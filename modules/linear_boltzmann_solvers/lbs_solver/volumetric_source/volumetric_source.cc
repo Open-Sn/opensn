@@ -6,7 +6,7 @@
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/math/functions/spatial_material_function.h"
+#include "framework/math/functions/vector_spatial_function.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 
@@ -55,7 +55,7 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
               : nullptr),
     strength_(params.GetParamVectorValue<double>("group_strength")),
     function_(params.ParametersAtAssignment().Has("function_handle")
-                ? GetStackItemPtrAsType<SpatialMaterialFunction>(
+                ? GetStackItemPtrAsType<VectorSpatialFunction>(
                     object_stack, params.GetParamValue<size_t>("function_handle"))
                 : nullptr)
 {
@@ -121,7 +121,7 @@ lbs::VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const in
   else if (not function_)
     return strength_;
   else
-    return function_->Evaluate(xyz, cell.material_id_, num_groups);
+    return function_->Evaluate(xyz, num_groups);
 }
 
 } // namespace opensn::lbs

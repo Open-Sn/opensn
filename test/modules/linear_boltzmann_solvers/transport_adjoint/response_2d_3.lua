@@ -157,7 +157,7 @@ function ResponseFunction(xyz, mat_id)
   end
   return response
 end
-response_func = opensn.LuaSpatialMaterialFunction.Create({ lua_function_name = "ResponseFunction" })
+response_func = opensn.LuaVectorSpatialFunction.Create({ lua_function_name = "ResponseFunction" })
 
 adjoint_source = lbs.VolumetricSource.Create({
   logical_volume_handle = qoi_vol,

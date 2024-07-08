@@ -8,7 +8,7 @@
 #include "lua/framework/lua.h"
 
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "lua/framework/math/functions/lua_spatial_material_function.h"
+#include "lua/framework/math/functions/lua_vector_spatial_material_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
 using namespace opensn;

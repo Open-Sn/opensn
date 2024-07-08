@@ -14,10 +14,10 @@ namespace opensn
 class Function : public Object
 {
 public:
-  static InputParameters GetInputParameters();
+  static InputParameters GetInputParameters() { return Object::GetInputParameters(); }
 
 protected:
-  explicit Function(const InputParameters& params);
+  explicit Function(const InputParameters& params) : Object(params) {}
 };
 
 } // namespace opensn

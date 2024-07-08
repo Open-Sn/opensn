@@ -13,7 +13,7 @@ namespace opensn
 struct Vector3;
 class Cell;
 class LogicalVolume;
-class SpatialMaterialFunction;
+class VectorSpatialFunction;
 
 namespace lbs
 {
@@ -24,7 +24,7 @@ class LBSSolver;
  *
  * This class differs from the standard material property sources in that it can be specified
  * for an arbitrary logical volume that may span multiple material regions and with spatial,
- * material id, and group-wise behaviors via a SpatialMaterialFunction.
+ * material id, and group-wise behaviors via a VectorSpatialMaterialFunction.
  *
  * The flexibility of this object allows for its use as a standard volumetric source or as
  * a volumetric response function for adjoint calculations.
@@ -57,7 +57,7 @@ private:
   const std::shared_ptr<LogicalVolume> logvol_;
 
   std::vector<double> strength_;
-  const std::shared_ptr<SpatialMaterialFunction> function_;
+  const std::shared_ptr<VectorSpatialFunction> function_;
 
   size_t num_local_subsribers_ = 0;
   size_t num_global_subscribers_ = 0;
