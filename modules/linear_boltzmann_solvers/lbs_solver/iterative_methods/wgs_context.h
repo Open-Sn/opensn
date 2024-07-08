@@ -35,7 +35,9 @@ struct WGSContext : public LinearSolverContext
              bool log_info);
 
   virtual void PreSetupCallback(){};
+
   virtual void SetPreconditioner(KSP& solver){};
+
   virtual void PostSetupCallback(){};
 
   virtual void PreSolveCallback(){};
