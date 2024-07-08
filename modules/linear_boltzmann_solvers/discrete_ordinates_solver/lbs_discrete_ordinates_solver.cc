@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -138,7 +139,6 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
   for (auto& groupset : groupsets_)
   {
     std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
-
     auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext>(
       *this,
       groupset,
@@ -148,10 +148,11 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       options_.verbose_inner_iterations,
       sweep_chunk);
 
-    auto wgs_solver = std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr);
-
-    wgs_solvers_.push_back(wgs_solver);
-  } // for groupset
+    if (groupset.iterative_method_ == IterativeMethod::CLASSIC_RICHARDSON)
+      wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(sweep_wgs_context_ptr));
+    else
+      wgs_solvers_.push_back(std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr));
+  }
 }
 
 void
@@ -721,7 +722,6 @@ DiscreteOrdinatesSolver::ComputeBalance()
         local_production += q_0g * IntV_shapeI[i];
       } // for g
     }   // for i
-
   } // for cell
 
   // Compute local balance

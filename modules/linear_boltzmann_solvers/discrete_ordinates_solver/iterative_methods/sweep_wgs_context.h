@@ -29,6 +29,8 @@ struct SweepWGSContext : public WGSContext
 
   void PreSetupCallback() override;
 
+  void PreSolveCallback() override;
+
   void SetPreconditioner(KSP& solver) override;
 
   std::pair<int64_t, int64_t> SystemSize() override;
