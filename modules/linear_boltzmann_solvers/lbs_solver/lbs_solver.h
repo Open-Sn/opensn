@@ -63,7 +63,7 @@ public:
 
   void SetBoundaryOptions(const InputParameters& params);
 
-  double ComputePiecewiseChange(LBSGroupset& groupset);
+  double ComputePointwiseChange(LBSGroupset& groupset);
 
   /**
    * Returns the number of moments for the solver. This will only be non-zero after initialization.
