@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -72,7 +72,7 @@ PowerIterationKEigen::Initialize()
     wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
-  ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
+  ags_solver_->Verbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());

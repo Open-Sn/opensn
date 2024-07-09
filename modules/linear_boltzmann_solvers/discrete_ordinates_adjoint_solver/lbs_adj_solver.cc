@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adj_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adjoint.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

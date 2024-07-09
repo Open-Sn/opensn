@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/isotropic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
@@ -360,7 +360,7 @@ LBSSolver::GetActiveSetSourceFunction() const
   return active_set_source_function_;
 }
 
-std::shared_ptr<AGSLinearSolver>
+std::shared_ptr<AGSSolver>
 LBSSolver::GetAGSSolver()
 {
   return ags_solver_;
@@ -461,7 +461,7 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter(
-    "maximum_ags_iterations", 1, "Maximum number of across-groupset iterations.");
+    "max_ags_iterations", 1, "Maximum number of across-groupset iterations.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
   params.AddOptionalParameter(
     "verbose_ags_iterations", false, "Flag to control verbosity of across-groupset iterations.");
@@ -636,8 +636,8 @@ LBSSolver::SetOptions(const InputParameters& params)
     else if (spec.Name() == "verbose_inner_iterations")
       options_.verbose_inner_iterations = spec.GetValue<bool>();
 
-    else if (spec.Name() == "maximum_ags_iterations")
-      options_.maximum_ags_iterations = spec.GetValue<int>();
+    else if (spec.Name() == "max_ags_iterations")
+      options_.max_ags_iterations = spec.GetValue<int>();
 
     else if (spec.Name() == "ags_tolerance")
       options_.ags_tolerance = spec.GetValue<double>();
@@ -1070,7 +1070,8 @@ LBSSolver::ComputeUnitIntegrals()
   if (options_.geometry_type == GeometryType::TWOD_CYLINDRICAL)
     swf_ptr = std::make_shared<CylindricalSWF>();
 
-  auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf) {
+  auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf)
+  {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces_.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
@@ -1599,11 +1600,10 @@ LBSSolver::InitializeSolverSchemes()
 
   InitializeWGSSolvers();
 
-  auto ags_context = std::make_shared<AGSContext>(*this, wgs_solvers_);
-  ags_solver_ = std::make_shared<AGSLinearSolver>(ags_context);
-  ags_solver_->SetMaximumIterations(options_.maximum_ags_iterations);
-  ags_solver_->SetTolerance(options_.ags_tolerance);
-  ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
+  ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
+  ags_solver_->MaxIterations(options_.max_ags_iterations);
+  ags_solver_->Tolerance(options_.ags_tolerance);
+  ags_solver_->Verbosity(options_.verbose_ags_iterations);
 }
 
 void

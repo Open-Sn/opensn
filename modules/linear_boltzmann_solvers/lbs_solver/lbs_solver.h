@@ -21,7 +21,6 @@ namespace opensn
 class MPICommunicatorSet;
 class GridFaceHistogram;
 class TimeIntegration;
-class AGSLinearSolver;
 class WGSLinearSolver;
 struct WGSContext;
 
@@ -264,7 +263,7 @@ public:
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
-  std::shared_ptr<AGSLinearSolver> GetAGSSolver();
+  std::shared_ptr<AGSSolver> GetAGSSolver();
 
   std::vector<std::shared_ptr<LinearSolver>>& GetWGSSolvers();
 
@@ -578,7 +577,7 @@ protected:
 
   SetSourceFunction active_set_source_function_;
 
-  std::shared_ptr<AGSLinearSolver> ags_solver_;
+  std::shared_ptr<AGSSolver> ags_solver_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;

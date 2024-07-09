@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 
 #include "framework/runtime.h"
@@ -50,7 +50,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   double k_eff_change = 1.0;
 
   // Start power iterations
-  ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
+  ags_solver->Verbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
   while (nit < max_iterations)

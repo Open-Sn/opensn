@@ -5,7 +5,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
@@ -153,7 +153,8 @@ PowerIterationKEigenSCDSA::Execute()
   /**Lambda for the creation of scattering sources but the input vector is only the zeroth moment*/
   auto SetLBSScatterSourcePhi0 = [this, &phi_temp](const std::vector<double>& input,
                                                    const bool additive,
-                                                   const bool suppress_wg_scat = false) {
+                                                   const bool suppress_wg_scat = false)
+  {
     ProjectBackPhi0(front_gs_, input, phi_temp);
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
