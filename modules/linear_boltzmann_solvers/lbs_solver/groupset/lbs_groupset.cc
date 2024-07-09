@@ -83,7 +83,8 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
-    "inner_linear_method", AllowableRangeList::New({"classic_richardson", "krylov_richardson", "gmres", "bicgstab"}));
+    "inner_linear_method",
+    AllowableRangeList::New({"classic_richardson", "krylov_richardson", "gmres", "bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));

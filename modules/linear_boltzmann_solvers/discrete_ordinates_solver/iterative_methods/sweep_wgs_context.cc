@@ -117,12 +117,6 @@ SweepWGSContext::SystemSize()
 }
 
 void
-SweepWGSContext::PreSolveCallback()
-{
-  lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
-}
-
-void
 SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
@@ -156,8 +150,9 @@ SweepWGSContext::PostSolveCallback()
 
   // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
   // Krylov methods to recover the actual solution (this includes all of the PETSc methods
-  // currently used in OpenSn). PostSolveCallback() is not called by Classic Richardson, so
-  // it's not necessary to guard this code.
+  // currently used in OpenSn). This step also zeros balance variables and computes the correct
+  // in-flow and out-flow. Classic Richardson calls this solely to compute balance quantities (note
+  // that it does cost us an extra sweep that is technically not necessary).
   lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
   const auto scope = lhs_src_scope_ | rhs_src_scope_;
   set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);

@@ -722,7 +722,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
         local_production += q_0g * IntV_shapeI[i];
       } // for g
     }   // for i
-  } // for cell
+  }     // for cell
 
   // Compute local balance
   double local_balance = local_production + local_in_flow - local_absorption - local_out_flow;

@@ -26,36 +26,39 @@ public:
    * \param gs_context_ptr Context Pointer to abstract context.
    */
   explicit ClassicRichardson(std::shared_ptr<WGSContext> gs_context_ptr);
- 
+
   ~ClassicRichardson() override;
 
-  void Setup() override
-  {}
+  void Setup() override {}
 
   void Solve() override;
 
 protected:
-  void PreSetupCallback() override {};
-  
-  void SetConvergenceTest() override {};
-  
-  void SetSystemSize() override {};
-  
-  void SetSystem() override {};
-  
-  void SetPreconditioner() override {};
-  
-  void PostSetupCallback() override {};
-  
-  void PreSolveCallback() override {};
-  
-  void SetRHS() override {};
-  
-  void SetInitialGuess() override {};
-  
-  void PostSolveCallback() override {};
+  void PreSetupCallback() override{};
 
+  void SetConvergenceTest() override{};
+
+  void SetSystemSize() override{};
+
+  void SetSystem() override{};
+
+  void SetPreconditioner() override{};
+
+  void PostSetupCallback() override{};
+
+  void PreSolveCallback() override{};
+
+  void SetRHS() override{};
+
+  void SetInitialGuess() override{};
+
+  void PostSolveCallback() override{};
+
+private:
   std::vector<double> saved_q_moments_local_;
+  std::vector<double> psi_new_, psi_old_;
+
+  double ComputePointwisePsiChange();
 };
 
 } // namespace lbs

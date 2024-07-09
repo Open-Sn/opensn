@@ -1591,10 +1591,10 @@ LBSSolver::InitializeBoundaries()
   }   // for bndry id
 }
 
-double LBSSolver::ComputePiecewiseChange(LBSGroupset& groupset)
+double
+LBSSolver::ComputePointwiseChange(LBSGroupset& groupset)
 {
   double pw_change = 0.0;
-
   int gsi = groupset.groups_[0].id_;
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -1611,14 +1611,14 @@ double LBSSolver::ComputePiecewiseChange(LBSGroupset& groupset)
 
         for (int g = 0; g < groupset.groups_.size(); ++g)
         {
-          size_t map0 = transport_view.MapDOF(i, 0, gsi+g);
+          size_t map0 = transport_view.MapDOF(i, 0, gsi + g);
           double abs_phi_m0 = fabs(phi_new_local_[map0]);
           double abs_phi_old_m0 = fabs(phi_old_local_[map0]);
           double max_phi = std::max(abs_phi_m0, abs_phi_old_m0);
           double delta_phi = std::fabs(phi_new_m[g] - phi_old_m[g]);
 
           if (max_phi >= std::numeric_limits<double>::min())
-            pw_change = std::max(delta_phi/max_phi, pw_change);
+            pw_change = std::max(delta_phi / max_phi, pw_change);
           else
             pw_change = std::max(delta_phi, pw_change);
         }
@@ -1627,7 +1627,7 @@ double LBSSolver::ComputePiecewiseChange(LBSGroupset& groupset)
   }
 
   double global_pw_change = 0.0;
-  MPI_Allreduce(&pw_change, &global_pw_change, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+  mpi_comm.all_reduce<double>(pw_change, global_pw_change, mpi::op::max<double>());
 
   return global_pw_change;
 }
