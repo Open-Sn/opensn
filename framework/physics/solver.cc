@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/physics/solver.h"
+#include "framework/field_functions/field_function_grid_based.h"
+#include "framework/physics/time_steppers/constant_time_stepper.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/physics/time_steppers/constant_time_stepper.h"
 #include "framework/object_factory.h"
 
 namespace opensn
@@ -19,6 +20,10 @@ Solver::GetInputParameters()
     "name",
     "A text name to associate with the solver. This name will be used "
     "in status messages and verbose iterative convergence monitors.");
+
+  params.AddOptionalParameterArray("auxvars",
+                                   std::vector<std::string>(),
+                                   "A list of auxiliary variable names to attach to the solver.");
 
   params.AddOptionalParameter("dt", 0.01, "Desired initial timestep size.");
   params.AddOptionalParameter("time", 0.0, "Current time of the solver.");
@@ -52,7 +57,8 @@ Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
 Solver::Solver(const InputParameters& params)
   : Object(params),
     timestepper_(InitializeTimeStepper(params)),
-    name_(params.GetParamValue<std::string>("name"))
+    name_(params.GetParamValue<std::string>("name")),
+    auxvars_(params.GetParamVectorValue<std::string>("auxvars"))
 {
 }
 
@@ -206,6 +212,21 @@ Solver::SetProperties(const ParameterBlock& params)
       timestepper_->SetMaxTimeSteps(param.GetValue<int>());
     if (param_name == "dt_min")
       timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
+  }
+}
+
+void
+Solver::SetAuxiliaryFieldFunction()
+{
+  for (const auto& auxvar : auxvars_)
+  {
+    for (auto& ff : field_function_stack)
+    {
+      if (auxvar == ff->Name())
+        aux_field_functions_[auxvar] = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff);
+    }
+    if (aux_field_functions_.count(auxvar) == 0)
+      throw std::runtime_error("Auxiliary field function " + auxvar + " not found.");
   }
 }
 

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/object.h"
-#include "basic_options.h"
+#include "framework/physics/basic_options.h"
 #include "framework/parameters/parameter_block.h"
 #include <iostream>
 #include <utility>
@@ -66,12 +66,17 @@ public:
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
 protected:
+  void SetAuxiliaryFieldFunction();
+
+protected:
   BasicOptions basic_options_;
   std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
+  std::map<std::string, std::shared_ptr<FieldFunctionGridBased>> aux_field_functions_;
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:
   const std::string name_;
+  const std::vector<std::string> auxvars_;
 
 public:
   static InputParameters GetInputParameters();
