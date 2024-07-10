@@ -103,6 +103,25 @@
     ]
   },
   {
+    "file": "transport_2d_2_unstructured_classic_richardson.lua",
+    "comment": "2D LinearBSolver Test Unstructured grid with Classic Richardson - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.51187,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.00142458,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_2d_3_poly_quad_mod.lua",
     "comment": "2D LinearBSolver Test Polar-Optimized quadrature - PWLD",
     "num_procs": 4,
@@ -434,6 +453,26 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_classic_richardson.lua",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD",
+    "num_procs": 4,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_6a_split_mesh.lua",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
@@ -480,6 +519,26 @@
   {
     "file": "reed_balance.lua",
     "comment": "1D LinearBSolver Reed problem with balance printout",
+    "num_procs": 1,
+    "weight_class" : "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Absorption rate             =",
+        "goldvalue": 1.006178e+02,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]   Out-flow rate               =",
+        "goldvalue": 3.821562e-01,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "reed_balance_classic_richardson.lua",
+    "comment": "1D LinearBSolver Reed problem with Classic Richardson and balance printout",
     "num_procs": 1,
     "weight_class" : "intermediate",
     "checks": [

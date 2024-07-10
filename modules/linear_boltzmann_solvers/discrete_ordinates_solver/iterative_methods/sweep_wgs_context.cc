@@ -51,6 +51,9 @@ SweepWGSContext::PreSetupCallback()
       case IterativeMethod::KRYLOV_BICGSTAB:
         method_name = "KRYLOV_BICGSTAB";
         break;
+      case IterativeMethod::CLASSIC_RICHARDSON:
+        method_name = "CLASSIC_RICHARDSON";
+        break;
       default:
         method_name = "KRYLOV_GMRES";
     }
