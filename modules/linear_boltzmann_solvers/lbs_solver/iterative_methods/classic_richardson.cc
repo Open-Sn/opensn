@@ -31,6 +31,8 @@ void
 ClassicRichardson::Solve()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
+  gs_context_ptr->PreSetupCallback();
+
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
   const auto scope = gs_context_ptr->lhs_src_scope_ | gs_context_ptr->rhs_src_scope_;
@@ -86,9 +88,9 @@ ClassicRichardson::Solve()
       log.Log() << iter_stats.str();
   }
 
-  gs_context_ptr->PostSolveCallback();
-
   lbs_solver.QMomentsLocal() = saved_q_moments_local_;
+
+  gs_context_ptr->PostSolveCallback();
 }
 
 double
