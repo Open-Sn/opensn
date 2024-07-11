@@ -10,7 +10,7 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: clang-format style check
         uses: jidicula/clang-format-action@v4.13.0
@@ -38,7 +38,7 @@ jobs:
         shell: bash -el {0}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: kt3k/license_checker@v1.0.6
 
   check-flake8:
