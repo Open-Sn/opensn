@@ -46,7 +46,7 @@ parser.add_argument(
 parser.add_argument(
     "-t", "--test",
     type=str, required=False, default=None,
-    help="A specific test to run"
+    help="Full path to an OpenSn test file"
 )
 
 parser.add_argument(
@@ -89,6 +89,13 @@ argv = parser.parse_args()
 # Check the exe exists
 if not os.path.isfile(argv.exe):
     raise FileNotFoundError(argv.exe)
+
+# --test should provide the full path to a test file. Break that up and set
+# test and directory appropriately
+if argv.test is not None:
+    dir, file = os.path.split(argv.test)
+    argv.directory = dir
+    argv.test = file
 
 # Check the test directory exists
 if not os.path.isdir(argv.directory):
@@ -147,8 +154,8 @@ job_manager.PrintCaughtWarnings(warning_manager1, "Warnings during test configur
 print()
 
 with warnings.catch_warnings(record=True) as warning_manager2:
-    RETVAL = job_manager.RunTests(tests, argv)
+    retval = job_manager.RunTests(tests, argv)
 
 job_manager.PrintCaughtWarnings(warning_manager2, "Warnings during test execution")
 
-sys.exit(RETVAL)
+sys.exit(retval)

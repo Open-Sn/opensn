@@ -296,7 +296,7 @@ def ConfigureTests(test_hierarchy: dict, argv):
                 else:
                     print("skipping " + obj.filename)
 
-            # Ff a specific test has dependencies, also add them to the list of executed tests
+            # If a specific test has dependencies, also add them to the list of executed tests
             if specific_test_dependency is not None:
                 if specific_test_dependency in sub_test_objs:
                     obj = sub_test_objs[specific_test_dependency]
