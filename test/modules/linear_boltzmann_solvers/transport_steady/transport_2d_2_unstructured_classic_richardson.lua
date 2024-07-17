@@ -2,9 +2,8 @@
 -- SDM: PWLD
 -- Test: Max-value=0.51187 and 1.42458e-03
 num_procs = 4
---Unstructured mesh
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -16,7 +15,7 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
   os.exit(false)
 end
 
---############################################### Setup mesh
+-- Unstructured mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
@@ -33,11 +32,11 @@ meshgen1 = mesh.MeshGenerator.Create({
 })
 mesh.MeshGenerator.Execute(meshgen1)
 
---############################################### Set Material IDs
+-- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 mesh.SetUniformMaterialID(0)
 
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
@@ -50,11 +49,10 @@ src = {}
 for g = 1, num_groups do
   src[g] = 0.0
 end
---src[1] = 1.0
 mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
---############################################### Setup Physics
+-- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 4)
 aquad.OptimizeForPolarSymmetry(pquad0, 4.0 * math.pi)
 
@@ -101,16 +99,16 @@ lbs_options = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys1, lbs_options)
 
---############################################### Initialize and Execute Solver
+-- Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
 
 solver.Initialize(ss_solver)
 solver.Execute(ss_solver)
 
---############################################### Get field functions
+-- Get field functions
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Volume integrations
+-- Volume integrations
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
@@ -123,7 +121,7 @@ maxval = fieldfunc.GetValue(curffi)
 
 log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
---############################################### Volume integrations
+-- Volume integrations
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)

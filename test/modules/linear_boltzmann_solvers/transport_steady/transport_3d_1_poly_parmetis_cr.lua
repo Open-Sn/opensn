@@ -1,8 +1,6 @@
--- 3D Transport test with Vacuum BCs.
+-- 3D Transport test with Vacuum and Incident-isotropic BC.
 -- SDM: PWLD
--- Test: Max-value1=6.55387e+00
---       Max-value2=1.02940e+00
-
+-- Test: Max-value=0.49903 and 7.18243e-4
 num_procs = 4
 
 -- Check num_procs
@@ -18,28 +16,35 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
 end
 
 -- Setup mesh
-meshgen1 = mesh.MeshGenerator.Create({
-  inputs = {
-    mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../resources/TestMeshes/Sphere.case",
-    }),
-  },
-  partitioner = mesh.KBAGraphPartitioner.Create({
-    nx = 2,
-    ny = 2,
-    nz = 1,
-    xcuts = { 0.0 },
-    ycuts = { 0.0 },
-  }),
-})
+Nxy = 32
+nodesxy = {}
+dxy = 2 / Nxy
+dz = 1.6 / 8
+for i = 0, Nxy do
+  nodesxy[i + 1] = -1.0 + i * dxy
+end
+nodesz = {}
+for k = 0, 8 do
+  nodesz[k + 1] = 0.0 + k * dz
+end
+
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
 mesh.MeshGenerator.Execute(meshgen1)
+
+-- Set Material IDs
+vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+
+vol1 =
+  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
 
 -- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
 
-num_groups = 5
+num_groups = 21
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_graphite_pure.xs")
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_graphite_pure.xs")
 
@@ -48,9 +53,8 @@ for g = 1, num_groups do
   src[g] = 0.0
 end
 
-mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
-src[1] = 1.0
 mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -59,20 +63,27 @@ lbs_block = {
   num_groups = num_groups,
   groupsets = {
     {
-      groups_from_to = { 0, num_groups - 1 },
+      groups_from_to = { 0, 20 },
       angular_quadrature_handle = pquad0,
       angle_aggregation_type = "single",
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "classic_richardson",
       l_abs_tol = 1.0e-6,
-      l_max_its = 1000,
+      l_max_its = 300,
     },
   },
 }
-
+bsrc = {}
+for g = 1, num_groups do
+  bsrc[g] = 0.0
+end
+bsrc[1] = 1.0 / 4.0 / math.pi
 lbs_options = {
-  scattering_order = 0,
+  boundary_conditions = {
+    { name = "zmin", type = "isotropic", group_strength = bsrc },
+  },
+  scattering_order = 1,
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
@@ -88,7 +99,6 @@ solver.Execute(ss_solver)
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
 
 -- Volume integrations
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
@@ -105,7 +115,7 @@ ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
 curffi = ffi1
 fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
 fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[2])
+fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[20])
 
 fieldfunc.Initialize(curffi)
 fieldfunc.Execute(curffi)
@@ -116,5 +126,4 @@ log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 -- Exports
 if master_export == nil then
   fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-  fieldfunc.ExportToVTK(fflist[1], "ZPhi3D_g0")
 end

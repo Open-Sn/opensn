@@ -3,12 +3,12 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <memory>
 #include <iomanip>
 
@@ -17,7 +17,6 @@ namespace opensn
 namespace lbs
 {
 
-/**Solves a groupset using classic richardson.*/
 ClassicRichardson::ClassicRichardson(std::shared_ptr<WGSContext> gs_context_ptr)
   : LinearSolver("ClassicRichardson", gs_context_ptr)
 {
@@ -35,6 +34,8 @@ ClassicRichardson::Solve()
 
   auto& groupset = gs_context_ptr->groupset_;
   auto& lbs_solver = gs_context_ptr->lbs_solver_;
+  auto& phi_old = lbs_solver.PhiOldLocal();
+  auto& phi_new = lbs_solver.PhiNewLocal();
   const auto scope = gs_context_ptr->lhs_src_scope_ | gs_context_ptr->rhs_src_scope_;
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();
   psi_old_.resize(groupset.angle_agg_->GetNumDelayedAngularDOFs().first, 0.0);
@@ -44,14 +45,31 @@ ClassicRichardson::Solve()
   for (int k = 0; k < groupset.max_iterations_; ++k)
   {
     lbs_solver.QMomentsLocal() = saved_q_moments_local_;
-    gs_context_ptr->set_source_function_(groupset,
-                                         lbs_solver.QMomentsLocal(),
-                                         lbs_solver.PhiOldLocal(),
-                                         lbs_solver.DensitiesLocal(),
-                                         scope);
+    gs_context_ptr->set_source_function_(
+      groupset, lbs_solver.QMomentsLocal(), phi_old, lbs_solver.DensitiesLocal(), scope);
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
-    double pw_phi_change = lbs_solver.ComputePointwiseChange(groupset);
+    // Apply WGDSA
+    if (groupset.apply_wgdsa_)
+    {
+      std::vector<double> delta_phi;
+      lbs_solver.AssembleWGDSADeltaPhiVector(groupset, phi_new - phi_old, delta_phi);
+      groupset.wgdsa_solver_->Assemble_b(delta_phi);
+      groupset.wgdsa_solver_->Solve(delta_phi);
+      lbs_solver.DisAssembleWGDSADeltaPhiVector(groupset, delta_phi, phi_new);
+    }
+
+    // Apply TGDSA
+    if (groupset.apply_tgdsa_)
+    {
+      std::vector<double> delta_phi;
+      lbs_solver.AssembleTGDSADeltaPhiVector(groupset, phi_new - phi_old, delta_phi);
+      groupset.tgdsa_solver_->Assemble_b(delta_phi);
+      groupset.tgdsa_solver_->Solve(delta_phi);
+      lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi, phi_new);
+    }
+
+    double pw_phi_change = lbs_solver.ComputePointwisePhiChange(groupset);
     double rho = (k == 0) ? 0.0 : sqrt(pw_phi_change / pw_phi_change_prev);
     pw_phi_change_prev = pw_phi_change;
 

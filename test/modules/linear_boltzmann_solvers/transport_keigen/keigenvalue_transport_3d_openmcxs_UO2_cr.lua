@@ -2,8 +2,6 @@
 -- Test: Final k-eigenvalue: 1.5029618
 num_procs = 4
 
---########## Mesh ##########
-
 -- Cells
 Nx = 5
 Ny = 5
@@ -14,6 +12,7 @@ Lx = 2.0
 Ly = 2.0
 Lz = 2.0
 
+-- Mesh
 xmesh = {}
 xmin = 0.0
 dx = Lx / Nx
@@ -41,14 +40,14 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 mesh.MeshGenerator.Execute(meshgen1)
 
---########## Materials ##########
+-- Materials
 
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "uo2.h5", 294.0)
 mesh.SetUniformMaterialID(0)
 
---########## Solver ##########
+-- Solver
 
 num_groups = 172
 lbs_block = {
