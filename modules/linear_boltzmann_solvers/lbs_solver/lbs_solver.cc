@@ -1592,7 +1592,7 @@ LBSSolver::InitializeBoundaries()
 }
 
 double
-LBSSolver::ComputePointwiseChange(LBSGroupset& groupset)
+LBSSolver::ComputePointwisePhiChange(LBSGroupset& groupset)
 {
   double pw_change = 0.0;
   int gsi = groupset.groups_[0].id_;

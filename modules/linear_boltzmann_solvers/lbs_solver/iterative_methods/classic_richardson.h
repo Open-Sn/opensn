@@ -34,25 +34,25 @@ public:
   void Solve() override;
 
 protected:
-  void PreSetupCallback() override{};
+  void PreSetupCallback() override {}
 
-  void SetConvergenceTest() override{};
+  void SetConvergenceTest() override {}
 
-  void SetSystemSize() override{};
+  void SetSystemSize() override {}
 
-  void SetSystem() override{};
+  void SetSystem() override {}
 
-  void SetPreconditioner() override{};
+  void SetPreconditioner() override {}
 
-  void PostSetupCallback() override{};
+  void PostSetupCallback() override {}
 
-  void PreSolveCallback() override{};
+  void PreSolveCallback() override {}
 
-  void SetRHS() override{};
+  void SetRHS() override {}
 
-  void SetInitialGuess() override{};
+  void SetInitialGuess() override {}
 
-  void PostSolveCallback() override{};
+  void PostSolveCallback() override {}
 
 private:
   std::vector<double> saved_q_moments_local_;

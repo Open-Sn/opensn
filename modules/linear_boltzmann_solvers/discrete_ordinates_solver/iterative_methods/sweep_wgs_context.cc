@@ -153,7 +153,7 @@ SweepWGSContext::PostSolveCallback()
 
   // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
   // Krylov methods to recover the actual solution (this includes all of the PETSc methods
-  // currently used in OpenSn). This step also zeros balance variables and computes the correct
+  // currently used in OpenSn). This step also zeros out balance variables and computes the correct
   // in-flow and out-flow. Classic Richardson calls this solely to compute balance quantities (note
   // that it does cost us an extra sweep that is technically not necessary).
   lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);

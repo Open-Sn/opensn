@@ -278,6 +278,25 @@
     ]
   },
   {
+    "file": "transport_3d_1_poly_parmetis_cr.lua",
+    "comment": "3D LinearBSolver Test Ortho Grid Parmetis with Classic Richardson- PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_1_poly_scotch.lua",
     "comment": "3D LinearBSolver Test Ortho Grid Scotch - PWLD",
     "num_procs": 4,
