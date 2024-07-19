@@ -19,7 +19,7 @@ end
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../resources/TestMeshes/SquareMesh2x2QuadsBlock.obj",
+      filename = "../../../assets/mesh/SquareMesh2x2QuadsBlock.obj",
     }),
   },
   partitioner = mesh.KBAGraphPartitioner.Create({

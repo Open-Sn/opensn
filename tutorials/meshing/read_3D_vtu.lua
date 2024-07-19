@@ -11,7 +11,7 @@ We start by reading a 3D vtu file. The resulting mesh and partition is shown bel
 meshgen = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../resources/TestMeshes/GMSH_AllTets.vtu",
+      filename = "../../test/assets/mesh/GMSH_AllTets.vtu",
     }),
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
