@@ -64,7 +64,7 @@ public:
 
   virtual double AddSourceMoments() const;
 
-  typedef std::vector<MultiGroupXS::Precursor> PrecursorList;
+  using PrecursorList = std::vector<MultiGroupXS::Precursor>;
   /**Adds delayed particle precursor sources.*/
   virtual double AddDelayedFission(const PrecursorList& precursors,
                                    const double& rho,

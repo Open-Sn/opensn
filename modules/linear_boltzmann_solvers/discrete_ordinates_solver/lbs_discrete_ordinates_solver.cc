@@ -1062,8 +1062,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       // Process Product Quadrature
       try
       {
-        typedef ProductQuadrature ProdQuadType;
-        const auto& product_quad = dynamic_cast<const ProdQuadType&>(quadrature);
+        const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
         const auto num_azi = product_quad.azimu_ang_.size();
         const auto num_pol = product_quad.polar_ang_.size();
@@ -1128,8 +1127,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       // Process Product Quadrature
       try
       {
-        typedef ProductQuadrature ProdQuadType;
-        const auto& product_quad = dynamic_cast<const ProdQuadType&>(quadrature);
+        const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
         for (const auto& dir_set : product_quad.GetDirectionMap())
         {

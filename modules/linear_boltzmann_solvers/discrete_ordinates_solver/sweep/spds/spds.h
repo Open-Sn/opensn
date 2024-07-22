@@ -22,11 +22,16 @@ public:
   const Vector3& Omega() const { return omega_; }
   const SPLS& GetSPLS() const { return spls_; }
 
-  typedef std::vector<int> VecInt;
-  const VecInt& GetLocationDependencies() const { return location_dependencies_; }
-  const VecInt& GetLocationSuccessors() const { return location_successors_; }
-  const VecInt& GetDelayedLocationDependencies() const { return delayed_location_dependencies_; }
-  const VecInt& GetDelayedLocationSuccessors() const { return delayed_location_successors_; }
+  const std::vector<int>& GetLocationDependencies() const { return location_dependencies_; }
+  const std::vector<int>& GetLocationSuccessors() const { return location_successors_; }
+  const std::vector<int>& GetDelayedLocationDependencies() const
+  {
+    return delayed_location_dependencies_;
+  }
+  const std::vector<int>& GetDelayedLocationSuccessors() const
+  {
+    return delayed_location_successors_;
+  }
   const std::vector<std::pair<int, int>>& GetLocalCyclicDependencies() const
   {
     return local_cyclic_dependencies_;

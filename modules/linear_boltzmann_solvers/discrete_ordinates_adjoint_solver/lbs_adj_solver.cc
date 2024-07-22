@@ -212,13 +212,11 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 
   const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 
-  typedef VectorN<4> Arr4; // phi, J_x, J_y, J_z
-  typedef std::vector<Arr4> MGVec4;
-  typedef std::vector<MGVec4> VecOfMGVec4;
+  using MGVec4 = std::vector<VectorN<4>>; // 0 = phi, 1 = J_x, 2 = J_y, 3 = J_z
   const size_t num_groups = set_group_numbers.size();
   const size_t num_cells = grid_ptr_->local_cells.size();
 
-  VecOfMGVec4 cell_avg_p1_moments(num_cells, MGVec4(num_groups));
+  std::vector<MGVec4> cell_avg_p1_moments(num_cells, MGVec4(num_groups));
   {
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -227,7 +225,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
       const int num_nodes = cell_view.NumNodes();
       const auto& fe_values = unit_cell_matrices_[cell.local_id_];
 
-      VecOfMGVec4 nodal_p1_moments(num_nodes);
+      std::vector<MGVec4> nodal_p1_moments(num_nodes);
       for (int i = 0; i < num_nodes; ++i)
       {
         // Get multigroup p1_moments
@@ -275,10 +273,9 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   }
 
   // Determine cell-based exponential-representations
-  typedef std::pair<double, double> ABCoeffsPair;
-  typedef std::vector<ABCoeffsPair> VecOfABCoeffsPair;
-  typedef std::vector<VecOfABCoeffsPair> ExpReps;
-  ExpReps cell_exp_reps(num_cells, VecOfABCoeffsPair(num_groups, {0.0, 0.0}));
+  using VecOfABCoeffsPair = std::vector<std::pair<double, double>>;
+  std::vector<VecOfABCoeffsPair> cell_exp_reps(num_cells,
+                                               VecOfABCoeffsPair(num_groups, {0.0, 0.0}));
   {
     for (const auto& cell : grid_ptr_->local_cells)
     {

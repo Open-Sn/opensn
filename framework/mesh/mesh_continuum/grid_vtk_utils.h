@@ -43,8 +43,8 @@ void UploadFaceGeometry(const CellFace& cell_face,
                         const std::vector<uint64_t>& vertex_map,
                         vtkNew<vtkUnstructuredGrid>& ugrid);
 
-typedef vtkSmartPointer<vtkUnstructuredGrid> vtkUGridPtr;
-typedef std::pair<vtkUGridPtr, std::string> vtkUGridPtrAndName;
+using vtkUGridPtr = vtkSmartPointer<vtkUnstructuredGrid>;
+using vtkUGridPtrAndName = std::pair<vtkUGridPtr, std::string>;
 
 /**
  * Finds the highest dimension across all the grid blocks. This is useful when a vtk-read mesh

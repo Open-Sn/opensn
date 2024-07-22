@@ -15,7 +15,7 @@ CellMapping::CellMapping(const MeshContinuum& grid,
                          size_t num_nodes,
                          std::vector<Vector3> node_locations,
                          std::vector<std::vector<int>> face_node_mappings,
-                         const VandAFunction& volume_area_function)
+                         const VolumeAndAreaFunction& volume_area_function)
   : ref_grid_(grid),
     cell_(cell),
     num_nodes_(num_nodes),

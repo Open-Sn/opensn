@@ -29,7 +29,7 @@ struct FaceNodalMapping
   {
   }
 };
-typedef std::vector<FaceNodalMapping> CellFaceNodalMapping;
+using CellFaceNodalMapping = std::vector<FaceNodalMapping>;
 
 class FLUDSCommonData
 {

@@ -32,18 +32,16 @@ CBC_ASynchronousCommunicator::SendData()
 {
   CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::SendData");
 
-  typedef int MPIRank;
-
   // First we convert any new outgoing messages from the queue into
   // buffer messages. We aggregate these messages per location-id
   // they need to be sent to
   if (not outgoing_message_queue_.empty())
   {
-    std::map<MPIRank, BufferItem> locI_buffer_map;
+    std::map<int, BufferItem> locI_buffer_map;
 
     for (const auto& [msg_key, data] : outgoing_message_queue_)
     {
-      const MPIRank locI = std::get<0>(msg_key);
+      const int locI = std::get<0>(msg_key);
       const uint64_t cell_global_id = std::get<1>(msg_key);
       const unsigned int face_id = std::get<2>(msg_key);
       const size_t data_size = data.size();
@@ -95,8 +93,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
 {
   CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::ReceiveData");
 
-  typedef std::pair<uint64_t, unsigned int> CellFaceKey; // cell_gid + face_id
-
+  using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
   std::map<CellFaceKey, std::vector<double>> received_messages;
   std::vector<uint64_t> cells_who_received_data;
   auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();

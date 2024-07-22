@@ -32,10 +32,10 @@ struct BaseFunctor
  * spherical quadrilateral (SQ).*/
 struct SimplifiedLDFESQ::SphericalQuadrilateral
 {
-  std::array<Vertex, 4> vertices_xy_tilde;  ///< On square
-  std::array<Vertex, 4> vertices_xyz_prime; ///< On cube face
-  std::array<Vertex, 4> vertices_xyz;       ///< On unit sphere
-  Vertex centroid_xyz;
+  std::array<Vector3, 4> vertices_xy_tilde;  ///< On square
+  std::array<Vector3, 4> vertices_xyz_prime; ///< On cube face
+  std::array<Vector3, 4> vertices_xyz;       ///< On unit sphere
+  Vector3 centroid_xyz;
 
   Matrix3x3 rotation_matrix;
   Vector3 translation_vector;
@@ -108,13 +108,13 @@ private:
    */
   void EmpiricalQPOptimization(SphericalQuadrilateral& sq,
                                GaussLegendreQuadrature& legendre,
-                               Vertex& sq_xy_tilde_centroid,
+                               Vector3& sq_xy_tilde_centroid,
                                std::array<Vector3, 4>& radii_vectors_xy_tilde,
                                std::array<double, 4>& sub_sub_sqr_areas);
 
   void IsolatedQPOptimization(SphericalQuadrilateral& sq,
                               GaussLegendreQuadrature& legendre,
-                              Vertex& sq_xy_tilde_centroid,
+                              Vector3& sq_xy_tilde_centroid,
                               std::array<Vector3, 4>& radii_vectors_xy_tilde,
                               std::array<double, 4>& sub_sub_sqr_areas);
 
@@ -122,7 +122,7 @@ private:
    * Computes the area of a cell. This routine uses Girard's theorem to get the area of a spherical
    * triangle using the spherical excess.
    */
-  static double ComputeSphericalQuadrilateralArea(std::array<Vertex, 4>& vertices_xyz);
+  static double ComputeSphericalQuadrilateralArea(std::array<Vector3, 4>& vertices_xyz);
 
   /**
    * Integrates shape functions to produce weights.
@@ -190,7 +190,7 @@ private:
 struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
 {
   Quadrature& sldfesq;
-  Vertex& centroid_xy_tilde;
+  Vector3& centroid_xy_tilde;
   std::array<Vector3, 4>& radii_vectors_xy_tilde;
   SphericalQuadrilateral& sq;
 
@@ -204,7 +204,7 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   std::vector<double>& lqw;
 
   FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& sldfesq,
-                           Vertex& centroid_xy_tilde,
+                           Vector3& centroid_xy_tilde,
                            std::array<Vector3, 4>& radii_vectors_xy_tilde,
                            SphericalQuadrilateral& sq,
                            GaussLegendreQuadrature& legendre_quadrature)

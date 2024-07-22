@@ -65,9 +65,9 @@ Plugin::Plugin(const InputParameters& params)
   if (user_params.Has("entry_function"))
   {
     const auto& entry_function = user_params.GetParamValue<std::string>("entry_function");
-    typedef void(some_func)();
 
-    auto func = (some_func*)dlsym(library_handle_, entry_function.c_str());
+    using func_ptr = void (*)();
+    auto func = (func_ptr)dlsym(library_handle_, entry_function.c_str());
 
     OpenSnLogicalErrorIf(not func, "Failed to call entry function \"" + entry_function + "\"");
 

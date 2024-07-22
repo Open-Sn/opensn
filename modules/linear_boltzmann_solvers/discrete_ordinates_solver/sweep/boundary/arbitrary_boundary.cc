@@ -51,11 +51,9 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
 
   size_t num_angles = quadrature.omegas_.size();
 
-  typedef std::pair<double, double> PhiTheta;
-
   std::vector<int> angle_indices;
   std::vector<Vector3> angle_vectors;
-  std::vector<PhiTheta> phi_theta_angles;
+  std::vector<std::pair<double, double>> phi_theta_angles;
   std::vector<int> group_indices;
 
   angle_indices.reserve(num_angles);

@@ -79,9 +79,8 @@ private:
   void SolveOneGroupProblem(unsigned int g, int64_t iverbose);
   void UpdateFluxWithTwoGrid(int64_t iverbose);
 
-  typedef std::pair<BoundaryType, std::array<std::vector<double>, 3>> BoundaryInfo;
-
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
+  using BoundaryInfo = std::pair<BoundaryType, std::array<std::vector<double>, 3>>;
+  using BoundaryPreferences = std::map<std::string, BoundaryInfo>;
 
   std::shared_ptr<MeshContinuum> grid_ptr_;
 

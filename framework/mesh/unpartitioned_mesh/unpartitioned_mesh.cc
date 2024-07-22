@@ -47,7 +47,7 @@ UnpartitionedMesh::ComputeCentroids()
   log.Log0Verbose1() << "Computing cell-centroids.";
   for (auto cell : raw_cells_)
   {
-    cell->centroid = Vertex(0.0, 0.0, 0.0);
+    cell->centroid = Vector3(0.0, 0.0, 0.0);
     for (auto vid : cell->vertex_ids)
       cell->centroid += vertices_[vid];
 

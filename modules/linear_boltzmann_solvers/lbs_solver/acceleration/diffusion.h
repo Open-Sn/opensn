@@ -22,7 +22,7 @@ struct Multigroup_D_and_sigR;
 class DiffusionSolver
 {
 protected:
-  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
+  using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
 
   const std::string text_name_;
   const MeshContinuum& grid_;

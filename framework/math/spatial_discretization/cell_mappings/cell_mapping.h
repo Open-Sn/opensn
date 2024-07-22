@@ -80,15 +80,15 @@ protected:
    * used as this function. Otherwise (i.e. for higher order
    * elements, the child-class should
    * bind a different function to this.*/
-  typedef std::function<void(const MeshContinuum&, const Cell&, double&, std::vector<double>&)>
-    VandAFunction;
+  using VolumeAndAreaFunction =
+    std::function<void(const MeshContinuum&, const Cell&, double&, std::vector<double>&)>;
 
   CellMapping(const MeshContinuum& grid,
               const Cell& cell,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
               std::vector<std::vector<int>> face_node_mappings,
-              const VandAFunction& volume_area_function);
+              const VolumeAndAreaFunction& volume_area_function);
 
   /**Static method that all child elements can use as a default.*/
   static void ComputeCellVolumeAndAreas(const MeshContinuum& grid,

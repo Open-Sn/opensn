@@ -9,8 +9,6 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include <memory>
 
-typedef std::vector<std::vector<double>> MatDbl;
-
 namespace opensn
 {
 class SparseMatrix;
@@ -20,6 +18,9 @@ class SpatialDiscretization;
 class SpatialDiscretization_FV;
 class SpatialDiscretization_PWLD;
 class SpatialDiscretization_PWLC;
+
+using MatDbl = std::vector<std::vector<double>>;
+using MatVec3 = std::vector<std::vector<Vector3>>;
 
 /**
  * Coordinate system type.

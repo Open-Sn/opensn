@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-typedef std::vector<std::pair<int, short>> LockBox;
+using LockBox = std::vector<std::pair<int, short>>;
 
 AAH_FLUDSCommonData::AAH_FLUDSCommonData(
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,

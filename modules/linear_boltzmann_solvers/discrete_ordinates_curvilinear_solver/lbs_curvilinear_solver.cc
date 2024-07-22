@@ -126,9 +126,8 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     {
       case CoordinateSystemType::CYLINDRICAL:
       {
-        typedef CylindricalQuadrature CylAngQuad;
         const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<CylAngQuad>(angular_quad_ptr);
+          std::dynamic_pointer_cast<CylindricalQuadrature>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
@@ -141,9 +140,8 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       }
       case CoordinateSystemType::SPHERICAL:
       {
-        typedef SphericalQuadrature SphAngQuad;
         const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<SphAngQuad>(angular_quad_ptr);
+          std::dynamic_pointer_cast<SphericalQuadrature>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
@@ -287,8 +285,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
   }
 
-  typedef PieceWiseLinearDiscontinuous SDM_PWLD;
-  discretization_ = SDM_PWLD::New(*grid_ptr_, qorder, system);
+  discretization_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_, qorder, system);
 
   ComputeUnitIntegrals();
 
@@ -321,7 +318,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
     }
   }
 
-  discretization_secondary_ = SDM_PWLD::New(*grid_ptr_, qorder, system);
+  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_, qorder, system);
 
   ComputeSecondaryUnitIntegrals();
 }

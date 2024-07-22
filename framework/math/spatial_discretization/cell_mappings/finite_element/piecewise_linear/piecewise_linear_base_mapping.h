@@ -18,9 +18,6 @@ class PieceWiseLinearBaseMapping : public CellMapping
 {
 protected:
 public:
-  typedef std::vector<Vector3> VecVec3;
-
-public:
   /** Constructor. */
   PieceWiseLinearBaseMapping(const MeshContinuum& grid,
                              const Cell& cell,

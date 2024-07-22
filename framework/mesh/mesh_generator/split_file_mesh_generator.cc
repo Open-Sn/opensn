@@ -372,7 +372,7 @@ SplitFileMeshGenerator::ReadSplitMesh()
       new_cell.faces.push_back(std::move(new_face));
     } // for f
 
-    cells.insert(std::make_pair(CellPIDGID(cell_pid, cell_gid), std::move(new_cell)));
+    cells.insert(std::make_pair(std::make_pair(cell_pid, cell_gid), std::move(new_cell)));
   } // for cell c
 
   // Read the vertices

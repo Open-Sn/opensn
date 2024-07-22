@@ -21,10 +21,8 @@ private:
   std::unique_ptr<BoundaryFunction> boundary_function_;
   const uint64_t boundary_id_;
 
-  typedef std::vector<double> FaceNodeData;
-  typedef std::vector<FaceNodeData> FaceData;
-  typedef std::vector<FaceData> CellData;
-
+  using FaceData = std::vector<std::vector<double>>;
+  using CellData = std::vector<FaceData>;
   std::vector<CellData> local_cell_data_;
 
 public:

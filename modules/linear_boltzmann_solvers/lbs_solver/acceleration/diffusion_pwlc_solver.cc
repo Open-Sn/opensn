@@ -69,8 +69,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
     // Mark dirichlet nodes
-    typedef std::pair<bool, double> DirichFlagVal;
-    std::vector<DirichFlagVal> node_is_dirichlet(num_nodes, {false, 0.0});
+    std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
@@ -268,8 +267,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
     // Mark dirichlet nodes
-    typedef std::pair<bool, double> DirichFlagVal;
-    std::vector<DirichFlagVal> node_is_dirichlet(num_nodes, {false, 0.0});
+    std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];

@@ -17,12 +17,6 @@ enum class SchedulingAlgorithm
   DEPTH_OF_GRAPH = 2      ///< DOG
 };
 
-typedef AngleSetGroup TAngleSetGroup;
-typedef AngleSet TAngleSet;
-typedef STDG TGSPO;
-
-typedef std::vector<TGSPO> TLEVELED_GRAPH;
-
 class SweepScheduler
 {
 private:
@@ -31,14 +25,14 @@ private:
 
   struct RULE_VALUES
   {
-    std::shared_ptr<TAngleSet> angle_set;
+    std::shared_ptr<AngleSet> angle_set;
     int depth_of_graph;
     int sign_of_omegax;
     int sign_of_omegay;
     int sign_of_omegaz;
     size_t set_index;
 
-    explicit RULE_VALUES(std::shared_ptr<TAngleSet>& ref_as) : angle_set(ref_as)
+    explicit RULE_VALUES(std::shared_ptr<AngleSet>& ref_as) : angle_set(ref_as)
     {
       depth_of_graph = 0;
       set_index = 0;

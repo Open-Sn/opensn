@@ -29,16 +29,15 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
   std::shared_ptr<UnpartitionedMesh> mesh = std::make_shared<UnpartitionedMesh>();
 
-  typedef std::pair<uint64_t, uint64_t> Edge;
   struct BlockData
   {
     std::string name;
     std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells;
-    std::vector<Edge> edges;
+    std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
 
   std::vector<BlockData> block_data;
-  std::vector<Vertex> file_vertices;
+  std::vector<Vector3> file_vertices;
 
   // Reading every line
   std::string file_line;
@@ -71,7 +70,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     // Keyword "v" for Vertex
     if (first_word == "v")
     {
-      Vertex newVertex;
+      Vector3 newVertex;
       for (int k = 1; k <= 3; k++)
       {
         // Extract sub word
@@ -178,7 +177,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     // Keyword "l" for edge
     if (first_word == "l")
     {
-      Edge edge;
+      std::pair<uint64_t, uint64_t> edge;
       for (int k = 1; k <= 2; ++k)
       {
         // Extract sub word
@@ -249,7 +248,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
                            "\"selection only\"");
 
   // Process blocks
-  std::vector<Vertex> cell_vertices;
+  std::vector<Vector3> cell_vertices;
   {
     // Initial map is straight
     std::vector<size_t> vertex_map;

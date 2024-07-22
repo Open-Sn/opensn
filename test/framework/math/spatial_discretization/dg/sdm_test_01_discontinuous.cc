@@ -147,14 +147,12 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
       const double hm = HPerpendicular(cell_mapping, f);
 
-      typedef MeshContinuum Grid;
-
       if (face.has_neighbor_)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id_];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-        const size_t acf = Grid::MapCellFace(cell, adj_cell, f);
+        const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp = HPerpendicular(adj_cell_mapping, acf);
 
         // Compute kappa

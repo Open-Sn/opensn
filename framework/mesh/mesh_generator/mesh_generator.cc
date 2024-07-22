@@ -170,9 +170,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   OpenSnLogicalErrorIf(num_raw_cells == 0, "No cells in final input mesh");
 
   // Build cell graph and centroids
-  typedef std::vector<uint64_t> CellGraphNode;
-  typedef std::vector<CellGraphNode> CellGraph;
-  CellGraph cell_graph;
+  std::vector<std::vector<uint64_t>> cell_graph;
   std::vector<Vector3> cell_centroids;
 
   cell_graph.reserve(num_raw_cells);
@@ -180,7 +178,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   {
     for (const auto& raw_cell_ptr : raw_cells)
     {
-      CellGraphNode cell_graph_node; // <-- Note A
+      std::vector<uint64_t> cell_graph_node; // <-- Note A
       for (auto& face : raw_cell_ptr->faces)
         if (face.has_neighbor)
           cell_graph_node.push_back(face.neighbor);
@@ -302,7 +300,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
     newFace.neighbor_id_ = raw_face.neighbor;
 
     newFace.vertex_ids_ = raw_face.vertex_ids;
-    auto vfc = Vertex(0.0, 0.0, 0.0);
+    auto vfc = Vector3(0.0, 0.0, 0.0);
     for (auto fvid : newFace.vertex_ids_)
       vfc = vfc + vertices.at(fvid);
     newFace.centroid_ = vfc / static_cast<double>(newFace.vertex_ids_.size());

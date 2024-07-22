@@ -111,7 +111,6 @@ SweepChunkPWLTransientTheta::Sweep(opensn::AngleSet* angle_set)
   auto const& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
 
   const auto& psi_uk_man = groupset_.psi_uk_man_;
-  typedef const int64_t cint64_t;
 
   const bool fixed_src_active = surface_source_active;
   //  const bool fixed_src_active = true;
@@ -239,7 +238,7 @@ SweepChunkPWLTransientTheta::Sweep(opensn::AngleSet* angle_set)
             const size_t ir = transport_view.MapDOF(i, m, g);
             temp_src += m2d_op[m][angle_num] * q_moments_[ir];
           } // for m
-          cint64_t imap = grid_fe_view_.MapDOFLocal(cell, i, psi_uk_man, angle_num, 0);
+          const int64_t imap = grid_fe_view_.MapDOFLocal(cell, i, psi_uk_man, angle_num, 0);
           if (fixed_src_active) temp_src += tau_gsg[gsg] * psi_prev_[imap + gsg];
           source_[i] = temp_src;
         } // for i
@@ -284,7 +283,7 @@ SweepChunkPWLTransientTheta::Sweep(opensn::AngleSet* angle_set)
       {
         for (int i = 0; i < num_nodes; ++i)
         {
-          cint64_t imap = grid_fe_view_.MapDOFLocal(cell, i, psi_uk_man, angle_num, gs_ss_begin);
+          const int64_t imap = grid_fe_view_.MapDOFLocal(cell, i, psi_uk_man, angle_num, gs_ss_begin);
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
             output_psi[imap + gsg] = b_[gsg][i];
           // inv_theta*(b_[gsg][i] + (theta_ - 1.0) * psi_prev_[imap + gsg]);

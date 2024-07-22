@@ -23,7 +23,7 @@ RegisterWrapperFunctionInNamespace(unit_tests,
 ParameterBlock
 acceleration_Diffusion_CFEM(const InputParameters&)
 {
-  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
+  using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
@@ -45,14 +45,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Make Boundary conditions
-  typedef BoundaryCondition BC;
-  std::map<uint64_t, BC> bcs;
-  // bcs[0] = {BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[1] = {BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[2] = {BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[3] = {BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[4] = {BCType::DIRICHLET,{1.0,0,0}},
-  // bcs[5] = {BCType::DIRICHLET,{1.0,0,0}};
+  std::map<uint64_t, BoundaryCondition> bcs;
   bcs[0] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[1] = {BCType::ROBIN, {0.25, 0.5, 0}},
   bcs[2] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[3] = {BCType::ROBIN, {0.25, 0.5, 0}},
   bcs[4] = {BCType::ROBIN, {0.25, 0.5, 0}}, bcs[5] = {BCType::ROBIN, {0.25, 0.5, 0}};
@@ -64,8 +57,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
   unit_cell_matrices.resize(grid.local_cells.size());
 
   // Build unit integrals
-  typedef std::vector<Vector3> VecVec3;
-  typedef std::vector<VecVec3> MatVec3;
+  using MatVec3 = std::vector<std::vector<Vector3>>;
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -110,7 +102,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
       IntS_shapeI_shapeJ[f].resize(cell_num_nodes, std::vector<double>(cell_num_nodes));
       IntS_shapeI[f].resize(cell_num_nodes);
-      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, VecVec3(cell_num_nodes));
+      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, std::vector<Vector3>(cell_num_nodes));
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {

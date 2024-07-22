@@ -53,13 +53,13 @@ public:
 
   struct VertexListHelper
   {
-    virtual const Vertex& at(uint64_t vid) const = 0;
+    virtual const Vector3& at(uint64_t vid) const = 0;
   };
   template <typename T>
   struct STLVertexListHelper : public VertexListHelper
   {
     explicit STLVertexListHelper(const T& list) : list_(list) {}
-    const Vertex& at(uint64_t vid) const override { return list_.at(vid); };
+    const Vector3& at(uint64_t vid) const override { return list_.at(vid); };
     const T& list_;
   };
 
