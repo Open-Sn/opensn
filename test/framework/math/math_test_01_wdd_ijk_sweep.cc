@@ -20,14 +20,12 @@ RegisterWrapperFunctionInNamespace(unit_tests,
                                    nullptr,
                                    math_Test01_WDD_IJK_Sweep);
 
-typedef NDArray<double> IJKArrayDbl;
-
-IJKArrayDbl
+NDArray<double>
 WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
                const std::array<double, 3>& mesh_lengths,
                const std::array<double, 6>& bcs,
-               const IJKArrayDbl& sigma_t,
-               const IJKArrayDbl& q,
+               const NDArray<double>& sigma_t,
+               const NDArray<double>& q,
                const AngularQuadrature& quad,
                bool verbose = false)
 {
@@ -39,7 +37,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   const double dy = mesh_lengths[1] / Ny;
   const double dz = mesh_lengths[2] / Nz;
 
-  IJKArrayDbl phi_0(mesh_divs);
+  NDArray<double> phi_0(mesh_divs);
   phi_0.set(0.0);
 
   auto iorder = Range<int>(0, Nx);
@@ -71,9 +69,9 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
       korder = Range<int>(Nz - 1, -1, -1);
 
     // Sweep cells
-    IJKArrayDbl psi_ds_x(mesh_divs);
-    IJKArrayDbl psi_ds_y(mesh_divs);
-    IJKArrayDbl psi_ds_z(mesh_divs);
+    NDArray<double> psi_ds_x(mesh_divs);
+    NDArray<double> psi_ds_y(mesh_divs);
+    NDArray<double> psi_ds_z(mesh_divs);
     for (auto k : korder)
       for (auto j : jorder)
         for (auto i : iorder)
@@ -136,8 +134,8 @@ math_Test01_WDD_IJK_Sweep(const InputParameters&)
   const std::array<double, 3> mesh_lengths = {1.0, 1.0, 10.0};
   const std::array<double, 6> bcs = {0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
 
-  IJKArrayDbl sigma_t(mesh_divisions, 0.2);
-  IJKArrayDbl q(mesh_divisions, 0.0);
+  NDArray<double> sigma_t(mesh_divisions, 0.2);
+  NDArray<double> q(mesh_divisions, 0.0);
 
   //  sigma_t.Set(0.2);
   //  q.Set(0.0);

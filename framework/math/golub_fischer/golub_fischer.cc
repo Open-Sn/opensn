@@ -11,8 +11,8 @@
 namespace opensn
 {
 
-AnglePairs&
-GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
+std::vector<std::pair<double, double>>&
+GolubFischer::GetDiscreteScatAngles(std::vector<double>& mell)
 {
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Getting Discrete Scattering Angles" << '\n';
 
@@ -33,11 +33,11 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
     return xn_wn_;
 
   /* Legendre recurrence coefficients */
-  Tvecdbl a;
+  std::vector<double> a;
   a.resize(2 * n, 0.0);
-  Tvecdbl b;
+  std::vector<double> b;
   b.resize(2 * n, 0.0);
-  Tvecdbl c;
+  std::vector<double> c;
   c.resize(2 * n, 0.0);
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "a,b,c:\n";
@@ -65,7 +65,10 @@ GolubFischer::GetDiscreteScatAngles(Tvecdbl& mell)
 }
 
 void
-GolubFischer::MCA(Tvecdbl& mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
+GolubFischer::MCA(std::vector<double>& mell,
+                  std::vector<double>& a,
+                  std::vector<double>& b,
+                  std::vector<double>& c)
 {
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "MCA Start" << '\n';
 
@@ -119,7 +122,7 @@ GolubFischer::MCA(Tvecdbl& mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c)
 }
 
 void
-GolubFischer::RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta)
+GolubFischer::RootsOrtho(int& N, std::vector<double>& alpha, std::vector<double>& beta)
 {
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "RootsOrtho Start" << '\n';
 
@@ -129,9 +132,9 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta)
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 1: Init guess" << '\n';
 
-  Tvecdbl xn;
+  std::vector<double> xn;
   xn.resize(N, 0.0);
-  Tvecdbl wn;
+  std::vector<double> wn;
   wn.resize(N, 0.0);
 
   for (int i = 0; i < N; i++)
@@ -140,7 +143,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta)
     log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "x[" << i << "]=" << xn[i] << "\n";
   }
 
-  Tvecdbl norm;
+  std::vector<double> norm;
   norm.resize(N + 1, 0.0);
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Check 2 " << beta[0] << '\n';
   norm[0] = beta[0];
@@ -231,7 +234,7 @@ GolubFischer::RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta)
 }
 
 double
-GolubFischer::Ortho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta)
+GolubFischer::Ortho(int ell, double x, std::vector<double>& alpha, std::vector<double>& beta)
 {
   if (ell == 0)
   {
@@ -259,7 +262,7 @@ GolubFischer::Ortho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta)
 }
 
 double
-GolubFischer::dOrtho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta)
+GolubFischer::dOrtho(int ell, double x, std::vector<double>& alpha, std::vector<double>& beta)
 {
 
   double eps = 0.000001;

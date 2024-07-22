@@ -20,7 +20,7 @@ namespace opensn
 namespace lbs
 {
 
-typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
+using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 
 MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                                LBSGroupset& groupset,

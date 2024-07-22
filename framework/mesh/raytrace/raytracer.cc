@@ -223,7 +223,7 @@ RayTracer::TraceSlab(const Cell& cell,
   for (int f = 0; f < num_faces; f++)
   {
     uint64_t fpi = cell.vertex_ids_[f]; // face point index
-    Vertex face_point = grid.vertices[fpi];
+    Vector3 face_point = grid.vertices[fpi];
 
     bool intersects = CheckPlaneLineIntersect(
       cell.faces_[f].normal_, face_point, pos_i, pos_f_line, intersection_point, &weights);
@@ -275,8 +275,8 @@ RayTracer::TracePolygon(const Cell& cell,
 
     uint64_t fpi = cell.faces_[f].vertex_ids_[0]; // face point index 0
     uint64_t fpf = cell.faces_[f].vertex_ids_[1]; // face point index 1
-    const Vertex& face_point_i = grid.vertices[fpi];
-    const Vertex& face_point_f = grid.vertices[fpf];
+    const Vector3& face_point_i = grid.vertices[fpi];
+    const Vector3& face_point_f = grid.vertices[fpf];
 
     bool intersects = CheckLineIntersectStrip(
       face_point_i, face_point_f, cell.faces_[f].normal_, pos_i, pos_f_line, ip);
@@ -400,7 +400,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
 }
 
 bool
-CheckPlaneLineIntersect(const Normal& plane_normal,
+CheckPlaneLineIntersect(const Vector3& plane_normal,
                         const Vector3& plane_point,
                         const Vector3& line_point_0,
                         const Vector3& line_point_1,
@@ -532,7 +532,7 @@ CheckLineIntersectTriangle2(const Vector3& tri_point0,
 
 bool
 CheckPointInTriangle(
-  const Vector3& v0, const Vector3& v1, const Vector3& v2, const Normal& n, const Vector3& point)
+  const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n, const Vector3& point)
 {
   auto v01 = v1 - v0;
   auto v12 = v2 - v1;
@@ -557,7 +557,7 @@ CheckPointInTriangle(
 }
 
 bool
-CheckPlaneTetIntersect(const Normal& plane_normal,
+CheckPlaneTetIntersect(const Vector3& plane_normal,
                        const Vector3& plane_point,
                        const std::vector<Vector3>& tet_points)
 {
@@ -621,7 +621,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
 
       auto n0 = (vc - v0).Cross(khat).Normalized();
 
-      Vertex intersection_point;
+      Vector3 intersection_point;
       double d = 0.0;
       bool intersects =
         CheckLineIntersectStrip(v0, vc, n0, line_point0, line_point1, intersection_point, &d);
@@ -647,7 +647,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
       {
         auto& vert = grid.vertices[vi];
 
-        Vertex intersection_point;
+        Vector3 intersection_point;
 
         double d = 0.0;
         bool intersects =
@@ -671,7 +671,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
         auto& v1 = grid.vertices[vid_1];
         auto& v2 = vcc;
 
-        Vertex intersection_point;
+        Vector3 intersection_point;
 
         double d = 0.0;
         bool intersects =

@@ -37,9 +37,6 @@
 namespace opensn
 {
 
-typedef std::vector<std::pair<double, double>> AnglePairs;
-typedef std::vector<double> Tvecdbl;
-
 /**Implementation of the GolubFischer Modified ChebyShev Algorithm (MCA) to find
  * moment-preserving angles from a set of moments computed for the expansion of
  * an angular function in Legendre polynomials.
@@ -55,25 +52,28 @@ typedef std::vector<double> Tvecdbl;
 class GolubFischer
 {
 public:
-  AnglePairs xn_wn_;
-  Tvecdbl alpha_;
-  Tvecdbl beta_;
+  std::vector<std::pair<double, double>> xn_wn_;
+  std::vector<double> alpha_;
+  std::vector<double> beta_;
 
 public:
   /**Master callable function that will return a reference to the abscissae and
    * weights of the discrete angles.*/
-  AnglePairs& GetDiscreteScatAngles(Tvecdbl& mell);
+  std::vector<std::pair<double, double>>& GetDiscreteScatAngles(std::vector<double>& mell);
 
 private:
   /**Applies the Modified Chebyshev Algorithm contained in [1] to find the
    * recursion coefficients for the orthogonal polynomials.*/
-  void MCA(Tvecdbl& mell, Tvecdbl& a, Tvecdbl& b, Tvecdbl& c);
+  void MCA(std::vector<double>& mell,
+           std::vector<double>& a,
+           std::vector<double>& b,
+           std::vector<double>& c);
   /**Finds the roots of the orthogonal polynomial.*/
-  void RootsOrtho(int& N, Tvecdbl& alpha, Tvecdbl& beta);
+  void RootsOrtho(int& N, std::vector<double>& alpha, std::vector<double>& beta);
   /**Computes the derivative of the orthogonal polynomials.*/
-  double dOrtho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta);
+  double dOrtho(int ell, double x, std::vector<double>& alpha, std::vector<double>& beta);
   /**Computes the function evaluation of the orthogonal polynomials.*/
-  double Ortho(int ell, double x, Tvecdbl& alpha, Tvecdbl& beta);
+  double Ortho(int ell, double x, std::vector<double>& alpha, std::vector<double>& beta);
 };
 
 } // namespace opensn

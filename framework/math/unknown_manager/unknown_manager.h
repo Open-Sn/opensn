@@ -121,14 +121,13 @@ public:
   std::vector<Unknown> unknowns_;
   UnknownStorageType dof_storage_type_;
 
-  typedef std::pair<UnknownType, unsigned int> UnknownInfo;
   // Constructors
   explicit UnknownManager(UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(storage_type)
   {
   }
 
-  UnknownManager(std::initializer_list<UnknownInfo> unknown_info_list,
+  UnknownManager(std::initializer_list<std::pair<UnknownType, unsigned int>> unknown_info_list,
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type_(storage_type)
   {

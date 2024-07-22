@@ -132,14 +132,12 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        typedef MeshContinuum Grid;
-
         if (face.has_neighbor_)
         {
           const auto& adj_cell = grid_.cells[face.neighbor_id_];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Grid::MapCellFace(cell, adj_cell, f);
+          const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);
@@ -660,14 +658,12 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        typedef MeshContinuum Grid;
-
         if (face.has_neighbor_)
         {
           const auto& adj_cell = grid_.cells[face.neighbor_id_];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Grid::MapCellFace(cell, adj_cell, f);
+          const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);

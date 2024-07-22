@@ -19,8 +19,6 @@ class DynamicMatrix;
 template <class NumberFormat>
 class DynamicMatrix
 {
-  typedef std::pair<size_t, size_t> MatDim;
-
 public:
   std::vector<std::vector<NumberFormat>> elements_;
 
@@ -141,7 +139,7 @@ public:
 
   size_t size() const { return elements_.size(); }
 
-  MatDim Dimensions() const
+  std::pair<size_t, size_t> Dimensions() const
   {
     if (elements_.empty())
       return {0, 0};
@@ -150,13 +148,15 @@ public:
   }
 
 private:
-  static void bounds_check_rows_cols(const MatDim a, const MatDim b)
+  static void bounds_check_rows_cols(const std::pair<size_t, size_t> a,
+                                     const std::pair<size_t, size_t> b)
   {
     if ((a.first != b.first) or (a.second != b.second))
       throw std::length_error("Mismatched square sizes of DynamicMatrix");
   }
 
-  static void bounds_check_colsA_rowsB(const MatDim a, const MatDim b)
+  static void bounds_check_colsA_rowsB(const std::pair<size_t, size_t> a,
+                                       const std::pair<size_t, size_t> b)
   {
     if (a.first != b.second)
       throw std::length_error("Mismatched matrix A rows with matrix B cols"

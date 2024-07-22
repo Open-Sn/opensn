@@ -15,7 +15,7 @@ namespace opensn
 namespace lbs
 {
 
-typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
+using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 
 SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                                  LBSGroupset& groupset,
