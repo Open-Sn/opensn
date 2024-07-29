@@ -129,13 +129,20 @@ In-code comments should use `//`.
 call();
 ```
 
-For [doxygen](https://www.doxygen.nl/) style comments `/** */` should be used.
+For [doxygen](https://www.doxygen.nl/)-style comments, use `///` for single-line comments
+and `/** */` for multi-line comments with the following formatting:
 
 ```c++
 /**
- * In-code doxygen-style documentation
+ * Function description
+ *
+ * \param i Description of the first parameter
+ * \return Description of the return value
  */
-void SomeMemberFunction()
+double SomeMemberFunction(int i)
+
+/// Single-line comment
+int my_member_variable;
 ```
 
 ### Include directives
