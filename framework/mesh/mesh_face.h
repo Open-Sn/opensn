@@ -14,9 +14,9 @@ struct Face
   int vt_index[3];
   int e_index[3][4];
 
-  Normal geometric_normal;
-  Normal assigned_normal;
-  Vertex face_centroid;
+  Vector3 geometric_normal;
+  Vector3 assigned_normal;
+  Vector3 face_centroid;
 
   bool invalidated;
 
@@ -96,8 +96,8 @@ struct PolyFace
   std::vector<std::vector<int>> edges;
   int face_indices[3];
 
-  Normal geometric_normal;
-  Vertex face_centroid;
+  Vector3 geometric_normal;
+  Vector3 face_centroid;
 
   bool invalidated;
 

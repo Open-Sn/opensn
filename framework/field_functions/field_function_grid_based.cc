@@ -121,12 +121,8 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   const auto& grid_ptr = GetCurrentMesh();
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
 
-  typedef FiniteVolume FV;
-  typedef PieceWiseLinearContinuous PWLC;
-  typedef PieceWiseLinearDiscontinuous PWLD;
-
   if (sdm_type == "FV")
-    return FV::New(*grid_ptr);
+    return FiniteVolume::New(*grid_ptr);
 
   CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
@@ -163,9 +159,9 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   }
 
   if (sdm_type == "PWLC")
-    return PWLC::New(*grid_ptr, q_order, cs_type);
+    return PieceWiseLinearContinuous::New(*grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
-    return PWLD::New(*grid_ptr, q_order, cs_type);
+    return PieceWiseLinearDiscontinuous::New(*grid_ptr, q_order, cs_type);
 
   // If not returned by now
   OpenSnInvalidArgument("Unsupported sdm_type \"" + sdm_type + "\"");
@@ -313,7 +309,6 @@ FieldFunctionGridBased::GetGhostedFieldVector() const
 std::vector<double>
 FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 {
-  typedef const int64_t cint64_t;
   const auto& uk_man = GetUnknownManager();
   const size_t num_components = uk_man.GetTotalUnknownStructureSize();
 
@@ -352,7 +347,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
         {
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            cint64_t dof_map_j = sdm_->MapDOFLocal(cell, j, uk_man, 0, c);
+            const int64_t dof_map_j = sdm_->MapDOFLocal(cell, j, uk_man, 0, c);
             const double dof_value_j = field_vector[dof_map_j];
 
             local_point_value[c] += dof_value_j * shape_values[j];
@@ -382,7 +377,6 @@ FieldFunctionGridBased::Evaluate(const Cell& cell,
 {
   const auto& field_vector = *ghosted_field_vector_;
 
-  typedef const int64_t cint64_t;
   const auto& cell_mapping = sdm_->GetCellMapping(cell);
 
   std::vector<double> shape_values;
@@ -392,7 +386,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell,
   const size_t num_nodes = cell_mapping.NumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
-    cint64_t dof_map = sdm_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
+    const int64_t dof_map = sdm_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
 
     value += field_vector[dof_map] * shape_values[j];
   }

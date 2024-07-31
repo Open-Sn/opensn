@@ -26,11 +26,10 @@ protected:
                       int num_parts);
   static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
                             ByteArray& serial_buffer);
-  typedef std::pair<int, uint64_t> CellPIDGID;
   struct SplitMeshInfo
   {
     unsigned int dimension;
-    std::map<CellPIDGID, UnpartitionedMesh::LightWeightCell> cells;
+    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
     MeshType mesh_type;

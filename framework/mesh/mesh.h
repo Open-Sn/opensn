@@ -16,11 +16,7 @@ namespace opensn
 {
 
 struct Vector3;
-typedef Vector3 Normal;
-typedef Vector3 Vertex;
-
 struct Matrix3x3;
-
 struct Face;
 struct Edge;
 struct PolyFace;

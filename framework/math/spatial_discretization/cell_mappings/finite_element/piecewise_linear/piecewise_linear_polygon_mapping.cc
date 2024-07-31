@@ -31,7 +31,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
 
     const auto& v0 = ref_grid_.vertices[face.vertex_ids_[0]];
     const auto& v1 = ref_grid_.vertices[face.vertex_ids_[1]];
-    Vertex v2 = vc_;
+    Vector3 v2 = vc_;
 
     Vector3 sidev01 = v1 - v0;
     Vector3 sidev02 = v2 - v0;
@@ -319,9 +319,9 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
 
   // Declare necessary vars
   std::vector<unsigned int> V_quadrature_point_indices;
-  VecVec3 V_qpoints_xyz;
+  std::vector<Vector3> V_qpoints_xyz;
   std::vector<std::vector<double>> V_shape_value;
-  std::vector<VecVec3> V_shape_grad;
+  std::vector<std::vector<Vector3>> V_shape_grad;
   std::vector<double> V_JxW;
   size_t V_num_nodes;
 
@@ -335,7 +335,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
   for (size_t i = 0; i < num_nodes_; i++)
   {
     std::vector<double> node_shape_value;
-    VecVec3 node_shape_grad;
+    std::vector<Vector3> node_shape_grad;
 
     node_shape_value.reserve(ttl_num_vol_qpoints);
     node_shape_grad.reserve(ttl_num_vol_qpoints);
@@ -389,11 +389,11 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   unsigned int s = face_index;
   // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
-  VecVec3 F_qpoints_xyz;
+  std::vector<Vector3> F_qpoints_xyz;
   std::vector<std::vector<double>> F_shape_value;
-  std::vector<VecVec3> F_shape_grad;
+  std::vector<std::vector<Vector3>> F_shape_grad;
   std::vector<double> F_JxW;
-  VecVec3 F_normals;
+  std::vector<Vector3> F_normals;
   size_t F_num_nodes;
 
   size_t ttl_num_face_qpoints = num_srf_qpoints;
@@ -411,7 +411,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   for (size_t i = 0; i < num_nodes_; i++)
   {
     std::vector<double> node_shape_value;
-    VecVec3 node_shape_grad;
+    std::vector<Vector3> node_shape_grad;
 
     node_shape_value.reserve(ttl_num_face_qpoints);
     node_shape_grad.reserve(ttl_num_face_qpoints);

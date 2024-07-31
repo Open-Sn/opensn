@@ -897,7 +897,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       int node_g_index = node;
       node_mapping[node_g_index] = node_counter;
 
-      Vertex cur_v = grid->vertices[node_g_index];
+      Vector3 cur_v = grid->vertices[node_g_index];
 
       fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
     }
@@ -998,7 +998,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
         int node_g_index = node;
         node_mapping[node_g_index] = node_counter;
 
-        Vertex cur_v = grid->vertices[node_g_index];
+        Vector3 cur_v = grid->vertices[node_g_index];
 
         fprintf(of, "v %9.6f %9.6f %9.6f\n", cur_v.x, cur_v.y, cur_v.z);
       }

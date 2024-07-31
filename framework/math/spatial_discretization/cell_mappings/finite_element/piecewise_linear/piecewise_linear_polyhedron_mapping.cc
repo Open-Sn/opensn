@@ -20,7 +20,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
     surface_quadrature_(surface_quadrature)
 {
   // Assign cell centre
-  const Vertex& vcc = polyh_cell.centroid_;
+  const Vector3& vcc = polyh_cell.centroid_;
   alphac_ = 1.0 / static_cast<double>(polyh_cell.vertex_ids_.size());
 
   // For each face
@@ -36,7 +36,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
 
     face_betaf_.push_back(1.0 / static_cast<double>(face.vertex_ids_.size()));
 
-    const Vertex& vfc = face.centroid_;
+    const Vector3& vfc = face.centroid_;
 
     // For each edge
     const size_t num_edges = face.vertex_ids_.size();
@@ -583,9 +583,9 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
 
   // Declare necessary vars
   std::vector<unsigned int> V_quadrature_point_indices;
-  VecVec3 V_qpoints_xyz;
+  std::vector<Vector3> V_qpoints_xyz;
   std::vector<std::vector<double>> V_shape_value;
-  std::vector<VecVec3> V_shape_grad;
+  std::vector<std::vector<Vector3>> V_shape_grad;
   std::vector<double> V_JxW;
   size_t V_num_nodes;
 
@@ -599,7 +599,7 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
   for (size_t i = 0; i < num_nodes_; i++)
   {
     std::vector<double> node_shape_value;
-    VecVec3 node_shape_grad;
+    std::vector<Vector3> node_shape_grad;
 
     node_shape_value.reserve(ttl_num_vol_qpoints);
     node_shape_grad.reserve(ttl_num_vol_qpoints);
@@ -661,11 +661,11 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
   unsigned int f = face_index;
   // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
-  VecVec3 F_qpoints_xyz;
+  std::vector<Vector3> F_qpoints_xyz;
   std::vector<std::vector<double>> F_shape_value;
-  std::vector<VecVec3> F_shape_grad;
+  std::vector<std::vector<Vector3>> F_shape_grad;
   std::vector<double> F_JxW;
-  VecVec3 F_normals;
+  std::vector<Vector3> F_normals;
   size_t F_num_nodes;
 
   size_t num_tris = face_data_[f].sides.size();
@@ -684,7 +684,7 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
   for (size_t i = 0; i < num_nodes_; i++)
   {
     std::vector<double> node_shape_value;
-    VecVec3 node_shape_grad;
+    std::vector<Vector3> node_shape_grad;
 
     node_shape_value.reserve(ttl_num_face_qpoints);
     node_shape_grad.reserve(ttl_num_face_qpoints);

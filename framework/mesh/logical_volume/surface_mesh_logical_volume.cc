@@ -135,12 +135,12 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
         int v0_i = surf_mesh->GetTriangles()[fi].v_index[0];
         int v1_i = surf_mesh->GetTriangles()[fi].v_index[1];
         int v2_i = surf_mesh->GetTriangles()[fi].v_index[2];
-        Vertex v0 = surf_mesh->GetVertices()[v0_i];
-        Vertex v1 = surf_mesh->GetVertices()[v1_i];
-        Vertex v2 = surf_mesh->GetVertices()[v2_i];
+        Vector3 v0 = surf_mesh->GetVertices()[v0_i];
+        Vector3 v1 = surf_mesh->GetVertices()[v1_i];
+        Vector3 v2 = surf_mesh->GetVertices()[v2_i];
 
         // Check if the line intersects plane
-        Vertex intp; // Intersection point
+        Vector3 intp; // Intersection point
         std::pair<double, double> weights;
         bool intersects_plane = CheckPlaneLineIntersect(
           surf_mesh->GetTriangles()[fi].geometric_normal, v0, point, fc, intp, &weights);

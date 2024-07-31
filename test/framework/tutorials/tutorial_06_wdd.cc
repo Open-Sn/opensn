@@ -14,7 +14,6 @@ using namespace opensn;
 
 namespace unit_sim_tests
 {
-typedef AngularQuadrature::HarmonicIndices YlmIndices;
 double ComputeRelativePWChange(const MeshContinuum& grid,
                                const SpatialDiscretization& sdm,
                                const UnknownManager& phi_uk_man,
@@ -27,7 +26,7 @@ std::vector<double> SetSource(const MeshContinuum& grid,
                               const std::vector<double>& q_source,
                               const std::vector<double>& phi_old,
                               const MultiGroupXS& xs,
-                              const std::vector<YlmIndices>& m_ell_em_map);
+                              const std::vector<AngularQuadrature::HarmonicIndices>& m_ell_em_map);
 
 /**WDD Sweep. */
 ParameterBlock SimTest06_WDD(const InputParameters&);
@@ -153,10 +152,9 @@ SimTest06_WDD(const InputParameters&)
   }     // for cell
 
   // Define sweep chunk
-  typedef NDArray<double> IJKArrayDbl;
-  IJKArrayDbl psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
-  IJKArrayDbl psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
-  IJKArrayDbl psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double> psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double> psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
 
   auto SweepChunk = [&ijk_info,
                      &ijk_mapping,
@@ -392,7 +390,7 @@ SetSource(const MeshContinuum& grid,
           const std::vector<double>& q_source,
           const std::vector<double>& phi_old,
           const MultiGroupXS& xs,
-          const std::vector<YlmIndices>& m_ell_em_map)
+          const std::vector<AngularQuadrature::HarmonicIndices>& m_ell_em_map)
 {
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);

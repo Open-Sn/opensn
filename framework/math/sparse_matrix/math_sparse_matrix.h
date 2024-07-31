@@ -104,9 +104,6 @@ public:
     class RowIterator
     {
     private:
-      typedef RowIterator It;
-
-    private:
       RowIteratorContext& context_;
       size_t ref_entry_;
 
@@ -116,13 +113,13 @@ public:
       {
       }
 
-      It operator++()
+      RowIterator operator++()
       {
-        It i = *this;
+        RowIterator i = *this;
         ref_entry_++;
         return i;
       }
-      It operator++(int)
+      RowIterator operator++(int)
       {
         ref_entry_++;
         return *this;
@@ -134,8 +131,8 @@ public:
           context_.ref_row_, context_.ref_col_ids_[ref_entry_], context_.ref_col_vals_[ref_entry_]};
       }
 
-      bool operator==(const It& rhs) const { return ref_entry_ == rhs.ref_entry_; }
-      bool operator!=(const It& rhs) const { return ref_entry_ != rhs.ref_entry_; }
+      bool operator==(const RowIterator& rhs) const { return ref_entry_ == rhs.ref_entry_; }
+      bool operator!=(const RowIterator& rhs) const { return ref_entry_ != rhs.ref_entry_; }
     };
 
     RowIterator begin() { return {*this, 0}; }
@@ -162,9 +159,6 @@ public:
     class ConstRowIterator
     {
     private:
-      typedef ConstRowIterator It;
-
-    private:
       const ConstRowIteratorContext& context_;
       size_t ref_entry_;
 
@@ -174,13 +168,13 @@ public:
       {
       }
 
-      It operator++()
+      ConstRowIterator operator++()
       {
-        It i = *this;
+        ConstRowIterator i = *this;
         ref_entry_++;
         return i;
       }
-      It operator++(int)
+      ConstRowIterator operator++(int)
       {
         ref_entry_++;
         return *this;
@@ -192,8 +186,8 @@ public:
           context_.ref_row_, context_.ref_col_ids_[ref_entry_], context_.ref_col_vals_[ref_entry_]};
       }
 
-      bool operator==(const It& rhs) const { return ref_entry_ == rhs.ref_entry_; }
-      bool operator!=(const It& rhs) const { return ref_entry_ != rhs.ref_entry_; }
+      bool operator==(const ConstRowIterator& rhs) const { return ref_entry_ == rhs.ref_entry_; }
+      bool operator!=(const ConstRowIterator& rhs) const { return ref_entry_ != rhs.ref_entry_; }
     };
 
     ConstRowIterator begin() const { return {*this, 0}; }
@@ -205,9 +199,6 @@ public:
   /**Iterator to loop over all matrix entries.*/
   class EntriesIterator
   {
-  private:
-    typedef EntriesIterator EIt;
-
   private:
     SparseMatrix& sp_matrix;
     size_t ref_row_;
@@ -231,13 +222,13 @@ public:
       }
     }
 
-    EIt operator++()
+    EntriesIterator operator++()
     {
-      EIt i = *this;
+      EntriesIterator i = *this;
       Advance();
       return i;
     }
-    EIt operator++(int)
+    EntriesIterator operator++(int)
     {
       Advance();
       return *this;
@@ -249,11 +240,11 @@ public:
               sp_matrix.rowI_indices_[ref_row_][ref_col_],
               sp_matrix.rowI_values_[ref_row_][ref_col_]};
     }
-    bool operator==(const EIt& rhs) const
+    bool operator==(const EntriesIterator& rhs) const
     {
       return (ref_row_ == rhs.ref_row_) and (ref_col_ == rhs.ref_col_);
     }
-    bool operator!=(const EIt& rhs) const
+    bool operator!=(const EntriesIterator& rhs) const
     {
       return (ref_row_ != rhs.ref_row_) or (ref_col_ != rhs.ref_col_);
     }

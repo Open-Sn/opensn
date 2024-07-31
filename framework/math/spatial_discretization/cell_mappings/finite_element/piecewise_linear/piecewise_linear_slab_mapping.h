@@ -50,7 +50,7 @@ private:
   Vector3 v0_;
   uint64_t v0i_;
   uint64_t v1i_;
-  std::array<Normal, 2> normals_;
+  std::array<Vector3, 2> normals_;
   const LineQuadrature& volume_quadrature_;
   double h_;
 };

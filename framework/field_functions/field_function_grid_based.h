@@ -22,7 +22,8 @@ class GhostedParallelSTLVector;
 class FieldFunctionGridBased : public FieldFunction
 {
 public:
-  typedef std::pair<Vector3, Vector3> BoundingBox;
+  using BoundingBox = std::pair<Vector3, Vector3>;
+  using FFList = std::vector<std::shared_ptr<const FieldFunctionGridBased>>;
 
   /**Returns required input parameters.*/
   static InputParameters GetInputParameters();
@@ -75,11 +76,6 @@ public:
    * Updates the field vector with a PETSc vector. This only operates locally.
    */
   void UpdateFieldVector(const Vec& field_vector);
-
-  /**
-   * Static method to export multiple grid-based field functions.
-   */
-  typedef std::vector<std::shared_ptr<const FieldFunctionGridBased>> FFList;
 
   /**
    * Export multiple field functions to VTK.

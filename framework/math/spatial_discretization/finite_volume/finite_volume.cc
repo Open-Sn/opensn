@@ -14,7 +14,7 @@ namespace opensn
 {
 
 FiniteVolume::FiniteVolume(const MeshContinuum& grid, CoordinateSystemType cs_type)
-  : SpatialDiscretization(grid, cs_type, SDMType::FINITE_VOLUME)
+  : SpatialDiscretization(grid, cs_type, SpatialDiscretizationType::FINITE_VOLUME)
 {
   CreateCellMappings();
 
@@ -65,9 +65,8 @@ FiniteVolume::CreateCellMappings()
       case CellType::POLYGON:
       case CellType::POLYHEDRON:
       {
-        typedef std::vector<std::vector<int>> FaceDofMapping;
         mapping = make_unique<FiniteVolumeMapping>(
-          ref_grid_, cell, cell.centroid_, FaceDofMapping(cell.faces_.size(), {-1}));
+          ref_grid_, cell, cell.centroid_, std::vector<std::vector<int>>(cell.faces_.size(), {-1}));
         break;
       }
       default:

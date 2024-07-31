@@ -12,7 +12,7 @@ namespace opensn
 
 PieceWiseLinearBase::PieceWiseLinearBase(const MeshContinuum& grid,
                                          QuadratureOrder q_order,
-                                         SDMType sdm_type,
+                                         SpatialDiscretizationType sdm_type,
                                          CoordinateSystemType cs_type)
   : FiniteElementBase(grid, cs_type, sdm_type, q_order),
     line_quad_order_arbitrary_(q_order),
@@ -26,10 +26,6 @@ PieceWiseLinearBase::CreateCellMappings()
 {
   constexpr std::string_view fname = __PRETTY_FUNCTION__;
 
-  typedef PieceWiseLinearSlabMapping SlabSlab;
-  typedef PieceWiseLinearPolygonMapping Polygon;
-  typedef PieceWiseLinearPolyhedronMapping Polyhedron;
-
   auto MakeCellMapping = [this, fname](const Cell& cell)
   {
     using namespace std;
@@ -42,7 +38,7 @@ PieceWiseLinearBase::CreateCellMappings()
       {
         const auto& vol_quad = line_quad_order_arbitrary_;
 
-        mapping = make_unique<SlabSlab>(cell, ref_grid_, vol_quad);
+        mapping = make_unique<PieceWiseLinearSlabMapping>(cell, ref_grid_, vol_quad);
         break;
       }
       case CellType::POLYGON:
@@ -50,7 +46,7 @@ PieceWiseLinearBase::CreateCellMappings()
         const auto& vol_quad = tri_quad_order_arbitrary_;
         const auto& area_quad = line_quad_order_arbitrary_;
 
-        mapping = make_unique<Polygon>(cell, ref_grid_, vol_quad, area_quad);
+        mapping = make_unique<PieceWiseLinearPolygonMapping>(cell, ref_grid_, vol_quad, area_quad);
         break;
       }
       case CellType::POLYHEDRON:
@@ -58,7 +54,8 @@ PieceWiseLinearBase::CreateCellMappings()
         const auto& vol_quad = tet_quad_order_arbitrary_;
         const auto& area_quad = tri_quad_order_arbitrary_;
 
-        mapping = make_unique<Polyhedron>(cell, ref_grid_, vol_quad, area_quad);
+        mapping =
+          make_unique<PieceWiseLinearPolyhedronMapping>(cell, ref_grid_, vol_quad, area_quad);
         break;
       }
       default:

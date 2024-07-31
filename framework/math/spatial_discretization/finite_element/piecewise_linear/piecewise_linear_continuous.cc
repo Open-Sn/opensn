@@ -15,7 +15,8 @@ namespace opensn
 PieceWiseLinearContinuous::PieceWiseLinearContinuous(const MeshContinuum& grid,
                                                      QuadratureOrder q_order,
                                                      CoordinateSystemType cs_type)
-  : PieceWiseLinearBase(grid, q_order, SDMType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
+  : PieceWiseLinearBase(
+      grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
 {
   CreateCellMappings();
 
@@ -74,8 +75,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // node. We build this list here.
   // We start by adding the current location id
   // as the first subscription
-  typedef std::set<uint64_t> PSUBS;
-  std::map<uint64_t, PSUBS> ls_node_ids_psubs;
+  std::map<uint64_t, std::set<uint64_t>> ls_node_ids_psubs;
   for (const uint64_t node_id : ls_node_ids_set)
     ls_node_ids_psubs[node_id] = {static_cast<uint64_t>(opensn::mpi_comm.rank())};
 
@@ -303,7 +303,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   // of ir-nodes that are not local. Each ir-node needs to
   // be furnished with the jr-nodes it links to.
 
-  typedef std::pair<int64_t, std::vector<int64_t>> ROWJLINKS;
+  using ROWJLINKS = std::pair<int64_t, std::vector<int64_t>>;
   std::vector<ROWJLINKS> ir_links;
 
   for (auto& cell : ref_grid_.local_cells)

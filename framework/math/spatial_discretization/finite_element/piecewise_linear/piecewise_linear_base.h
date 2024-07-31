@@ -19,7 +19,7 @@ protected:
   /**Constructor*/
   explicit PieceWiseLinearBase(const MeshContinuum& grid,
                                QuadratureOrder q_order,
-                               SDMType sdm_type,
+                               SpatialDiscretizationType sdm_type,
                                CoordinateSystemType cs_type);
 
   LineQuadrature line_quad_order_arbitrary_;

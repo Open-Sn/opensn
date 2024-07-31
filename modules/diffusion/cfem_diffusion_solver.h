@@ -48,8 +48,8 @@ public:
   void UpdateFieldFunctions();
 
 private:
-  typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
+  using BoundaryInfo = std::pair<opensn::diffusion::BoundaryType, std::vector<double>>;
+  using BoundaryPreferences = std::map<std::string, BoundaryInfo>;
 
   std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
 
