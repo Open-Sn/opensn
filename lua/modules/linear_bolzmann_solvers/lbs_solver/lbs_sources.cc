@@ -8,7 +8,7 @@
 #include "lua/framework/lua.h"
 
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "lua/framework/math/functions/lua_spatial_material_function.h"
+#include "lua/framework/math/functions/lua_vector_spatial_material_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
 using namespace opensn;
@@ -51,11 +51,11 @@ ClearPointSources(lua_State* L)
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionInNamespace(AddDistributedSource, lbs, AddDistributedSource);
+RegisterLuaFunctionInNamespace(AddVolumetricSource, lbs, AddVolumetricSource);
 int
-AddDistributedSource(lua_State* L)
+AddVolumetricSource(lua_State* L)
 {
-  const std::string fname = "lbs.AddDistributedSource";
+  const std::string fname = "lbs.AddVolumetricSource";
   LuaCheckArgs<int, int>(L, fname);
 
   const auto solver_handle = LuaArg<int>(L, 1);
@@ -63,18 +63,18 @@ AddDistributedSource(lua_State* L)
     opensn::GetStackItem<opensn::lbs::LBSSolver>(object_stack, solver_handle, __FUNCTION__);
 
   const auto src_handle = LuaArg<int>(L, 2);
-  lbs_solver.AddDistributedSource(std::move(
-    opensn::GetStackItem<opensn::lbs::DistributedSource>(object_stack, src_handle, __FUNCTION__)));
+  lbs_solver.AddVolumetricSource(std::move(
+    opensn::GetStackItem<opensn::lbs::VolumetricSource>(object_stack, src_handle, __FUNCTION__)));
 
-  opensn::log.Log() << lbs_solver.TextName() << ": Added distributed source.";
+  opensn::log.Log() << lbs_solver.TextName() << ": Added volumetric source.";
   return LuaReturn(L);
 }
 
-RegisterLuaFunctionInNamespace(ClearDistributedSources, lbs, ClearDistributedSources);
+RegisterLuaFunctionInNamespace(ClearVolumetricSources, lbs, ClearVolumetricSources);
 int
-ClearDistributedSources(lua_State* L)
+ClearVolumetricSources(lua_State* L)
 {
-  const std::string fname = "lbs.ClearDistributedSources";
+  const std::string fname = "lbs.ClearVolumetricSources";
   LuaCheckArgs<int>(L, fname);
 
   // Process solver handle
@@ -82,8 +82,8 @@ ClearDistributedSources(lua_State* L)
   auto& lbs_solver =
     opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, __FUNCTION__);
 
-  lbs_solver.ClearDistributedSources();
-  opensn::log.Log() << "Cleared all distributed sources.";
+  lbs_solver.ClearVolumetricSources();
+  opensn::log.Log() << "Cleared all volumetric sources.";
   return LuaReturn(L);
 }
 

@@ -81,12 +81,9 @@ mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "response_2d_3
 -- Create sources
 src = {}
 for g = 1, num_groups do
-  if g == 1 then
-    src[g] = 1.0
-  else
-    src[g] = 0.0
-  end
+  src[g] = 0.0
 end
+src[1] = 1.0
 
 loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
@@ -160,9 +157,9 @@ function ResponseFunction(xyz, mat_id)
   end
   return response
 end
-response_func = opensn.LuaSpatialMaterialFunction.Create({ lua_function_name = "ResponseFunction" })
+response_func = opensn.LuaVectorSpatialFunction.Create({ lua_function_name = "ResponseFunction" })
 
-adjoint_source = lbs.DistributedSource.Create({
+adjoint_source = lbs.VolumetricSource.Create({
   logical_volume_handle = qoi_vol,
   function_handle = response_func,
 })
@@ -170,7 +167,7 @@ adjoint_source = lbs.DistributedSource.Create({
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
-  distributed_sources = { adjoint_source },
+  volumetric_sources = { adjoint_source },
 }
 lbs.SetOptions(phys, adjoint_options)
 

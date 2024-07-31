@@ -74,31 +74,22 @@ materials[2] = mat.AddMaterial("Test Material2")
 materials[3] = mat.AddMaterial("Test Material3")
 
 -- Add cross sections to materials
-num_groups = 1
 mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.01, 0.01)
 mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.1 * 20, 0.8)
 mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.3 * 20, 0.0)
 
 -- Create sources
-src = {}
-for g = 1, num_groups do
-  if g == 1 then
-    src[g] = 3.0
-  else
-    src[g] = 0.0
-  end
-end
-mat.SetProperty(materials[3], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+fwd_src = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = { 3.0 } })
 
 -- Setup physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
-  num_groups = num_groups,
+  num_groups = 1,
   groupsets = {
     {
-      groups_from_to = { 0, num_groups - 1 },
+      groups_from_to = { 0, 0 },
       angular_quadrature_handle = pquad,
       inner_linear_method = "gmres",
       l_abs_tol = 1.0e-6,
@@ -106,7 +97,10 @@ lbs_block = {
       gmres_restart_interval = 100,
     },
   },
-  options = { scattering_order = 0 },
+  options = {
+    scattering_order = 0,
+    volumetric_sources = { fwd_src },
+  },
 }
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
@@ -141,12 +135,12 @@ fieldfunc.Execute(ffi)
 fwd_qoi = fieldfunc.GetValue(ffi)
 
 -- Create adjoint source
-adjoint_source = lbs.DistributedSource.Create({ logical_volume_handle = qoi_vol })
+adj_src = lbs.VolumetricSource.Create({ logical_volume_handle = qoi_vol, group_strength = { 1.0 } })
 
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
-  distributed_sources = { adjoint_source },
+  volumetric_sources = { adj_src },
 }
 lbs.SetOptions(phys, adjoint_options)
 
@@ -156,7 +150,7 @@ lbs.WriteFluxMoments(phys, "adjoint_2d_1")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_1" } } }
-mat_sources = { { material_id = 2, strength = src } }
+mat_sources = { { material_id = 2, strength = { 3.0 } } }
 response_options = {
   lbs_solver_handle = phys,
   options = {

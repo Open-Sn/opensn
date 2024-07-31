@@ -173,10 +173,10 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
     }       // for cell
   }         // for point source
 
-  // Distributed sources
-  for (const auto& distributed_source : distributed_sources_)
+  // Volumetric sources
+  for (const auto& volumetric_source : volumetric_sources_)
   {
-    for (const auto& local_id : distributed_source.Subscribers())
+    for (const auto& local_id : volumetric_source.GetSubscribers())
     {
       const auto& cell = grid_ptr_->local_cells[local_id];
       const auto& transport_view = cell_transport_views_[local_id];
@@ -186,7 +186,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         // Compute group-wise values for this node
-        const auto src = distributed_source(cell, nodes[i], num_groups_);
+        const auto src = volumetric_source(cell, nodes[i], num_groups_);
 
         // Contribute to the source moments
         const auto& intV_shapeI = fe_values.intV_shapeI[i];

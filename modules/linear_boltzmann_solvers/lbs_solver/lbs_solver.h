@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/distributed_source/distributed_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/linear_solver/linear_solver.h"
@@ -119,19 +119,19 @@ public:
   const std::vector<PointSource>& PointSources() const;
 
   /**
-   * Adds a distributed source to the solver.
+   * Adds a volumetric source to the solver.
    */
-  void AddDistributedSource(DistributedSource&& distributed_source);
+  void AddVolumetricSource(VolumetricSource&& volumetric_source);
 
   /**
-   * Clears all the distributed sources from the solver.
+   * Clears all the volumetric sources from the solver.
    */
-  void ClearDistributedSources();
+  void ClearVolumetricSources();
 
   /**
-   * Constant accessor to the list of distributed sources.
+   * Constant accessor to the list of volumetric sources.
    */
-  const std::vector<DistributedSource>& DistributedSources() const;
+  const std::vector<VolumetricSource>& VolumetricSources() const;
 
   size_t& LastRestartTime();
 
@@ -551,7 +551,7 @@ protected:
   std::map<int, std::shared_ptr<IsotropicMultiGroupSource>> matid_to_src_map_;
 
   std::vector<PointSource> point_sources_;
-  std::vector<DistributedSource> distributed_sources_;
+  std::vector<VolumetricSource> volumetric_sources_;
 
   std::shared_ptr<MeshContinuum> grid_ptr_;
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;

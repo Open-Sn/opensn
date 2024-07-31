@@ -12,11 +12,11 @@ namespace opensn
 /**
  * Base class for evaluating spatial material functions given a coordinate and material ID.
  */
-class SpatialMaterialFunction : public Function
+class VectorSpatialMaterialFunction : public Function
 {
 public:
-  static InputParameters GetInputParameters();
-  explicit SpatialMaterialFunction(const InputParameters& params);
+  static InputParameters GetInputParameters() { return Function::GetInputParameters(); }
+  explicit VectorSpatialMaterialFunction(const InputParameters& params) : Function(params) {}
 
   /**
    * Evaluate the function.
