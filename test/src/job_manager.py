@@ -1,14 +1,16 @@
+"""Module providing job management for regression tests."""
+
 import json
 import os
 import warnings
-from . import checks
 import shutil
 import time
+from . import checks
 from . import test_slot
 
 
 class TestConfiguration:
-    """Data structure to hold all the necessary info to define a test and its checks"""
+    """Data structure that holds the necessary info to define a test and its checks"""
 
     def __init__(self, file_dir: str,
                  filename: str,
@@ -97,14 +99,14 @@ class TestConfiguration:
             raise ValueError
 
     def GetTestPath(self):
-        """Shorthand utility get a relative path to a test"""
+        """Shorthand utility to get the relative path to a test"""
         return os.path.relpath(self.file_dir + self.filename)
 
     def GetOutFilenamePrefix(self) -> str:
+        """Get the output filename prefix"""
         if self.outfileprefix == "":
             return self.filename
-        else:
-            return self.outfileprefix
+        return self.outfileprefix
 
     def __str__(self):
         """Converts the class to a readable format"""
@@ -136,9 +138,9 @@ class TestConfiguration:
 def ParseTestConfiguration(file_path: str):
     """Parses a JSON configuration at the path specified"""
     test_objects = {}
-    file = open(file_path)
-    data = json.load(file)
-    file.close()
+
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
 
     err_read = "Error reading " + file_path + ": "
 
@@ -191,11 +193,11 @@ def ParseTestConfiguration(file_path: str):
                 if input_weight_class not in allowable_list:
                     warnings.warn(message_prefix + '"weight_class" field, with '
                                   + f'value "{input_weight_class}" must be in the '
-                                  + 'list: ' + allowable_list.__str__())
+                                  + 'list: ' + str(allowable_list))
                     continue
                 weight_class = input_weight_class
             else:
-                warnings.warn(message_prefix + '"weight_class" field must be a str')
+                warnings.warn(message_prefix + '"weight_class" field must be a string')
                 continue
 
         outfileprefix = ""
@@ -203,7 +205,7 @@ def ParseTestConfiguration(file_path: str):
             if isinstance(test_block["outfileprefix"], str):
                 outfileprefix = test_block["outfileprefix"]
             else:
-                warnings.warn(message_prefix + '"outfileprefix" field must be a str')
+                warnings.warn(message_prefix + '"outfileprefix" field must be a string')
                 continue
 
         skip_reason = ""
@@ -211,12 +213,11 @@ def ParseTestConfiguration(file_path: str):
             if isinstance(test_block["skip"], str):
                 input_reason = test_block["skip"]
                 if len(input_reason) == 0:
-                    warnings.warn(message_prefix + '"skip" field must be a '
-                                                   'non-zero length str')
+                    warnings.warn(message_prefix + '"skip" field must be a non-zero length string')
                     continue
                 skip_reason = test_block["skip"]
             else:
-                warnings.warn(message_prefix + '"skip" field must be a str')
+                warnings.warn(message_prefix + '"skip" field must be a string')
                 continue
 
         try:
@@ -230,18 +231,16 @@ def ParseTestConfiguration(file_path: str):
                                          args=args,
                                          weight_class=weight_class,
                                          skip=skip_reason)
-            test_objects[new_test.filename] = new_test
+            args_str = ''.join(map(str, new_test.args))
+            test_objects[hash(new_test.filename + args_str)] = new_test
         except ValueError:
             continue
 
     return test_objects
 
 
-# ========================================================= Top level
-#                                                           functions
 def ListFilesInDir(folder: str, ext=None):
-    """Lists the files in a directory, non-recursively. Optionally an extension
-       can be used as a filter"""
+    """Lists the files in a directory, non-recursively. A file extension can be used as a filter"""
     files = []
     dirs_and_files = os.listdir(folder)
     for item in dirs_and_files:
@@ -277,9 +276,8 @@ def BuildSearchHierarchyForTests(argv):
 
 
 def ConfigureTests(test_hierarchy: dict, argv):
-    """Search through a map of dirs-to-lua-file and looks for a .json file
-       that will then be used to create a test object. Also preps the
-       out and gold dirs"""
+    """Search through a map of dirs-to-lua-file and looks for a .json file that will then be used
+       to create a test object. Also preps the out and gold directories."""
 
     specific_test = argv.test
     if specific_test is not None:
@@ -298,7 +296,7 @@ def ConfigureTests(test_hierarchy: dict, argv):
                 else:
                     print("skipping " + obj.filename)
 
-            # if a specific test has dependencies, also add them to the list of executed tests
+            # If a specific test has dependencies, also add them to the list of executed tests
             if specific_test_dependency is not None:
                 if specific_test_dependency in sub_test_objs:
                     obj = sub_test_objs[specific_test_dependency]
@@ -326,17 +324,18 @@ def EchoTests(tests: list):
     """For debugging, echos the string format of each test configuration"""
     test_num = 0
     for test in tests:
-        print(f"test {test_num} " + test.__str__())
+        print(f"test {test_num} " + str(test))
 
 
 def RunTests(tests: list, argv):
-    """Actually runs the tests. This routine dynamically checks the system
-       load in order to use the system maximally"""
+    """Actually runs the tests. This routine dynamically checks the system load."""
     start_time = time.perf_counter()
 
-    capacity = max(4, argv.jobs)
+    # os.cpu_count() may not be ideal in this case since it returns the number of logical cpus.
+    capacity = os.cpu_count()
+    if argv.jobs > 0:
+        capacity = argv.jobs
     system_load = 0
-
     test_slots = []
 
     specific_test = ""
@@ -354,7 +353,7 @@ def RunTests(tests: list, argv):
         warnings.warn('Illegal value "' + str(argv.weights) + '" supplied '
                       + 'for argument -w, --weights')
 
-    print("Executing tests with class in: " + weight_classes_allowed.__str__())
+    print("Executing tests with weights in: " + str(weight_classes_allowed))
 
     while True:
         done = True
@@ -370,8 +369,7 @@ def RunTests(tests: list, argv):
 
                     new_slot = test_slot.TestSlot(test, argv)
 
-                    # This will only run if a specific test has been
-                    # specified
+                    # This will only run if a specific test has been specified
                     if new_slot.test.filename == specific_test:
                         print("Running " + new_slot.test.GetTestPath() + ":")
 
@@ -384,7 +382,6 @@ def RunTests(tests: list, argv):
                 system_load += slot.test.num_procs
 
         time.sleep(0.01)
-        # print(system_load)
 
         if done:
             break
@@ -397,7 +394,7 @@ def RunTests(tests: list, argv):
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
-    print("Done executing tests with class in: " + weight_classes_allowed.__str__())
+    print("Done executing tests with weights in: " + str(weight_classes_allowed))
 
     num_skipped_tests = 0
     for test in tests:
@@ -426,6 +423,7 @@ def RunTests(tests: list, argv):
 
 
 def PrintCaughtWarnings(warning_manager, name: str):
+    """Prints warnings"""
     if len(warning_manager) > 0:
         print(f"{name}:")
     for w in warning_manager:

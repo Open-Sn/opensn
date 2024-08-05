@@ -1,14 +1,18 @@
+"""Module providing regression test execution and completion checking."""
+
 import os
 import subprocess
+import shutil
 import re
 
 
 class TestSlot:
-    """Data structure to hold information regarding the parallel execution
-       of a test"""
+    """Data structure to hold information regarding the execution of a test"""
 
     def __init__(self, test, argv):
         self.process = None
+        self.stdout_file = None
+        self.stderr_file = None
         self.test = test
         self.passed = False
         self.argv = argv
@@ -17,9 +21,11 @@ class TestSlot:
         self._Run()
 
     def _Run(self):
-        """Protected method to actually run the test"""
+        """Protected method to run the test"""
         test = self.test
-        self.test.submitted = True
+        test.submitted = True
+        stdout_filename = test.file_dir + f"out/{test.GetOutFilenamePrefix()}.tmp"
+        stderr_filename = test.file_dir + f"out/{test.GetOutFilenamePrefix()}.err"
 
         if test.skip != "":
             return
@@ -31,26 +37,27 @@ class TestSlot:
         cmd += "--lua master_export=false "
         for arg in test.args:
             if arg.find("\"") >= 0:
-                cmd += "--lua " + "'" + arg + "' "
+                qarg = arg.replace('"', '\\"')
+                cmd += "--lua " + "\\\"" + qarg + "\\\""
             else:
                 cmd += arg + " "
         self.command = cmd
 
-        # cmd += f"> out/{test.filename}.out "
-        # cmd += "2>&1 "
+        # Write command to output file
+        self.stdout_file = open(stdout_filename, "w", encoding="utf-8")
+        self.stderr_file = open(stderr_filename, "w", encoding="utf-8")
+
         self.process = subprocess.Popen(cmd,
                                         cwd=test.file_dir,
                                         shell=True,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
+                                        stdout=self.stdout_file,
+                                        stderr=self.stdout_file,
                                         universal_newlines=True)
-        # test_path = os.path.relpath(test.file_dir + test.filename)
-        # print("Submitting test " + test_path)
 
     def Probe(self):
         """Probes the test to see if it finished"""
-        running = True
         test = self.test
+        running = True
 
         if test.ran:
             running = False
@@ -63,24 +70,37 @@ class TestSlot:
             return running
 
         if self.process.poll() is not None:
-
-            out, err = self.process.communicate()
-
-            file = open(test.file_dir + f"out/{test.GetOutFilenamePrefix()}.out", "w")
-            file.write(self.command + "\n")
-            file.write(out + "\n")
-            file.write(err + "\n")
-            file.close()
-
-            if not self.test.ran:
-                self.PerformChecks()
-
-            self.test.ran = True
-            # print("done with " + test.GetTestPath())
-
+            self.CreateUnifiedOutput()
+            self.PerformChecks()
+            test.ran = True
             running = False
 
         return running
+
+    def CreateUnifiedOutput(self):
+        """Combines output and error files into one file"""
+        test = self.test
+        stdout_filename = test.file_dir + f"out/{test.GetOutFilenamePrefix()}.tmp"
+        stderr_filename = test.file_dir + f"out/{test.GetOutFilenamePrefix()}.err"
+        unified_filename = test.file_dir + f"out/{test.GetOutFilenamePrefix()}.out"
+
+        # Close stdout and stderr files. This will automatically flush them.
+        if self.stdout_file is not None:
+            if not self.stdout_file.closed:
+                self.stdout_file.close()
+        if self.stderr_file is not None:
+            if not self.stderr_file.closed:
+                self.stderr_file.close()
+
+        # Append stderr and stdout to unified file
+        with open(unified_filename, "a", encoding="utf-8") as unified_file:
+            unified_file.write(self.command + "\n")
+            with open(stdout_filename, "r", encoding="utf-8") as self.stdout_file:
+                shutil.copyfileobj(self.stdout_file, unified_file)
+            with open(stderr_filename, "r", encoding="utf-8") as self.stderr_file:
+                shutil.copyfileobj(self.stderr_file, unified_file)
+        os.remove(stdout_filename)
+        os.remove(stderr_filename)
 
     def PerformChecks(self):
         """Applies to check-suite for the test"""
@@ -90,23 +110,27 @@ class TestSlot:
 
         if test.skip == "":
             error_code = self.process.returncode
-            for check in self.test.checks:
+            for check in test.checks:
                 verbose = self.argv.verbose
-                check_passed = check.PerformCheck(output_filename,
-                                                  error_code, verbose)
+                check_passed = check.PerformCheck(output_filename, error_code, verbose)
                 passed = passed and check_passed
 
                 check_annotations = check.GetAnnotations()
                 for ann in check_annotations:
                     test.annotations.append(ann)
         else:
-            test.annotations.append("skipped")
+            test.annotations.append("Skipped")
 
         test_path = os.path.join(test.file_dir, test.filename)
         test_file_name = os.path.relpath(test_path, self.argv.directory)
 
         if not os.path.isfile(test_path):
-            test.annotations.append("lua file missing")
+            test.annotations.append("Lua file missing")
+
+        args_str = ', '.join(map(str, test.args))
+        if len(args_str) != 0:
+            args_str = " (" + args_str + ")"
+        test_file_name += args_str
 
         pad = 0
         if passed:
@@ -122,7 +146,7 @@ class TestSlot:
         pad += 5 + 4
 
         for annotation in test.annotations:
-            message = f"\033[36m[{annotation}]\033[0m" + message
+            message = f"\033[36m[{annotation}]\033[0m" + " " + message
             pad += 5 + 4
 
         width = 120 - len(prefix + test_file_name) + pad
@@ -130,18 +154,19 @@ class TestSlot:
 
         opensn_elapsed_time_sec = 0.0
         if os.path.exists(output_filename):
-            for line in open(output_filename, 'r'):
-                found = re.search("Elapsed execution time:", line)
-                if found:
-                    values_slice = re.split(r'[,:]', line.strip())
-                    opensn_elapsed_time_sec = (float(values_slice[1]) * 3600
-                                               + float(values_slice[2]) * 60
-                                               + float(values_slice[3]))
-                    break
+            with open(output_filename, 'r', encoding='utf-8') as file:
+                for line in file:
+                    found = re.search("Elapsed execution time:", line)
+                    if found:
+                        values_slice = re.split(r'[,:]', line.strip())
+                        opensn_elapsed_time_sec = (float(values_slice[1]) * 3600
+                                                   + float(values_slice[2]) * 60
+                                                   + float(values_slice[3]))
+                        break
 
-        time_taken_message = " {:.1f}s".format(opensn_elapsed_time_sec)
+        time_message = " {:.1f}s".format(opensn_elapsed_time_sec)
 
-        print(prefix + " " + test_file_name + message + time_taken_message)
+        print(prefix + " " + test_file_name + message + time_message)
 
         if test.skip != "":
-            print("Skip reason: " + test.skip)
+            print("\tSkip reason: " + test.skip)
