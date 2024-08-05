@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-/**Base class for an allowable range.*/
+/// Base class for an allowable range.
 class AllowableRange
 {
 protected:
@@ -20,15 +20,14 @@ protected:
   virtual std::string AllowableRangeStr() const = 0;
 
 public:
-  /**Returns `true` is the value is within the allowable range.*/
+  /// Returns `true` is the value is within the allowable range.
   template <typename T>
   bool IsAllowable(const T& value)
   {
     return ChildIsAllowable(Varying(value));
   }
 
-  /**Provides a formatted string of the message to display if a
-   * value is out of range.*/
+  /// Provides a formatted string of the message to display if a value is out of range.
   template <typename T>
   std::string OutOfRangeString(const std::string& scope, const T& value) const
   {
@@ -44,13 +43,13 @@ public:
     return outstr.str();
   }
 
-  /**Prints the allowable constraints to a string.*/
+  /// Prints the allowable constraints to a string.
   std::string PrintRange() { return AllowableRangeStr(); }
 
   virtual ~AllowableRange() = default;
 };
 
-/**Range comprising a list of values.*/
+/// Range comprising a list of values
 class AllowableRangeList : public AllowableRange
 {
 protected:
@@ -103,7 +102,7 @@ protected:
 
 class AllowableRangeLowHighLimit;
 
-/**Lower limit range.*/
+/// Lower limit range.
 class AllowableRangeLowLimit : public AllowableRange
 {
 protected:
@@ -145,7 +144,7 @@ protected:
   }
 };
 
-/**Upper limit range.*/
+/// Upper limit range
 class AllowableRangeHighLimit : public AllowableRange
 {
 protected:
@@ -187,7 +186,7 @@ protected:
   }
 };
 
-/**Upper and lower limit range.*/
+/// Upper and lower limit range
 class AllowableRangeLowHighLimit : public AllowableRange
 {
 protected:
