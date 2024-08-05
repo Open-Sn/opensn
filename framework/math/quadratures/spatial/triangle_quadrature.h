@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Initializes quadratures for use on triangles.*/
+/// Initializes quadratures for use on triangles.
 class TriangleQuadrature : public SpatialQuadrature
 {
 public:

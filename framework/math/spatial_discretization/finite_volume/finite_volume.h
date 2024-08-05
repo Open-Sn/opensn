@@ -13,6 +13,7 @@ namespace opensn
 
 /**
  * Spatial discretizations supporting Finite Volume representations.
+ *
  * \ingroup doc_SpatialDiscretization
  */
 class FiniteVolume : public SpatialDiscretization
@@ -26,18 +27,14 @@ private:
 public:
   virtual ~FiniteVolume() = default;
 
-  /**
-   * Publicly accessible construction handler.
-   */
+  /// Publicly accessible construction handler.
   static std::shared_ptr<FiniteVolume>
   New(const MeshContinuum& grid, CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
   void CreateCellMappings();
 
 protected:
-  /**
-   * Develops node ordering per location.
-   */
+  /// Develops node ordering per location.
   void OrderNodes();
 
 public:

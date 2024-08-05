@@ -10,7 +10,7 @@ namespace opensn
 {
 class ParallelVector;
 
-/**Generalized solver structure.*/
+/// Generalized solver structure.
 struct PETScSolverSetup
 {
   KSP ksp;
@@ -180,28 +180,20 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat matrix,
                                                double abs_tol = PETSC_DEFAULT,
                                                int64_t maximum_iterations = 100);
 
-/**
- * General monitor that print the residual norm relative to the right-hand side norm.
- */
+/// General monitor that print the residual norm relative to the right-hand side norm.
 PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*);
 
-/**
- * Copies a PETSc vector to a STL vector. Only the local portion is copied.
- */
+/// Copies a PETSc vector to a STL vector. Only the local portion is copied.
 void CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL = true);
 
-/**
- * Copies a PETSc vector to a STL vector. Only the local portion is copied.
- */
+/// Copies a PETSc vector to a STL vector. Only the local portion is copied.
 void
 CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool resize_STL = true);
 
 void CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N);
 void CopyParallelVectorToVec(const ParallelVector& y, Vec x);
 
-/**
- * Copies global values from a PETSc vector to a STL vector.
- */
+/// Copies global values from a PETSc vector to a STL vector.
 void CopyGlobalVecToSTLvector(Vec x,
                               const std::vector<int64_t>& global_indices,
                               std::vector<double>& data);
@@ -213,33 +205,26 @@ void CopyGlobalVecToSTLvector(Vec x,
  */
 void CommunicateGhostEntries(Vec x);
 
-/**Simple data structure to keep track of a ghost vector's
- * localized views.*/
+/// Simple data structure to keep track of a ghost vector's localized views.
 struct GhostVecLocalRaw
 {
   Vec x_localized = nullptr;
   double* x_localized_raw = nullptr;
 
-  /**Returns a copy of the value at the specified index.*/
+  /// Returns a copy of the value at the specified index.
   double operator[](int index) { return x_localized_raw[index]; }
 
-  /**Returns a reference of the value at the specified index.*/
+  /// Returns a reference of the value at the specified index.
   double& operator()(int index) { return x_localized_raw[index]; }
 };
 
-/**
- * Gets a local raw view of a ghost vector.
- */
+/// Gets a local raw view of a ghost vector.
 GhostVecLocalRaw GetGhostVectorLocalViewRead(Vec x);
 
-/**
- * Gets a local raw view of a ghost vector.
- */
+/// Gets a local raw view of a ghost vector.
 void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
-/**
- * Gets the string value of a converged reason.
- */
+/// Gets the string value of a converged reason.
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
 
 } // namespace opensn

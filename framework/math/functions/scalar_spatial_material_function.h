@@ -9,9 +9,7 @@
 namespace opensn
 {
 
-/**
- * Base class for evaluating functions given material ID and spatial location
- */
+/// Base class for evaluating functions given material ID and spatial location
 class ScalarSpatialMaterialFunction : public Function
 {
 public:

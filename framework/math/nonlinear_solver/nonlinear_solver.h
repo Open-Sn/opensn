@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-/**Implementation of a general non-linear solver.*/
+/// Implementation of a general non-linear solver.
 class NonLinearSolver
 {
 public:

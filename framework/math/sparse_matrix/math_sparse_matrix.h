@@ -8,53 +8,57 @@
 namespace opensn
 {
 
-/**Sparse matrix utility. This is a basic CSR type sparse matrix
- * which allows efficient matrix storage and multiplication. It is
- * not intended for solving linear systems (use PETSc for that instead).
- * It was originally developed for the transfer matrices of transport
- * cross sections.*/
+/**
+ * Sparse matrix utility. This is a basic CSR type sparse matrix which allows efficient matrix
+ * storage and multiplication. It is not intended for solving linear systems (use PETSc for that
+ * instead). It was originally developed for the transfer matrices of transport cross sections.
+ */
 class SparseMatrix
 {
 private:
-  size_t row_size_; ///< Maximum number of rows for this matrix
-  size_t col_size_; ///< Maximum number of columns for this matrix
+  /// Maximum number of rows for this matrix
+  size_t row_size_;
+  /// Maximum number of columns for this matrix
+  size_t col_size_;
 
 public:
-  /**rowI_indices[i] is a vector indices j for the
-   * non-zero columns.*/
+  /// rowI_indices[i] is a vector indices j for the non-zero columns.
   std::vector<std::vector<size_t>> rowI_indices_;
-  /**rowI_values[i] corresponds to column indices and
-   * contains the non-zero value.*/
+  /// rowI_values[i] corresponds to column indices and contains the non-zero value.
   std::vector<std::vector<double>> rowI_values_;
 
 public:
-  /**Constructor with number of rows and columns constructor.*/
+  /// Constructor with number of rows and columns constructor.
   SparseMatrix(size_t num_rows, size_t num_cols);
-  /**Copy constructor.*/
+  /// Copy constructor.
   SparseMatrix(const SparseMatrix& matrix);
 
   size_t NumRows() const { return row_size_; }
   size_t NumCols() const { return col_size_; }
 
-  /**Inserts a value into the matrix.*/
+  /// Inserts a value into the matrix.
   void Insert(size_t i, size_t j, double value);
-  /**Inserts-Adds a value into the matrix with duplicate check.*/
+
+  /// Inserts-Adds a value into the matrix with duplicate check.
   void InsertAdd(size_t i, size_t j, double value);
-  /**Returns the value in the matrix at the given location. This
-   * is a rather inefficient routine. Use the columns and values
-   * rather than directly this function.*/
+
+  /**
+   * Returns the value in the matrix at the given location. This is a rather inefficient routine.
+   * Use the columns and values rather than directly this function.
+   */
   double ValueIJ(size_t i, size_t j) const;
-  /**Sets the diagonal of the matrix using a vector.*/
+
+  /// Sets the diagonal of the matrix using a vector.
   void SetDiagonal(const std::vector<double>& diag);
 
-  /**Sorts the column indices of each row for faster lookup.*/
+  /// Sorts the column indices of each row for faster lookup.
   void Compress();
 
-  /**Prints the sparse matrix to string.*/
+  /// Prints the sparse matrix to string.
   std::string PrintStr() const;
 
 private:
-  /**Constructor with number of rows constructor.*/
+  /// Constructor with number of rows constructor.
   void CheckInitialized() const;
 
 public:
@@ -196,7 +200,7 @@ public:
 
   ConstRowIteratorContext Row(size_t row_id) const;
 
-  /**Iterator to loop over all matrix entries.*/
+  /// Iterator to loop over all matrix entries.
   class EntriesIterator
   {
   private:

@@ -13,14 +13,14 @@ struct Vector3;
 template <class NumberFormat>
 class DynamicVector;
 
-/** General dynamic vector utility.*/
+/// General dynamic vector utility.
 template <class NumberFormat>
 class DynamicVector
 {
 public:
   std::vector<NumberFormat> elements_;
 
-  /**Default constructor. Does nothing.*/
+  /// Default constructor. Does nothing.
   DynamicVector()
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -28,7 +28,7 @@ public:
                   "supported for DVectorNX.");
   }
 
-  /**Constructor with number of entries. Value defaults.*/
+  /// Constructor with number of entries. Value defaults.
   explicit DynamicVector(size_t N) : elements_(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -36,7 +36,7 @@ public:
                   "supported for DVectorNX.");
   }
 
-  /**Constructor with number of entries and default value.*/
+  /// Constructor with number of entries and default value.
   DynamicVector(size_t N, NumberFormat value) : elements_(N, value)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -44,40 +44,40 @@ public:
                   "supported for DVectorNX.");
   }
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   DynamicVector(const DynamicVector& other) { elements_ = other.elements_; }
 
-  /**Assignment operator.*/
+  /// Assignment operator.
   DynamicVector& operator=(const DynamicVector& other)
   {
     elements_ = other.elements_;
     return *this;
   }
 
-  /**Move constructor.*/
+  /// Move constructor.
   DynamicVector(DynamicVector&& other) noexcept { elements_ = std::move(other.elements_); }
 
-  /**Move assignment operator.*/
+  /// Move assignment operator.
   DynamicVector& operator=(DynamicVector&& other) noexcept
   {
     elements_ = std::move(other.elements_);
     return *this;
   }
 
-  /**Constructor with vector.*/
+  /// Constructor with vector.
   explicit DynamicVector(const std::vector<double>& in) { elements_ = in; }
 
-  /**Copy constructor with vector.*/
+  /// Copy constructor with vector.
   DynamicVector& operator=(const std::vector<double>& in)
   {
     elements_ = in;
     return *this;
   }
 
-  /**Constructor with vector.*/
+  /// Constructor with vector.
   DynamicVector(std::initializer_list<NumberFormat> in) { elements_ = in; }
 
-  /**Copy constructor with vector.*/
+  /// Copy constructor with vector.
   DynamicVector& operator=(std::initializer_list<NumberFormat> in)
   {
     elements_ = in;
@@ -128,8 +128,10 @@ public:
     }
   }
 
-  /**Component-wise addition of two vectors.
-   * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
+  /**
+   * Component-wise addition of two vectors.
+   * \f$ \vec{w} = \vec{x} + \vec{y} \f$
+   */
   DynamicVector operator+(const DynamicVector& rhs) const
   {
     bounds_check(size(), rhs.size());
@@ -140,8 +142,10 @@ public:
     return newVector;
   }
 
-  /**In-place component-wise addition of two vectors.
-   * \f$ \vec{x} = \vec{x} + \vec{y} \f$*/
+  /**
+   * In-place component-wise addition of two vectors.
+   * \f$ \vec{x} = \vec{x} + \vec{y} \f$
+   */
   DynamicVector& operator+=(const DynamicVector& rhs)
   {
     bounds_check(size(), rhs.size());
@@ -151,8 +155,10 @@ public:
     return *this;
   }
 
-  /**Component-wise subtraction.
-   * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
+  /**
+   * Component-wise subtraction.
+   * \f$ \vec{w} = \vec{x} - \vec{y} \f$
+   */
   DynamicVector operator-(const DynamicVector& rhs) const
   {
     bounds_check(size(), rhs.size());
@@ -163,8 +169,10 @@ public:
     return newVector;
   }
 
-  /**In-place component-wise subtraction.
-   * \f$ \vec{x} = \vec{x} - \vec{y} \f$*/
+  /**
+   * In-place component-wise subtraction.
+   * \f$ \vec{x} = \vec{x} - \vec{y} \f$
+   */
   DynamicVector& operator-=(const DynamicVector& rhs)
   {
     bounds_check(size(), rhs.size());
@@ -174,8 +182,10 @@ public:
     return *this;
   }
 
-  /**Vector component-wise multiplication by scalar.
-   * \f$ \vec{w} = \vec{x} \alpha \f$*/
+  /**
+   * Vector component-wise multiplication by scalar.
+   * \f$ \vec{w} = \vec{x} \alpha \f$
+   */
   DynamicVector operator*(const NumberFormat value) const
   {
     DynamicVector<NumberFormat> newVector(size());
@@ -185,8 +195,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise multiplication by scalar.
-   * \f$ \vec{x} = \vec{x} \alpha \f$*/
+  /**
+   * Vector in-place component-wise multiplication by scalar.
+   * \f$ \vec{x} = \vec{x} \alpha \f$
+   */
   DynamicVector& operator*=(const NumberFormat value)
   {
     for (int i = 0; i < size(); ++i)
@@ -195,8 +207,10 @@ public:
     return *this;
   }
 
-  /**Vector component-wise multiplication.
-   * \f$ w_i = x_i y_i \f$*/
+  /**
+   * Vector component-wise multiplication.
+   * \f$ w_i = x_i y_i \f$
+   */
   DynamicVector operator*(const DynamicVector& rhs) const
   {
     bounds_check(size(), rhs.size());
@@ -207,8 +221,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise multiplication.
-   * \f$ x_i = x_i y_i \f$*/
+  /**
+   * Vector in-place component-wise multiplication.
+   * \f$ x_i = x_i y_i \f$
+   */
   DynamicVector& operator*=(const DynamicVector& rhs)
   {
     bounds_check(size(), rhs.size());
@@ -218,8 +234,10 @@ public:
     return *this;
   }
 
-  /**Vector component-wise division by scalar.
-   * \f$ w_i = \frac{x_i}{\alpha} \f$*/
+  /**
+   * Vector component-wise division by scalar.
+   * \f$ w_i = \frac{x_i}{\alpha} \f$
+   */
   DynamicVector operator/(const NumberFormat value) const
   {
     DynamicVector<NumberFormat> newVector(size());
@@ -229,8 +247,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise division by scalar.
-   * \f$ x_i = \frac{x_i}{\alpha} \f$*/
+  /**
+   * Vector in-place component-wise division by scalar.
+   * \f$ x_i = \frac{x_i}{\alpha} \f$
+   */
   DynamicVector& operator/=(const NumberFormat value)
   {
     for (int i = 0; i < size(); ++i)
@@ -239,8 +259,10 @@ public:
     return *this;
   }
 
-  /**Vector component-wise division.
-   * \f$ w_i = \frac{x_i}{y_i} \f$*/
+  /**
+   * Vector component-wise division.
+   * \f$ w_i = \frac{x_i}{y_i} \f$
+   */
   DynamicVector operator/(const DynamicVector& rhs) const
   {
     bounds_check(size(), rhs.size());
@@ -251,8 +273,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise division.
-   * \f$ x_i = \frac{x_i}{y_i} \f$*/
+  /**
+   * Vector in-place component-wise division.
+   * \f$ x_i = \frac{x_i}{y_i} \f$
+   */
   DynamicVector& operator/=(const DynamicVector& rhs)
   {
     bounds_check(size(), rhs.size());
@@ -262,8 +286,10 @@ public:
     return *this;
   }
 
-  /**Vector dot-product.
-   * \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$ */
+  /**
+   * Vector dot-product.
+   * \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$
+   */
   NumberFormat Dot(const DynamicVector& rhs) const
   {
     bounds_check(size(), rhs.size());
@@ -274,8 +300,7 @@ public:
     return value;
   }
 
-  /**Computes the L2-norm of the vector. Otherwise known as the length of
-   * a 3D vector.*/
+  /// Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector.
   NumberFormat Norm() const
   {
     NumberFormat value = 0.0;
@@ -286,9 +311,10 @@ public:
     return value;
   }
 
-  /**Computes the square of the L2-norm of the vector. This eliminates the
-   * usage of the square root and is therefore less expensive that a proper
-   * L2-norm. Useful if only comparing distances.*/
+  /**
+   * Computes the square of the L2-norm of the vector. This eliminates the usage of the square root
+   * and is therefore less expensive that a proper L2-norm. Useful if only comparing distances.
+   */
   NumberFormat NormSquare() const
   {
     NumberFormat value = 0.0;
@@ -298,7 +324,7 @@ public:
     return value;
   }
 
-  /**Normalizes the vector in-place.*/
+  /// Normalizes the vector in-place.
   void Normalize()
   {
     NumberFormat norm = this->Norm();
@@ -306,7 +332,7 @@ public:
       elements_[i] = elements_[i] / norm;
   }
 
-  /**Returns a normalized version of the vector.*/
+  /// Returns a normalized version of the vector.
   DynamicVector Normalized() const
   {
     NumberFormat norm = this->Norm();
@@ -317,14 +343,14 @@ public:
     return newVector;
   }
 
-  /**Sets all the elements of the vector to the specified value.*/
+  /// Sets all the elements of the vector to the specified value.
   void Set(NumberFormat value)
   {
     for (int i = 0; i < size(); ++i)
       elements_[i] = value;
   }
 
-  /**Prints the vector to a string and then returns the string.*/
+  /// Prints the vector to a string and then returns the string.
   std::string PrintStr() const
   {
     std::stringstream out;
@@ -337,7 +363,7 @@ public:
   }
 };
 
-/**Multiplication by a scalar from the left.*/
+/// Multiplication by a scalar from the left.
 template <class NumberFormat>
 DynamicVector<NumberFormat>
 operator*(const double value, const DynamicVector<NumberFormat>& that)

@@ -15,14 +15,14 @@ namespace opensn
 template <class NumberFormat>
 class DynamicMatrix;
 
-/**General dynamic matrix utility.*/
+/// General dynamic matrix utility.
 template <class NumberFormat>
 class DynamicMatrix
 {
 public:
   std::vector<std::vector<NumberFormat>> elements_;
 
-  /**Default constructor. Does nothing.*/
+  /// Default constructor. Does nothing.
   DynamicMatrix()
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -30,7 +30,7 @@ public:
                   "supported for DynamicMatrix.");
   }
 
-  /**Constructor with number of entries. Value defaults.*/
+  /// Constructor with number of entries. Value defaults.
   DynamicMatrix(size_t Nrows, size_t Ncols) : elements_(Nrows, std::vector<NumberFormat>(Ncols))
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -38,7 +38,7 @@ public:
                   "supported for DynamicMatrix.");
   }
 
-  /**Constructor with number of entries and default value.*/
+  /// Constructor with number of entries and default value.
   DynamicMatrix(size_t Nrows, size_t Ncols, NumberFormat value)
     : elements_(Nrows, std::vector<NumberFormat>(Ncols, value))
   {
@@ -47,37 +47,37 @@ public:
                   "supported for DynamicMatrix.");
   }
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   DynamicMatrix(const DynamicMatrix& other) { elements_ = other.elements_; }
 
-  /**Assignment operator.*/
+  /// Assignment operator.
   DynamicMatrix& operator=(const DynamicMatrix& other)
   {
     elements_ = other.elements_;
     return *this;
   }
 
-  /**Move constructor.*/
+  /// Move constructor.
   DynamicMatrix(DynamicMatrix&& other) noexcept { elements_ = std::move(other.elements_); }
 
-  /**Move assignment operator.*/
+  /// Move assignment operator.
   DynamicMatrix& operator=(DynamicMatrix&& other) noexcept
   {
     elements_ = std::move(other.elements_);
     return *this;
   }
 
-  /**Constructor with vector.*/
+  /// Constructor with vector.
   explicit DynamicMatrix(const std::vector<std::vector<double>>& in) { elements_ = in; }
 
-  /**Copy constructor with vector.*/
+  /// Copy constructor with vector.
   DynamicMatrix& operator=(const std::vector<std::vector<double>>& in)
   {
     elements_ = in;
     return *this;
   }
 
-  /**Constructor with vector.*/
+  /// Constructor with vector.
   DynamicMatrix(std::initializer_list<std::initializer_list<NumberFormat>> in)
   {
     elements_.clear();
@@ -85,7 +85,7 @@ public:
       elements_.push_back(v);
   }
 
-  /**Copy constructor with vector.*/
+  /// Copy constructor with vector.
   DynamicMatrix& operator=(std::initializer_list<std::initializer_list<NumberFormat>> in)
   {
     elements_.clear();
@@ -164,8 +164,10 @@ private:
   }
 
 public:
-  /**Component-wise addition of two matrices.
-   * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
+  /**
+   * Component-wise addition of two matrices.
+   * \f$ \vec{w} = \vec{x} + \vec{y} \f$
+   */
   DynamicMatrix operator+(const DynamicMatrix& rhs) const
   {
     auto dim = Dimensions();
@@ -178,8 +180,10 @@ public:
     return newVector;
   }
 
-  /**In-place component-wise addition of two vectors.
-   * \f$ \vec{x} = \vec{x} + \vec{y} \f$*/
+  /**
+   * In-place component-wise addition of two vectors.
+   * \f$ \vec{x} = \vec{x} + \vec{y} \f$
+   */
   DynamicMatrix& operator+=(const DynamicMatrix& rhs)
   {
     auto dim = Dimensions();
@@ -191,8 +195,10 @@ public:
     return *this;
   }
 
-  /**Component-wise subtraction.
-   * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
+  /**
+   * Component-wise subtraction.
+   * \f$ \vec{w} = \vec{x} - \vec{y} \f$
+   */
   DynamicMatrix operator-(const DynamicMatrix& rhs) const
   {
     auto dim = Dimensions();
@@ -205,8 +211,10 @@ public:
     return newVector;
   }
 
-  /**In-place component-wise subtraction.
-   * \f$ \vec{x} = \vec{x} - \vec{y} \f$*/
+  /**
+   * In-place component-wise subtraction.
+   * \f$ \vec{x} = \vec{x} - \vec{y} \f$
+   */
   DynamicMatrix& operator-=(const DynamicMatrix& rhs)
   {
     auto dim = Dimensions();
@@ -218,8 +226,10 @@ public:
     return *this;
   }
 
-  /**Vector component-wise multiplication by scalar.
-   * \f$ \vec{w} = \vec{x} \alpha \f$*/
+  /**
+   * Vector component-wise multiplication by scalar.
+   * \f$ \vec{w} = \vec{x} \alpha \f$
+   */
   DynamicMatrix operator*(const NumberFormat value) const
   {
     auto dim = Dimensions();
@@ -231,8 +241,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise multiplication by scalar.
-   * \f$ \vec{x} = \vec{x} \alpha \f$*/
+  /**
+   * Vector in-place component-wise multiplication by scalar.
+   * \f$ \vec{x} = \vec{x} \alpha \f$
+   */
   DynamicMatrix& operator*=(const NumberFormat value)
   {
     auto dim = Dimensions();
@@ -243,7 +255,7 @@ public:
     return *this;
   }
 
-  /** Matrix-Matrix multiplication */
+  /// Matrix-Matrix multiplication
   DynamicMatrix operator*(const DynamicMatrix& rhs)
   {
     auto dimA = Dimensions();
@@ -271,7 +283,7 @@ public:
     return newMatrix;
   }
 
-  /** Matrix-Vector multiplication */
+  /// Matrix-Vector multiplication
   DynamicVector<NumberFormat> operator*(const DynamicVector<NumberFormat>& V)
   {
     auto dimA = Dimensions();
@@ -295,8 +307,10 @@ public:
     return newV;
   }
 
-  /**Vector component-wise division by scalar.
-   * \f$ w_i = \frac{x_i}{\alpha} \f$*/
+  /**
+   * Vector component-wise division by scalar.
+   * \f$ w_i = \frac{x_i}{\alpha} \f$
+   */
   DynamicMatrix operator/(const NumberFormat value) const
   {
     auto dim = Dimensions();
@@ -308,8 +322,10 @@ public:
     return newVector;
   }
 
-  /**Vector in-place component-wise division by scalar.
-   * \f$ x_i = \frac{x_i}{\alpha} \f$*/
+  /**
+   * Vector in-place component-wise division by scalar.
+   * \f$ x_i = \frac{x_i}{\alpha} \f$
+   */
   DynamicMatrix& operator/=(const NumberFormat value)
   {
     auto dim = Dimensions();
@@ -320,7 +336,7 @@ public:
     return *this;
   }
 
-  /**Obtains the inverse with Gauss-Elimination.*/
+  /// Obtains the inverse with Gauss-Elimination.
   DynamicMatrix Inverse() const
   {
     auto inv_elems = InverseGEPivoting(elements_);
@@ -328,7 +344,7 @@ public:
     return DynamicMatrix<NumberFormat>(inv_elems);
   }
 
-  /** Set the diagonal using a vector.*/
+  /// Set the diagonal using a vector.
   void SetDiagonal(DynamicVector<NumberFormat>& V)
   {
     auto dimA = Dimensions();
@@ -344,7 +360,7 @@ public:
       elements_[i][i] = V[i];
   }
 
-  /** Set the diagonal using value.*/
+  /// Set the diagonal using value.
   void SetDiagonal(NumberFormat val)
   {
     auto dimA = Dimensions();
@@ -353,7 +369,7 @@ public:
       elements_[i][i] = val;
   }
 
-  /**Prints the matrix to a string and then returns the string.*/
+  /// Prints the matrix to a string and then returns the string.
   std::string PrintStr() const
   {
     auto dim = Dimensions();
@@ -373,7 +389,7 @@ public:
   }
 };
 
-/**Multiplication by a scalar from the left.*/
+/// Multiplication by a scalar from the left.
 template <class NumberFormat>
 DynamicMatrix<NumberFormat>
 operator*(const double value, DynamicMatrix<NumberFormat>& that)

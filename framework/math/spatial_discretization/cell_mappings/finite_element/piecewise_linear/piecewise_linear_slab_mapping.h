@@ -11,12 +11,15 @@
 namespace opensn
 {
 
-/**Object for handling slab shaped piecewise linear shape functions.
- * \ingroup doc_CellMappings*/
+/**
+ * Object for handling slab shaped piecewise linear shape functions.
+ *
+ * \ingroup doc_CellMappings
+ */
 class PieceWiseLinearSlabMapping : public PieceWiseLinearBaseMapping
 {
 public:
-  /**Constructor for a slab view.*/
+  /// Constructor for a slab view.
   PieceWiseLinearSlabMapping(const Cell& slab_cell,
                              const MeshContinuum& ref_grid,
                              const LineQuadrature& volume_quadrature);
@@ -25,9 +28,7 @@ public:
 
   SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
-  /**
-   * Define standard slab linear shape functions
-   */
+  /// Define standard slab linear shape functions
   double SlabShape(uint32_t index,
                    const Vector3& qpoint,
                    bool on_surface = false,
@@ -35,9 +36,7 @@ public:
 
   double SlabGradShape(uint32_t index) const;
 
-  /**
-   * Actual shape functions as function of cartesian coordinates
-   */
+  /// Actual shape functions as function of cartesian coordinates
   double ShapeValue(int i, const Vector3& xyz) const override;
 
   Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
