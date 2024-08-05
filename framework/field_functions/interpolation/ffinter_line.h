@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/** A line based interpolation function.*/
+/// A line based interpolation function.
 class FieldFunctionInterpolationLine : public FieldFunctionInterpolation
 {
 private:
