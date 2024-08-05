@@ -12,67 +12,68 @@
 namespace opensn
 {
 
-/**Object for controlling logging.
-   *
-   * ## Part A: Output logs
-   * There are three levels of verbosity in OpenSn: Zero(Default), One and Two.
-   * These can be set on the command line via the switch -v followed by a
-   * space and the number for the verbosity (0,1 or 2).
-   *
-   * \code
-   * ./opensn InputFile.lua -v 1
-   * \endcode
-   *
-   * The lua command `LogSetVerbosity(int_level)` achieves the same.\n\n
-   *
-   * Printing a log under the auspices of a verbosity level again has
-   * numerous options. Firstly, any log can be a normal log, a warning
-   * or an error. Secondly, a log can be either location 0 or all the locations
-   * in a parallel process environment. The log option enums defined under
-   * LOG_LVL are
-   - LOG_0,                      Used only for location 0
-   - LOG_0WARNING,               Warning only for location 0
-   - LOG_0ERROR,                 Error only for location 0
-   - LOG_0VERBOSE_0,             Default verbosity level
-   - LOG_0VERBOSE_1,             Used only if verbosity level equals 1
-   - LOG_0VERBOSE_2,             Used only if verbosity level equals 2
-   - LOG_ALL,                    Verbose level 0 all locations
-   - LOG_ALLWARNING,             Warning for any location
-   - LOG_ALLERROR,               Error for any location
-   - LOG_ALLVERBOSE_0,     Default verbosity level
-   - LOG_ALLVERBOSE_1,     Used only if verbosity level equals 1
-   - LOG_ALLVERBOSE_2,     Used only if verbosity level equals 2
-
-   * A log can be made by first connecting code with the logger. This is done
-   * by including the log header and then defining an extern reference to the
-   * global object.
-   *
-   * \code
-   * #include "framework/logging/log.h"
-   * extern Logger& opensn::log;
-   * \endcode
-   *
-   * A log is then written inside a piece of code as follows:
-   *
-   * \code
-   * void PrintSomethingToLog()
-   * {
-   *   opensn::log.Log() << "This is printed on location 0 only";
-   *   opensn::log.Log0Warning() << "This is a warning";
-   *   opensn::log.Log0Error() << "This is an error";
-   * }
-   * \endcode
-   *
-  \verbatim
-  [0]  This is printed on location 0 only
-  [0]  **WARNING** This is a warning
-  [0]  **!**ERROR**!** This is an error
-  \endverbatim
-   * */
+/**
+ * Object for controlling logging.
+ *
+ * ## Part A: Output logs
+ * There are three levels of verbosity in OpenSn: Zero(Default), One and Two.
+ * These can be set on the command line via the switch -v followed by a
+ * space and the number for the verbosity (0,1 or 2).
+ *
+ * \code
+ * ./opensn InputFile.lua -v 1
+ * \endcode
+ *
+ * The lua command `LogSetVerbosity(int_level)` achieves the same.\n\n
+ *
+ * Printing a log under the auspices of a verbosity level again has
+ * numerous options. Firstly, any log can be a normal log, a warning
+ * or an error. Secondly, a log can be either location 0 or all the locations
+ * in a parallel process environment. The log option enums defined under
+ * LOG_LVL are
+ *  - LOG_0,                      Used only for location 0
+ *  - LOG_0WARNING,               Warning only for location 0
+ *  - LOG_0ERROR,                 Error only for location 0
+ *  - LOG_0VERBOSE_0,             Default verbosity level
+ *  - LOG_0VERBOSE_1,             Used only if verbosity level equals 1
+ *  - LOG_0VERBOSE_2,             Used only if verbosity level equals 2
+ *  - LOG_ALL,                    Verbose level 0 all locations
+ *  - LOG_ALLWARNING,             Warning for any location
+ *  - LOG_ALLERROR,               Error for any location
+ *  - LOG_ALLVERBOSE_0,     Default verbosity level
+ *  - LOG_ALLVERBOSE_1,     Used only if verbosity level equals 1
+ *  - LOG_ALLVERBOSE_2,     Used only if verbosity level equals 2
+ *
+ * A log can be made by first connecting code with the logger. This is done
+ * by including the log header and then defining an extern reference to the
+ * global object.
+ *
+ * \code
+ * #include "framework/logging/log.h"
+ * extern Logger& opensn::log;
+ * \endcode
+ *
+ * A log is then written inside a piece of code as follows:
+ *
+ * \code
+ * void PrintSomethingToLog()
+ * {
+ *   opensn::log.Log() << "This is printed on location 0 only";
+ *   opensn::log.Log0Warning() << "This is a warning";
+ *   opensn::log.Log0Error() << "This is an error";
+ * }
+ * \endcode
+ *
+ * \verbatim
+ * [0]  This is printed on location 0 only
+ * [0]  **WARNING** This is a warning
+ * [0]  **!**ERROR**!** This is an error
+ * \endverbatim
+ */
 class Logger
 {
 public:
-  /**Logging level*/
+  /// Logging level
   enum LOG_LVL
   {
     LOG_0 = 1,             ///< Used only for location 0
