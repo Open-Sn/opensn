@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/** Basic isotropic multi-group source material property. */
+/// Basic isotropic multi-group source material property.
 class IsotropicMultiGroupSource : public MaterialProperty
 {
 public:

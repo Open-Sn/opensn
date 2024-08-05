@@ -21,7 +21,7 @@ enum class OperationType
   OPENMC_XSLIB = 24
 };
 
-/** Base class for materials used in physics simulations.*/
+/// Base class for materials used in physics simulations.
 class Material
 {
 public:

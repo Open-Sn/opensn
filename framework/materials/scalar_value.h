@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/** Simple scalar-valued material property. */
+/// Simple scalar-valued material property.
 class ScalarValue : public MaterialProperty
 {
 public:
