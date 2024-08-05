@@ -17,7 +17,7 @@ enum class SteppingMethod
   THETA_SCHEME = 4,
 };
 
-/**Returns the string name of a time stepping method.*/
+/// Returns the string name of a time stepping method.
 std::string SteppingMethodStringName(SteppingMethod);
 SteppingMethod SteppingMethodFromString(const std::string& name);
 

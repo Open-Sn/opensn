@@ -16,8 +16,8 @@ class GhostedParallelSTLVector : public ParallelSTLVector
 {
 public:
   /**
-   * Initialize the ghosted parallel vector with the given local and global
-   * sizes, with the specified global ghost indices.
+   * Initialize the ghosted parallel vector with the given local and global sizes, with the
+   * specified global ghost indices.
    */
   GhostedParallelSTLVector(const uint64_t local_size,
                            const uint64_t global_size,
@@ -37,13 +37,13 @@ public:
     values_.assign(local_size_ + ghost_comm_.NumGhosts(), 0.0);
   }
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   GhostedParallelSTLVector(const GhostedParallelSTLVector& other)
     : ParallelSTLVector(other), ghost_comm_(other.ghost_comm_)
   {
   }
 
-  /**Move constructor.*/
+  /// Move constructor.
   GhostedParallelSTLVector(GhostedParallelSTLVector&& other) noexcept
     : ParallelSTLVector(std::move(other)), ghost_comm_(std::move(other.ghost_comm_))
   {
@@ -73,14 +73,13 @@ public:
   /**
    * Return the value of the parallel vector for the specified global index.
    *
-   * An error is thrown if the global index does not belong to a locally
-   * owned, or ghost entry.
+   * An error is thrown if the global index does not belong to a locally owned, or ghost entry.
    */
   double GetGlobalValue(int64_t global_id) const;
 
   /**
-   * Communicate the current ghost entries to all other processes to
-   * update the locally stored ghost data.
+   * Communicate the current ghost entries to all other processes to update the locally stored ghost
+   * data.
    */
   void CommunicateGhostEntries() override { ghost_comm_.CommunicateGhostEntries(values_); }
 

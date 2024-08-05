@@ -8,9 +8,7 @@
 namespace opensn
 {
 
-/**
- * Base class for functions
- */
+/// Base class for functions
 class Function : public Object
 {
 public:

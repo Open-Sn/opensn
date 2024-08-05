@@ -10,15 +10,15 @@ namespace opensn
 {
 
 /**
- * Generalization of the Galerkin Finite Element Method with piecewise linear basis functions
- * for use by a Continues Finite Element Method (CFEM).
- * \ingroup doc_SpatialDiscretization*/
+ * Generalization of the Galerkin Finite Element Method with piecewise linear basis functions for
+ * use by a Continues Finite Element Method (CFEM).
+ *
+ * \ingroup doc_SpatialDiscretization
+ */
 class PieceWiseLinearContinuous : public PieceWiseLinearBase
 {
 public:
-  /**
-   * Construct a shared object using the protected constructor.
-   */
+  /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearContinuous>
   New(const MeshContinuum& grid,
       QuadratureOrder q_order = QuadratureOrder::SECOND,
@@ -55,10 +55,7 @@ public:
   std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const override;
 
 protected:
-  /**
-   * Reorders the nodes for parallel computation in a Continuous
-   * Finite Element calculation.
-   */
+  /// Reorders the nodes for parallel computation in a Continuous Finite Element calculation.
   void OrderNodes();
 
   std::map<uint64_t, int64_t> node_mapping_;

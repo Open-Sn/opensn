@@ -9,9 +9,7 @@
 namespace opensn
 {
 
-/**
- * Base class for evaluating spatial material functions given a coordinate.
- */
+/// Base class for evaluating spatial material functions given a coordinate.
 class VectorSpatialFunction : public Function
 {
 public:

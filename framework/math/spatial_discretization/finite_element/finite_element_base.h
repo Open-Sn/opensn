@@ -10,8 +10,11 @@
 namespace opensn
 {
 
-/**Base Finite Element spatial discretization class.
- * \ingroup doc_SpatialDiscretization*/
+/**
+ * Base Finite Element spatial discretization class.
+ *
+ * \ingroup doc_SpatialDiscretization
+ */
 class FiniteElementBase : public SpatialDiscretization
 {
 public:

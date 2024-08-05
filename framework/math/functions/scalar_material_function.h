@@ -9,9 +9,7 @@
 namespace opensn
 {
 
-/**
- * Base class for evaluating functions given material ID and single value
- */
+/// Base class for evaluating functions given material ID and single value
 class ScalarMaterialFunction : public Function
 {
 public:
