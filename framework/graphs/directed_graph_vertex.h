@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-/**General implementation of a directed-graph vertex.*/
+/// General implementation of a directed-graph vertex.
 struct GraphVertex
 {
   size_t id;
