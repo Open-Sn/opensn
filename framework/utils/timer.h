@@ -9,36 +9,38 @@
 namespace opensn
 {
 
-/** Timer object.*/
+/// Timer object.
 class Timer
 {
 private:
   std::chrono::steady_clock::time_point start_time_;
 
 public:
-  /** Default constructor.*/
+  /// Default constructor.
   Timer() noexcept;
-  /** Resets the timer to zero.*/
+
+  /// Resets the timer to zero.
   void Reset();
-  /** Gets the current timer value in milliseconds.*/
+
+  /// Gets the current timer value in milliseconds.
   double GetTime() const;
-  /**
-   * Obtains a string in the format of hh:mm::ss.
-   */
+
+  /// Obtains a string in the format of hh:mm::ss.
   std::string GetTimeString() const;
-  /**
-   * Obtains a string in the format YYYY-MM-DD hh:mm:ss
-   */
+
+  /// Obtains a string in the format YYYY-MM-DD hh:mm:ss
   static std::string GetLocalDateTimeString();
 };
 
-/**Puts the current thread to sleep.
+/**
+ * Puts the current thread to sleep.
  * \param time Time to sleep for.
  *
  * \note To specify different times `std::chrono` allows
  * you to change the unit with, e.g.,
  * `opensn::Sleep(std::chrono::milliseconds(100))` sleeps for 100 milliseconds,
- * `std::Sleep(std::chrono::seconds(1))` sleeps for 1 second.*/
+ * `std::Sleep(std::chrono::seconds(1))` sleeps for 1 second.
+ */
 void Sleep(std::chrono::duration<double> time);
 
 } // namespace opensn
