@@ -35,9 +35,7 @@ struct TwoGridCollapsedInfo
 //   std::vector<double> sigR;
 // };
 
-/**
- * Multi-group diffusion solver
- */
+/// Multi-group diffusion solver
 class MGDiffusionSolver : public opensn::Solver
 {
 public:
@@ -63,9 +61,7 @@ public:
 
   void Execute() override;
 
-  /**
-   * Updates the field functions with the latest data.
-   */
+  /// Updates the field functions with the latest data.
   void UpdateFieldFunctions();
 
 private:
