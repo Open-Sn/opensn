@@ -35,9 +35,7 @@ class MeshContinuum;
 class MeshGenerator : public Object
 {
 public:
-  /**
-   * Final execution step.
-   */
+  /// Final execution step.
   virtual void Execute();
 
   static InputParameters GetInputParameters();
@@ -65,35 +63,27 @@ public:
 
 protected:
   /**
-   * Builds a cell-graph and executes the partitioner that assigns cell
-   * partition ids based on the supplied number of partitions.
+   * Builds a cell-graph and executes the partitioner that assigns cell partition ids based on the
+   * supplied number of partitions.
    */
   std::vector<int64_t> PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions);
 
-  /**
-   * Executes the partitioner and configures the mesh as a real mesh.
-   */
+  /// Executes the partitioner and configures the mesh as a real mesh.
   std::shared_ptr<MeshContinuum> SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
                                            const std::vector<int64_t>& cell_pids);
 
-  /**
-   * Broadcasts PIDs to other locations.
-   */
+  /// Broadcasts PIDs to other locations.
   static void
   BroadcastPIDs(std::vector<int64_t>& cell_pids, int root, const mpi::Communicator& communicator);
 
-  /**
-   * Determines if a cells needs to be included as a ghost or as a local cell.
-   */
+  /// Determines if a cells needs to be included as a ghost or as a local cell.
   bool CellHasLocalScope(int location_id,
                          const UnpartitionedMesh::LightWeightCell& lwcell,
                          uint64_t cell_global_id,
                          const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                          const std::vector<int64_t>& cell_partition_ids) const;
 
-  /**
-   * Converts a light-weight cell to a real cell.
-   */
+  /// Converts a light-weight cell to a real cell.
   static std::unique_ptr<Cell> SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
                                          uint64_t global_id,
                                          uint64_t partition_id,

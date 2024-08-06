@@ -8,9 +8,8 @@
 #include <memory>
 
 /**
- * Meshes in OpenSn follow the concept of Regions. In any given region the
- * boundaries are a collection of either line-meshes (2D) or
- * surface-meshes (3D).
+ * Meshes in OpenSn follow the concept of Regions. In any given region the boundaries are a
+ * collection of either line-meshes (2D) or surface-meshes (3D).
  */
 namespace opensn
 {
@@ -71,9 +70,7 @@ struct OrthoMeshAttributes
   size_t Nz = 0;
 };
 
-/**
- * Obtains the current mesh from the global stack.
- */
+/// Obtains the current mesh from the global stack.
 std::shared_ptr<MeshContinuum> GetCurrentMesh();
 
 } // namespace opensn

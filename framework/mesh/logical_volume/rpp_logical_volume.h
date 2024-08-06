@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Rectangular Parallel Piped (RPP) logical volume*/
+/// Rectangular Parallel Piped (RPP) logical volume
 class RPPLogicalVolume : public LogicalVolume
 {
   enum CornerName

@@ -19,11 +19,14 @@ struct TensorRank2Dim3;
  */
 struct Vector3
 {
-  double x; ///< Element-0
-  double y; ///< Element-1
-  double z; ///< Element-2
+  /// Element-0
+  double x;
+  /// Element-1
+  double y;
+  /// Element-2
+  double z;
 
-  /**Default constructor. Initialized as all zeros.*/
+  /// Default constructor. Initialized as all zeros.
   Vector3()
   {
     x = 0.0;
@@ -31,7 +34,7 @@ struct Vector3
     z = 0.0;
   }
 
-  /**Constructor where single element is initialized \f$ x[z]=a \f$.*/
+  /// Constructor where single element is initialized \f$ x[z]=a \f$.
   explicit Vector3(double a)
   {
     x = a;
@@ -39,7 +42,7 @@ struct Vector3
     z = 0.0;
   }
 
-  /**Constructor where \f$ x=a\f$ and \f$ y=b \f$. */
+  /// Constructor where \f$ x=a\f$ and \f$ y=b \f$.
   explicit Vector3(double a, double b)
   {
     x = a;
@@ -47,7 +50,7 @@ struct Vector3
     z = 0.0;
   }
 
-  /**Constructor where \f$ \vec{x}=[a,b,c] \f$.*/
+  /// Constructor where \f$ \vec{x}=[a,b,c] \f$.
   explicit Vector3(double a, double b, double c)
   {
     x = a;
@@ -55,7 +58,7 @@ struct Vector3
     z = c;
   }
 
-  /**Constructor where \f$ \vec{x}=\{a,b,c\} \f$.*/
+  /// Constructor where \f$ \vec{x}=\{a,b,c\} \f$.
   Vector3(std::initializer_list<double> list)
   {
     if (not empty(list))
@@ -73,7 +76,7 @@ struct Vector3
     }
   }
 
-  /**Constructor where \f$ \vec{x}=\{a,b,c\} \f$.*/
+  /// Constructor where \f$ \vec{x}=\{a,b,c\} \f$.
   explicit Vector3(const std::vector<double>& list)
   {
     if (not empty(list))
@@ -91,7 +94,7 @@ struct Vector3
     }
   }
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   Vector3(const Vector3& that)
   {
     this->x = that.x;
@@ -99,7 +102,7 @@ struct Vector3
     this->z = that.z;
   }
 
-  /**Assignment operator.*/
+  /// Assignment operator.
   Vector3& operator=(const Vector3& that)
   {
     this->x = that.x;
@@ -137,8 +140,7 @@ struct Vector3
     return *this;
   }
 
-  /**Component-wise addition of two vectors.
-   * \f$ \vec{w} = \vec{x} + \vec{y} \f$*/
+  /// Component-wise addition of two vectors. \f$ \vec{w} = \vec{x} + \vec{y} \f$
   Vector3 operator+(const Vector3& that) const
   {
     Vector3 newVector;
@@ -149,8 +151,7 @@ struct Vector3
     return newVector;
   }
 
-  /**In-place component-wise addition of two vectors.
-   * \f$ \vec{x} = \vec{x} + \vec{y} \f$*/
+  /// In-place component-wise addition of two vectors. \f$ \vec{x} = \vec{x} + \vec{y} \f$
   Vector3& operator+=(const Vector3& that)
   {
     this->x += that.x;
@@ -160,8 +161,7 @@ struct Vector3
     return *this;
   }
 
-  /**Component-wise shift by scalar-value.
-   * \f$ \vec{w} = \vec{x} + \alpha \f$*/
+  /// Component-wise shift by scalar-value. \f$ \vec{w} = \vec{x} + \alpha \f$
   Vector3 Shifted(const double value) const
   {
     Vector3 newVector;
@@ -172,8 +172,7 @@ struct Vector3
     return newVector;
   }
 
-  /**In-place component-wise shift by scalar value.
-   * \f$ \vec{x} = \vec{x} + \alpha \f$*/
+  /// In-place component-wise shift by scalar value. \f$ \vec{x} = \vec{x} + \alpha \f$
   Vector3& Shift(const double value)
   {
     this->x += value;
@@ -183,8 +182,7 @@ struct Vector3
     return *this;
   }
 
-  /**Component-wise subtraction.
-   * \f$ \vec{w} = \vec{x} - \vec{y} \f$*/
+  /// Component-wise subtraction. \f$ \vec{w} = \vec{x} - \vec{y} \f$
   Vector3 operator-(const Vector3& that) const
   {
     Vector3 newVector;
@@ -195,8 +193,7 @@ struct Vector3
     return newVector;
   }
 
-  /**In-place component-wise subtraction.
-   * \f$ \vec{x} = \vec{x} - \vec{y} \f$*/
+  /// In-place component-wise subtraction. \f$ \vec{x} = \vec{x} - \vec{y} \f$
   Vector3& operator-=(const Vector3& that)
   {
     this->x -= that.x;
@@ -206,8 +203,7 @@ struct Vector3
     return *this;
   }
 
-  /**Vector component-wise multiplication by scalar.
-   * \f$ \vec{w} = \vec{x} \alpha \f$*/
+  /// Vector component-wise multiplication by scalar. \f$ \vec{w} = \vec{x} \alpha \f$
   Vector3 operator*(const double value) const
   {
     Vector3 newVector;
@@ -218,8 +214,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Vector in-place component-wise multiplication by scalar.
-   * \f$ \vec{x} = \vec{x} \alpha \f$*/
+  /// Vector in-place component-wise multiplication by scalar. \f$ \vec{x} = \vec{x} \alpha \f$
   Vector3& operator*=(const double value)
   {
     this->x *= value;
@@ -229,8 +224,7 @@ struct Vector3
     return *this;
   }
 
-  /**Vector component-wise multiplication.
-   * \f$ w_i = x_i y_i \f$*/
+  /// Vector component-wise multiplication. \f$ w_i = x_i y_i \f$
   Vector3 operator*(const Vector3& that) const
   {
     Vector3 newVector;
@@ -241,8 +235,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Vector in-place component-wise multiplication.
-   * \f$ x_i = x_i y_i \f$*/
+  /// Vector in-place component-wise multiplication. \f$ x_i = x_i y_i \f$
   Vector3& operator*=(const Vector3& that)
   {
     this->x *= that.x;
@@ -252,8 +245,7 @@ struct Vector3
     return *this;
   }
 
-  /**Vector component-wise division by scalar.
-   * \f$ w_i = \frac{x_i}{\alpha} \f$*/
+  /// Vector component-wise division by scalar. \f$ w_i = \frac{x_i}{\alpha} \f$
   Vector3 operator/(const double value) const
   {
     Vector3 newVector;
@@ -264,8 +256,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Vector in-place component-wise division by scalar.
-   * \f$ x_i = \frac{x_i}{\alpha} \f$*/
+  /// Vector in-place component-wise division by scalar. \f$ x_i = \frac{x_i}{\alpha} \f$
   Vector3& operator/=(const double value)
   {
     this->x /= value;
@@ -275,8 +266,7 @@ struct Vector3
     return *this;
   }
 
-  /**Vector component-wise division.
-   * \f$ w_i = \frac{x_i}{y_i} \f$*/
+  /// Vector component-wise division. \f$ w_i = \frac{x_i}{y_i} \f$
   Vector3 operator/(const Vector3& that) const
   {
     Vector3 newVector;
@@ -287,8 +277,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Vector in-place component-wise division.
-   * \f$ x_i = \frac{x_i}{y_i} \f$*/
+  /// Vector in-place component-wise division. \f$ x_i = \frac{x_i}{y_i} \f$
   Vector3& operator/=(const Vector3& that)
   {
     this->x /= that.x;
@@ -298,7 +287,7 @@ struct Vector3
     return *this;
   }
 
-  /**Returns a copy of the value at the given index.*/
+  /// Returns a copy of the value at the given index.
   double operator[](const size_t i) const
   {
     if (i == 0)
@@ -311,7 +300,7 @@ struct Vector3
     return 0.0;
   }
 
-  /**Returns a reference of the value at the given index.*/
+  /// Returns a reference of the value at the given index.
   double& operator()(const size_t i)
   {
     if (i == 0)
@@ -350,8 +339,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Vector dot-product.
-   * \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$ */
+  /// Vector dot-product. \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$
   double Dot(const Vector3& that) const
   {
     double value = 0.0;
@@ -362,8 +350,7 @@ struct Vector3
     return value;
   }
 
-  /**Computes the L2-norm of the vector. Otherwise known as the length of
-   * a 3D vector.*/
+  /// Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector.
   double Norm() const
   {
     double value = 0.0;
@@ -376,9 +363,10 @@ struct Vector3
     return value;
   }
 
-  /**Computes the square of the L2-norm of the vector. This eliminates the
-   * usage of the square root and is therefore less expensive that a proper
-   * L2-norm. Useful if only comparing distances.*/
+  /**
+   * Computes the square of the L2-norm of the vector. This eliminates the usage of the square root
+   * and is therefore less expensive that a proper L2-norm. Useful if only comparing distances.
+   */
   double NormSquare() const
   {
     double value = 0.0;
@@ -389,8 +377,7 @@ struct Vector3
     return value;
   }
 
-  /**Normalizes the vector in-place.
-   * \f$ \vec{x} = \frac{\vec{x}}{||x||_2} \f$*/
+  /// Normalizes the vector in-place. \f$ \vec{x} = \frac{\vec{x}}{||x||_2} \f$
   void Normalize()
   {
     double norm = this->Norm();
@@ -400,8 +387,7 @@ struct Vector3
     z /= norm;
   }
 
-  /**Returns a normalized version of the vector.
-   * \f$ \vec{w} = \frac{\vec{x}}{||x||_2} \f$*/
+  /// Returns a normalized version of the vector. \f$ \vec{w} = \frac{\vec{x}}{||x||_2} \f$
   Vector3 Normalized() const
   {
     double norm = this->Norm();
@@ -414,10 +400,10 @@ struct Vector3
     return newVector;
   }
 
-  /**Returns a vector v^* where each element is inverted provided
-   * that it is greater than the given tolerance, otherwise the offending entry
-   * is set to 0.0.
-   * \f$ w_i = \frac{1.0}{x_i} \f$*/
+  /**
+   * Returns a vector v^* where each element is inverted provided that it is greater than the given
+   * tolerance, otherwise the offending entry is set to 0.0. \f$ w_i = \frac{1.0}{x_i} \f$
+   */
   Vector3 InverseZeroIfSmaller(const double tol) const
   {
     Vector3 newVector;
@@ -428,10 +414,10 @@ struct Vector3
     return newVector;
   }
 
-  /**Returns a vector v^* where each element is inverted provided
-   * that it is greater than the given tolerance, otherwise the offending entry
-   * is set to 1.0.
-   * \f$ w_i = \frac{1.0}{x_i} \f$*/
+  /**
+   * Returns a vector v^* where each element is inverted provided that it is greater than the given
+   * tolerance, otherwise the offending entry is set to 1.0. \f$ w_i = \frac{1.0}{x_i} \f$
+   */
   Vector3 InverseOneIfSmaller(const double tol) const
   {
     Vector3 newVector;
@@ -442,9 +428,10 @@ struct Vector3
     return newVector;
   }
 
-  /**Returns a vector v^* where each element is inverted without any
-   * check for division by zero.
-   * \f$ w_i = \frac{1.0}{x_i} \f$*/
+  /**
+   * Returns a vector v^* where each element is inverted without any check for division by zero.
+   * \f$ w_i = \frac{1.0}{x_i} \f$
+   */
   Vector3 Inverse() const
   {
     Vector3 newVector;
@@ -455,7 +442,7 @@ struct Vector3
     return newVector;
   }
 
-  /**Prints the vector to std::cout.*/
+  /// Prints the vector to std::cout.
   void Print() const
   {
     std::cout << this->x << " ";
@@ -470,7 +457,7 @@ struct Vector3
     return out;
   }
 
-  /**Deprecated. Prints the vector to a string and then returns the string.*/
+  /// Deprecated. Prints the vector to a string and then returns the string.
   std::string PrintS() const // TODO: Deprecated
   {
     std::stringstream out;
@@ -479,7 +466,7 @@ struct Vector3
     return out.str();
   }
 
-  /**Prints the vector to a string and then returns the string.*/
+  /// Prints the vector to a string and then returns the string.
   std::string PrintStr() const
   {
     std::stringstream out;

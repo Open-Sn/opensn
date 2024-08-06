@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-/**Manages a vertex map with custom calls.*/
+/// Manages a vertex map with custom calls.
 class VertexHandler
 {
   using GlobalIDMap = std::map<uint64_t, Vector3>;

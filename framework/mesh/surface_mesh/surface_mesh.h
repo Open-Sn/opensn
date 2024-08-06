@@ -13,8 +13,8 @@ namespace opensn
 
 /**
  * Generic surface mesh class.
- * This class facilitates many functions within the mesh environment including logically
- * determining volumes.
+ * This class facilitates many functions within the mesh environment including logically determining
+ * volumes.
  */
 class SurfaceMesh : public Object
 {
@@ -26,11 +26,13 @@ protected:
 
 protected:
   std::vector<Vector3> vertices_;
-  std::vector<Vector3> tex_vertices_; ///< Texture vertices
+  /// Texture vertices
+  std::vector<Vector3> tex_vertices_;
   std::vector<Vector3> normals_;
   std::vector<Face> faces_;
   std::vector<Edge> lines_;
-  std::vector<std::shared_ptr<PolyFace>> poly_faces_; ///< Polygonal faces
+  /// Polygonal faces
+  std::vector<std::shared_ptr<PolyFace>> poly_faces_;
 
   std::vector<int> physical_region_map_;
 
@@ -45,38 +47,27 @@ public:
   ~SurfaceMesh();
   friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& dt);
 
-  /**
-   * Loads a surface mesh from a wavefront .obj file.
-   */
+  /// Loads a surface mesh from a wavefront .obj file.
   int ImportFromOBJFile(const std::string& fileName,
                         bool as_poly = false,
                         const Vector3& transform = Vector3(0, 0, 0));
 
-  /**
-   * Loads a surface mesh from triangle's file format.
-   */
+  /// Loads a surface mesh from triangle's file format.
   int ImportFromTriangleFiles(const char* fileName, bool as_poly);
 
-  /**
-   * Loads a surface mesh from gmsh's file format.
-   */
+  /// Loads a surface mesh from gmsh's file format.
   int ImportFromMshFiles(const char* fileName, bool as_poly);
 
-  /**
-   * Exports the triangular faces of a surface mesh to
-   * wavefront .obj files.
-   */
+  /// Exports the triangular faces of a surface mesh to wavefront .obj files.
   void ExportToOBJFile(const char* fileName);
 
-  /**
-   * Exports a PSLG to triangle1.6's .poly format.
-   */
+  /// Exports a PSLG to triangle1.6's .poly format.
   void ExportToPolyFile(const char* fileName);
 
   /**
-   * Creates a 2D orthogonal mesh from a set of vertices in x and y.
-   * The vertices along a dimension merely represents the divisions. They
-   * are not the complete vertices defining a cell. For example:
+   * Creates a 2D orthogonal mesh from a set of vertices in x and y. The vertices along a dimension
+   * merely represents the divisions. They are not the complete vertices defining a cell.
+   * For example:
    * \code
    * std::vector<Vector3> vertices_x = {0.0,1.0,2.0};
    * std::vector<Vector3> vertices_y = {0.0,1.0,2.0};
@@ -89,24 +80,19 @@ public:
                                                           std::vector<double>& vertices_1d_y);
 
   /**
-   * Runs over the faces of the surfacemesh and determines
-   * neighbors. The algorithm first establishes which cells subscribe to each
-   * vertex and then loops over faces and edges. For each edge, only the
-   * subscribing faces are searched for neighbors. This routine has
-   * time complexity O(N).
+   * Runs over the faces of the surfacemesh and determines neighbors. The algorithm first
+   * establishes which cells subscribe to each vertex and then loops over faces and edges. For each
+   * edge, only the subscribing faces are searched for neighbors. This routine has time complexity
+   * O(N).
    */
   void UpdateInternalConnectivity();
 
   bool CheckNegativeSense(double x, double y, double z);
 
-  /**
-   * Splits the surface by patch.
-   */
+  /// Splits the surface by patch.
   void SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches);
 
-  /**
-   * Extract open edges to wavefront obj format.
-   */
+  /// Extract open edges to wavefront obj format.
   void ExtractOpenEdgesToObj(const char* fileName);
 
   /**
@@ -116,9 +102,7 @@ public:
    */
   void CheckCyclicDependencies(int num_angles);
 
-  /**
-   * Gets simple mesh statistics.
-   */
+  /// Gets simple mesh statistics.
   void GetMeshStats();
 
   /**

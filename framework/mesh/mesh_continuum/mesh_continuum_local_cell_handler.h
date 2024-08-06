@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Stores references to global cells to enable an iterator.*/
+/// Stores references to global cells to enable an iterator
 class LocalCellHandler
 {
   friend class MeshContinuum;
@@ -17,19 +17,20 @@ public:
   std::vector<std::unique_ptr<Cell>>& native_cells;
 
 private:
-  /**Constructor.*/
+  /// Constructor.
   explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& native_cells)
     : native_cells(native_cells)
   {
   }
 
 public:
-  /**Returns a reference to a local cell, given a local cell index.*/
+  /// Returns a reference to a local cell, given a local cell index.
   Cell& operator[](uint64_t cell_local_index);
-  /**Returns a const reference to a local cell, given a local cell index.*/
+
+  /// Returns a const reference to a local cell, given a local cell index.
   const Cell& operator[](uint64_t cell_local_index) const;
 
-  /**Internal iterator class.*/
+  /// Internal iterator class.
   class iterator
   {
   public:
@@ -55,7 +56,7 @@ public:
     bool operator!=(const iterator& rhs) const { return ref_element != rhs.ref_element; }
   };
 
-  /**Internal const iterator class.*/
+  /// Internal const iterator class.
   class const_iterator
   {
   public:

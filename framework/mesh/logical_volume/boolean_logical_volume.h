@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Boolean volume*/
+/// Boolean volume
 class BooleanLogicalVolume : public LogicalVolume
 {
 public:
