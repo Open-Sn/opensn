@@ -26,7 +26,6 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& q_moments_local = lbs_solver.QMomentsLocal();
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto phi_temp = phi_old_local;
-  const auto& densities_local = lbs_solver.DensitiesLocal();
 
   const auto& phi_l = nl_context_ptr->phi_l_;
   const auto& phi_lph_i = nl_context_ptr->phi_lph_i_;
@@ -35,26 +34,23 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& Sf = nl_context_ptr->Sf_;
 
   // Lambdas
-  auto SetLBSFissionSource = [&active_set_source_function, &front_gs, &densities_local](
+  auto SetLBSFissionSource = [&active_set_source_function, &front_gs](
                                const std::vector<double>& input, std::vector<double>& output)
   {
     Set(output, 0.0);
-    active_set_source_function(front_gs,
-                               output,
-                               input,
-                               densities_local,
-                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function(
+      front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
   auto SetLBSScatterSource =
-    [&active_set_source_function, &front_gs, &densities_local](
-      const std::vector<double>& input, std::vector<double>& output, bool suppress_wgs)
+    [&active_set_source_function,
+     &front_gs](const std::vector<double>& input, std::vector<double>& output, bool suppress_wgs)
   {
     Set(output, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (suppress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(front_gs, output, input, densities_local, source_flags);
+    active_set_source_function(front_gs, output, input, source_flags);
   };
 
   auto SetPhi0FissionSource =
