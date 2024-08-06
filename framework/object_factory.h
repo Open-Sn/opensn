@@ -8,7 +8,8 @@
 #include "framework/logging/log_exceptions.h"
 #include "framework/utils/utils.h"
 
-/**Macro for registering an object within the ObjectFactory singleton.
+/**
+ * Macro for registering an object within the ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
  * \param object_name Name of the object in the registry.
  * Example:
@@ -38,7 +39,8 @@
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
 
-/**Macro for registering an object (parameters only) within the
+/**
+ * Macro for registering an object (parameters only) within the
  * ObjectFactory singleton.
  * \param namespace_name Name of the namespace within which the object is.
  * \param object_name Name of the object in the registry.
@@ -57,7 +59,8 @@
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name)
 
-/**Macro for registering a pure input parameters block within the
+/**
+ * Macro for registering a pure input parameters block within the
  * ObjectFactory singleton AND giving it a custom name
  * \param namespace_name Name of the namespace within which the object is.
  * \param block_name Name of the object in the registry.
@@ -81,7 +84,7 @@ namespace opensn
 
 class Object;
 
-/**Singleton object for handling the registration and making of `Object`s.*/
+/// Singleton object for handling the registration and making of `Object`s.
 class ObjectFactory
 {
 public:
@@ -90,7 +93,7 @@ public:
   using ObjectGetInParamsFunc = InputParameters (*)();
   using ObjectConstructorFunc = ObjectPtr (*)(const InputParameters&);
 
-  // Structure storing the entities necessary for creating an object
+  /// Structure storing the entities necessary for creating an object
   struct ObjectRegistryEntry
   {
     ObjectGetInParamsFunc get_in_params_func = nullptr;
@@ -102,12 +105,13 @@ public:
   ObjectFactory(const ObjectFactory&&) = delete;
   ObjectFactory& operator=(const ObjectFactory&) = delete;
 
-  /**Access to the singleton*/
+  /// Access to the singleton
   static ObjectFactory& GetInstance() noexcept;
 
-  /**Returns a constant reference to the object registry.*/
+  /// Returns a constant reference to the object registry.
   const std::map<std::string, ObjectRegistryEntry>& Registry() const;
-  /**Checks if the object registry has a specific text key.*/
+
+  /// Checks if the object registry has a specific text key.
   bool RegistryHasKey(const std::string& key) const;
 
   template <typename T, typename base_T>
@@ -176,44 +180,45 @@ public:
     return 0;
   }
 
-  /**Makes an object with the given parameters and places on the global
-   * object stack. Returns a handle to the object. The object type is
-   * obtained from a string parameter name `obj_type`.*/
+  /**
+   * Makes an object with the given parameters and places on the global object stack. Returns a
+   * handle to the object. The object type is obtained from a string parameter name `obj_type`.
+   */
   size_t MakeRegisteredObject(const ParameterBlock& params) const;
-  /**Makes an object with the given parameters and places on the global
-   * object stack. Returns a handle to the object.*/
+
+  /**
+   * Makes an object with the given parameters and places on the global object stack. Returns a
+   * handle to the object.
+   */
   size_t MakeRegisteredObjectOfType(const std::string& type, const ParameterBlock& params) const;
 
-  /**Returns the input parameters of a registered object.*/
+  /// Returns the input parameters of a registered object.
   InputParameters GetRegisteredObjectParameters(const std::string& type) const;
 
-  /**\brief Dumps the object registry to stdout.*/
+  /// Dumps the object registry to stdout.
   void DumpRegister() const;
 
 private:
   std::map<std::string, ObjectRegistryEntry> object_registry_;
 
-  /**Private constructor because this is a singleton.*/
+  /// Private constructor because this is a singleton.
   ObjectFactory() = default;
 
-  /**Utility redirection to call an object's static `GetInputParameters`
-   * function.*/
+  /// Utility redirection to call an object's static `GetInputParameters` function.
   template <typename T>
   static InputParameters CallGetInputParamsFunction()
   {
     return T::GetInputParameters();
   }
 
-  /**Utility redirection to call an object's constructor with a specified list
-   * of input parameters.*/
+  /// Utility redirection to call an object's constructor with a specified list of input parameters.
   template <typename T, typename base_T>
   static std::shared_ptr<base_T> CallObjectConstructor(const InputParameters& params)
   {
     return std::make_shared<T>(params);
   }
 
-  /**Checks that the registry key is available and throws a
-   * `std::logical_error` if it is not.*/
+  /// Checks that the registry key is available and throws a `std::logical_error` if it is not.
   void AssertRegistryKeyAvailable(const std::string& key,
                                   const std::string& calling_function) const;
 };
