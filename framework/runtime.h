@@ -43,7 +43,7 @@ extern bool use_caliper;
 extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
 
-/** Global stack of handlers */
+/// Global stack of handlers
 extern std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;
 extern int current_mesh_handler;
 
@@ -67,7 +67,7 @@ const size_t SIZE_T_INVALID = ((size_t)-1);
 extern bool suppress_color;
 extern std::filesystem::path input_path;
 
-/**Customized exceptions.*/
+/// Customized exceptions.
 class RecoverableException : public std::runtime_error
 {
 public:
@@ -87,18 +87,16 @@ public:
   ~RecoverableException() noexcept override = default;
 };
 
-/**Attempts to retrieve an object of base-type `shared_ptr<T>` at the given
- * handle. It then attempts to cast it to type `shared_ptr<R>` and, if
- * successful, will return a reference of type R&.
- * \n
- * \n
+/**
+ * Attempts to retrieve an object of base-type `shared_ptr<T>` at the given handle. It then attempts
+ * to cast it to type `shared_ptr<R>` and, if  successful, will return a reference of type R&.
+ *
  * Example usage:
  *
  * \code
  * const auto& surf_mesh = GetStackItem<SurfaceMesh>(object_stack, surface_hndl);
-   // Returns SurfaceMesh&
  * \endcode
- * */
+ */
 template <class R, class T>
 static R&
 GetStackItem(std::vector<std::shared_ptr<T>>& stack,
@@ -121,18 +119,17 @@ GetStackItem(std::vector<std::shared_ptr<T>>& stack,
   }
 }
 
-/**Attempts to obtain object of type `shared_ptr<T>` at the given
+/**
+ * Attempts to obtain object of type `shared_ptr<T>` at the given
  * handle of a stack with parent type P.
- * \n
- * \n
+ *
  * Example usage:
  *
  * \code
  * auto surf_mesh_ptr =
  *   GetStackItemPtrAsType<SurfaceMesh>(object_stack, surf_mesh_hndle, fname);
-   // Returns std::shared_ptr<SurfaceMesh>
  * \endcode
- * */
+ */
 template <class T, class P>
 static std::shared_ptr<T>
 GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
@@ -157,17 +154,16 @@ GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
   return item_type_T;
 }
 
-/**Attempts to obtain object of type `shared_ptr<T>` at the given
+/**
+ * Attempts to obtain object of type `shared_ptr<T>` at the given
  * handle of a stack ALSO OF TYPE T.
- * \n
- * \n
+ *
  * Example usage:
  *
  * \code
  * auto surf_mesh_ptr = GetStackItemPtr(object_stack, surf_mesh_hndle, fname);
-   // Returns std::shared_ptr<Object>
  * \endcode
- * */
+ */
 template <class T>
 static std::shared_ptr<T>&
 GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
@@ -186,24 +182,16 @@ GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
   }
 }
 
-/**
- * Initializes all necessary items
- */
+/// Initializes all necessary items
 int Initialize();
 
-/**
- * Finalize the run
- */
+/// Finalize the run
 void Finalize();
 
-/**
- * Gets the version string.
- */
+/// Gets the version string.
 std::string GetVersionStr();
 
-/**
- * Exits the program appropriately.
- */
+/// Exits the program appropriately.
 void Exit(int error_code);
 
 } // namespace opensn
