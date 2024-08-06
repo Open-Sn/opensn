@@ -9,9 +9,10 @@ namespace opensn
 {
 class ByteArray;
 
-/**Generates the mesh only on location 0, thereafter partitions the mesh
- * but instead of broadcasting the mesh to other locations it creates binary
- * mesh files for each location.*/
+/**
+ * Generates the mesh only on location 0, thereafter partitions the mesh but instead of broadcasting
+ * the mesh to other locations it creates binary mesh files for each location.
+ */
 class SplitFileMeshGenerator : public MeshGenerator
 {
 public:

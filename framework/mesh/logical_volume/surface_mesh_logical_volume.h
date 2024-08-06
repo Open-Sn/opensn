@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**SurfaceMesh volume*/
+/// SurfaceMesh volume
 class SurfaceMeshLogicalVolume : public LogicalVolume
 {
 public:

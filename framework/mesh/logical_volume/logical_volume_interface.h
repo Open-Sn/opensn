@@ -10,10 +10,11 @@ namespace opensn
 
 class LogicalVolume;
 
-/**Interface class to add a dependency on a logical volume. Two things need to
- * be done to use this interface. 1) Derive from it. 2) Add its parameters to
- * the child class. Now it will require a handle to logical volume in the input
- * language.*/
+/**
+ * Interface class to add a dependency on a logical volume. Two things need to be done to use this
+ * interface. 1) Derive from it. 2) Add its parameters to the child class. Now it will require a
+ * handle to logical volume in the input language.
+ */
 class LogicalVolumeInterface
 {
 protected:

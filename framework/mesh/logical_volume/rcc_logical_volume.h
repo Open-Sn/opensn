@@ -8,10 +8,11 @@
 namespace opensn
 {
 
-/**Right Circular Cylinder (RCC) logical volume.
+/**
+ * Right Circular Cylinder (RCC) logical volume.
  *
  * Determining whether a point is within an RCC is tricky.
- * */
+ */
 class RCCLogicalVolume : public LogicalVolume
 {
 public:
