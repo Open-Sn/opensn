@@ -12,20 +12,26 @@ namespace mpi = mpicpp_lite;
 namespace opensn
 {
 
-/**Simple implementation a communicator set.
+/**
+ * Simple implementation a communicator set.
  * Definitions:
  * P = total amount of processors.
- * locI = process I in [0,P]*/
+ * locI = process I in [0,P]
+ */
 class MPICommunicatorSet
 {
 private:
-  /**A list of communicators, size P, contains a communicator for
-   * only communicating with the neighbors of locI.*/
+  /**
+   * A list of communicators, size P, contains a communicator for only communicating with the
+   * neighbors of locI.
+   */
   std::vector<mpi::Communicator> communicators_;
-  /**A list of groupings, size P, allows mapping of the rank of locJ
-   * relative to the local communicator.*/
+  /**
+   * A list of groupings, size P, allows mapping of the rank of locJ relative to the local
+   * communicator.
+   */
   std::vector<mpi::Group> location_groups_;
-  /**Used to translate ranks.*/
+  /// Used to translate ranks.
   mpi::Group world_group_;
 
 public:
