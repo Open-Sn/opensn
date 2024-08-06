@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Manages the workstages of a single angleset group.*/
+/// Manages the workstages of a single angleset group.
 class AngleSetGroup
 {
 private:

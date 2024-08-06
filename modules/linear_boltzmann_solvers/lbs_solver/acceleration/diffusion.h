@@ -16,9 +16,7 @@ class SpatialDiscretization;
 struct UnitCellMatrices;
 struct Multigroup_D_and_sigR;
 
-/**
- * Generic diffusion solver for acceleration.
- */
+/// Generic diffusion solver for acceleration.
 class DiffusionSolver
 {
 protected:
@@ -48,10 +46,14 @@ protected:
 public:
   struct Options
   {
-    double residual_tolerance = 1.0e-4;  ///< Residual tol. relative to rhs
-    int max_iters = 100;                 ///< Maximum iterations
-    bool verbose = false;                ///< Verbosity flag
-    bool perform_symmetry_check = false; ///< For debugging only (very expensive)
+    /// Residual tol. relative to rhs
+    double residual_tolerance = 1.0e-4;
+    /// Maximum iterations
+    int max_iters = 100;
+    /// Verbosity flag
+    bool verbose = false;
+    /// For debugging only (very expensive)
+    bool perform_symmetry_check = false;
     std::string additional_options_string;
     double penalty_factor = 4.0;
   } options;
@@ -67,26 +69,18 @@ public:
                   bool suppress_bcs,
                   bool verbose);
 
-  /**
-   * Returns the assigned text name.
-   */
+  /// Returns the assigned text name.
   std::string TextName() const;
 
-  /**
-   * Returns the right-hand side petsc vector.
-   */
+  /// Returns the right-hand side petsc vector.
   const Vec& RHS() const;
 
-  /**
-   * Returns the assigned unknown structure.
-   */
+  /// Returns the assigned unknown structure.
   const std::map<uint64_t, BoundaryCondition>& BCS() const { return bcs_; }
 
   const UnknownManager& UnknownStructure() const;
 
-  /**
-   * Returns the associated spatial discretization.
-   */
+  /// Returns the associated spatial discretization.
   const class SpatialDiscretization& SpatialDiscretization() const;
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
@@ -106,14 +100,10 @@ public:
   virtual void Assemble_b(const std::vector<double>& q_vector) = 0;
   virtual void Assemble_b(Vec petsc_q_vector) = 0;
 
-  /**
-   * Adds to the right-hand side without applying spatial discretization.
-   */
+  /// Adds to the right-hand side without applying spatial discretization.
   void AddToRHS(const std::vector<double>& values);
 
-  /**
-   * Adds to the entries into the matrix without applying spatial discretization.
-   */
+  /// Adds to the entries into the matrix without applying spatial discretization.
   void AddToMatrix(const std::vector<int64_t>& rows,
                    const std::vector<int64_t>& cols,
                    const std::vector<double>& vals);

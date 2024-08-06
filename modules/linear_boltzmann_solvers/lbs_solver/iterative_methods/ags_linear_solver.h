@@ -9,16 +9,18 @@
 namespace opensn
 {
 
-/**Linear Solver specialization for Within GroupSet (WGS) solves.*/
+/// Linear Solver specialization for Within GroupSet (WGS) solves.
 class AGSLinearSolver : public LinearSolver
 {
 public:
-  /**Constructor.
+  /**
+   * Constructor.
    * \param iterative_method string Across Groupset iterative method.
    * \param ags_context_ptr Pointer Pointer to the context to use.
    * \param groupspan_first_id int First group index.
    * \param groupspan_last_id int Last group index.
-   * \param verbose bool Flag to enable verbose output.*/
+   * \param verbose bool Flag to enable verbose output.
+   */
   AGSLinearSolver(std::string iterative_method,
                   std::shared_ptr<AGSContext> ags_context_ptr,
                   int groupspan_first_id,

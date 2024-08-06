@@ -42,21 +42,15 @@ public:
 
   void Execute() override;
 
-  /**
-   * Copies only the scalar moments from an lbs primary flux moments vector.
-   */
+  /// Copies only the scalar moments from an lbs primary flux moments vector.
   std::vector<double> CopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in);
 
-  /**
-   * Copies back only the scalar moments to a lbs primary flux vector.
-   */
+  /// Copies back only the scalar moments to a lbs primary flux vector.
   void ProjectBackPhi0(const LBSGroupset& groupset,
                        const std::vector<double>& input,
                        std::vector<double>& output);
 
-  /**
-   * Creates a ghost communicator and all associated information.
-   */
+  /// Creates a ghost communicator and all associated information.
   GhostInfo MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
                                      const UnknownManager& uk_man);
 

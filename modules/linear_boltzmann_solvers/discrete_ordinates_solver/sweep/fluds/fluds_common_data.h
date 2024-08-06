@@ -13,11 +13,11 @@ class SPDS;
 
 struct FaceNodalMapping
 {
-  /**Face index on the neighbor cell.*/
+  /// Face index on the neighbor cell.
   const int associated_face_;
-  /**Face-node index on the neighbor face.*/
+  /// Face-node index on the neighbor face.
   const std::vector<short> face_node_mapping_;
-  /**Cell-node index on the neighbor cell.*/
+  /// Cell-node index on the neighbor cell.
   const std::vector<short> cell_node_mapping_;
 
   FaceNodalMapping(int ass_face,
@@ -29,6 +29,7 @@ struct FaceNodalMapping
   {
   }
 };
+
 typedef std::vector<FaceNodalMapping> CellFaceNodalMapping;
 
 class FLUDSCommonData

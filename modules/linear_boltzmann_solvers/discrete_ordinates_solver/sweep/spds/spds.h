@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/**Contains multiple levels*/
+/// Contains multiple levels
 class SPDS
 {
 public:
@@ -36,9 +36,9 @@ public:
     return cell_face_orientations_;
   }
 
-  /** Given a location J index, maps to a predecessor location.*/
+  /// Given a location J index, maps to a predecessor location.
   int MapLocJToPrelocI(int locJ) const;
-  /** Given a location J index, maps to a dependent location.*/
+  /// Given a location J index, maps to a dependent location.
   int MapLocJToDeplocI(int locJ) const;
 
   virtual ~SPDS() = default;
@@ -61,7 +61,7 @@ protected:
 
   bool verbose_ = false;
 
-  /**Populates cell relationships and cell_face_orientations.*/
+  /// Populates cell relationships and cell_face_orientations.
   void PopulateCellRelationships(const Vector3& omega,
                                  std::set<int>& location_dependencies,
                                  std::set<int>& location_successors,

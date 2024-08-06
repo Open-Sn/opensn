@@ -37,23 +37,17 @@ public:
   void Initialize() override;
   void Execute() override;
 
-  /**
-   * Computes the inner product of the flux and the material source.
-   */
+  /// Computes the inner product of the flux and the material source.
   double ComputeInnerProduct();
 
-  /**
-   * Exports an importance map in binary format.
-   */
+  /// Exports an importance map in binary format.
   void ExportImportanceMap(const std::string& file_name);
 
 public:
   std::vector<std::vector<double>> flux_moment_buffers_;
 
 public:
-  /**
-   * Returns the input parameters.
-   */
+  /// Returns the input parameters.
   static InputParameters GetInputParameters();
 };
 

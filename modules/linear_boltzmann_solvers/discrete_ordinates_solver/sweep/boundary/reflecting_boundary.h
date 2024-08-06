@@ -10,9 +10,7 @@
 namespace opensn
 {
 
-/**
- * Reflective boundary condition.
- */
+/// Reflective boundary condition.
 class ReflectingBoundary : public SweepBoundary
 {
 protected:
@@ -75,9 +73,7 @@ public:
 
   bool CheckAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) override;
 
-  /**
-   * Resets angle ready flags to false.
-   */
+  /// Resets angle ready flags to false.
   void ResetAnglesReadyStatus();
 };
 

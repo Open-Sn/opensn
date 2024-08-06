@@ -73,9 +73,7 @@ public:
    */
   double HPerpendicular(const Cell& cell, unsigned int f);
 
-  /**
-   * Maps a face, in a discontinuous sense, using the spatial discretization.
-   */
+  /// Maps a face, in a discontinuous sense, using the spatial discretization.
   int MapFaceNodeDisc(const Cell& cur_cell,
                       const Cell& adj_cell,
                       const std::vector<Vector3>& cc_node_locs,

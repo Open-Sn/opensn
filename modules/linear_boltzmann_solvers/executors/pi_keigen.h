@@ -42,14 +42,10 @@ public:
   void Execute() override;
 
 protected:
-  /**
-   * Combines function calls to set fission source.
-   */
+  /// Combines function calls to set fission source.
   void SetLBSFissionSource(const std::vector<double>& input, bool additive);
 
-  /**
-   * Combines function calls to set scattering source source.
-   */
+  /// Combines function calls to set scattering source source.
   void SetLBSScatterSource(const std::vector<double>& input,
                            bool additive,
                            bool suppress_wg_scat = false);
