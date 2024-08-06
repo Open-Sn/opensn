@@ -38,7 +38,7 @@ class TestSlot:
         for arg in test.args:
             if arg.find("\"") >= 0:
                 qarg = arg.replace('"', '\\"')
-                cmd += "--lua " + "\\\"" + qarg + "\\\""
+                cmd += "--lua " + qarg
             else:
                 cmd += arg + " "
         self.command = cmd
