@@ -20,25 +20,25 @@ enum class BoundaryType : int
 
 } // namespace opensn
 
-// //###################################################################
-// /**Robin boundary condition is a natural (i.w., weak) boundary condition of
-// // the form
-//  *
-// \f[
-// a \phi + b D \hat{n}\cdot \nabla \phi = f
-// \f]
-// When \f$ a=0\f$ the boundary condition is equivalent to a <B>Neumann</B>
-// boundary condition.
-// \f[
-// b D\hat{n}\cdot \nabla \phi = f
-// \f]
-//  When \f$ a=\frac{1}{4} \f$, \f$ b=\frac{1}{2} \f$
-// and \f$ f=0 \f$ then the boundary condition is equivalent to a
-// <B>Vacuum</B> boundary condition.
-// \f[
-// \frac{1}{4}\phi + \frac{1}{2}D\hat{n}\cdot \nabla \phi = 0
-// \f]
-//  */
-// However, one should not set \f$b=0$\f in the hopes of obtaining a
-// <B>Dirichlet</B> boundary condition as this type of boundary condition is
-// strongly imposed in a different implementation.
+/**
+ * Robin boundary condition is a natural (i.w., weak) boundary condition of the form
+ *
+ * \f[
+ * a \phi + b D \hat{n}\cdot \nabla \phi = f
+ * \f]
+ * When \f$ a=0\f$ the boundary condition is equivalent to a <B>Neumann</B>
+ * boundary condition.
+ * \f[
+ * b D\hat{n}\cdot \nabla \phi = f
+ * \f]
+ *  When \f$ a=\frac{1}{4} \f$, \f$ b=\frac{1}{2} \f$
+ * and \f$ f=0 \f$ then the boundary condition is equivalent to a
+ * <B>Vacuum</B> boundary condition.
+ * \f[
+ * \frac{1}{4}\phi + \frac{1}{2}D\hat{n}\cdot \nabla \phi = 0
+ * \f]
+ *
+ * However, one should not set \f$b=0$\f in the hopes of obtaining a
+ * <B>Dirichlet</B> boundary condition as this type of boundary condition is
+ * strongly imposed in a different implementation.
+ */
