@@ -4,6 +4,7 @@ import os
 import subprocess
 import shutil
 import re
+import sys
 
 
 class TestSlot:
@@ -38,7 +39,10 @@ class TestSlot:
         for arg in test.args:
             if arg.find("\"") >= 0:
                 qarg = arg.replace('"', '\\"')
-                cmd += "--lua " + qarg
+                if sys.platform.startswith('darwin'):
+                    cmd += "--lua " + "\\\"" + qarg + "\\\""
+                else:
+                    cmd += "--lua " + qarg
             else:
                 cmd += arg + " "
         self.command = cmd
