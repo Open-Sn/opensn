@@ -25,7 +25,7 @@ enum class PPNumericFormat : int
   GENERAL = 3,
 };
 
-/**Base class for all post-processors.*/
+/// Base class for all post-processors/
 class PostProcessor : public Object, public EventSubscriber
 {
 public:
@@ -36,37 +36,47 @@ public:
     ParameterBlock value_;
   };
 
-  /**Returns the name of the post-processors.*/
+  /// Returns the name of the post-processors.
   const std::string& Name() const;
-  /**Returns the type of the post-processors. This is the generic type
-   * SCALAR, VECTOR, etc. not the c++ type.*/
+
+  /**
+   *Returns the type of the post-processors. This is the generic type SCALAR, VECTOR, etc. not the
+   * c++ type.
+   */
   PPType Type() const;
 
-  /**Returns the numeric format of the post-processor for printing.*/
+  /// Returns the numeric format of the post-processor for printing.
   PPNumericFormat NumericFormat() const;
-  /**Returns the numeric precision of the post-processor for printing.*/
+
+  /// Returns the numeric precision of the post-processor for printing.
   size_t NumericPrecision() const;
 
-  /**Calls the base Object's method and adds a subscription to
-   * `opensn::PhysicsEventPublisher` singleton.*/
+  /**
+   * Calls the base Object's method and adds a subscription to `opensn::PhysicsEventPublisher`
+   * singleton.
+   */
   void PushOntoStack(std::shared_ptr<Object>& new_object) override;
 
   void ReceiveEventUpdate(const Event& event) override;
 
   virtual void Execute(const Event& event_context) = 0;
 
-  /**Gets the scalar value currently stored for the post-processor.*/
+  /// Gets the scalar value currently stored for the post-processor.
   virtual const ParameterBlock& GetValue() const;
   virtual const std::vector<TimeHistoryEntry>& GetTimeHistory() const;
 
   const std::vector<std::string>& PrintScope() const;
 
-  /**Converts a scalar value into a string format based on this post-processor's
-   * numeric specifications.*/
+  /**
+   * Converts a scalar value into a string format based on this post-processor's numeric
+   * specifications.
+   */
   std::string ConvertScalarValueToString(const ParameterBlock& value) const;
 
-  /**Converts a scalar and vector values into a string format based on this
-   * post-processor's numeric specifications.*/
+  /**
+   * Converts a scalar and vector values into a string format based on this post-processor's numeric
+   * specifications.
+   */
   std::string ConvertValueToString(const ParameterBlock& value) const;
 
   virtual ~PostProcessor() = default;
@@ -78,7 +88,7 @@ protected:
 
   static PPType FigureTypeFromValue(const ParameterBlock& value);
 
-  /**Sets the post-processor's generic type.*/
+  /// Sets the post-processor's generic type.
   void SetType(PPType type);
 
   const std::string name_;
