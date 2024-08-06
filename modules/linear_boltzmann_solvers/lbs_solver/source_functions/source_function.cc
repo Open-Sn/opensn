@@ -19,7 +19,6 @@ void
 SourceFunction::operator()(const LBSGroupset& groupset,
                            std::vector<double>& q,
                            const std::vector<double>& phi,
-                           const std::vector<double>& densities,
                            const SourceFlags source_flags)
 {
   CALI_CXX_MARK_SCOPE("SourceFunction::operator");
@@ -33,6 +32,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   apply_wgs_fission_src_ = (source_flags & APPLY_WGS_FISSION_SOURCES);
   apply_ags_fission_src_ = (source_flags & APPLY_AGS_FISSION_SOURCES);
   suppress_wg_scatter_src_ = (source_flags & SUPPRESS_WG_SCATTER);
+
+  const auto& densities = lbs_solver_.DensitiesLocal();
 
   // Get group setup
   gs_i_ = static_cast<size_t>(groupset.groups_.front().id_);
