@@ -18,8 +18,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 namespace
 {
@@ -134,5 +132,4 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
             << "\n";
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
                                                const MeshContinuum& grid,
@@ -269,5 +267,4 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   }
 }
 
-} // namespace lbs
 } // namespace opensn

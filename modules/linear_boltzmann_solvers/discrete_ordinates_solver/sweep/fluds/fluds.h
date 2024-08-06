@@ -13,10 +13,6 @@ namespace opensn
 {
 
 class GridFaceHistogram;
-
-namespace lbs
-{
-
 class SPDS;
 
 class FLUDS
@@ -64,5 +60,4 @@ protected:
   const SPDS& spds_;
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**A transient source function needs to adjust the AddDelayedFission
  * routine to properly fit with the current timestepping method and timestep.*/
@@ -32,5 +30,4 @@ public:
                            const double* phi) const override;
 };
 
-} // namespace lbs
 } // namespace opensn

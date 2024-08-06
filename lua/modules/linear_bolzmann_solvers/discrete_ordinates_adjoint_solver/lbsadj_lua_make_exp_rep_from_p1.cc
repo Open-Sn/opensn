@@ -8,7 +8,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunction(AdjointSolverMakeExpRepFromP1Moments);
@@ -25,8 +25,8 @@ AdjointSolverMakeExpRepFromP1Moments(lua_State* L)
 
   auto verbose = LuaArgOptional<bool>(L, 2, false);
 
-  auto solution = opensn::lbs::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
+  auto solution = opensn::MakeExpRepFromP1({P1[0], P1[1], P1[2], P1[3]}, verbose);
 
   return LuaReturn(L, solution[0], solution[1]);
 }
-} // namespace opensnlua::lbs
+} // namespace opensnlua

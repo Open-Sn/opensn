@@ -12,8 +12,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class LBSGroupset;
 class LBSSolver;
 
@@ -52,5 +51,4 @@ struct WGSContext : public LinearSolverContext
   virtual void PostSolveCallback(){};
 };
 
-} // namespace lbs
 } // namespace opensn

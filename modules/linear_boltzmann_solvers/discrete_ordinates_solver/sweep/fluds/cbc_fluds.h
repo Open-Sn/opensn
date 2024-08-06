@@ -15,9 +15,6 @@ class UnknownManager;
 class SpatialDiscretization;
 class Cell;
 
-namespace lbs
-{
-
 class CBC_FLUDS : public FLUDS
 {
 public:
@@ -99,5 +96,4 @@ private:
   std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
 };
 
-} // namespace lbs
 } // namespace opensn

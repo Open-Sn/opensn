@@ -14,8 +14,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesCurvilinearSolver);
 
@@ -54,7 +52,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  perform all verifications of Cartesian LBS
   //  --------------------------------------------------------------------------
 
-  lbs::DiscreteOrdinatesSolver::PerformInputChecks();
+  DiscreteOrdinatesSolver::PerformInputChecks();
 
   //  --------------------------------------------------------------------------
   //  perform additional verifications for curvilinear LBS
@@ -73,7 +71,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  re-interpret geometry type to curvilinear
   switch (options_.geometry_type)
   {
-    case lbs::GeometryType::ONED_SLAB:
+    case GeometryType::ONED_SLAB:
     {
       switch (coord_system_type_)
       {
@@ -89,13 +87,13 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       }
       break;
     }
-    case lbs::GeometryType::TWOD_CARTESIAN:
+    case GeometryType::TWOD_CARTESIAN:
     {
       switch (coord_system_type_)
       {
         case CoordinateSystemType::CYLINDRICAL:
         {
-          options_.geometry_type = lbs::GeometryType::TWOD_CYLINDRICAL;
+          options_.geometry_type = GeometryType::TWOD_CYLINDRICAL;
           break;
         }
         default:
@@ -171,7 +169,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     {
       case CoordinateSystemType::CYLINDRICAL:
       {
-        if (angleagg_method != lbs::AngleAggregationType::AZIMUTHAL)
+        if (angleagg_method != AngleAggregationType::AZIMUTHAL)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
@@ -182,7 +180,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       }
       case CoordinateSystemType::SPHERICAL:
       {
-        if (angleagg_method != lbs::AngleAggregationType::POLAR)
+        if (angleagg_method != AngleAggregationType::POLAR)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
@@ -266,14 +264,14 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
   //  primary discretisation
   switch (options_.geometry_type)
   {
-    case lbs::GeometryType::ONED_SPHERICAL:
+    case GeometryType::ONED_SPHERICAL:
     {
       qorder = QuadratureOrder::FOURTH;
       system = CoordinateSystemType::SPHERICAL;
       break;
     }
-    case lbs::GeometryType::ONED_CYLINDRICAL:
-    case lbs::GeometryType::TWOD_CYLINDRICAL:
+    case GeometryType::ONED_CYLINDRICAL:
+    case GeometryType::TWOD_CYLINDRICAL:
     {
       qorder = QuadratureOrder::THIRD;
       system = CoordinateSystemType::CYLINDRICAL;
@@ -300,14 +298,14 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
   //  than the primary discretisation
   switch (options_.geometry_type)
   {
-    case lbs::GeometryType::ONED_SPHERICAL:
+    case GeometryType::ONED_SPHERICAL:
     {
       qorder = QuadratureOrder::THIRD;
       system = CoordinateSystemType::CYLINDRICAL;
       break;
     }
-    case lbs::GeometryType::ONED_CYLINDRICAL:
-    case lbs::GeometryType::TWOD_CYLINDRICAL:
+    case GeometryType::ONED_CYLINDRICAL:
+    case GeometryType::TWOD_CYLINDRICAL:
     {
       qorder = QuadratureOrder::SECOND;
       system = CoordinateSystemType::CARTESIAN;
@@ -362,14 +360,14 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
       }   // for j
     }     // for i
 
-    return lbs::UnitCellMatrices{{},
-                                 {},
-                                 IntV_shapeI_shapeJ,
-                                 {},
+    return UnitCellMatrices{{},
+                            {},
+                            IntV_shapeI_shapeJ,
+                            {},
 
-                                 {},
-                                 {},
-                                 {}};
+                            {},
+                            {},
+                            {}};
   };
 
   const size_t num_local_cells = grid_ptr_->local_cells.size();
@@ -383,7 +381,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 }
 
 std::shared_ptr<SweepChunk>
-DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
+DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(LBSGroupset& groupset)
 {
   auto sweep_chunk = std::make_shared<SweepChunkPwlrz>(*grid_ptr_,
                                                        *discretization_,
@@ -402,5 +400,4 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(lbs::LBSGroupset& groupset)
   return sweep_chunk;
 }
 
-} // namespace lbs
 } // namespace opensn

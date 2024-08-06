@@ -14,8 +14,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigen);
 
@@ -66,7 +64,7 @@ PowerIterationKEigen::Initialize()
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
 
     OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
 
@@ -77,7 +75,7 @@ PowerIterationKEigen::Initialize()
   primary_ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
-  front_wgs_context_ = std::dynamic_pointer_cast<lbs::WGSContext>(front_wgs_solver_->GetContext());
+  front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
@@ -152,7 +150,7 @@ PowerIterationKEigen::Execute()
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<lbs::WGSContext>(context);
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
     total_num_sweeps += wgs_context->counter_applications_of_inv_op_;
   }
 
@@ -267,5 +265,4 @@ PowerIterationKEigen::ReadRestartData()
     throw std::invalid_argument("Failed to read restart data from " + fbase + "X.restart.h5");
 }
 
-} // namespace lbs
 } // namespace opensn

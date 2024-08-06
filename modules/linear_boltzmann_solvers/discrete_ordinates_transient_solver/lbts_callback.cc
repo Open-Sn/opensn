@@ -10,9 +10,9 @@
  * can setup all sorts of controls like adaptive timestepping and
  * outputs.*/
 void
-lbs::DiscOrdTransientSolver::PostStepCallBackFunction() const
+DiscOrdTransientSolver::PostStepCallBackFunction() const
 {
-  const std::string fname = "lbs::TransientSolver::PostStepCallBackFunction";
+  const std::string fname = "TransientSolver::PostStepCallBackFunction";
 
   if (transient_options_.console_call_back_function.empty()) return;
 

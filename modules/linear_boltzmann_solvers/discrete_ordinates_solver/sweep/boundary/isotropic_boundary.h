@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * Specified isotropic incident fluxes on a boundary.
@@ -42,5 +40,4 @@ public:
   }
 };
 
-} // namespace lbs
 } // namespace opensn

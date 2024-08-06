@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**This function evaluates the flux moments based k-eigenvalue transport
  * residual of the form
@@ -16,5 +14,4 @@ namespace lbs
  */
 PetscErrorCode NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
 
-} // namespace lbs
 } // namespace opensn

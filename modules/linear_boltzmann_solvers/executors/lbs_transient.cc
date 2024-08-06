@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, TransientSolver);
 
@@ -63,5 +61,4 @@ TransientSolver::Advance()
 {
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -17,8 +17,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
 
@@ -119,5 +117,4 @@ MIPWGSContext2::PostSolveCallback()
     groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
 
-} // namespace lbs
 } // namespace opensn

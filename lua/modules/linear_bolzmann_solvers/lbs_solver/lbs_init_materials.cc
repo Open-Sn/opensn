@@ -9,7 +9,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(LBSInitializeMaterials, lbs, InitializeMaterials);
@@ -23,11 +23,11 @@ LBSInitializeMaterials(lua_State* L)
   // Get pointer to solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
   auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   lbs_solver.InitializeMaterials();
 
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

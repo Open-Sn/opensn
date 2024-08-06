@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 struct Task;
 class CBC_SPDS;
@@ -68,5 +66,4 @@ public:
                        size_t gs_ss_begin) override;
 };
 
-} // namespace lbs
 } // namespace opensn

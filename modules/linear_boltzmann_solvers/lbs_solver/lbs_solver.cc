@@ -31,8 +31,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
   {"xmin", XMIN}, {"xmax", XMAX}, {"ymin", YMIN}, {"ymax", YMAX}, {"zmin", ZMIN}, {"zmax", ZMAX}};
@@ -59,12 +57,12 @@ LBSSolver::GetInputParameters()
 
   params.AddRequiredParameterArray("groupsets",
                                    "An array of blocks each specifying the input parameters for a "
-                                   "<TT>lbs::LBSGroupset</TT>.");
-  params.LinkParameterToBlock("groupsets", "lbs::LBSGroupset");
+                                   "<TT>LBSGroupset</TT>.");
+  params.LinkParameterToBlock("groupsets", "LBSGroupset");
 
   params.AddOptionalParameterBlock(
-    "options", ParameterBlock(), "Block of options. See <TT>lbs::OptionsBlock</TT>.");
-  params.LinkParameterToBlock("options", "lbs::OptionsBlock");
+    "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
+  params.LinkParameterToBlock("options", "OptionsBlock");
 
   return params;
 }
@@ -101,13 +99,13 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   }
 }
 
-Options&
+LBSOptions&
 LBSSolver::Options()
 {
   return options_;
 }
 
-const Options&
+const LBSOptions&
 LBSSolver::Options() const
 {
   return options_;
@@ -495,7 +493,7 @@ LBSSolver::OptionsBlock()
                               "underscore after \"prefix\" is added automatically.");
   params.AddOptionalParameterArray(
     "boundary_conditions", {}, "An array containing tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions", "lbs::BoundaryOptionsBlock");
+  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
   params.AddOptionalParameter("clear_boundary_conditions",
                               false,
                               "Clears all boundary conditions. If no additional boundary "
@@ -722,11 +720,10 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
   const auto bndry_type = user_params.GetParamValue<std::string>("type");
 
   const auto bid = supported_boundary_names.at(boundary_name);
-  const std::map<std::string, lbs::BoundaryType> type_list = {
-    {"vacuum", BoundaryType::VACUUM},
-    {"isotropic", BoundaryType::ISOTROPIC},
-    {"reflecting", BoundaryType::REFLECTING},
-    {"arbitrary", BoundaryType::ARBITRARY}};
+  const std::map<std::string, BoundaryType> type_list = {{"vacuum", BoundaryType::VACUUM},
+                                                         {"isotropic", BoundaryType::ISOTROPIC},
+                                                         {"reflecting", BoundaryType::REFLECTING},
+                                                         {"arbitrary", BoundaryType::ARBITRARY}};
 
   const auto type = type_list.at(bndry_type);
   switch (type)
@@ -1059,9 +1056,9 @@ LBSSolver::ComputeUnitIntegrals()
   };
 
   auto swf_ptr = std::make_shared<SpatialWeightFunction>();
-  if (options_.geometry_type == lbs::GeometryType::ONED_SPHERICAL)
+  if (options_.geometry_type == GeometryType::ONED_SPHERICAL)
     swf_ptr = std::make_shared<SphericalSWF>();
-  if (options_.geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
+  if (options_.geometry_type == GeometryType::TWOD_CYLINDRICAL)
     swf_ptr = std::make_shared<CylindricalSWF>();
 
   auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf)
@@ -1480,7 +1477,7 @@ LBSSolver::InitializeBoundaries()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitializeBoundaries");
 
-  const std::string fname = "lbs::LBSSolver::InitializeBoundaries";
+  const std::string fname = "LBSSolver::InitializeBoundaries";
   // Determine boundary-ids involved in the problem
   std::set<uint64_t> globl_unique_bids_set;
   {
@@ -1518,9 +1515,9 @@ LBSSolver::InitializeBoundaries()
       const auto& bndry_pref = boundary_preferences_.at(bid);
       const auto& mg_q = bndry_pref.isotropic_mg_source;
 
-      if (bndry_pref.type == lbs::BoundaryType::VACUUM)
+      if (bndry_pref.type == BoundaryType::VACUUM)
         sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
-      else if (bndry_pref.type == lbs::BoundaryType::ISOTROPIC)
+      else if (bndry_pref.type == BoundaryType::ISOTROPIC)
         sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
       else if (bndry_pref.type == BoundaryType::ARBITRARY)
       {
@@ -1530,7 +1527,7 @@ LBSSolver::InitializeBoundaries()
           G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
 #endif
       }
-      else if (bndry_pref.type == lbs::BoundaryType::REFLECTING)
+      else if (bndry_pref.type == BoundaryType::REFLECTING)
       {
         // Locally check all faces, that subscribe to this boundary,
         // have the same normal
@@ -1614,7 +1611,7 @@ LBSSolver::InitializeSolverSchemes()
 }
 
 void
-lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
+LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitWGDSA");
 
@@ -1661,7 +1658,7 @@ lbs::LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 }
 
 void
-lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
+LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpWGDSA");
 
@@ -1670,7 +1667,7 @@ lbs::LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 }
 
 std::vector<double>
-lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in)
+LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
@@ -1707,9 +1704,9 @@ lbs::LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<d
 }
 
 void
-lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
-                                  const std::vector<double>& input,
-                                  std::vector<double>& output)
+LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
+                             const std::vector<double>& input,
+                             std::vector<double>& output)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
@@ -1740,9 +1737,9 @@ lbs::LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
 }
 
 void
-lbs::LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                            const std::vector<double>& phi_in,
-                                            std::vector<double>& delta_phi_local)
+LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
+                                       const std::vector<double>& phi_in,
+                                       std::vector<double>& delta_phi_local)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
@@ -1812,7 +1809,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
 }
 
 void
-lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
+LBSSolver::InitTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitTGDSA");
 
@@ -1837,7 +1834,7 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
     }
 
     // Make xs map
-    typedef lbs::Multigroup_D_and_sigR MultiGroupXS;
+    typedef Multigroup_D_and_sigR MultiGroupXS;
     typedef std::map<int, MultiGroupXS> MatID2MGDXSMap;
     MatID2MGDXSMap matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
@@ -1878,7 +1875,7 @@ lbs::LBSSolver::InitTGDSA(LBSGroupset& groupset)
 }
 
 void
-lbs::LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
+LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpTGDSA");
 
@@ -3306,5 +3303,4 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
   VecRestoreArrayRead(x, &x_ref);
 }
 
-} // namespace lbs
 } // namespace opensn

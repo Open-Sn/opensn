@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Manages the workstages of a single angle set.*/
 class AAH_AngleSet : public AngleSet
@@ -59,5 +57,4 @@ public:
                        size_t gs_ss_begin) override;
 };
 
-} // namespace lbs
 } // namespace opensn

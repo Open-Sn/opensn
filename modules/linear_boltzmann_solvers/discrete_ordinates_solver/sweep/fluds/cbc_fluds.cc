@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 CBC_FLUDS::CBC_FLUDS(size_t num_groups,
                      size_t num_angles,
@@ -59,5 +57,4 @@ CBC_FLUDS::GetNonLocalUpwindPsi(const std::vector<double>& psi_data,
   return &psi_data[dof_map];
 }
 
-} // namespace lbs
 } // namespace opensn

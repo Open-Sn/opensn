@@ -10,8 +10,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 OpenSnRegisterObjectParametersOnlyInNamespace(lbs, LBSGroupset);
 
 InputParameters
@@ -212,40 +211,38 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
 }
 
 void
-LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, lbs::GeometryType geometry_type)
+LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type)
 {
-  if (geometry_type == lbs::GeometryType::ONED_SLAB or
-      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
-      geometry_type == lbs::GeometryType::ONED_SPHERICAL)
+  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
+      geometry_type == GeometryType::ONED_SPHERICAL)
   {
     quadrature_->BuildDiscreteToMomentOperator(scattering_order, 1);
   }
-  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN or
-           geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
+  else if (geometry_type == GeometryType::TWOD_CARTESIAN or
+           geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
     quadrature_->BuildDiscreteToMomentOperator(scattering_order, 2);
   }
-  else if (geometry_type == lbs::GeometryType::THREED_CARTESIAN)
+  else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
     quadrature_->BuildDiscreteToMomentOperator(scattering_order, 3);
   }
 }
 
 void
-LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, lbs::GeometryType geometry_type)
+LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type)
 {
-  if (geometry_type == lbs::GeometryType::ONED_SLAB or
-      geometry_type == lbs::GeometryType::ONED_CYLINDRICAL or
-      geometry_type == lbs::GeometryType::ONED_SPHERICAL)
+  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
+      geometry_type == GeometryType::ONED_SPHERICAL)
   {
     quadrature_->BuildMomentToDiscreteOperator(scattering_order, 1);
   }
-  else if (geometry_type == lbs::GeometryType::TWOD_CARTESIAN or
-           geometry_type == lbs::GeometryType::TWOD_CYLINDRICAL)
+  else if (geometry_type == GeometryType::TWOD_CARTESIAN or
+           geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
     quadrature_->BuildMomentToDiscreteOperator(scattering_order, 2);
   }
-  else if (geometry_type == lbs::GeometryType::THREED_CARTESIAN)
+  else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
     quadrature_->BuildMomentToDiscreteOperator(scattering_order, 3);
   }
@@ -266,5 +263,4 @@ LBSGroupset::BuildSubsets()
   }
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -8,7 +8,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunction(AdjointSolverExportImportanceMapBinary);
@@ -22,7 +22,7 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
   const auto solver_handle = LuaArg<int>(L, 1);
   const auto file_name = LuaArg<std::string>(L, 2);
 
-  auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesAdjointSolver>(
+  auto& solver = opensn::GetStackItem<opensn::DiscreteOrdinatesAdjointSolver>(
     opensn::object_stack, solver_handle, fname);
 
   solver.ExportImportanceMap(file_name);
@@ -30,4 +30,4 @@ AdjointSolverExportImportanceMapBinary(lua_State* L)
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

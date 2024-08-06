@@ -7,10 +7,11 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
-RegisterWrapperFunctionInNamespace(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
+namespace
+{
 
 opensn::InputParameters
 GetSyntax_SetOptions()
@@ -20,9 +21,9 @@ GetSyntax_SetOptions()
   params.SetGeneralDescription("Set options from a large list of parameters");
   params.SetDocGroup("LBSLuaFunctions");
 
-  params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>lbs::LBSSolver</TT> object.");
-  params.AddRequiredParameterBlock("arg1", "Block of parameters for <TT>lbs::OptionsBlock</TT>");
-  params.LinkParameterToBlock("arg1", "lbs::OptionsBlock");
+  params.AddRequiredParameter<size_t>("arg0", "Handle to a <TT>LBSSolver</TT> object.");
+  params.AddRequiredParameterBlock("arg1", "Block of parameters for <TT>OptionsBlock</TT>");
+  params.LinkParameterToBlock("arg1", "OptionsBlock");
 
   return params;
 }
@@ -36,10 +37,9 @@ SetOptions(const opensn::InputParameters& params)
   params.RequireParameter("arg1");
 
   const size_t handle = params.GetParamValue<size_t>("arg0");
-  auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, handle, fname);
+  auto& lbs_solver = opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, handle, fname);
 
-  auto options_params = opensn::lbs::LBSSolver::OptionsBlock();
+  auto options_params = opensn::LBSSolver::OptionsBlock();
   options_params.AssignParameters(params.GetParam("arg1"));
 
   lbs_solver.SetOptions(options_params);
@@ -47,4 +47,8 @@ SetOptions(const opensn::InputParameters& params)
   return opensn::ParameterBlock();
 }
 
-} // namespace opensnlua::lbs
+} // namespace
+
+RegisterWrapperFunctionInNamespace(lbs, SetOptions, GetSyntax_SetOptions, SetOptions);
+
+} // namespace opensnlua

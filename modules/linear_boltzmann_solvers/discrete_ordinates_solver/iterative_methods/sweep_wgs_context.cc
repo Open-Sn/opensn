@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 typedef PetscErrorCode (*PCShellPtr)(PC, Vec, Vec);
 
@@ -186,5 +184,4 @@ SweepWGSContext::PostSolveCallback()
   }
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * Specified incident fluxes on a boundary.
@@ -50,5 +48,4 @@ public:
   void Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature) override;
 };
 
-} // namespace lbs
 } // namespace opensn

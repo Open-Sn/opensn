@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**
  * Reflective boundary condition.
@@ -83,5 +81,4 @@ public:
   void ResetAnglesReadyStatus();
 };
 
-} // namespace lbs
 } // namespace opensn

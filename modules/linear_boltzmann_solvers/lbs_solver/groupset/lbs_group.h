@@ -5,8 +5,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 /**Object holding a grouping.*/
 class LBSGroup
 {
@@ -18,5 +17,4 @@ public:
   explicit LBSGroup(int id) : id_(id) {}
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -7,7 +7,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(ComputeLeakage, lbs, ComputeLeakage);
@@ -20,13 +20,12 @@ ComputeLeakage(lua_State* L)
 
   // Get the solver
   const auto solver_handle = LuaArg<size_t>(L, 1);
-  const auto& solver = opensn::GetStackItem<opensn::lbs::DiscreteOrdinatesSolver>(
+  const auto& solver = opensn::GetStackItem<opensn::DiscreteOrdinatesSolver>(
     opensn::object_stack, solver_handle, fname);
 
   // Get the supported boundaries
-  const auto supported_boundary_names =
-    opensn::lbs::DiscreteOrdinatesSolver::supported_boundary_names;
-  const auto supported_boundary_ids = opensn::lbs::DiscreteOrdinatesSolver::supported_boundary_ids;
+  const auto supported_boundary_names = opensn::DiscreteOrdinatesSolver::supported_boundary_names;
+  const auto supported_boundary_ids = opensn::DiscreteOrdinatesSolver::supported_boundary_ids;
 
   // Get the boundaries to parse
   std::vector<uint64_t> bndry_ids;
@@ -51,4 +50,4 @@ ComputeLeakage(lua_State* L)
   return LuaReturn(L, ret_val);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

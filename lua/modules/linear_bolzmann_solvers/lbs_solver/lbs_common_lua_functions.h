@@ -5,7 +5,7 @@
 
 #include "lua/framework/lua.h"
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 /**Obtains a list of field functions, related only to scalar flux,
@@ -145,4 +145,4 @@ int LBSComputeFissionRate(lua_State* L);
  */
 int LBSInitializeMaterials(lua_State* L);
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

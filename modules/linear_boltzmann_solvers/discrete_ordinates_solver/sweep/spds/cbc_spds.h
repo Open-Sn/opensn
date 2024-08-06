@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Cell-by-Cell (CBC) Sweep Plane Data Structure*/
 class CBC_SPDS : public SPDS
@@ -26,5 +24,4 @@ protected:
   std::vector<Task> task_list_;
 };
 
-} // namespace lbs
 } // namespace opensn

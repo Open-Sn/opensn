@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
@@ -68,5 +66,4 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
   return matid_2_mgxs_map;
 }
 
-} // namespace lbs
 } // namespace opensn

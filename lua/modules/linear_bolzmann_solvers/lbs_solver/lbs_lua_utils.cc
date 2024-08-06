@@ -5,10 +5,11 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
+
 void
-RegisterLuaEntities(lua_State* L)
+RegisterLuaEntitiesLBS(lua_State* L)
 {
   LuaSetGlobal(L, "DISCRETIZATION_METHOD", 1);
   LuaSetGlobal(L, "PWLD", 3);
@@ -53,4 +54,4 @@ RegisterLuaEntities(lua_State* L)
   LuaSetGlobal(L, "KRYLOV_BICGSTAB_CYCLES", 10);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

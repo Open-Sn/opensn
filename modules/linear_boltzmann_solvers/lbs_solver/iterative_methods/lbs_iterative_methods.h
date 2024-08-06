@@ -7,8 +7,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 enum class IterativeMethod : int
 {
   NONE = 0,
@@ -46,5 +45,4 @@ IterativeMethodPETScName(IterativeMethod it_method)
   return "";
 }
 
-} // namespace lbs
 } // namespace opensn

@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
                                                            size_t num_groups,
@@ -311,5 +309,4 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
   }
 }
 
-} // namespace lbs
 } // namespace opensn

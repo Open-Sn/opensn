@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class CBC_FLUDSCommonData : public FLUDSCommonData
 {
@@ -18,5 +16,4 @@ public:
                       const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
 };
 
-} // namespace lbs
 } // namespace opensn

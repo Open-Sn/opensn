@@ -5,8 +5,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 TransientSourceFunction::TransientSourceFunction(const LBSSolver& lbs_solver,
                                                  double& ref_dt,
@@ -61,5 +59,4 @@ TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
   return value;
 }
 
-} // namespace lbs
 } // namespace opensn

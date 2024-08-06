@@ -13,10 +13,6 @@ namespace opensn
 {
 
 class MPICommunicatorSet;
-
-namespace lbs
-{
-
 class FLUDS;
 
 class AsynchronousCommunicator
@@ -43,5 +39,4 @@ protected:
   const MPICommunicatorSet& comm_set_;
 };
 
-} // namespace lbs
 } // namespace opensn

@@ -11,15 +11,13 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                              std::vector<double>& destination_psi,
                              const MeshContinuum& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                             std::vector<lbs::CellLBSView>& cell_transport_views,
+                             std::vector<CellLBSView>& cell_transport_views,
                              const std::vector<double>& densities,
                              const std::vector<double>& source_moments,
                              const LBSGroupset& groupset,
@@ -329,5 +327,4 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   }     // for angleset/subset
 }
 
-} // namespace lbs
 } // namespace opensn

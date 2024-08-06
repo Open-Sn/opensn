@@ -11,8 +11,6 @@ using namespace opensn;
 
 namespace opensnlua
 {
-namespace lbs
-{
 
 std::vector<double>
 BoundaryFunctionToLua::Evaluate(
@@ -58,5 +56,4 @@ BoundaryFunctionToLua::Evaluate(
   return psi;
 }
 
-} // namespace lbs
 } // namespace opensnlua

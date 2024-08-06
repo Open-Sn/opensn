@@ -10,7 +10,7 @@
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 
-namespace opensn::lbs
+namespace opensn
 {
 
 OpenSnRegisterObjectInNamespace(lbs, VolumetricSource);
@@ -70,7 +70,7 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
 }
 
 void
-lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
+VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 {
   // Set the source strength vector
   if (not function_ and not strength_.empty())
@@ -114,7 +114,7 @@ lbs::VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 }
 
 std::vector<double>
-lbs::VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
+VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
 {
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id_) == 0)
     return std::vector<double>(num_groups, 0.0);
@@ -124,4 +124,4 @@ lbs::VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const in
     return function_->Evaluate(xyz, num_groups);
 }
 
-} // namespace opensn::lbs
+} // namespace opensn

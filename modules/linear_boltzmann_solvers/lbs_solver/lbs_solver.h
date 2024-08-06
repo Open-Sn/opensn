@@ -21,9 +21,6 @@ namespace opensn
 class MPICommunicatorSet;
 class GridFaceHistogram;
 class TimeIntegration;
-
-namespace lbs
-{
 class AGSLinearSolver;
 class WGSLinearSolver;
 struct WGSContext;
@@ -48,12 +45,12 @@ public:
   /**
    * Returns a reference to the solver options.
    */
-  lbs::Options& Options();
+  LBSOptions& Options();
 
   /**
    * Returns a constant reference to the solver options.
    */
-  const lbs::Options& Options() const;
+  const LBSOptions& Options() const;
 
   static InputParameters OptionsBlock();
 
@@ -168,7 +165,7 @@ public:
   /**
    * Returns a reference to the list of local cell transport views.
    */
-  const std::vector<lbs::CellLBSView>& GetCellTransportViews() const;
+  const std::vector<CellLBSView>& GetCellTransportViews() const;
 
   /**
    * Read/Write access to the boundary preferences.
@@ -537,7 +534,7 @@ protected:
   /**Initializes the Within-Group DSA solver. */
   void InitTGDSA(LBSGroupset& groupset);
 
-  lbs::Options options_;
+  LBSOptions options_;
   size_t last_restart_write_time_ = 0;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
@@ -562,7 +559,7 @@ protected:
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
-  std::vector<lbs::CellLBSView> cell_transport_views_;
+  std::vector<CellLBSView> cell_transport_views_;
 
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
@@ -610,5 +607,4 @@ public:
   static InputParameters GetInputParameters();
 };
 
-} // namespace lbs
 } // namespace opensn

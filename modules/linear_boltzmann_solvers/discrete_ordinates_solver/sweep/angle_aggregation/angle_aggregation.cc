@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 AngleAggregation::AngleAggregation(
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
@@ -712,5 +710,4 @@ AngleAggregation::SetDelayedPsiNew2Old()
         angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi();
 }
 
-} // namespace lbs
 } // namespace opensn

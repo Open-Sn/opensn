@@ -10,7 +10,7 @@
 
 using namespace opensn;
 
-namespace opensnlua::lbs
+namespace opensnlua
 {
 
 RegisterLuaFunctionInNamespace(LBSSetPhiFromFieldFunction, lbs, SetPhiFromFieldFunction);
@@ -22,12 +22,11 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   LuaCheckArgs<size_t, ParameterBlock>(L, fname);
 
   const auto handle = LuaArg<size_t>(L, 1);
-  auto& lbs_solver =
-    opensn::GetStackItem<opensn::lbs::LBSSolver>(opensn::object_stack, handle, fname);
+  auto& lbs_solver = opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, handle, fname);
 
   auto specs = LuaArg<ParameterBlock>(L, 2);
 
-  opensn::lbs::PhiSTLOption phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
+  opensn::PhiSTLOption phi_option = opensn::PhiSTLOption::PHI_OLD;
   std::vector<size_t> moment_indices;
   std::vector<size_t> group_indices;
 
@@ -38,9 +37,9 @@ LBSSetPhiFromFieldFunction(lua_State* L)
     {
       const auto phi_str = spec.GetValue<std::string>();
       if (phi_str == "old")
-        phi_option = opensn::lbs::PhiSTLOption::PHI_OLD;
+        phi_option = opensn::PhiSTLOption::PHI_OLD;
       else if (phi_str == "new")
-        phi_option = opensn::lbs::PhiSTLOption::PHI_NEW;
+        phi_option = opensn::PhiSTLOption::PHI_NEW;
       else
         OpenSnInvalidArgument(std::string("Parameter \"which_phi\" can only be"
                                           " \"old\" or \"new\". ") +
@@ -65,4 +64,4 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   return LuaReturn(L);
 }
 
-} // namespace opensnlua::lbs
+} // namespace opensnlua

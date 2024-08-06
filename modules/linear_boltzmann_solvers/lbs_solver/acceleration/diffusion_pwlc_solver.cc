@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 DiffusionPWLCSolver::DiffusionPWLCSolver(std::string text_name,
                                          const opensn::SpatialDiscretization& sdm,
@@ -34,7 +32,7 @@ DiffusionPWLCSolver::DiffusionPWLCSolver(std::string text_name,
                     verbose)
 {
   if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
-    throw std::logic_error("lbs::acceleration::DiffusionPWLCSolver can only be used with PWLC.");
+    throw std::logic_error("acceleration::DiffusionPWLCSolver can only be used with PWLC.");
 }
 
 void
@@ -46,7 +44,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
                             std::to_string(q_vector.size()) + " vs " +
                             std::to_string(num_local_dofs));
 
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "AssembleAand_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -244,7 +242,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
                           std::string("q_vector size mismatch. ") +
                             std::to_string(q_vector.size()) + " vs " +
                             std::to_string(num_local_dofs));
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "Assemble_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -389,7 +387,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 void
 DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 {
-  const std::string fname = "lbs::acceleration::DiffusionMIPSolver::"
+  const std::string fname = "acceleration::DiffusionMIPSolver::"
                             "Assemble_b";
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
@@ -517,5 +515,4 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 }
 
-} // namespace lbs
 } // namespace opensn

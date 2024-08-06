@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 enum class FaceOrientation : short
 {
@@ -65,5 +63,4 @@ void CommunicateLocationDependencies(const std::vector<int>& location_dependenci
 /**Print a sweep ordering to file.*/
 void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
 
-} // namespace lbs
 } // namespace opensn

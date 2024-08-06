@@ -3,7 +3,7 @@
 -- handle and name
 
 -- Example Point-Reactor Kinetics solver
-phys0 = prk.TransientSolver.Create({ initial_source = 0.0 })
+phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
 for k = 1, 20 do
   post.SolverInfoPostProcessor.Create({

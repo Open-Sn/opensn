@@ -10,7 +10,7 @@
   throw std::logic_error(fname + ": Insufficient amount of arguments, " +                          \
                          std::to_string(num_args) + ", for property " + prop_name)
 
-namespace lbs::lbts_lua_utils
+namespace lbts_lua_utils
 {
 
 //###################################################################
@@ -73,7 +73,7 @@ LBTSSetProperty(lua_State* L)
   const int solver_handle = lua_tointeger(L, 1);
 
   auto& solver =
-    opensn::GetStackItem<lbs::DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
+    opensn::GetStackItem<DiscOrdTransientSolver>(opensn::object_stack, solver_handle, fname);
 
   // Get the property
   LuaCheckStringValue(fname, L, 2);
@@ -204,13 +204,13 @@ LBTSSetProperty(lua_State* L)
 
     if (option == "TOTAL_POWER")
       solver.transient_options_.normalization_method =
-        lbs::DiscOrdTransientSolver::NormalizationMethod::TOTAL_POWER;
+        DiscOrdTransientSolver::NormalizationMethod::TOTAL_POWER;
     else if (option == "POWER_DENSITY")
       solver.transient_options_.normalization_method =
-        lbs::DiscOrdTransientSolver::NormalizationMethod::POWER_DENSITY;
+        DiscOrdTransientSolver::NormalizationMethod::POWER_DENSITY;
     else if (option == "NONE")
       solver.transient_options_.normalization_method =
-        lbs::DiscOrdTransientSolver::NormalizationMethod::NONE;
+        DiscOrdTransientSolver::NormalizationMethod::NONE;
     else
       throw std::invalid_argument(fname + ": Only the following normalization methods are " +
                                   "supported: \"TOTAL_POWER\", \"POWER_DENSITY\", \"NONE\"");
@@ -223,5 +223,5 @@ LBTSSetProperty(lua_State* L)
   return 0;
 }
 
-} // namespace lbs::lbts_lua_utils
+} // namespace lbts_lua_utils
 #endif

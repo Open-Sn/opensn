@@ -70,8 +70,8 @@ diff_options = {
 }
 
 -- DFEM solver
-phys1 = diffusion.DFEMSolver.Create({
-  name = "DFEMSolver",
+phys1 = diffusion.DFEMDiffusionSolver.Create({
+  name = "DFEMDiffusionSolver",
   residual_tolerance = 1e-8,
 })
 diffusion.SetOptions(phys1, diff_options)

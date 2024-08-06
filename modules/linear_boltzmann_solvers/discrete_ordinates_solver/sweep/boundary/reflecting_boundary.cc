@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 double*
 ReflectingBoundary::PsiIncoming(uint64_t cell_local_id,
@@ -75,5 +73,4 @@ ReflectingBoundary::ResetAnglesReadyStatus()
       flags[gs_ss] = false;
 }
 
-} // namespace lbs
 } // namespace opensn

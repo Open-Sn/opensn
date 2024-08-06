@@ -11,8 +11,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class VacuumBoundary : public SweepBoundary
 {
@@ -37,5 +35,4 @@ public:
   }
 };
 
-} // namespace lbs
 } // namespace opensn

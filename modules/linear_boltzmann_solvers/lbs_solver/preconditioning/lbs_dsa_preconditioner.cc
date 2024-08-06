@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 int
 WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
@@ -97,5 +95,4 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   return 0;
 }
 
-} // namespace lbs
 } // namespace opensn

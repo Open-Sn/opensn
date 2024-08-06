@@ -12,9 +12,6 @@ namespace opensn
 class VectorGhostCommunicator;
 class GhostedParallelSTLVector;
 
-namespace lbs
-{
-
 class PowerIterationKEigenSMM : public PowerIterationKEigen
 {
 protected:
@@ -144,5 +141,4 @@ protected:
                                    double epsilon = 1.0e-12);
 };
 
-} // namespace lbs
 } // namespace opensn

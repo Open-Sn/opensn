@@ -3,13 +3,10 @@
 
 #pragma once
 
-#include "framework/physics/solver_base/solver.h"
-#include "framework/math/petsc_utils/petsc_utils.h"
-#include "modules/diffusion/boundary.h"
-#include "framework/utils/timer.h"
+#include "modules/diffusion/diffusion_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/mesh/mesh.h"
-#include <map>
+#include <vector>
 
 namespace opensn
 {
@@ -17,18 +14,15 @@ class MeshContinuum;
 class SpatialDiscretization;
 class ScalarSpatialMaterialFunction;
 
-namespace diffusion
-{
-
 /**
  * DFEM diffusion solver
  */
-class DFEMSolver : public opensn::Solver
+class DFEMDiffusionSolver : public DiffusionSolverBase
 {
 public:
-  explicit DFEMSolver(const std::string& name);
-  explicit DFEMSolver(const InputParameters& params);
-  ~DFEMSolver() override;
+  explicit DFEMDiffusionSolver(const std::string& name);
+  explicit DFEMDiffusionSolver(const InputParameters& params);
+  ~DFEMDiffusionSolver() override;
 
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
@@ -39,11 +33,6 @@ public:
 
   void Initialize() override;
   void Execute() override;
-
-  /**
-   * Updates the field functions with the latest data.
-   */
-  void UpdateFieldFunctions();
 
 private:
   /**Still searching for a reference for this.
@@ -70,28 +59,7 @@ private:
                       size_t ccfi,
                       double epsilon = 1.0e-12);
 
-  typedef std::pair<opensn::diffusion::BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
-
-  std::shared_ptr<MeshContinuum> grid_ptr_ = nullptr;
-
-  std::shared_ptr<SpatialDiscretization> sdm_ptr_ = nullptr;
-
-  size_t num_local_dofs_ = 0;
-  size_t num_globl_dofs_ = 0;
-
   std::vector<double> field_;
-
-  /// approx solution
-  Vec x_ = nullptr;
-  /// RHS
-  Vec b_ = nullptr;
-  /// linear system matrix
-  Mat A_ = nullptr;
-
-  std::map<uint64_t, Boundary> boundaries_;
-
-  BoundaryPreferences boundary_preferences_;
 
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
@@ -103,5 +71,4 @@ public:
   static InputParameters BoundaryOptionsBlock();
 };
 
-} // namespace diffusion
 } // namespace opensn

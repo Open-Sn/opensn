@@ -12,19 +12,17 @@
 
 namespace opensn
 {
-namespace prk
-{
 
-OpenSnRegisterObjectInNamespace(prk, TransientSolver);
+OpenSnRegisterObjectInNamespace(prk, PRKSolver);
 
 InputParameters
-TransientSolver::GetInputParameters()
+PRKSolver::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetDocGroup("prk");
 
-  params.ChangeExistingParamToOptional("name", "prk_TransientSolver");
+  params.ChangeExistingParamToOptional("name", "PRKSolver");
 
   std::vector<double> default_lambdas = {0.0124, 0.0304, 0.111, 0.301, 1.14, 3.01};
   std::vector<double> default_betas = {0.00021, 0.00142, 0.00127, 0.00257, 0.00075, 0.00027};
@@ -54,7 +52,7 @@ TransientSolver::GetInputParameters()
   return params;
 }
 
-TransientSolver::TransientSolver(const InputParameters& params)
+PRKSolver::PRKSolver(const InputParameters& params)
   : opensn::Solver(params.GetParamValue<std::string>("name")),
     lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
     betas_(params.GetParamVectorValue<double>("precursor_betas")),
@@ -82,7 +80,7 @@ TransientSolver::TransientSolver(const InputParameters& params)
 }
 
 void
-TransientSolver::Initialize()
+PRKSolver::Initialize()
 {
   // Check size
   if (lambdas_.size() != betas_.size())
@@ -140,7 +138,7 @@ TransientSolver::Initialize()
 }
 
 void
-TransientSolver::Execute()
+PRKSolver::Execute()
 {
   auto& physics_ev_pub = PhysicsEventPublisher::GetInstance();
 
@@ -152,7 +150,7 @@ TransientSolver::Execute()
 }
 
 void
-TransientSolver::Step()
+PRKSolver::Step()
 {
   log.Log() << "Solver \"" + TextName() + "\" " + timestepper_->StringTimeInfo();
 
@@ -194,14 +192,14 @@ TransientSolver::Step()
 }
 
 void
-TransientSolver::Advance()
+PRKSolver::Advance()
 {
   x_t_ = x_tp1_;
   timestepper_->Advance();
 }
 
 ParameterBlock
-TransientSolver::GetInfo(const ParameterBlock& params) const
+PRKSolver::GetInfo(const ParameterBlock& params) const
 {
   const auto param_name = params.GetParamValue<std::string>("name");
 
@@ -235,55 +233,55 @@ TransientSolver::GetInfo(const ParameterBlock& params) const
 }
 
 double
-TransientSolver::PopulationPrev() const
+PRKSolver::PopulationPrev() const
 {
   return x_t_[0];
 }
 
 double
-TransientSolver::PopulationNew() const
+PRKSolver::PopulationNew() const
 {
   return x_tp1_[0];
 }
 
 double
-TransientSolver::Period() const
+PRKSolver::Period() const
 {
   return period_tph_;
 }
 
 double
-TransientSolver::TimePrev() const
+PRKSolver::TimePrev() const
 {
   return timestepper_->Time();
 }
 
 double
-TransientSolver::TimeNew() const
+PRKSolver::TimeNew() const
 {
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
 std::vector<double>
-TransientSolver::SolutionPrev() const
+PRKSolver::SolutionPrev() const
 {
   return x_t_.elements_;
 }
 
 std::vector<double>
-TransientSolver::SolutionNew() const
+PRKSolver::SolutionNew() const
 {
   return x_tp1_.elements_;
 }
 
 void
-TransientSolver::SetRho(double value)
+PRKSolver::SetRho(double value)
 {
   rho_ = value;
 }
 
 void
-TransientSolver::SetProperties(const ParameterBlock& params)
+PRKSolver::SetProperties(const ParameterBlock& params)
 {
   opensn::Solver::SetProperties(params);
 
@@ -295,5 +293,4 @@ TransientSolver::SetProperties(const ParameterBlock& params)
   }
 }
 
-} // namespace prk
 } // namespace opensn

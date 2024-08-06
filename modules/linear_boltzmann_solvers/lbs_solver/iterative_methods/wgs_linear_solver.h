@@ -13,8 +13,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Linear Solver specialization for Within GroupSet (WGS) solves.*/
 class WGSLinearSolver : public LinearSolver
@@ -42,5 +40,4 @@ protected:
   std::vector<double> saved_q_moments_local_;
 };
 
-} // namespace lbs
 } // namespace opensn

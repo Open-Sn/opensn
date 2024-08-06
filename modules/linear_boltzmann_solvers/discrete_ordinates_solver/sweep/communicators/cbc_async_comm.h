@@ -19,10 +19,6 @@ namespace opensn
 
 class MPICommunicatorSet;
 class ByteArray;
-
-namespace lbs
-{
-
 class CBC_FLUDS;
 
 class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
@@ -72,5 +68,4 @@ protected:
   std::vector<BufferItem> send_buffer_;
 };
 
-} // namespace lbs
 } // namespace opensn

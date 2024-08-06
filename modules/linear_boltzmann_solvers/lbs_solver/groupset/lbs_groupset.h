@@ -16,8 +16,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class DiffusionMIPSolver;
 class LBSSolver;
@@ -94,5 +92,4 @@ private:
   void Init(int id);
 };
 
-} // namespace lbs
 } // namespace opensn

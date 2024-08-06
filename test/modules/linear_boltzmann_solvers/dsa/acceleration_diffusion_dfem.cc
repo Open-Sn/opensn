@@ -40,7 +40,7 @@ RegisterWrapperFunctionInNamespace(unit_tests,
 ParameterBlock
 acceleration_Diffusion_DFEM(const InputParameters&)
 {
-  typedef std::map<int, lbs::Multigroup_D_and_sigR> MatID2XSMap;
+  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
   opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
@@ -62,16 +62,16 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
 
   // Make Boundary conditions
-  typedef lbs::BoundaryCondition BC;
+  typedef BoundaryCondition BC;
   std::map<uint64_t, BC> bcs;
-  bcs[0] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[1] = {lbs::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[2] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[3] = {lbs::BCType::DIRICHLET, {2, 0, 0}},
-  bcs[4] = {lbs::BCType::DIRICHLET, {2, 0, 0}}, bcs[5] = {lbs::BCType::DIRICHLET, {2, 0, 0}};
+  bcs[0] = {BCType::DIRICHLET, {2, 0, 0}}, bcs[1] = {BCType::DIRICHLET, {2, 0, 0}},
+  bcs[2] = {BCType::DIRICHLET, {2, 0, 0}}, bcs[3] = {BCType::DIRICHLET, {2, 0, 0}},
+  bcs[4] = {BCType::DIRICHLET, {2, 0, 0}}, bcs[5] = {BCType::DIRICHLET, {2, 0, 0}};
 
   MatID2XSMap matid_2_xs_map;
-  matid_2_xs_map.insert(std::make_pair(0, lbs::Multigroup_D_and_sigR{{1.0}, {0.0}}));
+  matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
-  std::vector<lbs::UnitCellMatrices> unit_cell_matrices;
+  std::vector<UnitCellMatrices> unit_cell_matrices;
   unit_cell_matrices.resize(grid.local_cells.size());
 
   // Build unit integrals
@@ -143,14 +143,14 @@ acceleration_Diffusion_DFEM(const InputParameters&)
       }   // for i
     }     // for f
 
-    unit_cell_matrices[cell.local_id_] = lbs::UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
-                                                               {},
-                                                               IntV_shapeI_shapeJ,
-                                                               IntV_shapeI,
+    unit_cell_matrices[cell.local_id_] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                                                          {},
+                                                          IntV_shapeI_shapeJ,
+                                                          IntV_shapeI,
 
-                                                               IntS_shapeI_shapeJ,
-                                                               IntS_shapeI_gradshapeJ,
-                                                               IntS_shapeI};
+                                                          IntS_shapeI_shapeJ,
+                                                          IntS_shapeI_gradshapeJ,
+                                                          IntS_shapeI};
   } // for cell
 
   auto mms_phi_function = CreateFunction("MMS_phi");
@@ -160,7 +160,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   opensn::function_stack.push_back(mms_q_function);
 
   // Make solver
-  lbs::DiffusionMIPSolver solver(
+  DiffusionMIPSolver solver(
     "SimTest92_DSA", sdm, OneDofPerNode, bcs, matid_2_xs_map, unit_cell_matrices, false, true);
   solver.options.verbose = true;
   solver.options.residual_tolerance = 1.0e-10;

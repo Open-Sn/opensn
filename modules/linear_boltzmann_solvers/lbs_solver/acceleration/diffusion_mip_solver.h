@@ -14,8 +14,6 @@ class SpatialDiscretization;
 struct UnitCellMatrices;
 class ScalarSpatialFunction;
 
-namespace lbs
-{
 /**
  * Generalized diffusion solver for both WGDSA and TGDSA based on the MIP-method
  * of Bruno Turcksin and Jean Ragusa.
@@ -92,5 +90,4 @@ private:
   std::shared_ptr<ScalarSpatialFunction> ref_solution_function_;
 };
 
-} // namespace lbs
 } // namespace opensn

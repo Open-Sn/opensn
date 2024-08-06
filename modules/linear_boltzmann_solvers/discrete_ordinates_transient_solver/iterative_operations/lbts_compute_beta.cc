@@ -6,7 +6,7 @@
 #if 0
 /**Computes the delayed neutron factor.*/
 double
-lbs::DiscOrdTransientSolver::ComputeBeta()
+DiscOrdTransientSolver::ComputeBeta()
 {
   if (num_precursors_ == 0 or not options_.use_precursors) return 0.0;
 

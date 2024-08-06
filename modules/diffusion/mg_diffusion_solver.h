@@ -17,9 +17,6 @@ namespace opensn
 class MeshContinuum;
 class SpatialDiscretization;
 
-namespace diffusion
-{
-
 struct KSPAppContext
 {
   PetscBool verbose = PETSC_FALSE;
@@ -41,12 +38,23 @@ struct TwoGridCollapsedInfo
 /**
  * Multi-group diffusion solver
  */
-class MGSolver : public opensn::Solver
+class MGDiffusionSolver : public opensn::Solver
 {
 public:
-  explicit MGSolver(const std::string& name);
-  explicit MGSolver(const InputParameters& params);
-  ~MGSolver() override;
+  /** Multigroup diffusion boundary */
+  class MGBoundary
+  {
+  public:
+    MGBoundary();
+    MGBoundary(BoundaryType type, const std::array<std::vector<double>, 3>& mg_values);
+
+    BoundaryType type;
+    std::array<std::vector<double>, 3> mg_values;
+  };
+
+  explicit MGDiffusionSolver(const std::string& name);
+  explicit MGDiffusionSolver(const InputParameters& params);
+  ~MGDiffusionSolver() override;
 
   void SetOptions(const InputParameters& params);
   void SetBoundaryOptions(const InputParameters& params);
@@ -71,8 +79,7 @@ private:
   void SolveOneGroupProblem(unsigned int g, int64_t iverbose);
   void UpdateFluxWithTwoGrid(int64_t iverbose);
 
-  typedef std::pair<opensn::diffusion::BoundaryType, std::array<std::vector<double>, 3>>
-    BoundaryInfo;
+  typedef std::pair<BoundaryType, std::array<std::vector<double>, 3>> BoundaryInfo;
 
   typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
 
@@ -123,5 +130,4 @@ public:
   static InputParameters BoundaryOptionsBlock();
 };
 
-} // namespace diffusion
 } // namespace opensn

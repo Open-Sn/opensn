@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 double*
 ArbitraryBoundary::PsiIncoming(uint64_t cell_local_id,
@@ -127,5 +125,4 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
   } // for cell
 }
 
-} // namespace lbs
 } // namespace opensn

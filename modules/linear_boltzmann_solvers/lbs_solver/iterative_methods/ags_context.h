@@ -11,8 +11,7 @@
 
 namespace opensn
 {
-namespace lbs
-{
+
 class LBSSolver;
 
 struct AGSContext : public LinearSolverContext
@@ -32,5 +31,4 @@ struct AGSContext : public LinearSolverContext
   int MatrixAction(Mat& matrix, Vec& vector, Vec& action) override;
 };
 
-} // namespace lbs
 } // namespace opensn

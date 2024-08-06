@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 std::vector<double>&
 CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
@@ -138,5 +136,4 @@ CBC_ASynchronousCommunicator::ReceiveData()
   return cells_who_received_data;
 }
 
-} // namespace lbs
 } // namespace opensn

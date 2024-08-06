@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, SteadyStateSolver);
 
@@ -61,5 +59,4 @@ SteadyStateSolver::Execute()
   lbs_solver_.UpdateFieldFunctions();
 }
 
-} // namespace lbs
 } // namespace opensn

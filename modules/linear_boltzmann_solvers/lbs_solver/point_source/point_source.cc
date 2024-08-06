@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, PointSource);
 
@@ -118,5 +116,4 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
   log.Log() << "Point source has " << num_global_subscribers_ << " global subscribing cells.";
 }
 
-} // namespace lbs
 } // namespace opensn

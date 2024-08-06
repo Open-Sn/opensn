@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, DiffusionDFEMSolver);
 
@@ -166,5 +164,4 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
   } // for groupset
 }
 
-} // namespace lbs
 } // namespace opensn

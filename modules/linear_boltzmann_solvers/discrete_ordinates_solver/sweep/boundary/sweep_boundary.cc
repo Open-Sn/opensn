@@ -7,8 +7,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 double*
 SweepBoundary::PsiIncoming(uint64_t cell_local_id,
@@ -35,5 +33,4 @@ SweepBoundary::PsiOutgoing(uint64_t cell_local_id,
   return nullptr;
 }
 
-} // namespace lbs
 } // namespace opensn

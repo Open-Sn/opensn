@@ -10,8 +10,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 void
 PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum)
@@ -111,5 +109,4 @@ PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continu
   //  }
 }
 
-} // namespace lbs
 } // namespace opensn

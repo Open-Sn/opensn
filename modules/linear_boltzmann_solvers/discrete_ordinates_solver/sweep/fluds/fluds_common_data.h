@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class SPDS;
 
@@ -49,5 +47,4 @@ protected:
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings_;
 };
 
-} // namespace lbs
 } // namespace opensn

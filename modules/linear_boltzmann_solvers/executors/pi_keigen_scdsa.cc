@@ -16,8 +16,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSCDSA);
 
@@ -570,5 +568,4 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   return output;
 }
 
-} // namespace lbs
 } // namespace opensn

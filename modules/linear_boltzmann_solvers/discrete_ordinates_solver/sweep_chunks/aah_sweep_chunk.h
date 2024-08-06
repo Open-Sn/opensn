@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class AahSweepChunk : public SweepChunk
 {
@@ -18,7 +16,7 @@ public:
   AahSweepChunk(const MeshContinuum& grid,
                 const SpatialDiscretization& discretization,
                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                std::vector<lbs::CellLBSView>& cell_transport_views,
+                std::vector<CellLBSView>& cell_transport_views,
                 const std::vector<double>& densities,
                 std::vector<double>& destination_phi,
                 std::vector<double>& destination_psi,
@@ -31,5 +29,4 @@ public:
   void Sweep(AngleSet& angle_set) override;
 };
 
-} // namespace lbs
 } // namespace opensn

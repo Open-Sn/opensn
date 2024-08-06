@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigen);
 
@@ -102,5 +100,4 @@ NonLinearKEigen::Execute()
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
-} // namespace lbs
 } // namespace opensn

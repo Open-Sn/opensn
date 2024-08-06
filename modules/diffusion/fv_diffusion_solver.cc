@@ -7,101 +7,70 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 
 namespace opensn
 {
-namespace diffusion
-{
 
-OpenSnRegisterObjectInNamespace(diffusion, FVSolver);
+OpenSnRegisterObjectAliasInNamespace(diffusion, FVSolver, FVDiffusionSolver);
 OpenSnRegisterSyntaxBlockInNamespace(diffusion,
                                      FVBoundaryOptionsBlock,
-                                     FVSolver::BoundaryOptionsBlock);
+                                     FVDiffusionSolver::BoundaryOptionsBlock);
 
-FVSolver::FVSolver(const std::string& name)
-  : opensn::Solver(name, {{"max_iters", int64_t(500)}, {"residual_tolerance", 1.0e-2}}),
-    num_local_dofs_(0),
-    num_global_dofs_(0),
-    x_(nullptr),
-    b_(nullptr),
-    A_(nullptr)
+FVDiffusionSolver::FVDiffusionSolver(const std::string& name) : DiffusionSolverBase(name)
 {
 }
 
 InputParameters
-FVSolver::GetInputParameters()
+FVDiffusionSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
-  params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
-  params.AddOptionalParameter<int>("max_iters", 500, "Solver relative tolerance");
+  InputParameters params = DiffusionSolverBase::GetInputParameters();
   return params;
 }
 
 InputParameters
-FVSolver::OptionsBlock()
+FVDiffusionSolver::OptionsBlock()
 {
-  InputParameters params;
-  params.AddOptionalParameterArray(
-    "boundary_conditions", {}, "An array contain tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions", "FVSolver::BoundaryOptionsBlock");
+  InputParameters params = DiffusionSolverBase::OptionsBlock();
   return params;
 }
 
 InputParameters
-FVSolver::BoundaryOptionsBlock()
+FVDiffusionSolver::BoundaryOptionsBlock()
 {
-  InputParameters params;
-  params.SetGeneralDescription("Set options for boundary conditions");
-  params.AddRequiredParameter<std::string>("boundary",
-                                           "Boundary to apply the boundary condition to.");
-  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
-  params.AddOptionalParameterArray<double>("coeffs", {}, "Coefficients.");
+  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
   return params;
 }
 
-FVSolver::FVSolver(const InputParameters& params)
-  : opensn::Solver(params),
-    num_local_dofs_(0),
-    num_global_dofs_(0),
-    x_(nullptr),
-    b_(nullptr),
-    A_(nullptr)
+FVDiffusionSolver::FVDiffusionSolver(const InputParameters& params) : DiffusionSolverBase(params)
 {
-  basic_options_.AddOption("residual_tolerance",
-                           params.GetParamValue<double>("residual_tolerance"));
-  basic_options_.AddOption<int64_t>("max_iters", params.GetParamValue<int>("max_iters"));
 }
 
-FVSolver::~FVSolver()
+FVDiffusionSolver::~FVDiffusionSolver()
 {
-  VecDestroy(&x_);
-  VecDestroy(&b_);
-  MatDestroy(&A_);
 }
 
 void
-FVSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+FVDiffusionSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   d_coef_function_ = function;
 }
 
 void
-FVSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+FVDiffusionSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   q_ext_function_ = function;
 }
 
 void
-FVSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+FVDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
 {
   sigma_a_function_ = function;
 }
 
 void
-FVSolver::SetOptions(const InputParameters& params)
+FVDiffusionSolver::SetOptions(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -122,7 +91,7 @@ FVSolver::SetOptions(const InputParameters& params)
 }
 
 void
-FVSolver::SetBoundaryOptions(const InputParameters& params)
+FVDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = "FVSolver::SetBoundaryOptions";
 
@@ -133,8 +102,8 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
 
   if (bc_type_lc == "reflecting")
   {
-    opensn::diffusion::FVSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Reflecting;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Reflecting;
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Reflecting.";
   }
@@ -144,8 +113,8 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto boundary_value = coeffs[0];
-    opensn::diffusion::FVSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Dirichlet;
+    FVDiffusionSolver::BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Dirichlet;
     bndry_info.second = {boundary_value};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Dirichlet with value "
@@ -157,8 +126,8 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto f_value = coeffs[0];
-    opensn::diffusion::FVSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {0.0, 1.0, f_value};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Neumann with D grad(u) dot n = ("
@@ -166,8 +135,8 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "vacuum")
   {
-    opensn::diffusion::FVSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {0.25, 0.5, 0.0};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Vacuum.";
@@ -180,8 +149,8 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
     auto a_value = coeffs[0];
     auto b_value = coeffs[1];
     auto f_value = coeffs[2];
-    opensn::diffusion::FVSolver::BoundaryInfo bndry_info;
-    bndry_info.first = opensn::diffusion::BoundaryType::Robin;
+    BoundaryInfo bndry_info;
+    bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {a_value, b_value, f_value};
     boundary_preferences_.insert(std::make_pair(boundary, bndry_info));
     opensn::log.Log() << "Boundary " << boundary << " set as Robin with a,b,f = (" << a_value << ","
@@ -192,9 +161,9 @@ FVSolver::SetBoundaryOptions(const InputParameters& params)
 }
 
 void
-FVSolver::Initialize()
+FVDiffusionSolver::Initialize()
 {
-  const std::string fname = "diffusion::FVSolver::Initialize";
+  const std::string fname = "FVSolver::Initialize";
   log.Log() << "\n"
             << program_timer.GetTimeString() << " " << TextName()
             << ": Initializing FV Diffusion solver ";
@@ -227,7 +196,7 @@ FVSolver::Initialize()
         case BoundaryType::Reflecting:
         {
           boundaries_.insert(
-            std::make_pair(bndry_id, Boundary{BoundaryType::Reflecting, {0.0, 0.0, 0.0}}));
+            std::make_pair(bndry_id, Boundary(BoundaryType::Reflecting, {0.0, 0.0, 0.0})));
           log.Log() << "Boundary " << bndry_name << " set to reflecting.";
           break;
         }
@@ -305,24 +274,11 @@ FVSolver::Initialize()
 
   InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  if (field_functions_.empty())
-  {
-    std::string solver_name;
-    if (not TextName().empty())
-      solver_name = TextName() + "-";
-
-    std::string text_name = solver_name + "phi";
-
-    auto initial_field_function =
-      std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
-
-    field_functions_.push_back(initial_field_function);
-    field_function_stack.push_back(initial_field_function);
-  } // if not ff set
+  InitFieldFunctions();
 }
 
 void
-FVSolver::Execute()
+FVDiffusionSolver::Execute()
 {
   log.Log() << "\nExecuting FV Diffusion solver";
 
@@ -380,11 +336,11 @@ FVSolver::Execute()
       {
         const auto& bndry = boundaries_[face.neighbor_id_];
 
-        if (bndry.type_ == BoundaryType::Robin)
+        if (bndry.type == BoundaryType::Robin)
         {
-          const auto& aval = bndry.values_[0];
-          const auto& bval = bndry.values_[1];
-          const auto& fval = bndry.values_[2];
+          const auto& aval = bndry.values[0];
+          const auto& bval = bndry.values[1];
+          const auto& fval = bndry.values[2];
 
           if (std::fabs(bval) < 1e-8)
             throw std::logic_error("if b=0, this is a Dirichlet BC, not a Robin BC");
@@ -395,9 +351,9 @@ FVSolver::Execute()
             VecSetValue(b_, imap, A_f * fval / bval, ADD_VALUES);
         } // if Robin
 
-        if (bndry.type_ == BoundaryType::Dirichlet)
+        if (bndry.type == BoundaryType::Dirichlet)
         {
-          const auto& boundary_value = bndry.values_[0];
+          const auto& boundary_value = bndry.values[0];
 
           const auto& x_cc_N = x_cc_P + 2.0 * x_PF;
           const auto x_PN = x_cc_N - x_cc_P;
@@ -440,12 +396,4 @@ FVSolver::Execute()
   log.Log() << "Done solving";
 }
 
-void
-FVSolver::UpdateFieldFunctions()
-{
-  auto& ff = *field_functions_.front();
-  ff.UpdateFieldVector(x_);
-}
-
-} // namespace diffusion
 } // namespace opensn

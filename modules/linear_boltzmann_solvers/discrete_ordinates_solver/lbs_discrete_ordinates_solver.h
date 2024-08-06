@@ -8,8 +8,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 class CBC_ASynchronousCommunicator;
 
@@ -145,8 +143,7 @@ protected:
   AssociateSOsAndDirections(const MeshContinuum& grid,
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
-                            lbs::GeometryType lbs_geo_type);
+                            GeometryType lbs_geo_type);
 };
 
-} // namespace lbs
 } // namespace opensn
