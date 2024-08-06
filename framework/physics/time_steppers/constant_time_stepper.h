@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Timestep controller that does not dynamically change.*/
+/// Timestep controller that does not dynamically change.
 class ConstantTimeStepper : public TimeStepper
 {
 public:
