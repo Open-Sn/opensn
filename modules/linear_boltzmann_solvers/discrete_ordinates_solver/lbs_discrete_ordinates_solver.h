@@ -21,9 +21,7 @@ protected:
   using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
 
 public:
-  /**
-   * Static registration based constructor.
-   */
+  /// Static registration based constructor.
   explicit DiscreteOrdinatesSolver(const InputParameters& params);
   ~DiscreteOrdinatesSolver() override;
 
@@ -47,20 +45,13 @@ public:
   void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
                                                   Vec x,
                                                   PhiSTLOption which_phi) override;
-  /**
-   * Reorient an adjoint solution to account for backwards streaming.
-   */
+  /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 
-  /**
-   * Zeroes all the outflow data-structures required to compute
-   * balance.
-   */
+  /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
-  /**
-   * Compute balance
-   */
+  /// Compute balance
   void ComputeBalance();
 
   /**
@@ -84,9 +75,7 @@ public:
 protected:
   explicit DiscreteOrdinatesSolver(const std::string& text_name);
 
-  /**
-   * Initializes Within-GroupSet solvers.
-   */
+  /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;
 
   /**
@@ -106,19 +95,13 @@ protected:
    */
   void InitializeSweepDataStructures();
 
-  /**
-   * Initializes fluds_ data structures.
-   */
+  /// Initializes fluds_ data structures.
   void InitFluxDataStructures(LBSGroupset& groupset);
 
-  /**
-   * Clears all the sweep orderings for a groupset in preperation for another.
-   */
+  /// Clears all the sweep orderings for a groupset in preperation for another.
   void ResetSweepOrderings(LBSGroupset& groupset);
 
-  /**
-   * Sets up the sweek chunk for the given discretization method.
-   */
+  /// Sets up the sweek chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
@@ -136,8 +119,8 @@ public:
 
 protected:
   /**
-   * This routine groups angle-indices to groups sharing the same sweep
-   * ordering. It also takes geometry into account.
+   * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
+   * geometry into account.
    */
   static std::pair<UniqueSOGroupings, DirIDToSOMap>
   AssociateSOsAndDirections(const MeshContinuum& grid,

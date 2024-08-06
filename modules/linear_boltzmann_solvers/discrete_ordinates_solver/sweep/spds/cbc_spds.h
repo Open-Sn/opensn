@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/**Cell-by-Cell (CBC) Sweep Plane Data Structure*/
+/// Cell-by-Cell (CBC) Sweep Plane Data Structure
 class CBC_SPDS : public SPDS
 {
 public:

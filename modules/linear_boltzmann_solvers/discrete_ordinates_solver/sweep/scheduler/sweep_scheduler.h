@@ -52,81 +52,51 @@ public:
 
   AngleAggregation& AngleAgg() { return angle_agg_; }
 
-  /**
-   * This is the entry point for sweeping.
-   */
+  /// This is the entry point for sweeping.
   void Sweep();
 
-  /**
-   * Returns the referenced sweep chunk.
-   */
+  /// Returns the referenced sweep chunk.
   SweepChunk& GetSweepChunk();
 
 private:
-  /**
-   * Applies a First-In-First-Out sweep scheduling.
-   */
+  /// Applies a First-In-First-Out sweep scheduling.
   void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
 
-  /**
-   * Initializes the Depth-Of-Graph algorithm.
-   */
+  /// Initializes the Depth-Of-Graph algorithm.
   void InitializeAlgoDOG();
 
-  /**
-   * Executes the Depth-Of-Graph algorithm.
-   */
+  /// Executes the Depth-Of-Graph algorithm.
   void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
 
 public:
-  /**
-   * Sets the location where flux moments are to be written.
-   */
+  /// Sets the location where flux moments are to be written.
   void SetDestinationPhi(std::vector<double>& destination_phi);
 
-  /**
-   * Sets all elements of the output vector to zero.
-   */
+  /// Sets all elements of the output vector to zero.
   void ZeroDestinationPhi();
 
-  /**
-   * Returns a reference to the output flux moments vector.
-   */
+  /// Returns a reference to the output flux moments vector.
   std::vector<double>& GetDestinationPhi();
 
-  /**
-   * Sets the location where angular fluxes are to be written.
-   */
+  /// Sets the location where angular fluxes are to be written.
   void SetDestinationPsi(std::vector<double>& destination_psi);
 
-  /**
-   * Sets all elements of the output angular flux vector to zero.
-   */
+  /// Sets all elements of the output angular flux vector to zero.
   void ZeroDestinationPsi();
 
-  /**
-   * Returns a reference to the output angular flux vector.
-   */
+  /// Returns a reference to the output angular flux vector.
   std::vector<double>& GetDestinationPsi();
 
-  /** Resets all the incoming intra-location and inter-location
-   * cyclic interfaces.
-   */
+  /// Resets all the incoming intra-location and inter-locationcyclic interfaces.
   void ZeroIncomingDelayedPsi();
 
-  /** Resets all the outgoing intra-location and inter-location
-   * cyclic interfaces.
-   */
+  /// Resets all the outgoing intra-location and inter-location cyclic interfaces.
   void ZeroOutgoingDelayedPsi();
 
-  /**
-   * Clear the output angular flux vector, the flux moments vector, and the outgoing delayed psi.
-   */
+  /// Clear the output angular flux vector, the flux moments vector, and the outgoing delayed psi.
   void ZeroOutputFluxDataStructures();
 
-  /**
-   * Activates or deactives the surface src flag.
-   */
+  /// Activates or deactives the surface src flag.
   void SetBoundarySourceActiveFlag(bool flag_value);
 };
 

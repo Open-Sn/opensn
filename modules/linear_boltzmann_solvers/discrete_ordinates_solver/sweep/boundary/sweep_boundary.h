@@ -9,15 +9,14 @@
 namespace opensn
 {
 
-/**
- * Base class for sweep related boundaries.
- */
+/// Base class for sweep related boundaries.
 class SweepBoundary
 {
 private:
   const BoundaryType type_;
   const CoordinateSystemType coord_type_;
-  double evaluation_time_ = 0.0; ///< Time value passed to boundary functions
+  /// Time value passed to boundary functions
+  double evaluation_time_ = 0.0;
 
 protected:
   std::vector<double> zero_boundary_flux_;
@@ -44,9 +43,7 @@ public:
 
   void SetEvaluationTime(double time) { evaluation_time_ = time; }
 
-  /**
-   * Returns a pointer to the location of the incoming flux.
-   */
+  /// Returns a pointer to the location of the incoming flux.
   virtual double* PsiIncoming(uint64_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
@@ -54,9 +51,7 @@ public:
                               int group_num,
                               size_t gs_ss_begin);
 
-  /**
-   * Returns a pointer to the location of the outgoing flux.
-   */
+  /// Returns a pointer to the location of the outgoing flux.
   virtual double* PsiOutgoing(uint64_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
@@ -83,7 +78,7 @@ public:
 class BoundaryFunction
 {
 public:
-  /**Customized boundary function by calling a lua routine.*/
+  /// Customized boundary function by calling a lua routine.
   virtual std::vector<double>
   Evaluate(size_t cell_global_id,
            int cell_material_id,

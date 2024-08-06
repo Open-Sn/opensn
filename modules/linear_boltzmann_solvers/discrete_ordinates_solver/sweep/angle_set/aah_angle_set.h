@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/**Manages the workstages of a single angle set.*/
+/// Manages the workstages of a single angle set.
 class AAH_AngleSet : public AngleSet
 {
 protected:

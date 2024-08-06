@@ -12,9 +12,7 @@
 namespace opensn
 {
 
-/**
- * Specified incident fluxes on a boundary.
- */
+/// Specified incident fluxes on a boundary.
 class ArbitraryBoundary : public SweepBoundary
 {
 private:

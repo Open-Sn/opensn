@@ -10,8 +10,7 @@ namespace opensn
 
 class LBSGroupset;
 
-/** A sweep-chunk in point-symmetric and axial-symmetric
- *  curvilinear coordinates. */
+/// A sweep-chunk in point-symmetric and axial-symmetric curvilinear coordinates.
 class SweepChunkPwlrz : public SweepChunk
 {
 public:
@@ -32,15 +31,15 @@ public:
   void Sweep(AngleSet& angle_set) override;
 
 private:
-  /** Secondary spatial discretization cell matrices */
+  /// Secondary spatial discretization cell matrices
   const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices_;
-  /** Unknown manager. */
+  /// Unknown manager.
   UnknownManager unknown_manager_;
-  /** Sweeping dependency angular intensity (for each polar level). */
+  /// Sweeping dependency angular intensity (for each polar level).
   std::vector<double> psi_sweep_;
-  /** Mapping from direction linear index to direction polar level. */
+  /// Mapping from direction linear index to direction polar level.
   std::map<unsigned int, unsigned int> map_polar_level_;
-  /** Normal vector to determine symmetric boundary condition. */
+  /// Normal vector to determine symmetric boundary condition.
   Vector3 normal_vector_boundary_;
 };
 

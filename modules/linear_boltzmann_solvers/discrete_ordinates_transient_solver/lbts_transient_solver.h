@@ -10,7 +10,8 @@
 namespace lbs
 {
 
-/**A transient neutral particle transport solver.
+/**
+ * A transient neutral particle transport solver.
  *
  * \author Zachary Hardy.
  */
@@ -40,17 +41,17 @@ public:
     NormalizationMethod normalization_method = NormalizationMethod::TOTAL_POWER;
   } transient_options_;
 
-  /**Temporal domain and discretization information.*/
+  /// Temporal domain and discretization information.
   double dt_ = 2.0e-3;
   double time_ = 0.0;
 
 protected:
-  /**Previous time step vectors.*/
+  /// Previous time step vectors.
   std::vector<double> phi_prev_local_;
   std::vector<double> precursor_prev_local_;
   std::vector<std::vector<double>> psi_prev_local_;
 
-  /**Fission rate vector*/
+  /// Fission rate vector
   std::vector<double> fission_rate_local_;
 
 public:
