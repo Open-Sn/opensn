@@ -46,12 +46,6 @@ RegisterLuaEntitiesLBS(lua_State* L)
   LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_SINGLE", 1);
   LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_POLAR", 2);
   LuaRegisterTableConstant(L, "LBSGroupset", "ANGLE_AGG_AZIMUTHAL", 3);
-  LuaSetGlobal(L, "KRYLOV_RICHARDSON", 5);
-  LuaSetGlobal(L, "KRYLOV_RICHARDSON_CYCLES", 6);
-  LuaSetGlobal(L, "KRYLOV_GMRES", 7);
-  LuaSetGlobal(L, "KRYLOV_GMRES_CYCLES", 8);
-  LuaSetGlobal(L, "KRYLOV_BICGSTAB", 9);
-  LuaSetGlobal(L, "KRYLOV_BICGSTAB_CYCLES", 10);
 }
 
 } // namespace opensnlua
