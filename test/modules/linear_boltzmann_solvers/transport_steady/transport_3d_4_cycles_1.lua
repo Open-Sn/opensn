@@ -19,7 +19,7 @@ end
 meshgen1 = mesh.ExtruderMeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../resources/TestMeshes/Square2x2_partition_cyclic3.obj",
+      filename = "../../../assets/mesh/Square2x2_partition_cyclic3.obj",
     }),
   },
   layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, -- layers
