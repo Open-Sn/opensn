@@ -8,7 +8,8 @@
 namespace opensnlua
 {
 
-/** Creates a new field function interpolation.
+/**
+ * Creates a new field function interpolation.
  *
  * \param FFITypeIndex int Type of field function interpolation.
  *
@@ -27,7 +28,8 @@ namespace opensnlua
  */
 int FFInterpolationCreate(lua_State* L);
 
-/** Creates a new field function interpolation.
+/**
+ * Creates a new field function interpolation.
  *
  * \param FFIHandle int Handle to the field function interpolation.
  * \param PropertyIndex int Type of property to set.
@@ -112,7 +114,8 @@ int FFInterpolationCreate(lua_State* L);
  */
 int FFInterpolationSetProperty(lua_State* L);
 
-/** Initialize interpolator.
+/**
+ * Initialize interpolator.
  *
  * \param FFIHandle int Handle to the field function interpolation.
  *
@@ -121,7 +124,8 @@ int FFInterpolationSetProperty(lua_State* L);
  */
 int FFInterpolationInitialize(lua_State* L);
 
-/** Execute interpolator.
+/**
+ * Execute interpolator.
  *
  * \param FFIHandle int Handle to the field function interpolation.
  *
@@ -130,7 +134,8 @@ int FFInterpolationInitialize(lua_State* L);
  */
 int FFInterpolationExecute(lua_State* L);
 
-/** Export interpolation to a CSV file. This is only valid for
+/**
+ * Export interpolation to a CSV file. This is only valid for
  * line interpolators.
  *
  * \param FFIHandle int Handle to the field function interpolation.
@@ -140,7 +145,8 @@ int FFInterpolationExecute(lua_State* L);
  */
 int FFInterpolationExportToCSV(lua_State* L);
 
-/** Export interpolation to a Python file. This is only valid for
+/**
+ * Export interpolation to a Python file. This is only valid for
  * slice interpolators.
  *
  * \param FFIHandle int Handle to the field function interpolation.
@@ -150,7 +156,8 @@ int FFInterpolationExportToCSV(lua_State* L);
  */
 int FFInterpolationExportToPython(lua_State* L);
 
-/** Gets the value(s) associated with an interpolation provided the
+/**
+ * Gets the value(s) associated with an interpolation provided the
  * interpolation type has an associated value.
  *
  * \param FFIHandle int Handle to the field function interpolation.

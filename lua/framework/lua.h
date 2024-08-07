@@ -19,28 +19,49 @@ extern "C"
 #include "framework/math/math.h"
 #include "lua/framework/exceptions/invalid_lua_argument.h"
 
-/**Posts a generalized error message indicating that the
- * expected amount of arguments don't match the given amount.*/
+/**
+ * Posts a generalized error message indicating that the expected amount of arguments don't match
+ * the given amount.
+ */
 void LuaPostArgAmountError(const std::string& func_name, lua_State* L, int expected, int given);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a nil value. Throws an error if it is.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is a nil value. Throws an
+ * error if it is.
+ */
 void LuaCheckNilValue(const std::string& func_name, lua_State* L, int arg);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a string. Throws an error if it is not.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is a string. Throws an error
+ * if it is not.
+ */
 void LuaCheckStringValue(const std::string& func_name, lua_State* L, int arg);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a boolean. Throws an error if it is not.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is a boolean. Throws an error
+ * if it is not.
+ */
 void LuaCheckBoolValue(const std::string& func_name, lua_State* L, int arg);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is a number. Throws an error if it is not.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is a number. Throws an error
+ * if it is not.
+ */
 void LuaCheckNumberValue(const std::string& func_name, lua_State* L, int arg);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is an integer. Throws an error if it is not.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is an integer. Throws an
+ * error if it is not.
+ */
 void LuaCheckIntegerValue(const std::string& func_name, lua_State* L, int arg);
-/**Checks if the lua variable at the stack location indicated by <arg>
- * is an actual table. Throws an error if it is not.*/
+
+/**
+ * Checks if the lua variable at the stack location indicated by <arg> is an actual table. Throws an
+ * error if it is not.
+ */
 void LuaCheckTableValue(const std::string& func_name, lua_State* L, int arg);
-/**Gets information about an error state.*/
+
+/// Gets information about an error state.
 std::string LuaSourceInfo(lua_State* L, const char* func_name);
 
 namespace opensnlua
@@ -50,7 +71,6 @@ namespace opensnlua
  * This function operates on table keys recursively. It has a specific
  * behavior if it detects an array.
  */
-
 void RecursivelyParseTableKeys(lua_State* L, int t, opensn::ParameterBlock& block);
 
 /**

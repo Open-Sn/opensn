@@ -6,7 +6,8 @@
 namespace opensnlua
 {
 
-/** Creates an angular quadrature.
+/**
+ * Creates an angular quadrature.
  *
  * \param azimuthal_angles array A lua table with N entries each being an azimuthal
  *                               angle.
@@ -22,7 +23,8 @@ namespace opensnlua
  */
 int CreateCustomAngularQuadrature(lua_State* L);
 
-/** Creates a curvilinear product quadrature suitable for cylindrical
+/**
+ * Creates a curvilinear product quadrature suitable for cylindrical
  * geometries.
  *
  * \param QuadratureType int Quadrature identifier.
@@ -58,7 +60,8 @@ int CreateCustomAngularQuadrature(lua_State* L);
 int CreateCylindricalProductQuadrature(lua_State* L);
 int CreateSphericalProductQuadrature(lua_State* L);
 
-/** Creates a Product-quadrature.
+/**
+ * Creates a Product-quadrature.
  *
  * \param QuadratureType int Quadrature identifier.
  * \param values varying Varying options based on the quadrature type.
@@ -98,7 +101,8 @@ int CreateSphericalProductQuadrature(lua_State* L);
  */
 int CreateProductQuadrature(lua_State* L);
 
-/** Creates a quadrature.
+/**
+ * Creates a quadrature.
  *
  * \param QuadratureType int Quadrature identifier.
  * \param NumberOfPoints int Number of quadrature points.
@@ -117,7 +121,8 @@ int CreateProductQuadrature(lua_State* L);
  */
 int CreateLineQuadrature(lua_State* L);
 
-/** Get the values of a product quadrature
+/**
+ * Get the values of a product quadrature
  *
  * \param QuadHandle int Handle to an existing product quadrature.
  *
@@ -129,7 +134,8 @@ int CreateLineQuadrature(lua_State* L);
  */
 int GetProductQuadrature(lua_State* L);
 
-/**Optimizes the indicated angular quadrature for polar symmetry.
+/**
+ * Optimizes the indicated angular quadrature for polar symmetry.
  *
  * \param handle        int. Handle to the quadrature to be optimized.
  * \param normalization double. (Optional) The normalization to be applied to the

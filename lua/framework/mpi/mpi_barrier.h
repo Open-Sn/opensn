@@ -8,7 +8,8 @@
 namespace opensnlua
 {
 
-/** Blocks until all processes in the communicator have reached this routine.
+/**
+ * Blocks until all processes in the communicator have reached this routine.
  *
  * \author Jan
  */
