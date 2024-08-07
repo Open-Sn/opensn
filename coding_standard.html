@@ -214,11 +214,18 @@ shared pointers simply don’t exist.</p>
 <span class="n">call</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>For <a class="reference external" href="https://www.doxygen.nl/">doxygen</a> style comments <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">*/</span></code> should be used.</p>
+<p>For <a class="reference external" href="https://www.doxygen.nl/">doxygen</a>-style comments, use <code class="docutils literal notranslate"><span class="pre">///</span></code> for single-line comments
+and <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">*/</span></code> for multi-line comments with the following formatting:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
-<span class="cm"> * In-code doxygen-style documentation</span>
+<span class="cm"> * Function description</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param i Description of the first parameter</span>
+<span class="cm"> * \return Description of the return value</span>
 <span class="cm"> */</span>
-<span class="kt">void</span><span class="w"> </span><span class="n">SomeMemberFunction</span><span class="p">()</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">SomeMemberFunction</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span>
+
+<span class="c1">/// Single-line comment</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">my_member_variable</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
