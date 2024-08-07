@@ -8,9 +8,7 @@
 namespace opensnlua
 {
 
-/**
- * Sets all cell-material id's to the supplied value.
- */
+/// Sets all cell-material id's to the supplied value.
 int MeshSetUniformMaterialID(lua_State* L);
 
 /**
@@ -26,9 +24,7 @@ int MeshSetUniformMaterialID(lua_State* L);
  */
 int MeshSetMaterialIDFromLuaFunction(lua_State* L);
 
-/**
- * Set specified material IDs using a LogicalVolume
- */
+/// Set specified material IDs using a LogicalVolume
 int MeshSetMaterialIDFromLogicalVolume(lua_State* L);
 
 /**
@@ -45,9 +41,7 @@ int MeshSetMaterialIDFromLogicalVolume(lua_State* L);
  */
 int MeshSetBoundaryIDFromLuaFunction(lua_State* L);
 
-/**
- * Set specified boundary IDs using a LogicalVolume
- */
+/// Set specified boundary IDs using a LogicalVolume
 int MeshSetBoundaryIDFromLogicalVolume(lua_State* L);
 
 } // namespace opensnlua

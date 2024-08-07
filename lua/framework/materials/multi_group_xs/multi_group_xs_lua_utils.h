@@ -29,9 +29,9 @@ int XSCreate(lua_State* L);
 /**
  * Sets the properties of a transport cross section.
  *
- *  \param XS_handle int Handle to the cross section to be modified.
- *  \param OperationIndex int Method used for setting the xs property.
- *  \param Information varying Varying information depending on the operation.
+ * \param XS_handle int Handle to the cross section to be modified.
+ * \param OperationIndex int Method used for setting the xs property.
+ * \param Information varying Varying information depending on the operation.
  *
  *  ##_
  *
@@ -74,7 +74,7 @@ int XSSet(lua_State* L);
 /**
  * Makes a combined cross section from multiple other cross sections.
  *
- *  \param Combinations table A lua-table with each element another table
+ * \param Combinations table A lua-table with each element another table
  *                            containing a handle to an existing xs and a
  *                            scalar multiplier.
  *
@@ -102,8 +102,8 @@ int XSSet(lua_State* L);
  *                               aerated_graphite)
  * \endcode
  *
- *  \return Returns a handle to another cross-section object that contains the
- *          desired combination.
+ * \return Returns a handle to another cross-section object that contains the
+ *         desired combination.
  *
  * \ingroup LuaTransportXSs
  */
@@ -113,10 +113,10 @@ int XSMakeCombined(lua_State* L);
  * Sets a combined cross section from multiple other cross sections. This function can be called
  * multiple times on the same cross-section handle.
  *
- *  \param XS_handle int Handle to the cross section to be modified.
- *  \param Combinations table A lua-table with each element another table
- *                            containing a handle to an existing xs and a
- *                            scalar multiplier.
+ * \param XS_handle int Handle to the cross section to be modified.
+ * \param Combinations table A lua-table with each element another table
+ *                           containing a handle to an existing xs and a
+ *                           scalar multiplier.
  *
  *  ## _
  *
@@ -146,8 +146,8 @@ int XSSetCombined(lua_State* L);
 /**
  * Creates cross sections by scaling other cross sections.
  *
- *  \param XS_handle int Handle to the cross section to be modified.
- *  \param ScalingFactor double The scaling factor to apply.
+ * \param XS_handle int Handle to the cross section to be modified.
+ * \param ScalingFactor double The scaling factor to apply.
  *
  *  ## _
  *
@@ -167,8 +167,8 @@ int XSMakeScaled(lua_State* L);
  * Sets the scaling factor for cross sections. This routine can be called multiple times on the
  * same handle to modify scaling factors.
  *
- *  \param XS_handle int Handle to the cross section to be modified.
- *  \param ScalingFactor double The scaling factor to apply.
+ * \param XS_handle int Handle to the cross section to be modified.
+ * \param ScalingFactor double The scaling factor to apply.
  *
  *  ## _
  *

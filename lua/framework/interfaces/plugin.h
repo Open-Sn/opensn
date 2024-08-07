@@ -8,7 +8,7 @@
 namespace opensnlua
 {
 
-/**Stores all the keys currently in the registries.*/
+/// Stores all the keys currently in the registries.
 struct RegistryStatuses
 {
   std::vector<std::string> objfactory_keys_;
@@ -16,7 +16,7 @@ struct RegistryStatuses
   std::vector<std::string> console_lua_wrapper_keys_;
 };
 
-/**Builds a `RegistryStatuses` structure*/
+/// Builds a `RegistryStatuses` structure
 RegistryStatuses GetStatusOfRegistries();
 
 class Plugin : public opensn::Object

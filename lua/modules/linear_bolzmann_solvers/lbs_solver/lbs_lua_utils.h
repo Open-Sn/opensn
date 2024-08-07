@@ -11,7 +11,8 @@ namespace opensnlua
 
 int LBSSetOptions(lua_State* L);
 
-/**Sets the internal phi vector to the value in the associated
+/**
+ * Sets the internal phi vector to the value in the associated
  * field function.
  * \param handle int Handle to the lbs-based object.
  * \param specs Table Various options in a table. Detailed below.

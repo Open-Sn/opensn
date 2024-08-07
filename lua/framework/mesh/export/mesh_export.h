@@ -8,19 +8,13 @@
 namespace opensnlua
 {
 
-/**
- * Exports the mesh to a wavefront OBJ format.
- */
+/// Exports the mesh to a wavefront OBJ format.
 int MeshExportToOBJ(lua_State* L);
 
-/**
- * Exports the mesh to PVTU format.
- */
+/// Exports the mesh to PVTU format.
 int MeshExportToPVTU(lua_State* L);
 
-/**
- * Exports the mesh to ExodusII format.
- */
+/// Exports the mesh to ExodusII format.
 int MeshExportToExodusII(lua_State* L);
 
 } // namespace opensnlua
