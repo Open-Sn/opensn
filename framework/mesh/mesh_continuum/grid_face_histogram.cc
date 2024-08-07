@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-
 #include "framework/logging/log.h"
 
 namespace opensn

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/nonlinear_solver/nonlinear_solver_options.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

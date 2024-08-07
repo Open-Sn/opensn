@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/data_types/varying.h"
-
 #include <memory>
 #include <vector>
 #include <string>

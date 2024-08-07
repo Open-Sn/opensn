@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "lua/framework/console/console.h"
 #include "lua/framework/math/quadratures/legendre_poly/legendre.h"
+#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 
 using namespace opensn;
 

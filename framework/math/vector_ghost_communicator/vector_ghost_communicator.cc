@@ -2,11 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-
 #include "framework/mpi/mpi_utils.h"
-
 #include "framework/logging/log_exceptions.h"
-
 #include <map>
 #include <string>
 #include <algorithm>

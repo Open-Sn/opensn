@@ -2,17 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
-
-#include <petscksp.h>
-
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
+#include <petscksp.h>
 #include <iomanip>
 
 namespace opensn

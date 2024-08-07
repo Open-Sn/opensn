@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/serial_newton_iteration/serial_newton_iteration.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <iomanip>
 
 namespace opensn

@@ -10,14 +10,14 @@ extern "C"
 #include <lauxlib.h>
 }
 
+#include "lua/framework/exceptions/invalid_lua_argument.h"
+#include "framework/parameters/parameter_block.h"
+#include "framework/math/math.h"
 #include <typeinfo>
 #include <string>
 #include <vector>
 #include <memory>
 #include <type_traits>
-#include "framework/parameters/parameter_block.h"
-#include "framework/math/math.h"
-#include "lua/framework/exceptions/invalid_lua_argument.h"
 
 /**
  * Posts a generalized error message indicating that the expected amount of arguments don't match

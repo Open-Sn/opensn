@@ -4,14 +4,11 @@
 #pragma once
 
 #include "framework/mesh/mesh_vector.h"
-
 #include <iostream>
-
 #include <vector>
 #include <array>
 #include <cmath>
 #include <sstream>
-
 #include <type_traits>
 
 namespace opensn

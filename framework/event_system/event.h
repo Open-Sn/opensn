@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/parameters/parameter_block.h"
-
 #include <string>
 
 namespace opensn

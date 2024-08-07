@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/time_integrations/theta_scheme_time_intgr.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

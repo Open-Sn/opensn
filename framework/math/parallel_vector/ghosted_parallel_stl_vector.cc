@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
-
 #include "framework/logging/log.h"
-
 #include <algorithm>
 
 namespace opensn

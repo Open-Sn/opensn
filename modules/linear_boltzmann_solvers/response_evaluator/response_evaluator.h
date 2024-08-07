@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/object.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "framework/object.h"
 
 namespace opensn
 {

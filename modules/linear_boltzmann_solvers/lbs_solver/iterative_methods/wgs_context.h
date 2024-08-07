@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/math/linear_solver/linear_solver_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
+#include "framework/math/linear_solver/linear_solver_context.h"
 #include <vector>
 #include <functional>
 #include <memory>

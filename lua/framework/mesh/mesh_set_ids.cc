@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/mesh/mesh_set_ids.h"
+#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "lua/framework/console/console.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 
 namespace opensnlua

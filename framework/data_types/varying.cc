@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/data_types/varying.h"
-
+#include "framework/logging/log_exceptions.h"
 #include <algorithm>
 #include <sstream>
-
-#include "framework/logging/log_exceptions.h"
 
 namespace opensn
 {

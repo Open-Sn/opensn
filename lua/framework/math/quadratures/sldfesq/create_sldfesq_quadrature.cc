@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "lua/framework/console/console.h"
-#include "framework/runtime.h"
 #include "lua/framework/math/quadratures/sldfesq/sldfe.h"
+#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
 

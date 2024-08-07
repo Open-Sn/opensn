@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/linear_solver/preconditioner_apply.h"
-
 #include "framework/math/linear_solver/preconditioner_context.h"
-
 #include <petscksp.h>
 
 namespace opensn

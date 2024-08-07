@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/functions/function_dimA_to_dimB.h"
-
 #include "framework/logging/log.h"
 
 namespace opensn

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "lua/framework/console/console.h"
 #include "framework/post_processors/post_processor_printer.h"
 #include "framework/post_processors/post_processor.h"
-#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

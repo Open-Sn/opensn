@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include "framework/math/nonlinear_solver/nonlinear_solver.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_context.h"
-
+#include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include <petscsnes.h>
 
 namespace opensn

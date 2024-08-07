@@ -7,7 +7,6 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <numeric>
 
 namespace opensn

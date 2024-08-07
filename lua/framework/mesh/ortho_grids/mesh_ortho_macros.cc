@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
+#include "lua/framework/mesh/ortho_grids/mesh_ortho_macros.h"
+#include "lua/framework/console/console.h"
 #include "framework/data_types/varying.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "lua/framework/mesh/ortho_grids/mesh_ortho_macros.h"
-#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

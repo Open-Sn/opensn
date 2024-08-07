@@ -3,9 +3,9 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"

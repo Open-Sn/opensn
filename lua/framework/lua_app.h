@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <string>
 #include "mpicpp-lite/mpicpp-lite.h"
+#include <string>
 
 namespace mpi = mpicpp_lite;
 

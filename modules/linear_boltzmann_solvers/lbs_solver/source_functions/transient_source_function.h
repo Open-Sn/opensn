@@ -4,7 +4,6 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
-
 #include "framework/math/math_time_stepping.h"
 
 namespace opensn

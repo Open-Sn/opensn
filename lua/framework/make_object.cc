@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-
-#include "framework/object_factory.h"
 #include "lua/framework/console/console.h"
+#include "framework/object_factory.h"
 
 namespace opensnlua
 {

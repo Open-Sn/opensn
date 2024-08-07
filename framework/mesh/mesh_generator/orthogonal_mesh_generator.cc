@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
-
 #include "framework/object_factory.h"
-
 #include "framework/logging/log.h"
 
 namespace opensn

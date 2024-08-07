@@ -3,12 +3,10 @@
 
 #pragma once
 
-#include <utility>
-
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "framework/math/math.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "framework/math/math.h"
+#include <utility>
 
 namespace opensn
 {

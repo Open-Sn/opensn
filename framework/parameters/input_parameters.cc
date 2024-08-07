@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/parameters/input_parameters.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <sstream>
 #include <algorithm>
 #include <utility>

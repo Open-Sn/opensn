@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/time_integrations/time_integration.h"
-
 #include "framework/logging/log_exceptions.h"
 
 namespace opensn

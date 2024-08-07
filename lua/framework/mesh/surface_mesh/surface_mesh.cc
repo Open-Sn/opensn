@@ -3,10 +3,10 @@
 
 #include "lua/framework/mesh/surface_mesh/surface_mesh.h"
 #include "lua/framework/lua.h"
+#include "lua/framework/console/console.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

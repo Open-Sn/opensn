@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/physics/time_steppers/constant_time_stepper.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

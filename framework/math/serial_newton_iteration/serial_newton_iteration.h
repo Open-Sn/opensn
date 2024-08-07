@@ -3,10 +3,9 @@
 
 #pragma once
 
+#include "framework/math/math.h"
 #include <vector>
 #include <cassert>
-
-#include "framework/math/math.h"
 
 namespace opensn
 {

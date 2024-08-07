@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

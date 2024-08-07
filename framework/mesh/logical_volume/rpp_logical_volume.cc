@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

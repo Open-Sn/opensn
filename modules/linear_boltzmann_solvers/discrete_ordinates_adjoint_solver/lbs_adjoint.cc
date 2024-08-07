@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_adjoint_solver/lbs_adjoint.h"
-
 #include "framework/math/math.h"
 #include "framework/math/serial_newton_iteration/serial_newton_iteration.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

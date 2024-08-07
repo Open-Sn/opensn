@@ -6,7 +6,6 @@
 #include "framework/object.h"
 #include "framework/physics/basic_options/basic_options.h"
 #include "framework/parameters/parameter_block.h"
-
 #include <iostream>
 #include <utility>
 

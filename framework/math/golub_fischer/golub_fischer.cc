@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/golub_fischer/golub_fischer.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <cmath>
 
 namespace opensn

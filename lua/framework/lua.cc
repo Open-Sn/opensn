@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-
 #include "framework/logging/log.h"
-
 #include <string>
 #include <sstream>
 #include <map>
