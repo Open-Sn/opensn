@@ -22,7 +22,6 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   const auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& q_moments_local = lbs_solver.QMomentsLocal();
-  const auto& densities_local = lbs_solver.DensitiesLocal();
 
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
 
@@ -39,7 +38,6 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     active_set_source_function(groupset,
                                q_moments_local,
                                phi_old_local,
-                               densities_local,
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
   const double k_eff = lbs_solver.ComputeFissionProduction(phi_old_local);
@@ -53,8 +51,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (supress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(
-      groupset, q_moments_local, phi_old_local, densities_local, source_flags);
+    active_set_source_function(groupset, q_moments_local, phi_old_local, source_flags);
   }
 
   // Sweep all the groupsets

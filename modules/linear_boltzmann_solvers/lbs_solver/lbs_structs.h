@@ -198,7 +198,6 @@ class AGSSchemeEntry;
 typedef std::function<void(const LBSGroupset& groupset,
                            std::vector<double>& q,
                            const std::vector<double>& phi,
-                           const std::vector<double>& densities,
                            const SourceFlags source_flags)>
   SetSourceFunction;
 
