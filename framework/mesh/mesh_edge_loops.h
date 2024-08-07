@@ -6,12 +6,14 @@
 namespace opensn
 {
 
-/**Structure containing edge properties*/
+/// Structure containing edge properties
 struct Edge
 {
-  int v_index[2]{};   ///< Indices of the vertices
-  int f_index[4]{};   ///< Indices of faces adjoining it
-  Vertex vertices[2]; ///< Vector vertices
+  /// Indices of the vertices
+  int v_index[2]{};
+  /// Indices of faces adjoining it
+  int f_index[4]{};
+  Vertex vertices[2];
 
   Edge()
   {

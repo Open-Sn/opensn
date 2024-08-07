@@ -8,18 +8,18 @@
 namespace opensnlua
 {
 
-/**Obtains a list of field functions, related only to scalar flux,
- * from the transport solver.
+/**
+ * Obtains a list of field functions, related only to scalar flux, from the transport solver.
  *
- * \param SolverIndex int Handle to the solver for which the list is to be
- * obtained.
+ * \param SolverIndex int Handle to the solver for which the list is to be obtained.
  *
  * \return Pair Table and count. Returns an array of handles and the amount of
  * elements in it (indexed from 1). \ingroup LBSLuaFunctions \author Jan
  */
 int LBSGetScalarFieldFunctionList(lua_State* L);
 
-/**Writes the angular fluxes of a LBS groupset to file.
+/**
+ * Writes the angular fluxes of a LBS groupset to file.
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
@@ -29,11 +29,11 @@ int LBSGetScalarFieldFunctionList(lua_State* L);
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
  *                         will append its id to the back plus an extension ".data"
- *
  */
 int LBSWriteGroupsetAngularFlux(lua_State* L);
 
-/**Reads the angular fluxes of a LBS groupset from a file.
+/**
+ * Reads the angular fluxes of a LBS groupset from a file.
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
@@ -43,22 +43,22 @@ int LBSWriteGroupsetAngularFlux(lua_State* L);
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
  *                         will append its id to the back plus an extension ".data"
- *
  */
 int LBSReadGroupsetAngularFlux(lua_State* L);
 
-/**Writes the flux-moments of a LBS solution to file (phi_old_local).
+/**
+ * Writes the flux-moments of a LBS solution to file (phi_old_local).
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
  *                         will append its id to the back plus an extension ".data"
- *
  */
 int LBSWriteFluxMoments(lua_State* L);
 
-/**Creates scattered source-moments, based on a LBS solution, and writes them
+/**
+ * Creates scattered source-moments, based on a LBS solution, and writes them
  * to file.
  *
  * \param SolverIndex int Handle to the solver for which the group
@@ -66,11 +66,11 @@ int LBSWriteFluxMoments(lua_State* L);
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
  *                         will append its id to the back plus an extension ".data"
- *
  */
 int LBSCreateAndWriteSourceMoments(lua_State* L);
 
-/**Reads flux-moments from a file and creates a scattering source from these
+/**
+ * Reads flux-moments from a file and creates a scattering source from these
  * moments to be used instead of a regular material/boundary source.
  *
  * \param SolverIndex int Handle to the solver for which the group
@@ -83,13 +83,12 @@ int LBSCreateAndWriteSourceMoments(lua_State* L);
  *                              single stand-alone file. The file_base will then
  *                              be used without adding the location-id, but still
  *                              with the ".data" appended. Default: false.
- *
  */
 int LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
 
-/**Reads the source-moments from a file to a specific
- * ext_src_moments_local-vector
- *  * to be used instead of a regular material/boundary source.
+/**
+ * Reads the source-moments from a file to a specific ext_src_moments_local-vector to be used
+ * instead of a regular material/boundary source.
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
@@ -104,7 +103,8 @@ int LBSReadFluxMomentsAndMakeSourceMoments(lua_State* L);
  */
 int LBSReadSourceMoments(lua_State* L);
 
-/**Reads flux-moments from a file to phi_old_local (the initial flux solution).
+/**
+ * Reads flux-moments from a file to phi_old_local (the initial flux solution).
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
@@ -119,7 +119,8 @@ int LBSReadSourceMoments(lua_State* L);
  */
 int LBSReadFluxMoments(lua_State* L);
 
-/**Computes and returns the fission rate.
+/**
+ * Computes and returns the fission rate.
  *
  * \param SolverIndex int Handle to the solver maintaining the information.
  * \param OldNewOption string "NEW" or "OLD". For steady state solvers, the
@@ -133,7 +134,8 @@ int LBSReadFluxMoments(lua_State* L);
  */
 int LBSComputeFissionRate(lua_State* L);
 
-/**Initializes or reinitializes the materials. This normally happens
+/**
+ * Initializes or reinitializes the materials. This normally happens
  * automatically during solver initialization but if the user wants to
  * swap/change XSs during the run then this will allow the material structures
  * to now deal with the new/changed materials.

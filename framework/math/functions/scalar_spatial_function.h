@@ -9,9 +9,7 @@
 namespace opensn
 {
 
-/**
- * Base class for evaluating functions given spatial location
- */
+/// Base class for evaluating functions given spatial location
 class ScalarSpatialFunction : public Function
 {
 public:

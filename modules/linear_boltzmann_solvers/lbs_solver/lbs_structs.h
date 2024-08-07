@@ -88,14 +88,10 @@ enum SourceType
   ZERO_INCOMING_DELAYED_PSI = (1 << 6)
 };
 
-/**
- * SourceFlags is a combination of `SourceType`s
- */
+/// SourceFlags is a combination of `SourceType`s
 struct SourceFlags
 {
-  /**
-   * Create an empty `SourceFlags`
-   */
+  /// Create an empty `SourceFlags`
   SourceFlags() : flags_(0) {}
 
   /**
@@ -202,7 +198,7 @@ typedef std::function<void(const LBSGroupset& groupset,
                            const SourceFlags source_flags)>
   SetSourceFunction;
 
-/**Struct for storing LBS options.*/
+/// Struct for storing LBS options.
 struct LBSOptions
 {
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
@@ -241,7 +237,7 @@ struct LBSOptions
   std::vector<AGSSchemeEntry> ags_scheme;
 };
 
-/**Transport view of a cell*/
+/// Transport view of a cell
 class CellLBSView
 {
 private:

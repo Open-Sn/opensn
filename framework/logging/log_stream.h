@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/** Log stream for adding header information to a string stream.*/
+/// Log stream for adding header information to a string stream.
 class LogStream : public std::stringstream
 {
 private:
@@ -18,13 +18,13 @@ private:
   const bool dummy_ = false;
 
 public:
-  /** Creates a string stream.*/
+  /// Creates a string stream.
   LogStream(std::ostream* output_stream, std::string header, bool dummy_flag = false)
     : log_stream_(output_stream), log_header_(std::move(header)), dummy_(dummy_flag)
   {
   }
 
-  /** Flushes stream.*/
+  /// Flushes stream.
   virtual ~LogStream();
 
   LogStream(const LogStream& other)

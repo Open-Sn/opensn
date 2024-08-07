@@ -11,9 +11,7 @@
 namespace opensn
 {
 
-/**
- * General transient solver for point kinetics.
- */
+/// General transient solver for point kinetics.
 class PRKSolver : public opensn::Solver
 {
 private:
@@ -31,9 +29,9 @@ private:
   double period_tph_ = 0.0;
 
 public:
-  /**Sets input parameters.*/
+  /// Sets input parameters.
   static InputParameters GetInputParameters();
-  /**Constructor.*/
+  /// Constructor.
   explicit PRKSolver(const InputParameters& params);
 
   void Initialize() override;
@@ -45,22 +43,23 @@ public:
 
   // Getters and Setters
 
-  /**Returns the population at the previous time step.*/
+  /// Returns the population at the previous time step.
   double PopulationPrev() const;
-  /**Returns the population at the next time step.*/
+  /// Returns the population at the next time step.
   double PopulationNew() const;
-  /**Returns the period computed for the last time step.*/
+  /// Returns the period computed for the last time step.
   double Period() const;
-  /**Returns the time computed for the last time step.*/
+  /// Returns the time computed for the last time step.
   double TimePrev() const;
-  /**Returns the time computed for the next time step.*/
+  /// Returns the time computed for the next time step.
   double TimeNew() const;
-  /**Returns the solution at the previous time step.*/
+  /// Returns the solution at the previous time step.
   std::vector<double> SolutionPrev() const;
-  /**Returns the solution at the next time step.*/
+  /// Returns the solution at the next time step.
   std::vector<double> SolutionNew() const;
 
-  /**\addtogroup prk
+  /**
+   * \addtogroup prk
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
@@ -75,7 +74,7 @@ public:
    */
   void SetProperties(const ParameterBlock& params) override;
 
-  /**Sets the value of rho.*/
+  /// Sets the value of rho.
   void SetRho(double value);
 };
 

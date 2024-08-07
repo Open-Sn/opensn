@@ -23,12 +23,14 @@ public:
 
   /// Returns the text name of the field function.
   const std::string& Name() const { return name_; }
-  /**Returns a reference to the unknown structure.*/
+
+  /// Returns a reference to the unknown structure.
   const Unknown& GetUnknown() const { return unknown_; }
+
   /// Returns a reference to the unknown manager that can be with spatial discretizations.
   const UnknownManager& GetUnknownManager() const { return unknown_manager_; }
 
-  /// Overrides the stack placement so that field functions go to the field function stack.*/
+  /// Overrides the stack placement so that field functions go to the field function stack.
   void PushOntoStack(std::shared_ptr<Object>& new_object) override;
 
   /// Evaluate the field function on a given cell, at a given position, for the given component.

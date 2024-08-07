@@ -6,7 +6,8 @@
 namespace opensnlua
 {
 
-/**Provides the function evaluation of Pn at value x.
+/**
+ * Provides the function evaluation of Pn at value x.
  *
  * \param N int The Legendre polynomial.
  * \param x double The evaluation point.
@@ -15,7 +16,8 @@ namespace opensnlua
  */
 int Legendre(lua_State* L);
 
-/**Provides the function evaluation of the derivative of Pn at value x
+/**
+ *Provides the function evaluation of the derivative of Pn at value x
  *
  * \param N int The Legendre polynomial.
  * \param x double The evaluation point.
@@ -24,7 +26,8 @@ int Legendre(lua_State* L);
  */
 int LegendreDerivative(lua_State* L);
 
-/**Provides the function evaluation of the spherical harmonics.
+/**
+ * Provides the function evaluation of the spherical harmonics.
  *
  * \param ell int The \f$ \ell \f$-th order of the harmonic.
  * \param m   int The \f$ m \f$-th moment of the harmonic.

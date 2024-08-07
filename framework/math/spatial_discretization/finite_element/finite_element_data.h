@@ -7,7 +7,7 @@
 
 namespace opensn
 {
-/**Stores finite element data for volumetric integrals.*/
+/// Stores finite element data for volumetric integrals.
 class VolumetricFiniteElementData
 {
 public:
@@ -51,16 +51,22 @@ public:
   size_t NumNodes() const;
 
 private:
-  std::vector<unsigned int> quadrature_point_indices_; ///< qp index only
-  std::vector<Vector3> qpoints_xyz_;                   ///< qp index only
-  std::vector<std::vector<double>> shape_value_;       ///< Node i, then qp
-  std::vector<std::vector<Vector3>> shape_grad_;       ///< Node i, then qp
-  std::vector<double> JxW_;                            ///< qp index only
-  std::vector<std::vector<int>> face_dof_mappings_;    ///< Face f,then fi
+  /// qp index only
+  std::vector<unsigned int> quadrature_point_indices_;
+  /// qp index only
+  std::vector<Vector3> qpoints_xyz_;
+  /// Node i, then qp
+  std::vector<std::vector<double>> shape_value_;
+  /// Node i, then qp
+  std::vector<std::vector<Vector3>> shape_grad_;
+  /// qp index only
+  std::vector<double> JxW_;
+  /// Face f,then fi
+  std::vector<std::vector<int>> face_dof_mappings_;
   size_t num_nodes_;
 };
 
-/**Stores finite element information for surface integrals.*/
+/// Stores finite element information for surface integrals.
 class SurfaceFiniteElementData : public VolumetricFiniteElementData
 {
 public:
@@ -88,7 +94,8 @@ public:
   const std::vector<Vector3>& Normals() const;
 
 private:
-  std::vector<Vector3> normals_; ///< node i, then qp
+  /// node i, then qp
+  std::vector<Vector3> normals_;
 };
 
 } // namespace opensn

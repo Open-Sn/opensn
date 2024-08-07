@@ -15,12 +15,14 @@ namespace opensn
 class FieldFunctionGridBased;
 class TimeStepper;
 
-/**\defgroup SolverBase Base class for all solvers
- * \ingroup doc_PhysicsSolver*/
+/**
+ * \defgroup SolverBase Base class for all solvers
+ * \ingroup doc_PhysicsSolver
+ */
 class Solver : public Object
 {
 public:
-  /**Returns the input parameters.*/
+  /// Returns the input parameters.
   static InputParameters GetInputParameters();
   explicit Solver(std::string name);
   Solver(std::string name, std::initializer_list<BasicOption> options);
@@ -39,18 +41,23 @@ public:
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
 
-  /**Initialize function.*/
+  /// Initialize function.
   virtual void Initialize();
-  /**Execution function.*/
+
+  /// Execution function.
   virtual void Execute();
-  /**Step function*/
+
+  /// Step function*/
   virtual void Step();
-  /**Advance time values function.*/
+
+  /// Advance time values function.
   virtual void Advance();
 
-  /**Generalized query for information supporting varying returns.*/
+  /// Generalized query for information supporting varying returns.
   virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
-  /**\addtogroup SolverBase
+
+  /**
+   * \addtogroup SolverBase
    *
    * \section Properties Properties that can be set
    * The following properties can be set via the lua call
@@ -62,7 +69,8 @@ public:
    * - `time`, Current time
    */
   virtual void SetProperties(const ParameterBlock& params);
-  /**PreCheck call to GetInfo.*/
+
+  /// PreCheck call to GetInfo.
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
 protected:

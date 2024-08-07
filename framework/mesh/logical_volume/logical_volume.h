@@ -12,13 +12,13 @@
 namespace opensn
 {
 
-/** Class for defining base logical volumes.*/
+/// Class for defining base logical volumes.
 class LogicalVolume : public Object
 {
 public:
   static InputParameters GetInputParameters();
 
-  /**Logical operation for surface mesh.*/
+  /// Logical operation for surface mesh.
   virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:

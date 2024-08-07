@@ -13,7 +13,7 @@ namespace mpi = mpicpp_lite;
 namespace opensn
 {
 
-/**Vector with allocation space for ghosts.*/
+/// Vector with allocation space for ghosts.
 class VectorGhostCommunicator
 {
 
@@ -23,10 +23,10 @@ public:
                           const std::vector<int64_t>& ghost_ids,
                           const mpi::Communicator& communicator);
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   VectorGhostCommunicator(const VectorGhostCommunicator& other);
 
-  /**Move constructor.*/
+  /// Move constructor.
   VectorGhostCommunicator(VectorGhostCommunicator&& other) noexcept;
 
   uint64_t LocalSize() const { return local_size_; }

@@ -24,10 +24,12 @@ public:
   explicit ByteArray(std::vector<std::byte>&& raw_data) : raw_data_(std::move(raw_data)) {}
   explicit ByteArray(const std::vector<std::byte>& raw_data) : raw_data_(raw_data) {}
 
-  /**Uses the template type T to convert an associated value (of type T)
+  /**
+   * Uses the template type T to convert an associated value (of type T)
    * to a sub-array of std::bytes and adds it to the internal byte-array.
    *
-   * The template type T must support sizeof.*/
+   * The template type T must support sizeof.
+   */
   template <typename T>
   void Write(const T& value)
   {
@@ -37,7 +39,8 @@ public:
     raw_data_.insert(raw_data_.end(), dest.data(), dest.data() + num_bytes);
   }
 
-  /**Uses the template type `T` to convert `sizeof(T)` number of bytes to
+  /**
+   * Uses the template type `T` to convert `sizeof(T)` number of bytes to
    * a value of type `T`. The bytes are pulled from the internal byte-array
    * starting at the internal address `m_offset` which can be viewed with a
    * call to `Offset()`. This offset is incremented by the amount of bytes
@@ -45,7 +48,8 @@ public:
    *
    * Bounds-checking is performed by checking if the internal byte array
    * has the required number of bytes available. If this check fails then
-   * this call will return an `out_of_range` exception.*/
+   * this call will return an `out_of_range` exception.
+   */
   template <typename T>
   T Read()
   {
@@ -63,7 +67,8 @@ public:
     return value;
   }
 
-  /**Uses the template type T to convert sizeof(T) number of bytes to
+  /**
+   * Uses the template type T to convert sizeof(T) number of bytes to
    * a value of type T. The bytes are pulled from the internal byte-array
    * starting at the internal address specified by the argument "address".
    * An optional argument next_address can be used to return the location
@@ -73,7 +78,8 @@ public:
    *
    * Bounds-checking is performed by checking if the internal byte array
    * has the required number of bytes available. If this check fails then
-   * this call will return an `out_of_range` exception.*/
+   * this call will return an `out_of_range` exception.
+   */
   template <typename T>
   T Read(const size_t address, size_t* next_address = nullptr) const
   {
@@ -92,7 +98,7 @@ public:
     return value;
   }
 
-  /**Appends a `ByteArray` to the current internal byte array.*/
+  /// Appends a `ByteArray` to the current internal byte array.
   void Append(const ByteArray& other_raw)
   {
     auto& master = raw_data_;
@@ -101,8 +107,7 @@ public:
     master.insert(master.end(), slave.begin(), slave.end());
   }
 
-  /**Appends bytes from a `std::vector<std::byte>` to the internal
-   * byte array.*/
+  /// Appends bytes from a `std::vector<std::byte>` to the internal byte array.
   void Append(const std::vector<std::byte>& other_raw)
   {
     auto& master = raw_data_;
@@ -111,26 +116,29 @@ public:
     master.insert(master.end(), slave.begin(), slave.end());
   }
 
-  /**Clears the internal byte array and resets the address offset to zero.*/
+  /// Clears the internal byte array and resets the address offset to zero.
   void Clear()
   {
     raw_data_.clear();
     offset_ = 0;
   }
 
-  /**Moves the address marker to the supplied address.*/
+  /// Moves the address marker to the supplied address.
   void Seek(const size_t address = 0) { offset_ = address; }
-  /**Returns the internal address marker position.*/
+
+  /// Returns the internal address marker position.
   size_t Offset() const { return offset_; }
-  /**Determines if the internal address marker is beyond the internal
-   * byte array.*/
+
+  /// Determines if the internal address marker is beyond the internal byte array.
   bool EndOfBuffer() const { return offset_ >= raw_data_.size(); }
-  /**Returns the current size of the internal byte array.*/
+
+  /// Returns the current size of the internal byte array.
   size_t Size() const { return raw_data_.size(); }
 
-  /**Returns a reference to the internal byte array.*/
+  /// Returns a reference to the internal byte array.
   std::vector<std::byte>& Data() { return raw_data_; }
-  /**Returns a const reference of the internal byte array.*/
+
+  /// Returns a const reference of the internal byte array.
   const std::vector<std::byte>& Data() const { return raw_data_; }
 };
 

@@ -25,18 +25,16 @@ public:
   bool HasCurvature() const override { return false; }
 
 private:
-  // Inputs
-  /**Independent variable values.*/
+  /// Independent variable values.
   const std::vector<double> x_values_;
-  /**Dependent variable values.*/
+  /// Dependent variable values.
   const std::vector<double> y_values_;
 
   std::vector<double> slopes_;
 
-  // Determined during construction
-  /**The number of items in the discrete function values*/
+  /// The number of items in the discrete function values
   const size_t num_vals_;
-  /**Distance between independent variable values. Used for interpolation.*/
+  /// Distance between independent variable values. Used for interpolation.
   std::vector<double> delta_x_values_;
 };
 

@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Enumeration of data-types supported by Varying*/
+/// Enumeration of data-types supported by Varying
 enum class VaryingDataType : int
 {
   VOID = 0,            ///< Basically undefined or null
@@ -19,7 +19,7 @@ enum class VaryingDataType : int
   FLOAT = 5            ///< Datatype mapping to double
 };
 
-/**Provides a string-name for an enumerated VaryingDataType.*/
+/// Provides a string-name for an enumerated VaryingDataType.
 std::string VaryingDataTypeStringName(VaryingDataType type);
 
 class Varying;

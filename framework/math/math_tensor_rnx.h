@@ -16,9 +16,11 @@
 namespace opensn
 {
 
-/**Generalized tensor with rank-R dimension-N and arbitrary number
- * format.
- * \author Jan.*/
+/**
+ * Generalized tensor with rank-R dimension-N and arbitrary number format.
+ *
+ * \author Jan.
+ */
 template <int R, int N, class NumberFormat>
 struct TensorRNX
 {
@@ -26,7 +28,7 @@ struct TensorRNX
   const unsigned int rank;
   const unsigned int dimension;
 
-  /**Default constructor.*/
+  /// Default constructor.
   TensorRNX() : rank(R), dimension(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -36,7 +38,7 @@ struct TensorRNX
     entries.resize(num_rank1_entries);
   }
 
-  /**Constructor with value.*/
+  /// Constructor with value.
   TensorRNX(const NumberFormat value) : rank(R), dimension(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -46,7 +48,7 @@ struct TensorRNX
     entries.resize(num_rank1_entries, VectorNX<N, NumberFormat>(value));
   }
 
-  /**Component-wise copy.*/
+  /// Component-wise copy.
   TensorRNX& operator=(const TensorRNX& rhs)
   {
     entries = rhs.entries;
@@ -63,15 +65,9 @@ struct TensorRNX
   };
 
   VectorNX<N, NumberFormat> operator[](const int i);
-
-  /***/
-  //    RecursiveAccessor operator[](const int i)
-  //    {
-  //
-  //    }
 };
 
-/**Specialized rank-2 tensor.*/
+/// Specialized rank-2 tensor.
 template <int N, class NumberFormat>
 struct TensorRNX<2, N, NumberFormat>
 {
@@ -79,7 +75,7 @@ struct TensorRNX<2, N, NumberFormat>
   const unsigned int rank;
   const unsigned int dimension;
 
-  /**Default constructor.*/
+  /// Default constructor.
   TensorRNX() : rank(2), dimension(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -89,7 +85,7 @@ struct TensorRNX<2, N, NumberFormat>
     entries.resize(num_rank1_entries);
   }
 
-  /**Constructor with value.*/
+  /// Constructor with value.
   TensorRNX(const NumberFormat value) : rank(2), dimension(N)
   {
     static_assert(std::is_floating_point<NumberFormat>::value,
@@ -99,13 +95,13 @@ struct TensorRNX<2, N, NumberFormat>
     entries.resize(num_rank1_entries, VectorNX<N, NumberFormat>(value));
   }
 
-  /**Copy constructor.*/
+  /// Copy constructor.
   TensorRNX(const TensorRNX<2, N, NumberFormat>& that) : rank(2), dimension(N)
   {
     this->entries = that.entries;
   }
 
-  /**Component-wise copy (assignment operator.*/
+  /// Component-wise copy (assignment operator.
   TensorRNX& operator=(const TensorRNX& rhs)
   {
     entries = rhs.entries;
@@ -113,14 +109,16 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  /**Return reference to vector at given row.*/
+  /// Return reference to vector at given row.
   const VectorNX<N, NumberFormat>& operator[](const int i) const { return entries.at(i); }
 
-  /**Return reference to vector at given row.*/
+  /// Return reference to vector at given row.
   VectorNX<N, NumberFormat>& operator()(const int i) { return entries.at(i); }
 
-  /**Component-wise addition.
-   * \f$ \vec{\vec{W}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$*/
+  /**
+   * Component-wise addition.
+   * \f$ \vec{\vec{W}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$
+   */
   TensorRNX<2, N, NumberFormat> operator+(const TensorRNX<2, N, NumberFormat>& that) const
   {
     TensorRNX<2, N, NumberFormat> new_t;
@@ -135,8 +133,10 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  /**In-place component-wise addition.
-   * \f$ \vec{\vec{X}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$*/
+  /**
+   * In-place component-wise addition.
+   * \f$ \vec{\vec{X}} = \vec{\vec{X}} + \vec{\vec{Y}} \f$
+   */
   TensorRNX<2, N, NumberFormat>& operator+=(const TensorRNX<2, N, NumberFormat>& that)
   {
     for (int i = 0; i < N; ++i)
@@ -149,8 +149,10 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  /**Component-wise subtraction.
-   * \f$ \vec{\vec{W}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$*/
+  /**
+   * Component-wise subtraction.
+   * \f$ \vec{\vec{W}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$
+   */
   TensorRNX<2, N, NumberFormat> operator-(const TensorRNX<2, N, NumberFormat>& that) const
   {
     TensorRNX<2, N, NumberFormat> new_t;
@@ -165,8 +167,10 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  /**In-place component-wise subtraction.
-   * \f$ \vec{\vec{X}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$*/
+  /**
+   * In-place component-wise subtraction.
+   * \f$ \vec{\vec{X}} = \vec{\vec{X}} - \vec{\vec{Y}} \f$
+   */
   TensorRNX<2, N, NumberFormat>& operator-=(const TensorRNX<2, N, NumberFormat>& that)
   {
     for (int i = 0; i < N; ++i)
@@ -179,8 +183,10 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  /**Component-wise multiplication by scalar.
-   * \f$ \vec{\vec{W}} = \vec{\vec{X}}\alpha \f$ */
+  /**
+   * Component-wise multiplication by scalar.
+   * \f$ \vec{\vec{W}} = \vec{\vec{X}}\alpha \f$
+   */
   TensorRNX<2, N, NumberFormat> operator*(const double value) const
   {
     TensorRNX<2, N, NumberFormat> new_t;
@@ -194,8 +200,10 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  /**In-place component-wise multiplication by scalar.
-   *  \f$ \vec{\vec{X}} = \vec{\vec{X}}\alpha \f$*/
+  /**
+   * In-place component-wise multiplication by scalar.
+   * \f$ \vec{\vec{X}} = \vec{\vec{X}}\alpha \f$
+   */
   TensorRNX<2, N, NumberFormat>& operator*=(const double value)
   {
     for (int i = 0; i < N; ++i)
@@ -205,8 +213,10 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  /**Component-wise division by scalar.
-   *  \f$ \vec{\vec{W}} = \vec{\vec{X}}\frac{1}{\alpha} \f$*/
+  /**
+   * Component-wise division by scalar.
+   * \f$ \vec{\vec{W}} = \vec{\vec{X}}\frac{1}{\alpha} \f$
+   */
   TensorRNX<2, N, NumberFormat> operator/(const double value) const
   {
     TensorRNX<2, N, NumberFormat> new_t;
@@ -220,8 +230,10 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  /**In-place component-wise division by scalar.
-   * \f$ \vec{\vec{X}} = \vec{\vec{X}}\frac{1}{\alpha} \f$*/
+  /**
+   * In-place component-wise division by scalar.
+   * \f$ \vec{\vec{X}} = \vec{\vec{X}}\frac{1}{\alpha} \f$
+   */
   TensorRNX<2, N, NumberFormat>& operator/=(const double value)
   {
     for (int i = 0; i < N; ++i)
@@ -231,8 +243,10 @@ struct TensorRNX<2, N, NumberFormat>
     return *this;
   }
 
-  /**Classical transpose of the tensor.
-   * \f$ W_{ij} = T_{ji} \f$*/
+  /**
+   * Classical transpose of the tensor.
+   * \f$ W_{ij} = T_{ji} \f$
+   */
   TensorRNX<2, N, NumberFormat> Transpose() const
   {
     TensorRNX<2, N, NumberFormat> new_t;
@@ -246,7 +260,7 @@ struct TensorRNX<2, N, NumberFormat>
     return new_t;
   }
 
-  /**Tensor dot-product with a vector.*/
+  /// Tensor dot-product with a vector.
   VectorNX<N, NumberFormat> Dot(const VectorNX<N, NumberFormat>& v) const
   {
     VectorNX<N, NumberFormat> new_vec;
@@ -259,7 +273,7 @@ struct TensorRNX<2, N, NumberFormat>
     return new_vec;
   }
 
-  /**Obtains the diagonal of a rank-2 tensor as a vector.*/
+  /// Obtains the diagonal of a rank-2 tensor as a vector.
   VectorNX<N, NumberFormat> Diag() const
   {
     VectorNX<N, NumberFormat> new_vec;
@@ -272,8 +286,10 @@ struct TensorRNX<2, N, NumberFormat>
     return new_vec;
   }
 
-  /**Returns the sum of the diagonal. Sometimes useful to get
-   * divergence of a vector given its gradient.*/
+  /**
+   * Returns the sum of the diagonal. Sometimes useful to get divergence of a vector given its
+   * gradient.
+   */
   double DiagSum() const
   {
     double val = 0.0;
@@ -286,7 +302,7 @@ struct TensorRNX<2, N, NumberFormat>
     return val;
   }
 
-  /**Prints the tensor to a string and then returns the string.*/
+  /// Prints the tensor to a string and then returns the string.
   std::string PrintS() const
   {
     std::stringstream out;
@@ -305,6 +321,7 @@ struct TensorRNX<2, N, NumberFormat>
     return out.str();
   }
 };
+
 template <int R, int N>
 using TensorRN = TensorRNX<R, N, double>;
 
@@ -313,7 +330,7 @@ using Tensor2N = TensorRNX<2, N, double>;
 
 } // namespace opensn
 
-/**Multiplication by a scalar from the left.*/
+/// Multiplication by a scalar from the left.
 template <int N, class NumberFormat>
 TensorRNX<2, N, NumberFormat>
 operator*(const double value, const TensorRNX<2, N, NumberFormat>& that)

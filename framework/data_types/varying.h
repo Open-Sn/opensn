@@ -75,7 +75,7 @@ private:
     return static_cast<int64_t>(value);
   }
 
-  /**This acts as a base class for templated child arbitrary types*/
+  /// This acts as a base class for templated child arbitrary types
   class VaryingType
   {
   public:
@@ -210,21 +210,24 @@ private:
     T value_;
   };
 
-  /**Type specification*/
+  /// Type specification
   VaryingDataType type_ = VaryingDataType::VOID;
   std::unique_ptr<VaryingType> data_ = nullptr;
 
 private:
-  /**Checks if two VaryingDataType values match.
-   * Type A is matched against type B.*/
+  /**
+   * Checks if two VaryingDataType values match.
+   * Type A is matched against type B.
+   */
   void CheckTypeMatch(VaryingDataType type_A, VaryingDataType type_B_required) const;
 
 private:
 public:
   // Constructors
-  /**Generalized constructor for bool, integral- and float-types. This
-   * constructor has been specialized for std::string and
-   * std::vector<std::byte>.*/
+  /**
+   * Generalized constructor for bool, integral- and float-types. This constructor has been
+   * specialized for std::string and std::vector<std::byte>.
+   */
   template <typename T>
   explicit Varying(const T& value)
   {
@@ -262,73 +265,34 @@ public:
     return std::make_unique<VaryingArbitraryType<double>>(value);
   }
 
-  // template <typename T>
-  // explicit Varying(const BoolType<T>& value)
-  //{
-  //   constexpr bool is_supported_type = IsBool<T>::value;
-  //   static_assert(is_supported_type,
-  //                 "Constructor called with unsupported type");
-  //
-  //   type_ = VaryingDataType::BOOL;
-  //   data_ = std::make_unique<VaryingArbitraryType<BoolStorageType<T>>>(
-  //     CastValue(value));
-  // }
-  //
-  // template <typename T>
-  // explicit Varying(const IntegerType<T>& value)
-  //{
-  //   constexpr bool is_supported_type = IsInteger<T>::value;
-  //   static_assert(is_supported_type,
-  //                 "Constructor called with unsupported type");
-  //
-  //   type_ = VaryingDataType::INTEGER;
-  //   data_ = std::make_unique<VaryingArbitraryType<IntegerStorageType<T>>>(
-  //     CastValue(value));
-  // }
-  //
-  // template <typename T>
-  // explicit Varying(const FloatType<T>& value)
-  //{
-  //   constexpr bool is_supported_type = IsFloat<T>::value;
-  //   static_assert(is_supported_type,
-  //                 "Constructor called with unsupported type");
-  //
-  //   type_ = VaryingDataType::FLOAT;
-  //   data_ = std::make_unique<VaryingArbitraryType<FloatStorageType<T>>>(
-  //     CastValue(value));
-  // }
-
-  /**Constructor for an arbitrary sequence of bytes value.*/
+  /// Constructor for an arbitrary sequence of bytes value.
   explicit Varying(const std::vector<std::byte>& value);
-  /**Constructor for a string value.*/
-  explicit Varying(const std::string& value);
-  /**Constructor for a string literal value.*/
-  // explicit Varying(const char*& value) : Varying(std::string(value)) {}
-  explicit Varying(const char* value) : Varying((not value) ? std::string() : std::string(value)) {}
-  // template <std::size_t N>
-  // explicit Varying(const char (&value)[N])
-  //   : Varying(static_cast<const char*>(value))
-  //{
-  // }
 
-  /**Copy constructor.*/
+  /// Constructor for a string value.
+  explicit Varying(const std::string& value);
+
+  /// Constructor for a string literal value.
+  explicit Varying(const char* value) : Varying((not value) ? std::string() : std::string(value)) {}
+
+  /// Copy constructor.
   Varying(const Varying& other);
 
-  /**Move constructor.*/
+  /// Move constructor.
   Varying(Varying&& other) noexcept;
 
 public:
   // Copy assignment operator
-  /**Assignment operator. i.e., type_A = type_B*/
+  /// Assignment operator. i.e., type_A = type_B
   Varying& operator=(const Varying& other);
 
   // Assignment operators
-  /**Assigns an arbitrary sequence of bytes value.*/
+  /// Assigns an arbitrary sequence of bytes value.
   Varying& operator=(const std::vector<std::byte>& value);
-  /**Assigns a string value.*/
+
+  /// Assigns a string value.
   Varying& operator=(const std::string& value);
 
-  /**Assigns a bool value.*/
+  /// Assigns a bool value.
   template <typename T, std::enable_if_t<IsBool<T>::value, bool> = true>
   Varying& operator=(const T& value)
   {
@@ -338,7 +302,7 @@ public:
     return *this;
   }
 
-  /**Assigns an integer value.*/
+  /// Assigns an integer value.
   template <typename T, std::enable_if_t<IsInteger<T>::value, bool> = true>
   Varying& operator=(const T& value)
   {
@@ -348,7 +312,7 @@ public:
     return *this;
   }
 
-  /**Assign a floating point value.*/
+  /// Assign a floating point value.
   template <typename T, std::enable_if_t<IsFloat<T>::value, bool> = true>
   Varying& operator=(const T& value)
   {
@@ -358,22 +322,25 @@ public:
     return *this;
   }
 
-  /**Equality operator*/
+  /// Equality operator
   bool operator==(const Varying& that) const { return *data_ == *that.data_; }
 
-  /**Inequality operator*/
+  /// Inequality operator
   bool operator!=(const Varying& that) const { return not(*this == that); }
 
-  /**Relation operators*/
+  /// Relation operators
   bool operator>(const Varying& that) const { return *data_ > *that.data_; }
-  /**Relation operators*/
+
+  /// Relation operators
   bool operator>=(const Varying& that) const { return (*this > that) or (*this == that); }
-  /**Relation operators*/
+
+  /// Relation operators
   bool operator<(const Varying& that) const { return *data_ < *that.data_; }
-  /**Relation operators*/
+
+  /// Relation operators
   bool operator<=(const Varying& that) const { return (*this < that) or (*this == that); }
 
-  /**Returns a default value for the type required.*/
+  /// Returns a default value for the type required.
   template <typename T>
   static T DefaultValue()
   {
@@ -402,7 +369,7 @@ public:
   template <typename T>
   using UnsignedIntegerType = typename std::enable_if_t<IsUnsignedInteger<T>::value, T>;
 
-  /**Returns values of type bool if able.*/
+  /// Returns values of type bool if able.
   template <typename T>
   BoolType<T> GetValue() const
   {
@@ -411,7 +378,7 @@ public:
     return data_->BoolValue();
   }
 
-  /**Returns floating point values if able.*/
+  /// Returns floating point values if able.
   template <typename T>
   FloatType<T> GetValue() const
   {
@@ -422,7 +389,7 @@ public:
     return static_cast<T>(value);
   }
 
-  /**Returns a string if able.*/
+  /// Returns a string if able.
   template <typename T>
   StringType<T> GetValue() const
   {
@@ -431,7 +398,7 @@ public:
     return data_->StringValue();
   }
 
-  /**Returns a signed integer if able.*/
+  /// Returns a signed integer if able.
   template <typename T>
   SignedIntegerType<T> GetValue() const
   {
@@ -442,7 +409,7 @@ public:
     return static_cast<T>(value);
   }
 
-  /**Returns an unsigned integer if able.*/
+  /// Returns an unsigned integer if able.
   template <typename T>
   UnsignedIntegerType<T> GetValue() const
   {
@@ -457,32 +424,36 @@ public:
     return static_cast<T>(value);
   }
 
-  /**Returns the string value if valid. Otherwise throws std::logic_error.*/
+  /// Returns the string value if valid. Otherwise throws std::logic_error.
   std::string StringValue() const;
-  /**Returns the bool value if valid. Otherwise throws std::logic_error.*/
+
+  /// Returns the bool value if valid. Otherwise throws std::logic_error.
   bool BoolValue() const;
-  /**Returns the integer value if valid. Otherwise throws std::logic_error.*/
+
+  /// Returns the integer value if valid. Otherwise throws std::logic_error.
   int64_t IntegerValue() const;
-  /**Returns the float value if valid. Otherwise throws std::logic_error.*/
+
+  /// Returns the float value if valid. Otherwise throws std::logic_error.
   double FloatValue() const;
 
-  /**Returns the raw byte size associated with the type.*/
+  /// Returns the raw byte size associated with the type.
   size_t ByteSize() const;
 
 public:
-  /**Returns the current-type of the variable.*/
+  /// Returns the current-type of the variable.
   VaryingDataType Type() const { return type_; }
-  /**Returns the string type name of the type.*/
+
+  /// Returns the string type name of the type.
   std::string TypeName() const { return VaryingDataTypeStringName(type_); }
 
-  /**Returns a string value for the value.*/
+  /// Returns a string value for the value.
   std::string PrintStr(bool with_type = true) const;
 
 public:
   ~Varying() = default;
-}; // class Varying
+};
 
 } // namespace opensn
 
-/**Stream operator*/
+/// Stream operator
 std::ostream& operator<<(std::ostream& outstr, const opensn::Varying& value);

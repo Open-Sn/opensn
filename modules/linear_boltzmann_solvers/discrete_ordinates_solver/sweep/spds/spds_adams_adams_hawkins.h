@@ -18,11 +18,12 @@ public:
   const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }
 
 private:
-  /**Builds the task dependency graph.*/
+  /// Builds the task dependency graph.
   void BuildTaskDependencyGraph(const std::vector<std::vector<int>>& global_dependencies,
                                 bool cycle_allowance_flag);
 
-  std::vector<STDG> global_sweep_planes_; ///< Processor sweep planes
+  /// Processor sweep planes
+  std::vector<STDG> global_sweep_planes_;
 };
 
 } // namespace opensn

@@ -12,17 +12,20 @@ namespace opensn
 class SphericalQuadrature : public CurvilinearQuadrature
 {
 private:
-  /** Initialize with one-dimensional quadrature. */
+  /// Initialize with one-dimensional quadrature.
   void Initialize(const GaussQuadrature& quad_polar, const bool verbose = false);
 
-  /** Initialize parametrizing factors of the spherical angular quadrature,
-   *  starting from a fully initialized underlying product quadrature. */
+  /**
+   * Initialize parametrizing factors of the spherical angular quadrature, starting from a fully
+   * initialized underlying product quadrature.
+   */
   void InitializeParameters();
 
 public:
-  /** Effective constructor. Initialize with one-dimensional quadrature.
-   *  If not already present in the quadrature, the method inserts
-   *  the starting directions. */
+  /**
+   * Effective constructor. Initialize with one-dimensional quadrature. If not already present in
+   * the quadrature, the method inserts the starting directions.
+   */
   SphericalQuadrature(const GaussQuadrature& quad_polar, const bool verbose = false);
 
   virtual ~SphericalQuadrature() = default;

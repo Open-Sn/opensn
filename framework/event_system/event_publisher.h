@@ -12,13 +12,14 @@ namespace opensn
 class Event;
 class EventSubscriber;
 
-/**Base class for event publishers.*/
+/// Base class for event publishers.
 class EventPublisher
 {
 public:
-  /**Publish the given event.*/
+  /// Publish the given event.
   virtual void PublishEvent(const Event& event);
-  /**Adds a subscriber to the publisher.*/
+
+  /// Adds a subscriber to the publisher.
   void AddSubscriber(std::shared_ptr<EventSubscriber>& subscriber_sptr);
 
   virtual ~EventPublisher() = default;

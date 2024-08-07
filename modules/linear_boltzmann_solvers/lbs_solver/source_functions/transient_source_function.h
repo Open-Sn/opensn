@@ -10,8 +10,10 @@
 namespace opensn
 {
 
-/**A transient source function needs to adjust the AddDelayedFission
- * routine to properly fit with the current timestepping method and timestep.*/
+/**
+ * A transient source function needs to adjust the AddDelayedFission routine to properly fit with
+ * the current timestepping method and timestep.
+ */
 class TransientSourceFunction : public SourceFunction
 {
 private:
@@ -19,9 +21,10 @@ private:
   SteppingMethod& method_;
 
 public:
-  /**Constructor for the transient source function. The only difference
-   * as compared to a steady source function is the treatment of delayed
-   * fission.*/
+  /**
+   * Constructor for the transient source function. The only difference as compared to a steady
+   * source function is the treatment of delayed fission.
+   */
   TransientSourceFunction(const LBSSolver& lbs_solver, double& ref_dt, SteppingMethod& method);
 
   double AddDelayedFission(const PrecursorList& precursors,

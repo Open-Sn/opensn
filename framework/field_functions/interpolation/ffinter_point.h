@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/** A line based interpolation function.*/
+/// A line based interpolation function.
 class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {
 protected:
@@ -35,7 +35,7 @@ public:
 
   void Execute() override;
 
-  /**Gets the value of the field function evaluation at the point.*/
+  /// Gets the value of the field function evaluation at the point.
   double GetPointValue() const;
 };
 } // namespace opensn

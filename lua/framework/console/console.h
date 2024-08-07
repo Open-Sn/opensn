@@ -77,9 +77,7 @@ namespace opensnlua
 
 struct RegistryStatuses;
 
-/**
- * Class for handling the console and scripting.
- */
+/// Class for handling the console and scripting.
 class Console
 {
 public:
@@ -113,9 +111,7 @@ private:
   Console() noexcept;
 
 public:
-  /**
-   * Access to the singleton
-   */
+  /// Access to the singleton
   static Console& GetInstance() noexcept;
 
   lua_State*& GetConsoleState() { return console_state_; }
@@ -137,9 +133,7 @@ public:
     return lua_constants_registry_;
   }
 
-  /**
-   * Executes the loop for the console.
-   */
+  /// Executes the loop for the console.
   void RunConsoleLoop(char* fileName = nullptr) const;
 
   /**
@@ -148,9 +142,7 @@ public:
    */
   int ExecuteFile(const std::string& fileName, int argc, char** argv) const;
 
-  /**
-   * Pushes location id and number of processes to lua state.
-   */
+  /// Pushes location id and number of processes to lua state.
   void PostMPIInfo(int location_id, int number_of_processes) const;
 
 private:
@@ -187,14 +179,10 @@ public:
                                        const std::string& constant_name,
                                        const opensn::Varying& value);
 
-  /**
-   * A default function for returning empty input parameters.
-   */
+  /// A default function for returning empty input parameters.
   static opensn::InputParameters DefaultGetInParamsFunc();
 
-  /**
-   * Adds a function wrapper to the lua registry.
-   */
+  /// Adds a function wrapper to the lua registry.
   static char AddWrapperToRegistryInNamespaceWithName(const std::string& namespace_name,
                                                       const std::string& name_in_lua,
                                                       WrapperGetInParamsFunc syntax_function,
@@ -206,9 +194,7 @@ public:
                                                       WrapperCallFunc actual_function,
                                                       bool ignore_null_call_func = false);
 
-  /**
-   * Formats a namespace structure as table.
-   */
+  /// Formats a namespace structure as table.
   static void SetLuaFuncNamespaceTableStructure(const std::string& full_lua_name,
                                                 lua_CFunction function_ptr);
 
@@ -236,19 +222,13 @@ public:
    */
   static void FleshOutLuaTableStructure(const std::vector<std::string>& table_names);
 
-  /**
-   * Sets a lua constant in the lua state.
-   */
+  /// Sets a lua constant in the lua state.
   static void SetLuaConstant(const std::string& constant_name, const opensn::Varying& value);
 
-  /**
-   * Flushes any commands in the command buffer.
-   */
+  /// Flushes any commands in the command buffer.
   void FlushConsole();
 
-  /**
-   * Generic entry point for wrapper calls.
-   */
+  /// Generic entry point for wrapper calls.
   static int LuaWrapperCall(lua_State* L);
 
   /**
@@ -257,9 +237,7 @@ public:
    */
   void DumpRegister() const;
 
-  /**
-   * Given an old status, will update the bindings for only newly registered items.
-   */
+  /// Given an old status, will update the bindings for only newly registered items.
   void UpdateConsoleBindings(const RegistryStatuses& old_statuses);
 };
 

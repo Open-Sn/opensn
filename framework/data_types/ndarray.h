@@ -36,14 +36,15 @@ private:
   using AllIntegral = typename conjunction<std::is_integral<U>...>::type;
 
 public:
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from a vector-list.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from a vector-list.
    *
-   *  \param dims `std::vector` list of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::vector` list of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D>
   explicit NDArray(const std::vector<D>& dims)
@@ -72,14 +73,15 @@ public:
       base_[i] = 0.0;
   }
 
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from an array.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an array.
    *
-   *  \param dims `std::array` list of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::array` list of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D, size_t N>
   explicit NDArray(const std::array<D, N>& dims)
@@ -107,14 +109,15 @@ public:
       base_[i] = 0.0;
   }
 
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from an initializer-list.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an initializer-list.
    *
-   *  \param dims `std::vector` list of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::vector` list of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D>
   NDArray(const std::initializer_list<D>& dims)
@@ -150,15 +153,16 @@ public:
       base_[i] = 0.0;
   }
 
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from a vector. Each entry in the array is assigned the designated value.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from a vector. Each entry in the array is assigned the designated value.
    *
-   *  \param dims `std::vector` list of the number of elements in each
-   *              dimension.
-   *  \param value The value to assing to each element.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::vector` list of the number of elements in each
+   *             dimension.
+   * \param value The value to assing to each element.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D>
   explicit NDArray(const std::vector<D>& dims, T value)
@@ -186,15 +190,16 @@ public:
       base_[i] = value;
   }
 
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from an array. Each entry in the array is assigned the designated value.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an array. Each entry in the array is assigned the designated value.
    *
-   *  \param dims `std::array` list of the number of elements in each
-   *              dimension.
-   *  \param value The value to assing to each element.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::array` list of the number of elements in each
+   *             dimension.
+   * \param value The value to assing to each element.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D, size_t N>
   explicit NDArray(const std::array<D, N>& dims, T value)
@@ -222,16 +227,17 @@ public:
       base_[i] = value;
   }
 
-  /** Creates an array with the specified number of elements in each dimension,
-   *  from an initializer-list. Each entry in the array is assigned the
-   *  designated value.
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an initializer-list. Each entry in the array is assigned the
+   * designated value.
    *
-   *  \param dims `std::initializer` list of the number of elements in each
-   *              dimension.
-   *  \param value The value to assing to each element.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims `std::initializer` list of the number of elements in each
+   *             dimension.
+   * \param value The value to assing to each element.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an array with the specified size.
+   * This constructor creates an array with the specified size.
    */
   template <typename D>
   NDArray(const std::initializer_list<D>& dims, T value)
@@ -267,16 +273,19 @@ public:
       base_[i] = value;
   }
 
-  /** Creates an empty array.
-   *  \throw std::bad_alloc if memory allocation fails.
+  /**
+   * Creates an empty array.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This constructor creates an empty array and initializes the reference
+   * This constructor creates an empty array and initializes the reference
    * count to one.
    */
   NDArray() : rank_(0), dimensions_(), strides_(), size_(0), base_(nullptr) {}
 
-  /** Copy construct from another array.
-   *  \param other The array to copy.
+  /**
+   * Copy construct from another array.
+   *
+   * \param other The array to copy.
    */
   NDArray(NDArray<T> const& other)
     : rank_(other.rank_),
@@ -297,8 +306,10 @@ public:
       base_[i] = other.base_[i];
   }
 
-  /** Assign from another array.
-   *  \param other The array to copy.
+  /**
+   * Assign from another array.
+   *
+   * \param other The array to copy.
    */
   NDArray<T>& operator=(NDArray<T> const& other)
   {
@@ -306,7 +317,7 @@ public:
     return *this;
   }
 
-  /**Move constructor.*/
+  /// Move constructor
   NDArray(NDArray<T>&& other) noexcept
     : rank_(std::move(other.rank_)),
       dimensions_(std::move(other.dimensions_)),
@@ -316,18 +327,20 @@ public:
   {
   }
 
-  /**Deleted move assignment operator*/
+  /// Deleted move assignment operator
   NDArray<T>& operator=(NDArray<T>&&) = delete;
 
-  /**Sets a value to all the items in the array.*/
+  /// Sets a value to all the items in the array.
   void set(T value)
   {
     for (size_t i = 0; i < size_; ++i)
       base_[i] = value;
   }
 
-  /** Swap the contents of this array with another array.
-   *  \param other The array to swap with.
+  /**
+   * Swap the contents of this array with another array.
+   *
+   * \param other The array to swap with.
    */
   void swap(NDArray<T>& other)
   {
@@ -338,31 +351,31 @@ public:
     std::swap(base_, other.base_);
   }
 
-  /** Returns the number of elements in the array.*/
+  /// Returns the number of elements in the array.
   size_t size() const noexcept { return size_; }
 
-  /** Returns true if the array has no elements.*/
+  /// Returns true if the array has no elements.
   bool empty() const noexcept { return size_ == 0; }
 
-  /** Returns an iterator pointing to the beginning of the array.*/
+  /// Returns an iterator pointing to the beginning of the array.
   T* begin() const noexcept { return base_; }
 
-  /** Returns a constant iterator pointing to the beginning of the array.*/
+  /// Returns a constant iterator pointing to the beginning of the array.
   const T* cbegin() const noexcept { return base_; }
 
-  /** Returns an iterator pointing to the end of the array.*/
+  /// Returns an iterator pointing to the end of the array.
   T* end() const noexcept { return base_ + size_; }
 
-  /** Returns a constant iterator pointing to the end of the array*/
+  /// Returns a constant iterator pointing to the end of the array
   const T* cend() const noexcept { return base_ + size_; }
 
-  /** Returns a pointer to the underlying array data.*/
+  /// Returns a pointer to the underlying array data.
   T* data() const noexcept { return base_; }
 
-  /** Returns the rank of the array.*/
+  /// Returns the rank of the array.
   size_t rank() const noexcept { return rank_; }
 
-  /**Returns the dimension of the array.*/
+  /// Returns the dimension of the array.
   std::vector<size_t> dimension() const
   {
     std::vector<size_t> dim(rank_, 0);
@@ -372,14 +385,15 @@ public:
     return dim;
   }
 
-  /** Resizes the array with a vector.
+  /**
+   * Resizes the array with a vector.
    *
-   *  \param dims std::vector of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims std::vector of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This method resizes the array to the specified number of elements. If the
-   *  current size is equal to the new size, no memory allocation occurs.
+   * This method resizes the array to the specified number of elements. If the
+   * current size is equal to the new size, no memory allocation occurs.
    */
   template <typename D>
   void resize(const std::vector<D>& dims)
@@ -395,14 +409,15 @@ public:
     NDArray<T>(dims).swap(*this);
   }
 
-  /** Resizes the array with an array.
+  /**
+   * Resizes the array with an array.
    *
-   *  \param dims std::array of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims std::array of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This method resizes the array to the specified number of elements. If the
-   *  current size is equal to the new size, no memory allocation occurs.
+   * This method resizes the array to the specified number of elements. If the
+   * current size is equal to the new size, no memory allocation occurs.
    */
   template <typename D, size_t N>
   void resize(const std::array<D, N>& dims)
@@ -418,14 +433,15 @@ public:
     NDArray<T>(dims).swap(*this);
   }
 
-  /** Resizes the array with an initializer_list.
+  /**
+   * Resizes the array with an initializer_list.
    *
-   *  \param dims std::initializer_list of the number of elements in each
-   *              dimension.
-   *  \throw std::bad_alloc if memory allocation fails.
+   * \param dims std::initializer_list of the number of elements in each
+   *             dimension.
+   * \throw std::bad_alloc if memory allocation fails.
    *
-   *  This method resizes the array to the specified number of elements. If the
-   *  current size is equal to the new size, no memory allocation occurs.
+   * This method resizes the array to the specified number of elements. If the
+   * current size is equal to the new size, no memory allocation occurs.
    */
   template <typename D>
   void resize(const std::initializer_list<D>& dims)
@@ -441,9 +457,11 @@ public:
     NDArray<T>(dims).swap(*this);
   }
 
-  /** Accesses the specified element.
-   *  \param args The indices of the desired element.
-   *  \return Read/write reference to the element.
+  /**
+   * Accesses the specified element.
+   *
+   * \param args The indices of the desired element.
+   * \return Read/write reference to the element.
    */
   template <typename... Args>
   T& operator()(Args... args) noexcept
@@ -461,9 +479,11 @@ public:
     return *(address);
   }
 
-  /** Accesses the specified element.
-   *  \param args The indices of the desired element.
-   *  \return Read reference to the element.
+  /**
+   * Accesses the specified element.
+   *
+   * \param args The indices of the desired element.
+   * \return Read reference to the element.
    */
   template <typename... Args>
   T const& operator()(Args... args) const noexcept
@@ -481,12 +501,13 @@ public:
     return *(address);
   }
 
-  /** Accesses the specified element with safety checks.
+  /**
+   * Accesses the specified element with safety checks.
    *
-   *  \param args The indices of the desired element.
-   *  \throw std::invalid_argument if the number of arguments are incorrect and
-   *  std::out_of_range if one of the dimension-indices are out of range.
-   *  \return Read/write reference to the element.
+   * \param args The indices of the desired element.
+   * \throw std::invalid_argument if the number of arguments are incorrect and
+   * std::out_of_range if one of the dimension-indices are out of range.
+   * \return Read/write reference to the element.
    */
   template <typename... Args>
   T& at(Args... args) noexcept
@@ -513,12 +534,13 @@ public:
     return *(address);
   }
 
-  /** Returns a linear index to the specified element with safety checks.
+  /**
+   * Returns a linear index to the specified element with safety checks.
    *
-   *  \param args The indices of the desired element.
-   *  \throw std::invalid_argument if the number of arguments are incorrect and
-   *  std::out_of_range if one of the dimension-indices are out of range.
-   *  \return Linear index to the specified element.
+   * \param args The indices of the desired element.
+   * \throw std::invalid_argument if the number of arguments are incorrect and
+   * std::out_of_range if one of the dimension-indices are out of range.
+   * \return Linear index to the specified element.
    */
   template <typename... Args>
   size_t MapNDtoLin(Args... args) const
@@ -545,9 +567,10 @@ public:
     return index;
   }
 
-  /** Deletes the array.
+  /**
+   * Deletes the array.
    *
-   *  The destructor deletes the underlying array data.
+   * The destructor deletes the underlying array data.
    */
   ~NDArray()
   {

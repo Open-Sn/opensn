@@ -18,14 +18,13 @@ enum class InputParameterTag
   REQUIRED = 2
 };
 
-/**Class for handling input parameters.*/
+/// Class for handling input parameters.
 class InputParameters : public ParameterBlock
 {
 private:
-  /**String to represent class name. If not provided a default will be
-   * generated.*/
+  /// String to represent class name. If not provided a default will be generated.
   std::string class_name_;
-  /**Space separated list of group names.*/
+  /// Space separated list of group names.
   std::string doc_group_;
   std::map<std::string, InputParameterTag> parameter_class_tags_;
   std::map<std::string, std::string> parameter_doc_string_;
@@ -40,8 +39,7 @@ private:
 
   std::string general_description_;
 
-  /**Parameter names to ignore when trying to assign. For now this
-   * "obj_type"*/
+  /// Parameter names to ignore when trying to assign. For now this "obj_type"
   static const std::vector<std::string> system_ignored_param_names_;
 
   ParameterBlock param_block_at_assignment_;
@@ -59,35 +57,38 @@ public:
   }
 
 public:
-  /**Sets the object type string for more descriptive error messages.*/
+  /// Sets the object type string for more descriptive error messages.
   void SetObjectType(const std::string& obj_type);
-  /**Returns the object type string.*/
+
+  /// Returns the object type string.
   std::string ObjectType() const;
 
-  /**Sets the class name to be applied to this object. If not used a
-   * default will be generated.*/
+  /// Sets the class name to be applied to this object. If not used a default will be generated.
   void SetClassName(const std::string& class_name) { class_name_ = class_name; }
 
-  /**Sets a general description of the object that should be included with
-   * the object's documentation.*/
+  /**
+   * Sets a general description of the object that should be included with the object's
+   * documentation.
+   */
   void SetGeneralDescription(const std::string& description) { general_description_ = description; }
   std::string GetGeneralDescription() const { return general_description_; }
 
-  /**Space separated list of doxygen group names to which this documentation
-   * should belong.*/
+  /// Space separated list of doxygen group names to which this documentation should belong.
   void SetDocGroup(const std::string& doc_group) { doc_group_ = doc_group; }
 
-  /**Sets a link to the documentation of a different object.*/
+  /// Sets a link to the documentation of a different object.
   void LinkParameterToBlock(const std::string& param_name, const std::string& block_name);
-  /**Gets any linkage information of a parameter.*/
+
+  /// Gets any linkage information of a parameter.
   std::string GetParameterDocumentationLink(const std::string& param_name) const;
 
-  /**Returns the parameter's doc string.*/
+  /// Returns the parameter's doc string.
   std::string GetParameterDocString(const std::string& param_name);
 
 private:
   using ParameterBlock::AddParameter;
-  /**Determines if a parameter is ignored.*/
+
+  /// Determines if a parameter is ignored.
   static bool IsParameterIgnored(const std::string& param_name);
 
 public:
@@ -99,7 +100,7 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
-  /**Specialization for block type parameters.*/
+  /// Specialization for block type parameters.
   void AddOptionalParameterBlock(const std::string& name,
                                  const ParameterBlock& block,
                                  const std::string& doc_string);
@@ -114,7 +115,7 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
-  /**Specialization for block type parameters.*/
+  /// Specialization for block type parameters.
   void AddOptionalParameterArray(const std::string& name,
                                  const std::vector<ParameterBlock>& array,
                                  const std::string& doc_string);
@@ -127,10 +128,10 @@ public:
     parameter_doc_string_[name] = doc_string;
   }
 
-  /**Specialization for block type parameters.*/
+  /// Specialization for block type parameters.
   void AddRequiredParameterBlock(const std::string& name, const std::string& doc_string);
 
-  /**Specialization for array type parameters.*/
+  /// Specialization for array type parameters.
   void AddRequiredParameterArray(const std::string& name, const std::string& doc_string);
 
   template <typename T>
@@ -156,32 +157,34 @@ public:
   }
 
 public:
-  /**\brief Assigns parameters with thorough type checks, deprecation checks,
-   * unused parameter checks.*/
+  /// Assigns parameters with thorough type checks, deprecation checks, unused parameter checks.
   void AssignParameters(const ParameterBlock& params);
 
-  /**Returns the raw parameter block used at assignment. This can be used
-   * to see if a user supplied an optional parameter or not.*/
+  /**
+   * Returns the raw parameter block used at assignment. This can be used to see if a user supplied
+   * an optional parameter or not.
+   */
   const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
 
-  /**Marks a parameters as deprecated but will only produce a warning.*/
+  /// Marks a parameters as deprecated but will only produce a warning.
   void MarkParamaterDeprecatedWarning(const std::string& param_name,
                                       const std::string& deprecation_message = "");
-  /**Marks a parameters as deprecated and will produce an error if the parameter
-   * is specified.*/
+
+  /// Marks a parameters as deprecated and will produce an error if the parameter is specified.
   void MarkParamaterDeprecatedError(const std::string& param_name,
                                     const std::string& deprecation_message = "");
-  /**Marks a parameters as renamed and will produce an error if the parameter
-   * is specified.*/
+
+  /// Marks a parameters as renamed and will produce an error if the parameter is specified.
   void MarkParamaterRenamed(const std::string& param_name, const std::string& renaming_description);
-  /**Creates a range based constraint for a given parameter.*/
+
+  /// Creates a range based constraint for a given parameter.
   void ConstrainParameterRange(const std::string& param_name,
                                std::unique_ptr<AllowableRange> allowable_range);
-  /**\brief Sets a tag for the given parameter that will allow its type to be
-   * mismatched upon assignment.*/
+
+  /// Sets a tag for the given parameter that will allow its type to be mismatched upon assignment.
   void SetParameterTypeMismatchAllowed(const std::string& param_name);
 
-  /**Dumps the input parameters to stdout.*/
+  /// Dumps the input parameters to stdout.
   void DumpParameters() const;
 };
 

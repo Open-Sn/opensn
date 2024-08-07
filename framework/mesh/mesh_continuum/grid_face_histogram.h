@@ -9,8 +9,7 @@
 namespace opensn
 {
 
-/**Utility class for handling face categorizations based on number
- * of vertices.*/
+/// Utility class for handling face categorizations based on number of vertices.
 class GridFaceHistogram
 {
 private:
@@ -22,11 +21,13 @@ public:
   {
   }
 
-  /**Returns the number of bins.*/
+  /// Returns the number of bins.
   size_t NumberOfFaceHistogramBins() const;
-  /**Finds which bin holds the given number of vertices*/
+
+  /// Finds which bin holds the given number of vertices
   size_t MapFaceHistogramBins(size_t num_face_verts) const;
-  /**Finds the amount of vertices per face for the given bin.*/
+
+  /// Finds the amount of vertices per face for the given bin.
   size_t GetFaceHistogramBinDOFSize(size_t bin_number) const;
 };
 
