@@ -25,7 +25,7 @@ protected:
   std::vector<double>& phi_new_local_;
 
   std::vector<LBSGroupset>& groupsets_;
-  std::shared_ptr<AGSLinearSolver> primary_ags_solver_;
+  std::shared_ptr<AGSSolver> ags_solver_;
   SetSourceFunction active_set_source_function_;
 
   LBSGroupset& front_gs_;

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "framework/object_factory.h"
 #include "caliper/cali.h"
 
@@ -45,9 +45,7 @@ SteadyStateSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSolver::Execute");
 
-  auto& ags_solver = *lbs_solver_.GetPrimaryAGSSolver();
-
-  ags_solver.Setup();
+  auto& ags_solver = *lbs_solver_.GetAGSSolver();
   ags_solver.Solve();
 
   if (lbs_solver_.Options().use_precursors)

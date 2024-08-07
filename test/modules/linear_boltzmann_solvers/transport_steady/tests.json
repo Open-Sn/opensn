@@ -336,6 +336,31 @@
     ]
   },
   {
+    "file": "transport_3d_ags_upscatter.lua",
+    "comment": "3D, multiple groupsets, groupset-to-groupset upscattering",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 1.47450e+00,
+        "abs_tol": 0.00001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 1.47450e+00,
+        "abs_tol": 0.00001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value3=",
+        "goldvalue": 1.47450e+00,
+        "abs_tol": 0.00001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_3a_dsa_ortho.lua",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
@@ -616,13 +641,13 @@
       {
         "type": "KeyValuePair",
         "key": "[0]   Absorption rate             =",
-        "goldvalue": 3.245024e-01,
+        "goldvalue": 3.245020e-01,
         "abs_tol": 1.0e-6
       },
       {
         "type": "KeyValuePair",
         "key": "[0]   Out-flow rate               =",
-        "goldvalue": 1.343473e+01,
+        "goldvalue": 1.343586e+01,
         "abs_tol": 1.0e-6
       }
     ]

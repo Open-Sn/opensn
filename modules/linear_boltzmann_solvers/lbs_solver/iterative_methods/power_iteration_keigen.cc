@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 
 #include "framework/runtime.h"
@@ -36,7 +36,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& phi_new_local = lbs_solver.PhiNewLocal();
   const auto& densities_local = lbs_solver.DensitiesLocal();
-  auto primary_ags_solver = lbs_solver.GetPrimaryAGSSolver();
+  auto ags_solver = lbs_solver.GetAGSSolver();
   auto& groupsets = lbs_solver.Groupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
 
@@ -50,7 +50,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   double k_eff_change = 1.0;
 
   // Start power iterations
-  primary_ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
+  ags_solver->Verbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
   while (nit < max_iterations)
@@ -66,8 +66,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
     Scale(q_moments_local, 1.0 / k_eff);
 
     // This solves the inners for transport
-    primary_ags_solver->Setup();
-    primary_ags_solver->Solve();
+    ags_solver->Solve();
 
     // Recompute k-eigenvalue
     double F_new = lbs_solver.ComputeFissionProduction(phi_new_local);

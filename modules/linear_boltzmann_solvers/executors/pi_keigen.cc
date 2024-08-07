@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -59,7 +59,7 @@ PowerIterationKEigen::Initialize()
   lbs_solver_.Initialize();
 
   active_set_source_function_ = lbs_solver_.GetActiveSetSourceFunction();
-  primary_ags_solver_ = lbs_solver_.GetPrimaryAGSSolver();
+  ags_solver_ = lbs_solver_.GetAGSSolver();
 
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
@@ -72,7 +72,7 @@ PowerIterationKEigen::Initialize()
     wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
-  primary_ags_solver_->SetVerbosity(lbs_solver_.Options().verbose_ags_iterations);
+  ags_solver_->Verbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id_);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
@@ -102,8 +102,7 @@ PowerIterationKEigen::Execute()
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     // This solves the inners for transport
-    primary_ags_solver_->Setup();
-    primary_ags_solver_->Solve();
+    ags_solver_->Solve();
 
     // Recompute k-eigenvalue
     double F_new = lbs_solver_.ComputeFissionProduction(phi_new_local_);

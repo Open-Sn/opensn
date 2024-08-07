@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/isotropic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
@@ -360,10 +360,10 @@ LBSSolver::GetActiveSetSourceFunction() const
   return active_set_source_function_;
 }
 
-std::shared_ptr<AGSLinearSolver>
-LBSSolver::GetPrimaryAGSSolver()
+std::shared_ptr<AGSSolver>
+LBSSolver::GetAGSSolver()
 {
-  return primary_ags_solver_;
+  return ags_solver_;
 }
 
 std::vector<std::shared_ptr<LinearSolver>>&
@@ -461,7 +461,10 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter(
-    "verbose_ags_iterations", false, "Flag to control verbosity of across-groupset iterations.");
+    "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
+  params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
+  params.AddOptionalParameter(
+    "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter("power_field_function_on",
                               false,
                               "Flag to control the creation of the power generation field "
@@ -632,6 +635,12 @@ LBSSolver::SetOptions(const InputParameters& params)
 
     else if (spec.Name() == "verbose_inner_iterations")
       options_.verbose_inner_iterations = spec.GetValue<bool>();
+
+    else if (spec.Name() == "max_ags_iterations")
+      options_.max_ags_iterations = spec.GetValue<int>();
+
+    else if (spec.Name() == "ags_tolerance")
+      options_.ags_tolerance = spec.GetValue<double>();
 
     else if (spec.Name() == "verbose_ags_iterations")
       options_.verbose_ags_iterations = spec.GetValue<bool>();
@@ -1587,27 +1596,17 @@ LBSSolver::InitializeSolverSchemes()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitializeSolverSchemes");
 
-  log.Log() << "Initializing solver...";
+  log.Log() << "Initializing WGS and AGS solvers";
 
   InitializeWGSSolvers();
 
-  /*This default behavior covers the situation when no Across-GroupSet (AGS)
-   * solvers have been created for this solver.*/
-  ags_solvers_.clear();
-  // Default AGS scheme
-  if (options_.ags_scheme.empty())
-  {
-    auto ags_context = std::make_shared<AGSContext>(*this, wgs_solvers_);
-
-    auto ags_solver = std::make_shared<AGSLinearSolver>(
-      "krylov_richardson", ags_context, groupsets_.front().id_, groupsets_.back().id_);
-    ags_solver->ToleranceOptions().maximum_iterations = 1;
-    ags_solver->SetVerbosity(options_.verbose_ags_iterations);
-
-    ags_solvers_.push_back(ags_solver);
-
-    primary_ags_solver_ = ags_solvers_.front();
-  }
+  ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
+  if (groupsets_.size() == 1)
+    ags_solver_->MaxIterations(1);
+  else
+    ags_solver_->MaxIterations(options_.max_ags_iterations);
+  ags_solver_->Tolerance(options_.ags_tolerance);
+  ags_solver_->Verbosity(options_.verbose_ags_iterations);
 }
 
 void

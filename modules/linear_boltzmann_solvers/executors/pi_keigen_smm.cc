@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
@@ -200,8 +200,7 @@ PowerIterationKEigenSMM::Execute()
     Scale(q_moments_local_, 1.0 / k_eff_);
 
     // Solve some transport inners
-    primary_ags_solver_->Setup();
-    primary_ags_solver_->Solve();
+    ags_solver_->Solve();
 
     std::vector<double> phi0;
     TransferTransportToDiffusion(phi_new_local_, phi0);
