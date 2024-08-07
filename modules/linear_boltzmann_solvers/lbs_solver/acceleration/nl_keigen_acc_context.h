@@ -33,7 +33,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
     : diff_solver_(diff_solver),
       lbs_solver_(lbs_solver),
       verbosity_level_(verbosity_level),
-      kresid_func_context_({diff_solver.TextName(), 1.0}),
+      kresid_func_context_({diff_solver.Name(), 1.0}),
       diff_num_local_dofs_(diff_solver_.GetNumPhiIterativeUnknowns().first)
   {
   }

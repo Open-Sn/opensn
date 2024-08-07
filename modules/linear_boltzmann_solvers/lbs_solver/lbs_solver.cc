@@ -42,7 +42,7 @@ OpenSnRegisterSyntaxBlockInNamespace(lbs, OptionsBlock, LBSSolver::OptionsBlock)
 
 OpenSnRegisterSyntaxBlockInNamespace(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
-LBSSolver::LBSSolver(const std::string& text_name) : Solver(text_name)
+LBSSolver::LBSSolver(const std::string& name) : Solver(name)
 {
 }
 
@@ -1252,7 +1252,7 @@ LBSSolver::InitializeParrays()
   for (size_t m = 0; m < num_moments_; m++)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
-    flux_moments_uk_man_.unknowns_.back().text_name_ = "m" + std::to_string(m);
+    flux_moments_uk_man_.unknowns_.back().name_ = "m" + std::to_string(m);
   }
 
   // Compute local # of dof
@@ -1459,10 +1459,10 @@ LBSSolver::InitializeFieldFunctions()
       char buff[100];
       snprintf(
         buff, 99, "%sphi_g%03d_m%02d", prefix.c_str(), static_cast<int>(g), static_cast<int>(m));
-      const std::string text_name = std::string(buff);
+      const std::string name = std::string(buff);
 
       auto group_ff = std::make_shared<FieldFunctionGridBased>(
-        text_name, discretization_, Unknown(UnknownType::SCALAR));
+        name, discretization_, Unknown(UnknownType::SCALAR));
 
       field_function_stack.push_back(group_ff);
       field_functions_.push_back(group_ff);

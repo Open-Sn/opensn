@@ -29,7 +29,7 @@ struct WGSContext;
 class LBSSolver : public opensn::Solver
 {
 public:
-  explicit LBSSolver(const std::string& text_name);
+  explicit LBSSolver(const std::string& name);
 
   /// Input parameters based construction.
   explicit LBSSolver(const InputParameters& params);

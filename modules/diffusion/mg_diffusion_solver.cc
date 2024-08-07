@@ -390,10 +390,10 @@ MGDiffusionSolver::Initialize()
       char buff[100];
       int dummy = snprintf(buff, 4, "%03d", g);
 
-      std::string text_name = solver_name + "Flux_g" + std::string(buff);
+      std::string name = solver_name + "Flux_g" + std::string(buff);
 
       auto initial_field_function =
-        std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+        std::make_shared<FieldFunctionGridBased>(name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
       field_functions_.push_back(initial_field_function);
       field_function_stack.push_back(initial_field_function);

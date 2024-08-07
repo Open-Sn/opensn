@@ -34,8 +34,8 @@ public:
   const UnknownType type_;
   const unsigned int num_components_;
   const unsigned int map_begin_;
-  std::string text_name_;
-  std::vector<std::string> component_text_names_;
+  std::string name_;
+  std::vector<std::string> component_names_;
   std::vector<int> num_off_block_connections_;
 
 public:
@@ -47,13 +47,13 @@ public:
                                                          : num_components),
       map_begin_(map_begin)
   {
-    component_text_names_.resize(num_components_, std::string());
+    component_names_.resize(num_components_, std::string());
     for (unsigned int c = 0; c < num_components_; ++c)
     {
 
       char buffer[100];
       snprintf(buffer, 100, " %03d", c);
-      component_text_names_[c] = buffer;
+      component_names_[c] = buffer;
     }
     num_off_block_connections_.resize(num_components_, 0);
   }
@@ -150,11 +150,11 @@ public:
     for (const auto& uk : unknowns)
     {
       AddUnknown(uk.type_, uk.num_components_);
-      SetUnknownTextName(ukid, uk.text_name_);
+      SetUnknownTextName(ukid, uk.name_);
       size_t compid = 0;
-      for (const auto& comp_text_name : uk.component_text_names_)
+      for (const auto& component_name : uk.component_names_)
       {
-        SetUnknownComponentTextName(ukid, compid, comp_text_name);
+        SetUnknownComponentName(ukid, compid, component_name);
         ++compid;
       }
 
@@ -206,13 +206,13 @@ public:
                                                  unsigned int component,
                                                  int num_conn);
 
-  /// Sets a text name for the indicated unknown
-  void SetUnknownTextName(unsigned int unknown_id, const std::string& text_name);
+  /**Sets a text name for the indicated unknown.*/
+  void SetUnknownTextName(unsigned int unknown_id, const std::string& name);
 
-  /// Sets the text name to be associated with each component of the unknown.
-  void SetUnknownComponentTextName(unsigned int unknown_id,
-                                   unsigned int component,
-                                   const std::string& text_name);
+  /**Sets the text name to be associated with each component of the
+   * unknown.*/
+  void
+  SetUnknownComponentName(unsigned int unknown_id, unsigned int component, const std::string& name);
 
   ~UnknownManager() = default;
 };
