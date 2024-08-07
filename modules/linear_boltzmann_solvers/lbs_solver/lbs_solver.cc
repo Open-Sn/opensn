@@ -461,10 +461,10 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter(
-    "max_ags_iterations", 1, "Maximum number of across-groupset iterations.");
+    "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
   params.AddOptionalParameter(
-    "verbose_ags_iterations", false, "Flag to control verbosity of across-groupset iterations.");
+    "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter("power_field_function_on",
                               false,
                               "Flag to control the creation of the power generation field "
@@ -1601,7 +1601,10 @@ LBSSolver::InitializeSolverSchemes()
   InitializeWGSSolvers();
 
   ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
-  ags_solver_->MaxIterations(options_.max_ags_iterations);
+  if (groupsets_.size() == 1)
+    ags_solver_->MaxIterations(1);
+  else
+    ags_solver_->MaxIterations(options_.max_ags_iterations);
   ags_solver_->Tolerance(options_.ags_tolerance);
   ags_solver_->Verbosity(options_.verbose_ags_iterations);
 }

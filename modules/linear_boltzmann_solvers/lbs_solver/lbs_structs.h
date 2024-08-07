@@ -225,9 +225,9 @@ struct LBSOptions
   bool adjoint = false;
 
   bool verbose_inner_iterations = true;
-  bool verbose_ags_iterations = false;
+  bool verbose_ags_iterations = true;
   bool verbose_outer_iterations = true;
-  int max_ags_iterations = 1;
+  int max_ags_iterations = 100;
   double ags_tolerance = 1.0e-6;
 
   bool power_field_function_on = false;

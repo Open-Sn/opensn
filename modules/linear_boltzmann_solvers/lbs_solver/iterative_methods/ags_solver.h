@@ -9,8 +9,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 /**Solver for Across-Groupset (AGS) solves.*/
 class AGSSolver
@@ -20,9 +18,9 @@ public:
     : lbs_solver_(lbs_solver),
       wgs_solvers_(std::move(wgs_solvers)),
       phi_old_(lbs_solver.PhiOldLocal().size()),
-      max_iterations_(10),
-      tolerance_(1.0e-2),
-      verbose_(false)
+      max_iterations_(100),
+      tolerance_(1.0e-6),
+      verbose_(true)
   {
   }
 
@@ -53,5 +51,4 @@ private:
   double ComputePointwisePhiChange() const;
 };
 
-} // namespace lbs
 } // namespace opensn

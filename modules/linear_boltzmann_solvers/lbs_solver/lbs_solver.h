@@ -21,6 +21,7 @@ namespace opensn
 class MPICommunicatorSet;
 class GridFaceHistogram;
 class TimeIntegration;
+class AGSSolver;
 class WGSLinearSolver;
 struct WGSContext;
 

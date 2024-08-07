@@ -14,8 +14,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 void
 AGSSolver::Solve()
@@ -117,5 +115,4 @@ AGSSolver::ComputePointwisePhiChange() const
   return global_pw_change;
 }
 
-} // namespace lbs
 } // namespace opensn
