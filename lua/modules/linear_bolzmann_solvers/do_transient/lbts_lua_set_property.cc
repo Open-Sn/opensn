@@ -89,7 +89,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.dt_ = dt_input;
 
-    opensn::log.Log() << solver.TextName() << ": dt set to " << std::to_string(dt_input);
+    opensn::log.Log() << solver.Name() << ": dt set to " << std::to_string(dt_input);
   }
   else if (property == "TIME")
   {
@@ -101,7 +101,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.time_ = t_input;
 
-    opensn::log.Log() << solver.TextName() << ": time set to " << std::to_string(t_input);
+    opensn::log.Log() << solver.Name() << ": time set to " << std::to_string(t_input);
   }
   else if (property == "TIMESTOP")
   {
@@ -113,7 +113,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.transient_options_.t_final = t_input;
 
-    opensn::log.Log() << solver.TextName() << ": t_final set to " << std::to_string(t_input);
+    opensn::log.Log() << solver.Name() << ": t_final set to " << std::to_string(t_input);
   }
   else if (property == "MAX_TIMESTEPS")
   {
@@ -125,7 +125,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.transient_options_.max_time_steps = t_input;
 
-    opensn::log.Log() << solver.TextName() << ": max_time_steps set to " << std::to_string(t_input);
+    opensn::log.Log() << solver.Name() << ": max_time_steps set to " << std::to_string(t_input);
   }
   else if (property == "INHIBIT_ADVANCE")
   {
@@ -137,7 +137,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.transient_options_.inhibit_advance = inhibit_advance;
 
-    opensn::log.Log() << solver.TextName() << ": inhibit_advance set to "
+    opensn::log.Log() << solver.Name() << ": inhibit_advance set to "
                    << std::to_string(inhibit_advance);
   }
   else if (property == "VERBOSITY_LEVEL")
@@ -150,7 +150,7 @@ LBTSSetProperty(lua_State* L)
 
     solver.transient_options_.verbosity_level = verbosity_level;
 
-    opensn::log.Log() << solver.TextName() << ": verbosity_level set to "
+    opensn::log.Log() << solver.Name() << ": verbosity_level set to "
                    << std::to_string(verbosity_level);
   }
   else if (property == "TIMESTEP_METHOD")
@@ -169,7 +169,7 @@ LBTSSetProperty(lua_State* L)
                                   ": Only the following timestepping "
                                   "methods are supported: \"CRANK_NICHOLSON\", \"BACKWARD_EULER\"");
 
-    opensn::log.Log() << solver.TextName() << ": method set to " << option;
+    opensn::log.Log() << solver.Name() << ": method set to " << option;
   }
   else if (property == "CALLBACK")
   {
@@ -180,7 +180,7 @@ LBTSSetProperty(lua_State* L)
     const std::string cbfname = lua_tostring(L, 3);
 
     solver.transient_options_.console_call_back_function = cbfname;
-    opensn::log.Log() << solver.TextName() << ": console_call_back_function set to " << cbfname;
+    opensn::log.Log() << solver.Name() << ": console_call_back_function set to " << cbfname;
   }
   else if (property == "SCALE_FISSION_XS")
   {
@@ -191,7 +191,7 @@ LBTSSetProperty(lua_State* L)
     const bool scale_fission_xs = lua_toboolean(L, 3);
     solver.transient_options_.scale_fission_xs = scale_fission_xs;
 
-    opensn::log.Log() << solver.TextName() << ": scale_fission_xs set to "
+    opensn::log.Log() << solver.Name() << ": scale_fission_xs set to "
                    << std::to_string(scale_fission_xs);
   }
   else if (property == "NORMALIZATION_METHOD")
@@ -215,7 +215,7 @@ LBTSSetProperty(lua_State* L)
       throw std::invalid_argument(fname + ": Only the following normalization methods are " +
                                   "supported: \"TOTAL_POWER\", \"POWER_DENSITY\", \"NONE\"");
 
-    opensn::log.Log() << solver.TextName() << ": normalization_method set to " << option;
+    opensn::log.Log() << solver.Name() << ": normalization_method set to " << option;
   }
   else
     throw std::logic_error(fname + ": unsupported property name \"" + property + "\".");

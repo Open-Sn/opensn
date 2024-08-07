@@ -222,7 +222,7 @@ Solver::SetAuxiliaryFieldFunction()
   {
     for (auto& ff : field_function_stack)
     {
-      if (auxvar == ff->TextName())
+      if (auxvar == ff->Name())
         aux_field_functions_[auxvar] = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff);
     }
     if (aux_field_functions_.count(auxvar) == 0)
