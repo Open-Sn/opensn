@@ -4,9 +4,8 @@
 #pragma once
 
 #include "framework/object.h"
-#include "framework/physics/basic_options/basic_options.h"
+#include "framework/physics/basic_options.h"
 #include "framework/parameters/parameter_block.h"
-
 #include <iostream>
 #include <utility>
 
@@ -20,35 +19,31 @@ class TimeStepper;
 class Solver : public Object
 {
 public:
-  /**Returns the input parameters.*/
-  static InputParameters GetInputParameters();
   explicit Solver(std::string name);
   Solver(std::string name, std::initializer_list<BasicOption> options);
   explicit Solver(const InputParameters& params);
+
   virtual ~Solver() = default;
 
-  std::string TextName() const;
+  std::string Name() const;
 
   BasicOptions& GetBasicOptions();
   const BasicOptions& GetBasicOptions() const;
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions();
-
   const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
 
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
 
-  /**Initialize function.*/
   virtual void Initialize();
-  /**Execution function.*/
   virtual void Execute();
-  /**Step function*/
+  /// Solve the current time step.
   virtual void Step();
-  /**Advance time values function.*/
+  /// Move the solver to the start of next time step.
   virtual void Advance();
 
-  /**Generalized query for information supporting varying returns.*/
+  /// Generalized query for information supporting varying returns.
   virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
   /**\addtogroup SolverBase
    *
@@ -58,21 +53,31 @@ public:
    * \copydoc opensn::Solver::SetProperties
    *
    * Base solver settable properties:
-   * - `dt`, Timestep size
+   * - `dt`, Time step size
    * - `time`, Current time
    */
   virtual void SetProperties(const ParameterBlock& params);
-  /**PreCheck call to GetInfo.*/
+  /// Pre-check call to GetInfo.
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
+
+protected:
+  void SetAuxiliaryFieldFunction();
 
 protected:
   BasicOptions basic_options_;
   std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
+  std::map<std::string, std::shared_ptr<FieldFunctionGridBased>> aux_field_functions_;
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:
-  static std::shared_ptr<TimeStepper> InitTimeStepper(const InputParameters& params);
-  const std::string text_name_;
+  const std::string name_;
+  const std::vector<std::string> auxvars_;
+
+public:
+  static InputParameters GetInputParameters();
+
+private:
+  static std::shared_ptr<TimeStepper> InitializeTimeStepper(const InputParameters& params);
 };
 
 } // namespace opensn

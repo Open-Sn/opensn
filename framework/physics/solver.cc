@@ -1,13 +1,11 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/physics/solver_base/solver.h"
-
+#include "framework/physics/solver.h"
+#include "framework/field_functions/field_function_grid_based.h"
+#include "framework/physics/time_steppers/constant_time_stepper.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#include "framework/physics/time_steppers/constant_time_stepper.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn
@@ -22,6 +20,10 @@ Solver::GetInputParameters()
     "name",
     "A text name to associate with the solver. This name will be used "
     "in status messages and verbose iterative convergence monitors.");
+
+  params.AddOptionalParameterArray("auxvars",
+                                   std::vector<std::string>(),
+                                   "A list of auxiliary variable names to attach to the solver.");
 
   params.AddOptionalParameter("dt", 0.01, "Desired initial timestep size.");
   params.AddOptionalParameter("time", 0.0, "Current time of the solver.");
@@ -41,26 +43,27 @@ Solver::GetInputParameters()
 }
 
 Solver::Solver(std::string name)
-  : timestepper_(InitTimeStepper(GetInputParameters())), text_name_(std::move(name))
+  : timestepper_(InitializeTimeStepper(GetInputParameters())), name_(std::move(name))
 {
 }
 
 Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
   : basic_options_(options),
-    timestepper_(InitTimeStepper(GetInputParameters())),
-    text_name_(std::move(name))
+    timestepper_(InitializeTimeStepper(GetInputParameters())),
+    name_(std::move(name))
 {
 }
 
 Solver::Solver(const InputParameters& params)
   : Object(params),
-    timestepper_(InitTimeStepper(params)),
-    text_name_(params.GetParamValue<std::string>("name"))
+    timestepper_(InitializeTimeStepper(params)),
+    name_(params.GetParamValue<std::string>("name")),
+    auxvars_(params.GetParamVectorValue<std::string>("auxvars"))
 {
 }
 
 std::shared_ptr<TimeStepper>
-Solver::InitTimeStepper(const InputParameters& params)
+Solver::InitializeTimeStepper(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
 
@@ -105,9 +108,9 @@ Solver::InitTimeStepper(const InputParameters& params)
 }
 
 std::string
-Solver::TextName() const
+Solver::Name() const
 {
-  return text_name_;
+  return name_;
 }
 
 BasicOptions&
@@ -151,25 +154,25 @@ Solver::GetFieldFunctions() const
 void
 Solver::Initialize()
 {
-  log.Log() << "\"Initialize()\" method not defined for " << TextName();
+  log.Log() << "\"Initialize()\" method not defined for " << Name();
 }
 
 void
 Solver::Execute()
 {
-  log.Log() << "\"Execute()\" method not defined for " << TextName();
+  log.Log() << "\"Execute()\" method not defined for " << Name();
 }
 
 void
 Solver::Step()
 {
-  log.Log() << "\"Step()\" method not defined for " << TextName();
+  log.Log() << "\"Step()\" method not defined for " << Name();
 }
 
 void
 Solver::Advance()
 {
-  log.Log() << "\"Advance()\" method not defined for " << TextName();
+  log.Log() << "\"Advance()\" method not defined for " << Name();
 }
 
 ParameterBlock
@@ -209,6 +212,21 @@ Solver::SetProperties(const ParameterBlock& params)
       timestepper_->SetMaxTimeSteps(param.GetValue<int>());
     if (param_name == "dt_min")
       timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
+  }
+}
+
+void
+Solver::SetAuxiliaryFieldFunction()
+{
+  for (const auto& auxvar : auxvars_)
+  {
+    for (auto& ff : field_function_stack)
+    {
+      if (auxvar == ff->Name())
+        aux_field_functions_[auxvar] = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff);
+    }
+    if (aux_field_functions_.count(auxvar) == 0)
+      throw std::runtime_error("Auxiliary field function " + auxvar + " not found.");
   }
 }
 

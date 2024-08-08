@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/diffusion/fv_diffusion_solver.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
+#include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
-#include "framework/math/functions/scalar_spatial_material_function.h"
 
 namespace opensn
 {
@@ -165,7 +165,7 @@ FVDiffusionSolver::Initialize()
 {
   const std::string fname = "FVSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << Name()
             << ": Initializing FV Diffusion solver ";
 
   // Get grid
@@ -381,7 +381,7 @@ FVDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  TextName(),
+                                  Name(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,

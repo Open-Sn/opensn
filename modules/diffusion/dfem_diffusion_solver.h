@@ -4,9 +4,7 @@
 #pragma once
 
 #include "modules/diffusion/diffusion_solver.h"
-#include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/mesh/mesh.h"
-#include <vector>
 
 namespace opensn
 {

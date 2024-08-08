@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/diffusion/cfem_diffusion_solver.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/functions/scalar_spatial_material_function.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/math/functions/scalar_spatial_material_function.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 
 namespace opensn
 {
@@ -171,7 +171,7 @@ CFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "CFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << Name()
             << ": Initializing CFEM Diffusion solver ";
 
   // Get grid
@@ -444,7 +444,7 @@ CFEMDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  TextName(),
+                                  Name(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
