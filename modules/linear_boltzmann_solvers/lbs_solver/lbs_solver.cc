@@ -1643,11 +1643,16 @@ LBSSolver::InitializeSolverSchemes()
 
   ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
   if (groupsets_.size() == 1)
+  {
     ags_solver_->MaxIterations(1);
+    ags_solver_->Verbosity(false);
+  }
   else
+  {
     ags_solver_->MaxIterations(options_.max_ags_iterations);
+    ags_solver_->Verbosity(options_.verbose_ags_iterations);
+  }
   ags_solver_->Tolerance(options_.ags_tolerance);
-  ags_solver_->Verbosity(options_.verbose_ags_iterations);
 }
 
 void

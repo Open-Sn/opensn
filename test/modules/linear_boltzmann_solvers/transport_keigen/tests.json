@@ -145,8 +145,9 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_openmcxs_UO2_cr.lua",
-    "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with Classic Richardson and OpenMC MGXS library",
+    "file": "keigenvalue_transport_3d_openmcxs_UO2_crichardson.lua",
+    "comment":
+      "3D 172G KEigenvalue::Solver test using Power Iteration with Classic Richardson and OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
       {

@@ -19,7 +19,7 @@ end
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../resources/TestMeshes/TriangleMesh2x2Cuts.obj",
+      filename = "../../../assets/mesh/TriangleMesh2x2Cuts.obj",
     }),
   },
   partitioner = mesh.KBAGraphPartitioner.Create({

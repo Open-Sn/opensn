@@ -54,8 +54,6 @@ public:
 
   void SetBoundaryOptions(const InputParameters& params);
 
-  double ComputePointwisePhiChange(LBSGroupset& groupset);
-
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t NumMoments() const;
 
@@ -298,6 +296,9 @@ public:
   void SetPhiFromFieldFunctions(PhiSTLOption which_phi,
                                 const std::vector<size_t>& m_indices,
                                 const std::vector<size_t>& g_indices);
+
+  /// Computes the pointwise difference between new and old phi.
+  double ComputePointwisePhiChange(LBSGroupset& groupset);
 
   /**
    * Compute the total fission production in the problem.

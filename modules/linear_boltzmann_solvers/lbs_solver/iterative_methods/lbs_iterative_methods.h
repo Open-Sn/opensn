@@ -30,7 +30,7 @@ IterativeMethodPETScName(IterativeMethod it_method)
       return "gmres";
     case IterativeMethod::KRYLOV_BICGSTAB:
       return "bcgs";
-    case IterativeMethod::CLASSIC_RICHARDSON:
+    default:
       return "";
   }
   return "";

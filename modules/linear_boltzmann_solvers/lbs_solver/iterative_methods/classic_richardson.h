@@ -12,10 +12,9 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
-/**Linear Solver specialization for Within GroupSet (WGS) solves with classic
+/**
+ * Linear Solver specialization for Within GroupSet (WGS) solves with classic
  * Richardson.
  */
 class ClassicRichardson : public LinearSolver
@@ -61,5 +60,4 @@ private:
   double ComputePointwisePsiChange();
 };
 
-} // namespace lbs
 } // namespace opensn

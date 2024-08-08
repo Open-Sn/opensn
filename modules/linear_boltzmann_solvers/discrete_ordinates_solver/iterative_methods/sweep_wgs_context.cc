@@ -161,7 +161,8 @@ SweepWGSContext::PostSolveCallback()
   set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);
   sweep_scheduler_.SetDestinationPhi(lbs_solver_.PhiNewLocal());
   ApplyInverseTransportOperator(scope);
-  lbs_solver_.GSScopedCopyPrimarySTLvectors(groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+  lbs_solver_.GSScopedCopyPrimarySTLvectors(
+    groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
   if (log_info_)
   {

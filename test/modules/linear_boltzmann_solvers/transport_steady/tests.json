@@ -22,7 +22,7 @@
     "file": "transport_1d_leakage.lua",
     "comment": "1D LinearBSolver Test - Leakage",
     "num_procs": 3,
-    "checks" : [
+    "checks": [
       {
         "type": "KeyValuePair",
         "key": "[0]  zmax=",
@@ -103,7 +103,7 @@
     ]
   },
   {
-    "file": "transport_2d_2_unstructured_classic_richardson.lua",
+    "file": "transport_2d_2_unstructured_crichardson.lua",
     "comment": "2D LinearBSolver Test Unstructured grid with Classic Richardson - PWLD",
     "num_procs": 4,
     "checks": [
@@ -278,7 +278,7 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_parmetis_cr.lua",
+    "file": "transport_3d_1_poly_parmetis_crichardson.lua",
     "comment": "3D LinearBSolver Test Ortho Grid Parmetis with Classic Richardson- PWLD",
     "num_procs": 4,
     "checks": [
@@ -336,7 +336,7 @@
   },
   {
     "file": "transport_3d_1_poly_qmom_part2.lua",
-    "dependency" : "transport_3d_1_poly_qmom_part1.lua",
+    "dependency": "transport_3d_1_poly_qmom_part1.lua",
     "comment": "3D LinearBSolver Test Source moment reading - PWLD",
     "num_procs": 4,
     "checks": [
@@ -402,7 +402,7 @@
     "file": "transport_3d_3a_dsa_ortho.lua",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "StrCompare",
@@ -455,7 +455,7 @@
     "file": "transport_3d_5_cycles_2.lua",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh - PWLD",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -472,10 +472,10 @@
     ]
   },
   {
-    "file": "transport_3d_5_cycles_2_classic_richardson.lua",
+    "file": "transport_3d_5_cycles_2_crichardson.lua",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -495,19 +495,19 @@
     "file": "transport_3d_6a_split_mesh.lua",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
-        "wordnum" : 4,
+        "wordnum": 4,
         "gold": 1.131566e-01,
         "abs_tol": 1.0e-6
       },
       {
         "type": "FloatCompare",
         "key": "max-grp19(latest)",
-        "wordnum" : 4,
+        "wordnum": 4,
         "gold": 7.340585e-04,
         "abs_tol": 1.0e-9
       }
@@ -517,19 +517,19 @@
     "file": "transport_3d_6b_split_mesh.lua",
     "comment": "3D LinearBSolver Test Split mesh configuration B",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "FloatCompare",
         "key": "max-grp0(latest)",
-        "wordnum" : 4,
+        "wordnum": 4,
         "gold": 1.131566e-01,
         "abs_tol": 1.0e-6
       },
       {
         "type": "FloatCompare",
         "key": "max-grp19(latest)",
-        "wordnum" : 4,
+        "wordnum": 4,
         "gold": 7.340585e-04,
         "abs_tol": 1.0e-9
       }
@@ -539,7 +539,7 @@
     "file": "reed_balance.lua",
     "comment": "1D LinearBSolver Reed problem with balance printout",
     "num_procs": 1,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -556,10 +556,10 @@
     ]
   },
   {
-    "file": "reed_balance_classic_richardson.lua",
+    "file": "reed_balance_crichardson.lua",
     "comment": "1D LinearBSolver Reed problem with Classic Richardson and balance printout",
     "num_procs": 1,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -659,7 +659,8 @@
   },
   {
     "file": "transport_1d_4_dsa_ortho_inf.lua",
-    "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
+    "comment":
+      "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
     "num_procs": 1,
     "checks": [
       {
@@ -694,7 +695,7 @@
     "file": "transport_2d_1_poly_balance.lua",
     "comment": "2D Transport test. Pure scatterer. Balance.",
     "num_procs": 1,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -714,7 +715,7 @@
     "file": "transport_2d_1_poly_balance_mg.lua",
     "comment": "2D Transport test. Vacuum and Isotropic BC. Balance.\n",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",

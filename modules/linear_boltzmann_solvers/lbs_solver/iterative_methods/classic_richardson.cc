@@ -14,8 +14,6 @@
 
 namespace opensn
 {
-namespace lbs
-{
 
 ClassicRichardson::ClassicRichardson(std::shared_ptr<WGSContext> gs_context_ptr)
   : LinearSolver("ClassicRichardson", gs_context_ptr)
@@ -45,8 +43,7 @@ ClassicRichardson::Solve()
   for (int k = 0; k < groupset.max_iterations_; ++k)
   {
     lbs_solver.QMomentsLocal() = saved_q_moments_local_;
-    gs_context_ptr->set_source_function_(
-      groupset, lbs_solver.QMomentsLocal(), phi_old, lbs_solver.DensitiesLocal(), scope);
+    gs_context_ptr->set_source_function_(groupset, lbs_solver.QMomentsLocal(), phi_old, scope);
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Apply WGDSA
@@ -131,5 +128,4 @@ ClassicRichardson::ComputePointwisePsiChange()
   return global_pw_psi_change;
 }
 
-} // namespace lbs
 } // namespace opensn
