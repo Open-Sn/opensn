@@ -98,6 +98,7 @@ lbs_options = {
   },
   scattering_order = 1,
   save_angular_flux = true,
+  max_ags_iterations = 1,
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
