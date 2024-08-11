@@ -25,9 +25,9 @@ protected:
   explicit SurfaceMesh(const InputParameters& params);
 
 protected:
-  std::vector<Vertex> vertices_;
-  std::vector<Vertex> tex_vertices_; ///< Texture vertices
-  std::vector<Normal> normals_;
+  std::vector<Vector3> vertices_;
+  std::vector<Vector3> tex_vertices_; ///< Texture vertices
+  std::vector<Vector3> normals_;
   std::vector<Face> faces_;
   std::vector<Edge> lines_;
   std::vector<std::shared_ptr<PolyFace>> poly_faces_; ///< Polygonal faces
@@ -35,7 +35,7 @@ protected:
   std::vector<int> physical_region_map_;
 
 public:
-  const std::vector<Vertex>& GetVertices() const { return vertices_; }
+  const std::vector<Vector3>& GetVertices() const { return vertices_; }
 
   const std::vector<Face>& GetTriangles() const { return faces_; }
 
@@ -78,8 +78,8 @@ public:
    * The vertices along a dimension merely represents the divisions. They
    * are not the complete vertices defining a cell. For example:
    * \code
-   * std::vector<Vertex> vertices_x = {0.0,1.0,2.0};
-   * std::vector<Vertex> vertices_y = {0.0,1.0,2.0};
+   * std::vector<Vector3> vertices_x = {0.0,1.0,2.0};
+   * std::vector<Vector3> vertices_y = {0.0,1.0,2.0};
    * SurfaceMesh::CreateFromDivisions(vertices_x,vertices_y);
    * \endcode
    *

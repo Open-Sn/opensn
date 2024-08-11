@@ -98,8 +98,6 @@ PrintIterationProgress(const size_t current_iteration,
                        const size_t total_num_iterations,
                        const unsigned int num_intvls)
 {
-  typedef unsigned int uint;
-
   // Creating shorthand symbols for arguments
   const auto& i = current_iteration;
   const auto& I = num_intvls;
@@ -129,7 +127,7 @@ PrintIterationProgress(const size_t current_iteration,
   double x2;
   std::modf(double(i) / dI, &x2);
 
-  if (uint(x2) != uint(x1))
+  if (static_cast<unsigned int>(x2) != static_cast<unsigned int>(x1))
   {
     output << x2 * (100.0 / I);
     return output.str();

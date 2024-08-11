@@ -9,8 +9,8 @@
 namespace opensn
 {
 
-typedef std::function<double(double)> ScalarScalarFunction;
-typedef std::function<double(double, double, double, double)> ScalarXYZTFunction;
+using ScalarScalarFunction = std::function<double(double)>;
+using ScalarXYZTFunction = std::function<double(double, double, double, double)>;
 
 class FunctionDimAToDimB : public Object
 {

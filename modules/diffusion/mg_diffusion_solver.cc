@@ -408,7 +408,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
   std::stringstream materials_list;
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Process materials found
+  // Process materials found
   const size_t num_physics_mats = material_stack.size();
   bool first_material_read = true;
 
@@ -502,7 +502,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
   opensn::mpi_comm.barrier();
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Compute last fast group
+  // Compute last fast group
   // initialize last fast group
   log.Log() << "Computing last fast group.";
   unsigned int lfg = num_groups_;
@@ -529,7 +529,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
   last_fast_group_ = lfg;
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Compute two-grid params
+  // Compute two-grid params
   do_two_grid_ = basic_options_("do_two_grid").BoolValue();
   if ((lfg == num_groups_) and do_two_grid_)
   {

@@ -15,7 +15,8 @@ namespace opensn
 PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(const MeshContinuum& grid,
                                                            QuadratureOrder q_order,
                                                            CoordinateSystemType cs_type)
-  : PieceWiseLinearBase(grid, q_order, SDMType::PIECEWISE_LINEAR_DISCONTINUOUS, cs_type)
+  : PieceWiseLinearBase(
+      grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS, cs_type)
 {
   CreateCellMappings();
 

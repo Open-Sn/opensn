@@ -148,11 +148,11 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
   GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
   // Generate xy_tilde values
-  std::vector<std::vector<Vertex>> vertices_xy_tilde_ij;
-  vertices_xy_tilde_ij.resize(Np, std::vector<Vertex>(Np));
+  std::vector<std::vector<Vector3>> vertices_xy_tilde_ij;
+  vertices_xy_tilde_ij.resize(Np, std::vector<Vector3>(Np));
   for (int i = 0; i < Np; ++i)
     for (int j = 0; j < Np; ++j)
-      vertices_xy_tilde_ij[i][j] = Vertex(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
+      vertices_xy_tilde_ij[i][j] = Vector3(diagonal_vertices_[i].x, diagonal_vertices_[j].y, 0.0);
 
   // Generate SQs
   for (int i = 0; i < Ns; ++i)
@@ -215,7 +215,7 @@ void
 SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   SphericalQuadrilateral& sq,
   GaussLegendreQuadrature& legendre,
-  Vertex& sq_xy_tilde_centroid,
+  Vector3& sq_xy_tilde_centroid,
   std::array<Vector3, 4>& radii_vectors_xy_tilde,
   std::array<double, 4>& sub_sub_sqr_areas)
 {
@@ -239,7 +239,7 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
 void
 SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
                                                      GaussLegendreQuadrature& legendre,
-                                                     Vertex& sq_xy_tilde_centroid,
+                                                     Vector3& sq_xy_tilde_centroid,
                                                      std::array<Vector3, 4>& radii_vectors_xy_tilde,
                                                      std::array<double, 4>& sub_sub_sqr_areas)
 {
@@ -329,7 +329,7 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
                                                   GaussLegendreQuadrature& legendre)
 {
   // Determine sq tilde center
-  Vertex sq_tilde_center;
+  Vector3 sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
@@ -341,8 +341,8 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
     vctoi[v] = sq.vertices_xy_tilde[v] - vc;
 
   // Determine sub-sub-squares
-  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, Vertex> vm;
+  std::array<std::array<Vector3, 4>, 4> sub_sub_square_xy_tilde;
+  std::map<std::string, Vector3> vm;
 
   for (int v = 0; v < 4; ++v)
     vm[std::to_string(v)] = sq.vertices_xy_tilde[v];
@@ -360,7 +360,7 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
   sst[3] = {vm["03"], vm["c"], vm["23"], vm["3"]};
 
   // Determine sub-sub-square xyz
-  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xyz;
+  std::array<std::array<Vector3, 4>, 4> sub_sub_square_xyz;
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       sub_sub_square_xyz[i][j] =
@@ -389,12 +389,13 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
 }
 
 double
-SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(std::array<Vertex, 4>& vertices_xyz)
+SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
+  std::array<Vector3, 4>& vertices_xyz)
 {
   const auto num_verts = 4;
 
   // Compute centroid
-  Vertex centroid_xyz;
+  Vector3 centroid_xyz;
   for (auto& v : vertices_xyz)
     centroid_xyz += v;
   centroid_xyz /= num_verts;
@@ -969,14 +970,14 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQ
   std::array<SphericalQuadrilateral, 4> new_sqs;
 
   // Determine sq tilde center
-  Vertex sq_tilde_center;
+  Vector3 sq_tilde_center;
   for (const auto& v : sq.vertices_xy_tilde)
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
   // Determine sub-sub-squares Tilde coordinates
-  std::array<std::array<Vertex, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, Vertex> vm;
+  std::array<std::array<Vector3, 4>, 4> sub_sub_square_xy_tilde;
+  std::map<std::string, Vector3> vm;
 
   for (int v = 0; v < 4; ++v)
     vm[std::to_string(v)] = sq.vertices_xy_tilde[v];

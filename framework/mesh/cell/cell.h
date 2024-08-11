@@ -39,8 +39,8 @@ class CellFace
 {
 public:
   std::vector<uint64_t> vertex_ids_; /// A list of the vertices
-  Normal normal_;                    ///< The average/geometric normal
-  Vertex centroid_;                  ///< The face centroid
+  Vector3 normal_;                   ///< The average/geometric normal
+  Vector3 centroid_;                 ///< The face centroid
   bool has_neighbor_ = false;        ///< Flag indicating whether face has a neighbor
   uint64_t neighbor_id_ = 0;         ///< If face has neighbor, contains the global_id.
                                      ///< Otherwise contains boundary_id.
@@ -81,7 +81,7 @@ public:
   uint64_t global_id_ = 0;
   uint64_t local_id_ = 0;
   uint64_t partition_id_ = 0;
-  Vertex centroid_;
+  Vector3 centroid_;
   int material_id_ = -1;
 
   std::vector<uint64_t> vertex_ids_;

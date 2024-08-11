@@ -119,7 +119,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   // Reorient 1D vertices along z
-  std::vector<Vertex> zverts;
+  std::vector<Vector3> zverts;
   zverts.reserve(vertices.size());
   for (double z_coord : vertices)
     zverts.emplace_back(0.0, 0.0, z_coord);
@@ -200,8 +200,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   umesh->AddBoundary(YMIN, "YMIN");
   umesh->AddBoundary(YMAX, "YMAX");
 
-  typedef std::vector<uint64_t> VecIDs;
-  std::vector<VecIDs> vertex_ij_to_i_map(Ny, VecIDs(Nx));
+  std::vector<std::vector<uint64_t>> vertex_ij_to_i_map(Ny, std::vector<uint64_t>(Nx));
   umesh->Vertices().reserve(Nx * Ny);
   {
     uint64_t k = 0;
@@ -215,7 +214,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
     }
   }
 
-  std::vector<VecIDs> cells_ij_to_i_map(Ny - 1, VecIDs(Nx - 1));
+  std::vector<std::vector<uint64_t>> cells_ij_to_i_map(Ny - 1, std::vector<uint64_t>(Nx - 1));
   {
     uint64_t k = 0;
     for (size_t i = 0; i < (Ny - 1); ++i)
@@ -326,11 +325,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   // and the j-index refers to the jth row. We try to follow
   // the same logic here.
 
-  typedef std::vector<uint64_t> VecIDs;
-  typedef std::vector<VecIDs> VecVecIDs;
-  std::vector<VecVecIDs> vertex_ijk_to_i_map(Ny);
+  std::vector<std::vector<std::vector<uint64_t>>> vertex_ijk_to_i_map(Ny);
   for (auto& vec : vertex_ijk_to_i_map)
-    vec.resize(Nx, VecIDs(Nz));
+    vec.resize(Nx, std::vector<uint64_t>(Nz));
 
   umesh->Vertices().reserve(Nx * Ny * Nz);
   {
@@ -348,9 +345,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
     }
   }
 
-  std::vector<VecVecIDs> cells_ijk_to_i_map(Ny - 1);
+  std::vector<std::vector<std::vector<uint64_t>>> cells_ijk_to_i_map(Ny - 1);
   for (auto& vec : cells_ijk_to_i_map)
-    vec.resize(Nx - 1, VecIDs(Nz - 1));
+    vec.resize(Nx - 1, std::vector<uint64_t>(Nz - 1));
 
   {
     uint64_t c = 0;

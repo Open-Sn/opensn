@@ -40,8 +40,8 @@ public:
 protected:
   void InitFieldFunctions();
 
-  typedef std::pair<BoundaryType, std::vector<double>> BoundaryInfo;
-  typedef std::map<std::string, BoundaryInfo> BoundaryPreferences;
+  using BoundaryInfo = std::pair<BoundaryType, std::vector<double>>;
+  using BoundaryPreferences = std::map<std::string, BoundaryInfo>;
 
   std::shared_ptr<MeshContinuum> grid_ptr_;
   std::shared_ptr<SpatialDiscretization> sdm_ptr_;

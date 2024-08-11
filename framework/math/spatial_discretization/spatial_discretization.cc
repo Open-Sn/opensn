@@ -13,7 +13,7 @@ namespace opensn
 
 SpatialDiscretization::SpatialDiscretization(const MeshContinuum& grid,
                                              CoordinateSystemType cs_type,
-                                             SDMType sdm_type)
+                                             SpatialDiscretizationType sdm_type)
   : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}),
     ref_grid_(grid),
     coord_sys_type_(cs_type),
@@ -122,26 +122,22 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
 std::vector<std::vector<std::vector<int>>>
 SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
-  typedef std::vector<int> FaceAdjMapping;
-  typedef std::vector<FaceAdjMapping> PerFaceAdjMapping;
-  typedef std::vector<PerFaceAdjMapping> CellAdjMapping;
-
   const auto& grid = this->ref_grid_;
 
-  CellAdjMapping cell_adj_mapping;
+  std::vector<std::vector<std::vector<int>>> cell_adj_mapping;
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = this->GetCellMapping(cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
     const size_t num_faces = cell.faces_.size();
 
-    PerFaceAdjMapping per_face_adj_mapping;
+    std::vector<std::vector<int>> per_face_adj_mapping;
 
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
       const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
-      FaceAdjMapping face_adj_mapping(num_face_nodes, -1);
+      std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor_)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id_];

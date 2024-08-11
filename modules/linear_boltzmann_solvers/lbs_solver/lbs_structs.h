@@ -15,7 +15,6 @@ namespace opensn
 using DirIDs = std::vector<size_t>; ///< Direction-IDs
 using UniqueSOGroupings = std::vector<DirIDs>;
 using DirIDToSOMap = std::map<size_t, size_t>;
-using MatVec3 = std::vector<std::vector<Vector3>>;
 
 enum class SolverType
 {
@@ -194,12 +193,11 @@ enum class PhiSTLOption
 
 class LBSGroupset;
 
-typedef std::function<void(const LBSGroupset& groupset,
-                           std::vector<double>& q,
-                           const std::vector<double>& phi,
-                           const std::vector<double>& densities,
-                           const SourceFlags source_flags)>
-  SetSourceFunction;
+using SetSourceFunction = std::function<void(const LBSGroupset& groupset,
+                                             std::vector<double>& q,
+                                             const std::vector<double>& phi,
+                                             const std::vector<double>& densities,
+                                             const SourceFlags source_flags)>;
 
 /**Struct for storing LBS options.*/
 struct LBSOptions

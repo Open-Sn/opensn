@@ -21,7 +21,8 @@ class GhostedParallelSTLVector;
 class FieldFunctionGridBased : public FieldFunction
 {
 public:
-  typedef std::pair<Vector3, Vector3> BoundingBox;
+  using BoundingBox = std::pair<Vector3, Vector3>;
+  using FFList = std::vector<std::shared_ptr<const FieldFunctionGridBased>>;
 
   static InputParameters GetInputParameters();
   explicit FieldFunctionGridBased(const InputParameters& params);

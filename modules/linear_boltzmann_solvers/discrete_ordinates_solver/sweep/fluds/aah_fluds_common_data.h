@@ -16,10 +16,10 @@ class Cell;
 class CellFace;
 
 // face_slot index, vertex ids
-typedef std::pair<int, std::vector<uint64_t>> CompactFaceView;
+using CompactFaceView = std::pair<int, std::vector<uint64_t>>;
 
 // cell_global_id, faces
-typedef std::pair<int, std::vector<CompactFaceView>> CompactCellView;
+using CompactCellView = std::pair<int, std::vector<CompactFaceView>>;
 
 class SPDS;
 

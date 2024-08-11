@@ -20,7 +20,7 @@ public:
 protected:
   explicit FiniteElementBase(const MeshContinuum& grid,
                              CoordinateSystemType cs_type,
-                             SDMType sdm_type,
+                             SpatialDiscretizationType sdm_type,
                              QuadratureOrder q_order)
     : SpatialDiscretization(grid, cs_type, sdm_type), q_order_(q_order)
   {

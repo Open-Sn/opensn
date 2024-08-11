@@ -39,9 +39,7 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
   const int num_gs_groups = last_group_index - first_grp_index + 1;
   OpenSnInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
-  typedef Multigroup_D_and_sigR MultiGroupXS;
-  typedef std::map<int, Multigroup_D_and_sigR> MatID2XSMap;
-  MatID2XSMap matid_2_mgxs_map;
+  std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
   for (const auto& matid_xs_pair : matid_to_xs_map)
   {
     const auto& mat_id = matid_xs_pair.first;
@@ -60,7 +58,7 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
       ++g;
     } // for g
 
-    matid_2_mgxs_map.insert(std::make_pair(mat_id, MultiGroupXS{D, sigma_r}));
+    matid_2_mgxs_map.insert(std::make_pair(mat_id, Multigroup_D_and_sigR{D, sigma_r}));
   }
 
   return matid_2_mgxs_map;

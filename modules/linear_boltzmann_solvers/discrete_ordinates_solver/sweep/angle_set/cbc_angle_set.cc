@@ -39,10 +39,8 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 {
   CALI_CXX_MARK_SCOPE("CBC_AngleSet::AngleSetAdvance");
 
-  typedef AngleSetStatus Status;
-
   if (executed_)
-    return Status::FINISHED;
+    return AngleSetStatus::FINISHED;
 
   if (current_task_list_.empty())
     current_task_list_ = cbc_spds_.TaskList();
@@ -59,7 +57,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   // Check if boundaries allow for execution
   for (auto& [bid, boundary] : boundaries_)
     if (not boundary->CheckAnglesReadyStatus(angles_, group_subset_))
-      return Status::NOT_FINISHED;
+      return AngleSetStatus::NOT_FINISHED;
 
   bool all_tasks_completed = true;
   bool a_task_executed = true;
@@ -94,10 +92,10 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     for (auto& [bid, boundary] : boundaries_)
       boundary->UpdateAnglesReadyStatus(angles_, group_subset_);
     executed_ = true;
-    return Status::FINISHED;
+    return AngleSetStatus::FINISHED;
   }
 
-  return Status::NOT_FINISHED;
+  return AngleSetStatus::NOT_FINISHED;
 }
 
 void

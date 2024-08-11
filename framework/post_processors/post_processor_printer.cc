@@ -166,8 +166,7 @@ PostProcessorPrinter::GetPrintedPostProcessors(
 {
   std::stringstream outstr;
 
-  typedef std::pair<std::string, std::string> PPNameAndVal;
-  std::vector<PPNameAndVal> scalar_ppnames_and_vals;
+  std::vector<std::pair<std::string, std::string>> scalar_ppnames_and_vals;
   for (const auto& pp : pp_list)
   {
     const auto& value = pp->GetValue();
@@ -196,8 +195,7 @@ PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
     return;
   std::stringstream outstr;
 
-  typedef std::pair<std::string, std::string> PPNameAndVal;
-  std::vector<PPNameAndVal> scalar_ppnames_and_vals;
+  std::vector<std::pair<std::string, std::string>> scalar_ppnames_and_vals;
   for (const auto& pp : pp_list)
   {
     const auto& value = pp->GetValue();
@@ -425,13 +423,12 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
     sub_mat_sizes.push_back(col_counter);
 
     // Now actually build the sub-matrices
-    typedef std::vector<std::string> VecStr;
-    typedef std::vector<VecStr> MatStr;
-    std::vector<MatStr> sub_matrices;
+    std::vector<std::vector<std::vector<std::string>>> sub_matrices;
     size_t last_k = 1;
     for (const size_t k : sub_mat_sizes)
     {
-      MatStr sub_matrix(num_rows, VecStr(k - last_k + 1, ""));
+      std::vector<std::vector<std::string>> sub_matrix(
+        num_rows, std::vector<std::string>(k - last_k + 1, ""));
       // Copy time col
       for (size_t i = 0; i < num_rows; ++i)
         sub_matrix[i][0] = value_matrix[i][0];
@@ -673,9 +670,8 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
 
   const auto& front_time_hist = pp_sub_list.front()->GetTimeHistory();
 
-  typedef std::vector<std::string> VecStr;
-  typedef std::vector<VecStr> MatStr;
-  MatStr value_matrix(num_rows, VecStr(num_cols, ""));
+  std::vector<std::vector<std::string>> value_matrix(num_rows,
+                                                     std::vector<std::string>(num_cols, ""));
 
   // Do the header first
   value_matrix[0][0] = "Time";

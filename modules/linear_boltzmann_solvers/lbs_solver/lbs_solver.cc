@@ -1833,17 +1833,15 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
     }
 
     // Make xs map
-    typedef Multigroup_D_and_sigR MultiGroupXS;
-    typedef std::map<int, MultiGroupXS> MatID2MGDXSMap;
-    MatID2MGDXSMap matid_2_mgxs_map;
+    std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
     for (const auto& matid_xs_pair : matid_to_xs_map_)
     {
       const auto& mat_id = matid_xs_pair.first;
 
       const auto& tg_info = groupset.tg_acceleration_info_.map_mat_id_2_tginfo.at(mat_id);
 
-      matid_2_mgxs_map.insert(
-        std::make_pair(mat_id, MultiGroupXS{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
+      matid_2_mgxs_map.insert(std::make_pair(
+        mat_id, Multigroup_D_and_sigR{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
     }
 
     // Create solver

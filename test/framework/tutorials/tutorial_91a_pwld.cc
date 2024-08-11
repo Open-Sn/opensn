@@ -138,10 +138,9 @@ SimTest91_PWLD(const InputParameters&)
   }
 
   // Precompute cell matrices
-  typedef std::vector<Vector3> VecVec3;
-  typedef std::vector<VecVec3> MatVec3;
-  typedef std::vector<std::vector<double>> MatDbl;
-  typedef std::vector<MatDbl> VecMatDbl;
+  using MatVec3 = std::vector<std::vector<Vector3>>;
+  using MatDbl = std::vector<std::vector<double>>;
+  using VecMatDbl = std::vector<MatDbl>;
 
   std::vector<MatVec3> cell_Gmatrices;
   std::vector<MatDbl> cell_Mmatrices;
@@ -153,7 +152,7 @@ SimTest91_PWLD(const InputParameters&)
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    MatVec3 IntV_shapeI_gradshapeJ(num_nodes, VecVec3(num_nodes, Vector3(0, 0, 0)));
+    MatVec3 IntV_shapeI_gradshapeJ(num_nodes, std::vector<Vector3>(num_nodes, Vector3(0, 0, 0)));
     MatDbl IntV_shapeI_shapeJ(num_nodes, std::vector<double>(num_nodes, 0.0));
 
     for (unsigned int i = 0; i < num_nodes; ++i)

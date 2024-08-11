@@ -130,7 +130,7 @@ private:
  *
  * \author Jan
  */
-bool CheckPlaneLineIntersect(const Normal& plane_normal,
+bool CheckPlaneLineIntersect(const Vector3& plane_normal,
                              const Vector3& plane_point,
                              const Vector3& line_point_0,
                              const Vector3& line_point_1,
@@ -169,7 +169,7 @@ bool CheckLineIntersectTriangle2(const Vector3& tri_point0,
  * Check whether a point lies in a triangle.
  */
 bool CheckPointInTriangle(
-  const Vector3& v0, const Vector3& v1, const Vector3& v2, const Normal& n, const Vector3& point);
+  const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n, const Vector3& point);
 
 /**
  * This functions checks the intersection of a plane with a tetrahedron.
@@ -181,7 +181,7 @@ bool CheckPointInTriangle(
  * Therefore, if we encounter differing senses then the plane is indeed
  * intersecting.
  */
-bool CheckPlaneTetIntersect(const Normal& plane_normal,
+bool CheckPlaneTetIntersect(const Vector3& plane_normal,
                             const Vector3& plane_point,
                             const std::vector<Vector3>& tet_points);
 

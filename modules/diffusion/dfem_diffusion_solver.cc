@@ -342,15 +342,13 @@ DFEMDiffusionSolver::Execute()
 
       const double hm = HPerpendicular(cell, f);
 
-      typedef MeshContinuum Grid;
-
       // interior face
       if (face.has_neighbor_)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id_];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-        const size_t acf = Grid::MapCellFace(cell, adj_cell, f);
+        const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp_neigh = HPerpendicular(adj_cell, acf);
 
         const auto imat_neigh = adj_cell.material_id_;

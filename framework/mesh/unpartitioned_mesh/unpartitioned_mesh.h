@@ -33,7 +33,7 @@ public:
   {
     const CellType type;
     const CellType sub_type;
-    Vertex centroid;
+    Vector3 centroid;
     int material_id = -1;
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
@@ -90,8 +90,8 @@ public:
     return raw_boundary_cells_;
   }
 
-  const std::vector<Vertex>& Vertices() const { return vertices_; }
-  std::vector<Vertex>& Vertices() { return vertices_; }
+  const std::vector<Vector3>& Vertices() const { return vertices_; }
+  std::vector<Vector3>& Vertices() { return vertices_; }
 
   /**
    * Establishes neighbor connectivity for the light-weight mesh.
@@ -140,7 +140,7 @@ protected:
   BoundBox bound_box_;
   std::map<uint64_t, std::string> boundary_id_map_;
 
-  std::vector<Vertex> vertices_;
+  std::vector<Vector3> vertices_;
   std::vector<std::shared_ptr<LightWeightCell>> raw_cells_;
   std::vector<std::shared_ptr<LightWeightCell>> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;

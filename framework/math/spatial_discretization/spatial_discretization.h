@@ -26,16 +26,12 @@ public:
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
   MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
-  // 01 AddViewOfContinuum
   const CellMapping& GetCellMapping(const Cell& cell) const;
   SpatialDiscretizationType Type() const;
   /**Returns the reference grid on which this discretization is based.*/
   const MeshContinuum& Grid() const;
   CoordinateSystemType GetCoordinateSystemType() const;
 
-  // 02 OrderNodes
-
-  // 03
   /**Builds the sparsity pattern for a local block matrix compatible with
    * the given unknown manager. The modified vectors are: `nodal_nnz_in_diag`
    * which specifies for each row the number of non-zeros in the local diagonal
@@ -45,7 +41,6 @@ public:
                                     std::vector<int64_t>& nodal_nnz_off_diag,
                                     const UnknownManager& unknown_manager) const = 0;
 
-  // 04 Mappings
   /**Maps the global address of a degree of freedom.*/
   virtual int64_t MapDOF(const Cell& cell,
                          unsigned int node,
@@ -70,7 +65,6 @@ public:
    * here is a single scalar unknown.*/
   virtual int64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
-  // 05 Utils
   /**For the unknown structure in the unknown manager, returns the
    * number of local degrees-of-freedom.*/
   size_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
@@ -175,7 +169,7 @@ public:
   /**Spherical coordinate system (1D Spherical) spatial weighting function.*/
   static double Spherical1DSpatialWeightFunction(const Vector3& point);
 
-  typedef std::function<double(const Vector3&)> SpatialWeightFunction;
+  using SpatialWeightFunction = std::function<double(const Vector3&)>;
 
   /**Returns the spatial weighting function appropriate to the discretization's
    * coordinate system.*/
@@ -184,9 +178,9 @@ public:
   virtual ~SpatialDiscretization() = default;
 
 protected:
-  typedef SpatialDiscretizationType SDMType;
-  // 00
-  SpatialDiscretization(const MeshContinuum& grid, CoordinateSystemType cs_type, SDMType sdm_type);
+  SpatialDiscretization(const MeshContinuum& grid,
+                        CoordinateSystemType cs_type,
+                        SpatialDiscretizationType sdm_type);
 
   const MeshContinuum& ref_grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;

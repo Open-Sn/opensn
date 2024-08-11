@@ -61,7 +61,7 @@ SweepScheduler::InitializeAlgoDOG()
   // Loop over angleset groups
   for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); q++)
   {
-    TAngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
+    AngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
 
     // Loop over anglesets in group
     size_t num_anglesets = angleset_group.AngleSets().size();
@@ -70,7 +70,7 @@ SweepScheduler::InitializeAlgoDOG()
       auto angleset = angleset_group.AngleSets()[as];
       const auto& spds = dynamic_cast<const SPDS_AdamsAdamsHawkins&>(angleset->GetSPDS());
 
-      const TLEVELED_GRAPH& leveled_graph = spds.GetGlobalSweepPlanes();
+      const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
 
       // Find location depth
       int loc_depth = -1;

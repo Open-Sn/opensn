@@ -77,7 +77,7 @@ private:
 
   int num_of_subtris_;
   double beta_;
-  Vertex vc_;
+  Vector3 vc_;
   std::vector<std::vector<int>> node_to_side_map_;
 };
 

@@ -16,29 +16,22 @@ namespace opensn
 class ReflectingBoundary : public SweepBoundary
 {
 protected:
-  const opensn::Normal normal_;
+  const Vector3 normal_;
   bool opposing_reflected_ = false;
 
-  /// Groups per DOF
-  typedef std::vector<double> DOFVec;
-  /// DOFs per face
-  typedef std::vector<DOFVec> FaceVec;
-  /// Faces per cell
-  typedef std::vector<FaceVec> CellVec;
-  /// Cell per angle
-  typedef std::vector<CellVec> AngVec;
-
-  // angle,cell,face,dof,group
   // Populated by angle aggregation
-  std::vector<AngVec> boundary_flux_;
-  std::vector<AngVec> boundary_flux_old_;
+  // AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per
+  // DOF
+  using AngularFluxData = std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>;
+  AngularFluxData boundary_flux_;
+  AngularFluxData boundary_flux_old_;
 
   std::vector<int> reflected_anglenum_;
   std::vector<std::vector<bool>> angle_readyflags_;
 
 public:
   ReflectingBoundary(size_t num_groups,
-                     const Normal& normal,
+                     const Vector3& normal,
                      CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(BoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)
   {
@@ -50,9 +43,9 @@ public:
 
   void SetOpposingReflected(bool value) { opposing_reflected_ = value; }
 
-  std::vector<AngVec>& GetBoundaryFluxNew() { return boundary_flux_; }
+  AngularFluxData& GetBoundaryFluxNew() { return boundary_flux_; }
 
-  std::vector<AngVec>& GetBoundaryFluxOld() { return boundary_flux_old_; }
+  AngularFluxData& GetBoundaryFluxOld() { return boundary_flux_old_; }
 
   std::vector<int>& GetReflectedAngleIndexMap() { return reflected_anglenum_; }
 
