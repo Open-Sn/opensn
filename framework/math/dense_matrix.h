@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "framework/math/dynamic_vector.h"
 #include "framework/math/dense_vector.h"
 
 namespace opensn
@@ -56,13 +55,6 @@ public:
       (*this)(i, i) = val;
   }
 
-  void SetRow(int row, const DynamicVector<TYPE>& values)
-  {
-    assert(Columns() == values.size());
-    for (unsigned int i = 0; i < Columns(); ++i)
-      (*this)(row, i) = values[i];
-  }
-
   void SetRow(int row, const DenseVector<TYPE>& values)
   {
     assert(Columns() == values.Rows());
@@ -99,26 +91,6 @@ public:
     for (unsigned int i = 0; i < Rows(); ++i)
       for (unsigned int j = 0; j < Columns(); ++j)
         res(i, j) = (*this)(i, j) - rhs(i, j);
-    return res;
-  }
-
-  /// Matrix-Vector multiplication
-  DynamicVector<TYPE> operator*(const DynamicVector<TYPE>& V)
-  {
-    if (Rows() != V.size())
-      throw std::length_error("Mismatched matrix/vector sizes in matrix-vector multiplication");
-
-    DynamicVector<TYPE> res(Rows());
-    unsigned int k = 0;
-    for (unsigned int i = 0; i < Rows(); ++i)
-    {
-      TYPE value = 0.0;
-      for (unsigned int j = 0; j < Columns(); ++j)
-        value += (*this)(i, j) * V[j];
-      res[k] = value;
-      ++k;
-    }
-
     return res;
   }
 
