@@ -557,40 +557,39 @@ MGDiffusionSolver::ComputeTwoGridParams()
     const auto& diffusion_coeff = mat_id_xs.second->DiffusionCoefficient();
 
     // put P0 transfer matrix in nicer form
-    MatDbl S(num_groups_, std::vector<double>(num_groups_, 0.0));
+    DenseMatrix<double> S(num_groups_, num_groups_, 0.0);
     for (unsigned int g = 0; g < num_groups_; ++g)
       for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
-        S[g][gprime] = sigma;
+        S(g, gprime) = sigma;
 
     // (L+D) e_new = -U e_old
     // original matrix = diag(total) - scattering
     // so L+D = diag(removal) - tril(scattering)
     // and U = -triu(scattering)
-    MatDbl A(num_groups_, std::vector<double>(num_groups_, 0.0));
-    MatDbl B(num_groups_, std::vector<double>(num_groups_, 0.0));
+    DenseMatrix<double> A(num_groups_, num_groups_, 0.0);
+    DenseMatrix<double> B(num_groups_, num_groups_, 0.0);
     for (unsigned int g = 0; g < num_groups_; ++g)
     {
-      A[g][g] = sigma_t[g] - S[g][g];
+      A(g, g) = sigma_t[g] - S(g, g);
       for (unsigned int gp = 0; gp < g; ++gp)
-        A[g][gp] = -S[g][gp];
+        A(g, gp) = -S(g, gp);
       for (unsigned int gp = g + 1; gp < num_groups_; ++gp)
-        B[g][gp] = S[g][gp];
+        B(g, gp) = S(g, gp);
     }
-    MatDbl Ainv = Inverse(A);
     // finally, obtain the iteration matrix
-    MatDbl C_ = MatMul(Ainv, B);
+    auto C_ = Inverse(A) * B;
     // Perform power iteration
-    std::vector<double> E(num_groups_, 1.0);
-    double rho = PowerIteration(C_, E, 10000, 1.0e-12);
+    DenseVector<double> E(num_groups_, 1.0);
+    auto rho = PowerIteration(C_, E, 10000, 1.0e-12);
 
     // Compute two-grid diffusion quantities
     // normalize spectrum
     std::vector<double> spectrum(num_groups_, 1.0);
     double sum = 0.0;
     for (unsigned int g = 0; g < num_groups_; ++g)
-      sum += std::fabs(E[g]);
+      sum += std::fabs(E(g));
     for (unsigned int g = 0; g < num_groups_; ++g)
-      spectrum[g] = std::fabs(E[g]) / sum;
+      spectrum[g] = std::fabs(E(g)) / sum;
     // D ave and Sigma_a ave
     double collapsed_D = 0.0;
     double collapsed_sig_a = 0.0;
@@ -599,7 +598,7 @@ MGDiffusionSolver::ComputeTwoGridParams()
       collapsed_D += diffusion_coeff[g] * spectrum[g];
       collapsed_sig_a += sigma_t[g] * spectrum[g];
       for (unsigned int gp = last_fast_group_; gp < num_groups_; ++gp)
-        collapsed_sig_a -= S[g][gp] * spectrum[gp];
+        collapsed_sig_a -= S(g, gp) * spectrum[g];
     }
     // Verbose output the spectrum
     log.Log0Verbose1() << "Fundamental eigen-value: " << rho;
@@ -752,15 +751,15 @@ MGDiffusionSolver::AssembleAbext()
       collapsed_sig_a = xstg.collapsed_sig_a;
     }
 
-    std::vector<std::vector<double>> rhs_cell;
+    std::vector<DenseVector<double>> rhs_cell;
     rhs_cell.resize(num_groups_);
     for (uint g = 0; g < num_groups_; ++g)
-      rhs_cell[g].resize(num_nodes, 0.0);
+      rhs_cell[g] = DenseVector<double>(num_nodes, 0.0);
 
-    std::vector<MatDbl> Acell;
+    std::vector<DenseMatrix<double>> Acell;
     Acell.resize(num_groups_ + i_two_grid);
     for (uint g = 0; g < num_groups_ + i_two_grid; ++g)
-      Acell[g].resize(num_nodes, std::vector<double>(num_nodes, 0.0));
+      Acell[g] = DenseMatrix<double>(num_nodes, num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -777,16 +776,16 @@ MGDiffusionSolver::AssembleAbext()
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         for (uint g = 0; g < num_groups_; ++g)
-          Acell[g][i][j] = entry_mij * sigma_r[g] + entry_kij * D[g];
+          Acell[g](i, j) = entry_mij * sigma_r[g] + entry_kij * D[g];
 
         if (do_two_grid_)
-          Acell[num_groups_][i][j] = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
+          Acell[num_groups_](i, j) = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
       } // for j
       double entry_rhsi = 0.0;
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
         entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       for (uint g = 0; g < num_groups_; ++g)
-        rhs_cell[g][i] = entry_rhsi * (qext->source_value_g[g]);
+        rhs_cell[g](i) = entry_rhsi * (qext->source_value_g[g]);
     } // for i
 
     // Deal with BC (all based on variations of Robin)
@@ -839,7 +838,7 @@ MGDiffusionSolver::AssembleAbext()
               for (size_t qp : fe_srf_data.QuadraturePointIndices())
                 entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               if (g < num_groups_) // check due to two-grid
-                rhs_cell[g][i] += fval[g] / bval[g] * entry_rhsi;
+                rhs_cell[g](i) += fval[g] / bval[g] * entry_rhsi;
 
               for (size_t fj = 0; fj < num_face_nodes; ++fj)
               {
@@ -848,7 +847,7 @@ MGDiffusionSolver::AssembleAbext()
                 for (size_t qp : fe_srf_data.QuadraturePointIndices())
                   entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                                fe_srf_data.JxW(qp);
-                Acell[g][i][j] += aval[g] / bval[g] * entry_aij;
+                Acell[g](i, j) += aval[g] / bval[g] * entry_aij;
               } // for fj
             }   // for fi
           }     // end true Robin
@@ -864,12 +863,12 @@ MGDiffusionSolver::AssembleAbext()
     // Assembly into system
     for (uint g = 0; g < num_groups_; ++g)
       for (size_t i = 0; i < num_nodes; ++i)
-        VecSetValue(bext_[g], imap[i], rhs_cell[g][i], ADD_VALUES);
+        VecSetValue(bext_[g], imap[i], rhs_cell[g](i), ADD_VALUES);
 
     for (uint g = 0; g < num_groups_ + i_two_grid; ++g)
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
-          MatSetValue(A_[g], imap[i], imap[j], Acell[g][i][j], ADD_VALUES);
+          MatSetValue(A_[g], imap[i], imap[j], Acell[g](i, j), ADD_VALUES);
 
   } // for cell
 

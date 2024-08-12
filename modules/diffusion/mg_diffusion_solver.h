@@ -9,6 +9,7 @@
 #include "framework/physics/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/utils/timer.h"
+#include "framework/math/dense_vector.h"
 #include <map>
 #include <set>
 
