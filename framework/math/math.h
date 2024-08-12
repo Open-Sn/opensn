@@ -7,6 +7,7 @@
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/dense_vector.h"
 #include "framework/math/dense_matrix.h"
 #include <memory>
 
@@ -596,6 +597,59 @@ double PowerIteration(const MatDbl& A,
                       std::vector<double>& e_vec,
                       int max_it = 2000,
                       double tol = 1.0e-13);
+
+/**
+ * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental
+ * mode is return whilst the eigen-vector is return via reference.
+ */
+template <typename TYPE>
+double
+PowerIteration(const DenseMatrix<TYPE>& A,
+               DenseVector<TYPE>& e_vec,
+               int max_it = 2000,
+               double tol = 1.0e-13)
+{
+  unsigned int n = A.Rows();
+  int it_counter = 0;
+  DenseVector<double> y(n, 1.0);
+  double lambda0 = 0.0;
+
+  // Perform initial iteration outside of loop
+  auto Ay = A * y;
+  auto lambda = Dot(y, Ay);
+  y = (1.0 / Vec2Norm(Ay)) * Ay;
+  if (lambda < 0.0)
+    y.Scale(-1.0);
+
+  // Perform convergence loop
+  bool converged = false;
+  while (not converged and it_counter < max_it)
+  {
+    // Update old eigenvalue
+    lambda0 = std::fabs(lambda);
+    // Calculate new eigenvalue/eigenvector
+    Ay = A * y;
+    lambda = Dot(y, Ay);
+    y = (1.0 / Vec2Norm(Ay)) * Ay;
+
+    // Check if converged or not
+    if (std::fabs(std::fabs(lambda) - lambda0) <= tol)
+      converged = true;
+    // Update counter
+    ++it_counter;
+  }
+
+  if (lambda < 0.0)
+    y.Scale(-1.0);
+
+  // Renormalize eigenvector for the last time
+  y = (1.0 / lambda) * Ay;
+
+  // Set eigenvector, return the eigenvalue
+  e_vec = std::move(y);
+
+  return lambda;
+}
 
 double ComputePointwiseChange(std::vector<double>& x, std::vector<double>& y);
 
