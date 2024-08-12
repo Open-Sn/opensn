@@ -7,6 +7,7 @@
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/dense_matrix.h"
 #include <memory>
 
 namespace opensn
@@ -168,8 +169,41 @@ void Set(MatDbl& A, const double& val);
 /// Returns the transpose of a matrix.
 MatDbl Transpose(const MatDbl& A);
 
+/// Returns the transpose of a matrix.
+template <typename TYPE>
+DenseMatrix<TYPE>
+Transpose(const DenseMatrix<TYPE>& A)
+{
+  assert(A.Rows());
+  assert(A.Column());
+  size_t AR = A.Rows();
+  size_t AC = 0;
+  if (AR)
+    AC = A.Columns();
+
+  DenseMatrix<TYPE> T(AC, AR);
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
+      T(j, i) = A(i, j);
+  return T;
+}
+
 /// Swaps two rows of a matrix.
 void SwapRow(size_t r1, size_t r2, MatDbl& A);
+
+template <typename TYPE>
+void
+SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
+{
+  auto rows = A.Rows();
+  auto cols = A.Columns();
+  assert(rows > 0);
+  assert(cols > 0);
+  assert(r1 >= 0 and r1 < rows and r2 >= 0 and r2 < rows);
+
+  for (size_t j = 0; j < cols; ++j)
+    std::swap(A(r1, j), A(r2, j));
+}
 
 /// Swaps two columns of a matrix.
 void SwapColumn(size_t c1, size_t c2, MatDbl& A);
@@ -177,11 +211,72 @@ void SwapColumn(size_t c1, size_t c2, MatDbl& A);
 /// Multiply matrix with a constant and return result.
 MatDbl MatMul(const MatDbl& A, const double c);
 
+/// Multiply matrix with a constant and return result.
+template <typename TYPE>
+DenseMatrix<TYPE>
+MatMul(const DenseMatrix<TYPE>& A, const TYPE c)
+{
+  auto R = A.Rows();
+  auto C = A.Rows();
+  DenseMatrix<TYPE> B(R, C, 0.);
+  for (auto i = 0; i < R; ++i)
+    for (auto j = 0; j < C; ++j)
+      B(i, j) = A(i, j) * c;
+  return B;
+}
+
 /// Multiply matrix with a vector and return resulting vector
 std::vector<double> MatMul(const MatDbl& A, const std::vector<double>& x);
 
+/// Multiply matrix with a vector and return resulting vector
+template <typename TYPE>
+DenseVector<TYPE>
+MatMul(const DenseMatrix<TYPE>& A, const DenseVector<TYPE>& x)
+{
+  auto R = A.Rows();
+  auto C = x.Rows();
+
+  assert(R > 0);
+  assert(C == A.Columns());
+
+  DenseVector<TYPE> b(R, 0.0);
+  for (auto i = 0; i < R; ++i)
+  {
+    for (auto j = 0; j < C; ++j)
+      b(i) += A(i, j) * x(j);
+  }
+
+  return b;
+}
+
 /// Mutliply two matrices and return result.
 MatDbl MatMul(const MatDbl& A, const MatDbl& B);
+
+/// Mutliply two matrices and return result.
+template <typename TYPE>
+DenseMatrix<TYPE>
+MatMul(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+{
+  auto AR = A.Rows();
+
+  assert(AR != 0 and B.Rows() != 0);
+
+  auto AC = A.Columns();
+  auto BC = B.Columns();
+
+  assert(AC != 0 and BC != 0 and AC == B.Rows());
+
+  auto CR = AR;
+  auto CC = BC;
+  auto Cs = AC;
+
+  DenseMatrix<TYPE> C(CR, CC, 0.);
+  for (auto i = 0; i < CR; ++i)
+    for (auto j = 0; j < CC; ++j)
+      for (auto k = 0; k < Cs; ++k)
+        C(i, j) += A(i, k) * B(k, j);
+  return C;
+}
 
 /// Adds two matrices and returns the result.
 MatDbl MatAdd(const MatDbl& A, const MatDbl& B);
@@ -189,8 +284,82 @@ MatDbl MatAdd(const MatDbl& A, const MatDbl& B);
 /// Subtracts matrix A from B and returns the result.
 MatDbl MatSubtract(const MatDbl& A, const MatDbl& B);
 
+/// Returns a copy of A with removed rows `r` and removed columns `c`
+template <typename TYPE>
+DenseMatrix<TYPE>
+SubMatrix(const DenseMatrix<TYPE>& A, const size_t r, const size_t c)
+{
+  size_t rows = A.Rows();
+  size_t cols = A.Columns();
+  assert((r >= 0) and (r < rows) and (c >= 0) and (c < cols));
+
+  DenseMatrix<TYPE> B(rows - 1, cols - 1);
+  for (size_t i = 0, ii = 0; i < rows; ++i)
+  {
+    if (i != r)
+    {
+      for (size_t j = 0, jj = 0; j < cols; ++j)
+      {
+        if (j != c)
+        {
+          B(ii, jj) = A(i, j);
+          ++jj;
+        }
+      }
+      ++ii;
+    }
+  }
+  return B;
+}
+
 /// Computes the determinant of a matrix.
 double Determinant(const MatDbl& A);
+
+template <typename TYPE>
+double
+Determinant(const DenseMatrix<TYPE>& A)
+{
+  size_t rows = A.Rows();
+
+  if (rows == 1)
+    return A(0, 0);
+  else if (rows == 2)
+  {
+    return A(0, 0) * A(1, 1) - A(0, 1) * A(1, 0);
+  }
+  else if (rows == 3)
+  {
+    return A(0, 0) * A(1, 1) * A(2, 2) + A(0, 1) * A(1, 2) * A(2, 0) + A(0, 2) * A(1, 0) * A(2, 1) -
+           A(0, 0) * A(1, 2) * A(2, 1) - A(0, 1) * A(1, 0) * A(2, 2) - A(0, 2) * A(1, 1) * A(2, 0);
+  }
+  // http://www.cvl.iis.u-tokyo.ac.jp/~Aiyazaki/tech/teche23.htAl
+  else if (rows == 4)
+  {
+    return A(0, 0) * A(1, 1) * A(2, 2) * A(3, 3) + A(0, 0) * A(1, 2) * A(2, 3) * A(3, 1) +
+           A(0, 0) * A(1, 3) * A(2, 1) * A(3, 2) + A(0, 1) * A(1, 0) * A(2, 3) * A(3, 2) +
+           A(0, 1) * A(1, 2) * A(2, 0) * A(3, 3) + A(0, 1) * A(1, 3) * A(2, 2) * A(3, 0) +
+           A(0, 2) * A(1, 0) * A(2, 1) * A(3, 3) + A(0, 2) * A(1, 1) * A(2, 3) * A(3, 0) +
+           A(0, 2) * A(1, 3) * A(2, 0) * A(3, 1) + A(0, 3) * A(1, 0) * A(2, 2) * A(3, 1) +
+           A(0, 3) * A(1, 1) * A(2, 0) * A(3, 2) + A(0, 3) * A(1, 2) * A(2, 1) * A(3, 0) -
+           A(0, 0) * A(1, 1) * A(2, 3) * A(3, 2) - A(0, 0) * A(1, 2) * A(2, 1) * A(3, 3) -
+           A(0, 0) * A(1, 3) * A(2, 2) * A(3, 1) - A(0, 1) * A(1, 0) * A(2, 2) * A(3, 3) -
+           A(0, 1) * A(1, 2) * A(2, 3) * A(3, 0) - A(0, 1) * A(1, 3) * A(2, 0) * A(3, 2) -
+           A(0, 2) * A(1, 0) * A(2, 3) * A(3, 1) - A(0, 2) * A(1, 1) * A(2, 0) * A(3, 3) -
+           A(0, 2) * A(1, 3) * A(2, 1) * A(3, 0) - A(0, 3) * A(1, 0) * A(2, 1) * A(3, 2) -
+           A(0, 3) * A(1, 1) * A(2, 2) * A(3, 0) - A(0, 3) * A(1, 2) * A(2, 0) * A(3, 1);
+  }
+  else
+  {
+    double det = 0;
+    for (size_t n = 0; n < rows; ++n)
+    {
+      auto M = SubMatrix(A, 0, n);
+      double pm = ((n + 1) % 2) * 2.0 - 1.0;
+      det += pm * A(0, n) * Determinant(M);
+    }
+    return det;
+  }
+}
 
 /// Returns a sub-matrix.
 MatDbl SubMatrix(const size_t r, const size_t c, const MatDbl& A);
@@ -198,11 +367,202 @@ MatDbl SubMatrix(const size_t r, const size_t c, const MatDbl& A);
 /// Gauss Elimination without pivoting.
 void GaussElimination(MatDbl& A, std::vector<double>& b, int n);
 
+template <typename TYPE>
+void
+GaussElimination(DenseMatrix<TYPE>& A, DenseVector<TYPE>& b, unsigned int n)
+{
+  // Forward elimination
+  for (unsigned int i = 0; i < n - 1; ++i)
+  {
+    auto bi = b(i);
+    auto factor = 1.0 / A(i, i);
+    for (unsigned int j = i + 1; j < n; ++j)
+    {
+      auto val = A(j, i) * factor;
+      b(j) -= val * bi;
+      for (unsigned int k = i + 1; k < n; ++k)
+        A(j, k) -= val * A(i, k);
+    }
+  }
+
+  // Back substitution
+  for (int i = n - 1; i >= 0; --i)
+  {
+    auto bi = b(i);
+    for (unsigned int j = i + 1; j < n; ++j)
+      bi -= A(i, j) * b(j);
+    b(i) = bi / A(i, i);
+  }
+}
+
 /// Computes the inverse of a matrix using Gauss-Elimination with pivoting.
 MatDbl InverseGEPivoting(const MatDbl& A);
 
+template <typename TYPE>
+DenseMatrix<TYPE>
+InverseGEPivoting(const DenseMatrix<TYPE>& A)
+{
+  assert(A.Rows() == A.Columns());
+
+  const unsigned int rows = A.Rows();
+  const unsigned int cols = A.Columns();
+
+  DenseMatrix<TYPE> M(rows, cols);
+  M.Set(0.);
+  M.SetDiagonal(1.);
+
+  auto B = A;
+
+  for (unsigned int c = 0; c < rows; ++c)
+  {
+    // Find a row with the largest pivot value
+    unsigned int max_row = c; // nzr = non-zero row
+    for (unsigned int r = c; r < rows; ++r)
+      if (std::fabs(B(r, c)) > std::fabs(B(max_row, c)))
+        max_row = r;
+
+    if (max_row != c)
+    {
+      SwapRows(B, max_row, c);
+      SwapRows(M, max_row, c);
+    }
+
+    // Eliminate non-zero values
+    for (unsigned int r = 0; r < rows; ++r)
+    {
+      if (r != c)
+      {
+        double g = B(r, c) / B(c, c);
+        if (B(r, c) != 0)
+        {
+          for (unsigned int k = 0; k < rows; ++k)
+          {
+            B(r, k) -= B(c, k) * g;
+            M(r, k) -= M(c, k) * g;
+          }
+          B(r, c) = 0;
+        }
+      }
+      else
+      {
+        double g = 1 / B(c, c);
+        for (unsigned int k = 0; k < rows; ++k)
+        {
+          B(r, k) *= g;
+          M(r, k) *= g;
+        }
+      }
+    }
+  }
+  return M;
+}
+
 /// Computes the inverse of a matrix.
 MatDbl Inverse(const MatDbl& A);
+
+template <typename TYPE>
+DenseMatrix<TYPE>
+Inverse(const DenseMatrix<TYPE>& A)
+{
+  size_t rows = A.Rows();
+  DenseMatrix<double> M(rows, A.Rows());
+  double f = 0.0;
+
+  // Only calculate the determinant if matrix size is less than 5 since
+  // the inverse is directly calculated for larger matrices. Otherwise,
+  // the inverse routine spends all of its time sitting in the determinant
+  // function which is unnecessary.
+  if (rows < 5)
+  {
+    f = Determinant(A);
+    assert(f != 0.0);
+    f = 1.0 / f;
+  }
+
+  if (rows == 1)
+    M(0, 0) = f;
+  else if (rows == 2)
+  {
+    M(0, 0) = A(1, 1);
+    M(0, 1) = -A(0, 1);
+    M(1, 0) = -A(1, 0);
+    M(1, 1) = A(0, 0);
+    M.Scale(f);
+  }
+  else if (rows == 3)
+  {
+    M(0, 0) = A(2, 2) * A(1, 1) - A(2, 1) * A(1, 2);
+    M(0, 1) = -(A(2, 2) * A(0, 1) - A(2, 1) * A(0, 2));
+    M(0, 2) = A(1, 2) * A(0, 1) - A(1, 1) * A(0, 2);
+    M(1, 0) = -(A(2, 2) * A(1, 0) - A(2, 0) * A(1, 2));
+    M(1, 1) = A(2, 2) * A(0, 0) - A(2, 0) * A(0, 2);
+    M(1, 2) = -(A(1, 2) * A(0, 0) - A(1, 0) * A(0, 2));
+    M(2, 0) = A(2, 1) * A(1, 0) - A(2, 0) * A(1, 1);
+    M(2, 1) = -(A(2, 1) * A(0, 0) - A(2, 0) * A(0, 1));
+    M(2, 2) = A(1, 1) * A(0, 0) - A(1, 0) * A(0, 1);
+    M.Scale(f);
+  }
+  else if (rows == 4)
+  {
+    // http://www.cvl.iis.u-tokyo.ac.jp/~Aiyazaki/tech/teche23.htAl
+    M(0, 0) = A(1, 1) * A(2, 2) * A(3, 3) + A(1, 2) * A(2, 3) * A(3, 1) +
+              A(1, 3) * A(2, 1) * A(3, 2) - A(1, 1) * A(2, 3) * A(3, 2) -
+              A(1, 2) * A(2, 1) * A(3, 3) - A(1, 3) * A(2, 2) * A(3, 1);
+    M(0, 1) = A(0, 1) * A(2, 3) * A(3, 2) + A(0, 2) * A(2, 1) * A(3, 3) +
+              A(0, 3) * A(2, 2) * A(3, 1) - A(0, 1) * A(2, 2) * A(3, 3) -
+              A(0, 2) * A(2, 3) * A(3, 1) - A(0, 3) * A(2, 1) * A(3, 2);
+    M(0, 2) = A(0, 1) * A(1, 2) * A(3, 3) + A(0, 2) * A(1, 3) * A(3, 1) +
+              A(0, 3) * A(1, 1) * A(3, 2) - A(0, 1) * A(1, 3) * A(3, 2) -
+              A(0, 2) * A(1, 1) * A(3, 3) - A(0, 3) * A(1, 2) * A(3, 1);
+    M(0, 3) = A(0, 1) * A(1, 3) * A(2, 2) + A(0, 2) * A(1, 1) * A(2, 3) +
+              A(0, 3) * A(1, 2) * A(2, 1) - A(0, 1) * A(1, 2) * A(2, 3) -
+              A(0, 2) * A(1, 3) * A(2, 1) - A(0, 3) * A(1, 1) * A(2, 2);
+
+    M(1, 0) = A(1, 0) * A(2, 3) * A(3, 2) + A(1, 2) * A(2, 0) * A(3, 3) +
+              A(1, 3) * A(2, 2) * A(3, 0) - A(1, 0) * A(2, 2) * A(3, 3) -
+              A(1, 2) * A(2, 3) * A(3, 0) - A(1, 3) * A(2, 0) * A(3, 2);
+    M(1, 1) = A(0, 0) * A(2, 2) * A(3, 3) + A(0, 2) * A(2, 3) * A(3, 0) +
+              A(0, 3) * A(2, 0) * A(3, 2) - A(0, 0) * A(2, 3) * A(3, 2) -
+              A(0, 2) * A(2, 0) * A(3, 3) - A(0, 3) * A(2, 2) * A(3, 0);
+    M(1, 2) = A(0, 0) * A(1, 3) * A(3, 2) + A(0, 2) * A(1, 0) * A(3, 3) +
+              A(0, 3) * A(1, 2) * A(3, 0) - A(0, 0) * A(1, 2) * A(3, 3) -
+              A(0, 2) * A(1, 3) * A(3, 0) - A(0, 3) * A(1, 0) * A(3, 2);
+    M(1, 3) = A(0, 0) * A(1, 2) * A(2, 3) + A(0, 2) * A(1, 3) * A(2, 0) +
+              A(0, 3) * A(1, 0) * A(2, 2) - A(0, 0) * A(1, 3) * A(2, 2) -
+              A(0, 2) * A(1, 0) * A(2, 3) - A(0, 3) * A(1, 2) * A(2, 0);
+
+    M(2, 0) = A(1, 0) * A(2, 1) * A(3, 3) + A(1, 1) * A(2, 3) * A(3, 0) +
+              A(1, 3) * A(2, 0) * A(3, 1) - A(1, 0) * A(2, 3) * A(3, 1) -
+              A(1, 1) * A(2, 0) * A(3, 3) - A(1, 3) * A(2, 1) * A(3, 0);
+    M(2, 1) = A(0, 0) * A(2, 3) * A(3, 1) + A(0, 1) * A(2, 0) * A(3, 3) +
+              A(0, 3) * A(2, 1) * A(3, 0) - A(0, 0) * A(2, 1) * A(3, 3) -
+              A(0, 1) * A(2, 3) * A(3, 0) - A(0, 3) * A(2, 0) * A(3, 1);
+    M(2, 2) = A(0, 0) * A(1, 1) * A(3, 3) + A(0, 1) * A(1, 3) * A(3, 0) +
+              A(0, 3) * A(1, 0) * A(3, 1) - A(0, 0) * A(1, 3) * A(3, 1) -
+              A(0, 1) * A(1, 0) * A(3, 3) - A(0, 3) * A(1, 1) * A(3, 0);
+    M(2, 3) = A(0, 0) * A(1, 3) * A(2, 1) + A(0, 1) * A(1, 0) * A(2, 3) +
+              A(0, 3) * A(1, 1) * A(2, 0) - A(0, 0) * A(1, 1) * A(2, 3) -
+              A(0, 1) * A(1, 3) * A(2, 0) - A(0, 3) * A(1, 0) * A(2, 1);
+
+    M(3, 0) = A(1, 0) * A(2, 2) * A(3, 1) + A(1, 1) * A(2, 0) * A(3, 2) +
+              A(1, 2) * A(2, 1) * A(3, 0) - A(1, 0) * A(2, 1) * A(3, 2) -
+              A(1, 1) * A(2, 2) * A(3, 0) - A(1, 2) * A(2, 0) * A(3, 1);
+    M(3, 1) = A(0, 0) * A(2, 1) * A(3, 2) + A(0, 1) * A(2, 2) * A(3, 0) +
+              A(0, 2) * A(2, 0) * A(3, 1) - A(0, 0) * A(2, 2) * A(3, 1) -
+              A(0, 1) * A(2, 0) * A(3, 2) - A(0, 2) * A(2, 1) * A(3, 0);
+    M(3, 2) = A(0, 0) * A(1, 2) * A(3, 1) + A(0, 1) * A(1, 0) * A(3, 2) +
+              A(0, 2) * A(1, 1) * A(3, 0) - A(0, 0) * A(1, 1) * A(3, 2) -
+              A(0, 1) * A(1, 2) * A(3, 0) - A(0, 2) * A(1, 0) * A(3, 1);
+    M(3, 3) = A(0, 0) * A(1, 1) * A(2, 2) + A(0, 1) * A(1, 2) * A(2, 0) +
+              A(0, 2) * A(1, 0) * A(2, 1) - A(0, 0) * A(1, 2) * A(2, 1) -
+              A(0, 1) * A(1, 0) * A(2, 2) - A(0, 2) * A(1, 1) * A(2, 0);
+    M.Scale(f);
+  }
+  else
+    M = InverseGEPivoting(A);
+
+  return M;
+}
 
 /**
  * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental
