@@ -305,7 +305,7 @@ public:
       if (indices[i] >= dimensions_[i])
         throw std::out_of_range("Index out of bounds.");
     }
-    return (*this)(args...);
+    return storage_[ComputeIndex(args...)];
   }
 
   /// Returns an iterator pointing to the beginning of the array.
