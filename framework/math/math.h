@@ -124,6 +124,17 @@ double Vec1Norm(const std::vector<double>& x);
  */
 double Vec2Norm(const std::vector<double>& x);
 
+template <typename TYPE>
+double
+Vec2Norm(const DenseVector<TYPE>& x)
+{
+  size_t n = x.Rows();
+  double val = 0.0;
+  for (size_t i = 0; i != n; ++i)
+    val += x(i) * x(i);
+  return std::sqrt(val);
+}
+
 /**
  * Returns the infinity-norm.
  *
@@ -150,6 +161,19 @@ double VecPNorm(const std::vector<double>& x, const double& p);
  * \f]
  */
 double Dot(const std::vector<double>& x, const std::vector<double>& y);
+
+template <typename TYPE>
+double
+Dot(const DenseVector<TYPE>& x, const DenseVector<TYPE>& y)
+{
+  assert(x.Rows() > 0);
+  assert(y.Rows() > 0);
+  assert(x.Rows() == y.Rows());
+  double val = 0.0;
+  for (size_t i = 0; i < x.Rows(); ++i)
+    val += x(i) * y(i);
+  return val;
+}
 
 /// Adds two vectors component-wise.
 std::vector<double> operator+(const std::vector<double>& a, const std::vector<double>& b);
