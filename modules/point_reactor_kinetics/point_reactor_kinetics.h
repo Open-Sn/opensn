@@ -5,7 +5,7 @@
 
 #include "framework/physics/solver.h"
 #include "framework/math/math.h"
-#include "framework/math/dynamic_matrix.h"
+#include "framework/math/dense_matrix.h"
 #include "framework/math/dynamic_vector.h"
 
 namespace opensn
@@ -23,7 +23,7 @@ private:
   std::string time_integration_;
 
   size_t num_precursors_;
-  DynamicMatrix<double> A_, I_;
+  DenseMatrix<double> A_, I_;
   DynamicVector<double> x_t_, x_tp1_, q_;
   double beta_ = 1.0;
   double period_tph_ = 0.0;

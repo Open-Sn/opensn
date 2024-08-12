@@ -31,8 +31,9 @@ math_Test00(const InputParameters& params)
   }
   // Dynamic Matrix
   {
-    opensn::log.Log() << "Testing DynamicMatrix\n";
-    DynamicMatrix<double> mat(5, 7, 1.0);
+    opensn::log.Log() << "Testing DenseMatrix\n";
+    DenseMatrix<double> mat(5, 7);
+    mat.Set(1.0);
 
     opensn::log.Log() << mat.PrintStr();
   }

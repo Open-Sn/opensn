@@ -6,7 +6,7 @@
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/dynamic_vector.h"
-#include "framework/math/dynamic_matrix.h"
+#include "framework/math/dense_matrix.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
 #include <vector>
@@ -171,8 +171,8 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
   SphericalQuadrilateral& sq;
 
   std::array<DynamicVector<double>, 4> rhs;
-  DynamicMatrix<double> A;
-  DynamicMatrix<double> A_inv;
+  DenseMatrix<double> A;
+  DenseMatrix<double> A_inv;
   std::array<DynamicVector<double>, 4> c_coeffs;
   /// Legendre quadrature points
   std::vector<Vector3>& lqp;
@@ -220,10 +220,10 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
 
     // Assemble A
     for (int i = 0; i < 4; ++i)
-      A[i] = {1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]};
+      A.SetRow(i, DynamicVector({1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]}));
 
     // Compute A-inverse
-    A_inv = Inverse(A.elements_);
+    A_inv = Inverse(A);
 
     // Compute coefficients
     for (int i = 0; i < 4; ++i)

@@ -6,7 +6,7 @@
 [0]  GOLD_BEGIN
 [0]  Testing DenseVector
 [0]  [1 1 1 1 1]
-[0]  Testing DynamicMatrix
+[0]  Testing DenseMatrix
 [0]  1 1 1 1 1 1 1
 [0]  1 1 1 1 1 1 1
 [0]  1 1 1 1 1 1 1

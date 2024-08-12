@@ -7,6 +7,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/math/math.h"
 #include <numeric>
 
 namespace opensn
@@ -91,19 +92,19 @@ PRKSolver::Initialize()
 
   // Initializing linalg items
   const auto& J = num_precursors_;
-  A_ = DynamicMatrix<double>(J + 1, J + 1, 0.0);
+  A_ = DenseMatrix<double>(J + 1, J + 1);
   I_ = A_;
   I_.SetDiagonal(1.0);
 
   x_t_ = DynamicVector<double>(J + 1, 0.0);
 
   // Assembling system
-  A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
+  A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
   for (size_t j = 1; j <= J; ++j)
   {
-    A_[0][j] = lambdas_[j - 1];
-    A_[j][j] = -lambdas_[j - 1];
-    A_[j][0] = betas_[j - 1] / gen_time_;
+    A_(0, j) = lambdas_[j - 1];
+    A_(j, j) = -lambdas_[j - 1];
+    A_(j, 0) = betas_[j - 1] / gen_time_;
   }
 
   q_.resize(J + 1, 0.0);
@@ -116,7 +117,7 @@ PRKSolver::Initialize()
   {
     const auto b_theta = -1.0 * q_;
 
-    x_t_ = A_.Inverse() * b_theta;
+    x_t_ = Inverse(A_) * b_theta;
   }
   // Otherwise we initialize the system as a critical system with
   // no source.
@@ -126,11 +127,10 @@ PRKSolver::Initialize()
     auto b_temp = x_t_;
     b_temp.Set(0.0);
     b_temp[0] = 1.0;
-    for (auto& val : A_temp[0])
-      val = 0.0;
-    A_temp[0][0] = 1.0;
-
-    x_t_ = A_temp.Inverse() * b_temp;
+    for (unsigned int i = 0; i < A_temp.Columns(); ++i)
+      A_temp(0, i) = 0.0;
+    A_temp(0, 0) = 1.0;
+    x_t_ = Inverse(A_temp) * b_temp;
   }
 
   log.Log() << "Final: " << x_t_.PrintStr();
@@ -155,7 +155,7 @@ PRKSolver::Step()
 
   const double dt = timestepper_->TimeStepSize();
 
-  A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
+  A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
 
   if (time_integration_ == "implicit_euler" or time_integration_ == "crank_nicolson")
   {
@@ -171,7 +171,7 @@ PRKSolver::Step()
     auto A_theta = I_ - inv_tau * A_;
     auto b_theta = x_t_ + inv_tau * q_;
 
-    auto x_theta = A_theta.Inverse() * b_theta;
+    auto x_theta = Inverse(A_theta) * b_theta;
 
     x_tp1_ = x_t_ + (1.0 / theta) * (x_theta - x_t_);
   }
