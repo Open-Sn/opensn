@@ -92,11 +92,11 @@ PRKSolver::Initialize()
 
   // Initializing linalg items
   const auto& J = num_precursors_;
-  A_ = DenseMatrix<double>(J + 1, J + 1);
+  A_ = DenseMatrix<double>(J + 1, J + 1, 0.);
   I_ = A_;
   I_.SetDiagonal(1.0);
 
-  x_t_ = DynamicVector<double>(J + 1, 0.0);
+  x_t_ = DenseVector<double>(J + 1, 0.);
 
   // Assembling system
   A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
@@ -107,8 +107,8 @@ PRKSolver::Initialize()
     A_(j, 0) = betas_[j - 1] / gen_time_;
   }
 
-  q_.resize(J + 1, 0.0);
-  q_[0] = source_strength_;
+  q_ = DenseVector<double>(J + 1, 0.);
+  q_(0) = source_strength_;
 
   // Initializing x
   // If there is a source and the reactivity is < 0 then
@@ -126,7 +126,7 @@ PRKSolver::Initialize()
     auto A_temp = A_;
     auto b_temp = x_t_;
     b_temp.Set(0.0);
-    b_temp[0] = 1.0;
+    b_temp(0) = 1.0;
     for (unsigned int i = 0; i < A_temp.Columns(); ++i)
       A_temp(0, i) = 0.0;
     A_temp(0, 0) = 1.0;
@@ -182,8 +182,8 @@ PRKSolver::Step()
   else
     OpenSnLogicalError("Unsupported time integration scheme.");
 
-  if ((std::abs(x_t_[0]) > 1e-12) && std::abs((x_tp1_[0] / x_t_[0]) - 1.) > 1e-12)
-    period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
+  if ((std::abs(x_t_(0)) > 1e-12) && std::abs((x_tp1_(0) / x_t_(0)) - 1.) > 1e-12)
+    period_tph_ = dt / std::log(x_tp1_(0) / x_t_(0));
   else
     period_tph_ = 0.0;
 
@@ -206,7 +206,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   const auto param_name = params.GetParamValue<std::string>("name");
 
   if (param_name == "neutron_population")
-    return ParameterBlock("", x_t_[0]);
+    return ParameterBlock("", x_t_(0));
   else if (param_name == "population_next")
     return ParameterBlock("", PopulationNew());
   else if (param_name == "period")
@@ -214,7 +214,10 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   else if (param_name == "rho")
     return ParameterBlock("", rho_);
   else if (param_name == "solution")
-    return ParameterBlock("", x_t_.elements_);
+  {
+    std::vector<double> sln = x_t_.ToStdVector();
+    return ParameterBlock("", sln);
+  }
   else if (param_name == "time_integration")
     return ParameterBlock("", time_integration_);
   else if (param_name == "time_next")
@@ -237,13 +240,13 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
 double
 PRKSolver::PopulationPrev() const
 {
-  return x_t_[0];
+  return x_t_(0);
 }
 
 double
 PRKSolver::PopulationNew() const
 {
-  return x_tp1_[0];
+  return x_tp1_(0);
 }
 
 double
@@ -264,16 +267,16 @@ PRKSolver::TimeNew() const
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
-std::vector<double>
+DenseVector<double>
 PRKSolver::SolutionPrev() const
 {
-  return x_t_.elements_;
+  return x_t_;
 }
 
-std::vector<double>
+DenseVector<double>
 PRKSolver::SolutionNew() const
 {
-  return x_tp1_.elements_;
+  return x_tp1_;
 }
 
 void

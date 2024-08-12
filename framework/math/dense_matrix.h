@@ -5,6 +5,7 @@
 
 #include "framework/data_types/ndarray.h"
 #include "framework/math/dynamic_vector.h"
+#include "framework/math/dense_vector.h"
 
 namespace opensn
 {
@@ -62,6 +63,13 @@ public:
       (*this)(row, i) = values[i];
   }
 
+  void SetRow(int row, const DenseVector<TYPE>& values)
+  {
+    assert(Columns() == values.Rows());
+    for (unsigned int i = 0; i < Columns(); ++i)
+      (*this)(row, i) = values(i);
+  }
+
   /// Scale the matrix with a constant value
   void Scale(TYPE alpha)
   {
@@ -108,6 +116,26 @@ public:
       for (unsigned int j = 0; j < Columns(); ++j)
         value += (*this)(i, j) * V[j];
       res[k] = value;
+      ++k;
+    }
+
+    return res;
+  }
+
+  /// Matrix-Vector multiplication
+  DenseVector<TYPE> operator*(const DenseVector<TYPE>& b) const
+  {
+    if (Rows() != b.size())
+      throw std::length_error("Mismatched matrix/vector sizes in matrix-vector multiplication");
+
+    DenseVector<TYPE> res(Rows());
+    unsigned int k = 0;
+    for (unsigned int i = 0; i < Rows(); ++i)
+    {
+      TYPE value = 0.0;
+      for (unsigned int j = 0; j < Columns(); ++j)
+        value += (*this)(i, j) * b(j);
+      res(k) = value;
       ++k;
     }
 
