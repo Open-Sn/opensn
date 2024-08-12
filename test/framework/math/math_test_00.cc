@@ -22,9 +22,10 @@ math_Test00(const InputParameters& params)
   opensn::log.Log() << "GOLD_BEGIN";
   // Dynamic Vector
   {
-    opensn::log.Log() << "Testing DynamicVector\n";
+    opensn::log.Log() << "Testing DenseVector\n";
 
-    DynamicVector<double> vec(5, 1.0);
+    DenseVector<double> vec(5);
+    vec.Set(1.0);
 
     opensn::log.Log() << vec.PrintStr();
   }
