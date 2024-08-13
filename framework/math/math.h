@@ -21,7 +21,6 @@ class SpatialDiscretization_FV;
 class SpatialDiscretization_PWLD;
 class SpatialDiscretization_PWLC;
 
-using MatDbl = std::vector<std::vector<double>>;
 using MatVec3 = std::vector<std::vector<Vector3>>;
 
 /// Coordinate system type.
@@ -182,18 +181,6 @@ std::vector<double> operator+(const std::vector<double>& a, const std::vector<do
 /// Subtracts two vectors component-wise.
 std::vector<double> operator-(const std::vector<double>& a, const std::vector<double>& b);
 
-/// Prints the contents of a matrix.
-void PrintMatrix(const MatDbl& A);
-
-/// Scales the matrix by a constant value.
-void Scale(MatDbl& A, const double& val);
-
-/// Sets all the entries of the matrix to a constant value.
-void Set(MatDbl& A, const double& val);
-
-/// Returns the transpose of a matrix.
-MatDbl Transpose(const MatDbl& A);
-
 /// Returns the transpose of a matrix.
 template <typename TYPE>
 DenseMatrix<TYPE>
@@ -214,8 +201,6 @@ Transpose(const DenseMatrix<TYPE>& A)
 }
 
 /// Swaps two rows of a matrix.
-void SwapRow(size_t r1, size_t r2, MatDbl& A);
-
 template <typename TYPE>
 void
 SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
@@ -230,12 +215,6 @@ SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
     std::swap(A(r1, j), A(r2, j));
 }
 
-/// Swaps two columns of a matrix.
-void SwapColumn(size_t c1, size_t c2, MatDbl& A);
-
-/// Multiply matrix with a constant and return result.
-MatDbl MatMul(const MatDbl& A, const double c);
-
 /// Multiply matrix with a constant and return result.
 template <typename TYPE>
 DenseMatrix<TYPE>
@@ -249,9 +228,6 @@ MatMul(const DenseMatrix<TYPE>& A, const TYPE c)
       B(i, j) = A(i, j) * c;
   return B;
 }
-
-/// Multiply matrix with a vector and return resulting vector
-std::vector<double> MatMul(const MatDbl& A, const std::vector<double>& x);
 
 /// Multiply matrix with a vector and return resulting vector
 template <typename TYPE>
@@ -273,9 +249,6 @@ MatMul(const DenseMatrix<TYPE>& A, const DenseVector<TYPE>& x)
 
   return b;
 }
-
-/// Mutliply two matrices and return result.
-MatDbl MatMul(const MatDbl& A, const MatDbl& B);
 
 /// Mutliply two matrices and return result.
 template <typename TYPE>
@@ -304,10 +277,52 @@ MatMul(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 }
 
 /// Adds two matrices and returns the result.
-MatDbl MatAdd(const MatDbl& A, const MatDbl& B);
+template <typename TYPE>
+DenseMatrix<TYPE>
+MatAdd(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+{
+  size_t AR = A.Rows();
+  size_t BR = B.Rows();
+
+  assert(AR != 0 and B.Rows() != 0);
+  assert(AR == BR);
+
+  size_t AC = A.Columns();
+  size_t BC = B.Columns();
+
+  assert(AC != 0 and BC != 0);
+  assert(AC == BC);
+
+  DenseMatrix<TYPE> C(AR, AC, 0.0);
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
+      C(i, j) = A(i, j) + B(i, j);
+  return C;
+}
 
 /// Subtracts matrix A from B and returns the result.
-MatDbl MatSubtract(const MatDbl& A, const MatDbl& B);
+template <typename TYPE>
+DenseMatrix<TYPE>
+MatSubtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+{
+  size_t AR = A.Rows();
+  size_t BR = B.Rows();
+
+  assert(AR != 0 and B.size() != 0);
+  assert(AR == BR);
+
+  size_t AC = A.Columns();
+  size_t BC = B.Columns();
+
+  assert(AC != 0 and BC != 0);
+  assert(AC == BC);
+
+  DenseMatrix<TYPE> C(AR, AC, 0.0);
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
+      C(i, j) = A(i, j) - B(i, j);
+  return C;
+}
 
 /// Returns a copy of A with removed rows `r` and removed columns `c`
 template <typename TYPE>
@@ -338,8 +353,6 @@ SubMatrix(const DenseMatrix<TYPE>& A, const size_t r, const size_t c)
 }
 
 /// Computes the determinant of a matrix.
-double Determinant(const MatDbl& A);
-
 template <typename TYPE>
 double
 Determinant(const DenseMatrix<TYPE>& A)
@@ -386,12 +399,7 @@ Determinant(const DenseMatrix<TYPE>& A)
   }
 }
 
-/// Returns a sub-matrix.
-MatDbl SubMatrix(const size_t r, const size_t c, const MatDbl& A);
-
 /// Gauss Elimination without pivoting.
-void GaussElimination(MatDbl& A, std::vector<double>& b, int n);
-
 template <typename TYPE>
 void
 GaussElimination(DenseMatrix<TYPE>& A, DenseVector<TYPE>& b, unsigned int n)
@@ -421,8 +429,6 @@ GaussElimination(DenseMatrix<TYPE>& A, DenseVector<TYPE>& b, unsigned int n)
 }
 
 /// Computes the inverse of a matrix using Gauss-Elimination with pivoting.
-MatDbl InverseGEPivoting(const MatDbl& A);
-
 template <typename TYPE>
 DenseMatrix<TYPE>
 InverseGEPivoting(const DenseMatrix<TYPE>& A)
@@ -483,8 +489,6 @@ InverseGEPivoting(const DenseMatrix<TYPE>& A)
 }
 
 /// Computes the inverse of a matrix.
-MatDbl Inverse(const MatDbl& A);
-
 template <typename TYPE>
 DenseMatrix<TYPE>
 Inverse(const DenseMatrix<TYPE>& A)
@@ -588,15 +592,6 @@ Inverse(const DenseMatrix<TYPE>& A)
 
   return M;
 }
-
-/**
- * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental
- * mode is return whilst the eigen-vector is return via reference.
- */
-double PowerIteration(const MatDbl& A,
-                      std::vector<double>& e_vec,
-                      int max_it = 2000,
-                      double tol = 1.0e-13);
 
 /**
  * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental

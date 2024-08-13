@@ -93,12 +93,10 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
-  std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
-                                        std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
-                                         std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups.size(),
-                                     std::vector<double>(max_num_cell_dofs_));
+  DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
+  DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
+  std::vector<DenseVector<double>> b(groupset_.groups.size(),
+                                     DenseVector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
@@ -118,11 +116,12 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
     // Reset right-hand side
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-      b[gsg].assign(cell_num_nodes_, 0.0);
+      for (int i = 0; i < cell_num_nodes_; ++i)
+        b[gsg](i) = 0.0;
 
     for (int i = 0; i < cell_num_nodes_; ++i)
       for (int j = 0; j < cell_num_nodes_; ++j)
-        Amat[i][j] = omega.Dot(G_(i, j));
+        Amat(i, j) = omega.Dot(G_(i, j));
 
     // Update face orientations
     for (int f = 0; f < cell_num_faces_; ++f)
@@ -163,7 +162,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           const int j = cell_mapping_->MapFaceNode(f, fj);
 
           const double mu_Nij = -face_mu_values[f] * M_surf_[f](i, j);
-          Amat[i][j] += mu_Nij;
+          Amat(i, j) += mu_Nij;
 
           const double* psi = nullptr;
           if (is_local_face)
@@ -193,7 +192,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
             continue;
 
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-            b[gsg][i] += psi[gsg] * mu_Nij;
+            b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
       }   // for face node i
     }     // for f
@@ -224,10 +223,10 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         for (int j = 0; j < cell_num_nodes_; ++j)
         {
           const double Mij = M_(i, j);
-          Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
+          Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
           temp += Mij * source[j];
         }
-        b[gsg][i] += temp;
+        b[gsg](i) += temp;
       }
 
       // Solve system
@@ -243,7 +242,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-          output_phi[ir + gsg] += wn_d2m * b[gsg][i];
+          output_phi[ir + gsg] += wn_d2m * b[gsg](i);
       }
     }
 
@@ -259,7 +258,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         const size_t imap =
           i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin_;
         for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-          cell_psi_data[imap + gsg] = b[gsg][i];
+          cell_psi_data[imap + gsg] = b[gsg](i);
       }
     }
 
@@ -299,7 +298,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         {
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
             cell_transport_view_->AddOutflow(
-              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI(i));
+              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
         }
 
         double* psi = nullptr;
@@ -319,7 +318,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
-              psi[gsg] = b[gsg][i];
+              psi[gsg] = b[gsg](i);
           }
         }
       } // for fi
