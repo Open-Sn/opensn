@@ -9,17 +9,17 @@
 namespace opensn
 {
 
-std::vector<double>
+DenseVector<double>
 NewtonIteration(const NonLinearFunction& non_linear_function,
-                const std::vector<double>& x_0,
+                const DenseVector<double>& x_0,
                 const unsigned int max_iters,
                 const double epsilon,
                 const bool verbose)
 {
   // Verbose printing lambda
   auto PrintIterationInfo = [](unsigned int i,
-                               const std::vector<double>& x_i,
-                               const std::vector<double>& F_x_i,
+                               const DenseVector<double>& x_i,
+                               const DenseVector<double>& F_x_i,
                                double L2_norm_F_x_i)
   {
     std::stringstream output;
@@ -35,9 +35,9 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
   };
 
   // Declare and init variables
-  std::vector<double> x_i = x_0;
-  std::vector<double> F_x_i = non_linear_function.F(x_i);
-  MatDbl J_x_i_inv = Inverse(non_linear_function.J(x_i));
+  auto x_i = x_0;
+  auto F_x_i = non_linear_function.F(x_i);
+  auto J_x_i_inv = Inverse(non_linear_function.J(x_i));
 
   double L2_norm_F_x_i = Vec2Norm(F_x_i);
 
