@@ -160,6 +160,7 @@ public:
   {
     other.rank_ = 0;
     other.size_ = 0;
+    other.base_ = nullptr;
   }
 
   /// Copy assignment operator
