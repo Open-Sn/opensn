@@ -682,7 +682,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
                 for (int fi = 0; fi < face.vertex_ids.size(); ++fi)
                 {
                   const int i = cell_mapping.MapFaceNode(f, fi);
-                  const auto& IntFi_shapeI = IntS_shapeI[f][i];
+                  const auto& IntFi_shapeI = IntS_shapeI[f](i);
 
                   for (const auto& group : groupset.groups)
                   {
@@ -717,8 +717,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
         double phi_0g = phi_old_local_[imap];
         double q_0g = mat_src[imap];
 
-        local_absorption += sigma_a[g] * phi_0g * IntV_shapeI[i];
-        local_production += q_0g * IntV_shapeI[i];
+        local_absorption += sigma_a[g] * phi_0g * IntV_shapeI(i);
+        local_production += q_0g * IntV_shapeI(i);
       } // for g
     }   // for i
   }     // for cell
@@ -807,7 +807,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
                 const auto g = gsg + gsi;
                 const auto imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, g);
                 const auto psi = psi_new_local_[groupset_id][imap];
-                local_leakage[gsg] += weight * mu * psi * int_f_shape_i[i];
+                local_leakage[gsg] += weight * mu * psi * int_f_shape_i(i);
               } // for g
             }   // outgoing
           }     // for n
@@ -888,7 +888,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
               if (mu <= 0.0)
                 continue;
 
-              const auto coeff = weight * mu * int_f_shape_i[i];
+              const auto coeff = weight * mu * int_f_shape_i(i);
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
               {
                 const auto g = first_gs_group + gsg;

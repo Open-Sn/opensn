@@ -110,7 +110,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
           const double entry_aij =
-            Dg * intV_gradshapeI_gradshapeJ[i][j] + sigr_g * intV_shapeI_shapeJ[i][j];
+            Dg * intV_gradshapeI_gradshapeJ(i, j) + sigr_g * intV_shapeI_shapeJ(i, j);
 
           if (not node_is_dirichlet[j].first)
             MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
@@ -120,7 +120,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
           }
 
-          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
+          entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
         } // for j
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -178,7 +178,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
                   const int j = cell_mapping.MapFaceNode(f, fj);
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
-                  const double aij = (aval / bval) * intS_shapeI_shapeJ[i][j];
+                  const double aij = (aval / bval) * intS_shapeI_shapeJ(i, j);
 
                   MatSetValue(A_, ir, jr, aij, ADD_VALUES);
                 } // for fj
@@ -186,7 +186,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
               if (std::fabs(fval) >= 1.0e-12)
               {
-                const double rhs_val = (fval / bval) * intS_shapeI[i];
+                const double rhs_val = (fval / bval) * intS_shapeI(i);
 
                 VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
               } // if f nonzero
@@ -308,13 +308,13 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
           if (node_is_dirichlet[j].first)
           {
             const double entry_aij =
-              Dg * intV_gradshapeI_gradshapeJ[i][j] + sigr_g * intV_shapeI_shapeJ[i][j];
+              Dg * intV_gradshapeI_gradshapeJ(i, j) + sigr_g * intV_shapeI_shapeJ(i, j);
 
             const double bcvalue = node_is_dirichlet[j].second;
             VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
           }
 
-          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
+          entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
         } // for j
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -364,7 +364,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
               if (std::fabs(fval) >= 1.0e-12)
               {
-                const double rhs_val = (fval / bval) * intS_shapeI[i];
+                const double rhs_val = (fval / bval) * intS_shapeI(i);
 
                 VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
               } // if f nonzero
@@ -445,7 +445,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; ++j)
-          entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
+          entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
       } // for i
@@ -474,7 +474,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              VecSetValue(rhs_, imap, bc_value * intV_shapeI[i], ADD_VALUES);
+              VecSetValue(rhs_, imap, bc_value * intV_shapeI(i), ADD_VALUES);
             } // for fi
 
           } // Dirichlet BC
@@ -493,7 +493,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
               if (std::fabs(fval) >= 1.0e-12)
               {
-                const double rhs_val = (fval / bval) * intS_shapeI[i];
+                const double rhs_val = (fval / bval) * intS_shapeI(i);
 
                 VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
               } // if f nonzero

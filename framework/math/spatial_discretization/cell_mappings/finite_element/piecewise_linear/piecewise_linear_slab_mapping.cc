@@ -83,9 +83,9 @@ PieceWiseLinearSlabMapping::ShapeValue(const int i, const Vector3& xyz) const
 }
 
 void
-PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, std::vector<double>& shape_values) const
+PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, DenseVector<double>& shape_values) const
 {
-  shape_values.resize(num_nodes_, 0.0);
+  shape_values.Resize(num_nodes_, 0.0);
   const auto& p0 = ref_grid_.vertices[v0i_];
   const auto& p1 = ref_grid_.vertices[v1i_];
   Vector3 xyz_ref = xyz - p0;
@@ -99,9 +99,9 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, std::vector<double>&
     for (int i = 0; i < num_nodes_; ++i)
     {
       if (i == 0)
-        shape_values[i] = 1.0 - xi;
+        shape_values(i) = 1.0 - xi;
       else
-        shape_values[i] = xi;
+        shape_values(i) = xi;
     } // for dof
 
     return;

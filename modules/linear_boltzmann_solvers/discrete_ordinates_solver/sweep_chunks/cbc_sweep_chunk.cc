@@ -122,7 +122,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
     for (int i = 0; i < cell_num_nodes_; ++i)
       for (int j = 0; j < cell_num_nodes_; ++j)
-        Amat[i][j] = omega.Dot(G_[i][j]);
+        Amat[i][j] = omega.Dot(G_(i, j));
 
     // Update face orientations
     for (int f = 0; f < cell_num_faces_; ++f)
@@ -162,7 +162,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         {
           const int j = cell_mapping_->MapFaceNode(f, fj);
 
-          const double mu_Nij = -face_mu_values[f] * M_surf_[f][i][j];
+          const double mu_Nij = -face_mu_values[f] * M_surf_[f](i, j);
           Amat[i][j] += mu_Nij;
 
           const double* psi = nullptr;
@@ -223,7 +223,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         double temp = 0.0;
         for (int j = 0; j < cell_num_nodes_; ++j)
         {
-          const double Mij = M_[i][j];
+          const double Mij = M_(i, j);
           Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
           temp += Mij * source[j];
         }
@@ -299,7 +299,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         {
           for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
             cell_transport_view_->AddOutflow(
-              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI(i));
         }
 
         double* psi = nullptr;

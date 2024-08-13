@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/mesh/mesh.h"
+#include "framework/math/math.h"
 #include "framework/object.h"
 #include <utility>
 
@@ -35,8 +36,8 @@ public:
   {
     double volume_weight;
     uint64_t cell_local_id;
-    std::vector<double> shape_values;
-    std::vector<double> node_weights;
+    DenseVector<double> shape_values;
+    DenseVector<double> node_weights;
   };
 
 public:

@@ -1090,16 +1090,13 @@ LBSSolver::ComputeUnitIntegrals()
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    std::vector<std::vector<double>> IntV_gradshapeI_gradshapeJ(
-      cell_num_nodes, std::vector<double>(cell_num_nodes));
-    std::vector<std::vector<Vector3>> IntV_shapeI_gradshapeJ(cell_num_nodes,
-                                                             std::vector<Vector3>(cell_num_nodes));
-    std::vector<std::vector<double>> IntV_shapeI_shapeJ(cell_num_nodes,
-                                                        std::vector<double>(cell_num_nodes));
-    std::vector<double> IntV_shapeI(cell_num_nodes);
-    std::vector<std::vector<std::vector<double>>> IntS_shapeI_shapeJ(cell_num_faces);
-    std::vector<std::vector<std::vector<Vector3>>> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<std::vector<double>> IntS_shapeI(cell_num_faces);
+    DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
+    DenseMatrix<Vector3> IntV_shapeI_gradshapeJ(cell_num_nodes, cell_num_nodes);
+    DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);
+    DenseVector<double> IntV_shapeI(cell_num_nodes, 0.);
+    std::vector<DenseMatrix<double>> IntS_shapeI_shapeJ(cell_num_faces);
+    std::vector<DenseMatrix<Vector3>> IntS_shapeI_gradshapeJ(cell_num_faces);
+    std::vector<DenseVector<double>> IntS_shapeI(cell_num_faces);
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
@@ -1108,16 +1105,16 @@ LBSSolver::ComputeUnitIntegrals()
       {
         for (const auto& qp : fe_vol_data.QuadraturePointIndices())
         {
-          IntV_gradshapeI_gradshapeJ[i][j] +=
+          IntV_gradshapeI_gradshapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) *
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
             fe_vol_data.JxW(qp); // K-matrix
 
-          IntV_shapeI_gradshapeJ[i][j] +=
+          IntV_shapeI_gradshapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
             fe_vol_data.ShapeGrad(j, qp) * fe_vol_data.JxW(qp); // G-matrix
 
-          IntV_shapeI_shapeJ[i][j] +=
+          IntV_shapeI_shapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
             fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp); // M-matrix
         }                                                        // for qp
@@ -1125,7 +1122,7 @@ LBSSolver::ComputeUnitIntegrals()
 
       for (const auto& qp : fe_vol_data.QuadraturePointIndices())
       {
-        IntV_shapeI[i] +=
+        IntV_shapeI(i) +=
           swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
     }   // for i
@@ -1134,9 +1131,9 @@ LBSSolver::ComputeUnitIntegrals()
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, std::vector<double>(cell_num_nodes));
-      IntS_shapeI[f].resize(cell_num_nodes);
-      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, std::vector<Vector3>(cell_num_nodes));
+      IntS_shapeI_shapeJ[f] = DenseMatrix<double>(cell_num_nodes, cell_num_nodes, 0.0);
+      IntS_shapeI[f] = DenseVector<double>(cell_num_nodes, 0.);
+      IntS_shapeI_gradshapeJ[f] = DenseMatrix<Vector3>(cell_num_nodes, cell_num_nodes);
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {
@@ -1144,10 +1141,10 @@ LBSSolver::ComputeUnitIntegrals()
         {
           for (const auto& qp : fe_srf_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
+            IntS_shapeI_shapeJ[f](i, j) += swf(fe_srf_data.QPointXYZ(qp)) *
                                            fe_srf_data.ShapeValue(i, qp) *
                                            fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] += swf(fe_srf_data.QPointXYZ(qp)) *
+            IntS_shapeI_gradshapeJ[f](i, j) += swf(fe_srf_data.QPointXYZ(qp)) *
                                                fe_srf_data.ShapeValue(i, qp) *
                                                fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
@@ -1155,7 +1152,7 @@ LBSSolver::ComputeUnitIntegrals()
 
         for (const auto& qp : fe_srf_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i] +=
+          IntS_shapeI[f](i) +=
             swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
       }   // for i
@@ -1324,7 +1321,7 @@ LBSSolver::InitializeParrays()
     double cell_volume = 0.0;
     const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
-      cell_volume += IntV_shapeI[i];
+      cell_volume += IntV_shapeI(i);
 
     size_t cell_phi_address = block_MG_counter;
 
@@ -2142,7 +2139,7 @@ LBSSolver::UpdateFieldFunctions()
         } // for g
 
         data_vector_local[imapA] = nodal_power;
-        local_total_power += nodal_power * Vi[i];
+        local_total_power += nodal_power * Vi(i);
       } // for node
     }   // for cell
 
@@ -2237,7 +2234,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.intV_shapeI[i];
+      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
       for (size_t g = first_grp; g <= last_grp; ++g)
@@ -2288,7 +2285,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.intV_shapeI[i];
+      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
       for (size_t g = first_grp; g <= last_grp; ++g)
@@ -2335,7 +2332,7 @@ LBSSolver::ComputePrecursors()
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.intV_shapeI[i] / cell_volume;
+        const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
         // Loop over groups
         for (unsigned int g = 0; g < groups_.size(); ++g)

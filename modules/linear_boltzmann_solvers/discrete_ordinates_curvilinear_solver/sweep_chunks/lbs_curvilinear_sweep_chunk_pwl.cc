@@ -150,13 +150,13 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           const auto jr =
             discretization_.MapDOFLocal(cell, j, unknown_manager_, polar_level, gs_gi);
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-            b[gsg][i] += fac_streaming_operator * Maux[i][j] * psi_sweep_[jr + gsg];
+            b[gsg][i] += fac_streaming_operator * Maux(i, j) * psi_sweep_[jr + gsg];
         }
       }
 
       for (int i = 0; i < cell_num_nodes; ++i)
         for (int j = 0; j < cell_num_nodes; ++j)
-          Amat[i][j] = omega.Dot(G[i][j]) + fac_streaming_operator * Maux[i][j];
+          Amat[i][j] = omega.Dot(G(i, j)) + fac_streaming_operator * Maux(i, j);
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
@@ -188,7 +188,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           {
             const int j = cell_mapping.MapFaceNode(f, fj);
 
-            const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
+            const double mu_Nij = -face_mu_values[f] * M_surf[f](i, j);
             Amat[i][j] += mu_Nij;
 
             const double* psi;
@@ -268,7 +268,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           double temp = 0.0;
           for (int j = 0; j < cell_num_nodes; ++j)
           {
-            const double Mij = M[i][j];
+            const double Mij = M(i, j);
             Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
             temp += Mij * source[j];
           }
@@ -336,7 +336,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
               cell_transport_view.AddOutflow(
-                f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+                f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI(i));
           }
 
           double* psi = nullptr;

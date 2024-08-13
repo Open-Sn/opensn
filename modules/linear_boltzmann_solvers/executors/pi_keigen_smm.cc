@@ -553,7 +553,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
                 {
                   const auto dim_idx_l = dimension_ > 1 ? l : 2;
                   const auto dT = Tm[k * dimension_ + l] - Tp[k * dimension_ + l];
-                  val += dT * normal[dim_idx_l] * face_G[jm][i][dim_idx_k];
+                  val += dT * normal[dim_idx_l] * face_G(jm, i)[dim_idx_k];
                 }
               }
             } // for face node fj
@@ -594,7 +594,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
                   for (int l = 0; l < dimension_; ++l)
                   {
                     const auto dim_idx_l = dimension_ > 1 ? l : 2;
-                    val += Tm[k * dimension_ + l] * face_G[im][j][dim_idx_l] * normal[dim_idx_k];
+                    val += Tm[k * dimension_ + l] * face_G(im, j)[dim_idx_l] * normal[dim_idx_k];
                   }
                 }
               } // for node j
@@ -638,7 +638,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
               {
                 const auto j = cell_mapping.MapFaceNode(f, fj);
                 const auto jmap = pwld.MapDOFLocal(cell, j);
-                val += betas_.at(jmap)[g] * face_M[i][j];
+                val += betas_.at(jmap)[g] * face_M(i, j);
               } // for face node fj
 
               output.SetValue(imap, -val, VecOpType::ADD_VALUE);
@@ -712,7 +712,7 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
                 // required.
                 rows.push_back(imap + gsg);
                 cols.push_back(jmap + gsg);
-                vals.push_back(bfac * face_M[i][j]);
+                vals.push_back(bfac * face_M(i, j));
               }
             } // for face node fj
           }   // for face node fi
@@ -767,7 +767,7 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
         for (int j = 0; j < num_cell_nodes; ++j)
         {
           const auto jmap = pwld.MapDOFLocal(cell, j, uk_man, 0, g);
-          val += M[i][j] * q0[jmap];
+          val += M(i, j) * q0[jmap];
         }
         rhs.SetValue(imap, val, VecOpType::ADD_VALUE);
       } // for node i

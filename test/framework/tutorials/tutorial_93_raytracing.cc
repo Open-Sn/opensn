@@ -132,8 +132,8 @@ SimTest93_RayTracing(const InputParameters&)
     std::vector<double> segment_lengths;
     PopulateRaySegmentLengths(grid, cell, positionA, positionB, omega, segment_lengths);
 
-    std::vector<double> shape_values_k;   // At s_k
-    std::vector<double> shape_values_kp1; // At s_{k+1}
+    DenseVector<double> shape_values_k;   // At s_k
+    DenseVector<double> shape_values_kp1; // At s_{k+1}
 
     cell_mapping.ShapeValues(positionA, shape_values_k);
 
@@ -151,8 +151,8 @@ SimTest93_RayTracing(const InputParameters&)
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const double C0 = b_ik[i] * ell_k;
-        const double C1 = b_ikp1[i] - b_ik[i];
+        const double C0 = b_ik(i) * ell_k;
+        const double C1 = b_ikp1(i) - b_ik(i);
 
         for (size_t m = 0; m < num_moments; ++m)
         {

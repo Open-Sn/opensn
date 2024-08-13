@@ -79,13 +79,13 @@ FieldFunctionInterpolationLine::Execute()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    std::vector<double> shape_function_vals(num_nodes, 0.0);
+    DenseVector<double> shape_function_vals(num_nodes, 0.0);
     cell_mapping.ShapeValues(point, shape_function_vals);
     double point_value = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
-      point_value += shape_function_vals[i] * field_data[imap];
+      point_value += shape_function_vals(i) * field_data[imap];
     }
     local_interpolation_values_[p] = point_value;
     local_max = std::max(point_value, local_max);
