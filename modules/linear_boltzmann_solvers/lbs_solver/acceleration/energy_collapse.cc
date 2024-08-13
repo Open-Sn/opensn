@@ -24,30 +24,30 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 
   const auto& isotropic_transfer_matrix = xs.TransferMatrix(0);
 
-  MatDbl S(num_groups, std::vector<double>(num_groups, 0.0));
+  DenseMatrix<double> S(num_groups, num_groups, 0.0);
   for (int g = 0; g < num_groups; ++g)
     for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
-      S[g][gprime] = sigma;
+      S(g, gprime) = sigma;
 
   // Compiling the A and B matrices for different methods
-  MatDbl A(num_groups, std::vector<double>(num_groups, 0.0));
-  MatDbl B(num_groups, std::vector<double>(num_groups, 0.0));
+  DenseMatrix<double> A(num_groups, num_groups, 0.0);
+  DenseMatrix<double> B(num_groups, num_groups, 0.0);
   for (int g = 0; g < num_groups; ++g)
   {
     if (scheme == EnergyCollapseScheme::JFULL)
     {
-      A[g][g] = sigma_t[g] - S[g][g];
+      A(g, g) = sigma_t[g] - S(g, g);
       for (int gp = 0; gp < g; ++gp)
-        B[g][gp] = S[g][gp];
+        B(g, gp) = S(g, gp);
 
       for (int gp = g + 1; gp < num_groups; ++gp)
-        B[g][gp] = S[g][gp];
+        B(g, gp) = S(g, gp);
     }
     else if (scheme == EnergyCollapseScheme::JPARTIAL)
     {
-      A[g][g] = sigma_t[g];
+      A(g, g) = sigma_t[g];
       for (int gp = 0; gp < num_groups; ++gp)
-        B[g][gp] = S[g][gp];
+        B(g, gp) = S(g, gp);
     }
   } // for g
 
@@ -59,11 +59,11 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   // initial guess of 1.0. Here we reset them
   for (int g = 0; g < num_groups; ++g)
     if (sigma_t[g] < 1.0e-16)
-      A[g][g] = 1.0;
+      A(g, g) = 1.0;
 
-  MatDbl Ainv = Inverse(A);
-  MatDbl C = MatMul(Ainv, B);
-  std::vector<double> E(num_groups, 1.0);
+  auto Ainv = Inverse(A);
+  auto C = MatMul(Ainv, B);
+  DenseVector<double> E(num_groups, 1.0);
 
   double collapsed_D = 0.0;
   double collapsed_sig_a = 0.0;
@@ -75,10 +75,10 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   // Compute two-grid diffusion quantities
   double sum = 0.0;
   for (int g = 0; g < num_groups; ++g)
-    sum += std::fabs(E[g]);
+    sum += std::fabs(E(g));
 
   for (int g = 0; g < num_groups; ++g)
-    spectrum[g] = std::fabs(E[g]) / sum;
+    spectrum[g] = std::fabs(E(g)) / sum;
 
   for (int g = 0; g < num_groups; ++g)
   {
@@ -87,7 +87,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
     collapsed_sig_a += sigma_t[g] * spectrum[g];
 
     for (int gp = 0; gp < num_groups; ++gp)
-      collapsed_sig_a -= S[g][gp] * spectrum[gp];
+      collapsed_sig_a -= S(g, gp) * spectrum[gp];
   }
 
   // Verbose output the spectrum
