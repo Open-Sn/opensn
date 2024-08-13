@@ -282,6 +282,7 @@ data_types_Test00(const InputParameters&)
   // rank()
   {
     NDArray<double> nd_array1(std::vector<size_t>{2, 2, 2});
+    nd_array1.set(0.0);
     dummy << "Should be printing rank and 2x2x2=8 zeros\n";
     dummy << nd_array1.rank() << "\n";
     for (auto val : nd_array1)
@@ -294,6 +295,7 @@ data_types_Test00(const InputParameters&)
   // Constructor array
   {
     NDArray<double> nd_array1(std::array<size_t, 3>{2, 2, 2});
+    nd_array1.set(0.0);
     dummy << "Should be 2x2x2=8 zeros\n";
     for (auto val : nd_array1)
     {
@@ -306,6 +308,7 @@ data_types_Test00(const InputParameters&)
   {
     dummy << "Should be 2x2x2=8 zeros\n";
     NDArray<double> nd_array1({2, 2, 2});
+    nd_array1.set(0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
