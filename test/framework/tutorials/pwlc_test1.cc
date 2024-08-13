@@ -64,8 +64,8 @@ SimTest03_PWLC(const InputParameters&)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const size_t num_nodes = cell_mapping.NumNodes();
-    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
-    std::vector<double> cell_rhs(num_nodes, 0.0);
+    DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
+    DenseVector<double> cell_rhs(num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -77,10 +77,10 @@ SimTest03_PWLC(const InputParameters&)
           entry_aij +=
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
-        Acell[i][j] = entry_aij;
+        Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
-        cell_rhs[i] += 1.0 * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+        cell_rhs(i) += 1.0 * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 
     // Flag nodes for being on dirichlet boundary
@@ -118,9 +118,9 @@ SimTest03_PWLC(const InputParameters&)
         for (size_t j = 0; j < num_nodes; ++j)
         {
           if (not node_boundary_flag[j])
-            MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+            MatSetValue(A, imap[i], imap[j], Acell(i, j), ADD_VALUES);
         } // for j
-        VecSetValue(b, imap[i], cell_rhs[i], ADD_VALUES);
+        VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
       }
     } // for i
   }   // for cell

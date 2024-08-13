@@ -91,8 +91,8 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
-    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
-    std::vector<double> cell_rhs(num_nodes, 0.0);
+    DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
+    DenseVector<double> cell_rhs(num_nodes, 0.0);
 
     // Assemble continuous kernels
     {
@@ -111,18 +111,18 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
           for (size_t qp : fe_vol_data.QuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
 
-          Acell[i][j] = entry_aij;
+          Acell(i, j) = entry_aij;
         } // for j
         for (size_t qp : fe_vol_data.QuadraturePointIndices())
-          cell_rhs[i] += 1.0 * shape[i][qp] * JxW[qp];
+          cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
     }   // continuous kernels
 
     // Apply dirichlet BCs
     for (auto i : bndry_nodes)
     {
-      Acell[i][i] = 1.0;
-      cell_rhs[i] = 0.0;
+      Acell(i, i) = 1.0;
+      cell_rhs(i) = 0.0;
     }
 
     // Develop node mapping
@@ -134,9 +134,9 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (size_t j = 0; j < num_nodes; ++j)
-        MatSetValue(A, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+        MatSetValue(A, imap[i], imap[j], Acell(i, j), ADD_VALUES);
 
-      VecSetValue(b, imap[i], cell_rhs[i], ADD_VALUES);
+      VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
     } // for i
   }   // for cell
 

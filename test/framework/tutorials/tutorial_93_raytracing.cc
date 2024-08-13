@@ -278,24 +278,24 @@ SimTest93_RayTracing(const InputParameters&)
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    MatDbl M(num_nodes, std::vector<double>(num_nodes, 0.0));
+    DenseMatrix<double> M(num_nodes, num_nodes, 0.0);
     for (auto qp : fe_vol_data.QuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
-          M[i][j] +=
+          M(i, j) +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
     auto M_inv = Inverse(M);
 
     // Apply projection
-    std::vector<double> T(num_nodes, 0.0);
+    DenseVector<double> T(num_nodes, 0.0);
     for (size_t m = 0; m < num_moments; ++m)
       for (size_t g = 0; g < num_groups; ++g)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          T[i] = phi_tally[imap] / num_particles;
+          T(i) = phi_tally[imap] / num_particles;
         }
 
         auto phi_uc = MatMul(M_inv, T);
@@ -303,7 +303,7 @@ SimTest93_RayTracing(const InputParameters&)
         for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          phi_tally[imap] = phi_uc[i];
+          phi_tally[imap] = phi_uc(i);
         }
       } // for group g
 
