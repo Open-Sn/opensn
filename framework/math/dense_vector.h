@@ -70,26 +70,6 @@ public:
       (*this)(i) /= norm;
   }
 
-  /// Add vector to this vector
-  DenseVector<TYPE> operator+(const DenseVector<TYPE>& rhs) const
-  {
-    assert(Rows() == rhs.Rows());
-    DenseVector<TYPE> res(Rows());
-    for (unsigned int i = 0; i < Rows(); ++i)
-      res(i) = (*this)(i) + rhs(i);
-    return res;
-  }
-
-  /// Subtract matrix from this matrix
-  DenseVector<TYPE> operator-(const DenseVector<TYPE>& rhs) const
-  {
-    assert(Rows() == rhs.Rows());
-    DenseVector<TYPE> res(Rows());
-    for (unsigned int i = 0; i < Rows(); ++i)
-      res(i) = (*this)(i)-rhs(i);
-    return res;
-  }
-
   /// Prints the vector to a string and then returns the string.
   std::string PrintStr() const
   {
@@ -110,16 +90,5 @@ public:
     return res;
   }
 };
-
-/// Multiplication by a scalar from the left.
-template <class TYPE>
-DenseVector<TYPE>
-operator*(const double value, const DenseVector<TYPE>& that)
-{
-  DenseVector<TYPE> res(that.Rows());
-  for (int i = 0; i < that.Rows(); ++i)
-    res(i) = that(i) * value;
-  return res;
-}
 
 } // namespace opensn

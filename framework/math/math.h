@@ -100,8 +100,51 @@ void PrintVector(const std::vector<double>& x);
 /// Scales a vector in place by constant.
 void Scale(std::vector<double>& x, const double& val);
 
+/// Scale the vector with a constant value
+template <typename TYPE>
+void
+Scale(DenseVector<TYPE>& a, TYPE alpha)
+{
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    a(i) *= alpha;
+}
+
+template <typename TYPE>
+DenseVector<TYPE>
+Scaled(const DenseVector<TYPE>& a, TYPE alpha)
+{
+  DenseVector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) * alpha;
+  return res;
+}
+
 /// Sets a constant value to a vector.
 void Set(std::vector<double>& x, const double& val);
+
+/// Add vector to this vector
+template <typename TYPE>
+DenseVector<TYPE>
+VecAdd(const DenseVector<TYPE>& a, const DenseVector<TYPE>& b)
+{
+  assert(a.Rows() == b.Rows());
+  DenseVector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) + b(i);
+  return res;
+}
+
+/// Subtract two vectors
+template <typename TYPE>
+DenseVector<TYPE>
+VecSub(const DenseVector<TYPE>& a, const DenseVector<TYPE>& b)
+{
+  assert(a.Rows() == b.Rows());
+  DenseVector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) - b(i);
+  return res;
+}
 
 /// Multiplies the vector with a constant and returns result.
 std::vector<double> VecMul(const std::vector<double>& x, const double& val);
@@ -324,6 +367,28 @@ MatSubtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
   return C;
 }
 
+/// Scale the matrix with a constant value
+template <typename TYPE>
+void
+Scale(DenseMatrix<TYPE>& mat, TYPE alpha)
+{
+  for (unsigned int i = 0; i < mat.Rows(); ++i)
+    for (unsigned int j = 0; j < mat.Columns(); ++j)
+      mat(i, j) *= alpha;
+}
+
+/// Scale the matrix with a constant value
+template <typename TYPE>
+DenseMatrix<TYPE>
+Scaled(const DenseMatrix<TYPE>& mat, TYPE alpha)
+{
+  DenseMatrix<TYPE> res(mat.Rows(), mat.Columns());
+  for (unsigned int i = 0; i < mat.Rows(); ++i)
+    for (unsigned int j = 0; j < mat.Columns(); ++j)
+      res(i, j) = mat(i, j) * alpha;
+  return res;
+}
+
 /// Returns a copy of A with removed rows `r` and removed columns `c`
 template <typename TYPE>
 DenseMatrix<TYPE>
@@ -516,7 +581,7 @@ Inverse(const DenseMatrix<TYPE>& A)
     M(0, 1) = -A(0, 1);
     M(1, 0) = -A(1, 0);
     M(1, 1) = A(0, 0);
-    M.Scale(f);
+    Scale(M, f);
   }
   else if (rows == 3)
   {
@@ -529,7 +594,7 @@ Inverse(const DenseMatrix<TYPE>& A)
     M(2, 0) = A(2, 1) * A(1, 0) - A(2, 0) * A(1, 1);
     M(2, 1) = -(A(2, 1) * A(0, 0) - A(2, 0) * A(0, 1));
     M(2, 2) = A(1, 1) * A(0, 0) - A(1, 0) * A(0, 1);
-    M.Scale(f);
+    Scale(M, f);
   }
   else if (rows == 4)
   {
@@ -585,7 +650,7 @@ Inverse(const DenseMatrix<TYPE>& A)
     M(3, 3) = A(0, 0) * A(1, 1) * A(2, 2) + A(0, 1) * A(1, 2) * A(2, 0) +
               A(0, 2) * A(1, 0) * A(2, 1) - A(0, 0) * A(1, 2) * A(2, 1) -
               A(0, 1) * A(1, 0) * A(2, 2) - A(0, 2) * A(1, 1) * A(2, 0);
-    M.Scale(f);
+    Scale(M, f);
   }
   else
     M = InverseGEPivoting(A);
@@ -610,11 +675,11 @@ PowerIteration(const DenseMatrix<TYPE>& A,
   double lambda0 = 0.0;
 
   // Perform initial iteration outside of loop
-  auto Ay = A * y;
+  auto Ay = MatMul(A, y);
   auto lambda = Dot(y, Ay);
-  y = (1.0 / Vec2Norm(Ay)) * Ay;
+  y = Scaled(Ay, 1.0 / Vec2Norm(Ay));
   if (lambda < 0.0)
-    y.Scale(-1.0);
+    Scale(y, -1.0);
 
   // Perform convergence loop
   bool converged = false;
@@ -623,9 +688,9 @@ PowerIteration(const DenseMatrix<TYPE>& A,
     // Update old eigenvalue
     lambda0 = std::fabs(lambda);
     // Calculate new eigenvalue/eigenvector
-    Ay = A * y;
+    Ay = MatMul(A, y);
     lambda = Dot(y, Ay);
-    y = (1.0 / Vec2Norm(Ay)) * Ay;
+    y = Scaled(Ay, 1.0 / Vec2Norm(Ay));
 
     // Check if converged or not
     if (std::fabs(std::fabs(lambda) - lambda0) <= tol)
@@ -635,10 +700,10 @@ PowerIteration(const DenseMatrix<TYPE>& A,
   }
 
   if (lambda < 0.0)
-    y.Scale(-1.0);
+    Scale(y, -1.0);
 
   // Renormalize eigenvector for the last time
-  y = (1.0 / lambda) * Ay;
+  y = Scaled(Ay, 1.0 / lambda);
 
   // Set eigenvector, return the eigenvalue
   e_vec = std::move(y);

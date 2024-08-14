@@ -62,81 +62,6 @@ public:
       (*this)(row, i) = values(i);
   }
 
-  /// Scale the matrix with a constant value
-  void Scale(TYPE alpha)
-  {
-    for (unsigned int i = 0; i < Rows(); ++i)
-      for (unsigned int j = 0; j < Columns(); ++j)
-        (*this)(i, j) *= alpha;
-  }
-
-  /// Add matrix to this matrix
-  DenseMatrix<TYPE> operator+(const DenseMatrix<TYPE>& rhs) const
-  {
-    assert(Rows() == rhs.Rows());
-    assert(Columns() == rhs.Columns());
-    DenseMatrix<TYPE> res(Rows(), Columns());
-    for (unsigned int i = 0; i < Rows(); ++i)
-      for (unsigned int j = 0; j < Columns(); ++j)
-        res(i, j) = (*this)(i, j) + rhs(i, j);
-    return res;
-  }
-
-  /// Subtract matrix from this matrix
-  DenseMatrix<TYPE> operator-(const DenseMatrix<TYPE>& rhs) const
-  {
-    assert(Rows() == rhs.Rows());
-    assert(Columns() == rhs.Columns());
-    DenseMatrix<TYPE> res(Rows(), Columns());
-    for (unsigned int i = 0; i < Rows(); ++i)
-      for (unsigned int j = 0; j < Columns(); ++j)
-        res(i, j) = (*this)(i, j) - rhs(i, j);
-    return res;
-  }
-
-  /// Matrix-Vector multiplication
-  DenseVector<TYPE> operator*(const DenseVector<TYPE>& b) const
-  {
-    if (Rows() != b.size())
-      throw std::length_error("Mismatched matrix/vector sizes in matrix-vector multiplication");
-
-    DenseVector<TYPE> res(Rows());
-    unsigned int k = 0;
-    for (unsigned int i = 0; i < Rows(); ++i)
-    {
-      TYPE value = 0.0;
-      for (unsigned int j = 0; j < Columns(); ++j)
-        value += (*this)(i, j) * b(j);
-      res(k) = value;
-      ++k;
-    }
-
-    return res;
-  }
-
-  /// Matrix-Matrix multiplication
-  DenseMatrix<TYPE> operator*(const DenseMatrix<TYPE>& B) const
-  {
-    size_t AR = Rows();
-
-    assert(AR != 0 and B.size() != 0);
-
-    size_t AC = Columns();
-    size_t BC = B.Columns();
-
-    assert(AC != 0 and BC != 0 and AC == B.size());
-
-    size_t CR = AR;
-    size_t CC = BC;
-    size_t Cs = AC;
-    DenseMatrix<TYPE> C(CR, CC, 0.);
-    for (size_t i = 0; i < CR; ++i)
-      for (size_t j = 0; j < CC; ++j)
-        for (size_t k = 0; k < Cs; ++k)
-          C(i, j) += (*this)(i, k) * B(k, j);
-    return C;
-  }
-
   /// Prints the matrix to a string and then returns the string.
   std::string PrintStr() const
   {
@@ -155,20 +80,5 @@ public:
     return out.str();
   }
 };
-
-/// Multiplication by a scalar from the left.
-template <typename TYPE>
-DenseMatrix<TYPE>
-operator*(double value, DenseMatrix<TYPE>& that)
-{
-  auto rows = that.Rows();
-  auto cols = that.Columns();
-  DenseMatrix<TYPE> res(rows, cols);
-  for (int i = 0; i < rows; ++i)
-    for (int j = 0; j < cols; ++j)
-      res(i, j) = that(i, j) * value;
-
-  return res;
-}
 
 } // namespace opensn
