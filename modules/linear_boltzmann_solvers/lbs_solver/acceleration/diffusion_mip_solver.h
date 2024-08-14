@@ -21,7 +21,7 @@ class ScalarSpatialFunction;
 class DiffusionMIPSolver : public DiffusionSolver
 {
 public:
-  DiffusionMIPSolver(std::string text_name,
+  DiffusionMIPSolver(std::string name,
                      const opensn::SpatialDiscretization& sdm,
                      const UnknownManager& uk_man,
                      std::map<uint64_t, BoundaryCondition> bcs,

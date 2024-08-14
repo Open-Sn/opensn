@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "framework/physics/solver.h"
 #include "modules/diffusion/boundary.h"
-#include "framework/object_factory.h"
-#include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
+#include "framework/object_factory.h"
 
 namespace opensn
 {

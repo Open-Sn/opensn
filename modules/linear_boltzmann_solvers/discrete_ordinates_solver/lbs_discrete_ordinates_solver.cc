@@ -31,8 +31,7 @@ namespace opensn
 
 OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesSolver);
 
-DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& text_name)
-  : LBSSolver(text_name)
+DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& name) : LBSSolver(name)
 {
 }
 

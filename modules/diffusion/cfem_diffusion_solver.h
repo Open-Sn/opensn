@@ -3,12 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
-#include "framework/physics/solver_base/solver.h"
-#include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/diffusion/diffusion_solver.h"
-#include "framework/utils/timer.h"
-#include <map>
 
 namespace opensn
 {

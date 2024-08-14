@@ -24,7 +24,7 @@ class DiffusionSolver
 protected:
   using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
 
-  const std::string text_name_;
+  const std::string name_;
   const MeshContinuum& grid_;
   const class SpatialDiscretization& sdm_;
   const UnknownManager uk_man_;
@@ -57,7 +57,7 @@ public:
   } options;
 
 public:
-  DiffusionSolver(std::string text_name,
+  DiffusionSolver(std::string name,
                   const SpatialDiscretization& sdm,
                   const UnknownManager& uk_man,
                   std::map<uint64_t, BoundaryCondition> bcs,
@@ -70,7 +70,7 @@ public:
   /**
    * Returns the assigned text name.
    */
-  std::string TextName() const;
+  std::string Name() const;
 
   /**
    * Returns the right-hand side petsc vector.

@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "framework/physics/solver.h"
 #include "modules/diffusion/boundary.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/isotropic_multigroup_source.h"
-#include "framework/physics/solver_base/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/utils/timer.h"
 #include <map>
