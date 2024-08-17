@@ -92,6 +92,7 @@ lbs_options = {
     },
   },
   scattering_order = 5,
+  max_ags_iterations = 1,
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
