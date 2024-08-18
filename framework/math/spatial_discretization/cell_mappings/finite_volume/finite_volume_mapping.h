@@ -14,8 +14,11 @@
 namespace opensn
 {
 
-/**Cell mapping for a finite volume representation of a cell.
- * \ingroup doc_CellMappings*/
+/**
+ * Cell mapping for a finite volume representation of a cell.
+ *
+ * \ingroup doc_CellMappings
+ */
 class FiniteVolumeMapping : public CellMapping
 {
 public:

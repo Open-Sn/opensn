@@ -58,7 +58,7 @@ int MeshSurfaceMeshCreate(lua_State* L);
  * {dx,dy,0.0})
  *
  * lv2 = logvol.SurfaceMeshLogicalVolume.Create({surface_mesh_handle=lv_surfmesh2})
-
+ *
  * \endcode
  *
  * \return success bool Return true if file was successfully loaded and false

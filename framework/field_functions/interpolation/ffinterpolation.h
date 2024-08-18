@@ -46,7 +46,7 @@ enum class FieldFunctionInterpolationProperty : int
   CUSTOM_ARRAY = 14,
 };
 
-/** Base class for field-function interpolation objects.*/
+/// Base class for field-function interpolation objects.
 class FieldFunctionInterpolation
 {
 protected:

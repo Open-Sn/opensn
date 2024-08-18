@@ -25,15 +25,13 @@ class AGSSolver;
 class WGSLinearSolver;
 struct WGSContext;
 
-/**Base class for all Linear Boltzmann Solvers.*/
+/// Base class for all Linear Boltzmann Solvers.
 class LBSSolver : public opensn::Solver
 {
 public:
   explicit LBSSolver(const std::string& text_name);
 
-  /**
-   * Input parameters based construction.
-   */
+  /// Input parameters based construction.
   explicit LBSSolver(const InputParameters& params);
 
   LBSSolver(const LBSSolver&) = delete;
@@ -42,14 +40,10 @@ public:
 
   virtual ~LBSSolver() = default;
 
-  /**
-   * Returns a reference to the solver options.
-   */
+  /// Returns a reference to the solver options.
   LBSOptions& Options();
 
-  /**
-   * Returns a constant reference to the solver options.
-   */
+  /// Returns a constant reference to the solver options.
   const LBSOptions& Options() const;
 
   static InputParameters OptionsBlock();
@@ -60,14 +54,10 @@ public:
 
   void SetBoundaryOptions(const InputParameters& params);
 
-  /**
-   * Returns the number of moments for the solver. This will only be non-zero after initialization.
-   */
+  /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t NumMoments() const;
 
-  /**
-   * Returns the number of groups for the solver. This will only be non-zero after initialization.
-   */
+  /// Returns the number of groups for the solver. This will only be non-zero after initialization.
   size_t NumGroups() const;
 
   /**
@@ -77,8 +67,8 @@ public:
   size_t NumPrecursors() const;
 
   /**
-   * Returns the maximum number of precursors defined on any material. This will only be
-   * non-zero after initialization.
+   * Returns the maximum number of precursors defined on any material. This will only be non-zero
+   * after initialization.
    */
   size_t MaxPrecursorsPerMaterial() const;
 
@@ -91,8 +81,8 @@ public:
   const std::vector<LBSGroup>& Groups() const;
 
   /**
-   * Adds a groupset to the list of groupsets. The groupset id will be logically
-   * derived from the list size.
+   * Adds a groupset to the list of groupsets. The groupset id will be logically derived from the
+   * list size.
    */
   void AddGroupset();
 
@@ -100,166 +90,102 @@ public:
 
   const std::vector<LBSGroupset>& Groupsets() const;
 
-  /**
-   * Adds a point source to the solver.
-   */
+  /// Adds a point source to the solver.
   void AddPointSource(PointSource&& point_source);
 
-  /**
-   * Clears all the point sources from the solver.
-   */
+  /// Clears all the point sources from the solver.
   void ClearPointSources();
 
-  /**
-   * Constant accessor to the list of point sources.
-   */
+  /// Constant accessor to the list of point sources.
   const std::vector<PointSource>& PointSources() const;
 
-  /**
-   * Adds a volumetric source to the solver.
-   */
+  /// Adds a volumetric source to the solver.
   void AddVolumetricSource(VolumetricSource&& volumetric_source);
 
-  /**
-   * Clears all the volumetric sources from the solver.
-   */
+  /// Clears all the volumetric sources from the solver.
   void ClearVolumetricSources();
 
-  /**
-   * Constant accessor to the list of volumetric sources.
-   */
+  /// Constant accessor to the list of volumetric sources.
   const std::vector<VolumetricSource>& VolumetricSources() const;
 
   size_t& LastRestartTime();
 
-  /**
-   * Returns a reference to the map of material ids to XSs.
-   */
+  /// Returns a reference to the map of material ids to XSs.
   const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
 
-  /**
-   * Returns a reference to the map of material ids to Isotropic Srcs.
-   */
+  /// Returns a reference to the map of material ids to Isotropic Srcs.
   const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>& GetMatID2IsoSrcMap() const;
 
-  /**
-   * Obtains a reference to the grid.
-   */
+  /// Obtains a reference to the grid.
   const MeshContinuum& Grid() const;
 
-  /**
-   * Obtains a reference to the spatial discretization.
-   */
+  /// Obtains a reference to the spatial discretization.
   const class SpatialDiscretization& SpatialDiscretization() const;
 
-  /**
-   * Returns read-only access to the unit cell matrices.
-   */
+  /// Returns read-only access to the unit cell matrices.
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
 
-  /**
-   * Returns read-only access to the unit ghost cell matrices.
-   */
+  /// Returns read-only access to the unit ghost cell matrices.
   const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
-  /**
-   * Returns a reference to the list of local cell transport views.
-   */
+  /// Returns a reference to the list of local cell transport views.
   const std::vector<CellLBSView>& GetCellTransportViews() const;
 
-  /**
-   * Read/Write access to the boundary preferences.
-   */
+  /// Read/Write access to the boundary preferences.
   std::map<uint64_t, BoundaryPreference>& BoundaryPreferences();
 
-  /**
-   * Obtains a reference to the unknown manager for flux-moments.
-   */
+  /// Obtains a reference to the unknown manager for flux-moments.
   const class UnknownManager& UnknownManager() const;
 
-  /**
-   * Returns the local node count for the flux-moments data structures.
-   */
+  /// Returns the local node count for the flux-moments data structures.
   size_t LocalNodeCount() const;
 
-  /**
-   * Returns the global node count for the flux-moments data structures.
-   */
+  /// Returns the global node count for the flux-moments data structures.
   size_t GlobalNodeCount() const;
 
-  /**
-   * Read/write access to source moments vector.
-   */
+  /// Read/write access to source moments vector.
   std::vector<double>& QMomentsLocal();
 
-  /**
-   * Read access to source moments vector.
-   */
+  /// Read access to source moments vector.
   const std::vector<double>& QMomentsLocal() const;
 
-  /**
-   * Read/write access to exterior src moments vector.
-   */
+  /// Read/write access to exterior src moments vector.
   std::vector<double>& ExtSrcMomentsLocal();
 
-  /**
-   * Read access to exterior src moments vector.
-   */
+  /// Read access to exterior src moments vector.
   const std::vector<double>& ExtSrcMomentsLocal() const;
 
-  /**
-   * Read/write access to last updated flux vector.
-   */
+  /// Read/write access to last updated flux vector.
   std::vector<double>& PhiOldLocal();
 
-  /**
-   * Read access to last updated flux vector.
-   */
+  /// Read access to last updated flux vector.
   const std::vector<double>& PhiOldLocal() const;
 
-  /**
-   * Read/write access to newest updated flux vector.
-   */
+  /// Read/write access to newest updated flux vector.
   std::vector<double>& PhiNewLocal();
 
-  /**
-   * Read access to newest updated flux vector.
-   */
+  /// Read access to newest updated flux vector.
   const std::vector<double>& PhiNewLocal() const;
 
-  /**
-   * Read/write access to newest updated precursors vector.
-   */
+  /// Read/write access to newest updated precursors vector.
   std::vector<double>& PrecursorsNewLocal();
 
-  /**
-   * Read access to newest updated precursors vector.
-   */
+  /// Read access to newest updated precursors vector.
   const std::vector<double>& PrecursorsNewLocal() const;
 
-  /**
-   * Read/write access to newest updated angular flux vector.
-   */
+  /// Read/write access to newest updated angular flux vector.
   std::vector<std::vector<double>>& PsiNewLocal();
 
-  /**
-   * Read access to newest updated angular flux vector.
-   */
+  /// Read access to newest updated angular flux vector.
   const std::vector<std::vector<double>>& PsiNewLocal() const;
 
-  /**
-   * Read/write access to the cell-wise densities.
-   */
+  /// Read/write access to the cell-wise densities.
   std::vector<double>& DensitiesLocal();
 
-  /**
-   * Read access to the cell-wise densities.
-   */
+  /// Read access to the cell-wise densities.
   const std::vector<double>& DensitiesLocal() const;
 
-  /**
-   * Returns the sweep boundaries as a read only reference
-   */
+  /// Returns the sweep boundaries as a read only reference
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& SweepBoundaries() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
@@ -276,57 +202,48 @@ public:
    */
   virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
-  /**
-   * Gets the local handle of a flux-moment based field function.
-   */
+  /// Gets the local handle of a flux-moment based field function.
   size_t MapPhiFieldFunction(size_t g, size_t m) const;
 
-  /**
-   * Returns the local handle to the power generation field function, if enabled.
-   */
+  /// Returns the local handle to the power generation field function, if enabled.
   size_t GetHandleToPowerGenFieldFunc() const;
 
   void Initialize() override;
 
-  /**
-   * Initializes default materials and physics materials.
-   */
+  /// Initializes default materials and physics materials.
   void InitializeMaterials();
 
-  /**Initializes the Within-Group DSA solver. */
+  /// Initializes the Within-Group DSA solver.
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
 
-  /**Creates a vector from a lbs primary stl vector where only the
-   * scalar moments are mapped to the DOFs needed by WGDSA.*/
+  /**
+   * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
+   * DOFs needed by WGDSA.
+   */
   std::vector<double> WGSCopyOnlyPhi0(const LBSGroupset& groupset,
                                       const std::vector<double>& phi_in);
-  /**From the WGDSA DOFs, projects the scalar moments back into a
-   * primary STL vector.*/
+
+  /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
   void GSProjectBackPhi0(const LBSGroupset& groupset,
                          const std::vector<double>& input,
                          std::vector<double>& output);
 
-  /**Assembles a delta-phi vector on the first moment.*/
+  /// Assembles a delta-phi vector on the first moment.
   void AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
                                    const std::vector<double>& phi_in,
                                    std::vector<double>& delta_phi_local);
 
-  /**
-   * DAssembles a delta-phi vector on the first moment.
-   */
+  /// DAssembles a delta-phi vector on the first moment.
   void DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
                                       const std::vector<double>& delta_phi_local,
                                       std::vector<double>& ref_phi_new);
 
-  /**
-   * Assembles a delta-phi vector on the first moment.
-   */
+  /// Assembles a delta-phi vector on the first moment.
   void AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                    const std::vector<double>& phi_in,
                                    std::vector<double>& delta_phi_local);
-  /**
-   * DAssembles a delta-phi vector on the first moment.
-   */
+
+  /// DAssembles a delta-phi vector on the first moment.
   void DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                       const std::vector<double>& delta_phi_local,
                                       std::vector<double>& ref_phi_new);
@@ -337,67 +254,45 @@ public:
 
   void UpdateLastRestartWriteTime();
 
-  /**
-   * Writes phi_old to restart file.
-   */
+  /// Writes phi_old to restart file.
   void WriteRestartData();
 
-  /**
-   * Read phi_old from restart file.
-   */
+  /// Read phi_old from restart file.
   void ReadRestartData();
 
-  /**
-   * Writes a full angular flux vector to file.
-   */
+  /// Writes a full angular flux vector to file.
   void WriteAngularFluxes(const std::vector<std::vector<double>>& src,
                           const std::string& file_base) const;
 
-  /**
-   * Reads a full angular flux vector from a file into the specified vector.
-   */
+  /// Reads a full angular flux vector from a file into the specified vector.
   void ReadAngularFluxes(const std::string& file_base,
                          std::vector<std::vector<double>>& dest) const;
 
-  /**
-   * Writes a groupset angular flux vector to file.
-   */
+  /// Writes a groupset angular flux vector to file.
   void WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
                                   const std::vector<double>& src,
                                   const std::string& file_base) const;
 
-  /**
-   * Reads the groupset angular fluxes from a file into the specified vector.
-   */
+  /// Reads the groupset angular fluxes from a file into the specified vector.
   void ReadGroupsetAngularFluxes(const std::string& file_base,
                                  const LBSGroupset& groupset,
                                  std::vector<double>& dest) const;
 
-  /**
-   * Makes a source-moments vector from scattering and fission based on the latest phi-solution.
-   */
+  /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();
 
-  /**
-   * Writes a given flux moments vector to file.
-   */
+  /// Writes a given flux moments vector to file.
   void WriteFluxMoments(const std::vector<double>& src, const std::string& file_base) const;
 
-  /**
-   * Reads a flux moments vector from a file into the specified vector.
-   */
+  /// Reads a flux moments vector from a file into the specified vector.
   void ReadFluxMoments(const std::string& file_base,
                        std::vector<double>& dest,
                        bool single_file = false) const;
 
-  /**
-   * Copy relevant section of phi_old to the field functions.
-   */
+  /// Copy relevant section of phi_old to the field functions.
   void UpdateFieldFunctions();
 
-  /**
-   * Sets the internal phi vector to the value in the associated field function.
-   */
+  /// Sets the internal phi vector to the value in the associated field function.
   void SetPhiFromFieldFunctions(PhiSTLOption which_phi,
                                 const std::vector<size_t>& m_indices,
                                 const std::vector<size_t>& g_indices);
@@ -414,73 +309,51 @@ public:
    */
   double ComputeFissionRate(const std::vector<double>& phi);
 
-  /**
-   * Compute the steady state delayed neutron precursor concentrations.
-   */
+  /// Compute the steady state delayed neutron precursor concentrations.
   void ComputePrecursors();
 
-  /**
-   * Sets a value to the zeroth (scalar) moment of the vector.
-   */
+  /// Sets a value to the zeroth (scalar) moment of the vector.
   virtual void SetPhiVectorScalarValues(std::vector<double>& phi_vector, double value);
 
-  /**
-   * Scales a flux moment vector. For sweep methods the delayed angular fluxes will also be scaled.
-   */
+  /// Scales a flux moment vector. For sweep methods the delayed angular fluxes will also be scaled.
   virtual void ScalePhiVector(PhiSTLOption which_phi, double value);
 
-  /**
-   * Assembles a vector for a given groupset from a source vector.
-   */
+  /// Assembles a vector for a given groupset from a source vector.
   virtual void
   SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
 
-  /**
-   * Assembles a vector for a given groupset from a source vector.
-   */
+  /// Assembles a vector for a given groupset from a source vector.
   virtual void
   SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
 
-  /**
-   * Assembles a vector for a given groupset from a source vector.
-   */
+  /// Assembles a vector for a given groupset from a source vector.
   virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                              const std::vector<double>& x,
                                              std::vector<double>& y);
 
-  /**
-   * Assembles a vector for a given groupset from a source vector.
-   */
+  /// Assembles a vector for a given groupset from a source vector.
   virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
                                              PhiSTLOption from_which_phi,
                                              PhiSTLOption to_which_phi);
 
-  /**
-   * Assembles a vector for a given group span from a source vector.
-   */
+  /// Assembles a vector for a given group span from a source vector.
   virtual void SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
                                                           int last_group_id,
                                                           Vec x,
                                                           const std::vector<double>& y);
 
-  /**
-   * Assembles a vector for a given groupset from a source vector.
-   */
+  /// Assembles a vector for a given groupset from a source vector.
   virtual void SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
                                                           int last_group_id,
                                                           Vec x,
                                                           std::vector<double>& y);
 
-  /**
-   * Assembles a PETSc vector from multiple groupsets.
-   */
+  /// Assembles a PETSc vector from multiple groupsets.
   virtual void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
                                                       Vec x,
                                                       PhiSTLOption which_phi);
 
-  /**
-   * Disassembles a multiple Groupset PETSc vector STL vectors.
-   */
+  /// Disassembles a multiple Groupset PETSc vector STL vectors.
   virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
                                                           Vec x,
                                                           PhiSTLOption which_phi);
@@ -493,45 +366,35 @@ public:
   virtual void ReorientAdjointSolution(){};
 
 protected:
-  /**
-   * Performs general input checks before initialization continues.
-   */
+  /// Performs general input checks before initialization continues.
   virtual void PerformInputChecks();
 
-  /**
-   * Prints header information of simulation.
-   */
+  /// Prints header information of simulation.
   void PrintSimHeader();
 
   virtual void InitializeSpatialDiscretization();
 
   void ComputeUnitIntegrals();
 
-  /**
-   * Initializes common groupset items.
-   */
+  /// Initializes common groupset items.
   void InitializeGroupsets();
 
-  /**
-   * Computes the number of moments for the given mesher types
-   */
+  /// Computes the number of moments for the given mesher types
   void ComputeNumberOfMoments();
 
-  /**
-   * Initializes parallel arrays.
-   */
+  /// Initializes parallel arrays.
   virtual void InitializeParrays();
 
   void InitializeFieldFunctions();
 
-  /**Initializes transport related boundaries. */
+  /// Initializes transport related boundaries.
   void InitializeBoundaries();
 
   virtual void InitializeSolverSchemes();
 
   virtual void InitializeWGSSolvers(){};
 
-  /**Initializes the Within-Group DSA solver. */
+  /// Initializes the Within-Group DSA solver.
   void InitTGDSA(LBSGroupset& groupset);
 
   LBSOptions options_;
@@ -584,13 +447,13 @@ protected:
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
 
-  /**Time integration parameter meant to be set by an executor*/
+  /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
 
-  /**Cleans up memory consuming items. */
+  /// Cleans up memory consuming items.
   static void CleanUpWGDSA(LBSGroupset& groupset);
 
-  /**Cleans up memory consuming items. */
+  /// Cleans up memory consuming items.
   static void CleanUpTGDSA(LBSGroupset& groupset);
 
 private:
@@ -600,9 +463,7 @@ public:
   static std::map<std::string, uint64_t> supported_boundary_names;
   static std::map<uint64_t, std::string> supported_boundary_ids;
 
-  /**
-   * Returns the input parameters for this object.
-   */
+  /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
 };
 

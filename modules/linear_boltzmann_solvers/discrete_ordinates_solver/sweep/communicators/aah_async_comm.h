@@ -80,36 +80,25 @@ public:
    */
   void InitializeLocalAndDownstreamBuffers();
 
-  /**
-   * Sends downstream psi. This method gets called after a sweep chunk has executed
-   */
+  /// Sends downstream psi. This method gets called after a sweep chunk has executed
   void SendDownstreamPsi(int angle_set_num);
 
-  /**
-   * Receives delayed data from successor locations.
-   */
+  /// Receives delayed data from successor locations.
   bool ReceiveDelayedData(int angle_set_num);
 
-  /**
-   * Sends downstream psi.
-   */
+  /// Sends downstream psi.
   void ClearDownstreamBuffers();
 
-  /**
-   * Check if all upstream dependencies have been met and receives
-   * it as it becomes available.
-   */
+  /// Check if all upstream dependencies have been met and receives it as it becomes available.
   AngleSetStatus ReceiveUpstreamPsi(int angle_set_num);
 
   /**
-   * Receive all upstream Psi. This method is called from within
-   * an advancement of an angleset, right after execution.
+   * Receive all upstream Psi. This method is called from within  an advancement of an angleset,
+   * right after execution.
    */
   void ClearLocalAndReceiveBuffers();
 
-  /**
-   * Clear flags in preperation for another sweep.
-   */
+  /// Clear flags in preperation for another sweep.
   void Reset();
 };
 

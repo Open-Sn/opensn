@@ -15,9 +15,7 @@ class PostProcessor;
 class PostProcessorPrinter;
 class ParameterBlock;
 
-/**
- * A helper object to allow the printer to subscribe to events.
- */
+/// A helper object to allow the printer to subscribe to events.
 class PPPrinterSubscribeHelper : public EventSubscriber
 {
 public:
@@ -35,9 +33,7 @@ enum class ScalarPPTableFormat : int
   HORIZONTAL = 1,
 };
 
-/**
- * A singleton responsible for printing post-processors.
- */
+/// A singleton responsible for printing post-processors.
 class PostProcessorPrinter
 {
 public:
@@ -64,9 +60,7 @@ public:
 
   void SetCSVFilename(const std::string& csv_filename);
 
-  /**
-   * A manual means to print a post processor.
-   */
+  /// A manual means to print a post processor.
   std::string GetPrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
 
 private:

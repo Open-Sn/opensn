@@ -43,9 +43,10 @@ struct WGSContext : public LinearSolverContext
 
   virtual std::pair<int64_t, int64_t> SystemSize() = 0;
 
-  /**This operation applies the inverse of the transform operator in the form
-   * Ay = x where the the vector x's underlying implementing is always LBS's
-   * q_moments_local vextor.*/
+  /**
+   * This operation applies the inverse of the transform operator in the form Ay = x where the the
+   * vector x's underlying implementing is always LBS's q_moments_local vextor.
+   */
   virtual void ApplyInverseTransportOperator(SourceFlags scope) = 0;
 
   virtual void PostSolveCallback(){};

@@ -46,22 +46,22 @@ public:
   {
   }
 
-  /**Returns the angleset's unique id.*/
+  /// Returns the angleset's unique id.
   size_t GetID() const { return id_; }
 
-  /**Returns a reference to the associated spds.*/
+  /// Returns a reference to the associated spds.
   const SPDS& GetSPDS() const { return spds_; }
 
-  /**Returns a reference to the associated fluds_.*/
+  /// Returns a reference to the associated fluds_.
   FLUDS& GetFLUDS() { return *fluds_; }
 
-  /**Return the group subset number.*/
+  /// Return the group subset number.
   size_t GetGroupSubset() const { return group_subset_; }
 
-  /**Returns the angle indices associated with this angleset.*/
+  /// Returns the angle indices associated with this angleset.
   const std::vector<size_t>& GetAngleIndices() const { return angles_; }
 
-  /**Returns the angle indices associated with this angleset.*/
+  /// Returns the angle indices associated with this angleset.
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() { return boundaries_; }
 
   size_t GetNumGroups() const { return num_groups_; }
@@ -73,28 +73,30 @@ public:
     OpenSnLogicalError("Method not implemented");
   }
 
-  /**Initializes delayed upstream data. This method gets called
-   * when a sweep scheduler is constructed.*/
+  /**
+   * Initializes delayed upstream data. This method gets called when a sweep scheduler is
+   * constructed.
+   */
   virtual void InitializeDelayedUpstreamData() = 0;
 
-  /**Returns the maximum buffer size from the sweepbuffer.*/
+  /// Returns the maximum buffer size from the sweepbuffer.
   virtual int GetMaxBufferMessages() const = 0;
 
-  /**Sets the maximum buffer size for the sweepbuffer.*/
+  /// Sets the maximum buffer size for the sweepbuffer.
   virtual void SetMaxBufferMessages(int new_max) = 0;
 
-  /**This function advances the work stages of an angleset.*/
+  /// This function advances the work stages of an angleset.
   virtual AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) = 0;
 
   virtual AngleSetStatus FlushSendBuffers() = 0;
 
-  /**Resets the sweep buffer.*/
+  /// Resets the sweep buffer.
   virtual void ResetSweepBuffers() = 0;
 
-  /**Instructs the sweep buffer to receive delayed data.*/
+  /// Instructs the sweep buffer to receive delayed data.
   virtual bool ReceiveDelayedData() = 0;
 
-  /**Returns a pointer to a boundary flux data.*/
+  /// Returns a pointer to a boundary flux data.
   virtual const double* PsiBoundary(uint64_t boundary_id,
                                     unsigned int angle_num,
                                     uint64_t cell_local_id,
@@ -104,7 +106,7 @@ public:
                                     size_t gs_ss_begin,
                                     bool surface_source_active) = 0;
 
-  /**Returns a pointer to outbound reflected flux data.*/
+  /// Returns a pointer to outbound reflected flux data.
   virtual double* PsiReflected(uint64_t boundary_id,
                                unsigned int angle_num,
                                uint64_t cell_local_id,

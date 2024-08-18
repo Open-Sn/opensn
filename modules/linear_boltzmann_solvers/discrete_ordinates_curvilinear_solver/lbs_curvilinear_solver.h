@@ -10,25 +10,25 @@
 namespace opensn
 {
 
-/** A neutral particle transport solver in point-symmetric and axial-symmetric
- *  curvilinear coordinates. */
+/**
+ * A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
+ * coordinates.
+ */
 class DiscreteOrdinatesCurvilinearSolver : public DiscreteOrdinatesSolver
 {
-  //  Attributes
 private:
-  /** Coordinate system type. */
+  /// Coordinate system type.
   CoordinateSystemType coord_system_type_;
-  /** Discretisation pointer to matrices of the secondary cell view
-   *  (matrices of the primary cell view forwarded to the base class). */
+  /** Discretisation pointer to matrices of the secondary cell view  (matrices of the primary cell
+   * view forwarded to the base class).
+   */
   std::shared_ptr<opensn::SpatialDiscretization> discretization_secondary_;
   std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
 
-  //  Methods
 public:
   static InputParameters GetInputParameters();
   explicit DiscreteOrdinatesCurvilinearSolver(const InputParameters& params);
 
-  // Deleted copy constructors
   DiscreteOrdinatesCurvilinearSolver(const DiscreteOrdinatesCurvilinearSolver&) = delete;
   DiscreteOrdinatesCurvilinearSolver& operator=(const DiscreteOrdinatesCurvilinearSolver&) = delete;
 

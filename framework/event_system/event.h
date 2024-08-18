@@ -38,7 +38,7 @@ public:
 
   /**
    * Is this event a solver event
-   * @return `true` is event is a solver event, `false` otherwise
+   * \return `true` is event is a solver event, `false` otherwise
    */
   bool IsSolverEvent() const;
 

@@ -6,7 +6,8 @@
 namespace opensnlua
 {
 
-/** Creates a Simplified Linear Discontinuous Finite Element (SLDFE)
+/**
+ * Creates a Simplified Linear Discontinuous Finite Element (SLDFE)
  * quadrature based on Spherical Quadrilaterals (SQ). Hence SLDFE-SQ.
  * \param initial_refinement_level int Initial refinement level, \f$n\f$ to
  *        be used. The total number of angles will be \f$ 8{\times}12(n+1)^2 \f$.
@@ -28,7 +29,8 @@ namespace opensnlua
  */
 int CreateSLDFESQAngularQuadrature(lua_State* L);
 
-/** Applies a local refinement of angles.
+/**
+ * Applies a local refinement of angles.
  * \param handle int. Handle to the reference quadrature.
  * \param reference_direction vec3 Reference vector. \f$ \vec{r} \f$
  * \param cone_size double Cone size in radians. \f$ \theta \f$

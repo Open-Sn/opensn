@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Class for option.*/
+/// Class for option.
 class BasicOption
 {
 private:
@@ -46,7 +46,7 @@ public:
   void SetFloatValue(const double& value) { value_ = value; }
 };
 
-/**Class for basic options*/
+/// Class for basic options
 class BasicOptions
 {
 private:
@@ -55,41 +55,48 @@ private:
 public:
   BasicOptions() = default;
 
-  /**Constructor with initializer list.*/
+  /// Constructor with initializer list.
   BasicOptions(std::initializer_list<BasicOption> options) : options_(options) {}
 
   // Operators
-  /**Returns a constant reference to an option that matches the
-   * requested name. If no name-match is found the method will throw
-   * a std::out_of_range exception.*/
+
+  /**
+   * Returns a constant reference to an option that matches the requested name. If no name-match is
+   * found the method will throw a std::out_of_range exception.
+   */
   const BasicOption& operator()(const std::string& option_name) const;
 
-  /**Returns a constant reference to an option at the given
-   * index. If the index is out of range then a std::out_of_range
-   * exception is thrown. This method can potentially be faster than
-   * the string comparison equivalent.*/
+  /**
+   * Returns a constant reference to an option at the given index. If the index is out of range then
+   * a std::out_of_range exception is thrown. This method can potentially be faster than the string
+   * comparison equivalent.
+   */
   const BasicOption& operator()(size_t index) const;
 
-  /**Returns a non-constant reference to an option that matches the
-   * requested name. If no name-match is found the method will throw
-   * a std::out_of_range exception.*/
+  /**
+   * Returns a non-constant reference to an option that matches the requested name. If no name-match
+   * is found the method will throw a std::out_of_range exception.
+   */
   BasicOption& operator[](const std::string& option_name);
 
-  /**Returns a non-constant reference to an option at the given
-   * index. If the index is out of range then a std::out_of_range
-   * exception is thrown. This method can potentially be faster than
-   * the string comparison equivalent.*/
+  /**
+   * Returns a non-constant reference to an option at the given index. If the index is out of range
+   * then a std::out_of_range exception is thrown. This method can potentially be faster than the
+   * string comparison equivalent.
+   */
   BasicOption& operator[](size_t index);
 
-  /**Adds an option to the options list.*/
+  /// Adds an option to the options list.
   template <typename T>
   void AddOption(const std::string& option_name, const T& value);
 
   // Utilities
-  /**Attempts to find an option that matches the requested name.
-   * If one is found then its corresponding index is
-   * returned. If it is not found then a std::out_of_range
-   * exception is thrown.*/
+
+  /**
+   * Attempts to find an option that matches the requested name. If one is found then its
+   * corresponding index is returned. If it is not found then a std::out_of_range exception is
+   * thrown.
+   */
   size_t GetOptionIndexFromName(const std::string& option_name) const;
 };
 

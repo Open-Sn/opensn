@@ -14,7 +14,7 @@ struct Matrix3x3
 {
   double vals[9];
 
-  /**Creates a zeros matrix of size 3x3.*/
+  /// Creates a zeros matrix of size 3x3.
   Matrix3x3()
   {
     vals[0] = 0.0;
@@ -28,7 +28,8 @@ struct Matrix3x3
     vals[8] = 0.0;
   }
 
-  /**Produces a rotation matrix with a reference vector rotated from the
+  /**
+   * Produces a rotation matrix with a reference vector rotated from the
    * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.
    *
    * By default a rotation matrix that creates no rotation is
@@ -42,7 +43,8 @@ struct Matrix3x3
    * rotation matrix. The supplied vector is therefore the new normal-vector,
    * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,
    * and the bi-norm vector is computed as
-   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$*/
+   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$
+   */
   static Matrix3x3 MakeRotationMatrixFromVector(const Vector3& vec)
   {
     Matrix3x3 R;
@@ -66,7 +68,7 @@ struct Matrix3x3
     return R;
   }
 
-  /**Copy constructor*/
+  /// Copy constructor
   Matrix3x3& operator=(const Matrix3x3& inM)
   {
     for (int k = 0; k < 9; k++)
@@ -74,7 +76,7 @@ struct Matrix3x3
     return *this;
   }
 
-  /**Matrix addition operator.*/
+  /// Matrix addition operator.
   Matrix3x3 operator+(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
@@ -83,7 +85,7 @@ struct Matrix3x3
     return oM;
   }
 
-  /**Matrix subtraction operator.*/
+  /// Matrix subtraction operator.
   Matrix3x3 operator-(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
@@ -92,7 +94,7 @@ struct Matrix3x3
     return oM;
   }
 
-  /**Matrix multiply with scalar.*/
+  /// Matrix multiply with scalar.
   Matrix3x3 operator*(const double value)
   {
     Matrix3x3 oM;
@@ -103,7 +105,7 @@ struct Matrix3x3
     return oM;
   }
 
-  /**Matrix multiply with vector.*/
+  /// Matrix multiply with vector.
   Vector3 operator*(const Vector3& vec) const
   {
     double i_vec[] = {vec.x, vec.y, vec.z};
@@ -120,28 +122,28 @@ struct Matrix3x3
     return oV;
   }
 
-  /**Set value at row i and column j.*/
+  /// Set value at row i and column j.
   void SetIJ(int i, int j, double value)
   {
     int k = j + 3 * i;
     vals[k] = value;
   }
 
-  /**Add value to value at row i and column j.*/
+  /// Add value to value at row i and column j.
   void AddIJ(int i, int j, double value)
   {
     int k = j + 3 * i;
     vals[k] += value;
   }
 
-  /**Obtain a copy of the value at row i and column j.*/
+  /// Obtain a copy of the value at row i and column j.
   double GetIJ(int i, int j) const
   {
     int k = j + 3 * i;
     return vals[k];
   }
 
-  /**Set row i using a vector.*/
+  /// Set row i using a vector.
   void SetRowIVec(int i, Vector3 vec)
   {
     vals[0 + 3 * i] = vec.x;
@@ -149,7 +151,7 @@ struct Matrix3x3
     vals[2 + 3 * i] = vec.z;
   }
 
-  /**Set column j using a vector.*/
+  /// Set column j using a vector.
   void SetColJVec(int j, Vector3 vec)
   {
     vals[j + 3 * 0] = vec.x;
@@ -157,7 +159,7 @@ struct Matrix3x3
     vals[j + 3 * 2] = vec.z;
   }
 
-  /**Sets the diagonal of the matrix.*/
+  /// Sets the diagonal of the matrix.
   void SetDiagonalVec(double a00, double a11, double a22)
   {
     vals[0 + 3 * 0] = a00;
@@ -165,7 +167,7 @@ struct Matrix3x3
     vals[2 + 3 * 2] = a22;
   }
 
-  /**Get the determinant using specified row [default:0].*/
+  /// Get the determinant using specified row [default:0].
   double Det(int row = 0)
   {
     double det = 0.0;
@@ -182,7 +184,7 @@ struct Matrix3x3
     return det;
   }
 
-  /**Get the minor value associated with row ir and column jr.*/
+  /// Get the minor value associated with row ir and column jr.
   double MinorIJ(int ir, int jr)
   {
     double a[] = {0.0, 0.0, 0.0, 0.0};
@@ -207,7 +209,7 @@ struct Matrix3x3
     return a[0] * a[3] - a[2] * a[1];
   }
 
-  /**Compute the matrix transpose.*/
+  /// Compute the matrix transpose.
   Matrix3x3 Transpose()
   {
     Matrix3x3 oM;
@@ -224,7 +226,7 @@ struct Matrix3x3
     return oM;
   }
 
-  /**Compute the matrix transpose.*/
+  /// Compute the matrix transpose.
   Matrix3x3 Inverse()
   {
     Matrix3x3 oM;
@@ -259,7 +261,7 @@ struct Matrix3x3
     return oMT * (1.0 / det);
   }
 
-  /**Outputs the matrix to a stream.*/
+  /// Outputs the matrix to a stream.
   friend std::ostream& operator<<(std::ostream& out, Matrix3x3& inM)
   {
     out << "[";

@@ -3,7 +3,7 @@
 
 #pragma once
 
-/**Functions related to Legendre polynomials.*/
+/// Functions related to Legendre polynomials.
 namespace opensn
 {
 /**

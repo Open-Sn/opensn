@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-/**Object holding a grouping.*/
+/// Object holding a grouping.
 class LBSGroup
 {
 public:

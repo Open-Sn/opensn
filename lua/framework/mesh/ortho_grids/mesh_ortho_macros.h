@@ -6,9 +6,7 @@
 namespace opensnlua
 {
 
-/**
- * Sets boundary numbers on boundaries orthogonal to the cardinal directions.
- */
+/// Sets boundary numbers on boundaries orthogonal to the cardinal directions.
 int MeshSetupOrthogonalBoundaries(lua_State* L);
 
 } // namespace opensnlua

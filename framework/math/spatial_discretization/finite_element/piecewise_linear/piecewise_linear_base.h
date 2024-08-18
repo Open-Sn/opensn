@@ -11,12 +11,15 @@
 namespace opensn
 {
 
-/**Base class for PieceWiseLinear based discretization.
- * \ingroup doc_SpatialDiscretization*/
+/**
+ * Base class for PieceWiseLinear based discretization.
+ *
+ * \ingroup doc_SpatialDiscretization
+ */
 class PieceWiseLinearBase : public FiniteElementBase
 {
 protected:
-  /**Constructor*/
+  /// Constructor
   explicit PieceWiseLinearBase(const MeshContinuum& grid,
                                QuadratureOrder q_order,
                                SpatialDiscretizationType sdm_type,

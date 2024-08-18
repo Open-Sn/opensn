@@ -15,8 +15,8 @@
 
 namespace lbs
 {
-//###################################################################
-/**Sweep chunk for cartesian PWLD discretization Theta-scheme timestepping.*/
+
+/// Sweep chunk for cartesian PWLD discretization Theta-scheme timestepping.
 class SweepChunkPWLTransientTheta : public opensn::SweepChunk
 {
 protected:

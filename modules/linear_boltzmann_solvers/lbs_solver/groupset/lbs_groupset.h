@@ -20,7 +20,7 @@ namespace opensn
 class DiffusionMIPSolver;
 class LBSSolver;
 
-/**Group set functioning as a collection of groups*/
+/// Group set functioning as a collection of groups
 class LBSGroupset : public Object
 {
 public:
@@ -69,23 +69,23 @@ public:
 public:
   static InputParameters GetInputParameters();
 
-  /**Input parameters based constructor.*/
+  /// Input parameters based constructor.
   explicit LBSGroupset(const InputParameters& params, int id, const LBSSolver& lbs_solver);
 
   explicit LBSGroupset(int id);
 
   LBSGroupset();
 
-  /**Computes the discrete to moment operator.*/
+  /// Computes the discrete to moment operator.
   void BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type);
 
-  /**Computes the moment to discrete operator.*/
+  /// Computes the moment to discrete operator.
   void BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type);
 
-  /**Constructs the groupset subsets.*/
+  /// Constructs the groupset subsets.
   void BuildSubsets();
 
-  /**Constructs the groupset subsets.*/
+  /// Constructs the groupset subsets.
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
 
 private:

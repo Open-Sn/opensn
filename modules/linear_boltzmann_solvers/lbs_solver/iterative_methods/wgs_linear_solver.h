@@ -14,7 +14,7 @@
 namespace opensn
 {
 
-/**Linear Solver specialization for Within GroupSet (WGS) solves.*/
+/// Linear Solver specialization for Within GroupSet (WGS) solves.
 class WGSLinearSolver : public LinearSolver
 {
 public:

@@ -27,17 +27,17 @@ std::string ParameterBlockTypeName(ParameterBlockType type);
 
 class ParameterBlock;
 
-/**A ParameterBlock is a conceptually simple data structure that supports
- * a hierarchy of primitive parameters. There really are just 4 member variables
- * on a ParameterBlock object, they are 1) the type (as an enum), 2) the
- * name of the block, 3) a pointer to a value (which can only be a primitive
- * type), and 4) a vector of child parameters.
+/**
+ * A ParameterBlock is a conceptually simple data structure that supports a hierarchy of primitive
+ * parameters. There really are just 4 member variables on a ParameterBlock object, they are 1) the
+ * type (as an enum), 2) the name of the block, 3) a pointer to a value (which can only be a
+ * primitive type), and 4) a vector of child parameters.
  *
- * If a ParameterBlock has a primitive type, i.e., BOOLEAN, FLOAT, STRING, or
- * INTEGER, then the value_ptr will contain a pointer to the value of a
- * primitive type. Otherwise, for types ARRAY and BLOCK, the ParameterBlock
- * will not have a value_ptr and instead the vector member will contain
- * sub-parameters.*/
+ * If a ParameterBlock has a primitive type, i.e., BOOLEAN, FLOAT, STRING, or INTEGER, then the
+ * value_ptr will contain a pointer to the value of a primitive type. Otherwise, for types ARRAY and
+ * BLOCK, the ParameterBlock will not have a value_ptr and instead the vector member will contain
+ * sub-parameters.
+ */
 class ParameterBlock
 {
 private:
@@ -48,7 +48,7 @@ private:
   std::string error_origin_scope_ = "Unknown Scope";
 
 public:
-  /**Sets the name of the block.*/
+  /// Sets the name of the block.
   void SetBlockName(const std::string& name);
 
 public:
@@ -75,10 +75,10 @@ public:
   };
 
   // Constructors
-  /**Constructs an empty parameter block with the given name and type BLOCK.*/
+  /// Constructs an empty parameter block with the given name and type BLOCK.
   explicit ParameterBlock(const std::string& name = "");
 
-  /**Derived type constructor*/
+  /// Derived type constructor
   template <typename T>
   ParameterBlock(const std::string& name, const std::vector<T>& array)
     : type_(ParameterBlockType::ARRAY), name_(name)
@@ -88,7 +88,7 @@ public:
       AddParameter(std::to_string(k++), value);
   }
 
-  /**Constructs one of the fundamental types.*/
+  /// Constructs one of the fundamental types.
   template <typename T>
   explicit ParameterBlock(const std::string& name, T value) : name_(name)
   {
@@ -109,93 +109,105 @@ public:
     value_ptr_ = std::make_unique<Varying>(value);
   }
 
-  /**Copy constructor*/
+  /// Copy constructor
   ParameterBlock(const ParameterBlock& other);
 
-  /**Copy assignment operator*/
+  /// Copy assignment operator
   ParameterBlock& operator=(const ParameterBlock& other);
 
-  /**Move constructor*/
+  /// Move constructor
   ParameterBlock(ParameterBlock&& other) noexcept;
 
-  /**Move assignment operator*/
+  /// Move assignment operator
   ParameterBlock& operator=(ParameterBlock&& other) noexcept;
 
   // Accessors
   ParameterBlockType Type() const;
-  /**Returns true if the parameter block comprises a single value of any of
-   * the types BOOLEAN, FLOAT, STRING, INTEGER.*/
+
+  /**
+   * Returns true if the parameter block comprises a single value of any of the types BOOLEAN,
+   * FLOAT, STRING, INTEGER.
+   */
   bool IsScalar() const;
-  /**Returns a string version of the type.*/
+
+  /// Returns a string version of the type.
   std::string TypeName() const;
   std::string Name() const;
   const Varying& Value() const;
-  /**Returns the number of parameters in a block. This is normally
-   * only useful for the ARRAY type.*/
+
+  /// Returns the number of parameters in a block. This is normally only useful for the ARRAY type.
   size_t NumParameters() const;
-  /**Returns the sub-parameters of this block.*/
+
+  /// Returns the sub-parameters of this block.
   const std::vector<ParameterBlock>& Parameters() const;
-  /**Returns whether or not the block has a value. If this block has
-   * sub-parameters it should not have a value. This is a good way to
-   * check if the block is actually a single value because some
-   * Parameter blocks can be passed as empty.*/
+
+  /**
+   * Returns whether or not the block has a value. If this block has sub-parameters it should not
+   * have a value. This is a good way to check if the block is actually a single value because some
+   * Parameter blocks can be passed as empty.
+   */
   bool HasValue() const;
 
   // Mutators
-  /**Changes the block type to array, making it accessible via integer
-   * keys.*/
+
+  /// Changes the block type to array, making it accessible via integer keys.
   void ChangeToArray();
 
-  /**Sets a string to be displayed alongside exceptions that give some
-   * notion of the origin of the error.*/
+  /// Sets a string to be displayed alongside exceptions that give some notion of the origin of the
+  /// error.
   void SetErrorOriginScope(const std::string& scope);
 
-  /**Gets a string that allows error messages to print the scope of an
-   * error.*/
+  /// Gets a string that allows error messages to print the scope of an error.
   std::string GetErrorOriginScope() const { return error_origin_scope_; }
 
   // Requirements
-  /**Checks that the block is of the given type. If it is not it
-   * will throw an exception `std::logic_error`.*/
+
+  /**
+   * Checks that the block is of the given type. If it is not it will throw an exception
+   * `std::logic_error`.
+   */
   void RequireBlockTypeIs(ParameterBlockType type) const;
   void RequireParameterBlockTypeIs(const std::string& param_name, ParameterBlockType type) const
   {
     GetParam(param_name).RequireBlockTypeIs(type);
   }
-  /**Check that the parameter with the given name exists otherwise
-   * throws a `std::logic_error`.*/
+
+  /// Check that the parameter with the given name exists otherwise throws a `std::logic_error`.
   void RequireParameter(const std::string& param_name) const;
 
   // utilities
-  /**Adds a parameter to the sub-parameter list.*/
+
+  /// Adds a parameter to the sub-parameter list.
   void AddParameter(ParameterBlock block);
-  /**Makes a ParameterBlock and adds it to the sub-parameters list.*/
+
+  /// Makes a ParameterBlock and adds it to the sub-parameters list.
   template <typename T>
   void AddParameter(const std::string& name, T value)
   {
     AddParameter(ParameterBlock(name, value));
   }
 
-  /**Sorts the sub-parameter list according to name. This is useful
-   * for regression testing.*/
+  /// Sorts the sub-parameter list according to name. This is useful for regression testing.
   void SortParameters();
 
-  /**Returns true if a parameter with the specified name is in the
-   * list of sub-parameters. Otherwise, false.*/
+  /// Returns true if a parameter with the specified name is in the list of sub-parameters.
+  /// Otherwise, false.
   bool Has(const std::string& param_name) const;
 
-  /**Gets a parameter by name.*/
+  /// Gets a parameter by name.
   ParameterBlock& GetParam(const std::string& param_name);
-  /**Gets a parameter by index.*/
+
+  /// Gets a parameter by index.
   ParameterBlock& GetParam(size_t index);
 
-  /**Gets a parameter by name.*/
+  /// Gets a parameter by name.
   const ParameterBlock& GetParam(const std::string& param_name) const;
-  /**Gets a parameter by index.*/
+
+  /// Gets a parameter by index.
   const ParameterBlock& GetParam(size_t index) const;
 
 public:
-  /**Returns the value of the parameter.*/
+  /// Returns the value of the parameter.
   template <typename T>
   T GetValue() const
   {
@@ -213,7 +225,7 @@ public:
     }
   }
 
-  /**Fetches the parameter with the given name and returns it value.*/
+  /// Fetches the parameter with the given name and returns it value.
   template <typename T>
   T GetParamValue(const std::string& param_name) const
   {
@@ -229,8 +241,10 @@ public:
     }
   }
 
-  /**Converts the parameters of an array-type parameter block to a vector of
-   * primitive types and returns it.*/
+  /**
+   * Converts the parameters of an array-type parameter block to a vector of primitive types and
+   * returns it.
+   */
   template <typename T>
   std::vector<T> GetVectorValue() const
   {
@@ -266,8 +280,8 @@ public:
     return vec;
   }
 
-  /**Gets a vector of primitive types from an array-type parameter block
-   * specified as a parameter of the current block.*/
+  /// Gets a vector of primitive types from an array-type parameter block specified as a parameter
+  /// of the current block.
   template <typename T>
   std::vector<T> GetParamVectorValue(const std::string& param_name) const
   {
@@ -332,11 +346,13 @@ public:
   const_iterator begin() const { return {*this, 0}; }
   const_iterator end() const { return {*this, parameters_.size()}; }
 
-  /**Given a reference to a string, recursively travels the parameter
-   * tree and print values into the reference string.*/
+  /**
+   * Given a reference to a string, recursively travels the parameter tree and print values into
+   * the reference string.
+   */
   void RecursiveDumpToString(std::string& outstr, const std::string& offset = "") const;
 
-  /**Print the block tree structure into a designated string.*/
+  /// Print the block tree structure into a designated string.
   void RecursiveDumpToJSON(std::string& outstr) const;
 };
 

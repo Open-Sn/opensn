@@ -21,77 +21,102 @@ class SpatialDiscretization
 public:
   const UnknownManager UNITARY_UNKNOWN_MANAGER;
 
-  /**Utility method for getting node indices seperately for domain internal
-   * local nodes, and boundary nodes.*/
+  /**
+   * Utility method for getting node indices seperately for domain internal local nodes, and
+   * boundary nodes.
+   */
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
   MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
   const CellMapping& GetCellMapping(const Cell& cell) const;
   SpatialDiscretizationType Type() const;
-  /**Returns the reference grid on which this discretization is based.*/
+
+  /// Returns the reference grid on which this discretization is based.
   const MeshContinuum& Grid() const;
+
   CoordinateSystemType GetCoordinateSystemType() const;
 
-  /**Builds the sparsity pattern for a local block matrix compatible with
-   * the given unknown manager. The modified vectors are: `nodal_nnz_in_diag`
-   * which specifies for each row the number of non-zeros in the local diagonal
-   * block, `nodal_nnz_off_diag` which specifies for each row the number of
-   * non-zeros in the off-diagonal block.*/
+  /**
+   * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.
+   * The modified vectors are: `nodal_nnz_in_diag` which specifies for each row the number of
+   * non-zeros in the local diagonal block, `nodal_nnz_off_diag` which specifies for each row the
+   * number of non-zeros in the off-diagonal block.
+   */
   virtual void BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                     std::vector<int64_t>& nodal_nnz_off_diag,
                                     const UnknownManager& unknown_manager) const = 0;
 
-  /**Maps the global address of a degree of freedom.*/
+  /// Maps the global address of a degree of freedom.
   virtual int64_t MapDOF(const Cell& cell,
                          unsigned int node,
                          const UnknownManager& unknown_manager,
                          unsigned int unknown_id,
                          unsigned int component) const = 0;
 
-  /**Maps the local address of a degree of freedom. This can include
-   * ghost entries if the specific discretization has any.*/
+  /// Maps the local address of a degree of freedom. This can include ghost entries if the specific
+  /// discretization has any.
   virtual int64_t MapDOFLocal(const Cell& cell,
                               unsigned int node,
                               const UnknownManager& unknown_manager,
                               unsigned int unknown_id,
                               unsigned int component) const = 0;
 
-  /**Maps the local address of a degree of freedom. This can include
-   * ghost entries if the specific discretization has any. Default structure
-   * here is a single scalar unknown.*/
+  /**
+   * Maps the local address of a degree of freedom. This can include ghost entries if the specific
+   * discretization has any. Default structure here is a single scalar unknown.
+   */
   virtual int64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
-  /**Maps the local address of a degree of freedom. This can include
-   * ghost entries if the specific discretization has any. Default structure
-   * here is a single scalar unknown.*/
+
+  /**
+   * Maps the local address of a degree of freedom. This can include ghost entries if the specific
+   * discretization has any. Default structure here is a single scalar unknown.
+   */
   virtual int64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
-  /**For the unknown structure in the unknown manager, returns the
-   * number of local degrees-of-freedom.*/
+  /**
+   * For the unknown structure in the unknown manager, returns the number of local
+   * degrees-of-freedom.
+   */
   size_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
-  /**For the unknown structure in the unknown manager, returns the
-   * number of global degrees-of-freedom.*/
+
+  /**
+   * For the unknown structure in the unknown manager, returns the number of global
+   * degrees-of-freedom.
+   */
   size_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
 
-  /**For the unknown structure in the unknown manager, returns the
-   * number of ghost degrees-of-freedom.*/
+  /**
+   * For the unknown structure in the unknown manager, returns the number of ghost
+   * degrees-of-freedom.
+   */
   virtual size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
-  /**For the unknown structure in the unknown manager, returns the
-   * global IDs of all the ghost degrees-of-freedom.*/
+
+  /**
+   *For the unknown structure in the unknown manager, returns the global IDs of all the ghost
+   * degrees-of-freedom.
+   */
   virtual std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
 
-  /**For the unknown structure in the unknown manager, returns the
-   * number of local- and ghost degrees-of-freedom.*/
+  /**
+   * For the unknown structure in the unknown manager, returns the number of local- and ghost
+   * degrees-of-freedom.
+   */
   size_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
 
-  /**For the given cell, returns the number of relevant nodes. The same can
-   * be achieved by retrieving the cell-to-element mapping first.*/
+  /**
+   * For the given cell, returns the number of relevant nodes. The same can be achieved by
+   * retrieving the cell-to-element mapping first.
+   */
   size_t GetCellNumNodes(const Cell& cell) const;
 
-  /**For the given cell, returns a reference to the relevant node locations.
-   * The same can be achieved by retrieving the cell-to-element mapping first.*/
+  /**
+   * For the given cell, returns a reference to the relevant node locations. The same can be
+   * achieved by retrieving the cell-to-element mapping first.
+   */
   const std::vector<Vector3>& GetCellNodeLocations(const Cell& cell) const;
 
-  /**For each cell, for each face of that cell, for each node on that face, maps to which local
+  /**
+   * For each cell, for each face of that cell, for each node on that face, maps to which local
    * node on the adjacent cell that node position corresponds.
    *
    * \param tolerance double. Tolerance to use to determine if two node locations are
@@ -149,30 +174,33 @@ public:
                                   const UnknownManager& to_vec_uk_structure,
                                   unsigned int to_vec_uk_id) const;
 
-  /**Develops a localized view of a petsc vector.
-   * Each spatial discretization can have a specialization of this
-   * method.*/
+  /**
+   * Develops a localized view of a petsc vector. Each spatial discretization can have a
+   * specialization of this method.
+   */
   virtual void LocalizePETScVector(Vec petsc_vector,
                                    std::vector<double>& local_vector,
                                    const UnknownManager& unknown_manager) const;
-  /**Develops a localized view of a petsc vector.
-   * Each spatial discretization can have a specialization of this
-   * method.*/
+  /**
+   * Develops a localized view of a petsc vector. Each spatial discretization can have a
+   * specialization of this method.
+   */
   virtual void LocalizePETScVectorWithGhosts(Vec petsc_vector,
                                              std::vector<double>& local_vector,
                                              const UnknownManager& unknown_manager) const;
 
-  /**Cartesian coordinate system spatial weighting function.*/
+  /// Cartesian coordinate system spatial weighting function.
   static double CartesianSpatialWeightFunction(const Vector3& point);
-  /**Cylindrical coordinate system (RZ) spatial weighting function.*/
+
+  /// Cylindrical coordinate system (RZ) spatial weighting function.
   static double CylindricalRZSpatialWeightFunction(const Vector3& point);
-  /**Spherical coordinate system (1D Spherical) spatial weighting function.*/
+
+  /// Spherical coordinate system (1D Spherical) spatial weighting function.
   static double Spherical1DSpatialWeightFunction(const Vector3& point);
 
   using SpatialWeightFunction = std::function<double(const Vector3&)>;
 
-  /**Returns the spatial weighting function appropriate to the discretization's
-   * coordinate system.*/
+  /// Returns the spatial weighting function appropriate to the discretization's coordinate system.
   SpatialWeightFunction GetSpatialWeightingFunction() const;
 
   virtual ~SpatialDiscretization() = default;
@@ -198,4 +226,5 @@ protected:
 private:
   const SpatialDiscretizationType type_;
 };
+
 } // namespace opensn

@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-/**Spherical logical volume.*/
+/// Spherical logical volume.
 class SphereLogicalVolume : public LogicalVolume
 {
 public:

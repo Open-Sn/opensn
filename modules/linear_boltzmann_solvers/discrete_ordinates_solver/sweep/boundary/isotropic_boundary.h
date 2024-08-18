@@ -12,9 +12,7 @@
 namespace opensn
 {
 
-/**
- * Specified isotropic incident fluxes on a boundary.
- */
+/// Specified isotropic incident fluxes on a boundary.
 class IsotropicBoundary : public SweepBoundary
 {
 private:

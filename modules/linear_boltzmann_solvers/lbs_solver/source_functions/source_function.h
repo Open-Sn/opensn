@@ -14,9 +14,11 @@ namespace opensn
 class LBSSolver;
 class LBSGroupset;
 
-/**Implements a customizable source function using virtual methods.
+/**
+ * Implements a customizable source function using virtual methods.
  * This base class will function well for steady simulations and kEigenvalue
- * simulations. It needs some customization for adjoint and transient.*/
+ * simulations. It needs some customization for adjoint and transient.
+ */
 class SourceFunction
 {
 protected:
@@ -40,11 +42,12 @@ protected:
   std::vector<double> default_zero_src_;
 
 public:
-  /**Constructor.*/
+  /// Constructor.
   explicit SourceFunction(const LBSSolver& lbs_solver);
   virtual ~SourceFunction() = default;
 
-  /**Sets the source moments for the groups in the current group set.
+  /**
+   * Sets the source moments for the groups in the current group set.
    *
    * \param groupset The groupset the under consideration.
    * \param q A vector to contribute the source to.
@@ -54,7 +57,6 @@ public:
    *        destination vector. Available flags are for applying
    *        the material source, across/within-group scattering,
    *        and across/within-groups fission.
-   *
    */
   virtual void operator()(const LBSGroupset& groupset,
                           std::vector<double>& q,
@@ -65,7 +67,7 @@ public:
   virtual double AddSourceMoments() const;
 
   using PrecursorList = std::vector<MultiGroupXS::Precursor>;
-  /**Adds delayed particle precursor sources.*/
+  /// Adds delayed particle precursor sources.
   virtual double AddDelayedFission(const PrecursorList& precursors,
                                    const double& rho,
                                    const std::vector<double>& nu_delayed_sigma_f,
@@ -80,13 +82,13 @@ public:
     AddVolumetricSources(groupset, q, phi, source_flags);
   }
 
-  /**Adds point sources to the source moments.*/
+  /// Adds point sources to the source moments.
   void AddPointSources(const LBSGroupset& groupset,
                        std::vector<double>& q,
                        const std::vector<double>& phi,
                        SourceFlags source_flags);
 
-  /**Adds volumetric sources to the source moments.*/
+  /// Adds volumetric sources to the source moments.
   void AddVolumetricSources(const LBSGroupset& groupset,
                             std::vector<double>& q,
                             const std::vector<double>& phi,

@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-/**Different types of variables.*/
+/// Different types of variables.
 enum class UnknownType
 {
   SCALAR = 1,
@@ -20,14 +20,14 @@ enum class UnknownType
   TENSOR = 5
 };
 
-/**Nodal variable storage format.*/
+/// Nodal variable storage format.
 enum class UnknownStorageType
 {
   NODAL = 1,
   BLOCK = 2
 };
 
-/**Basic class for an variable.*/
+/// Basic class for an variable.
 class Unknown
 {
 public:
@@ -112,8 +112,7 @@ public:
   unsigned int NumComponents() const { return num_components_; }
 };
 
-/**General object for the management of unknowns in mesh-based
- * mathematical model.*/
+/// General object for the management of unknowns in mesh-based mathematical model.
 class UnknownManager
 {
 private:
@@ -184,31 +183,33 @@ public:
 
   void Clear() { unknowns_.clear(); }
 
-  /**Adds an unknown to the manager. This method will figure out
-   * where the last unknown ends and where to begin the next one.*/
+  /**
+   * Adds an unknown to the manager. This method will figure out where the last unknown ends and
+   * where to begin the next one.
+   */
   unsigned int AddUnknown(UnknownType unk_type, unsigned int dimension = 0);
 
-  /**Maps the unknown's component within the storage of a node.*/
+  /// Maps the unknown's component within the storage of a node.
   unsigned int MapUnknown(unsigned int unknown_id, unsigned int component = 0) const;
 
-  /**Determines the total number of components over all unknowns.*/
+  /// Determines the total number of components over all unknowns.
   unsigned int GetTotalUnknownStructureSize() const;
 
-  /**Sets the number of off block connections for the given unknown.
-   * All the components will be set to the same amount.*/
+  /**
+   * Sets the number of off block connections for the given unknown. All the components will be set
+   * to the same amount.
+   */
   void SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn);
 
-  /**Sets the number of off block connections for the given unknown-
-   * component pair.*/
+  /// Sets the number of off block connections for the given unknown-component pair.
   void SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
                                                  unsigned int component,
                                                  int num_conn);
 
-  /**Sets a text name for the indicated unknown.*/
+  /// Sets a text name for the indicated unknown
   void SetUnknownTextName(unsigned int unknown_id, const std::string& text_name);
 
-  /**Sets the text name to be associated with each component of the
-   * unknown.*/
+  /// Sets the text name to be associated with each component of the unknown.
   void SetUnknownComponentTextName(unsigned int unknown_id,
                                    unsigned int component,
                                    const std::string& text_name);

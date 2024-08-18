@@ -15,9 +15,9 @@ public:
 
   /// Deleted copy constructor
   SystemWideEventPublisher(const SystemWideEventPublisher&) = delete;
-  SystemWideEventPublisher
+
   /// Deleted assignment operator
-  operator=(const SystemWideEventPublisher&) = delete;
+  SystemWideEventPublisher operator=(const SystemWideEventPublisher&) = delete;
 
   void PublishEvent(const Event& event) override;
 

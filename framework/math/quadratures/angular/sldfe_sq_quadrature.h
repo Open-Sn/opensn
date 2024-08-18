@@ -20,21 +20,25 @@ struct SphericalQuadrilateral;
 struct FUNCTION_WEIGHT_FROM_RHO;
 class Quadrature;
 
-/**Base Functor to inherit from to change the function
- * to integrate in one of the integration utilities.*/
+/**
+ * Base Functor to inherit from to change the function to integrate in one of the integration
+ * utilities.
+ */
 struct BaseFunctor
 {
   virtual double operator()(double mu, double eta, double xi) { return 0.0; }
 };
 } // namespace SimplifiedLDFESQ
 
-/**Serves as a general data structure for a
- * spherical quadrilateral (SQ).*/
+/// Serves as a general data structure for a spherical quadrilateral (SQ).
 struct SimplifiedLDFESQ::SphericalQuadrilateral
 {
-  std::array<Vector3, 4> vertices_xy_tilde;  ///< On square
-  std::array<Vector3, 4> vertices_xyz_prime; ///< On cube face
-  std::array<Vector3, 4> vertices_xyz;       ///< On unit sphere
+  /// On square
+  std::array<Vector3, 4> vertices_xy_tilde;
+  /// On cube face
+  std::array<Vector3, 4> vertices_xyz_prime;
+  /// On unit sphere
+  std::array<Vector3, 4> vertices_xyz;
   Vector3 centroid_xyz;
 
   Matrix3x3 rotation_matrix;
@@ -48,7 +52,7 @@ struct SimplifiedLDFESQ::SphericalQuadrilateral
   Vector3 octant_modifier;
 };
 
-/** Piecewise-linear Finite element quadrature using quadrilaterals.*/
+/// Piecewise-linear Finite element quadrature using quadrilaterals.
 class SimplifiedLDFESQ::Quadrature : public AngularQuadrature
 {
 public:
@@ -63,7 +67,8 @@ public:
   std::string output_filename_prefix_;
 
 private:
-  static constexpr double a = 0.57735026919; ///< Inscribed cude side length
+  /// Inscribed cude side length
+  static constexpr double a = 0.57735026919;
   int initial_level_ = 0;
   std::vector<Vector3> diagonal_vertices_;
   std::vector<SphericalQuadrilateral> initial_octant_SQs_;
@@ -80,32 +85,22 @@ public:
 
   virtual ~Quadrature() {}
 
-  /**
-   * Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.
-   */
+  /// Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.
   void GenerateInitialRefinement(int level);
 
 private:
-  /**
-   * Generates diagonal spacings.
-   */
+  /// Generates diagonal spacings.
   void GenerateDiagonalSpacings(int level);
 
-  /**
-   * Generates the standard points on the reference face.
-   */
+  /// Generates the standard points on the reference face.
   void GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix,
                                      const Vector3& translation,
                                      int level);
 
-  /**
-   * Develops LDFE quantities.
-   */
+  /// Develops LDFE quantities.
   void DevelopSQLDFEValues(SphericalQuadrilateral& sq, GaussLegendreQuadrature& legendre);
 
-  /**
-   * Applies empirical quadrature point optimization.
-   */
+  /// Applies empirical quadrature point optimization.
   void EmpiricalQPOptimization(SphericalQuadrilateral& sq,
                                GaussLegendreQuadrature& legendre,
                                Vector3& sq_xy_tilde_centroid,
@@ -124,69 +119,50 @@ private:
    */
   static double ComputeSphericalQuadrilateralArea(std::array<Vector3, 4>& vertices_xyz);
 
-  /**
-   * Integrates shape functions to produce weights.
-   */
+  /// Integrates shape functions to produce weights.
   static std::array<double, 4>
   IntegrateLDFEShapeFunctions(const SphericalQuadrilateral& sq,
                               std::array<DynamicVector<double>, 4>& shape_coeffs,
                               const std::vector<Vector3>& legendre_qpoints,
                               const std::vector<double>& legendre_qweights);
 
-  /**
-   * Deploys the current set of SQs to all octants.
-   */
+  /// Deploys the current set of SQs to all octants.
   void CopyToAllOctants();
 
-  /**
-   * Populates the quadrature abscissaes, weights and direction vectors.
-   */
+  /// Populates the quadrature abscissaes, weights and direction vectors.
   void PopulateQuadratureAbscissae();
 
 private:
-  /**
-   * Performs a simple Riemann integral of a base functor.
-   */
+  /// Performs a simple Riemann integral of a base functor.
   double RiemannIntegral(BaseFunctor* F, int Ni = 20000);
 
-  /**
-   * Performs a quadrature integral of a base functor using the
-   * supplied SQs.
-   */
+  /// Performs a quadrature integral of a base functor using the supplied SQs.
   double QuadratureSSIntegral(BaseFunctor* F);
 
 public:
-  /**
-   * Performs a test integration of predefined cases.
-   */
+  /// Performs a test integration of predefined cases.
   void TestIntegration(int test_case, double ref_solution, int RiemannN = 0);
 
 public:
-  /**
-   * Prints the quadrature to file.
-   */
+  /// Prints the quadrature to file.
   void PrintQuadratureToFile();
 
 public:
-  /**
-   * Locally refines the cells.
-   */
+  /// Locally refines the cells.
   void LocallyRefine(const Vector3& ref_dir,
                      const double cone_size,
                      const bool dir_as_plane_normal = false);
 
 private:
-  /**
-   * Split a SQ.
-   */
+  /// Split a SQ.
   std::array<SphericalQuadrilateral, 4> SplitSQ(SphericalQuadrilateral& sq,
                                                 GaussLegendreQuadrature& legendre);
 };
 
-/**This is a utility function that encapsulates
- * all the necessary functionality to determine shape
- * function coefficients and integrate accross a
- * spherical quadrilateral.*/
+/**
+ * This is a utility function that encapsulates all the necessary functionality to determine shape
+ * function coefficients and integrate accross a spherical quadrilateral.
+ */
 struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
 {
   Quadrature& sldfesq;
@@ -227,9 +203,10 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
     }
   }
 
-  /**Computes the quadrature point locations
-   * from rho, followed by the shape-function coefficients and
-   * then the integral of the shape function to get the weights.*/
+  /**
+   * Computes the quadrature point locations from rho, followed by the shape-function coefficients
+   * and then the integral of the shape function to get the weights.
+   */
   std::array<double, 4> operator()(const DynamicVector<double>& rho)
   {
     // Determine qpoints from rho

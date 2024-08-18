@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-/**Data structure for a triangular face.*/
+/// Data structure for a triangular face.
 struct Face
 {
   int v_index[3];
@@ -68,27 +68,25 @@ struct Face
   }
 };
 
-// ######################################################### Struct
-/**Data structure for a polygon face.
-
- edges\n
- An array of 4 integers.\n
- [0] = Vertex index of edge start.\n
- [1] = Vertex index of edge end.\n
- [2] = Index of the face adjoining this edge (not the current face).
-       -1 if not connected to anything,-1*boundary_index if connected
-       to a boundary.\n
- [3] = Edge number of adjoining face. -1 if not connected
-       to anything. 0 if a boundary.\n
-   \n
-   \n
-  face_indices\n
-  [0] = Index of the adjoining cell. -1 if not connected to anything.
-        -1*boundary_index if connected to a boundary.\n
-  [1] = Face number of adjoining cell. -1 if not connected
-       to anything. 0 if a boundary.\n
-  [2] = Partition ID of adjecent cell.\n
-
+/**
+ * Data structure for a polygon face.
+ *
+ * edges
+ * An array of 4 integers.
+ * [0] = Vertex index of edge start.
+ * [1] = Vertex index of edge end.
+ * [2] = Index of the face adjoining this edge (not the current face).
+ *       -1 if not connected to anything,-1*boundary_index if connected
+ *       to a boundary.
+ * [3] = Edge number of adjoining face. -1 if not connected
+ *       to anything. 0 if a boundary.
+ *
+ * face_indices
+ *  [0] = Index of the adjoining cell. -1 if not connected to anything.
+ *        -1*boundary_index if connected to a boundary.
+ *  [1] = Face number of adjoining cell. -1 if not connected
+ *       to anything. 0 if a boundary.
+ *  [2] = Partition ID of adjecent cell.
  */
 struct PolyFace
 {

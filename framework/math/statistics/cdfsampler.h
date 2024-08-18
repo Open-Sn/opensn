@@ -6,7 +6,8 @@
 namespace opensn
 {
 
-/**Object for implementing an efficient cdf sampler.
+/**
+ * Object for implementing an efficient cdf sampler.
  *
  * Normal linear sampling of bins of a Cumulative Distribution Function
  * is O(N) for each sample which can lead to very expensive sampling
@@ -20,11 +21,11 @@ namespace opensn
  * sure to initialize it outside the phases that will repeatedly sample
  * it because it has some over-head to it that gets executed in the constructor.
  *
- \code
- CDFSampler sampler(cdf);
- \endcode
+ * \code
+ * CDFSampler sampler(cdf);
+ * \endcode
  *
- * */
+ */
 class CDFSampler
 {
 public:
@@ -39,17 +40,16 @@ private:
   std::vector<std::shared_ptr<SubIntvl>> sub_intvls_;
 
 public:
-  /** constructor.*/
+  /// constructor.
   CDFSampler(std::vector<double>& cdf,
              int subdiv_factor = AUTO_SUBDIV,
              int final_res = AUTO_FINERES);
 
-  /**Initiates the sampling process.*/
+  /// Initiates the sampling process.
   int Sample(double x);
 };
 
-// ###################################################################
-/**Sub-structure for sub-intervals*/
+/// Sub-structure for sub-intervals
 struct CDFSampler::SubIntvl
 {
   int cbin_i;
@@ -61,7 +61,7 @@ struct CDFSampler::SubIntvl
 
   std::string offset;
 
-  /**Constructor for a sub interval*/
+  /// Constructor for a sub interval
   SubIntvl(std::string offset,
            int ibin,
            int fbin,
@@ -70,7 +70,7 @@ struct CDFSampler::SubIntvl
            int final_res = 10,
            bool inhibit = false);
 
-  /**Sampling a sub-interval.*/
+  /// Sampling a sub-interval.
   bool Sample(double x, std::pair<int, int>& range);
 };
 

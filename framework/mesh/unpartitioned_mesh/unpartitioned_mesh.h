@@ -12,9 +12,7 @@
 namespace opensn
 {
 
-/**
- * This object is intended for unpartitioned meshes that still require partitioning.
- */
+/// This object is intended for unpartitioned meshes that still require partitioning.
 class UnpartitionedMesh
 {
 public:
@@ -93,24 +91,16 @@ public:
   const std::vector<Vector3>& Vertices() const { return vertices_; }
   std::vector<Vector3>& Vertices() { return vertices_; }
 
-  /**
-   * Establishes neighbor connectivity for the light-weight mesh.
-   */
+  /// Establishes neighbor connectivity for the light-weight mesh.
   void BuildMeshConnectivity();
 
-  /**
-   * Compute centroids for all cells.
-   */
+  /// Compute centroids for all cells.
   void ComputeCentroids();
 
-  /**
-   * Check element quality
-   */
+  /// Check element quality
   void CheckQuality();
 
-  /**
-   * Makes or gets a boundary that uniquely identifies the given name.
-   */
+  /// Makes or gets a boundary that uniquely identifies the given name.
   uint64_t MakeBoundaryID(const std::string& boundary_name);
 
   void AddBoundary(uint64_t id, const std::string& name);
@@ -121,7 +111,7 @@ public:
   void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
   const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
 
-  /**Makes a cell from proxy information and pushes the cell to the mesh.*/
+  /// Makes a cell from proxy information and pushes the cell to the mesh.
   void PushProxyCell(const std::string& type_str,
                      const std::string& sub_type_str,
                      int cell_num_faces,

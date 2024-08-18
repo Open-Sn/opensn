@@ -18,40 +18,40 @@ namespace opensn
  * configurations of interest in Lua. With this, the user can now iterate over the source
  * configurations in Lua and convolve them against all available adjoint solutions in the buffer.
  * For example,
- \code
-    buffers = {
-        {
-            buffer1,
-            buffer2,
-            ...,
-            bufferN
-        }
-    }
-
-    sources = {
-        {
-            source1,
-            source2,
-            ...,
-            sourceM
-        }
-    }
-
-    evaluator = lbs.ResponseEvaluator.Create({ lbs_solver_handle = phys })
-    lbs.AddResponseBuffers(evaluator, buffers)
-
-    responses = {}
-    for i = 1, M do
-        lbs.ClearResponseSources(evaluator)
-        lbs.AddResponseSources(evaluator, sources[i])
-
-        responses[i] = {}
-        for j = 1, N do
-            responses[i][buffer_name[j]] =
-                lbs.EvaluateResponse(evaluator, buffer_name[j])
-        end
-    end
- \endcode
+ * \code
+ *    buffers = {
+ *        {
+ *            buffer1,
+ *            buffer2,
+ *            ...,
+ *            bufferN
+ *        }
+ *    }
+ *
+ *    sources = {
+ *        {
+ *            source1,
+ *            source2,
+ *            ...,
+ *            sourceM
+ *        }
+ *    }
+ *
+ *    evaluator = lbs.ResponseEvaluator.Create({ lbs_solver_handle = phys })
+ *    lbs.AddResponseBuffers(evaluator, buffers)
+ *
+ *    responses = {}
+ *    for i = 1, M do
+ *        lbs.ClearResponseSources(evaluator)
+ *        lbs.AddResponseSources(evaluator, sources[i])
+ *
+ *        responses[i] = {}
+ *        for j = 1, N do
+ *            responses[i][buffer_name[j]] =
+ *                lbs.EvaluateResponse(evaluator, buffer_name[j])
+ *        end
+ *    end
+ * \endcode
  */
 class ResponseEvaluator : public Object
 {
@@ -82,14 +82,12 @@ public:
 
   void SetBoundarySourceOptions(const InputParameters& params);
 
-  /**
-   * Clear the existing forward sources from the response evaluator.
-   */
+  /// Clear the existing forward sources from the response evaluator.
   void ClearForwardSources();
 
   /**
-   * Evaluate a response using the specified adjoint buffer with the currently
-   * defined sources in the solver.
+   * Evaluate a response using the specified adjoint buffer with the currently defined sources in
+   * the solver.
    */
   double EvaluateResponse(const std::string& buffer_name) const;
 
