@@ -260,34 +260,8 @@ public:
   /// Read phi_old from restart file.
   void ReadRestartData();
 
-  /// Writes a full angular flux vector to file.
-  void WriteAngularFluxes(const std::vector<std::vector<double>>& src,
-                          const std::string& file_base) const;
-
-  /// Reads a full angular flux vector from a file into the specified vector.
-  void ReadAngularFluxes(const std::string& file_base,
-                         std::vector<std::vector<double>>& dest) const;
-
-  /// Writes a groupset angular flux vector to file.
-  void WriteGroupsetAngularFluxes(const LBSGroupset& groupset,
-                                  const std::vector<double>& src,
-                                  const std::string& file_base) const;
-
-  /// Reads the groupset angular fluxes from a file into the specified vector.
-  void ReadGroupsetAngularFluxes(const std::string& file_base,
-                                 const LBSGroupset& groupset,
-                                 std::vector<double>& dest) const;
-
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();
-
-  /// Writes a given flux moments vector to file.
-  void WriteFluxMoments(const std::vector<double>& src, const std::string& file_base) const;
-
-  /// Reads a flux moments vector from a file into the specified vector.
-  void ReadFluxMoments(const std::string& file_base,
-                       std::vector<double>& dest,
-                       bool single_file = false) const;
 
   /// Copy relevant section of phi_old to the field functions.
   void UpdateFieldFunctions();
