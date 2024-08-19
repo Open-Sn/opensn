@@ -257,7 +257,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
             q[dof_map + g] += src[g];
         } // for node i
       }   // for subscriber
-    }     // for distributed source
+    }     // for volumetric source
   }
 }
 

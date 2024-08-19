@@ -163,7 +163,7 @@ ResponseEvaluator::SourceOptionsBlock()
     "point", {}, "An array of tables containing point source handles.");
 
   params.AddOptionalParameterArray(
-    "distributed", {}, "An array of tables containing distributed source handles.");
+    "volumetric", {}, "An array of tables containing volumetric source handles.");
 
   params.AddOptionalParameterArray(
     "boundary", {}, "An array of tables containing boundary source specifications.");
@@ -201,10 +201,10 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
     }
   }
 
-  // Add distributed sources
-  if (params.Has("distributed"))
+  // Add volumetric sources
+  if (params.Has("volumetric"))
   {
-    const auto& user_dsrc_params = params.GetParam("distributed");
+    const auto& user_dsrc_params = params.GetParam("volumetric");
     for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
     {
       volumetric_sources_.push_back(GetStackItem<VolumetricSource>(
@@ -308,7 +308,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If point sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
   OpenSnLogicalErrorIf(not volumetric_sources_.empty() and phi_dagger.empty(),
-                       "if distributed sources are set, adjoint flux moments "
+                       "if volumetric sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
   OpenSnLogicalErrorIf(not boundary_sources_.empty() and psi_dagger.empty(),
                        "If boundary sources are set, adjoint angular fluxes "
@@ -421,9 +421,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       } // for node i
     }   // for subscriber
 
-  // Distributed sources
-  for (const auto& distributed_source : volumetric_sources_)
-    for (const uint64_t local_id : distributed_source.GetSubscribers())
+  // Volumetric sources
+  for (const auto& volumetric_source : volumetric_sources_)
+    for (const uint64_t local_id : volumetric_source.GetSubscribers())
     {
       const auto& cell = grid.local_cells[local_id];
       const auto& transport_view = transport_views[cell.local_id_];
@@ -435,7 +435,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       {
         const auto& V_i = fe_values.intV_shapeI[i];
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = distributed_source(cell, nodes[i], num_groups);
+        const auto& vals = volumetric_source(cell, nodes[i], num_groups);
         for (size_t g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
