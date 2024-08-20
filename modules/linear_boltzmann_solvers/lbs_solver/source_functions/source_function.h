@@ -52,7 +52,6 @@ public:
    * \param groupset The groupset the under consideration.
    * \param q A vector to contribute the source to.
    * \param phi The primary STL vector to operate off.
-   * \param densities The densities of the local cells.
    * \param source_flags Flags for adding specific terms into the
    *        destination vector. Available flags are for applying
    *        the material source, across/within-group scattering,
@@ -61,7 +60,6 @@ public:
   virtual void operator()(const LBSGroupset& groupset,
                           std::vector<double>& q,
                           const std::vector<double>& phi,
-                          const std::vector<double>& densities,
                           SourceFlags source_flags);
 
   virtual double AddSourceMoments() const;

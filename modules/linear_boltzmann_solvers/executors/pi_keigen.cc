@@ -178,11 +178,8 @@ PowerIterationKEigen::SetLBSFissionSource(const std::vector<double>& input, cons
 
   for (auto& groupset : groupsets_)
   {
-    active_set_source_function_(groupset,
-                                q_moments_local_,
-                                input,
-                                lbs_solver_.DensitiesLocal(),
-                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function_(
+      groupset, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   }
 }
 
@@ -200,8 +197,7 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 
   for (auto& groupset : groupsets_)
   {
-    active_set_source_function_(
-      groupset, q_moments_local_, input, lbs_solver_.DensitiesLocal(), source_flags);
+    active_set_source_function_(groupset, q_moments_local_, input, source_flags);
   }
 }
 

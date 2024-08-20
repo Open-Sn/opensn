@@ -173,11 +173,8 @@ WGSLinearSolver::SetRHS()
   if (not single_richardson)
   {
     const auto scope = gs_context_ptr->rhs_src_scope_ | ZERO_INCOMING_DELAYED_PSI;
-    gs_context_ptr->set_source_function_(groupset,
-                                         lbs_solver.QMomentsLocal(),
-                                         lbs_solver.PhiOldLocal(),
-                                         lbs_solver.DensitiesLocal(),
-                                         scope);
+    gs_context_ptr->set_source_function_(
+      groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
@@ -204,11 +201,8 @@ WGSLinearSolver::SetRHS()
   else
   {
     const auto scope = gs_context_ptr->rhs_src_scope_ | gs_context_ptr->lhs_src_scope_;
-    gs_context_ptr->set_source_function_(groupset,
-                                         lbs_solver.QMomentsLocal(),
-                                         lbs_solver.PhiOldLocal(),
-                                         lbs_solver.DensitiesLocal(),
-                                         scope);
+    gs_context_ptr->set_source_function_(
+      groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);

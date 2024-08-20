@@ -795,11 +795,8 @@ PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double
   TransferDiffusionToTransport(phi0, phi);
 
   std::vector<double> Sf(phi.size(), 0.0);
-  active_set_source_function_(front_gs_,
-                              Sf,
-                              phi,
-                              lbs_solver_.DensitiesLocal(),
-                              APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  active_set_source_function_(
+    front_gs_, Sf, phi, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   return Sf;
 }
 
@@ -823,7 +820,6 @@ PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double
   active_set_source_function_(front_gs_,
                               Ss,
                               phi,
-                              lbs_solver_.DensitiesLocal(),
                               APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                 SUPPRESS_WG_SCATTER);
   return Ss;

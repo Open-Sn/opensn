@@ -115,7 +115,7 @@ DiscreteOrdinatesSolver::Initialize()
   using namespace std::placeholders;
   auto src_function = std::make_shared<SourceFunction>(*this);
   active_set_source_function_ =
-    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4, _5);
+    std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4);
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
@@ -631,7 +631,6 @@ DiscreteOrdinatesSolver::ComputeBalance()
     active_set_source_function_(groupset,
                                 q_moments_local_,
                                 phi_old_local_,
-                                densities_local_,
                                 APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
                                   APPLY_WGS_FISSION_SOURCES);
     LBSSolver::GSScopedCopyPrimarySTLvectors(groupset, q_moments_local_, mat_src);
