@@ -47,7 +47,7 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
   while (L2_norm_F_x_i >= epsilon and i < max_iters)
   {
     ++i;
-    x_i = VecSub(x_i, MatMul(J_x_i_inv, F_x_i));
+    x_i = Subtract(x_i, Mult(J_x_i_inv, F_x_i));
 
     F_x_i = non_linear_function.F(x_i);
     J_x_i_inv = Inverse(non_linear_function.J(x_i));

@@ -125,7 +125,7 @@ void Set(std::vector<double>& x, const double& val);
 /// Add vector to this vector
 template <typename TYPE>
 Vector<TYPE>
-VecAdd(const Vector<TYPE>& a, const Vector<TYPE>& b)
+Add(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
   Vector<TYPE> res(a.Rows());
@@ -137,7 +137,7 @@ VecAdd(const Vector<TYPE>& a, const Vector<TYPE>& b)
 /// Subtract two vectors
 template <typename TYPE>
 Vector<TYPE>
-VecSub(const Vector<TYPE>& a, const Vector<TYPE>& b)
+Subtract(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
   Vector<TYPE> res(a.Rows());
@@ -147,7 +147,7 @@ VecSub(const Vector<TYPE>& a, const Vector<TYPE>& b)
 }
 
 /// Multiplies the vector with a constant and returns result.
-std::vector<double> VecMul(const std::vector<double>& x, const double& val);
+std::vector<double> Mult(const std::vector<double>& x, const double& val);
 
 /**
  * Returns the 1-norm. Also known as the Taxicab or Manhattan norm.
@@ -261,7 +261,7 @@ SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
 /// Multiply matrix with a constant and return result.
 template <typename TYPE>
 DenseMatrix<TYPE>
-MatMul(const DenseMatrix<TYPE>& A, const TYPE c)
+Mult(const DenseMatrix<TYPE>& A, const TYPE c)
 {
   auto R = A.Rows();
   auto C = A.Rows();
@@ -275,7 +275,7 @@ MatMul(const DenseMatrix<TYPE>& A, const TYPE c)
 /// Multiply matrix with a vector and return resulting vector
 template <typename TYPE>
 Vector<TYPE>
-MatMul(const DenseMatrix<TYPE>& A, const Vector<TYPE>& x)
+Mult(const DenseMatrix<TYPE>& A, const Vector<TYPE>& x)
 {
   auto R = A.Rows();
   auto C = x.Rows();
@@ -296,7 +296,7 @@ MatMul(const DenseMatrix<TYPE>& A, const Vector<TYPE>& x)
 /// Mutliply two matrices and return result.
 template <typename TYPE>
 DenseMatrix<TYPE>
-MatMul(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+Mult(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 {
   auto AR = A.Rows();
 
@@ -322,7 +322,7 @@ MatMul(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 /// Adds two matrices and returns the result.
 template <typename TYPE>
 DenseMatrix<TYPE>
-MatAdd(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+Add(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 {
   size_t AR = A.Rows();
   size_t BR = B.Rows();
@@ -346,7 +346,7 @@ MatAdd(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 /// Subtracts matrix A from B and returns the result.
 template <typename TYPE>
 DenseMatrix<TYPE>
-MatSubtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
+Subtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 {
   size_t AR = A.Rows();
   size_t BR = B.Rows();
@@ -675,7 +675,7 @@ PowerIteration(const DenseMatrix<TYPE>& A,
   double lambda0 = 0.0;
 
   // Perform initial iteration outside of loop
-  auto Ay = MatMul(A, y);
+  auto Ay = Mult(A, y);
   auto lambda = Dot(y, Ay);
   y = Scaled(Ay, 1.0 / Vec2Norm(Ay));
   if (lambda < 0.0)
@@ -688,7 +688,7 @@ PowerIteration(const DenseMatrix<TYPE>& A,
     // Update old eigenvalue
     lambda0 = std::fabs(lambda);
     // Calculate new eigenvalue/eigenvector
-    Ay = MatMul(A, y);
+    Ay = Mult(A, y);
     lambda = Dot(y, Ay);
     y = Scaled(Ay, 1.0 / Vec2Norm(Ay));
 

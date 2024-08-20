@@ -265,8 +265,8 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
     //    double fac = 1.0/N;
     //    std::array<std::array<double,4>,N> weights_offset;
 
-    auto weights_offset_pos = ComputeWeights(VecAdd(rho, delta));
-    auto weights_offset_neg = ComputeWeights(VecSub(rho, delta));
+    auto weights_offset_pos = ComputeWeights(Add(rho, delta));
+    auto weights_offset_neg = ComputeWeights(Subtract(rho, delta));
 
     double rho_change_total = 0.0;
     for (int i = 0; i < 4; ++i)

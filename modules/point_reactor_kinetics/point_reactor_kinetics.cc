@@ -117,7 +117,7 @@ PRKSolver::Initialize()
   {
     const auto b_theta = Scaled(q_, -1.0);
 
-    x_t_ = MatMul(Inverse(A_), b_theta);
+    x_t_ = Mult(Inverse(A_), b_theta);
   }
   // Otherwise we initialize the system as a critical system with
   // no source.
@@ -130,7 +130,7 @@ PRKSolver::Initialize()
     for (unsigned int i = 0; i < A_temp.Columns(); ++i)
       A_temp(0, i) = 0.0;
     A_temp(0, 0) = 1.0;
-    x_t_ = MatMul(Inverse(A_temp), b_temp);
+    x_t_ = Mult(Inverse(A_temp), b_temp);
   }
 
   log.Log() << "Final: " << x_t_.PrintStr();
@@ -168,16 +168,16 @@ PRKSolver::Step()
 
     const double inv_tau = theta * dt;
 
-    auto A_theta = MatSubtract(I_, Scaled(A_, inv_tau));
-    auto b_theta = VecAdd(x_t_, Scaled(q_, inv_tau));
+    auto A_theta = Subtract(I_, Scaled(A_, inv_tau));
+    auto b_theta = Add(x_t_, Scaled(q_, inv_tau));
 
-    auto x_theta = MatMul(Inverse(A_theta), b_theta);
+    auto x_theta = Mult(Inverse(A_theta), b_theta);
 
-    x_tp1_ = VecAdd(x_t_, Scaled(VecSub(x_theta, x_t_), 1.0 / theta));
+    x_tp1_ = Add(x_t_, Scaled(Subtract(x_theta, x_t_), 1.0 / theta));
   }
   else if (time_integration_ == "explicit_euler")
   {
-    x_tp1_ = VecAdd(x_t_, VecAdd(Scaled(MatMul(A_, x_t_), dt), Scaled(q_, dt)));
+    x_tp1_ = Add(x_t_, Add(Scaled(Mult(A_, x_t_), dt), Scaled(q_, dt)));
   }
   else
     OpenSnLogicalError("Unsupported time integration scheme.");

@@ -88,7 +88,7 @@ Dot(const std::vector<double>& x, const std::vector<double>& y)
 }
 
 std::vector<double>
-VecMul(const std::vector<double>& x, const double& val)
+Mult(const std::vector<double>& x, const double& val)
 {
   size_t n = x.size();
   std::vector<double> y(n);

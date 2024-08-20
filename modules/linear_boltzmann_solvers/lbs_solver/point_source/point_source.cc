@@ -67,7 +67,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
       Vector<double> shape_vals;
       cell_mapping.ShapeValues(location_, shape_vals);
       const auto M_inv = Inverse(fe_values.intV_shapeI_shapeJ);
-      const auto node_wgts = MatMul(M_inv, shape_vals);
+      const auto node_wgts = Mult(M_inv, shape_vals);
 
       // Increment the total volume
       total_volume += cell_mapping.CellVolume();

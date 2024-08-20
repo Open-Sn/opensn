@@ -227,7 +227,7 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
 
     // Compute coefficients
     for (int i = 0; i < 4; ++i)
-      c_coeffs[i] = MatMul(A_inv, rhs[i]);
+      c_coeffs[i] = Mult(A_inv, rhs[i]);
 
     return sldfesq.IntegrateLDFEShapeFunctions(sq, c_coeffs, lqp, lqw);
   }

@@ -298,7 +298,7 @@ SimTest93_RayTracing(const InputParameters&)
           T(i) = phi_tally[imap] / num_particles;
         }
 
-        auto phi_uc = MatMul(M_inv, T);
+        auto phi_uc = Mult(M_inv, T);
 
         for (size_t i = 0; i < num_nodes; ++i)
         {

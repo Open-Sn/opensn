@@ -577,7 +577,7 @@ MGDiffusionSolver::ComputeTwoGridParams()
         B(g, gp) = S(g, gp);
     }
     // finally, obtain the iteration matrix
-    auto C_ = MatMul(Inverse(A), B);
+    auto C_ = Mult(Inverse(A), B);
     // Perform power iteration
     Vector<double> E(num_groups_, 1.0);
     auto rho = PowerIteration(C_, E, 10000, 1.0e-12);
