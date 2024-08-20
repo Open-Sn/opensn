@@ -51,7 +51,7 @@ private:
   DenseMatrix<Vector3> G_;
   DenseMatrix<double> M_;
   std::vector<DenseMatrix<double>> M_surf_;
-  std::vector<DenseVector<double>> IntS_shapeI_;
+  std::vector<Vector<double>> IntS_shapeI_;
 };
 
 } // namespace opensn

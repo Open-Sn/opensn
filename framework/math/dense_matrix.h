@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "framework/math/dense_vector.h"
+#include "framework/math/vector.h"
 
 namespace opensn
 {
@@ -55,7 +55,7 @@ public:
       (*this)(i, i) = val;
   }
 
-  void SetRow(int row, const DenseVector<TYPE>& values)
+  void SetRow(int row, const Vector<TYPE>& values)
   {
     assert(Columns() == values.Rows());
     for (unsigned int i = 0; i < Columns(); ++i)

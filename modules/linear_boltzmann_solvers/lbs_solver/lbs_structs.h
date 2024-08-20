@@ -324,11 +324,11 @@ struct UnitCellMatrices
   DenseMatrix<double> intV_gradshapeI_gradshapeJ;
   DenseMatrix<Vector3> intV_shapeI_gradshapeJ;
   DenseMatrix<double> intV_shapeI_shapeJ;
-  DenseVector<double> intV_shapeI;
+  Vector<double> intV_shapeI;
 
   std::vector<DenseMatrix<double>> intS_shapeI_shapeJ;
   std::vector<DenseMatrix<Vector3>> intS_shapeI_gradshapeJ;
-  std::vector<DenseVector<double>> intS_shapeI;
+  std::vector<Vector<double>> intS_shapeI;
 };
 
 } // namespace opensn

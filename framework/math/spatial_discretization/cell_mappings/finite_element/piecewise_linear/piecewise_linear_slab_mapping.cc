@@ -83,7 +83,7 @@ PieceWiseLinearSlabMapping::ShapeValue(const int i, const Vector3& xyz) const
 }
 
 void
-PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, DenseVector<double>& shape_values) const
+PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
   const auto& p0 = ref_grid_.vertices[v0i_];

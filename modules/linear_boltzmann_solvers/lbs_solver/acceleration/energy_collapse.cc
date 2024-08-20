@@ -63,7 +63,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 
   auto Ainv = Inverse(A);
   auto C = MatMul(Ainv, B);
-  DenseVector<double> E(num_groups, 1.0);
+  Vector<double> E(num_groups, 1.0);
 
   double collapsed_D = 0.0;
   double collapsed_sig_a = 0.0;

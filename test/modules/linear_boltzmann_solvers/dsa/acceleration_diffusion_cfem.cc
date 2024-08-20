@@ -66,11 +66,11 @@ acceleration_Diffusion_CFEM(const InputParameters&)
 
     DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
     DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);
-    DenseVector<double> IntV_shapeI(cell_num_nodes, 0.0);
+    Vector<double> IntV_shapeI(cell_num_nodes, 0.0);
 
     std::vector<DenseMatrix<double>> IntS_shapeI_shapeJ(cell_num_faces);
     std::vector<DenseMatrix<Vector3>> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<DenseVector<double>> IntS_shapeI(cell_num_faces);
+    std::vector<Vector<double>> IntS_shapeI(cell_num_faces);
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
@@ -100,7 +100,7 @@ acceleration_Diffusion_CFEM(const InputParameters&)
     {
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
       IntS_shapeI_shapeJ[f] = DenseMatrix<double>(cell_num_nodes, cell_num_nodes, 0.0);
-      IntS_shapeI[f] = DenseVector<double>(cell_num_nodes, 0.0);
+      IntS_shapeI[f] = Vector<double>(cell_num_nodes, 0.0);
       IntS_shapeI_gradshapeJ[f] = DenseMatrix<Vector3>(cell_num_nodes, cell_num_nodes);
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)

@@ -579,7 +579,7 @@ MGDiffusionSolver::ComputeTwoGridParams()
     // finally, obtain the iteration matrix
     auto C_ = MatMul(Inverse(A), B);
     // Perform power iteration
-    DenseVector<double> E(num_groups_, 1.0);
+    Vector<double> E(num_groups_, 1.0);
     auto rho = PowerIteration(C_, E, 10000, 1.0e-12);
 
     // Compute two-grid diffusion quantities
@@ -751,10 +751,10 @@ MGDiffusionSolver::AssembleAbext()
       collapsed_sig_a = xstg.collapsed_sig_a;
     }
 
-    std::vector<DenseVector<double>> rhs_cell;
+    std::vector<Vector<double>> rhs_cell;
     rhs_cell.resize(num_groups_);
     for (uint g = 0; g < num_groups_; ++g)
-      rhs_cell[g] = DenseVector<double>(num_nodes, 0.0);
+      rhs_cell[g] = Vector<double>(num_nodes, 0.0);
 
     std::vector<DenseMatrix<double>> Acell;
     Acell.resize(num_groups_ + i_two_grid);

@@ -1,4 +1,4 @@
-#include "framework/math/dense_vector.h"
+#include "framework/math/vector.h"
 #include "framework/math/dense_matrix.h"
 #include "framework/math/sparse_matrix/sparse_matrix.h"
 
@@ -22,9 +22,9 @@ math_Test00(const InputParameters& params)
   opensn::log.Log() << "GOLD_BEGIN";
   // Dynamic Vector
   {
-    opensn::log.Log() << "Testing DenseVector\n";
+    opensn::log.Log() << "Testing Vector\n";
 
-    DenseVector<double> vec(5);
+    Vector<double> vec(5);
     vec.Set(1.0);
 
     opensn::log.Log() << vec.PrintStr();

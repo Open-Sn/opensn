@@ -10,19 +10,19 @@ namespace opensn
 {
 
 template <typename TYPE>
-class DenseVector : public NDArray<TYPE>
+class Vector : public NDArray<TYPE>
 {
 public:
   /// Create an empty dense (column) vector
-  DenseVector() : NDArray<TYPE>() {}
+  Vector() : NDArray<TYPE>() {}
 
   /// Create a dense (column) vector with specified number of rows
-  DenseVector(unsigned int rows) : NDArray<TYPE>({rows}) {}
+  Vector(unsigned int rows) : NDArray<TYPE>({rows}) {}
 
   /// Create a dense (column) vector with specified number of rows and initialize the elements
-  DenseVector(unsigned int rows, TYPE intitial_value) : NDArray<TYPE>({rows}, intitial_value) {}
+  Vector(unsigned int rows, TYPE intitial_value) : NDArray<TYPE>({rows}, intitial_value) {}
 
-  DenseVector(const std::vector<TYPE>& in) : NDArray<TYPE>({in.size()})
+  Vector(const std::vector<TYPE>& in) : NDArray<TYPE>({in.size()})
   {
     for (std::size_t i = 0; i < in.size(); ++i)
       (*this)(i) = in[i];

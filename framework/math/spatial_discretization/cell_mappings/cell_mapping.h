@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/dense_vector.h"
+#include "framework/math/vector.h"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -58,7 +58,7 @@ public:
    * Populates all the shape function values at the given world xyz point. This method is optimized
    * to minimize reallocation of shape_values.
    */
-  virtual void ShapeValues(const Vector3& xyz, DenseVector<double>& shape_values) const = 0;
+  virtual void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const = 0;
 
   /// Returns the value of the required shape function gradient at the world xyz point.
   virtual Vector3 GradShapeValue(int i, const Vector3& xyz) const = 0;

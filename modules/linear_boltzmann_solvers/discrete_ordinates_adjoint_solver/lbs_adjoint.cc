@@ -47,7 +47,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     }
 
     /**Function evaluation at vector-x.*/
-    DenseVector<double> F(const DenseVector<double>& x) const override
+    Vector<double> F(const Vector<double>& x) const override
     {
       assert(x.size() == 2);
       const double a = x(0);
@@ -56,11 +56,11 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
 
       double size_J = Vec2Norm({J_x, J_y, J_z});
 
-      return DenseVector<double>((FOUR_PI / b) * exp(a) * sinh(b) - 1.0,
-                                 (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J);
+      return Vector<double>((FOUR_PI / b) * exp(a) * sinh(b) - 1.0,
+                            (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J);
     }
     /**Jacobian evaluation at vector-x.*/
-    DenseMatrix<double> J(const DenseVector<double>& x) const override
+    DenseMatrix<double> J(const Vector<double>& x) const override
     {
       assert(x.size() == 2);
       const double a = x(0);
@@ -130,7 +130,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
   {
     CustomF custom_function({J_x, J_y, J_z});
     auto solution =
-      NewtonIteration(custom_function, DenseVector<double>(1.0, 0.1), 100, 1.0e-8, verbose);
+      NewtonIteration(custom_function, Vector<double>(1.0, 0.1), 100, 1.0e-8, verbose);
 
     double a = solution(0);
     double b = solution(1);

@@ -111,7 +111,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
-    DenseVector<double> cell_rhs(num_nodes, 0.0);
+    Vector<double> cell_rhs(num_nodes, 0.0);
 
     // Assemble continuous kernels
     {

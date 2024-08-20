@@ -103,17 +103,17 @@ void Scale(std::vector<double>& x, const double& val);
 /// Scale the vector with a constant value
 template <typename TYPE>
 void
-Scale(DenseVector<TYPE>& a, TYPE alpha)
+Scale(Vector<TYPE>& a, TYPE alpha)
 {
   for (unsigned int i = 0; i < a.Rows(); ++i)
     a(i) *= alpha;
 }
 
 template <typename TYPE>
-DenseVector<TYPE>
-Scaled(const DenseVector<TYPE>& a, TYPE alpha)
+Vector<TYPE>
+Scaled(const Vector<TYPE>& a, TYPE alpha)
 {
-  DenseVector<TYPE> res(a.Rows());
+  Vector<TYPE> res(a.Rows());
   for (unsigned int i = 0; i < a.Rows(); ++i)
     res(i) = a(i) * alpha;
   return res;
@@ -124,11 +124,11 @@ void Set(std::vector<double>& x, const double& val);
 
 /// Add vector to this vector
 template <typename TYPE>
-DenseVector<TYPE>
-VecAdd(const DenseVector<TYPE>& a, const DenseVector<TYPE>& b)
+Vector<TYPE>
+VecAdd(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
-  DenseVector<TYPE> res(a.Rows());
+  Vector<TYPE> res(a.Rows());
   for (unsigned int i = 0; i < a.Rows(); ++i)
     res(i) = a(i) + b(i);
   return res;
@@ -136,11 +136,11 @@ VecAdd(const DenseVector<TYPE>& a, const DenseVector<TYPE>& b)
 
 /// Subtract two vectors
 template <typename TYPE>
-DenseVector<TYPE>
-VecSub(const DenseVector<TYPE>& a, const DenseVector<TYPE>& b)
+Vector<TYPE>
+VecSub(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
-  DenseVector<TYPE> res(a.Rows());
+  Vector<TYPE> res(a.Rows());
   for (unsigned int i = 0; i < a.Rows(); ++i)
     res(i) = a(i) - b(i);
   return res;
@@ -169,7 +169,7 @@ double Vec2Norm(const std::vector<double>& x);
 
 template <typename TYPE>
 double
-Vec2Norm(const DenseVector<TYPE>& x)
+Vec2Norm(const Vector<TYPE>& x)
 {
   size_t n = x.Rows();
   double val = 0.0;
@@ -207,7 +207,7 @@ double Dot(const std::vector<double>& x, const std::vector<double>& y);
 
 template <typename TYPE>
 double
-Dot(const DenseVector<TYPE>& x, const DenseVector<TYPE>& y)
+Dot(const Vector<TYPE>& x, const Vector<TYPE>& y)
 {
   assert(x.Rows() > 0);
   assert(y.Rows() > 0);
@@ -274,8 +274,8 @@ MatMul(const DenseMatrix<TYPE>& A, const TYPE c)
 
 /// Multiply matrix with a vector and return resulting vector
 template <typename TYPE>
-DenseVector<TYPE>
-MatMul(const DenseMatrix<TYPE>& A, const DenseVector<TYPE>& x)
+Vector<TYPE>
+MatMul(const DenseMatrix<TYPE>& A, const Vector<TYPE>& x)
 {
   auto R = A.Rows();
   auto C = x.Rows();
@@ -283,7 +283,7 @@ MatMul(const DenseMatrix<TYPE>& A, const DenseVector<TYPE>& x)
   assert(R > 0);
   assert(C == A.Columns());
 
-  DenseVector<TYPE> b(R, 0.0);
+  Vector<TYPE> b(R, 0.0);
   for (auto i = 0; i < R; ++i)
   {
     for (auto j = 0; j < C; ++j)
@@ -467,7 +467,7 @@ Determinant(const DenseMatrix<TYPE>& A)
 /// Gauss Elimination without pivoting.
 template <typename TYPE>
 void
-GaussElimination(DenseMatrix<TYPE>& A, DenseVector<TYPE>& b, unsigned int n)
+GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
 {
   // Forward elimination
   for (unsigned int i = 0; i < n - 1; ++i)
@@ -665,13 +665,13 @@ Inverse(const DenseMatrix<TYPE>& A)
 template <typename TYPE>
 double
 PowerIteration(const DenseMatrix<TYPE>& A,
-               DenseVector<TYPE>& e_vec,
+               Vector<TYPE>& e_vec,
                int max_it = 2000,
                double tol = 1.0e-13)
 {
   unsigned int n = A.Rows();
   int it_counter = 0;
-  DenseVector<double> y(n, 1.0);
+  Vector<double> y(n, 1.0);
   double lambda0 = 0.0;
 
   // Perform initial iteration outside of loop

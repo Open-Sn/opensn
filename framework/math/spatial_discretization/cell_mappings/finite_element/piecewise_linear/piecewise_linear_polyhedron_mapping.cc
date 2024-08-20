@@ -455,7 +455,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const Vector3& xyz) co
 
 void
 PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
-                                              DenseVector<double>& shape_values) const
+                                              Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
   for (size_t f = 0; f < face_data_.size(); ++f)

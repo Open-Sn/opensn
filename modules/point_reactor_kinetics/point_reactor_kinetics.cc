@@ -96,7 +96,7 @@ PRKSolver::Initialize()
   I_ = A_;
   I_.SetDiagonal(1.0);
 
-  x_t_ = DenseVector<double>(J + 1, 0.);
+  x_t_ = Vector<double>(J + 1, 0.);
 
   // Assembling system
   A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
@@ -107,7 +107,7 @@ PRKSolver::Initialize()
     A_(j, 0) = betas_[j - 1] / gen_time_;
   }
 
-  q_ = DenseVector<double>(J + 1, 0.);
+  q_ = Vector<double>(J + 1, 0.);
   q_(0) = source_strength_;
 
   // Initializing x
@@ -267,13 +267,13 @@ PRKSolver::TimeNew() const
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
-DenseVector<double>
+Vector<double>
 PRKSolver::SolutionPrev() const
 {
   return x_t_;
 }
 
-DenseVector<double>
+Vector<double>
 PRKSolver::SolutionNew() const
 {
   return x_tp1_;

@@ -9,18 +9,16 @@
 namespace opensn
 {
 
-DenseVector<double>
+Vector<double>
 NewtonIteration(const NonLinearFunction& non_linear_function,
-                const DenseVector<double>& x_0,
+                const Vector<double>& x_0,
                 const unsigned int max_iters,
                 const double epsilon,
                 const bool verbose)
 {
   // Verbose printing lambda
-  auto PrintIterationInfo = [](unsigned int i,
-                               const DenseVector<double>& x_i,
-                               const DenseVector<double>& F_x_i,
-                               double L2_norm_F_x_i)
+  auto PrintIterationInfo =
+    [](unsigned int i, const Vector<double>& x_i, const Vector<double>& F_x_i, double L2_norm_F_x_i)
   {
     std::stringstream output;
     output << "Iteration " << std::setw(3) << i << ": x_i=";

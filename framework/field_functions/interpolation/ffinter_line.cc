@@ -79,7 +79,7 @@ FieldFunctionInterpolationLine::Execute()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    DenseVector<double> shape_function_vals(num_nodes, 0.0);
+    Vector<double> shape_function_vals(num_nodes, 0.0);
     cell_mapping.ShapeValues(point, shape_function_vals);
     double point_value = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)

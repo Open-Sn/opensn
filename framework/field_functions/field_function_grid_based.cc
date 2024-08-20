@@ -166,7 +166,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
       if (grid.CheckPointInsideCell(cell, point))
       {
         const auto& cell_mapping = discretization_->GetCellMapping(cell);
-        DenseVector<double> shape_values;
+        Vector<double> shape_values;
         cell_mapping.ShapeValues(point, shape_values);
 
         local_num_point_hits += 1;
@@ -206,7 +206,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
 
   const auto& cell_mapping = discretization_->GetCellMapping(cell);
 
-  DenseVector<double> shape_values;
+  Vector<double> shape_values;
   cell_mapping.ShapeValues(position, shape_values);
 
   double value = 0.0;

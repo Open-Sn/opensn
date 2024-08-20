@@ -225,7 +225,7 @@ SimTest91_PWLD(const InputParameters&)
     const auto& M = cell_Mmatrices[cell_local_id];
 
     DenseMatrix<double> A(num_nodes, num_nodes, 0.0);
-    std::vector<DenseVector<double>> b(num_groups, DenseVector<double>(num_nodes, 0.0));
+    std::vector<Vector<double>> b(num_groups, Vector<double>(num_nodes, 0.0));
 
     // Gradient matrix
     for (size_t i = 0; i < num_nodes; ++i)

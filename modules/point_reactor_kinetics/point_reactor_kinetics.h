@@ -6,7 +6,7 @@
 #include "framework/physics/solver.h"
 #include "framework/math/math.h"
 #include "framework/math/dense_matrix.h"
-#include "framework/math/dense_vector.h"
+#include "framework/math/vector.h"
 
 namespace opensn
 {
@@ -24,7 +24,7 @@ private:
 
   size_t num_precursors_;
   DenseMatrix<double> A_, I_;
-  DenseVector<double> x_t_, x_tp1_, q_;
+  Vector<double> x_t_, x_tp1_, q_;
   double beta_ = 1.0;
   double period_tph_ = 0.0;
 
@@ -54,9 +54,9 @@ public:
   /// Returns the time computed for the next time step.
   double TimeNew() const;
   /// Returns the solution at the previous time step.
-  DenseVector<double> SolutionPrev() const;
+  Vector<double> SolutionPrev() const;
   /// Returns the solution at the next time step.
-  DenseVector<double> SolutionNew() const;
+  Vector<double> SolutionNew() const;
 
   /**
    * \addtogroup prk

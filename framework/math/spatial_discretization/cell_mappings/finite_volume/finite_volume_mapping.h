@@ -39,12 +39,12 @@ public:
     else
       return 0.0;
   }
-  void ShapeValues(const Vector3& xyz, DenseVector<double>& shape_values) const override
+  void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const override
   {
     if (ref_grid_.CheckPointInsideCell(cell_, xyz))
-      shape_values = DenseVector<double>(num_nodes_, 1.0);
+      shape_values = Vector<double>(num_nodes_, 1.0);
     else
-      shape_values = DenseVector<double>(num_nodes_, 0.0);
+      shape_values = Vector<double>(num_nodes_, 0.0);
   }
   Vector3 GradShapeValue(int i, const Vector3& xyz) const override
   {

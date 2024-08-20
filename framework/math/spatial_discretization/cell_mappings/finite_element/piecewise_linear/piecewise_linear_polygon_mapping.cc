@@ -220,8 +220,7 @@ PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
 }
 
 void
-PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
-                                           DenseVector<double>& shape_values) const
+PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
   for (int s = 0; s < num_of_subtris_; ++s)

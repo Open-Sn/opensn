@@ -65,7 +65,7 @@ SimTest03_PWLC(const InputParameters&)
 
     const size_t num_nodes = cell_mapping.NumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
-    DenseVector<double> cell_rhs(num_nodes, 0.0);
+    Vector<double> cell_rhs(num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

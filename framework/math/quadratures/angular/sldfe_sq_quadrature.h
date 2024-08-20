@@ -5,7 +5,7 @@
 
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
-#include "framework/math/dense_vector.h"
+#include "framework/math/vector.h"
 #include "framework/math/dense_matrix.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
@@ -122,7 +122,7 @@ private:
   /// Integrates shape functions to produce weights.
   static std::array<double, 4>
   IntegrateLDFEShapeFunctions(const SphericalQuadrilateral& sq,
-                              std::array<DenseVector<double>, 4>& shape_coeffs,
+                              std::array<Vector<double>, 4>& shape_coeffs,
                               const std::vector<Vector3>& legendre_qpoints,
                               const std::vector<double>& legendre_qweights);
 
@@ -170,10 +170,10 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
   std::array<Vector3, 4>& radii_vectors_xy_tilde;
   SphericalQuadrilateral& sq;
 
-  std::array<DenseVector<double>, 4> rhs;
+  std::array<Vector<double>, 4> rhs;
   DenseMatrix<double> A;
   DenseMatrix<double> A_inv;
-  std::array<DenseVector<double>, 4> c_coeffs;
+  std::array<Vector<double>, 4> c_coeffs;
   /// Legendre quadrature points
   std::vector<Vector3>& lqp;
   /// Legendre quadrature weights
@@ -196,8 +196,8 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
     // Init RHS
     for (int i = 0; i < 4; ++i)
     {
-      rhs[i] = DenseVector<double>(4);
-      c_coeffs[i] = DenseVector<double>(4, 0.);
+      rhs[i] = Vector<double>(4);
+      c_coeffs[i] = Vector<double>(4, 0.);
       for (int j = 0; j < 4; ++j)
         rhs[i](i) = 1.0;
     }
@@ -207,7 +207,7 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
    * Computes the quadrature point locations from rho, followed by the shape-function coefficients
    * and then the integral of the shape function to get the weights.
    */
-  std::array<double, 4> operator()(const DenseVector<double>& rho)
+  std::array<double, 4> operator()(const Vector<double>& rho)
   {
     // Determine qpoints from rho
     std::array<Vector3, 4> qpoints;
@@ -220,7 +220,7 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
 
     // Assemble A
     for (int i = 0; i < 4; ++i)
-      A.SetRow(i, DenseVector<double>({1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]}));
+      A.SetRow(i, Vector<double>({1.0, qpoints[i][0], qpoints[i][1], qpoints[i][2]}));
 
     // Compute A-inverse
     A_inv = Inverse(A);

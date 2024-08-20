@@ -36,8 +36,8 @@ public:
   {
     double volume_weight;
     uint64_t cell_local_id;
-    DenseVector<double> shape_values;
-    DenseVector<double> node_weights;
+    Vector<double> shape_values;
+    Vector<double> node_weights;
   };
 
 public:

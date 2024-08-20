@@ -4,7 +4,7 @@
 [0]  Parsing argument 4 master_export=false
 [0]  OpenSn number of arguments supplied: 4
 [0]  GOLD_BEGIN
-[0]  Testing DenseVector
+[0]  Testing Vector
 [0]  [1 1 1 1 1]
 [0]  Testing DenseMatrix
 [0]  1 1 1 1 1 1 1

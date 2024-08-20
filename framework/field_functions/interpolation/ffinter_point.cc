@@ -82,7 +82,7 @@ FieldFunctionInterpolationPoint::Execute()
     node_dof_values[i] = field_data[imap];
   }
 
-  DenseVector<double> shape_values(num_nodes, 0.0);
+  Vector<double> shape_values(num_nodes, 0.0);
   cell_mapping.ShapeValues(point_of_interest_, shape_values);
   point_value_ = 0.0;
   for (size_t i = 0; i < num_nodes; ++i)

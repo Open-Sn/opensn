@@ -34,7 +34,7 @@ public:
 
   Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
 
-  void ShapeValues(const Vector3& xyz, DenseVector<double>& shape_values) const override;
+  void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const override;
 
   void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 

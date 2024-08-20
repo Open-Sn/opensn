@@ -14,14 +14,14 @@ class NonLinearFunction
 {
 public:
   /// Function evaluation at vector-x.
-  virtual DenseVector<double> F(const DenseVector<double>& x) const
+  virtual Vector<double> F(const Vector<double>& x) const
   {
-    DenseVector<double> result(x.Rows(), 0.0);
+    Vector<double> result(x.Rows(), 0.0);
     return result;
   }
 
   /// Jacobian evaluation at vector-x.
-  virtual DenseMatrix<double> J(const DenseVector<double>& x) const
+  virtual DenseMatrix<double> J(const Vector<double>& x) const
   {
     DenseMatrix<double> result(x.Rows(), x.Rows(), 0.0);
     return result;
@@ -31,10 +31,10 @@ public:
 };
 
 /// Newton iteration.
-DenseVector<double> NewtonIteration(const NonLinearFunction& non_linear_function,
-                                    const DenseVector<double>& x_0,
-                                    unsigned int max_iters,
-                                    double epsilon,
-                                    bool verbose = false);
+Vector<double> NewtonIteration(const NonLinearFunction& non_linear_function,
+                               const Vector<double>& x_0,
+                               unsigned int max_iters,
+                               double epsilon,
+                               bool verbose = false);
 
 } // namespace opensn
