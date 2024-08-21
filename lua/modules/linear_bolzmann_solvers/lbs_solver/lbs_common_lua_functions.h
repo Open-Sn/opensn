@@ -19,6 +19,15 @@ namespace opensnlua
 int LBSGetScalarFieldFunctionList(lua_State* L);
 
 /**
+ * Obtain the power field function handle.
+ *
+ * \param SolverIndex int Handle to the solver for which the list is to be obtained.
+ *
+ * \return ff_handle The power field function handle.
+ */
+int LBSGetPowerFieldFunction(lua_State* L);
+
+/**
  * Writes the angular fluxes of a LBS groupset to file.
  *
  * \param SolverIndex int Handle to the solver for which the group
