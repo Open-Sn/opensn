@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/data_types/ndarray.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion.h"
@@ -74,7 +75,7 @@ protected:
   std::map<uint64_t, std::vector<double>> bndry_factors_;
 
   // Cell-wise tensor stiffness matrices.
-  std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>> K_tensor_matrices_;
+  std::vector<NDArray<double>> K_tensor_matrices_;
 
   // Diffusion solver attributes
   std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;
