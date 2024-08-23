@@ -34,7 +34,7 @@ private:
   std::map<std::string, bool> type_mismatch_allowed_tags_;
   std::map<std::string, std::string> parameter_link_;
 
-  std::map<std::string, std::unique_ptr<AllowableRange>> constraint_tags_;
+  std::map<std::string, std::shared_ptr<AllowableRange>> constraint_tags_;
 
   std::string general_description_;
 
@@ -178,7 +178,7 @@ public:
 
   /// Creates a range based constraint for a given parameter.
   void ConstrainParameterRange(const std::string& param_name,
-                               std::unique_ptr<AllowableRange> allowable_range);
+                               std::shared_ptr<AllowableRange> allowable_range);
 
   /// Sets a tag for the given parameter that will allow its type to be mismatched upon assignment.
   void SetParameterTypeMismatchAllowed(const std::string& param_name);

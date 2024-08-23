@@ -391,7 +391,7 @@ InputParameters::MarkParamaterRenamed(const std::string& param_name,
 
 void
 InputParameters::ConstrainParameterRange(const std::string& param_name,
-                                         std::unique_ptr<AllowableRange> allowable_range)
+                                         std::shared_ptr<AllowableRange> allowable_range)
 {
   if (Has(param_name))
   {
@@ -400,7 +400,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
       param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
       std::string("Parameter \"") + param_name + "\" is of type " +
         ParameterBlockTypeName(param_type) + " to which constraints cannot be applied");
-    constraint_tags_[param_name] = std::move(allowable_range);
+    constraint_tags_[param_name] = allowable_range;
   }
   else
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
