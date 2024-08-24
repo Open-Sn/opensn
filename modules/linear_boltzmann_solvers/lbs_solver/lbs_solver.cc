@@ -463,6 +463,10 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
+  params.AddOptionalParameter("ags_convergence_check",
+                              "l2",
+                              "Type of convergence check for AGS iterations. Valid values are "
+                              "`\"l2\"` and '\"pointwise\"'");
   params.AddOptionalParameter(
     "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter("power_field_function_on",
@@ -508,6 +512,8 @@ LBSSolver::OptionsBlock()
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
   params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
+  params.ConstrainParameterRange("ags_convergence_check",
+                                 AllowableRangeList::New({"l2", "pointwise"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
 
@@ -641,6 +647,13 @@ LBSSolver::SetOptions(const InputParameters& params)
 
     else if (spec.Name() == "ags_tolerance")
       options_.ags_tolerance = spec.GetValue<double>();
+
+    else if (spec.Name() == "ags_convergence_check")
+    {
+      auto check = spec.GetValue<std::string>();
+      if (check == "pointwise")
+        options_.ags_pointwise_convergence = true;
+    }
 
     else if (spec.Name() == "verbose_ags_iterations")
       options_.verbose_ags_iterations = spec.GetValue<bool>();

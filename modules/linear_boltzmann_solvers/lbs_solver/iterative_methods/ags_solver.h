@@ -48,6 +48,8 @@ private:
   double tolerance_;
   bool verbose_;
 
+  double ComputeL2PhiChange() const;
+
   double ComputePointwisePhiChange() const;
 };
 

@@ -220,6 +220,7 @@ struct LBSOptions
   bool verbose_inner_iterations = true;
   bool verbose_ags_iterations = true;
   bool verbose_outer_iterations = true;
+  bool ags_pointwise_convergence = false;
   int max_ags_iterations = 100;
   double ags_tolerance = 1.0e-6;
 
