@@ -61,7 +61,6 @@ LuaApp::Run(int argc, char** argv)
     PetscOptionsSetValue(NULL, "-options_left", "0");
     InitPetSc(argc, argv);
     opensn::Initialize();
-    console.PostMPIInfo(opensn::mpi_comm.rank(), opensn::mpi_comm.size());
     console.FlushConsole();
 
     if (sim_option_interactive_)
