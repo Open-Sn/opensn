@@ -173,8 +173,8 @@ private:
 
   uint64_t global_vertex_count_;
 
-  std::vector<std::unique_ptr<Cell>> local_cells_; ///< Actual local cells
-  std::vector<std::unique_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
+  std::vector<std::shared_ptr<Cell>> local_cells_; ///< Actual local cells
+  std::vector<std::shared_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
