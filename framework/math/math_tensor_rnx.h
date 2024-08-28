@@ -4,13 +4,10 @@
 #pragma once
 
 #include "framework/math/math_vector_nx.h"
-
 #include <iostream>
-
 #include <vector>
 #include <cmath>
 #include <sstream>
-
 #include <type_traits>
 
 namespace opensn

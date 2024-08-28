@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-#include "framework/runtime.h"
 #include "lua/framework/mpi/mpi_barrier.h"
 #include "lua/framework/console/console.h"
+#include "framework/runtime.h"
 
 namespace opensnlua
 {

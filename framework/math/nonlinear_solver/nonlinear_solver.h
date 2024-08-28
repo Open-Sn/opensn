@@ -5,10 +5,10 @@
 
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_options.h"
+#include <petscsnes.h>
 #include <string>
 #include <memory>
 #include <utility>
-#include <petscsnes.h>
 
 namespace opensn
 {

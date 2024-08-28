@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include "framework/math/linear_solver/linear_solver.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
-
+#include "framework/math/linear_solver/linear_solver.h"
 #include <memory>
 #include <vector>
 #include <functional>

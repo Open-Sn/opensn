@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/linear_solver/linear_matrix_action_Ax.h"
-
 #include <petscksp.h>
 
 namespace opensn

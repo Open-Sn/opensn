@@ -3,12 +3,11 @@
 
 #pragma once
 
+#include "framework/math/math.h"
+#include "framework/math/dynamic_vector.h"
 #include <vector>
 #include <stdexcept>
 #include <sstream>
-
-#include "framework/math/math.h"
-#include "framework/math/dynamic_vector.h"
 
 namespace opensn
 {

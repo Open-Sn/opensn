@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/math/nonlinear_solver/nonlinear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_context.h"
+#include "framework/math/nonlinear_solver/nonlinear_solver.h"
 
 namespace opensn
 {

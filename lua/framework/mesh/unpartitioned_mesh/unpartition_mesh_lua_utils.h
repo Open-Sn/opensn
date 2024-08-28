@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "lua/framework/lua.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 
 namespace opensnlua
 {

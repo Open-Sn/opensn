@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
+#include "lua/framework/mesh/unpartitioned_mesh/unpartition_mesh_lua_utils.h"
+#include "lua/framework/console/console.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/io/mesh_io.h"
-#include "lua/framework/mesh/unpartitioned_mesh/unpartition_mesh_lua_utils.h"
-#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/modules/linear_bolzmann_solvers/response_evaluator/response_evaluator.h"
-#include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "lua/framework/console/console.h"
+#include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 
 namespace opensnlua
 {

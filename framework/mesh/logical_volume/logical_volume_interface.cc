@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/logical_volume/logical_volume_interface.h"
-
 #include "framework/mesh/logical_volume/logical_volume.h"
-
 #include "framework/runtime.h"
 
 namespace opensn

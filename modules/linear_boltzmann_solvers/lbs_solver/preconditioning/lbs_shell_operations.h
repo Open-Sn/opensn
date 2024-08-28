@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include <petscksp.h>
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
+#include <petscksp.h>
 
 namespace opensn
 {

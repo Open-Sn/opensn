@@ -6,7 +6,6 @@
 #include "framework/physics/solver_base/solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_solver.h"
-
 #include <petscsnes.h>
 
 namespace opensn

@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/event_system/event_publisher.h"
-
 #include "framework/event_system/event.h"
 #include "framework/event_system/event_subscriber.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <algorithm>
 
 namespace opensn

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/mesh/logical_volume/logic_volume.h"
+#include "lua/framework/console/console.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/runtime.h"
-#include "lua/framework/console/console.h"
 
 using namespace opensn;
 

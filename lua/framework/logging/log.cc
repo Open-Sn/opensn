@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/logging/log.h"
-#include "framework/logging/log.h"
 #include "lua/framework/console/console.h"
 #include "lua/framework/lua.h"
+#include "framework/logging/log.h"
 #include "framework/runtime.h"
 
 using namespace opensn;

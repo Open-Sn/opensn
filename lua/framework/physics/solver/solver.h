@@ -3,11 +3,6 @@
 
 #pragma once
 
-namespace opensn
-{
-class InputParameters;
-}
-
 #include "lua/framework/lua.h"
 
 namespace opensnlua

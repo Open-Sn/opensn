@@ -2,12 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/physics/solver_base/solver.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include "framework/physics/time_steppers/constant_time_stepper.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

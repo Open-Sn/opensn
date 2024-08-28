@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include <petscsnes.h>
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_context.h"
-
 #include "framework/logging/log.h"
+#include <petscsnes.h>
 
 namespace opensn
 {

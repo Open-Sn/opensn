@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/lua.h"
-#include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "lua/framework/console/console.h"
+#include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/runtime.h"
 
 using namespace opensn;

@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/petsc_graph_partitioner.h"
-
 #include "framework/object_factory.h"
-
-#include "petsc.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "petsc.h"
 
 namespace opensn
 {

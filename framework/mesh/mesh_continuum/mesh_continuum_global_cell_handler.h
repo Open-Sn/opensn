@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/mesh/cell/cell.h"
-
 #include <map>
 
 namespace opensn

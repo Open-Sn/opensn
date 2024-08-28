@@ -3,14 +3,14 @@
 
 #pragma once
 
+#include "mpicpp-lite/mpicpp-lite.h"
+#include "caliper/cali-manager.h"
 #include <utility>
 #include <vector>
 #include <string>
 #include <stdexcept>
 #include <memory>
 #include <filesystem>
-#include "mpicpp-lite/mpicpp-lite.h"
-#include "caliper/cali-manager.h"
 
 namespace mpi = mpicpp_lite;
 

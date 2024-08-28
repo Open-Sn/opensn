@@ -3,11 +3,11 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/functions/scalar_spatial_function.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"

@@ -2,15 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/kba_graph_partitioner.h"
-
 #include "framework/object_factory.h"
 #include "framework/utils/utils.h"
-
 #include "framework/mesh/mesh.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <cmath>
 
 namespace opensn

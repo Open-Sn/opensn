@@ -3,9 +3,9 @@
 
 #include "lua/framework/lua.h"
 #include "lua/framework/math/quadratures/quadratures.h"
+#include "lua/framework/console/console.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/logging/log.h"
-#include "lua/framework/console/console.h"
 #include "framework/runtime.h"
 
 using namespace opensn;

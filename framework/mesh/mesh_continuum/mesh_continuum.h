@@ -3,13 +3,12 @@
 
 #pragma once
 
-#include <memory>
-#include <array>
-
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
+#include <memory>
+#include <array>
 
 namespace opensn
 {

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/functions/piecewise_linear_1d.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

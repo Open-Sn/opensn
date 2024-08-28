@@ -3,9 +3,8 @@
 
 #include "lua/framework/math/functions/lua_dim_a_to_dim_b.h"
 #include "lua/framework/console/console.h"
-#include "framework/logging/log_exceptions.h"
 #include "lua/framework/lua.h"
-
+#include "framework/logging/log_exceptions.h"
 #include "framework/object_factory.h"
 
 using namespace opensn;

@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/directed_graph.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <sstream>
 #include <algorithm>
 

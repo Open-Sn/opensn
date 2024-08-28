@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/time_integrations/crank_nicolson_time_intgr.h"
-
 #include "framework/object_factory.h"
 
 namespace opensn

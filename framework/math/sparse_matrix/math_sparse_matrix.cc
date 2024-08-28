@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/sparse_matrix/math_sparse_matrix.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <iomanip>
 #include <algorithm>
 

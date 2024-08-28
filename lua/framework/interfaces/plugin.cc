@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/framework/interfaces/plugin.h"
+#include "lua/framework/console/console.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
-#include "lua/framework/console/console.h"
-
 #include <dlfcn.h>
 
 using namespace opensn;

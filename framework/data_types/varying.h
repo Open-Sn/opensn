@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/data_types/data_types.h"
-
 #include <cstddef>
 #include <iostream>
 #include <vector>

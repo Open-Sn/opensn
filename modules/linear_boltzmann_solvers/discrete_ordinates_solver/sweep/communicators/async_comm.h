@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/logging/log.h"
-
 #include <vector>
 #include <cstddef>
 #include <cstdint>

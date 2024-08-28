@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include "mpicpp-lite/mpicpp-lite.h"
 #include <vector>
 #include <cstdint>
 #include <map>
-#include "mpicpp-lite/mpicpp-lite.h"
 
 namespace mpi = mpicpp_lite;
 

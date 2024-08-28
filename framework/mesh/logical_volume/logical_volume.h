@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/object.h"
-
 #include "framework/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include <array>

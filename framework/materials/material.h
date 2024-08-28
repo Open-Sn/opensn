@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/materials/material_property.h"
-
 #include <vector>
 #include <memory>
 

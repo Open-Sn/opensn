@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/math_time_stepping.h"
-
 #include <stdexcept>
 
 namespace opensn

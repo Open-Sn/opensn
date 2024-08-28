@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/object.h"
-
 #include <vector>
 #include <iostream>
 

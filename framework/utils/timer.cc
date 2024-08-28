@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/utils/timer.h"
-
 #include <cmath>
 #include <ctime>
 #include <thread>

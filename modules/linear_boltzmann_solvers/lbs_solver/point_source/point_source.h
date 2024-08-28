@@ -3,10 +3,9 @@
 
 #pragma once
 
-#include <utility>
-
 #include "framework/mesh/mesh.h"
 #include "framework/object.h"
+#include <utility>
 
 namespace opensn
 {

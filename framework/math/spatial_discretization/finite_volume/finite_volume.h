@@ -5,7 +5,6 @@
 
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-
 #include <map>
 
 namespace opensn

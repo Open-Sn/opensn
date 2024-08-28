@@ -3,13 +3,10 @@
 
 #pragma once
 
-#include <utility>
-
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
-
 #include "framework/mesh/cell/cell.h"
-
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include <utility>
 
 namespace opensn
 {

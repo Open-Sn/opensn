@@ -4,14 +4,14 @@
 #include "lua/framework/console/console.h"
 #include "lua/modules/modules.h"
 #include "lua/framework/lua.h"
-#include "config.h"
+#include "lua/framework/interfaces/plugin.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/utils/utils.h"
-#include "lua/framework/interfaces/plugin.h"
 #include "framework/runtime.h"
+#include "config.h"
 #include <iostream>
 
 using namespace opensn;

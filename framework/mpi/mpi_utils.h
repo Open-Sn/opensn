@@ -3,11 +3,11 @@
 
 #pragma once
 
+#include "framework/runtime.h"
 #include <map>
 #include <vector>
 #include <type_traits>
 #include <set>
-#include "framework/runtime.h"
 
 namespace opensn
 {

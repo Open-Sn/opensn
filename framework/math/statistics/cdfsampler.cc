@@ -2,12 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/math.h"
-
 #include "framework/math/statistics/cdfsampler.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <unistd.h>
 
 namespace opensn

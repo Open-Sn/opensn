@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include <numeric>
 
 namespace opensn

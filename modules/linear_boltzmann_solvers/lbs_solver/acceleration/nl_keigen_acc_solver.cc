@@ -2,16 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_solver.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_residual_func.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/snes_k_monitor.h"
-
 #include "framework/math/petsc_utils/petsc_utils.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <iomanip>
 
 namespace opensn

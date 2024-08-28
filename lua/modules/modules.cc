@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/modules/modules.h"
-#include "framework/object_factory.h"
+#include "lua/modules/linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
 #include "lua/framework/lua.h"
 #include "lua/framework/console/console.h"
-#include "linear_bolzmann_solvers/lbs_solver/lbs_lua_utils.h"
+#include "framework/object_factory.h"
 #include "config.h"
 
 using namespace opensn;
