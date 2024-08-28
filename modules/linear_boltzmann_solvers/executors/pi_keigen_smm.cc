@@ -487,7 +487,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
           // i and j.
           for (int k = 0; k < dimension_; ++k)
             for (int l = 0; l < dimension_; ++l)
-              val += T[k * dimension_ + l] * K[i][j][k][l];
+              val += T[k * dimension_ + l] * K(i, j, k, l);
         } // for node j
 
         output.SetValue(imap, -val / sig_tr, VecOpType::ADD_VALUE);
@@ -863,16 +863,15 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
     const auto num_cell_nodes = cell_mapping.NumNodes();
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    std::vector<std::vector<std::vector<std::vector<double>>>> K;
-    K.resize(num_cell_nodes, std::vector<std::vector<std::vector<double>>>(num_cell_nodes));
+    NDArray<double> K(std::vector<size_t>({num_cell_nodes, num_cell_nodes, dimension_, dimension_}),
+                      0.);
     for (int i = 0; i < num_cell_nodes; ++i)
       for (int j = 0; j < num_cell_nodes; ++j)
       {
-        K[i][j].resize(dimension_, std::vector<double>(dimension_, 0.0));
         for (int k = 0; k < dimension_; ++k)
           for (int l = 0; l < dimension_; ++l)
             for (const auto& qp : qp_data.QuadraturePointIndices())
-              K[i][j][k][l] += (*swf)(qp_data.QPointXYZ(qp)) *
+              K(i, j, k, l) += (*swf)(qp_data.QPointXYZ(qp)) *
                                qp_data.ShapeGrad(i, qp)[dimension_ > 1 ? k : 2] *
                                qp_data.ShapeGrad(j, qp)[dimension_ > 1 ? l : 2] * qp_data.JxW(qp);
       }
