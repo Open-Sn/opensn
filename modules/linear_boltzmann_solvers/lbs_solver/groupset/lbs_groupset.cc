@@ -83,7 +83,8 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
-    "inner_linear_method", AllowableRangeList::New({"krylov_richardson", "gmres", "bicgstab"}));
+    "inner_linear_method",
+    AllowableRangeList::New({"classic_richardson", "krylov_richardson", "gmres", "bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
@@ -183,6 +184,8 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
   if (inner_linear_method == "krylov_richardson")
     iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
+  else if (inner_linear_method == "classic_richardson")
+    iterative_method_ = IterativeMethod::CLASSIC_RICHARDSON;
   else if (inner_linear_method == "gmres")
     iterative_method_ = IterativeMethod::KRYLOV_GMRES;
   else if (inner_linear_method == "bicgstab")
