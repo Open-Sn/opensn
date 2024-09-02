@@ -47,10 +47,6 @@ private:
   int max_iterations_;
   double tolerance_;
   bool verbose_;
-
-  double ComputeL2PhiChange() const;
-
-  double ComputePointwisePhiChange() const;
 };
 
 } // namespace opensn

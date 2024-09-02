@@ -681,4 +681,44 @@ operator-(const std::vector<double>& a, const std::vector<double>& b)
   return result;
 }
 
+double
+ComputeL2Change(std::vector<double>& x, std::vector<double>& y)
+{
+  assert(x.size() == y.size());
+
+  double norm = 0.0;
+  for (auto i = 0; i < x.size(); ++i)
+  {
+    double val = x[i] - y[i];
+    norm += val * val;
+  }
+
+  double global_norm = 0.0;
+  mpi_comm.all_reduce<double>(norm, global_norm, mpi::op::sum<double>());
+
+  return std::sqrt(global_norm);
+}
+
+double
+ComputePointwiseChange(std::vector<double>& x, std::vector<double>& y)
+{
+  assert(x.size() == y.size());
+
+  double pw_change = 0.0;
+  for (auto i = 0; i < x.size(); ++i)
+  {
+    double max = std::max(x[i], y[i]);
+    double delta = std::fabs(x[i] - y[i]);
+    if (max >= std::numeric_limits<double>::min())
+      pw_change = std::max(delta / max, pw_change);
+    else
+      pw_change = std::max(delta, pw_change);
+  }
+
+  double global_pw_change = 0.0;
+  mpi_comm.all_reduce<double>(pw_change, global_pw_change, mpi::op::max<double>());
+
+  return global_pw_change;
+}
+
 } // namespace opensn
