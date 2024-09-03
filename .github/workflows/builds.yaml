@@ -9,9 +9,6 @@ jobs:
   build:
     name: "${{ matrix.compiler }}"
     runs-on: [self-hosted]
-    env:
-        ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION: node16
-        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +21,7 @@ jobs:
           - clang/14.0.6
           - clang/16.0.6
           - clang/17.0.6
-          - intel/oneAPI-2021.4
+          - intel/oneapi-2024.1
     steps:
       - uses: actions/checkout@v3
       - name: build
@@ -44,4 +41,32 @@ jobs:
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/${{ matrix.compiler }}
+          test/run_tests -d tutorials -j 32 -v 1 -w 3
+
+  sanitize:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/clang/14.0.6
+          mkdir build && cd build
+          cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined,float-divide-by-zero,nullability,implicit-conversion \
+                -fsanitize-address-use-after-scope -fno-sanitize-recover" \
+                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,float-divide-by-zero,nullability,implicit-conversion \
+                -fsanitize-address-use-after-scope -fno-sanitize-recover" ..
+          make -j && cd .. 
+      - name: test
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/clang/14.0.6
+          test/run_tests -d test/ -j 32 -v 1 -w 3
+      - name: test tutorials
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles
+          module load opensn/clang/14.0.6
           test/run_tests -d tutorials -j 32 -v 1 -w 3
