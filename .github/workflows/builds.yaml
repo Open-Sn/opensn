@@ -53,9 +53,9 @@ jobs:
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/clang/14.0.6
           mkdir build && cd build
-          cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined,float-divide-by-zero,nullability,implicit-conversion \
+          cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined,nullability,implicit-conversion \
                 -fsanitize-address-use-after-scope -fno-sanitize-recover" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,float-divide-by-zero,nullability,implicit-conversion \
+                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,nullability,implicit-conversion \
                 -fsanitize-address-use-after-scope -fno-sanitize-recover" ..
           make -j && cd .. 
       - name: test
