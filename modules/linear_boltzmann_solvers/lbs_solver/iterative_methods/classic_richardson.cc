@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/math/linear_solver/linear_solver.h"
@@ -66,12 +67,12 @@ ClassicRichardson::Solve()
       lbs_solver.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi, phi_new);
     }
 
-    double pw_phi_change = lbs_solver.ComputePointwisePhiChange(groupset);
+    double pw_phi_change = ComputePointwisePhiChange(lbs_solver, groupset.id_);
     double rho = (k == 0) ? 0.0 : sqrt(pw_phi_change / pw_phi_change_prev);
     pw_phi_change_prev = pw_phi_change;
 
     psi_new_ = groupset.angle_agg_->GetNewDelayedAngularDOFsAsSTLVector();
-    double pw_psi_change = ComputePointwisePsiChange();
+    double pw_psi_change = ComputePointwiseChange(psi_new_, psi_old_);
 
     if ((pw_phi_change < std::max(groupset.residual_tolerance_ * (1.0 - rho), 1.0e-10)) &&
         (pw_psi_change < std::max(groupset.residual_tolerance_, 1.0e-10)))
@@ -106,26 +107,6 @@ ClassicRichardson::Solve()
   lbs_solver.QMomentsLocal() = saved_q_moments_local_;
 
   gs_context_ptr->PostSolveCallback();
-}
-
-double
-ClassicRichardson::ComputePointwisePsiChange()
-{
-  double pw_psi_change = 0.0;
-  for (size_t i = 0; i < psi_old_.size(); ++i)
-  {
-    double max_psi = std::max(psi_new_[i], psi_old_[i]);
-    double delta_psi = std::fabs(psi_new_[i] - psi_old_[i]);
-    if (max_psi >= std::numeric_limits<double>::min())
-      pw_psi_change = std::max(delta_psi / max_psi, pw_psi_change);
-    else
-      pw_psi_change = std::max(delta_psi, pw_psi_change);
-  }
-
-  double global_pw_psi_change = 0.0;
-  mpi_comm.all_reduce<double>(pw_psi_change, global_pw_psi_change, mpi::op::max<double>());
-
-  return global_pw_psi_change;
 }
 
 } // namespace opensn

@@ -463,6 +463,10 @@ LBSSolver::OptionsBlock()
   params.AddOptionalParameter(
     "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
+  params.AddOptionalParameter("ags_convergence_check",
+                              "l2",
+                              "Type of convergence check for AGS iterations. Valid values are "
+                              "`\"l2\"` and '\"pointwise\"'");
   params.AddOptionalParameter(
     "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter("power_field_function_on",
@@ -508,6 +512,8 @@ LBSSolver::OptionsBlock()
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
   params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
+  params.ConstrainParameterRange("ags_convergence_check",
+                                 AllowableRangeList::New({"l2", "pointwise"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
 
@@ -641,6 +647,13 @@ LBSSolver::SetOptions(const InputParameters& params)
 
     else if (spec.Name() == "ags_tolerance")
       options_.ags_tolerance = spec.GetValue<double>();
+
+    else if (spec.Name() == "ags_convergence_check")
+    {
+      auto check = spec.GetValue<std::string>();
+      if (check == "pointwise")
+        options_.ags_pointwise_convergence = true;
+    }
 
     else if (spec.Name() == "verbose_ags_iterations")
       options_.verbose_ags_iterations = spec.GetValue<bool>();
@@ -1589,47 +1602,6 @@ LBSSolver::InitializeBoundaries()
       }
     } // non-defaulted
   }   // for bndry id
-}
-
-double
-LBSSolver::ComputePointwisePhiChange(LBSGroupset& groupset)
-{
-  double pw_change = 0.0;
-  int gsi = groupset.groups_[0].id_;
-
-  for (const auto& cell : grid_ptr_->local_cells)
-  {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
-
-    for (int i = 0; i < cell.vertex_ids_.size(); ++i)
-    {
-      for (int m = 0; m < num_moments_; ++m)
-      {
-        size_t mapping = transport_view.MapDOF(i, m, gsi);
-        double* phi_new_m = &phi_new_local_[mapping];
-        double* phi_old_m = &phi_old_local_[mapping];
-
-        for (int g = 0; g < groupset.groups_.size(); ++g)
-        {
-          size_t map0 = transport_view.MapDOF(i, 0, gsi + g);
-          double abs_phi_m0 = fabs(phi_new_local_[map0]);
-          double abs_phi_old_m0 = fabs(phi_old_local_[map0]);
-          double max_phi = std::max(abs_phi_m0, abs_phi_old_m0);
-          double delta_phi = std::fabs(phi_new_m[g] - phi_old_m[g]);
-
-          if (max_phi >= std::numeric_limits<double>::min())
-            pw_change = std::max(delta_phi / max_phi, pw_change);
-          else
-            pw_change = std::max(delta_phi, pw_change);
-        }
-      }
-    }
-  }
-
-  double global_pw_change = 0.0;
-  mpi_comm.all_reduce<double>(pw_change, global_pw_change, mpi::op::max<double>());
-
-  return global_pw_change;
 }
 
 void

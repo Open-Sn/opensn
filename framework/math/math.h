@@ -213,4 +213,8 @@ double PowerIteration(const MatDbl& A,
                       int max_it = 2000,
                       double tol = 1.0e-13);
 
+double ComputePointwiseChange(std::vector<double>& x, std::vector<double>& y);
+
+double ComputeL2Change(std::vector<double>& x, std::vector<double>& y);
+
 } // namespace opensn

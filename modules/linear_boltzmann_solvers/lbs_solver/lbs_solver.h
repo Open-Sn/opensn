@@ -297,9 +297,6 @@ public:
                                 const std::vector<size_t>& m_indices,
                                 const std::vector<size_t>& g_indices);
 
-  /// Computes the pointwise difference between new and old phi.
-  double ComputePointwisePhiChange(LBSGroupset& groupset);
-
   /**
    * Compute the total fission production in the problem.
    * \author Zachary Hardy.
