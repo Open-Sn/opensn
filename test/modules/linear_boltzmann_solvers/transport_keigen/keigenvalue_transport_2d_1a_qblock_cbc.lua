@@ -4,7 +4,7 @@
 dofile("utils/qblock_mesh.lua")
 dofile("utils/qblock_materials.lua") --num_groups assigned here
 
---############################################### Setup Physics
+-- Setup Physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
@@ -13,7 +13,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_gmres",
       l_max_its = 50,
       gmres_restart_interval = 50,
@@ -50,13 +50,13 @@ lbs_block = {
 --}
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
---lbs.SetOptions(phys1, lbs_options)
+--phys1:SetOptions(lbs_options)
 
-k_solver0 = lbs.PowerIterationKEigen.Create({ lbs_solver_handle = phys1 })
-solver.Initialize(k_solver0)
-solver.Execute(k_solver0)
+k_solver0 = lbs.PowerIterationKEigen.Create({ lbs_solver = phys1 })
+k_solver0:Initialize()
+k_solver0:Execute()
 
-fflist, count = lbs.GetScalarFieldFunctionList(phys1)
+fflist = lbs.GetScalarFieldFunctionList(phys1)
 
 --fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 

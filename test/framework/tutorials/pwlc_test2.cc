@@ -4,23 +4,22 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "lua/framework/console/console.h"
-#include "lua/framework/lua.h"
+#include "lua/lib/console.h"
+#include "lua/lib/types.h"
 
 using namespace opensn;
 using namespace opensnlua;
 
-namespace unit_sim_tests
+namespace unit_tests
 {
 
-/**This is a simple test of the Finite Volume spatial discretization applied
- * to Laplace's problem but with a manufactured solution. */
-ParameterBlock SimTest04_PWLC(const InputParameters& params);
+/**
+ * This is a simple test of the Finite Volume spatial discretization applied
+ * to Laplace's problem but with a manufactured solution.
+ */
 
-RegisterWrapperFunctionInNamespace(unit_tests, SimTest04_PWLC, nullptr, SimTest04_PWLC);
-
-ParameterBlock
-SimTest04_PWLC(const InputParameters& params)
+void
+SimTest04_PWLC()
 {
   opensn::log.Log() << "Coding Tutorial 4";
 
@@ -60,6 +59,9 @@ SimTest04_PWLC(const InputParameters& params)
 
   lua_State* L = opensnlua::Console::GetInstance().GetConsoleState();
 
+  auto MMS_phi = luabridge::getGlobal(L, "MMS_phi");
+  auto MMS_q = luabridge::getGlobal(L, "MMS_q");
+
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid.local_cells)
@@ -85,8 +87,10 @@ SimTest04_PWLC(const InputParameters& params)
         Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
-        cell_rhs(i) += LuaCall<double>(L, "MMS_q", fe_vol_data.QPointXYZ(qp)) *
-                       fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+      {
+        double res = MMS_q(fe_vol_data.QPointXYZ(qp))[0];
+        cell_rhs(i) += res * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+      }
     } // for i
 
     // Flag nodes for being on dirichlet boundary
@@ -117,7 +121,7 @@ SimTest04_PWLC(const InputParameters& params)
       if (node_boundary_flag[i]) // if dirichlet node
       {
         MatSetValue(A, imap[i], imap[i], 1.0, ADD_VALUES);
-        auto bval = LuaCall<double>(L, "MMS_phi", cell_node_xyzs[i]);
+        double bval = MMS_phi(cell_node_xyzs[i])[0];
         VecSetValue(b, imap[i], bval, ADD_VALUES);
       }
       else
@@ -128,7 +132,7 @@ SimTest04_PWLC(const InputParameters& params)
             MatSetValue(A, imap[i], imap[j], Acell(i, j), ADD_VALUES);
           else
           {
-            auto bval = LuaCall<double>(L, "MMS_phi", cell_node_xyzs[j]);
+            double bval = MMS_phi(cell_node_xyzs[j])[0];
             VecSetValue(b, imap[i], -Acell(i, j) * bval, ADD_VALUES);
           }
         } // for j
@@ -204,7 +208,7 @@ SimTest04_PWLC(const InputParameters& params)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      auto phi_true = LuaCall<double>(L, "MMS_phi", fe_vol_data.QPointXYZ(qp));
+      double phi_true = MMS_phi(fe_vol_data.QPointXYZ(qp))[0];
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }
@@ -217,8 +221,8 @@ SimTest04_PWLC(const InputParameters& params)
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
                     << " Num-cells: " << grid.GetGlobalNumberOfCells();
-
-  return ParameterBlock();
 }
 
-} // namespace unit_sim_tests
+BIND_FUNCTION(unit_tests, SimTest04_PWLC);
+
+} // namespace unit_tests

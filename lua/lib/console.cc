@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/log_exceptions.h"
@@ -126,6 +126,13 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 void
 Console::DumpRegister() const
 {
+}
+
+bool
+Console::Bind(std::function<void(lua_State* L)> bind)
+{
+  bind(GetInstance().GetConsoleState());
+  return true;
 }
 
 } // namespace opensnlua

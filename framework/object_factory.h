@@ -7,6 +7,7 @@
 #include "framework/object.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/utils/utils.h"
+#include <memory>
 
 /**
  * Macro for registering an object within the ObjectFactory singleton.
@@ -58,26 +59,6 @@
 #define OpenSnRegisterObjectParametersOnly(object_name)                                            \
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name)
-
-/**
- * Macro for registering a pure input parameters block within the
- * ObjectFactory singleton AND giving it a custom name
- * \param namespace_name Name of the namespace within which the object is.
- * \param block_name Name of the object in the registry.
- * \param syntax_function Actual syntax function for this object
- * Example:
- * \code
- * OpenSnRegisterSyntaxBlockInNamespace(kaka, Zorba, ZorbaSyntaxFunction);
- * \endcode
- *
- * \note Remember to include the header "framework/object_factory.h"*/
-#define OpenSnRegisterSyntaxBlockInNamespace(namespace_name, block_name, syntax_function)          \
-  static char OpenSnJoinWords(unique_var_name_syntax_##block_name##_, __COUNTER__) =               \
-    opensn::ObjectFactory::AddSyntaxBlockToRegistry(#namespace_name, #block_name, syntax_function)
-
-#define OpenSnRegisterSyntaxBlock(block_name, syntax_function)                                     \
-  static char OpenSnJoinWords(unique_var_name_syntax_##block_name##_, __COUNTER__) =               \
-    opensn::ObjectFactory::AddSyntaxBlockToRegistry(#block_name, syntax_function)
 
 namespace opensn
 {
@@ -191,6 +172,26 @@ public:
    * handle to the object.
    */
   size_t MakeRegisteredObjectOfType(const std::string& type, const ParameterBlock& params) const;
+
+  template <class TYPE>
+  std::shared_ptr<TYPE> Create(const std::string& type, const ParameterBlock& params) const
+  {
+    if (object_registry_.count(type) == 0)
+      throw std::logic_error("No registered type \"" + type + "\" found.");
+
+    auto object_entry = object_registry_.at(type);
+    if (not object_entry.constructor_func)
+      throw std::runtime_error(
+        "Object is not constructable since it has no registered constructor");
+
+    auto input_params = object_entry.get_in_params_func();
+    input_params.SetObjectType(type);
+    input_params.SetErrorOriginScope(type);
+    input_params.AssignParameters(params);
+    auto obj = std::make_shared<TYPE>(input_params);
+    obj->PushOntoStack(obj);
+    return obj;
+  }
 
   /// Returns the input parameters of a registered object.
   InputParameters GetRegisteredObjectParameters(const std::string& type) const;

@@ -33,6 +33,14 @@ CellVolumeIntegralPostProcessor::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<CellVolumeIntegralPostProcessor>
+CellVolumeIntegralPostProcessor::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<CellVolumeIntegralPostProcessor>("post::CellVolumeIntegralPostProcessor",
+                                                         params);
+}
+
 CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     GridBasedFieldFunctionInterface(params),
@@ -45,7 +53,7 @@ CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputPara
 void
 CellVolumeIntegralPostProcessor::Initialize()
 {
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto grid_field_function = GetGridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"
@@ -53,7 +61,7 @@ CellVolumeIntegralPostProcessor::Initialize()
 
   const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
 
-  const auto* logical_volume_ptr_ = GetLogicalVolume();
+  const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
   {
     cell_local_ids_.reserve(grid.local_cells.size());
@@ -76,7 +84,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   if (not initialized_)
     Initialize();
 
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto grid_field_function = GetGridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"

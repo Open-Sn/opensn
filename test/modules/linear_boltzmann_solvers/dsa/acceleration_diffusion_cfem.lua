@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 if nmesh == nil then
   nmesh = 10
 end
@@ -15,9 +15,9 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
 mesh.SetupOrthogonalBoundaries()
@@ -29,7 +29,7 @@ function MMS_q(pt)
   return math.pi * math.pi * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
 end
 
-unit_tests.acceleration_Diffusion_CFEM()
+unit_sim_tests.acceleration_Diffusion_CFEM()
 MPIBarrier()
 if location_id == 0 then
   --os.execute("rm SimTest_92*")

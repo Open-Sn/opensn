@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/physics/solver.h"
+#include "framework/physics/time_steppers/time_stepper.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/physics/time_steppers/constant_time_stepper.h"
@@ -28,7 +29,7 @@ Solver::GetInputParameters()
     "max_time_steps", -1, "Maximum number of timesteps to allow. Negative values disables this.");
 
   params.AddOptionalParameter("timestepper",
-                              0,
+                              std::shared_ptr<TimeStepper>{},
                               "Handle to a timestepper. If not supplied then a ConstantTimeStepper "
                               "will be created.");
 
@@ -59,12 +60,9 @@ Solver::Solver(const InputParameters& params)
 std::shared_ptr<TimeStepper>
 Solver::InitTimeStepper(const InputParameters& params)
 {
-  const auto& user_params = params.ParametersAtAssignment();
-
-  if (user_params.Has("timestepper"))
+  if (params.IsParameterValid("timestepper"))
   {
-    auto stepper = GetStackItemPtrAsType<TimeStepper>(
-      object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
+    auto stepper = params.GetParamValue<std::shared_ptr<TimeStepper>>("timestepper");
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));

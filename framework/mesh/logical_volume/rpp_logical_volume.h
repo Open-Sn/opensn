@@ -22,7 +22,6 @@ class RPPLogicalVolume : public LogicalVolume
   };
 
 public:
-  static InputParameters GetInputParameters();
   explicit RPPLogicalVolume(const InputParameters& params);
 
   bool Inside(const Vector3& point) const override;
@@ -32,6 +31,10 @@ protected:
   double ymin_, ymax_;
   double zmin_, zmax_;
   bool infx_, infy_, infz_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<RPPLogicalVolume> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

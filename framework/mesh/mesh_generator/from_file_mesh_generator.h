@@ -11,7 +11,6 @@ namespace opensn
 class FromFileMeshGenerator : public MeshGenerator
 {
 public:
-  static InputParameters GetInputParameters();
   explicit FromFileMeshGenerator(const InputParameters& params);
 
 protected:
@@ -20,6 +19,10 @@ protected:
   const std::string filename_;
   const std::string material_id_fieldname_;
   const std::string boundary_id_fieldname_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<FromFileMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

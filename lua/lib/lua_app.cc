@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "lua/framework/lua_app.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/lua_app.h"
+#include "lua/lib/console.h"
 #include "framework/event_system/event.h"
 #include "framework/event_system/system_wide_event_publisher.h"
 #include "framework/logging/log.h"
@@ -27,6 +27,11 @@ LuaApp::LuaApp(const mpi::Communicator& comm)
   : sim_option_interactive_(true), allow_petsc_error_handler_(false)
 {
   opensn::mpi_comm = comm;
+
+  auto& L = Console::GetInstance().GetConsoleState();
+  luabridge::getGlobalNamespace(L)
+    .addVariable("location_id", opensn::mpi_comm.rank())
+    .addVariable("number_of_processes", opensn::mpi_comm.size());
 }
 
 int

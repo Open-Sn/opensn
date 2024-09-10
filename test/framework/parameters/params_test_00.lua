@@ -15,4 +15,4 @@ block = {
   },
 }
 
-unit_tests.ParameterBlock_Test00(--[[verbose=]] true, block)
+unit_tests.ParameterBlock_Test00(block)

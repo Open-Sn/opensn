@@ -11,15 +11,17 @@ namespace opensn
 class SteadyStateSolver : public opensn::Solver
 {
 protected:
-  LBSSolver& lbs_solver_;
+  std::shared_ptr<LBSSolver> lbs_solver_;
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit SteadyStateSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<SteadyStateSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

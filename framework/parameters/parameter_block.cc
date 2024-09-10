@@ -3,7 +3,9 @@
 
 #include "framework/parameters/parameter_block.h"
 #include <algorithm>
+#include <memory>
 #include <sstream>
+#include <iostream>
 
 namespace opensn
 {
@@ -25,6 +27,8 @@ ParameterBlockTypeName(ParameterBlockType type)
       return "ARRAY";
     case ParameterBlockType::BLOCK:
       return "BLOCK";
+    case ParameterBlockType::USER_DATA:
+      return "USER_DATA";
     default:
       throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": No name associated with type");
   }
@@ -37,7 +41,7 @@ ParameterBlock::SetBlockName(const std::string& name)
 }
 
 ParameterBlock::ParameterBlock(const std::string& name)
-  : type_(ParameterBlockType::BLOCK), name_(name)
+  : type_(ParameterBlockType::BLOCK), name_(name), value_ptr_(nullptr)
 {
 }
 
@@ -45,10 +49,8 @@ ParameterBlock::ParameterBlock(const ParameterBlock& other)
 {
   type_ = other.type_;
   name_ = other.name_;
-
   if (other.value_ptr_)
     value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
-
   parameters_ = other.parameters_;
   error_origin_scope_ = other.error_origin_scope_;
 }
@@ -60,10 +62,8 @@ ParameterBlock::operator=(const ParameterBlock& other)
   {
     type_ = other.type_;
     name_ = other.name_;
-
     if (other.value_ptr_)
       value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
-
     parameters_ = other.parameters_;
     error_origin_scope_ = other.error_origin_scope_;
   }
@@ -127,6 +127,7 @@ ParameterBlock::Value() const
     case ParameterBlockType::FLOAT:
     case ParameterBlockType::STRING:
     case ParameterBlockType::INTEGER:
+    case ParameterBlockType::USER_DATA:
     {
       if (value_ptr_ == nullptr)
         throw std::runtime_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +

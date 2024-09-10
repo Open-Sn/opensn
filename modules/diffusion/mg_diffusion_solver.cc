@@ -30,9 +30,6 @@ MGDiffusionSolver::MGBoundary::MGBoundary(BoundaryType type,
 }
 
 OpenSnRegisterObjectAliasInNamespace(diffusion, MGSolver, MGDiffusionSolver);
-OpenSnRegisterSyntaxBlockInNamespace(diffusion,
-                                     MGBoundaryOptionsBlock,
-                                     MGDiffusionSolver::BoundaryOptionsBlock);
 
 PetscErrorCode
 MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
@@ -175,11 +172,9 @@ MGDiffusionSolver::~MGDiffusionSolver()
 void
 MGDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  const auto& user_params = params.ParametersAtAssignment();
-
-  for (size_t p = 0; p < user_params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = params.GetParam(p);
     if (spec.Name() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
@@ -198,9 +193,8 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = "MGSolver::SetBoundaryOptions";
 
-  const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary = user_params.GetParamValue<std::string>("boundary");
-  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary = params.GetParamValue<std::string>("boundary");
+  const auto bc_type = params.GetParamValue<std::string>("type");
   const auto bc_type_lc = LowerCase(bc_type);
 
   if (bc_type_lc == "reflecting")
@@ -218,7 +212,7 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   {
     std::vector<double> a_values(num_groups_, 0.0);
     std::vector<double> b_values(num_groups_, 1.0);
-    const auto f_values = user_params.GetParamVectorValue<double>("f");
+    const auto f_values = params.GetParamVectorValue<double>("f");
     if (f_values.size() != num_groups_)
       throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
                                   " values in the 'f' parameter.");
@@ -245,13 +239,13 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "robin")
   {
-    auto a_values = user_params.GetParamVectorValue<double>("a");
+    auto a_values = params.GetParamVectorValue<double>("a");
     if (a_values.size() != num_groups_)
       throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
                                   " values in the 'a' parameter.");
 
-    auto b_values = user_params.GetParamVectorValue<double>("b");
-    auto f_values = user_params.GetParamVectorValue<double>("f");
+    auto b_values = params.GetParamVectorValue<double>("b");
+    auto f_values = params.GetParamVectorValue<double>("f");
     BoundaryInfo bndry_info;
     bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {a_values, b_values, f_values};

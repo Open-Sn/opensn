@@ -26,6 +26,13 @@ SphereLogicalVolume::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<SphereLogicalVolume>
+SphereLogicalVolume::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<SphereLogicalVolume>("logvol::SphereLogicalVolume", params);
+}
+
 SphereLogicalVolume::SphereLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     r_(params.GetParamValue<double>("r")),

@@ -14,6 +14,14 @@
 namespace opensn
 {
 
+std::shared_ptr<FieldFunctionInterpolationLine>
+FieldFunctionInterpolationLine::Create()
+{
+  auto ffi = std::make_shared<FieldFunctionInterpolationLine>();
+  field_func_interpolation_stack.emplace_back(ffi);
+  return ffi;
+}
+
 void
 FieldFunctionInterpolationLine::Initialize()
 {
@@ -107,7 +115,7 @@ FieldFunctionInterpolationLine::Execute()
 }
 
 void
-FieldFunctionInterpolationLine::ExportToCSV(std::string base_name)
+FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
 {
   // Populate local coordinate and interpolation data
   std::vector<double> local_data;

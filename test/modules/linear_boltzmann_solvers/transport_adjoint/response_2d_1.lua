@@ -27,7 +27,7 @@ for i = 0, N do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set material IDs
 mesh.SetUniformMaterialID(0)
@@ -39,7 +39,7 @@ vol1a = logvol.RPPLogicalVolume.Create({
   infz = true,
 })
 
-mesh.SetMaterialIDFromLogicalVolume(vol1a, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1a, 1, true)
 
 vol0 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -47,7 +47,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   infy = true,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol2 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -56,7 +56,7 @@ vol2 = logvol.RPPLogicalVolume.Create({
   ymax = 2 * 0.166666,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol2, 2)
+mesh.SetMaterialIDFromLogicalVolume(vol2, 2, true)
 
 vol1b = logvol.RPPLogicalVolume.Create({
   xmin = -1 + 2.5,
@@ -65,7 +65,7 @@ vol1b = logvol.RPPLogicalVolume.Create({
   ymax = L,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1b, 1, true)
 
 -- Create materials
 materials = {}
@@ -74,9 +74,12 @@ materials[2] = mat.AddMaterial("Test Material2")
 materials[3] = mat.AddMaterial("Test Material3")
 
 -- Add cross sections to materials
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.01, 0.01)
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.1 * 20, 0.8)
-mat.SetProperty(materials[3], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 0.3 * 20, 0.0)
+xs_1g1 = xs.CreateSimpleOneGroup(0.01, 0.01)
+materials[1]:SetTransportXSections(xs_1g1)
+xs_1g2 = xs.CreateSimpleOneGroup(0.1 * 20, 0.8)
+materials[2]:SetTransportXSections(xs_1g2)
+xs_1g3 = xs.CreateSimpleOneGroup(0.3 * 20, 0.0)
+materials[3]:SetTransportXSections(xs_1g3)
 
 -- Create sources
 fwd_src = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = { 3.0 } })
@@ -90,7 +93,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 0 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 500,
@@ -105,10 +108,10 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Forward solve
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 -- Get field functions
 ff_m0 = fieldfunc.GetHandleByName("phi_g000_m00")
@@ -125,34 +128,34 @@ qoi_vol = logvol.RPPLogicalVolume.Create({
 })
 
 -- Compute QoI
-ffi = fieldfunc.FFInterpolationCreate(VOLUME)
-fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
-fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff_m0)
+ffi = fieldfunc.FieldFunctionInterpolationVolume.Create()
+ffi:SetOperationType(OP_SUM)
+ffi:SetLogicalVolume(qoi_vol)
+ffi:AddFieldFunction(ff_m0)
 
-fieldfunc.Initialize(ffi)
-fieldfunc.Execute(ffi)
-fwd_qoi = fieldfunc.GetValue(ffi)
+ffi:Initialize(ffi)
+ffi:Execute(ffi)
+fwd_qoi = ffi:GetValue()
 
 -- Create adjoint source
-adj_src = lbs.VolumetricSource.Create({ logical_volume_handle = qoi_vol, group_strength = { 1.0 } })
+adj_src = lbs.VolumetricSource.Create({ logical_volume = qoi_vol, group_strength = { 1.0 } })
 
 -- Switch to adjoint mode
 adjoint_options = {
   adjoint = true,
   volumetric_sources = { adj_src },
 }
-lbs.SetOptions(phys, adjoint_options)
+phys:SetOptions(adjoint_options)
 
 -- Adjoint solve, write results
-solver.Execute(ss_solver)
+ss_solver:Execute()
 lbs.WriteFluxMoments(phys, "adjoint_2d_1")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_1" } } }
 mat_sources = { { material_id = 2, strength = { 3.0 } } }
 response_options = {
-  lbs_solver_handle = phys,
+  lbs_solver = phys,
   options = {
     buffers = buffers,
     sources = { material = mat_sources },
@@ -161,7 +164,7 @@ response_options = {
 evaluator = lbs.ResponseEvaluator.Create(response_options)
 
 -- Evaluate response
-adj_qoi = lbs.EvaluateResponse(evaluator, "buff")
+adj_qoi = evaluator:EvaluateResponse("buff")
 
 -- Print results
 log.Log(LOG_0, string.format("QoI Value=%.5e", fwd_qoi))

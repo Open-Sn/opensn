@@ -41,7 +41,6 @@ public:
   };
 
 public:
-  static InputParameters GetInputParameters();
   explicit PointSource(const InputParameters& params);
 
   /**
@@ -67,6 +66,10 @@ private:
 
   std::vector<Subscriber> subscribers_;
   size_t num_global_subscribers_ = 0;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PointSource> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

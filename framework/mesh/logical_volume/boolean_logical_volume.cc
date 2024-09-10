@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/logical_volume/boolean_logical_volume.h"
+#include "framework/mesh/mesh.h"
 #include "framework/object_factory.h"
 
 namespace opensn
@@ -10,9 +11,6 @@ namespace opensn
 InputParameters BooleanLogicalVolumeArgumentPair();
 
 OpenSnRegisterObjectInNamespace(logvol, BooleanLogicalVolume);
-OpenSnRegisterSyntaxBlockInNamespace(logvol,
-                                     BooleanLogicalVolumeArgumentPair,
-                                     BooleanLogicalVolumeArgumentPair);
 
 InputParameters
 BooleanLogicalVolume::GetInputParameters()
@@ -31,6 +29,13 @@ BooleanLogicalVolume::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<BooleanLogicalVolume>
+BooleanLogicalVolume::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<BooleanLogicalVolume>("logvol::BooleanLogicalVolume", params);
+}
+
 BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : LogicalVolume(params)
 {
   const auto& input_parts = params.GetParam("parts");
@@ -45,10 +50,8 @@ BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : Logi
 
     part_params.AssignParameters(part);
 
-    const size_t lv_handle = part_params.GetParamValue<size_t>("lv");
-    auto lv_ptr = GetStackItemPtrAsType<LogicalVolume>(object_stack, lv_handle, __FUNCTION__);
-
-    parts.emplace_back(part_params.GetParamValue<bool>("op"), lv_ptr);
+    auto lv = part_params.GetParamValue<std::shared_ptr<LogicalVolume>>("lv");
+    parts.emplace_back(part_params.GetParamValue<bool>("op"), lv);
   }
 }
 
@@ -63,7 +66,7 @@ BooleanLogicalVolumeArgumentPair()
     "op",
     "Boolean value indicating the volume sense. True means inside, False means "
     "outside");
-  params.AddRequiredParameter<size_t>("lv", "Handle to a logical volume.");
+  params.AddRequiredParameter<std::shared_ptr<LogicalVolume>>("lv", "Logical volume.");
 
   return params;
 }

@@ -28,7 +28,6 @@ class LBSSolver;
 class VolumetricSource : public Object
 {
 public:
-  static InputParameters GetInputParameters();
   explicit VolumetricSource(const InputParameters& params);
 
   void Initialize(const LBSSolver& lbs_solver);
@@ -59,6 +58,10 @@ private:
   size_t num_global_subscribers_ = 0;
 
   std::vector<uint64_t> subscribers_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<VolumetricSource> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

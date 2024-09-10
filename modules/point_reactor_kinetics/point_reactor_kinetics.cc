@@ -52,8 +52,16 @@ PRKSolver::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<PRKSolver>
+PRKSolver::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  auto obj = factory.Create<PRKSolver>("prk::PRKSolver", params);
+  return obj;
+}
+
 PRKSolver::PRKSolver(const InputParameters& params)
-  : opensn::Solver(params.GetParamValue<std::string>("name")),
+  : opensn::Solver(params),
     lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
     betas_(params.GetParamVectorValue<double>("precursor_betas")),
     gen_time_(params.GetParamValue<double>("gen_time")),

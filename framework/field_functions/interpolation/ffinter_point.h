@@ -37,5 +37,9 @@ public:
 
   /// Gets the value of the field function evaluation at the point.
   double GetPointValue() const;
+
+public:
+  static std::shared_ptr<FieldFunctionInterpolationPoint> Create();
 };
+
 } // namespace opensn

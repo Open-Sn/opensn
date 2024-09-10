@@ -352,6 +352,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (log.GetVerbosity() >= 2)
       log.Log0Verbose2() << "Setting parameter " << param_name;
     input_param = param;
+    parameter_valid_[param_name] = true;
   } // for input params
 
   if (not err_stream.str().empty())
@@ -423,7 +424,6 @@ InputParameters::DumpParameters() const
   log.Log() << "DESCRIPTION_END\n";
 
   log.Log() << "DOC_GROUP " << doc_group_;
-
   const std::string sp2 = "  ";
   const std::string sp4 = "    ";
   const auto params = Parameters();
@@ -474,6 +474,16 @@ InputParameters::DumpParameters() const
 
     log.Log() << sp2 << "PARAM_END";
   }
+}
+
+bool
+InputParameters::IsParameterValid(const std::string& param_name) const
+{
+  auto it = parameter_valid_.find(param_name);
+  if (it != parameter_valid_.end())
+    return it->second;
+  else
+    return false;
 }
 
 } // namespace opensn

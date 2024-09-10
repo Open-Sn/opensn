@@ -9,7 +9,7 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 -- Create cross sections
 xss = {}
@@ -18,17 +18,15 @@ for m = 0, 6 do
   xss[tostring(m)] = xs.Create()
 end
 
-xs.Set(xss["0"], OPENSN_XSFILE, "c5g7/materials/XS_water.xs")
-xs.Set(xss["1"], OPENSN_XSFILE, "c5g7/materials/XS_UO2.xs")
-xs.Set(xss["2"], OPENSN_XSFILE, "c5g7/materials/XS_7pMOX.xs")
-xs.Set(xss["3"], OPENSN_XSFILE, "c5g7/materials/XS_guide_tube.xs")
-xs.Set(xss["4"], OPENSN_XSFILE, "c5g7/materials/XS_4_3pMOX.xs")
-xs.Set(xss["5"], OPENSN_XSFILE, "c5g7/materials/XS_8_7pMOX.xs")
-xs.Set(xss["6"], OPENSN_XSFILE, "c5g7/materials/XS_fission_chamber.xs")
+xss["0"] = xs.LoadFromOpenSn("c5g7/materials/XS_water.xs")
+xss["1"] = xs.LoadFromOpenSn("c5g7/materials/XS_UO2.xs")
+xss["2"] = xs.LoadFromOpenSn("c5g7/materials/XS_7pMOX.xs")
+xss["3"] = xs.LoadFromOpenSn("c5g7/materials/XS_guide_tube.xs")
+xss["4"] = xs.LoadFromOpenSn("c5g7/materials/XS_4_3pMOX.xs")
+xss["5"] = xs.LoadFromOpenSn("c5g7/materials/XS_8_7pMOX.xs")
+xss["6"] = xs.LoadFromOpenSn("c5g7/materials/XS_fission_chamber.xs")
 
-water_xs = xs.Get(xss["0"])
-
-num_groups = water_xs["num_groups"]
+num_groups = xss["0"].num_groups
 log.Log(LOG_0, "Num groups: " .. tostring(num_groups))
 
 -- Create materials
@@ -36,7 +34,7 @@ materials = {}
 for m = 0, 6 do
   key = tostring(m)
   materials[key] = mat.AddMaterial("Material_" .. key)
-  mat.SetProperty(materials[key], TRANSPORT_XSECTIONS, EXISTING, xss[key])
+  materials[key]:SetTransportXSections(xss[key])
 end
 
 -- Angular quadrature
@@ -49,7 +47,7 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_gmres",
       l_max_its = 5,
       l_abs_tol = 1.0e-10,
@@ -79,13 +77,13 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
 
 -- Execute Solver
 k_solver = lbs.PowerIterationKEigen.Create({
-  lbs_solver_handle = phys1,
+  lbs_solver = phys1,
   k_tol = 1.0e-8,
 })
-solver.Initialize(k_solver)
-solver.Execute(k_solver)
+k_solver:Initialize()
+k_solver:Execute()
 
 if master_export == nil then
-  fflist, count = lbs.GetScalarFieldFunctionList(phys1)
+  fflist = lbs.GetScalarFieldFunctionList(phys1)
   fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
 end

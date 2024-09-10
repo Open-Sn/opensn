@@ -18,7 +18,7 @@ class GridFaceHistogram;
 class MeshGenerator;
 
 /// Encapsulates all the necessary information required to fully define a computational domain.
-class MeshContinuum
+class MeshContinuum : public std::enable_shared_from_this<MeshContinuum>
 {
 public:
   MeshContinuum();
@@ -155,8 +155,8 @@ public:
 
   /// Sets boundary id's using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
-                                bool sense,
-                                const std::string& boundary_name);
+                                const std::string& boundary_name,
+                                bool sense = true);
 
   void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
 

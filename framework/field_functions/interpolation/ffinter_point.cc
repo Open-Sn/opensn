@@ -11,6 +11,14 @@
 namespace opensn
 {
 
+std::shared_ptr<FieldFunctionInterpolationPoint>
+FieldFunctionInterpolationPoint::Create()
+{
+  auto ffi = std::make_shared<FieldFunctionInterpolationPoint>();
+  field_func_interpolation_stack.emplace_back(ffi);
+  return ffi;
+}
+
 void
 FieldFunctionInterpolationPoint::Initialize()
 {

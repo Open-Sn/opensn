@@ -27,7 +27,7 @@ private:
   std::string doc_group_;
   std::map<std::string, InputParameterTag> parameter_class_tags_;
   std::map<std::string, std::string> parameter_doc_string_;
-
+  std::map<std::string, bool> parameter_valid_;
   std::map<std::string, std::string> deprecation_warning_tags_;
   std::map<std::string, std::string> deprecation_error_tags_;
   std::map<std::string, std::string> renamed_error_tags_;
@@ -164,6 +164,8 @@ public:
    * an optional parameter or not.
    */
   const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
+
+  bool IsParameterValid(const std::string& param_name) const;
 
   /// Marks a parameters as deprecated but will only produce a warning.
   void MarkParamaterDeprecatedWarning(const std::string& param_name,

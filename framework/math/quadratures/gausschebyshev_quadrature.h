@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/math/quadratures/gauss_quadrature.h"
+#include "framework/object_factory.h"
 
 namespace opensn
 {
@@ -18,8 +19,6 @@ private:
   void Initialize(unsigned int N);
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit GaussChebyshevQuadrature(const InputParameters& params);
 
   /**
@@ -27,6 +26,10 @@ public:
    * desired quadrature points. The order of the quadrature will be 2N-1.
    */
   explicit GaussChebyshevQuadrature(unsigned int N, bool verbose = false);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GaussChebyshevQuadrature> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

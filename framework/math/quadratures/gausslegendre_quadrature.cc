@@ -35,12 +35,17 @@ GaussLegendreQuadrature::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<GaussLegendreQuadrature>
+GaussLegendreQuadrature::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<GaussLegendreQuadrature>("squad::GaussLegendreQuadrature", params);
+}
+
 GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
   : GaussQuadrature(params)
 {
-  const auto& assigned_params = params.ParametersAtAssignment();
-
-  const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
+  const int param_count = int(params.IsParameterValid("order")) + int(params.IsParameterValid("N"));
   OpenSnInvalidArgumentIf(param_count == 2,
                           "Either \"order\" or \"N\" must be specified, not both");
 
@@ -48,14 +53,14 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
 
   const double tol = params.GetParamValue<double>("root_finding_tol");
 
-  if (assigned_params.Has("order"))
+  if (params.IsParameterValid("order"))
   {
     const unsigned int n = std::ceil((static_cast<int>(order_) + 1) / 2.0);
     Initialize(n, verbose_, max_iters, tol);
   }
   else
   {
-    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    const auto n = params.GetParamValue<unsigned int>("N");
     order_ = static_cast<QuadratureOrder>(std::min(2 * n + 1, 43u));
     Initialize(n, verbose_, max_iters, tol);
   }

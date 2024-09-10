@@ -14,7 +14,7 @@ namespace opensn
 class NonLinearKEigen : public opensn::Solver
 {
 private:
-  LBSSolver& lbs_solver_;
+  std::shared_ptr<LBSSolver> lbs_solver_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
 
@@ -22,13 +22,15 @@ private:
   int num_initial_power_its_;
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit NonLinearKEigen(const InputParameters& params);
 
   void Initialize() override;
 
   void Execute() override;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<NonLinearKEigen> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

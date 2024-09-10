@@ -12,7 +12,7 @@ class TimeIntegration;
 class TransientSolver : public opensn::Solver
 {
 protected:
-  LBSSolver& lbs_solver_;
+  std::shared_ptr<LBSSolver> lbs_solver_;
   std::shared_ptr<TimeIntegration> time_integration_;
 
 public:

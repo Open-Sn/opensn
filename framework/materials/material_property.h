@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace opensn
 {
@@ -17,7 +18,7 @@ enum class PropertyType
 };
 
 /// Base class for material properties.
-class MaterialProperty
+class MaterialProperty : public std::enable_shared_from_this<MaterialProperty>
 {
 private:
   const PropertyType type_;

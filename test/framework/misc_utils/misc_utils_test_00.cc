@@ -3,19 +3,15 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 
 using namespace opensn;
 
 namespace unit_tests
 {
 
-ParameterBlock misc_utils_Test00(const InputParameters& params);
-
-RegisterWrapperFunctionInNamespace(unit_tests, misc_utils_Test00, nullptr, misc_utils_Test00);
-
-ParameterBlock
-misc_utils_Test00(const InputParameters&)
+void
+misc_utils_Test00()
 {
   opensn::log.Log() << "GOLD_BEGIN";
   opensn::log.Log() << "Testing misc_utils::PrintIterationProgress\n";
@@ -32,7 +28,8 @@ misc_utils_Test00(const InputParameters&)
   opensn::log.Log() << progress.str();
 
   opensn::log.Log() << "GOLD_END";
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, misc_utils_Test00);
 
 } //  namespace unit_tests

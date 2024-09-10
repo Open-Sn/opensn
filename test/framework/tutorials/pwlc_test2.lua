@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 if nmesh == nil then
   nmesh = 10
 end
@@ -14,9 +14,9 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
 function MMS_phi(pt)
