@@ -70,21 +70,12 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
     local_so_cell_mapping[cell.local_id_] = csoi; // Set mapping
 
-    SlotDynamics(cell,
-                 spds,
-                 grid_face_histogram,
-                 lock_boxes,
-                 delayed_lock_box,
-                 location_boundary_dependency_set);
+    SlotDynamics(cell, spds, grid_face_histogram, lock_boxes, delayed_lock_box);
 
   } // for csoi
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
   opensn::mpi_comm.barrier();
-
-  // Populate boundary dependencies
-  for (auto bndry : location_boundary_dependency_set)
-    boundary_dependencies.push_back(bndry);
 
   // PERFORM INCIDENT MAPPING
   // Loop over cells in sweep order
@@ -129,16 +120,11 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
                                   const SPDS& spds,
                                   const GridFaceHistogram& grid_face_histogram,
                                   std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
-                                  std::vector<std::pair<int, short>>& delayed_lock_box,
-                                  std::set<int>& location_boundary_dependency_set)
+                                  std::vector<std::pair<int, short>>& delayed_lock_box)
 {
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::SlotDynamics");
 
   const MeshContinuum& grid = spds.Grid();
-
-  Vector3 ihat(1.0, 0.0, 0.0);
-  Vector3 jhat(0.0, 1.0, 0.0);
-  Vector3 khat(0.0, 0.0, 1.0);
 
   // Loop over faces but process only incident faces
   std::vector<short> inco_face_face_category;
@@ -214,25 +200,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         }
 
       } // if local
-      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BOUNDARY DEPENDENCE
-      else if (not face.has_neighbor_)
-      {
-        const Vector3& face_norm = face.normal_;
-
-        if (face_norm.Dot(ihat) < -0.999)
-          location_boundary_dependency_set.insert(XMIN);
-        else if (face_norm.Dot(ihat) > 0.999)
-          location_boundary_dependency_set.insert(XMAX);
-        else if (face_norm.Dot(jhat) < -0.999)
-          location_boundary_dependency_set.insert(YMIN);
-        else if (face_norm.Dot(jhat) > 0.999)
-          location_boundary_dependency_set.insert(YMAX);
-        else if (face_norm.Dot(khat) < -0.999)
-          location_boundary_dependency_set.insert(ZMIN);
-        else if (face_norm.Dot(khat) > 0.999)
-          location_boundary_dependency_set.insert(ZMAX);
-      }
-    } // if incident
+    }   // if incident
 
   } // for f
 
