@@ -236,12 +236,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  std::vector<short> raw_inco_face_face_category(inco_face_face_category.size());
-  std::copy(inco_face_face_category.begin(),
-            inco_face_face_category.end(),
-            raw_inco_face_face_category.begin());
-
-  so_cell_inco_face_face_category.push_back(raw_inco_face_face_category);
+  so_cell_inco_face_face_category.push_back(inco_face_face_category);
 
   // Loop over faces but process only outgoing faces
   std::vector<int> outb_face_slot_indices;
@@ -336,19 +331,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  std::vector<int> raw_outb_face_slot_indices(outb_face_slot_indices.size());
-  std::copy(outb_face_slot_indices.begin(),
-            outb_face_slot_indices.end(),
-            raw_outb_face_slot_indices.begin());
-
-  so_cell_outb_face_slot_indices.push_back(raw_outb_face_slot_indices);
-
-  std::vector<short> raw_outb_face_face_category(outb_face_face_category.size());
-  std::copy(outb_face_face_category.begin(),
-            outb_face_face_category.end(),
-            raw_outb_face_face_category.begin());
-
-  so_cell_outb_face_face_category.push_back(raw_outb_face_face_category);
+  so_cell_outb_face_slot_indices.push_back(outb_face_slot_indices);
+  so_cell_outb_face_face_category.push_back(outb_face_face_category);
 }
 
 void
