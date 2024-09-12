@@ -69,9 +69,6 @@ protected:
   size_t delayed_local_psi_Gn_block_stride = 0;
   size_t delayed_local_psi_Gn_block_strideG = 0;
 
-  /// Very small vector listing the boundaries this location depends on
-  std::vector<int> boundary_dependencies;
-
   /**
    * This is a small vector [deplocI] that holds the number of face dofs for each dependent
    * location.
@@ -159,8 +156,7 @@ private:
                     const SPDS& spds,
                     const GridFaceHistogram& grid_face_histogram,
                     std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
-                    std::vector<std::pair<int, short>>& delayed_lock_box,
-                    std::set<int>& location_boundary_dependency_set);
+                    std::vector<std::pair<int, short>>& delayed_lock_box);
 
   /**
    * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
