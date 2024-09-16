@@ -88,14 +88,14 @@ Transpose(const DenseMatrix<TYPE>& A)
 {
   assert(A.Rows());
   assert(A.Columns());
-  size_t AR = A.Rows();
-  size_t AC = 0;
+  auto AR = A.Rows();
+  auto AC = 0;
   if (AR)
     AC = A.Columns();
 
   DenseMatrix<TYPE> T(AC, AR);
-  for (size_t i = 0; i < AR; ++i)
-    for (size_t j = 0; j < AC; ++j)
+  for (auto i = 0; i < AR; ++i)
+    for (auto j = 0; j < AC; ++j)
       T(j, i) = A(i, j);
   return T;
 }
@@ -111,7 +111,7 @@ SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
   assert(cols > 0);
   assert(r1 >= 0 and r1 < rows and r2 >= 0 and r2 < rows);
 
-  for (size_t j = 0; j < cols; ++j)
+  for (auto j = 0; j < cols; ++j)
     std::swap(A(r1, j), A(r2, j));
 }
 
@@ -181,21 +181,21 @@ template <typename TYPE>
 DenseMatrix<TYPE>
 Add(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 {
-  size_t AR = A.Rows();
-  size_t BR = B.Rows();
+  auto AR = A.Rows();
+  auto BR = B.Rows();
 
   assert(AR != 0 and B.Rows() != 0);
   assert(AR == BR);
 
-  size_t AC = A.Columns();
-  size_t BC = B.Columns();
+  auto AC = A.Columns();
+  auto BC = B.Columns();
 
   assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
   DenseMatrix<TYPE> C(AR, AC, 0.0);
-  for (size_t i = 0; i < AR; ++i)
-    for (size_t j = 0; j < AC; ++j)
+  for (auto i = 0; i < AR; ++i)
+    for (auto j = 0; j < AC; ++j)
       C(i, j) = A(i, j) + B(i, j);
   return C;
 }
@@ -205,21 +205,21 @@ template <typename TYPE>
 DenseMatrix<TYPE>
 Subtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
 {
-  size_t AR = A.Rows();
-  size_t BR = B.Rows();
+  auto AR = A.Rows();
+  auto BR = B.Rows();
 
   assert(AR != 0 and B.size() != 0);
   assert(AR == BR);
 
-  size_t AC = A.Columns();
-  size_t BC = B.Columns();
+  auto AC = A.Columns();
+  auto BC = B.Columns();
 
   assert(AC != 0 and BC != 0);
   assert(AC == BC);
 
   DenseMatrix<TYPE> C(AR, AC, 0.0);
-  for (size_t i = 0; i < AR; ++i)
-    for (size_t j = 0; j < AC; ++j)
+  for (auto i = 0; i < AR; ++i)
+    for (auto j = 0; j < AC; ++j)
       C(i, j) = A(i, j) - B(i, j);
   return C;
 }
@@ -229,8 +229,8 @@ template <typename TYPE>
 void
 Scale(DenseMatrix<TYPE>& mat, TYPE alpha)
 {
-  for (unsigned int i = 0; i < mat.Rows(); ++i)
-    for (unsigned int j = 0; j < mat.Columns(); ++j)
+  for (auto i = 0; i < mat.Rows(); ++i)
+    for (auto j = 0; j < mat.Columns(); ++j)
       mat(i, j) *= alpha;
 }
 
@@ -240,8 +240,8 @@ DenseMatrix<TYPE>
 Scaled(const DenseMatrix<TYPE>& mat, TYPE alpha)
 {
   DenseMatrix<TYPE> res(mat.Rows(), mat.Columns());
-  for (unsigned int i = 0; i < mat.Rows(); ++i)
-    for (unsigned int j = 0; j < mat.Columns(); ++j)
+  for (auto i = 0; i < mat.Rows(); ++i)
+    for (auto j = 0; j < mat.Columns(); ++j)
       res(i, j) = mat(i, j) * alpha;
   return res;
 }
@@ -251,16 +251,16 @@ template <typename TYPE>
 DenseMatrix<TYPE>
 SubMatrix(const DenseMatrix<TYPE>& A, const size_t r, const size_t c)
 {
-  size_t rows = A.Rows();
-  size_t cols = A.Columns();
+  auto rows = A.Rows();
+  auto cols = A.Columns();
   assert((r >= 0) and (r < rows) and (c >= 0) and (c < cols));
 
   DenseMatrix<TYPE> B(rows - 1, cols - 1);
-  for (size_t i = 0, ii = 0; i < rows; ++i)
+  for (auto i = 0, ii = 0; i < rows; ++i)
   {
     if (i != r)
     {
-      for (size_t j = 0, jj = 0; j < cols; ++j)
+      for (auto j = 0, jj = 0; j < cols; ++j)
       {
         if (j != c)
         {
@@ -279,7 +279,7 @@ template <typename TYPE>
 double
 Determinant(const DenseMatrix<TYPE>& A)
 {
-  size_t rows = A.Rows();
+  auto rows = A.Rows();
 
   if (rows == 1)
     return A(0, 0);
@@ -311,7 +311,7 @@ Determinant(const DenseMatrix<TYPE>& A)
   else
   {
     double det = 0;
-    for (size_t n = 0; n < rows; ++n)
+    for (auto n = 0; n < rows; ++n)
     {
       auto M = SubMatrix(A, 0, n);
       double pm = ((n + 1) % 2) * 2.0 - 1.0;
@@ -327,15 +327,15 @@ void
 GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
 {
   // Forward elimination
-  for (unsigned int i = 0; i < n - 1; ++i)
+  for (auto i = 0; i < n - 1; ++i)
   {
     auto bi = b(i);
     auto factor = 1.0 / A(i, i);
-    for (unsigned int j = i + 1; j < n; ++j)
+    for (auto j = i + 1; j < n; ++j)
     {
       auto val = A(j, i) * factor;
       b(j) -= val * bi;
-      for (unsigned int k = i + 1; k < n; ++k)
+      for (auto k = i + 1; k < n; ++k)
         A(j, k) -= val * A(i, k);
     }
   }
@@ -344,7 +344,7 @@ GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
   for (int i = n - 1; i >= 0; --i)
   {
     auto bi = b(i);
-    for (unsigned int j = i + 1; j < n; ++j)
+    for (auto j = i + 1; j < n; ++j)
       bi -= A(i, j) * b(j);
     b(i) = bi / A(i, i);
   }
@@ -357,8 +357,8 @@ InverseGEPivoting(const DenseMatrix<TYPE>& A)
 {
   assert(A.Rows() == A.Columns());
 
-  const unsigned int rows = A.Rows();
-  const unsigned int cols = A.Columns();
+  const auto rows = A.Rows();
+  const auto cols = A.Columns();
 
   DenseMatrix<TYPE> M(rows, cols);
   M.Set(0.);
@@ -366,11 +366,11 @@ InverseGEPivoting(const DenseMatrix<TYPE>& A)
 
   auto B = A;
 
-  for (unsigned int c = 0; c < rows; ++c)
+  for (auto c = 0; c < rows; ++c)
   {
     // Find a row with the largest pivot value
-    unsigned int max_row = c; // nzr = non-zero row
-    for (unsigned int r = c; r < rows; ++r)
+    auto max_row = c; // nzr = non-zero row
+    for (auto r = c; r < rows; ++r)
       if (std::fabs(B(r, c)) > std::fabs(B(max_row, c)))
         max_row = r;
 
@@ -381,14 +381,14 @@ InverseGEPivoting(const DenseMatrix<TYPE>& A)
     }
 
     // Eliminate non-zero values
-    for (unsigned int r = 0; r < rows; ++r)
+    for (auto r = 0; r < rows; ++r)
     {
       if (r != c)
       {
-        double g = B(r, c) / B(c, c);
+        auto g = B(r, c) / B(c, c);
         if (B(r, c) != 0)
         {
-          for (unsigned int k = 0; k < rows; ++k)
+          for (auto k = 0; k < rows; ++k)
           {
             B(r, k) -= B(c, k) * g;
             M(r, k) -= M(c, k) * g;
@@ -398,8 +398,8 @@ InverseGEPivoting(const DenseMatrix<TYPE>& A)
       }
       else
       {
-        double g = 1 / B(c, c);
-        for (unsigned int k = 0; k < rows; ++k)
+        auto g = 1 / B(c, c);
+        for (auto k = 0; k < rows; ++k)
         {
           B(r, k) *= g;
           M(r, k) *= g;
@@ -415,7 +415,7 @@ template <typename TYPE>
 DenseMatrix<TYPE>
 Inverse(const DenseMatrix<TYPE>& A)
 {
-  size_t rows = A.Rows();
+  auto rows = A.Rows();
   DenseMatrix<double> M(rows, A.Rows());
   double f = 0.0;
 
@@ -526,7 +526,7 @@ PowerIteration(const DenseMatrix<TYPE>& A,
                int max_it = 2000,
                double tol = 1.0e-13)
 {
-  unsigned int n = A.Rows();
+  auto n = A.Rows();
   int it_counter = 0;
   Vector<double> y(n, 1.0);
   double lambda0 = 0.0;
