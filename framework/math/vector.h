@@ -5,6 +5,7 @@
 
 #include "framework/data_types/ndarray.h"
 #include <sstream>
+#include <cmath>
 
 namespace opensn
 {
@@ -90,5 +91,72 @@ public:
     return res;
   }
 };
+
+/// Scale the vector with a constant value
+template <typename TYPE>
+void
+Scale(Vector<TYPE>& a, TYPE alpha)
+{
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    a(i) *= alpha;
+}
+
+template <typename TYPE>
+Vector<TYPE>
+Scaled(const Vector<TYPE>& a, TYPE alpha)
+{
+  Vector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) * alpha;
+  return res;
+}
+
+/// Add vector to this vector
+template <typename TYPE>
+Vector<TYPE>
+Add(const Vector<TYPE>& a, const Vector<TYPE>& b)
+{
+  assert(a.Rows() == b.Rows());
+  Vector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) + b(i);
+  return res;
+}
+
+/// Subtract two vectors
+template <typename TYPE>
+Vector<TYPE>
+Subtract(const Vector<TYPE>& a, const Vector<TYPE>& b)
+{
+  assert(a.Rows() == b.Rows());
+  Vector<TYPE> res(a.Rows());
+  for (unsigned int i = 0; i < a.Rows(); ++i)
+    res(i) = a(i) - b(i);
+  return res;
+}
+
+template <typename TYPE>
+double
+Vec2Norm(const Vector<TYPE>& x)
+{
+  size_t n = x.Rows();
+  double val = 0.0;
+  for (size_t i = 0; i != n; ++i)
+    val += x(i) * x(i);
+  return std::sqrt(val);
+}
+
+template <typename TYPE>
+double
+Dot(const Vector<TYPE>& x, const Vector<TYPE>& y)
+{
+  assert(x.Rows() > 0);
+  assert(y.Rows() > 0);
+  assert(x.Rows() == y.Rows());
+  double val = 0.0;
+  for (size_t i = 0; i < x.Rows(); ++i)
+    val += x(i) * y(i);
+  return val;
+}
 
 } // namespace opensn
