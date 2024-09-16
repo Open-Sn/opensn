@@ -72,5 +72,13 @@
         "type" : "GoldFile", "scope_keyword" : "GOLD"
       }
     ]
+  },
+  {
+    "file" : "dense_matrix_test.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "GoldFile", "scope_keyword" : "GOLD"
+      }
+    ]
   }
 ]
