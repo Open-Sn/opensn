@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -134,11 +135,13 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& params)
 
   std::vector<double> phi;
   if (prefixes.Has("flux_moments"))
-    lbs_solver_.ReadFluxMoments(prefixes.GetParamValue<std::string>("flux_moments"), phi);
+    LBSSolverIO::ReadFluxMoments(
+      lbs_solver_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
 
   std::vector<std::vector<double>> psi;
   if (prefixes.Has("angular_fluxes"))
-    lbs_solver_.ReadAngularFluxes(prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
+    LBSSolverIO::ReadAngularFluxes(
+      lbs_solver_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
   adjoint_buffers_[name] = {phi, psi};
   log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";

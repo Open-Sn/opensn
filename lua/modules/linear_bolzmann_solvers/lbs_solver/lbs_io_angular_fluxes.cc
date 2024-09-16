@@ -6,6 +6,7 @@
 #include "lua/framework/console/console.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -24,28 +25,13 @@ LBSWriteGroupsetAngularFlux(lua_State* L)
   LuaCheckArgs<size_t, int, std::string>(L, fname);
 
   const auto solver_handle = LuaArg<size_t>(L, 1);
-  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto groupset_index = LuaArg<int>(L, 2);
   const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =
     opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
-
-  // Obtain pointer to groupset
-  opensn::LBSGroupset* groupset = nullptr;
-  try
-  {
-    groupset = &lbs_solver.Groupsets().at(grpset_index);
-  }
-  catch (const std::out_of_range& o)
-  {
-    opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to " << fname;
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  const auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
-  lbs_solver.WriteGroupsetAngularFluxes(*groupset, psi, file_base);
+  LBSSolverIO::WriteGroupsetAngularFluxes(lbs_solver, groupset_index, file_base);
 
   return LuaReturn(L);
 }
@@ -57,28 +43,13 @@ LBSReadGroupsetAngularFlux(lua_State* L)
   LuaCheckArgs<size_t, int, std::string>(L, fname);
 
   const auto solver_handle = LuaArg<size_t>(L, 1);
-  const auto grpset_index = LuaArg<int>(L, 2);
+  const auto groupset_index = LuaArg<int>(L, 2);
   const auto file_base = LuaArg<std::string>(L, 3);
 
   // Get pointer to solver
   auto& lbs_solver =
     opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
-
-  // Obtain pointer to groupset
-  opensn::LBSGroupset* groupset = nullptr;
-  try
-  {
-    groupset = &lbs_solver.Groupsets().at(grpset_index);
-  }
-  catch (const std::out_of_range& o)
-  {
-    opensn::log.LogAllError() << "Invalid handle to groupset "
-                              << "in call to " << fname;
-    opensn::Exit(EXIT_FAILURE);
-  }
-
-  auto& psi = lbs_solver.PsiNewLocal().at(groupset->id_);
-  lbs_solver.ReadGroupsetAngularFluxes(file_base, *groupset, psi);
+  LBSSolverIO::ReadGroupsetAngularFluxes(lbs_solver, groupset_index, file_base);
 
   return LuaReturn(L);
 }
