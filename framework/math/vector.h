@@ -25,7 +25,7 @@ public:
 
   Vector(const std::vector<TYPE>& in) : NDArray<TYPE>({in.size()})
   {
-    for (std::size_t i = 0; i < in.size(); ++i)
+    for (auto i = 0; i < in.size(); ++i)
       (*this)(i) = in[i];
   }
 
@@ -48,7 +48,7 @@ public:
     this->resize({new_size});
     if (Rows() > old_size)
     {
-      for (unsigned int i = old_size; i < Rows(); ++i)
+      for (auto i = old_size; i < Rows(); ++i)
         (*this)(i) = value;
     }
   }
@@ -59,7 +59,7 @@ public:
   /// Scale the vector with a constant value
   void Scale(TYPE alpha)
   {
-    for (unsigned int i = 0; i < Rows(); ++i)
+    for (auto i = 0; i < Rows(); ++i)
       (*this)(i) *= alpha;
   }
 
@@ -67,7 +67,7 @@ public:
   void Normalize()
   {
     TYPE norm = this->Norm();
-    for (unsigned int i = 0; i < Rows(); ++i)
+    for (auto i = 0; i < Rows(); ++i)
       (*this)(i) /= norm;
   }
 
@@ -86,7 +86,7 @@ public:
   std::vector<TYPE> ToStdVector() const
   {
     std::vector<TYPE> res(Rows());
-    for (unsigned int i = 0; i < Rows(); ++i)
+    for (auto i = 0; i < Rows(); ++i)
       res[i] = (*this)(i);
     return res;
   }
@@ -97,7 +97,7 @@ template <typename TYPE>
 void
 Scale(Vector<TYPE>& a, TYPE alpha)
 {
-  for (unsigned int i = 0; i < a.Rows(); ++i)
+  for (auto i = 0; i < a.Rows(); ++i)
     a(i) *= alpha;
 }
 
@@ -106,7 +106,7 @@ Vector<TYPE>
 Scaled(const Vector<TYPE>& a, TYPE alpha)
 {
   Vector<TYPE> res(a.Rows());
-  for (unsigned int i = 0; i < a.Rows(); ++i)
+  for (auto i = 0; i < a.Rows(); ++i)
     res(i) = a(i) * alpha;
   return res;
 }
@@ -118,7 +118,7 @@ Add(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
   Vector<TYPE> res(a.Rows());
-  for (unsigned int i = 0; i < a.Rows(); ++i)
+  for (auto i = 0; i < a.Rows(); ++i)
     res(i) = a(i) + b(i);
   return res;
 }
@@ -130,7 +130,7 @@ Subtract(const Vector<TYPE>& a, const Vector<TYPE>& b)
 {
   assert(a.Rows() == b.Rows());
   Vector<TYPE> res(a.Rows());
-  for (unsigned int i = 0; i < a.Rows(); ++i)
+  for (auto i = 0; i < a.Rows(); ++i)
     res(i) = a(i) - b(i);
   return res;
 }
@@ -139,9 +139,9 @@ template <typename TYPE>
 double
 Vec2Norm(const Vector<TYPE>& x)
 {
-  size_t n = x.Rows();
+  auto n = x.Rows();
   double val = 0.0;
-  for (size_t i = 0; i != n; ++i)
+  for (auto i = 0; i != n; ++i)
     val += x(i) * x(i);
   return std::sqrt(val);
 }
@@ -154,7 +154,7 @@ Dot(const Vector<TYPE>& x, const Vector<TYPE>& y)
   assert(y.Rows() > 0);
   assert(x.Rows() == y.Rows());
   double val = 0.0;
-  for (size_t i = 0; i < x.Rows(); ++i)
+  for (auto i = 0; i < x.Rows(); ++i)
     val += x(i) * y(i);
   return val;
 }
