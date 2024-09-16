@@ -66,9 +66,19 @@ public:
   /// Normalizes the vector in-place.
   void Normalize()
   {
-    TYPE norm = this->Norm();
+    TYPE mag = this->Magnitude();
     for (auto i = 0; i < Rows(); ++i)
-      (*this)(i) /= norm;
+      (*this)(i) /= mag;
+  }
+
+  /// Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector.
+  TYPE Magnitude() const
+  {
+    TYPE value = 0.0;
+    for (auto i = 0; i < Rows(); ++i)
+      value += (*this)(i) * (*this)(i);
+    value = sqrt(value);
+    return value;
   }
 
   /// Prints the vector to a string and then returns the string.

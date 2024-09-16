@@ -64,5 +64,13 @@
 
       { "type" :  "ErrorCode", "error_code" :  0}
     ]
+  },
+  {
+    "file" : "vector_test.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "GoldFile", "scope_keyword" : "GOLD"
+      }
+    ]
   }
 ]
