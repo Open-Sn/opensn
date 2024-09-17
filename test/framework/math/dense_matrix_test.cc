@@ -1,6 +1,7 @@
 #include "lua/framework/console/console.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/dense_matrix.h"
+#include "framework/math/vector.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -100,6 +101,36 @@ DenseMatrixTest(const InputParameters&)
 
   auto d0 = Determinant(diag);
   opensn::log.LogAll() << "d0 = " << d0 << std::endl;
+
+  // --
+
+  auto apb2 = a;
+  apb2.Add(a_mult);
+  opensn::log.LogAll() << "a+b:values = " << std::endl;
+  opensn::log.LogAll() << apb2.PrintStr() << std::endl;
+
+  auto amb2 = a;
+  amb2.Subtract(a_mult);
+  opensn::log.LogAll() << "a-b:values = " << std::endl;
+  opensn::log.LogAll() << amb2.PrintStr() << std::endl;
+
+  auto a2 = a;
+  auto mv1 = a2.Mult(v0);
+  opensn::log.LogAll() << "mv1 = " << mv1.PrintStr() << std::endl;
+
+  auto a3 = a;
+  auto mm1 = a3.Mult(b);
+  opensn::log.LogAll() << "mm1 = " << std::endl;
+  opensn::log.LogAll() << mm1.PrintStr() << std::endl;
+
+  auto a_trans2 = a.Transposed();
+  opensn::log.LogAll() << "a_trans2:values = " << std::endl;
+  opensn::log.LogAll() << a_trans2.PrintStr() << std::endl;
+
+  auto a_trans3 = a;
+  a_trans3.Transpose();
+  opensn::log.LogAll() << "a_trans3:values = " << std::endl;
+  opensn::log.LogAll() << a_trans3.PrintStr() << std::endl;
 
   opensn::log.Log() << "GOLD_END";
 

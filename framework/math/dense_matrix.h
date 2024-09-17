@@ -62,6 +62,80 @@ public:
       (*this)(row, i) = values(i);
   }
 
+  void Add(const DenseMatrix<TYPE>& other)
+  {
+    assert(Rows() == other.Rows());
+    assert(Columns() == other.Columns());
+    for (auto i = 0; i < Rows(); ++i)
+      for (auto j = 0; j < Columns(); ++j)
+        (*this)(i, j) += other(i, j);
+  }
+
+  void Subtract(const DenseMatrix<TYPE>& other)
+  {
+    assert(Rows() == other.Rows());
+    assert(Columns() == other.Columns());
+    for (auto i = 0; i < Rows(); ++i)
+      for (auto j = 0; j < Columns(); ++j)
+        (*this)(i, j) -= other(i, j);
+  }
+
+  /// Multiply matrix with a vector and return resulting vector
+  Vector<TYPE> Mult(const Vector<TYPE>& x) const
+  {
+    auto rows = Rows();
+    auto cols = x.Rows();
+
+    assert(rows > 0);
+    assert(cols == Columns());
+
+    Vector<TYPE> b(rows, 0.0);
+    for (auto i = 0; i < rows; ++i)
+      for (auto j = 0; j < cols; ++j)
+        b(i) += (*this)(i, j) * x(j);
+    return b;
+  }
+
+  /// Multiply by a matrix and return the resulting matrix
+  DenseMatrix<TYPE> Mult(const DenseMatrix<TYPE>& other) const
+  {
+    auto rows = Rows();
+    assert(rows != 0 and other.Rows() != 0);
+    auto columns = Columns();
+    auto other_cols = other.Columns();
+    assert(columns != 0 and other_cols != 0 and columns == other.Rows());
+    DenseMatrix<TYPE> res(rows, other_cols, 0.);
+    for (auto i = 0; i < rows; ++i)
+      for (auto j = 0; j < other_cols; ++j)
+        for (auto k = 0; k < columns; ++k)
+          res(i, j) += (*this)(i, k) * other(k, j);
+    return res;
+  }
+
+  /// Returns the transpose of a matrix
+  DenseMatrix<TYPE> Transposed() const
+  {
+    assert(Rows());
+    assert(Columns());
+    DenseMatrix<TYPE> trans(Columns(), Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      for (auto j = 0; j < Columns(); ++j)
+        trans(j, i) = (*this)(i, j);
+    return trans;
+  }
+
+  /// Transpose this matrix
+  void Transpose()
+  {
+    assert(Rows());
+    assert(Columns());
+    DenseMatrix<TYPE> trans(Columns(), Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      for (auto j = 0; j < Columns(); ++j)
+        trans(j, i) = (*this)(i, j);
+    (*this) = trans;
+  }
+
   /// Prints the matrix to a string and then returns the string.
   std::string PrintStr() const
   {
