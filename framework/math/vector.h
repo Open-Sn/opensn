@@ -63,12 +63,31 @@ public:
       (*this)(i) *= alpha;
   }
 
+  /// Return this vector scaled
+  Vector<TYPE> Scaled(TYPE alpha)
+  {
+    Vector<TYPE> res(Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      res(i) = (*this)(i)*alpha;
+    return res;
+  }
+
   /// Normalizes the vector in-place.
   void Normalize()
   {
     TYPE mag = this->Magnitude();
     for (auto i = 0; i < Rows(); ++i)
       (*this)(i) /= mag;
+  }
+
+  /// Return this vector normalized
+  Vector<TYPE> Normalized() const
+  {
+    TYPE mag = this->Magnitude();
+    Vector<TYPE> res(Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      res(i) = (*this)(i) / mag;
+    return res;
   }
 
   /// Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector.
@@ -79,6 +98,29 @@ public:
       value += (*this)(i) * (*this)(i);
     value = sqrt(value);
     return value;
+  }
+
+  void Add(const Vector<TYPE>& other)
+  {
+    assert(Rows() == other.Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      (*this)(i) += other(i);
+  }
+
+  void Subtract(const Vector<TYPE>& other)
+  {
+    assert(Rows() == other.Rows());
+    for (auto i = 0; i < Rows(); ++i)
+      (*this)(i) -= other(i);
+  }
+
+  TYPE Dot(const Vector<TYPE>& other)
+  {
+    assert(Rows() == other.Rows());
+    TYPE prod = 0.;
+    for (auto i = 0; i < Rows(); ++i)
+      prod += (*this)(i)*other(i);
+    return prod;
   }
 
   /// Prints the vector to a string and then returns the string.

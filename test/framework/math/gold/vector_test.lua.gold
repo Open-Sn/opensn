@@ -12,4 +12,10 @@ OpenSn number of arguments supplied: 2
 [0]  b dot c:values = 23
 [0]  b_scaled:values = [12 16]
 [0]  b_scaled:values = [24 32]
+[0]  b_normalized = [0.6 0.8]
+[0]  added = [4 5]
+[0]  subtracted = [-1 -2]
+[0]  scaled = [10 4]
+[0]  scaled2 = [5 2]
+[0]  b dot c = 23
 [0]  GOLD_END

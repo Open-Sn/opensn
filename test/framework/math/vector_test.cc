@@ -50,6 +50,33 @@ VectorTest(const InputParameters&)
   Scale(b_scaled, 2.);
   opensn::log.LogAll() << "b_scaled:values = " << b_scaled.PrintStr() << std::endl;
 
+  //
+
+  auto b_normalized = b.Normalized();
+  opensn::log.LogAll() << "b_normalized = " << b_normalized.PrintStr() << std::endl;
+
+  Vector<double> added(2);
+  added.Set(1.);
+  added.Add(b);
+  opensn::log.LogAll() << "added = " << added.PrintStr() << std::endl;
+
+  Vector<double> subtracted(2);
+  subtracted.Set(2.);
+  subtracted.Subtract(b);
+  opensn::log.LogAll() << "subtracted = " << subtracted.PrintStr() << std::endl;
+
+  Vector<double> scaled(2);
+  scaled(0) = 5;
+  scaled(1) = 2;
+  scaled.Scale(2);
+  opensn::log.LogAll() << "scaled = " << scaled.PrintStr() << std::endl;
+
+  auto scaled2 = scaled.Scaled(0.5);
+  opensn::log.LogAll() << "scaled2 = " << scaled2.PrintStr() << std::endl;
+
+  auto dp1 = b.Dot(c);
+  opensn::log.LogAll() << "b dot c = " << dp1 << std::endl;
+
   opensn::log.Log() << "GOLD_END";
 
   return ParameterBlock();
