@@ -128,7 +128,7 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name)
 
   // Compute global size of coordinate and interpolation data and each location's offset
   std::vector<double> global_data;
-  std::vector<int> offsets;
+  std::vector<int> offsets(opensn::mpi_comm.size(), 0);
   int global_data_size = 0;
   if (opensn::mpi_comm.rank() == 0)
   {
