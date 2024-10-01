@@ -145,7 +145,7 @@ log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if master_export == nil then
-  ExportFieldFunctionToVTKG(fflist[1], "ZPhi3D", "Phi")
+  fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
 
   line = fieldfunc.FFInterpolationCreate(LINE)
   fieldfunc.SetProperty(line, LINE_FIRSTPOINT, { 0.0, -1.0, 0.5 })
