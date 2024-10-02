@@ -315,13 +315,13 @@ LBSSolver::PhiNewLocal() const
 std::vector<double>&
 LBSSolver::PrecursorsNewLocal()
 {
-  return phi_new_local_;
+  return precursor_new_local_;
 }
 
 const std::vector<double>&
 LBSSolver::PrecursorsNewLocal() const
 {
-  return phi_new_local_;
+  return precursor_new_local_;
 }
 
 std::vector<std::vector<double>>&
