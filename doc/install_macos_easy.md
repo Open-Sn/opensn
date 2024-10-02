@@ -99,13 +99,12 @@ Next, run the script to compile the necessary dependencies with
 ```shell
 mkdir -p /path/to/dependencies
 cd /path/to/opensn
-python3 resources/configure_dependencies.py -d /path/to/dependencies
+python3 tools/configure_dependencies.py -d /path/to/dependencies
 ```
 It is recommended that `path/to/dependencies` be outside the OpenSn
-source tree. Set environment variables for building OpenSn with the
-generated script:
+source tree. Set environment variables for building OpenSn:
 ```shell
-source /path/to/dependencies/configure_deproots.sh
+export CMAKE_PREFIX_PATH=/path/to/dependencies:$CMAKE_PREFIX_PATH`
 ```
 
 ## Step 5 - Configure and Build OpenSn
