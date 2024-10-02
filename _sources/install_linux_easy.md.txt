@@ -72,22 +72,22 @@ build process:
 
 ```bash
     $ cd opensn
-    $ python3 resources/configure_dependencies.py -d ../path/to/dependencies/directory
+    $ python3 tools/configure_dependencies.py -d ../path/to/dependencies/directory
 ```
 
 ## Step 4 - Configure Environment
 
 Before compiling **OpenSn**, you must add the location of the third-party
-libraries to your `CMAKE_PREFIX_PATH` environment variable. We have provided a
-script to do this for you. You can update your environment variables by running
-the command:
+libraries to your `CMAKE_PREFIX_PATH` environment variable. This can be
+accomplished with the following command:
 
 ```bash
-    $ source ../dependencies/configure_deproots.sh
+$ export CMAKE_PREFIX_PATH=/path/to/dependencies/directory:$CMAKE_PREFIX_PATH`
 ```
-**Important:** It may be a good idea to source this script int your `.bashrc`
-file so that you don't need to specify the path every time you need to re-run
-`cmake`.
+
+**Important:** It may be a good idea to add the `CMAKE_PREFIX_PATH` variable to
+your `.bashrc` file so that you don't need to specify the path every time you
+need to re-run `cmake`.
 
 ## Step 5 - Build OpenSn
 

@@ -186,13 +186,12 @@ file.</p>
 <p>Next, run the script to compile the necessary dependencies with</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/dependencies
 <span class="nb">cd</span><span class="w"> </span>/path/to/opensn
-python3<span class="w"> </span>resources/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>/path/to/dependencies
+python3<span class="w"> </span>tools/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>/path/to/dependencies
 </pre></div>
 </div>
 <p>It is recommended that <code class="docutils literal notranslate"><span class="pre">path/to/dependencies</span></code> be outside the OpenSn
-source tree. Set environment variables for building OpenSn with the
-generated script:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/path/to/dependencies/configure_deproots.sh
+source tree. Set environment variables for building OpenSn:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies:<span class="nv">$CMAKE_PREFIX_PATH</span><span class="sb">`</span>
 </pre></div>
 </div>
 </section>

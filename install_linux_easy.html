@@ -152,22 +152,21 @@ recommended that you first fork the <strong>OpenSn</strong> repository then clon
 required third-party packages, the following command automates the install and
 build process:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>opensn
-<span class="w">    </span>$<span class="w"> </span>python3<span class="w"> </span>resources/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>../path/to/dependencies/directory
+<span class="w">    </span>$<span class="w"> </span>python3<span class="w"> </span>tools/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>../path/to/dependencies/directory
 </pre></div>
 </div>
 </section>
 <section id="step-4-configure-environment">
 <h2><span class="section-number">2.4. </span>Step 4 - Configure Environment<a class="headerlink" href="#step-4-configure-environment" title="Link to this heading"></a></h2>
 <p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
-libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. We have provided a
-script to do this for you. You can update your environment variables by running
-the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>../dependencies/configure_deproots.sh
+libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. This can be
+accomplished with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies/directory:<span class="nv">$CMAKE_PREFIX_PATH</span><span class="sb">`</span>
 </pre></div>
 </div>
-<p><strong>Important:</strong> It may be a good idea to source this script int your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>
-file so that you don’t need to specify the path every time you need to re-run
-<code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
+<p><strong>Important:</strong> It may be a good idea to add the <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> variable to
+your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file so that you don’t need to specify the path every time you
+need to re-run <code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
 </section>
 <section id="step-5-build-opensn">
 <h2><span class="section-number">2.5. </span>Step 5 - Build OpenSn<a class="headerlink" href="#step-5-build-opensn" title="Link to this heading"></a></h2>
