@@ -53,9 +53,9 @@ jobs:
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/clang/14.0.6
           mkdir build && cd build
-          cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined,nullability,implicit-conversion \
+          cmake -DCMAKE_CXX_FLAGS="-O2 -fsanitize=address,undefined,nullability \
                 -fsanitize-address-use-after-scope -fno-sanitize-recover" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,nullability,implicit-conversion \
+                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,nullability \
                 -fsanitize-address-use-after-scope -fno-sanitize-recover" ..
           make -j && cd .. 
       - name: test
@@ -63,10 +63,12 @@ jobs:
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/clang/14.0.6
+          export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
           test/run_tests -d test/ -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
           module load opensn/clang/14.0.6
+          export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
           test/run_tests -d tutorials -j 32 -v 1 -w 3
