@@ -9,18 +9,16 @@
 namespace opensn
 {
 
-std::vector<double>
+Vector<double>
 NewtonIteration(const NonLinearFunction& non_linear_function,
-                const std::vector<double>& x_0,
+                const Vector<double>& x_0,
                 const unsigned int max_iters,
                 const double epsilon,
                 const bool verbose)
 {
   // Verbose printing lambda
-  auto PrintIterationInfo = [](unsigned int i,
-                               const std::vector<double>& x_i,
-                               const std::vector<double>& F_x_i,
-                               double L2_norm_F_x_i)
+  auto PrintIterationInfo =
+    [](unsigned int i, const Vector<double>& x_i, const Vector<double>& F_x_i, double L2_norm_F_x_i)
   {
     std::stringstream output;
     output << "Iteration " << std::setw(3) << i << ": x_i=";
@@ -35,9 +33,9 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
   };
 
   // Declare and init variables
-  std::vector<double> x_i = x_0;
-  std::vector<double> F_x_i = non_linear_function.F(x_i);
-  MatDbl J_x_i_inv = Inverse(non_linear_function.J(x_i));
+  auto x_i = x_0;
+  auto F_x_i = non_linear_function.F(x_i);
+  auto J_x_i_inv = Inverse(non_linear_function.J(x_i));
 
   double L2_norm_F_x_i = Vec2Norm(F_x_i);
 
@@ -49,7 +47,7 @@ NewtonIteration(const NonLinearFunction& non_linear_function,
   while (L2_norm_F_x_i >= epsilon and i < max_iters)
   {
     ++i;
-    x_i = x_i - MatMul(J_x_i_inv, F_x_i);
+    x_i = Subtract(x_i, Mult(J_x_i_inv, F_x_i));
 
     F_x_i = non_linear_function.F(x_i);
     J_x_i_inv = Inverse(non_linear_function.J(x_i));

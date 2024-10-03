@@ -281,7 +281,8 @@ data_types_Test00(const InputParameters&)
   // Constructor vector
   // rank()
   {
-    NDArray<double> nd_array1(std::vector<size_t>{2, 2, 2});
+    NDArray<double, 3> nd_array1({2, 2, 2});
+    nd_array1.set(0.0);
     dummy << "Should be printing rank and 2x2x2=8 zeros\n";
     dummy << nd_array1.rank() << "\n";
     for (auto val : nd_array1)
@@ -293,7 +294,8 @@ data_types_Test00(const InputParameters&)
 
   // Constructor array
   {
-    NDArray<double> nd_array1(std::array<size_t, 3>{2, 2, 2});
+    NDArray<double, 3> nd_array1({2, 2, 2});
+    nd_array1.set(0.0);
     dummy << "Should be 2x2x2=8 zeros\n";
     for (auto val : nd_array1)
     {
@@ -305,7 +307,8 @@ data_types_Test00(const InputParameters&)
   // Constructor initializer_list
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    NDArray<double> nd_array1({2, 2, 2});
+    NDArray<double, 3> nd_array1({2, 2, 2});
+    nd_array1.set(0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -316,7 +319,7 @@ data_types_Test00(const InputParameters&)
   // Constructor vector value
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    NDArray<double> nd_array1(std::vector<size_t>{2, 2, 2}, 0.0);
+    NDArray<double, 3> nd_array1({2, 2, 2}, 0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -327,7 +330,7 @@ data_types_Test00(const InputParameters&)
   // Constructor array value
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    NDArray<double> nd_array1(std::array<size_t, 3>{2, 2, 2}, 0.0);
+    NDArray<double, 3> nd_array1({2, 2, 2}, 0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -338,7 +341,7 @@ data_types_Test00(const InputParameters&)
   // Constructor initializer_list value
   {
     dummy << "Should be 2x2x2=8 zeros\n";
-    NDArray<double> nd_array1({2, 2, 2}, 0.0);
+    NDArray<double, 3> nd_array1({2, 2, 2}, 0.0);
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -349,7 +352,7 @@ data_types_Test00(const InputParameters&)
   // Constructor none
   {
     dummy << "Should not print anything\n";
-    NDArray<double> nd_array1;
+    NDArray<double, 2> nd_array1;
     for (auto val : nd_array1)
     {
       dummy << val << " ";
@@ -361,7 +364,7 @@ data_types_Test00(const InputParameters&)
   // iterators
   // const iterators
   {
-    NDArray<double> nd_array2(std::vector<size_t>{2, 2, 2});
+    NDArray<double, 3> nd_array2({2, 2, 2});
     nd_array2.set(1.0);
 
     dummy << "Should be 2x2x2=8 ones\n";
@@ -380,7 +383,7 @@ data_types_Test00(const InputParameters&)
 
   // size and empty
   {
-    NDArray<double> nd_array4(std::array<size_t, 3>{2, 2, 2});
+    NDArray<double, 3> nd_array4({2, 2, 2});
     nd_array4.set(1.0);
 
     dummy << "size " << nd_array4.size() << "\n";

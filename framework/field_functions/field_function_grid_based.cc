@@ -166,7 +166,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
       if (grid.CheckPointInsideCell(cell, point))
       {
         const auto& cell_mapping = discretization_->GetCellMapping(cell);
-        std::vector<double> shape_values;
+        Vector<double> shape_values;
         cell_mapping.ShapeValues(point, shape_values);
 
         local_num_point_hits += 1;
@@ -179,7 +179,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
             const auto dof_map = discretization_->MapDOFLocal(cell, j, uk_man, 0, c);
             const double dof_value = field_vector[dof_map];
 
-            local_point_value[c] += dof_value * shape_values[j];
+            local_point_value[c] += dof_value * shape_values(j);
           } // for node i
         }   // for component c
       }     // if inside cell
@@ -206,7 +206,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
 
   const auto& cell_mapping = discretization_->GetCellMapping(cell);
 
-  std::vector<double> shape_values;
+  Vector<double> shape_values;
   cell_mapping.ShapeValues(position, shape_values);
 
   double value = 0.0;
@@ -214,7 +214,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   for (size_t j = 0; j < num_nodes; ++j)
   {
     const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
-    value += field_vector[dof_map] * shape_values[j];
+    value += field_vector[dof_map] * shape_values(j);
   }
 
   return value;
