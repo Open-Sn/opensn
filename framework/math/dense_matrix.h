@@ -10,11 +10,11 @@ namespace opensn
 {
 
 template <typename TYPE>
-class DenseMatrix : public NDArray<TYPE>
+class DenseMatrix : public NDArray<TYPE, 2>
 {
 public:
   /// Create an empty dense matrix
-  DenseMatrix() : NDArray<TYPE>() {}
+  DenseMatrix() : NDArray<TYPE, 2>() {}
 
   /**
    * Create a dense matrix with specified number of rows and columns
@@ -22,7 +22,7 @@ public:
    * \param rows Number of rows
    * \param cols Number of columns
    */
-  DenseMatrix(unsigned int rows, unsigned int cols) : NDArray<TYPE>({rows, cols}) {}
+  DenseMatrix(unsigned int rows, unsigned int cols) : NDArray<TYPE, 2>({rows, cols}) {}
 
   /**
    * Create a dense matrix with specified number of rows and columns and initialize the element to a
@@ -33,7 +33,7 @@ public:
    * \param intitial_value Value to initialize the matrix elements with
    */
   DenseMatrix(unsigned int rows, unsigned int cols, TYPE intitial_value)
-    : NDArray<TYPE>({rows, cols}, intitial_value)
+    : NDArray<TYPE, 2>({rows, cols}, intitial_value)
   {
   }
 

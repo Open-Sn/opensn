@@ -863,8 +863,8 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
     const auto num_cell_nodes = cell_mapping.NumNodes();
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    NDArray<double> K(std::vector<size_t>({num_cell_nodes, num_cell_nodes, dimension_, dimension_}),
-                      0.);
+    NDArray<double, 4> K(
+      std::array<size_t, 4>({num_cell_nodes, num_cell_nodes, dimension_, dimension_}), 0.);
     for (int i = 0; i < num_cell_nodes; ++i)
       for (int j = 0; j < num_cell_nodes; ++j)
       {

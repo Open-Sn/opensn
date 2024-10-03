@@ -18,11 +18,20 @@
 namespace opensn
 {
 
-template <typename T>
+template <typename T, int D>
 class NDArray
 {
 private:
-  static constexpr size_t max_rank = 10;
+  template <bool...>
+  struct bool_pack
+  {
+  };
+
+  template <class... U>
+  using conjunction = std::is_same<bool_pack<true, U::value...>, bool_pack<U::value..., true>>;
+
+  template <typename... U>
+  using AllIntegral = typename conjunction<std::is_integral<U>...>::type;
 
 public:
   /**
@@ -32,42 +41,7 @@ public:
    * This constructor creates an empty array and initializes the reference
    * count to one.
    */
-  NDArray() noexcept : rank_(0), size_(0), storage_(nullptr), dimensions_{}, strides_{} {}
-
-  /**
-   * Creates an array with the specified number of elements in each dimension,
-   * from a vector-list.
-   *
-   * \param dims `std::vector` list of the number of elements in each
-   *             dimension.
-   * \throw std::bad_alloc if memory allocation fails.
-   *
-   * This constructor creates an array with the specified size.
-   */
-  template <typename D>
-  explicit NDArray(const std::vector<D>& dims)
-  {
-    SetDimensions(dims);
-    Initialize();
-  }
-
-  /**
-   * Creates an array with the specified number of elements in each dimension,
-   * from a vector-list and initializes the array.
-   *
-   * \param dims `std::vector` list of the number of elements in each
-   *             dimension.
-   * \param value Initial element value.
-   * \throw std::bad_alloc if memory allocation fails.
-   *
-   * This constructor creates an array with the specified size.
-   */
-  template <typename D>
-  explicit NDArray(const std::vector<D>& dims, T value)
-  {
-    SetDimensions(dims);
-    ValueInitialize(value);
-  }
+  NDArray() noexcept : size_(0), storage_(nullptr), dimensions_{}, strides_{} {}
 
   /**
    * Creates an array with the specified number of elements in each dimension,
@@ -79,8 +53,7 @@ public:
    *
    * This constructor creates an array with the specified size.
    */
-  template <typename D, size_t N>
-  explicit NDArray(const std::array<D, N>& dims)
+  explicit NDArray(const std::array<int, D>& dims)
   {
     SetDimensions(dims);
     Initialize();
@@ -97,8 +70,7 @@ public:
    *
    * This constructor creates an array with the specified size.
    */
-  template <typename D, size_t N>
-  explicit NDArray(const std::array<D, N>& dims, T value)
+  explicit NDArray(const std::array<int, D>& dims, T value)
   {
     SetDimensions(dims);
     ValueInitialize(value);
@@ -114,8 +86,8 @@ public:
    *
    * This constructor creates an array with the specified size.
    */
-  template <typename D>
-  NDArray(const std::initializer_list<D>& dims)
+  template <typename U>
+  NDArray(const std::initializer_list<U>& dims)
   {
     SetDimensions(dims);
     Initialize();
@@ -123,24 +95,58 @@ public:
 
   /**
    * Creates an array with the specified number of elements in each dimension,
-   * from an initializer-list and initializes the array.
+   * from an array. Each entry in the array is assigned the designated value.
    *
-   * \param dims `std::vector` list of the number of elements in each
+   * \param dims `std::array` list of the number of elements in each
    *             dimension.
-   * \param value Initial element value.
+   * \param value The value to assing to each element.
    * \throw std::bad_alloc if memory allocation fails.
    *
    * This constructor creates an array with the specified size.
    */
-  template <typename D>
-  NDArray(const std::initializer_list<D>& dims, T value)
+  template <typename U>
+  explicit NDArray(const std::array<U, D>& dims, T value)
+  {
+    SetDimensions(dims);
+    ValueInitialize(value);
+  }
+
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an array. Each entry in the array is assigned the designated value.
+   *
+   * \param dims `std::array` list of the number of elements in each
+   *             dimension.
+   * \param value The value to assing to each element.
+   * \throw std::bad_alloc if memory allocation fails.
+   *
+   * This constructor creates an array with the specified size.
+   */
+  template <typename U>
+  explicit NDArray(const std::array<U, D>& dims)
+  {
+    SetDimensions(dims);
+    Initialize();
+  }
+
+  /**
+   * Creates an array with the specified number of elements in each dimension,
+   * from an initializer-list. Each entry in the array is assigned the
+   * designated value.
+   *
+   * \param dims `std::initializer` list of the number of elements in each
+   *             dimension.
+   * \param value The value to assing to each element.
+   */
+  template <typename U>
+  NDArray(const std::initializer_list<U>& dims, T value)
   {
     SetDimensions(dims);
     ValueInitialize(value);
   }
 
   /// Copy constructor
-  NDArray(const NDArray<T>& other)
+  NDArray(const NDArray<T, D>& other)
     : rank_(other.rank_),
       size_(other.size_),
       storage_(std::make_unique<T[]>(other.size_)),
@@ -151,36 +157,28 @@ public:
   }
 
   /// Move constructor
-  NDArray(NDArray<T>&& other) noexcept
+  NDArray(NDArray<T, D>&& other) noexcept
     : rank_(other.rank_),
       size_(other.size_),
       storage_(std::move(other.storage_)),
       dimensions_(std::move(other.dimensions_)),
       strides_(std::move(other.strides_))
   {
-    other.rank_ = 0;
-    other.size_ = 0;
-    other.base_ = nullptr;
   }
 
-  /// Copy assignment operator
-  NDArray<T>& operator=(const NDArray<T>& other)
+  /**
+   * Assign from another array.
+   *
+   * \param other The array to copy.
+   */
+  NDArray<T, D>& operator=(NDArray<T, D> const& other)
   {
-    if (this != &other)
-    {
-      if (size_ != other.size_)
-        storage_ = std::make_unique<T[]>(other.size_);
-      std::copy(other.storage_.get(), other.storage_.get() + other.size_, storage_.get());
-      rank_ = other.rank_;
-      size_ = other.size_;
-      dimensions_ = other.dimensions_;
-      strides_ = other.strides_;
-    }
+    NDArray<T, D>(other).swap(*this);
     return *this;
   }
 
   /// Move assignment operator
-  NDArray<T>& operator=(NDArray<T>&& other) noexcept
+  NDArray<T, D>& operator=(NDArray<T, D>&& other) noexcept
   {
     if (this != &other)
     {
@@ -205,8 +203,8 @@ public:
    * This method resizes the array to the specified number of elements. If the
    * current size is equal to the new size, no memory allocation occurs.
    */
-  template <typename D>
-  void resize(const std::vector<D>& dims)
+  template <typename U>
+  void resize(const std::array<U, D>& dims)
   {
     SetDimensions(dims);
     if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
@@ -223,8 +221,8 @@ public:
    * This method resizes the array to the specified number of elements. If the
    * current size is equal to the new size, no memory allocation occurs.
    */
-  template <typename D, size_t N>
-  void resize(const std::array<D, N>& dims)
+  template <typename U, size_t N>
+  void resize(const std::array<U, N>& dims)
   {
     SetDimensions(dims);
     if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
@@ -241,8 +239,8 @@ public:
    * This method resizes the array to the specified number of elements. If the
    * current size is equal to the new size, no memory allocation occurs.
    */
-  template <typename D>
-  void resize(const std::initializer_list<D>& dims)
+  template <typename U>
+  void resize(const std::initializer_list<U>& dims)
   {
     SetDimensions(dims);
     if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
@@ -259,6 +257,18 @@ public:
   inline __attribute__((always_inline)) constexpr T& operator()(Args... args) noexcept
   {
     return storage_[ComputeIndex(args...)];
+  }
+
+  inline __attribute__((always_inline)) constexpr T& operator()(size_t idx) noexcept
+  {
+    static_assert(D == 1, "Can be only used on 1-dimensional arrays");
+    return storage_[idx];
+  }
+
+  inline __attribute__((always_inline)) constexpr T& operator()(size_t i, size_t j) noexcept
+  {
+    static_assert(D == 2, "Can be only used on 2-dimensional arrays");
+    return storage_[i * strides_[0] + j];
   }
 
   /**
@@ -289,6 +299,19 @@ public:
   inline __attribute__((always_inline)) constexpr const T& operator()(Args... args) const noexcept
   {
     return storage_[ComputeIndex(args...)];
+  }
+
+  inline __attribute__((always_inline)) constexpr T const& operator()(size_t idx) const noexcept
+  {
+    static_assert(D == 1, "Can be only used on 1-dimensional arrays");
+    return storage_[idx];
+  }
+
+  inline __attribute__((always_inline)) constexpr T const& operator()(size_t i,
+                                                                      size_t j) const noexcept
+  {
+    static_assert(D == 2, "Can be only used on 2-dimensional arrays");
+    return storage_[i * strides_[0] + j];
   }
 
   /**
@@ -379,7 +402,7 @@ public:
    *
    * \param other The array to swap with.
    */
-  inline void swap(NDArray<T>& other) noexcept
+  inline void swap(NDArray<T, D>& other) noexcept
   {
     std::swap(rank_, other.rank_);
     std::swap(size_, other.size_);
@@ -389,28 +412,28 @@ public:
   }
 
 private:
-  template <typename D>
-  void SetDimensions(const std::vector<D>& dims)
+  template <typename U>
+  void SetDimensions(const std::vector<U>& dims)
   {
     rank_ = dims.size();
-    if (rank_ > max_rank)
+    if (rank_ > D)
       throw std::invalid_argument("Rank exceeds the maximum allowed value of 10.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
 
-  template <typename D, size_t N>
-  void SetDimensions(const std::array<D, N>& dims)
+  template <typename U, size_t N>
+  void SetDimensions(const std::array<U, N>& dims)
   {
     rank_ = N;
-    static_assert(N <= max_rank, "Rank exceeds the maximum allowed value of 10.");
+    static_assert(N <= D, "Rank exceeds the maximum allowed value of 10.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
 
-  template <typename D>
-  void SetDimensions(const std::initializer_list<D>& dims)
+  template <typename U>
+  void SetDimensions(const std::initializer_list<U>& dims)
   {
     rank_ = dims.size();
-    if (rank_ > max_rank)
+    if (rank_ > D)
       throw std::invalid_argument("Rank exceeds the maximum allowed value of 10.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
@@ -467,8 +490,8 @@ private:
   size_t rank_;
   size_t size_;
   std::unique_ptr<T[]> storage_;
-  std::array<size_t, max_rank> dimensions_;
-  std::array<size_t, max_rank> strides_;
+  std::array<size_t, D> dimensions_;
+  std::array<size_t, D> strides_;
 };
 
 } // namespace opensn

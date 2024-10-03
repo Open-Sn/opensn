@@ -75,7 +75,7 @@ protected:
   std::map<uint64_t, std::vector<double>> bndry_factors_;
 
   // Cell-wise tensor stiffness matrices.
-  std::vector<NDArray<double>> K_tensor_matrices_;
+  std::vector<NDArray<double, 4>> K_tensor_matrices_;
 
   // Diffusion solver attributes
   std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;

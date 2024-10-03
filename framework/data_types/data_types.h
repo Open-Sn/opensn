@@ -25,7 +25,4 @@ std::string VaryingDataTypeStringName(VaryingDataType type);
 class Varying;
 class ByteArray;
 
-template <typename T>
-class NDArray;
-
 } // namespace opensn
