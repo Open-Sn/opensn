@@ -19,6 +19,8 @@ public:
   FromEnsightGold(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromOBJ(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromGmsh(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh> FromGmshV41(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh> FromGmshV22(const UnpartitionedMesh::Options& options);
 
   /**
    * Write grid cells into an OBJ file
