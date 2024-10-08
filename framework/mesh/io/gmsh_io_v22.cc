@@ -13,43 +13,32 @@ std::shared_ptr<UnpartitionedMesh>
 MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 {
   const std::string fname = "MeshIO::FromFile";
-
-  // Opening the file
-  std::ifstream file;
-  file.open(options.file_name);
-  if (not file.is_open())
-  {
-    std::ostringstream oss;
-    oss << fname + ": Failed to open file: " << options.file_name;
-    throw std::runtime_error(oss.str());
-  }
-
-  log.Log() << "Making unpartitioned mesh from Gmsh file " << options.file_name << " (format v2.2)";
-
-  std::shared_ptr<UnpartitionedMesh> mesh = std::make_shared<UnpartitionedMesh>();
-
-  // Declarations
-  std::string file_line;
-  std::istringstream iss;
   const std::string node_section_name = "$Nodes";
   const std::string elements_section_name = "$Elements";
   const std::string format_section_name = "$MeshFormat";
 
-  // Check the format of this input
-  // Role file forward until "$MeshFormat" line is encountered.
+  // Opening file
+  std::ifstream file(options.file_name);
+  if (not file.is_open())
+    throw std::runtime_error(fname + ": Failed to open file " + options.file_name);
+
+  // Check file format version
+  std::string file_line;
+  std::istringstream iss;
   while (std::getline(file, file_line))
     if (format_section_name == file_line)
       break;
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  double format;
-  if (not(iss >> format))
-    throw std::logic_error(fname + ": Failed to read the file format.");
-  else if (format != 2.2)
-    throw std::logic_error(fname + ": Only msh format 2.2 is supported.");
+  double gmsh_version;
+  if (!(iss >> gmsh_version) || gmsh_version != 2.2)
+    throw std::logic_error(fname + ": Only Gmsh version 4.1 format is supported.");
 
-  // Find section with node information and then read the nodes
+  auto mesh = std::make_shared<UnpartitionedMesh>();
+  log.Log() << "Making unpartitioned mesh from Gmsh file " << options.file_name << " (format v2.2)";
+
+  // Read node data
   file.seekg(0);
   while (std::getline(file, file_line))
     if (node_section_name == file_line)
@@ -59,8 +48,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   iss = std::istringstream(file_line);
   int num_nodes;
   if (not(iss >> num_nodes))
-    throw std::logic_error(fname + ": Failed while trying to read "
-                                   "the number of nodes.");
+    throw std::logic_error(fname + ": Failed to read the number of nodes.");
 
   auto& vertices = mesh->Vertices();
   vertices.clear();
@@ -75,21 +63,43 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     if (not(iss >> vert_index))
       throw std::logic_error(fname + ": Failed to read vertex index.");
 
-    if (not(iss >> vertices[vert_index - 1].x >> vertices[vert_index - 1].y >>
-            vertices[vert_index - 1].z))
-      throw std::logic_error(fname + ": Failed while reading the vertex "
-                                     "coordinates.");
+    double x, y, z;
+    if (not(iss >> x >> y >> z))
+      throw std::logic_error(fname + ": Failed while reading vertex coordinates.");
+    vertices[vert_index - 1] = {x, y, z};
   }
 
-  // Define utility lambdas
-  /**Lambda for reading nodes.*/
+  auto IsElementType1D = [](int type) { return type == 1; };
+  auto IsElementType2D = [](int type) { return type == 2 || type == 3; };
+  auto IsElementType3D = [](int type) { return type >= 4 && type <= 7; };
+  auto IsElementSupported = [](int type) { return type >= 1 && type <= 7; };
+  auto CellTypeFromMSHTypeID = [](int type)
+  {
+    switch (type)
+    {
+      case 1:
+        return CellType::SLAB;
+      case 2:
+        return CellType::TRIANGLE;
+      case 3:
+        return CellType::QUADRILATERAL;
+      case 4:
+        return CellType::TETRAHEDRON;
+      case 5:
+        return CellType::HEXAHEDRON;
+      case 6:
+      case 7:
+        return CellType::POLYHEDRON;
+      default:
+        return CellType::GHOST;
+    }
+  };
   auto ReadNodes = [&iss, &fname](int num_nodes)
   {
     std::vector<int> raw_nodes(num_nodes, 0);
     for (int i = 0; i < num_nodes; ++i)
       if (not(iss >> raw_nodes[i]))
-        throw std::logic_error(fname + ": Failed when reading element "
-                                       "node index.");
+        throw std::logic_error(fname + ": Failed reading element node index.");
 
     std::vector<uint64_t> nodes(num_nodes, 0);
     for (int i = 0; i < num_nodes; ++i)
@@ -98,72 +108,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     return nodes;
   };
 
-  /**Lamda for checking if an element is 1D.*/
-  auto IsElementType1D = [](int element_type)
-  {
-    if (element_type == 1)
-      return true;
-
-    return false;
-  };
-
-  /**Lamda for checking if an element is 2D.*/
-  auto IsElementType2D = [](int element_type)
-  {
-    if (element_type == 2 or element_type == 3)
-      return true;
-
-    return false;
-  };
-
-  /**Lamda for checking if an element is 3D.*/
-  auto IsElementType3D = [](int element_type)
-  {
-    if (element_type >= 4 and element_type <= 7)
-      return true;
-
-    return false;
-  };
-
-  /**Lambda for checking supported elements.*/
-  auto IsElementSupported = [](int element_type)
-  {
-    if (element_type >= 1 and element_type <= 7)
-      return true;
-
-    return false;
-  };
-
-  /**Lambda giving the cell subtype, given the MSH cell type.*/
-  auto CellTypeFromMSHTypeID = [](int element_type)
-  {
-    CellType cell_type = CellType::GHOST;
-
-    if (element_type == 1)
-      cell_type = CellType::SLAB;
-    else if (element_type == 2)
-      cell_type = CellType::TRIANGLE;
-    else if (element_type == 3)
-      cell_type = CellType::QUADRILATERAL;
-    else if (element_type == 4)
-      cell_type = CellType::TETRAHEDRON;
-    else if (element_type == 5)
-      cell_type = CellType::HEXAHEDRON;
-    else if (element_type == 6 or // Prism
-             element_type == 7)   // Pyramid
-      cell_type = CellType::POLYHEDRON;
-
-    return cell_type;
-  };
-
-  // Determine mesh type 2D/3D
-  // Only 2D and 3D meshes are supported. If the mesh
-  // is 1D then no elements will be read but the state
-  // would still be safe.
-  // This section will run through all the elements
-  // looking for a 3D element. It will not process
-  // any elements.
-  bool mesh_is_2D_assumption = true;
+  // Determine dimension of mesh. Only 2D and 3D meshes are supported. If the mesh is 1D, no
+  // elements will be read.
+  bool mesh_is_2D = true;
   file.seekg(0);
   while (std::getline(file, file_line))
     if (elements_section_name == file_line)
@@ -177,38 +124,37 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   for (int n = 0; n < num_elems; n++)
   {
-    int elem_type, num_tags, physical_reg, tag, element_index;
+    int element_type, num_tags, physical_reg, tag, element_index;
 
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    if (not(iss >> element_index >> elem_type >> num_tags))
-      throw std::logic_error(fname + ": Failed while reading element index, "
-                                     "element type, and number of tags.");
+    if (not(iss >> element_index >> element_type >> num_tags))
+      throw std::logic_error(fname + ": Failed reading element index, type, and number of tags.");
 
     if (not(iss >> physical_reg))
-      throw std::logic_error(fname + ": Failed while reading physical region.");
+      throw std::logic_error(fname + ": Failed reading physical region.");
 
     for (int i = 1; i < num_tags; i++)
       if (not(iss >> tag))
-        throw std::logic_error(fname + ": Failed when reading tags.");
+        throw std::logic_error(fname + ": Failed reading element tags.");
 
-    if (IsElementType3D(elem_type))
-    {
-      mesh_is_2D_assumption = false;
-      log.Log() << "Mesh identified as 3D.";
-      break; // have the answer now leave loop
-    }
-
-    if (elem_type == 15) // skip point type element
+    // Skip point type element
+    if (element_type == 15)
       continue;
 
-    if (not IsElementSupported(elem_type))
-      throw std::logic_error(fname + ": Unsupported element encountered.");
-  } // for n
+    if (IsElementType3D(element_type))
+    {
+      mesh_is_2D = false;
+      log.Log() << "Mesh identified as 3D.";
+      break;
+    }
 
-  // Return to the element listing section
-  // Now we will actually read the elements.
+    if (not IsElementSupported(element_type))
+      throw std::logic_error(fname + ": Found unsupported element type.");
+  }
+
+  // Read element data
   file.seekg(0);
   while (std::getline(file, file_line))
     if (elements_section_name == file_line)
@@ -221,76 +167,71 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   for (int n = 0; n < num_elems; n++)
   {
-    int elem_type, num_tags, physical_reg, tag, element_index;
-
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    if (not(iss >> element_index >> elem_type >> num_tags))
-      throw std::logic_error(fname + ": Failed while reading element index, "
-                                     "element type, and number of tags.");
+    int element_index, element_type, num_tags;
+    if (not(iss >> element_index >> element_type >> num_tags))
+      throw std::logic_error(fname + ": Failed reading element index, type, and number of tags.");
 
-    if (not(iss >> physical_reg))
-      throw std::logic_error(fname + ": Failed while reading physical region.");
+    int physical_region;
+    if (not(iss >> physical_region))
+      throw std::logic_error(fname + ": Failed reading physical region.");
 
+    int tag;
     for (int i = 1; i < num_tags; i++)
       if (not(iss >> tag))
-        throw std::logic_error(fname + ": Failed when reading tags.");
+        throw std::logic_error(fname + ": Failed reading tags.");
 
-    if (elem_type == 15) // skip point type elements
+    // Skip point type elements
+    if (element_type == 15)
       continue;
-
-    if (not IsElementSupported(elem_type))
-      throw std::logic_error(fname + ": Unsupported element encountered.");
-
-    log.Log0Verbose2() << "Reading element: " << file_line << " type: " << elem_type;
 
     int num_cell_nodes;
-    if (elem_type == 1)
+    if (element_type == 1) // 2-node edge
       num_cell_nodes = 2;
-    else if (elem_type == 2) // 3-node triangle
+    else if (element_type == 2) // 3-node triangle
       num_cell_nodes = 3;
-    else if (elem_type == 3 or elem_type == 4) // 4-node quadrangle or tet
+    else if (element_type == 3 or element_type == 4) // 4-node quadrangle or tet
       num_cell_nodes = 4;
-    else if (elem_type == 5) // 8-node hexahedron
+    else if (element_type == 5) // 8-node hexahedron
       num_cell_nodes = 8;
-    else
-      continue;
 
     auto& raw_boundary_cells = mesh->RawBoundaryCells();
     auto& raw_cells = mesh->RawCells();
+
     // Make the cell on either the volume or the boundary
     std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
-    if (mesh_is_2D_assumption)
+    if (mesh_is_2D)
     {
-      if (IsElementType1D(elem_type))
+      if (IsElementType1D(element_type))
       {
         raw_cell =
           std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
-      else if (IsElementType2D(elem_type))
+      else if (IsElementType2D(element_type))
       {
         raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(elem_type));
+          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }
     }
     else
     {
-      if (IsElementType2D(elem_type))
+      if (IsElementType2D(element_type))
       {
         raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(elem_type));
+          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
-      else if (IsElementType3D(elem_type))
+      else if (IsElementType3D(element_type))
       {
         raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYHEDRON, CellTypeFromMSHTypeID(elem_type));
+          CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }
@@ -300,11 +241,11 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       continue;
 
     auto& cell = *raw_cell;
-    cell.material_id = physical_reg;
+    cell.material_id = physical_region;
     cell.vertex_ids = ReadNodes(num_cell_nodes);
 
     // Populate faces
-    if (elem_type == 1) // 2-node edge
+    if (element_type == 1) // 2-node edge
     {
       UnpartitionedMesh::LightWeightFace face0;
       UnpartitionedMesh::LightWeightFace face1;
@@ -315,7 +256,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       cell.faces.push_back(face0);
       cell.faces.push_back(face1);
     }
-    else if (elem_type == 2 or elem_type == 3) // 3-node triangle or 4-node quadrangle
+    else if (element_type == 2 or element_type == 3) // 3-node triangle or 4-node quadrangle
     {
       size_t num_verts = cell.vertex_ids.size();
       for (size_t e = 0; e < num_verts; e++)
@@ -326,9 +267,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
         face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
 
         cell.faces.push_back(std::move(face));
-      }                      // for e
-    }                        // if 2D elements
-    else if (elem_type == 4) // 4-node tetrahedron
+      }
+    }
+    else if (element_type == 4) // 4-node tetrahedron
     {
       auto& v = cell.vertex_ids;
       std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(4);
@@ -340,7 +281,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       for (auto& lw_face : lw_faces)
         cell.faces.push_back(lw_face);
     }
-    else if (elem_type == 5) // 8-node hexahedron
+    else if (element_type == 5) // 8-node hexahedron
     {
       auto& v = cell.vertex_ids;
       std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(6);
@@ -390,14 +331,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   for (auto& cell : mesh->RawBoundaryCells())
     cell->material_id = boundary_mapping[cell->material_id];
 
-  // Always do this
-  unsigned int dimension = 2;
-  if (not mesh_is_2D_assumption)
-    dimension = 3;
-
+  unsigned int dimension = (mesh_is_2D) ? 2 : 3;
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
-
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

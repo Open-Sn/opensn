@@ -19,8 +19,6 @@ public:
   FromEnsightGold(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromOBJ(const UnpartitionedMesh::Options& options);
   static std::shared_ptr<UnpartitionedMesh> FromGmsh(const UnpartitionedMesh::Options& options);
-  static std::shared_ptr<UnpartitionedMesh> FromGmshV41(const UnpartitionedMesh::Options& options);
-  static std::shared_ptr<UnpartitionedMesh> FromGmshV22(const UnpartitionedMesh::Options& options);
 
   /**
    * Write grid cells into an OBJ file
@@ -54,6 +52,10 @@ public:
    * \param file_base_name Base name of the output file
    */
   static void ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name);
+
+private:
+  static std::shared_ptr<UnpartitionedMesh> FromGmshV41(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh> FromGmshV22(const UnpartitionedMesh::Options& options);
 };
 
 } // namespace opensn
