@@ -18,9 +18,8 @@ RegisterLuaFunctionInNamespace(CreateProductQuadrature, aquad, CreateProductQuad
 
 RegisterLuaConstant(GAUSS_LEGENDRE, Varying(1));
 RegisterLuaConstant(GAUSS_CHEBYSHEV, Varying(2));
-RegisterLuaConstant(GAUSS_LEGENDRE_LEGENDRE, Varying(3));
-RegisterLuaConstant(GAUSS_LEGENDRE_CHEBYSHEV, Varying(4));
-RegisterLuaConstant(CUSTOM_QUADRATURE, Varying(5));
+RegisterLuaConstant(GAUSS_LEGENDRE_CHEBYSHEV, Varying(3));
+RegisterLuaConstant(CUSTOM_QUADRATURE, Varying(4));
 
 int
 CreateProductQuadrature(lua_State* L)
@@ -47,30 +46,6 @@ CreateProductQuadrature(lua_State* L)
       opensn::log.Log() << "Created Gauss-Legendre Quadrature with " << new_quad->azimu_ang_.size()
                         << " azimuthal angles and " << new_quad->polar_ang_.size()
                         << " polar angles.";
-    }
-
-    return LuaReturn(L, index);
-  }
-  else if (ident == (int)ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE)
-  {
-    LuaCheckArgs<int, int, int>(L, fname);
-
-    auto Na = LuaArg<int>(L, 2);
-    auto Np = LuaArg<int>(L, 3);
-    auto verbose = LuaArgOptional<bool>(L, 4, false);
-
-    opensn::log.Log() << "Creating Gauss-Legendre-Legendre Quadrature\n";
-
-    auto new_quad = std::make_shared<AngularQuadratureProdGLL>(Na, Np, verbose);
-
-    opensn::angular_quadrature_stack.push_back(new_quad);
-    const size_t index = opensn::angular_quadrature_stack.size() - 1;
-
-    if (verbose)
-    {
-      opensn::log.Log() << "Created Gauss-Legendre-Legendre Quadrature with "
-                        << new_quad->azimu_ang_.size() << " azimuthal angles and "
-                        << new_quad->polar_ang_.size() << " polar angles.";
     }
 
     return LuaReturn(L, index);

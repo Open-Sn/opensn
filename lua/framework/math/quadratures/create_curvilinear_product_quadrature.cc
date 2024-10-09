@@ -75,21 +75,6 @@ CreateCylindricalProductQuadrature(lua_State* L)
       const size_t index = opensn::angular_quadrature_stack.size() - 1;
       return LuaReturn(L, index);
     }
-    case ProductQuadratureType::GAUSS_LEGENDRE_LEGENDRE:
-    {
-      opensn::log.Log() << "CreateCylindricalProductQuadrature : "
-                        << "Creating Gauss-Legendre-Legendre Quadrature\n";
-
-      const auto quad_pol = GaussLegendreQuadrature(Np, verbose);
-      std::vector<GaussQuadrature> quad_azi;
-      for (const auto& Na : vNa)
-        quad_azi.emplace_back(GaussLegendreQuadrature(Na, verbose));
-      const auto new_quad = std::make_shared<CylindricalQuadrature>(quad_pol, quad_azi, verbose);
-
-      opensn::angular_quadrature_stack.push_back(new_quad);
-      const size_t index = opensn::angular_quadrature_stack.size() - 1;
-      return LuaReturn(L, index);
-    }
     default:
     {
       opensn::log.LogAllError() << "CreateCylindricalProductQuadrature : "
