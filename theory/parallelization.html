@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,20 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>6. Parallel Sweeps &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -142,7 +140,8 @@ The optimal ordering of loops is problem-dependent, and, while we could
 introduce separate compute kernels for each ordering, a better solution
 is to extend our sweep algorithm to support sets of groups and angles.</p>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../_images/algo1.png"><img alt="../_images/algo1.png" src="../_images/algo1.png" style="width: 793.0px; height: 402.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/algo1.png"><img alt="../_images/algo1.png" src="../_images/algo1.png" style="width: 793.0px; height: 402.0px;" />
+</a>
 </figure>
 <section id="group-sets">
 <h3><span class="section-number">6.2.1. </span>Group-sets<a class="headerlink" href="#group-sets" title="Link to this heading"></a></h3>
@@ -151,7 +150,8 @@ flexibility to support different loop orderings without requiring
 multiple compute kernels. Algorithm 2 extends Algorithm 1 to support
 group-sets.</p>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../_images/algo2.png"><img alt="../_images/algo2.png" src="../_images/algo2.png" style="width: 744.0px; height: 515.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/algo2.png"><img alt="../_images/algo2.png" src="../_images/algo2.png" style="width: 744.0px; height: 515.0px;" />
+</a>
 </figure>
 <p>If each group is its own group-set, our solution algorithm is similar to
 Algorithm 1 and is optimal for problems with downscattering only. If all
@@ -170,7 +170,8 @@ to cache common geometric quantities for cell solves and to optimize our
 sweep-plane data structures for cache efficiency. Algorithm 3 extends
 our group-set algorithm to include angle-sets.</p>
 <figure class="align-center">
-<a class="reference internal image-reference" href="../_images/algo3.png"><img alt="../_images/algo3.png" src="../_images/algo3.png" style="width: 758.0px; height: 594.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/algo3.png"><img alt="../_images/algo3.png" src="../_images/algo3.png" style="width: 758.0px; height: 594.0px;" />
+</a>
 </figure>
 </section>
 </section>
@@ -182,7 +183,8 @@ This 4x4 mesh has been decomposed among four processors, with each
 processor being assigned a column of four cells. This columnar
 decomposition is the type of partitioning produced by the KBA algorithm.</p>
 <figure class="align-center" id="id314">
-<a class="reference internal image-reference" href="../_images/ProcMesh.png"><img alt="../_images/ProcMesh.png" src="../_images/ProcMesh.png" style="width: 671.0px; height: 623.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/ProcMesh.png"><img alt="../_images/ProcMesh.png" src="../_images/ProcMesh.png" style="width: 671.0px; height: 623.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Partitioned, 4x4, XY, Rectangular Mesh</span><a class="headerlink" href="#id314" title="Link to this image"></a></p>
 </figcaption>
@@ -205,7 +207,8 @@ efficiency. In the case where multiple angle-sets can be solved
 simultaneously, a scheduling algorithm is required to tell the processor
 the order in which to execute the available tasks.</p>
 <figure class="align-center" id="id315">
-<a class="reference internal image-reference" href="../_images/ProcGraph.png"><img alt="../_images/ProcGraph.png" src="../_images/ProcGraph.png" style="width: 630.0px; height: 873.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/ProcGraph.png"><img alt="../_images/ProcGraph.png" src="../_images/ProcGraph.png" style="width: 630.0px; height: 873.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Task Dependency Graph for Direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>.</span><a class="headerlink" href="#id315" title="Link to this image"></a></p>
 </figcaption>

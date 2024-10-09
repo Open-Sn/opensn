@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,20 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2. Phase-space Discretization &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -251,13 +249,15 @@ of the unit sphere is</p>
 angles and <span class="math notranslate nohighlight">\(N_{\text{azimuthal}}\)</span> is the number of azimuthal
 angles <strong>in one quadrant</strong>.</p>
 <figure class="align-center" id="id335">
-<a class="reference internal image-reference" href="../_images/P8GLC.png"><img alt="../_images/P8GLC.png" src="../_images/P8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/P8GLC.png"><img alt="../_images/P8GLC.png" src="../_images/P8GLC.png" style="width: 392.0px; height: 294.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Product Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=N_{\text{azimuthal}}=4\)</span>)</span><a class="headerlink" href="#id335" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id336">
-<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Product Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=N_{\text{azimuthal}}=6\)</span>)</span><a class="headerlink" href="#id336" title="Link to this image"></a></p>
 </figcaption>
@@ -274,7 +274,8 @@ pole. The number of directions in one octant of the unit sphere is</p>
 <div class="math notranslate nohighlight">
 \[\frac{N_{\text{polar}} (N_{\text{polar}}+1)}{2}\]</div>
 <figure class="align-center" id="id337">
-<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Triangular Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=4\)</span>)</span><a class="headerlink" href="#id337" title="Link to this image"></a></p>
 </figcaption>
@@ -289,13 +290,15 @@ are computed to obtain 4-th order accuracy. Note that the
 quadrilateral can be easily subdivided into 4 smaller quadrilaterals,
 hence yielding a locally refined angular quadrature.</p>
 <figure class="align-center" id="id338">
-<a class="reference internal image-reference" href="../_images/SLDFESQBasen2.png"><img alt="../_images/SLDFESQBasen2.png" src="../_images/SLDFESQBasen2.png" style="width: 366.8px; height: 309.6px;" /></a>
+<a class="reference internal image-reference" href="../_images/SLDFESQBasen2.png"><img alt="../_images/SLDFESQBasen2.png" src="../_images/SLDFESQBasen2.png" style="width: 366.8px; height: 309.6px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Example of uniform LDFE angular quadrature</span><a class="headerlink" href="#id338" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id339">
-<a class="reference internal image-reference" href="../_images/SLDFESQr.png"><img alt="../_images/SLDFESQr.png" src="../_images/SLDFESQr.png" style="width: 368.8px; height: 306.8px;" /></a>
+<a class="reference internal image-reference" href="../_images/SLDFESQr.png"><img alt="../_images/SLDFESQr.png" src="../_images/SLDFESQr.png" style="width: 368.8px; height: 306.8px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Example of locally refined LDFE angular quadrature</span><a class="headerlink" href="#id339" title="Link to this image"></a></p>
 </figcaption>
@@ -457,25 +460,29 @@ easy to check that <span class="math notranslate nohighlight">\(b_j(\vec{r})\)</
 <span class="math notranslate nohighlight">\(j\)</span> of the polyhedron and zero on all its other vertices.</p>
 </div></blockquote>
 <figure class="align-center" id="id341">
-<a class="reference internal image-reference" href="../_images/PWL_pentagon.png"><img alt="../_images/PWL_pentagon.png" src="../_images/PWL_pentagon.png" style="width: 512.0px; height: 384.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/PWL_pentagon.png"><img alt="../_images/PWL_pentagon.png" src="../_images/PWL_pentagon.png" style="width: 512.0px; height: 384.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">PWL basis functions in 2D for an arbitrary pentagon</span><a class="headerlink" href="#id341" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id342">
-<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon1.png"><img alt="../_images/PWL_degen_pentagon1.png" src="../_images/PWL_degen_pentagon1.png" style="width: 512.0px; height: 384.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon1.png"><img alt="../_images/PWL_degen_pentagon1.png" src="../_images/PWL_degen_pentagon1.png" style="width: 512.0px; height: 384.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">A PWL basis function in 2D for a degenerated square (pentagon).</span><a class="headerlink" href="#id342" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id343">
-<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon2.png"><img alt="../_images/PWL_degen_pentagon2.png" src="../_images/PWL_degen_pentagon2.png" style="width: 512.0px; height: 384.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/PWL_degen_pentagon2.png"><img alt="../_images/PWL_degen_pentagon2.png" src="../_images/PWL_degen_pentagon2.png" style="width: 512.0px; height: 384.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Another PWL basis function in 2D for a degenerated square (pentagon).</span><a class="headerlink" href="#id343" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id344">
-<a class="reference internal image-reference" href="../_images/ThreeDTetrahedral.png"><img alt="../_images/ThreeDTetrahedral.png" src="../_images/ThreeDTetrahedral.png" style="width: 882.0px; height: 378.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/ThreeDTetrahedral.png"><img alt="../_images/ThreeDTetrahedral.png" src="../_images/ThreeDTetrahedral.png" style="width: 882.0px; height: 378.0px;" />
+</a>
 <figcaption>
 <p><span class="caption-text">Identification of PWL basis functions in 3D</span><a class="headerlink" href="#id344" title="Link to this image"></a></p>
 </figcaption>
