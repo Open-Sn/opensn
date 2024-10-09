@@ -91,7 +91,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       {
         if (mu > tolerance)
           orientation = FOOUTGOING;
-        else if (mu < tolerance)
+        else if (mu < -tolerance)
           orientation = FOINCOMING;
 
         cell_face_orientations_[cell.local_id_][f] = orientation;
@@ -127,7 +127,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
         const double adj_mu = omega.Dot(adj_face.normal_);
         if (adj_mu > tolerance)
           orientation = FOOUTGOING;
-        else if (adj_mu < tolerance)
+        else if (adj_mu < -tolerance)
           orientation = FOINCOMING;
 
         switch (orientation)
