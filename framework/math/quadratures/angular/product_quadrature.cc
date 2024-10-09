@@ -164,31 +164,6 @@ AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : Pro
   AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
 }
 
-AngularQuadratureProdGLL::AngularQuadratureProdGLL(int Na, int Np, bool verbose)
-{
-  GaussLegendreQuadrature gl_polar(Np * 2);
-  GaussLegendreQuadrature gl_azimu(Na * 4);
-
-  // Create azimuthal angles
-  azimu_ang_.clear();
-  for (unsigned int i = 0; i < (Na * 4); ++i)
-    azimu_ang_.emplace_back(M_PI * gl_azimu.qpoints[i][0] + M_PI);
-
-  // Create polar angles
-  polar_ang_.clear();
-  for (unsigned int j = 0; j < (Np * 2); ++j)
-    polar_ang_.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
-
-  // Create combined weights
-  std::vector<double> weights;
-  for (unsigned int i = 0; i < azimu_ang_.size(); ++i)
-    for (unsigned int j = 0; j < polar_ang_.size(); ++j)
-      weights.emplace_back(M_PI * gl_azimu.weights[i] * gl_polar.weights[j]);
-
-  // Initialize
-  AssembleCosines(azimu_ang_, polar_ang_, weights, verbose);
-}
-
 AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
 {
   GaussLegendreQuadrature gl_polar(Np * 2);

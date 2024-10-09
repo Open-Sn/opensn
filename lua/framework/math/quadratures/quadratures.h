@@ -42,17 +42,6 @@ int CreateCustomAngularQuadrature(lua_State* L);
  * or (table<int>) number of azimuthal angles (diverse number at each polar level)
  *   - verbose : (bool) verbosity flag (optional).
  *
- * ###QuadratureType:\n
- * GAUSS_LEGENDRE_LEGENDRE\n
- *   Gauss-Legendre quadrature for the polar angle and Gauss-Legendre quadrature
- *   for the azimuthal angle.
- *   Arguments for this quadrature type, in order:
- *   - Np : (int) number of polar angles
- *   - Na : (int) number of azimuthal angles (unique number at each polar level),
- * or (table<int>) number of azimuthal angles (diverse number at each polar level)
- *   - verbose : (bool) verbosity flag (optional).
- *
- *
  * \return Returns a unique handle to the created product quadrature rule
  *
  * \ingroup LuaQuadrature
@@ -74,11 +63,6 @@ int CreateSphericalProductQuadrature(lua_State* L);
  *  for the azimuthal angle. Suitable only for 1D simulations. Expects
  *  to be followed by the number of angles Np. Optionally a verbosity flag
  *  can be added.\n\n
- *
- * GAUSS_LEGENDRE_LEGENDRE\n
- *  Gauss-Legendre quadrature for both the polar and azimuthal dimension.
- *  Expects to be followed by number of Azimuthal and Polar angles.
- *  Optionally a verbosity flag can be added.\n\n
  *
  * GAUSS_LEGENDRE_CHEBYSHEV\n
  *  Gauss-Legendre quadrature for the polar angle but Gauss-Chebyshev
