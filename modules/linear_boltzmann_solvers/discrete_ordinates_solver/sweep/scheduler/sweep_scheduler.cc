@@ -89,7 +89,7 @@ SweepScheduler::InitializeAlgoDOG()
       // Set up rule values
       if (loc_depth >= 0)
       {
-        RULE_VALUES new_rule_vals(angleset);
+        RuleValues new_rule_vals(angleset);
         new_rule_vals.depth_of_graph = loc_depth;
         new_rule_vals.set_index = as + q * num_anglesets;
 
@@ -112,7 +112,7 @@ SweepScheduler::InitializeAlgoDOG()
   // Init sort functions
   struct
   {
-    bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
+    bool operator()(const RuleValues& a, const RuleValues& b)
     {
       return a.depth_of_graph > b.depth_of_graph;
     }
@@ -120,7 +120,7 @@ SweepScheduler::InitializeAlgoDOG()
 
   struct
   {
-    bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
+    bool operator()(const RuleValues& a, const RuleValues& b)
     {
       return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax > b.sign_of_omegax);
     }
@@ -128,7 +128,7 @@ SweepScheduler::InitializeAlgoDOG()
 
   struct
   {
-    bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
+    bool operator()(const RuleValues& a, const RuleValues& b)
     {
       return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
              (a.sign_of_omegay > b.sign_of_omegay);
@@ -137,7 +137,7 @@ SweepScheduler::InitializeAlgoDOG()
 
   struct
   {
-    bool operator()(const RULE_VALUES& a, const RULE_VALUES& b)
+    bool operator()(const RuleValues& a, const RuleValues& b)
     {
       return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
              (a.sign_of_omegay == b.sign_of_omegay) and (a.sign_of_omegaz > b.sign_of_omegaz);
