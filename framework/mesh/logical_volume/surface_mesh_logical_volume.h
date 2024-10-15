@@ -18,7 +18,7 @@ public:
   bool Inside(const Vector3& point) const override;
 
 private:
-  const std::shared_ptr<SurfaceMesh> surf_mesh = nullptr;
+  const std::shared_ptr<SurfaceMesh> surf_mesh_ = nullptr;
   std::array<double, 2> xbounds_;
   std::array<double, 2> ybounds_;
   std::array<double, 2> zbounds_;
