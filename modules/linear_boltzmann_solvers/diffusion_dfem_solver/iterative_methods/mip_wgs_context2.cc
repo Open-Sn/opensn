@@ -23,7 +23,7 @@ MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                                SourceFlags rhs_scope,
                                bool log_info)
   : WGSContext(lbs_mip_ss_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
-    lbs_mip_ss_solver_(lbs_mip_ss_solver)
+    lbs_mip_ss_solver(lbs_mip_ss_solver)
 {
 }
 
@@ -89,7 +89,7 @@ void
 MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
-  auto& mip_solver = *lbs_mip_ss_solver_.gs_mip_solvers_[groupset_.id_];
+  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers_[groupset_.id_];
 
   lbs_solver_.PhiNewLocal() = lbs_solver_.QMomentsLocal();
 

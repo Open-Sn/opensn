@@ -12,7 +12,7 @@ class DiffusionDFEMSolver;
 
 struct MIPWGSContext2 : public WGSContext
 {
-  DiffusionDFEMSolver& lbs_mip_ss_solver_;
+  DiffusionDFEMSolver& lbs_mip_ss_solver;
 
   MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
                  LBSGroupset& groupset,
