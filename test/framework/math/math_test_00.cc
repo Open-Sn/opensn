@@ -1,6 +1,6 @@
 #include "framework/math/dynamic_vector.h"
 #include "framework/math/dynamic_matrix.h"
-#include "framework/math/sparse_matrix/math_sparse_matrix.h"
+#include "framework/math/sparse_matrix/sparse_matrix.h"
 
 #include "framework/runtime.h"
 #include "framework/logging/log.h"

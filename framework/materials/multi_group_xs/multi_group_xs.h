@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/materials/material_property.h"
-#include "framework/math/sparse_matrix/math_sparse_matrix.h"
+#include "framework/math/sparse_matrix/sparse_matrix.h"
 
 namespace opensn
 {
