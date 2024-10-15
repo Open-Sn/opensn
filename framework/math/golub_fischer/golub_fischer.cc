@@ -25,10 +25,10 @@ GolubFischer::GetDiscreteScatAngles(std::vector<double>& mell)
   int N = in_mell.size() - 1;
   int n = (N + 1) / 2;
 
-  xn_wn_.resize(n, std::pair<double, double>(0.0, 0.0));
+  xn_wn.resize(n, std::pair<double, double>(0.0, 0.0));
 
   if (N == 0)
-    return xn_wn_;
+    return xn_wn;
 
   /* Legendre recurrence coefficients */
   std::vector<double> a;
@@ -49,17 +49,17 @@ GolubFischer::GetDiscreteScatAngles(std::vector<double>& mell)
 
   MCA(in_mell, a, b, c);
 
-  RootsOrtho(n, alpha_, beta_);
+  RootsOrtho(n, alpha, beta);
 
   for (int i = 0; i < n; i++)
   {
     log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2)
-      << "i " << xn_wn_[i].first << " " << xn_wn_[i].second << '\n';
+      << "i " << xn_wn[i].first << " " << xn_wn[i].second << '\n';
   }
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
 
-  return xn_wn_;
+  return xn_wn;
 }
 
 void
@@ -76,8 +76,8 @@ GolubFischer::MCA(std::vector<double>& mell,
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "N " << N << " n " << n << '\n';
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "alpha, beta" << '\n';
 
-  alpha_.resize(n + 1, 0.0);
-  beta_.resize(n + 1, 0.0);
+  alpha.resize(n + 1, 0.0);
+  beta.resize(n + 1, 0.0);
 
   std::vector<std::vector<double>> sigma(n + 1, std::vector<double>(2 * n + 1, 0.0));
 
@@ -86,10 +86,10 @@ GolubFischer::MCA(std::vector<double>& mell,
     sigma[0][ell] = mell[ell];
   }
 
-  alpha_[0] = a[0] + c[0] * sigma[0][1] / sigma[0][0];
-  beta_[0] = mell[0];
+  alpha[0] = a[0] + c[0] * sigma[0][1] / sigma[0][0];
+  beta[0] = mell[0];
 
-  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << 0 << " " << alpha_[0] << " " << beta_[0] << "\n";
+  log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << 0 << " " << alpha[0] << " " << beta[0] << "\n";
 
   for (int k = 1; k < n + 1; k++)
   {
@@ -105,15 +105,14 @@ GolubFischer::MCA(std::vector<double>& mell,
       {
         sigmakm2ell = sigma[k - 2][ell];
       }
-      sigma[k][ell] = c[ell] * sigma[k - 1][ell + 1] -
-                      (alpha_[k - 1] - a[ell]) * sigma[k - 1][ell] - beta_[k - 1] * sigmakm2ell +
-                      b[ell] * sigma[k - 1][ell - 1];
+      sigma[k][ell] = c[ell] * sigma[k - 1][ell + 1] - (alpha[k - 1] - a[ell]) * sigma[k - 1][ell] -
+                      beta[k - 1] * sigmakm2ell + b[ell] * sigma[k - 1][ell - 1];
     }
-    alpha_[k] = a[k] - c[k - 1] * (sigma[k - 1][k] / sigma[k - 1][k - 1]) +
-                c[k] * (sigma[k][k + 1] / sigma[k][k]);
-    beta_[k] = c[k - 1] * sigma[k][k] / sigma[k - 1][k - 1];
+    alpha[k] = a[k] - c[k - 1] * (sigma[k - 1][k] / sigma[k - 1][k - 1]) +
+               c[k] * (sigma[k][k + 1] / sigma[k][k]);
+    beta[k] = c[k - 1] * sigma[k][k] / sigma[k - 1][k - 1];
 
-    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << k << " " << alpha_[k] << " " << beta_[k] << "\n";
+    log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << k << " " << alpha[k] << " " << beta[k] << "\n";
   }
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
@@ -224,8 +223,8 @@ GolubFischer::RootsOrtho(int& N, std::vector<double>& alpha, std::vector<double>
   }
   for (int i = 0; i < N; i++)
   {
-    xn_wn_[i].first = xn[i];
-    xn_wn_[i].second = wn[i];
+    xn_wn[i].first = xn[i];
+    xn_wn[i].second = wn[i];
   }
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done" << '\n';
