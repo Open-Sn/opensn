@@ -49,7 +49,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       size_t ep1 = (e < (num_edges - 1)) ? e + 1 : 0;
       uint64_t v0index = face.vertex_ids_[e];
       uint64_t v1index = face.vertex_ids_[ep1];
-      side_data.v_index.resize(2, -1);
+      side_data.v_index.resize(2);
       side_data.v_index[0] = v0index;
       side_data.v_index[1] = v1index;
 
@@ -170,7 +170,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
 }
 
 double
-PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index, const Vector3& qpoint, bool on_surface)
+PieceWiseLinearPolyhedronMapping::TetShape(int index, const Vector3& qpoint, bool on_surface)
 {
   double value = 0.0;
 
@@ -195,7 +195,7 @@ PieceWiseLinearPolyhedronMapping::TetShape(uint32_t index, const Vector3& qpoint
 }
 
 double
-PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
+PieceWiseLinearPolyhedronMapping::TetGradShape_x(const int index)
 {
   double value = 0.0;
   if (index == 0)
@@ -219,7 +219,7 @@ PieceWiseLinearPolyhedronMapping::TetGradShape_x(const uint32_t index)
 }
 
 double
-PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
+PieceWiseLinearPolyhedronMapping::TetGradShape_y(const int index)
 {
   double value = 0.0;
   if (index == 0)
@@ -243,7 +243,7 @@ PieceWiseLinearPolyhedronMapping::TetGradShape_y(const uint32_t index)
 }
 
 double
-PieceWiseLinearPolyhedronMapping::TetGradShape_z(const uint32_t index)
+PieceWiseLinearPolyhedronMapping::TetGradShape_z(const int index)
 {
   double value = 0.0;
   if (index == 0)
@@ -274,7 +274,7 @@ PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
                                                 bool on_surface) const
 {
   double value = 0.0;
-  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  auto index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   value += TetShape(index, qpoint, on_surface);
@@ -296,7 +296,7 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
   double tetdfdx = 0.0;
   double tetdfdy = 0.0;
   double tetdfdz = 0.0;
-  int index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
+  auto index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
   double betaf = face_betaf_[face_index];
 
   tetdfdx += TetGradShape_x(index);
