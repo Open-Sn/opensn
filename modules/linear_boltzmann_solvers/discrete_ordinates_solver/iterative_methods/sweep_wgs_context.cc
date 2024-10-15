@@ -21,14 +21,14 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                                  SourceFlags lhs_scope,
                                  SourceFlags rhs_scope,
                                  bool log_info,
-                                 std::shared_ptr<SweepChunk> sweep_chunk)
+                                 std::shared_ptr<SweepChunk> swp_chnk)
   : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
-    sweep_chunk_(std::move(sweep_chunk)),
-    sweep_scheduler_(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
-                                                     : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
-                     *groupset.angle_agg_,
-                     *sweep_chunk_),
-    lbs_ss_solver_(lbs_solver)
+    sweep_chunk(std::move(swp_chnk)),
+    sweep_scheduler(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
+                                                    : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+                    *groupset.angle_agg_,
+                    *sweep_chunk),
+    lbs_ss_solver(lbs_solver)
 {
 }
 
@@ -128,22 +128,22 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   const bool use_bndry_source_flag =
     (scope & APPLY_FIXED_SOURCES) and (not lbs_solver_.Options().use_src_moments);
 
-  sweep_scheduler_.SetBoundarySourceActiveFlag(use_bndry_source_flag);
+  sweep_scheduler.SetBoundarySourceActiveFlag(use_bndry_source_flag);
 
   if (scope & ZERO_INCOMING_DELAYED_PSI)
-    sweep_scheduler_.ZeroIncomingDelayedPsi();
+    sweep_scheduler.ZeroIncomingDelayedPsi();
 
   // Sweep
-  sweep_scheduler_.ZeroOutputFluxDataStructures();
+  sweep_scheduler.ZeroOutputFluxDataStructures();
   std::chrono::high_resolution_clock::time_point sweep_start =
     std::chrono::high_resolution_clock::now();
-  sweep_scheduler_.Sweep();
+  sweep_scheduler.Sweep();
   std::chrono::high_resolution_clock::time_point sweep_end =
     std::chrono::high_resolution_clock::now();
   double sweep_time =
     (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) /
     1.0e+9;
-  sweep_times_.push_back(sweep_time);
+  sweep_times.push_back(sweep_time);
 }
 
 void
@@ -156,10 +156,10 @@ SweepWGSContext::PostSolveCallback()
   // currently used in OpenSn). This step also zeros out balance variables and computes the correct
   // in-flow and out-flow. Classic Richardson calls this solely to compute balance quantities (note
   // that it does cost us an extra sweep that is technically not necessary).
-  lbs_ss_solver_.ZeroOutflowBalanceVars(groupset_);
+  lbs_ss_solver.ZeroOutflowBalanceVars(groupset_);
   const auto scope = lhs_src_scope_ | rhs_src_scope_;
   set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);
-  sweep_scheduler_.SetDestinationPhi(lbs_solver_.PhiNewLocal());
+  sweep_scheduler.SetDestinationPhi(lbs_solver_.PhiNewLocal());
   ApplyInverseTransportOperator(scope);
   lbs_solver_.GSScopedCopyPrimarySTLvectors(
     groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
@@ -167,15 +167,15 @@ SweepWGSContext::PostSolveCallback()
   if (log_info_)
   {
     double tot_sweep_time = 0.0;
-    auto num_sweeps = static_cast<double>(sweep_times_.size());
-    for (auto time : sweep_times_)
+    auto num_sweeps = static_cast<double>(sweep_times.size());
+    for (auto time : sweep_times)
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset_.quadrature_->abscissae.size();
     size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
     log.Log() << "\n       Average sweep time (s):        "
-              << tot_sweep_time / static_cast<double>(sweep_times_.size())
+              << tot_sweep_time / static_cast<double>(sweep_times.size())
               << "\n       Sweep Time/Unknown (ns):       "
               << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() /
                    static_cast<double>(num_unknowns)
