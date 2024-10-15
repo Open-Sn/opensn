@@ -117,7 +117,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   // Unpack solution
   const auto& groups = lbs_solver.Groups();
   lbs_solver.SetPrimarySTLvectorFromGroupScopedPETScVec(
-    groups.front().id_, groups.back().id_, x_, lbs_solver.PhiOldLocal());
+    groups.front().id, groups.back().id, x_, lbs_solver.PhiOldLocal());
 
   // Compute final k_eff
   double k_eff = lbs_solver.ComputeFissionProduction(lbs_solver.PhiOldLocal());

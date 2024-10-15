@@ -75,7 +75,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 
   auto gs_ss_size = grp_ss_info.ss_size;
   auto gs_ss_begin = grp_ss_info.ss_begin;
-  auto gs_gi = groupset_.groups_[gs_ss_begin].id_;
+  auto gs_gi = groupset_.groups_[gs_ss_begin].id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;

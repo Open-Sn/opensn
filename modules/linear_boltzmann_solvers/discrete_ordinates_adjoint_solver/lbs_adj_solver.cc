@@ -83,7 +83,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
     for (const auto& group : groupset.groups_)
-      set_group_numbers.insert(group.id_);
+      set_group_numbers.insert(group.id);
 
   const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 
@@ -126,7 +126,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 
     for (const auto& group : groups_)
     {
-      const auto& g = group.id_;
+      const auto& g = group.id;
       const auto& q = source->source_value_g[g];
 
       if (q > 0.0)
@@ -154,7 +154,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
 
       for (const auto& group : groups_)
       {
-        const auto& g = group.id_;
+        const auto& g = group.id;
         const auto& S = source_strength[g] * subscriber.volume_weight;
 
         if (S > 0.0)
@@ -191,7 +191,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
         const auto& intV_shapeI = fe_values.intV_shapeI[i];
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         for (const auto& group : groups_)
-          local_integral += src[group.id_] * intV_shapeI;
+          local_integral += src[group.id] * intV_shapeI;
       }
     }
   }
@@ -208,7 +208,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
     for (const auto& group : groupset.groups_)
-      set_group_numbers.insert(group.id_);
+      set_group_numbers.insert(group.id);
 
   const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
 

@@ -63,7 +63,7 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
-  gs_gi_ = groupset_.groups_[gs_ss_begin_].id_;
+  gs_gi_ = groupset_.groups_[gs_ss_begin_].id;
 
   surface_source_active_ = IsSurfaceSourceActive();
   group_stride_ = angle_set.GetNumGroups();

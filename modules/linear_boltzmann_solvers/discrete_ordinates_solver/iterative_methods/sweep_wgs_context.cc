@@ -61,7 +61,7 @@ SweepWGSContext::PreSetupCallback()
               << "********** Solving groupset " << groupset_.id_ << " with " << method_name
               << ".\n\n"
               << "Quadrature number of angles: " << groupset_.quadrature_->abscissae.size() << "\n"
-              << "Groups " << groupset_.groups_.front().id_ << " " << groupset_.groups_.back().id_
+              << "Groups " << groupset_.groups_.front().id << " " << groupset_.groups_.back().id
               << "\n\n";
   }
 }

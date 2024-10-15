@@ -88,7 +88,7 @@ PowerIterationKEigenSCDSA::Initialize()
 
   // Make xs map
   auto matid_2_mgxs_map = PackGroupsetXS(
-    lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
+    lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id, front_gs_.groups_.back().id);
 
   // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
@@ -305,7 +305,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
@@ -352,7 +352,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)

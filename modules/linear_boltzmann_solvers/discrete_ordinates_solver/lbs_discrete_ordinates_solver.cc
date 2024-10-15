@@ -220,8 +220,8 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups_.front().id;
+  int gsf = groupset.groups_.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -279,8 +279,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups_.front().id;
+  int gsf = groupset.groups_.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -347,7 +347,7 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id_;
+  int gsi = groupset.groups_.front().id;
   size_t gss = groupset.groups_.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -400,8 +400,8 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups_.front().id;
+    int gsf = groupset.groups_.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -463,8 +463,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups_.front().id;
+    int gsf = groupset.groups_.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -557,8 +557,8 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     }   // if saving angular flux
 
     const auto num_gs_groups = groupset.groups_.size();
-    const auto gsg_i = groupset.groups_.front().id_;
-    const auto gsg_f = groupset.groups_.back().id_;
+    const auto gsg_i = groupset.groups_.front().id;
+    const auto gsg_f = groupset.groups_.back().id;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
@@ -612,7 +612,7 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
   for (const auto& cell : grid_ptr_->local_cells)
     for (int f = 0; f < cell.faces.size(); ++f)
       for (auto& group : groupset.groups_)
-        cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id_);
+        cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id);
 }
 
 void
@@ -687,7 +687,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
 
                   for (const auto& group : groupset.groups_)
                   {
-                    const int g = group.id_;
+                    const int g = group.id;
                     const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g, 0);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                   } // for group
@@ -776,8 +776,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
   const auto num_gs_angles = quadrature->omegas.size();
   const auto num_gs_groups = groupset.groups_.size();
 
-  const auto gsi = groupset.groups_.front().id_;
-  const auto gsf = groupset.groups_.back().id_;
+  const auto gsi = groupset.groups_.front().id;
+  const auto gsf = groupset.groups_.back().id;
 
   // Start integration
   std::vector<double> local_leakage(num_gs_groups, 0.0);
@@ -858,7 +858,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
 
     const auto num_gs_angles = quadrature->omegas.size();
     const auto num_gs_groups = groupset.groups_.size();
-    const auto first_gs_group = groupset.groups_.front().id_;
+    const auto first_gs_group = groupset.groups_.front().id;
 
     const auto& psi_gs = psi_new_local_[gs];
 

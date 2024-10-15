@@ -55,7 +55,7 @@ ComputePointwisePhiChange(
       for (auto id : groupset_ids)
       {
         auto& groupset = lbs_solver.Groupsets()[id];
-        auto gsi = groupset.groups_.front().id_;
+        auto gsi = groupset.groups_.front().id;
         for (auto g = 0; g < groupset.groups_.size(); ++g)
         {
           auto m0g_idx = transport_view.MapDOF(i, 0, gsi + g);

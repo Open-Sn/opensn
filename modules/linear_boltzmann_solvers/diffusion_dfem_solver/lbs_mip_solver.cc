@@ -107,7 +107,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       std::vector<double> sigR(gs_G, 0.0);
 
       size_t g = 0;
-      for (size_t gprime = groupset.groups_.front().id_; gprime <= groupset.groups_.back().id_;
+      for (size_t gprime = groupset.groups_.front().id; gprime <= groupset.groups_.back().id;
            ++gprime)
       {
         Dg[g] = diffusion_coeff[gprime];

@@ -457,7 +457,7 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
 {
   const auto num_gs_angles = groupset.quadrature_->omegas.size();
   const auto num_gs_groups = groupset.groups_.size();
-  const auto first_group = groupset.groups_.front().id_;
+  const auto first_group = groupset.groups_.front().id;
 
   std::vector<double> psi;
   const auto& bc = boundary_sources_.at(boundary_id);

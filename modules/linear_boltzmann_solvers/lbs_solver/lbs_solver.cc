@@ -885,7 +885,7 @@ LBSSolver::PrintSimHeader()
       int counter = 0;
       for (auto group : groupset.groups_)
       {
-        snprintf(buf_pol, 20, "%5d ", group.id_);
+        snprintf(buf_pol, 20, "%5d ", group.id);
         outstr << std::string(buf_pol);
         counter++;
         if (counter == 12)
@@ -1644,7 +1644,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     // Make xs map
     auto matid_2_mgxs_map =
-      PackGroupsetXS(matid_to_xs_map_, groupset.groups_.front().id_, groupset.groups_.back().id_);
+      PackGroupsetXS(matid_to_xs_map_, groupset.groups_.front().id, groupset.groups_.back().id);
 
     // Create solver
     const auto& sdm = *discretization_;
@@ -1692,7 +1692,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
@@ -1731,7 +1731,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -1764,7 +1764,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   delta_phi_local.clear();
@@ -1803,7 +1803,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -1908,7 +1908,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   delta_phi_local.clear();
@@ -1951,7 +1951,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
+  const int gsi = groupset.groups_.front().id;
   const size_t gss = groupset.groups_.size();
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
@@ -2214,8 +2214,8 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionProduction");
 
-  const int first_grp = groups_.front().id_;
-  const int last_grp = groups_.back().id_;
+  const int first_grp = groups_.front().id;
+  const int last_grp = groups_.back().id;
 
   // Loop over local cells
   double local_production = 0.0;
@@ -2265,8 +2265,8 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionRate");
 
-  const int first_grp = groups_.front().id_;
-  const int last_grp = groups_.back().id_;
+  const int first_grp = groups_.front().id;
+  const int last_grp = groups_.back().id;
 
   // Loop over local cells
   double local_fission_rate = 0.0;
@@ -2352,8 +2352,8 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::SetPhiVectorScalarValues");
 
-  const size_t first_grp = groups_.front().id_;
-  const size_t final_grp = groups_.back().id_;
+  const size_t first_grp = groups_.front().id;
+  const size_t final_grp = groups_.back().id;
   const auto& sdm = *discretization_;
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -2417,8 +2417,8 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups_.front().id;
+  int gsf = groupset.groups_.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -2466,8 +2466,8 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups_.front().id;
+  int gsf = groupset.groups_.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -2499,7 +2499,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::GSScopedCopyPrimarySTLvectors");
 
-  int gsi = groupset.groups_.front().id_;
+  int gsi = groupset.groups_.front().id;
   size_t gss = groupset.groups_.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -2553,7 +2553,7 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id_;
+  int gsi = groupset.groups_.front().id;
   size_t gss = groupset.groups_.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -2676,8 +2676,8 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups_.front().id;
+    int gsf = groupset.groups_.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -2730,8 +2730,8 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups_.front().id;
+    int gsf = groupset.groups_.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
