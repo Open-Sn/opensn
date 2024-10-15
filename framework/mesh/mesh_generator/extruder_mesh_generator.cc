@@ -210,7 +210,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         {
           UnpartitionedMesh::LightWeightFace new_face;
 
-          new_face.vertex_ids.resize(4, -1);
+          new_face.vertex_ids.resize(4);
           new_face.vertex_ids[0] = tc_face.vertex_ids[0] + k * num_template_vertices;
           new_face.vertex_ids[1] = tc_face.vertex_ids[1] + k * num_template_vertices;
           new_face.vertex_ids[2] = tc_face.vertex_ids[1] + (k + 1) * num_template_vertices;
