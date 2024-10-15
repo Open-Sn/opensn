@@ -35,17 +35,17 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   const SPLS& spls = spds.GetSPLS();
 
   // Initialize face categorization
-  num_face_categories = grid_face_histogram.NumberOfFaceHistogramBins();
+  num_face_categories_ = grid_face_histogram.NumberOfFaceHistogramBins();
   // TODO: Check if we can move this down
-  local_psi_stride.resize(num_face_categories, 0);
-  local_psi_max_elements.resize(num_face_categories, 0);
-  local_psi_n_block_stride.resize(num_face_categories, 0);
-  local_psi_Gn_block_strideG.resize(num_face_categories, 0);
+  local_psi_stride_.resize(num_face_categories_, 0);
+  local_psi_max_elements_.resize(num_face_categories_, 0);
+  local_psi_n_block_stride_.resize(num_face_categories_, 0);
+  local_psi_Gn_block_strideG_.resize(num_face_categories_, 0);
 
   // Initialize dependent locations
   size_t num_of_deplocs = spds.GetLocationSuccessors().size();
-  deplocI_face_dof_count.resize(num_of_deplocs, 0);
-  deplocI_cell_views.resize(num_of_deplocs);
+  deplocI_face_dof_count_.resize(num_of_deplocs, 0);
+  deplocI_cell_views_.resize(num_of_deplocs);
 
   // PERFORM SLOT DYNAMICS
   // Loop over cells in sweep order
@@ -54,15 +54,15 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   std::vector<int> local_so_cell_mapping;
   local_so_cell_mapping.resize(grid.local_cells.size(), 0);
 
-  largest_face = 0;                                     // Will contain the max dofs per face
-  std::vector<LockBox> lock_boxes(num_face_categories); // cell,face index pairs
+  largest_face_ = 0;                                     // Will contain the max dofs per face
+  std::vector<LockBox> lock_boxes(num_face_categories_); // cell,face index pairs
   LockBox delayed_lock_box;
   std::set<int> location_boundary_dependency_set;
 
   // csoi = cell sweep order index
-  so_cell_inco_face_face_category.reserve(spls.item_id.size());
-  so_cell_outb_face_slot_indices.reserve(spls.item_id.size());
-  so_cell_outb_face_face_category.reserve(spls.item_id.size());
+  so_cell_inco_face_face_category_.reserve(spls.item_id.size());
+  so_cell_outb_face_slot_indices_.reserve(spls.item_id.size());
+  so_cell_outb_face_face_category_.reserve(spls.item_id.size());
   for (int csoi = 0; csoi < spls.item_id.size(); csoi++)
   {
     int cell_local_id = spls.item_id[csoi];
@@ -79,7 +79,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   // PERFORM INCIDENT MAPPING
   // Loop over cells in sweep order
-  so_cell_inco_face_dof_indices.reserve(spls.item_id.size());
+  so_cell_inco_face_dof_indices_.reserve(spls.item_id.size());
   for (int csoi = 0; csoi < spls.item_id.size(); csoi++)
   {
     int cell_local_id = spls.item_id[csoi];
@@ -89,30 +89,30 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   } // for csoi
 
-  for (size_t fc = 0; fc < num_face_categories; ++fc)
+  for (size_t fc = 0; fc < num_face_categories_; ++fc)
   {
-    local_psi_stride[fc] = grid_face_histogram.GetFaceHistogramBinDOFSize(fc);
-    local_psi_max_elements[fc] = lock_boxes[fc].size();
-    local_psi_n_block_stride[fc] = local_psi_stride[fc] * lock_boxes[fc].size();
-    local_psi_Gn_block_strideG[fc] = local_psi_n_block_stride[fc] * /*G=*/1;
+    local_psi_stride_[fc] = grid_face_histogram.GetFaceHistogramBinDOFSize(fc);
+    local_psi_max_elements_[fc] = lock_boxes[fc].size();
+    local_psi_n_block_stride_[fc] = local_psi_stride_[fc] * lock_boxes[fc].size();
+    local_psi_Gn_block_strideG_[fc] = local_psi_n_block_stride_[fc] * /*G=*/1;
   }
-  delayed_local_psi_stride = largest_face;
-  delayed_local_psi_max_elements = delayed_lock_box.size();
-  delayed_local_psi_Gn_block_stride = largest_face * delayed_lock_box.size();
-  delayed_local_psi_Gn_block_strideG = delayed_local_psi_Gn_block_stride * /*G=*/1;
+  delayed_local_psi_stride_ = largest_face_;
+  delayed_local_psi_max_elements_ = delayed_lock_box.size();
+  delayed_local_psi_Gn_block_stride_ = largest_face_ * delayed_lock_box.size();
+  delayed_local_psi_Gn_block_strideG_ = delayed_local_psi_Gn_block_stride_ * /*G=*/1;
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
   opensn::mpi_comm.barrier();
 
   // Clean up
-  so_cell_outb_face_slot_indices.shrink_to_fit();
+  so_cell_outb_face_slot_indices_.shrink_to_fit();
 
   local_so_cell_mapping.clear();
   local_so_cell_mapping.shrink_to_fit();
 
-  so_cell_inco_face_dof_indices.shrink_to_fit();
+  so_cell_inco_face_dof_indices_.shrink_to_fit();
 
-  nonlocal_outb_face_deplocI_slot.shrink_to_fit();
+  nonlocal_outb_face_deplocI_slot_.shrink_to_fit();
 }
 
 void
@@ -204,7 +204,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  so_cell_inco_face_face_category.push_back(inco_face_face_category);
+  so_cell_inco_face_face_category_.push_back(inco_face_face_category);
 
   // Loop over faces but process only outgoing faces
   std::vector<int> outb_face_slot_indices;
@@ -256,8 +256,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       LockBox& lock_box = *temp_lock_box;
 
       // Check if this face is the max size
-      if (num_face_dofs > largest_face)
-        largest_face = static_cast<int>(num_face_dofs);
+      if (num_face_dofs > largest_face_)
+        largest_face_ = static_cast<int>(num_face_dofs);
 
       // Find a open slot
       bool slot_found = false;
@@ -285,11 +285,11 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       {
         int locJ = face.GetNeighborPartitionID(grid);
         int deplocI = spds.MapLocJToDeplocI(locJ);
-        int face_slot = deplocI_face_dof_count[deplocI];
+        int face_slot = deplocI_face_dof_count_[deplocI];
 
-        deplocI_face_dof_count[deplocI] += face.vertex_ids.size();
+        deplocI_face_dof_count_[deplocI] += face.vertex_ids.size();
 
-        nonlocal_outb_face_deplocI_slot.emplace_back(deplocI, face_slot);
+        nonlocal_outb_face_deplocI_slot_.emplace_back(deplocI, face_slot);
 
         // The following function is defined below
         AddFaceViewToDepLocI(deplocI, cell_g_index, face_slot, face);
@@ -299,8 +299,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   } // for f
 
-  so_cell_outb_face_slot_indices.push_back(outb_face_slot_indices);
-  so_cell_outb_face_face_category.push_back(outb_face_face_category);
+  so_cell_outb_face_slot_indices_.push_back(outb_face_slot_indices);
+  so_cell_outb_face_face_category_.push_back(outb_face_face_category);
 }
 
 void
@@ -313,7 +313,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
 
   // Check if cell is already there
   bool cell_already_there = false;
-  for (auto& cell_view : deplocI_cell_views[deplocI])
+  for (auto& cell_view : deplocI_cell_views_[deplocI])
   {
     if (cell_view.first == cell_g_index)
     {
@@ -330,7 +330,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
     new_cell_view.first = cell_g_index;
     new_cell_view.second.emplace_back(face_slot, face.vertex_ids);
 
-    deplocI_cell_views[deplocI].push_back(new_cell_view);
+    deplocI_cell_views_[deplocI].push_back(new_cell_view);
   }
 }
 
@@ -384,7 +384,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         }
 
         dof_mapping.first = /*local_psi_stride*G**/
-          so_cell_outb_face_slot_indices[adj_so_index][ass_f_counter];
+          so_cell_outb_face_slot_indices_[adj_so_index][ass_f_counter];
 
         dof_mapping.second.shrink_to_fit();
         inco_face_dof_mapping.push_back(dof_mapping);
@@ -396,7 +396,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
   for (int i = 0; i < inco_face_dof_mapping.size(); ++i)
     inco_face_info_array[i].Setup(inco_face_dof_mapping[i]);
 
-  so_cell_inco_face_dof_indices.push_back(inco_face_info_array);
+  so_cell_inco_face_dof_indices_.push_back(inco_face_info_array);
 }
 
 void
@@ -429,23 +429,23 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     if ((delayed_successor == delayed_location_successors.end()))
       continue;
 
-    std::vector<CompactCellView> cell_views = deplocI_cell_views[deplocI];
+    std::vector<CompactCellView> cell_views = deplocI_cell_views_[deplocI];
 
-    SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count[deplocI]);
+    SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count_[deplocI]);
 
     send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 
-    deplocI_cell_views[deplocI].clear();
-    deplocI_cell_views[deplocI].shrink_to_fit();
+    deplocI_cell_views_[deplocI].clear();
+    deplocI_cell_views_[deplocI].shrink_to_fit();
   }
 
   // Receive delayed predecessor information
   const auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
-  delayed_prelocI_cell_views.resize(delayed_location_dependencies.size(),
-                                    std::vector<CompactCellView>());
-  delayed_prelocI_face_dof_count.resize(delayed_location_dependencies.size(), 0);
+  delayed_prelocI_cell_views_.resize(delayed_location_dependencies.size(),
+                                     std::vector<CompactCellView>());
+  delayed_prelocI_face_dof_count_.resize(delayed_location_dependencies.size(), 0);
   for (int prelocI = 0; prelocI < delayed_location_dependencies.size(); prelocI++)
   {
     int locJ = delayed_location_dependencies[prelocI];
@@ -453,8 +453,9 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     std::vector<int> face_indices;
     mpi_comm.recv(locJ, 101 + tag_index, face_indices);
 
-    DeSerializeCellInfo(
-      delayed_prelocI_cell_views[prelocI], &face_indices, delayed_prelocI_face_dof_count[prelocI]);
+    DeSerializeCellInfo(delayed_prelocI_cell_views_[prelocI],
+                        &face_indices,
+                        delayed_prelocI_face_dof_count_[prelocI]);
   }
 
   //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -465,8 +466,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
   // Receive predecessor information
   const auto& location_dependencies = spds.GetLocationDependencies();
-  prelocI_cell_views.resize(location_dependencies.size(), std::vector<CompactCellView>());
-  prelocI_face_dof_count.resize(location_dependencies.size(), 0);
+  prelocI_cell_views_.resize(location_dependencies.size(), std::vector<CompactCellView>());
+  prelocI_face_dof_count_.resize(location_dependencies.size(), 0);
   for (int prelocI = 0; prelocI < location_dependencies.size(); prelocI++)
   {
     int locJ = location_dependencies[prelocI];
@@ -475,7 +476,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     mpi_comm.recv(locJ, 101 + tag_index, face_indices);
 
     DeSerializeCellInfo(
-      prelocI_cell_views[prelocI], &face_indices, prelocI_face_dof_count[prelocI]);
+      prelocI_cell_views_[prelocI], &face_indices, prelocI_face_dof_count_[prelocI]);
   }
 
   // Send successor information
@@ -488,16 +489,16 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     if ((delayed_successor != delayed_location_successors.end()))
       continue;
 
-    std::vector<CompactCellView> cell_views = deplocI_cell_views[deplocI];
+    std::vector<CompactCellView> cell_views = deplocI_cell_views_[deplocI];
 
-    SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count[deplocI]);
+    SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count_[deplocI]);
 
     send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 
-    deplocI_cell_views[deplocI].clear();
-    deplocI_cell_views[deplocI].shrink_to_fit();
+    deplocI_cell_views_[deplocI].clear();
+    deplocI_cell_views_[deplocI].shrink_to_fit();
   }
 
   // Verify sends completed
@@ -520,24 +521,24 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     NonLocalIncidentMapping(cell, spds);
   } // for csoi
 
-  deplocI_cell_views.clear();
-  deplocI_cell_views.shrink_to_fit();
+  deplocI_cell_views_.clear();
+  deplocI_cell_views_.shrink_to_fit();
 
-  prelocI_cell_views.clear();
-  prelocI_cell_views.shrink_to_fit();
+  prelocI_cell_views_.clear();
+  prelocI_cell_views_.shrink_to_fit();
 
-  delayed_prelocI_cell_views.clear();
-  delayed_prelocI_cell_views.shrink_to_fit();
+  delayed_prelocI_cell_views_.clear();
+  delayed_prelocI_cell_views_.shrink_to_fit();
 
   // Clear unneccesary data
   auto empty_vector = std::vector<std::vector<CompactCellView>>(0);
-  deplocI_cell_views.swap(empty_vector);
+  deplocI_cell_views_.swap(empty_vector);
 
   empty_vector = std::vector<std::vector<CompactCellView>>(0);
-  prelocI_cell_views.swap(empty_vector);
+  prelocI_cell_views_.swap(empty_vector);
 
   empty_vector = std::vector<std::vector<CompactCellView>>(0);
-  delayed_prelocI_cell_views.swap(empty_vector);
+  delayed_prelocI_cell_views_.swap(empty_vector);
 }
 
 void
@@ -664,9 +665,9 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
         {
           // Find the cell in prelocI cell views
           int ass_cell = -1;
-          for (int c = 0; c < prelocI_cell_views[prelocI].size(); c++)
+          for (int c = 0; c < prelocI_cell_views_[prelocI].size(); c++)
           {
-            if (prelocI_cell_views[prelocI][c].first == face.neighbor_id)
+            if (prelocI_cell_views_[prelocI][c].first == face.neighbor_id)
             {
               ass_cell = c;
               break;
@@ -682,7 +683,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
           // Find associated face
           std::set<int> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
-          CompactCellView* adj_cell_view = &prelocI_cell_views[prelocI][ass_cell];
+          CompactCellView* adj_cell_view = &prelocI_cell_views_[prelocI][ass_cell];
           int ass_face = -1, af = -1;
           for (auto& adj_face : adj_cell_view->second)
           {
@@ -739,8 +740,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::pair<int, std::vector<int>>> empty_delayed_info;
           empty_delayed_info.first = prelocI;
 
-          nonlocal_inc_face_prelocI_slot_dof.push_back(inc_face_prelocI_info);
-          delayed_nonlocal_inc_face_prelocI_slot_dof.push_back(empty_delayed_info);
+          nonlocal_inc_face_prelocI_slot_dof_.push_back(inc_face_prelocI_info);
+          delayed_nonlocal_inc_face_prelocI_slot_dof_.push_back(empty_delayed_info);
         } // If not delayed predecessor
 
         else
@@ -748,9 +749,9 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int delayed_preLocI = abs(prelocI) - 1;
           // Find the cell in prelocI cell views
           int ass_cell = -1;
-          for (int c = 0; c < delayed_prelocI_cell_views[delayed_preLocI].size(); c++)
+          for (int c = 0; c < delayed_prelocI_cell_views_[delayed_preLocI].size(); c++)
           {
-            if (delayed_prelocI_cell_views[delayed_preLocI][c].first == face.neighbor_id)
+            if (delayed_prelocI_cell_views_[delayed_preLocI][c].first == face.neighbor_id)
             {
               ass_cell = c;
               break;
@@ -765,7 +766,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
 
           // Find associated face
-          CompactCellView* adj_cell_view = &delayed_prelocI_cell_views[delayed_preLocI][ass_cell];
+          CompactCellView* adj_cell_view = &delayed_prelocI_cell_views_[delayed_preLocI][ass_cell];
           int ass_face = -1;
           for (int af = 0; af < adj_cell_view->second.size(); af++)
           {
@@ -834,8 +835,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::pair<int, std::vector<int>>> delayed_info;
           delayed_info.first = -(delayed_preLocI + 1);
 
-          delayed_nonlocal_inc_face_prelocI_slot_dof.push_back(inc_face_prelocI_info);
-          nonlocal_inc_face_prelocI_slot_dof.push_back(delayed_info);
+          delayed_nonlocal_inc_face_prelocI_slot_dof_.push_back(inc_face_prelocI_info);
+          nonlocal_inc_face_prelocI_slot_dof_.push_back(delayed_info);
         } // If delayed predecessor
 
       } // if not local and not boundary
