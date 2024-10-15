@@ -19,7 +19,7 @@ GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
 
     const auto& cell = local_cells_ref_.back();
 
-    global_cell_id_to_native_id_map.insert(
+    global_cell_id_to_native_id_map_.insert(
       std::make_pair(cell->global_id, local_cells_ref_.size() - 1));
   }
   else
@@ -28,7 +28,7 @@ GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
 
     const auto& cell = ghost_cells_ref_.back();
 
-    global_cell_id_to_foreign_id_map.insert(
+    global_cell_id_to_foreign_id_map_.insert(
       std::make_pair(cell->global_id, ghost_cells_ref_.size() - 1));
   }
 }
@@ -36,14 +36,14 @@ GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
 Cell&
 GlobalCellHandler::operator[](uint64_t cell_global_index)
 {
-  auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
+  auto native_location = global_cell_id_to_native_id_map_.find(cell_global_index);
 
-  if (native_location != global_cell_id_to_native_id_map.end())
+  if (native_location != global_cell_id_to_native_id_map_.end())
     return *local_cells_ref_[native_location->second];
   else
   {
-    auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
-    if (foreign_location != global_cell_id_to_foreign_id_map.end())
+    auto foreign_location = global_cell_id_to_foreign_id_map_.find(cell_global_index);
+    if (foreign_location != global_cell_id_to_foreign_id_map_.end())
       return *ghost_cells_ref_[foreign_location->second];
   }
 
@@ -58,14 +58,14 @@ GlobalCellHandler::operator[](uint64_t cell_global_index)
 const Cell&
 GlobalCellHandler::operator[](uint64_t cell_global_index) const
 {
-  auto native_location = global_cell_id_to_native_id_map.find(cell_global_index);
+  auto native_location = global_cell_id_to_native_id_map_.find(cell_global_index);
 
-  if (native_location != global_cell_id_to_native_id_map.end())
+  if (native_location != global_cell_id_to_native_id_map_.end())
     return *local_cells_ref_[native_location->second];
   else
   {
-    auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
-    if (foreign_location != global_cell_id_to_foreign_id_map.end())
+    auto foreign_location = global_cell_id_to_foreign_id_map_.find(cell_global_index);
+    if (foreign_location != global_cell_id_to_foreign_id_map_.end())
       return *ghost_cells_ref_[foreign_location->second];
   }
 
@@ -92,9 +92,9 @@ GlobalCellHandler::GetGhostGlobalIDs() const
 uint64_t
 GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 {
-  auto foreign_location = global_cell_id_to_foreign_id_map.find(cell_global_index);
+  auto foreign_location = global_cell_id_to_foreign_id_map_.find(cell_global_index);
 
-  if (foreign_location != global_cell_id_to_foreign_id_map.end())
+  if (foreign_location != global_cell_id_to_foreign_id_map_.end())
     return foreign_location->second;
 
   std::stringstream ostr;
