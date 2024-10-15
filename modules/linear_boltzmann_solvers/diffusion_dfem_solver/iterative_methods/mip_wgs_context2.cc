@@ -89,7 +89,7 @@ void
 MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
-  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers_[groupset_.id_];
+  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset_.id_];
 
   lbs_solver_.PhiNewLocal() = lbs_solver_.QMomentsLocal();
 

@@ -60,7 +60,7 @@ void
 DiffusionDFEMSolver::InitializeWGSSolvers()
 {
   // Initialize groupset solvers
-  gs_mip_solvers_.assign(groupsets_.size(), nullptr);
+  gs_mip_solvers.assign(groupsets_.size(), nullptr);
   const size_t num_groupsets = groupsets_.size();
   for (size_t gs = 0; gs < num_groupsets; ++gs)
   {
@@ -141,7 +141,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 
     solver->AssembleAand_b(dummy_rhs);
 
-    gs_mip_solvers_[gs] = solver;
+    gs_mip_solvers[gs] = solver;
   } // for groupset
 
   wgs_solvers_.clear(); // this is required
