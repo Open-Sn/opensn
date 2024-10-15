@@ -64,11 +64,11 @@ SimTest02_FV(const InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const int64_t imap = sdm.MapDOF(cell, 0);
 
-    const auto& xp = cell.centroid_;
+    const auto& xp = cell.centroid;
     const double V = cell_mapping.CellVolume();
 
     size_t f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       const auto Af = face.normal * cell_mapping.FaceArea(f);
 
@@ -77,7 +77,7 @@ SimTest02_FV(const InputParameters&)
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
 
-        const auto& xn = adj_cell.centroid_;
+        const auto& xn = adj_cell.centroid;
 
         const auto xpn = xn - xp;
 
@@ -165,12 +165,12 @@ SimTest02_FV(const InputParameters&)
     const int64_t imap = sdm.MapDOFLocal(cell, 0);
     const double phi_P = field_wg[imap];
 
-    const auto& xp = cell.centroid_;
+    const auto& xp = cell.centroid;
 
     auto grad_phi_P = Vector3(0, 0, 0);
 
     size_t f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       const auto& xf = face.centroid;
       const auto Af = cell_mapping.FaceArea(f) * face.normal;
@@ -184,7 +184,7 @@ SimTest02_FV(const InputParameters&)
         const int64_t nmap = sdm.MapDOFLocal(adj_cell, 0);
         phi_N = field_wg[nmap];
 
-        xn = adj_cell.centroid_;
+        xn = adj_cell.centroid;
       }
 
       grad_phi_P += Af * ((xn - xf).Norm() * phi_P + (xf - xp).Norm() * phi_N) / (xn - xp).Norm();

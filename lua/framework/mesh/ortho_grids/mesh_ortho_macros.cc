@@ -37,7 +37,7 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 
   for (auto& cell : vol_cont->local_cells)
   {
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {

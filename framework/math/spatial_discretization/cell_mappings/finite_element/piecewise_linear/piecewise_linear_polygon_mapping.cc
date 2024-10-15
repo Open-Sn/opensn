@@ -14,20 +14,20 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const TriangleQuadrature& volume_quadrature,
   const LineQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
-      ref_grid, poly_cell, poly_cell.vertex_ids_.size(), MakeFaceNodeMapping(poly_cell)),
+      ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
-  num_of_subtris_ = static_cast<int>(poly_cell.faces_.size());
+  num_of_subtris_ = static_cast<int>(poly_cell.faces.size());
   beta_ = 1.0 / num_of_subtris_;
 
   // Get raw vertices
-  vc_ = poly_cell.centroid_;
+  vc_ = poly_cell.centroid;
 
   // Calculate legs and determinants
   for (int side = 0; side < num_of_subtris_; side++)
   {
-    const CellFace& face = poly_cell.faces_[side];
+    const CellFace& face = poly_cell.faces[side];
 
     const auto& v0 = ref_grid_.vertices[face.vertex_ids[0]];
     const auto& v1 = ref_grid_.vertices[face.vertex_ids[1]];
@@ -75,15 +75,15 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   }
 
   // Compute node to side mapping
-  for (int v = 0; v < poly_cell.vertex_ids_.size(); v++)
+  for (int v = 0; v < poly_cell.vertex_ids.size(); v++)
   {
-    const uint64_t vindex = poly_cell.vertex_ids_[v];
+    const uint64_t vindex = poly_cell.vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
     for (int side = 0; side < num_of_subtris_; side++)
     {
       side_mapping[side] = -1;
 
-      const CellFace& face = poly_cell.faces_[side];
+      const CellFace& face = poly_cell.faces[side];
       if (face.vertex_ids[0] == vindex)
       {
         side_mapping[side] = 0;

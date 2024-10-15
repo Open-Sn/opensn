@@ -227,9 +227,9 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -286,9 +286,9 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -352,9 +352,9 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -406,9 +406,9 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -469,9 +469,9 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -562,7 +562,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& transport_view = cell_transport_views_[cell.local_id];
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         // Reorient flux moments
@@ -610,9 +610,9 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ZeroOutflowBalanceVars");
 
   for (const auto& cell : grid_ptr_->local_cells)
-    for (int f = 0; f < cell.faces_.size(); ++f)
+    for (int f = 0; f < cell.faces.size(); ++f)
       for (auto& group : groupset.groups_)
-        cell_transport_views_[cell.local_id_].ZeroOutflow(f, group.id_);
+        cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id_);
 }
 
 void
@@ -645,8 +645,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = discretization_->GetCellMapping(cell);
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
     const size_t num_nodes = transport_view.NumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
@@ -655,9 +655,9 @@ DiscreteOrdinatesSolver::ComputeBalance()
     // non-reflective boundaries, only the cosines that are negative are added to the inflow
     // integral. For reflective boundaries, it is expected that, upon convergence, inflow = outflow
     // (within numerical tolerances set by the user).
-    for (int f = 0; f < cell.faces_.size(); ++f)
+    for (int f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
 
       if (not face.has_neighbor) // Boundary face
       {
@@ -688,7 +688,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
                   for (const auto& group : groupset.groups_)
                   {
                     const int g = group.id_;
-                    const double psi = *bndry->PsiIncoming(cell.local_id_, f, fi, n, g, 0);
+                    const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g, 0);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                   } // for group
                 }   // for fi
@@ -700,9 +700,9 @@ DiscreteOrdinatesSolver::ComputeBalance()
     }               // for f
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
-    for (int f = 0; f < cell.faces_.size(); ++f)
+    for (int f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       for (int g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
     }
@@ -784,10 +784,10 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id];
 
     unsigned int f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor and face.neighbor_id == boundary_id)
       {
@@ -866,10 +866,10 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = discretization_->GetCellMapping(cell);
-      const auto& fe_values = unit_cell_matrices_.at(cell.local_id_);
+      const auto& fe_values = unit_cell_matrices_.at(cell.local_id);
 
       unsigned int f = 0;
-      for (const auto& face : cell.faces_)
+      for (const auto& face : cell.faces)
       {
         // If face is on the specified boundary...
         const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id);

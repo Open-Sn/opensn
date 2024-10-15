@@ -57,22 +57,22 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -129,7 +129,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -254,23 +254,23 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
     const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       if (not face.has_neighbor and suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -323,7 +323,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
@@ -401,11 +401,11 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
     const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
@@ -414,7 +414,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     std::vector<bool> node_is_dirichlet(num_nodes, false);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -453,7 +453,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];

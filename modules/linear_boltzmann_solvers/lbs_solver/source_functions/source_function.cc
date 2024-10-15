@@ -56,16 +56,16 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& grid = lbs_solver_.Grid();
   for (const auto& cell : grid.local_cells)
   {
-    const auto& rho = densities[cell.local_id_];
-    const auto& transport_view = cell_transport_views[cell.local_id_];
+    const auto& rho = densities[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.Volume();
 
     // Obtain xs
     const auto& xs = transport_view.XS();
 
     std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
-    if (matid_to_src_map.count(cell.material_id_) > 0)
-      P0_src = matid_to_src_map.at(cell.material_id_);
+    if (matid_to_src_map.count(cell.material_id) > 0)
+      P0_src = matid_to_src_map.at(cell.material_id);
 
     const auto& S = xs.TransferMatrices();
     const auto& F = xs.ProductionMatrix();

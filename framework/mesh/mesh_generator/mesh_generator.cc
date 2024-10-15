@@ -219,7 +219,7 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
                             cell_pids[cell_globl_id],
                             STLVertexListHelper(input_umesh->Vertices()));
 
-      for (uint64_t vid : cell->vertex_ids_)
+      for (uint64_t vid : cell->vertex_ids)
         grid_ptr->vertices.Insert(vid, input_umesh->Vertices()[vid]);
 
       grid_ptr->cells.push_back(std::move(cell));
@@ -284,12 +284,12 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
                          const VertexListHelper& vertices)
 {
   auto cell = std::make_unique<Cell>(raw_cell.type, raw_cell.sub_type);
-  cell->centroid_ = raw_cell.centroid;
-  cell->global_id_ = global_id;
-  cell->partition_id_ = partition_id;
-  cell->material_id_ = raw_cell.material_id;
+  cell->centroid = raw_cell.centroid;
+  cell->global_id = global_id;
+  cell->partition_id = partition_id;
+  cell->material_id = raw_cell.material_id;
 
-  cell->vertex_ids_ = raw_cell.vertex_ids;
+  cell->vertex_ids = raw_cell.vertex_ids;
 
   size_t face_counter = 0;
   for (auto& raw_face : raw_cell.faces)
@@ -357,7 +357,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
     }
     ++face_counter;
 
-    cell->faces_.push_back(newFace);
+    cell->faces.push_back(newFace);
   }
 
   return cell;

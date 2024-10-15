@@ -61,7 +61,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
     if (grid.CheckPointInsideCell(cell, location_))
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& fe_values = unit_cell_matrices[cell.local_id_];
+      const auto& fe_values = unit_cell_matrices[cell.local_id];
 
       // Map the point source to the finite element space
       std::vector<double> shape_vals;
@@ -74,7 +74,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
 
       // Add to subscribers
       subscribers.push_back(
-        Subscriber{cell_mapping.CellVolume(), cell.local_id_, shape_vals, node_wgts});
+        Subscriber{cell_mapping.CellVolume(), cell.local_id, shape_vals, node_wgts});
     }
   }
 
@@ -86,7 +86,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
     const auto& nbr_cell = grid.cells[global_id];
     if (grid.CheckPointInsideCell(nbr_cell, location_))
     {
-      const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id_);
+      const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
       total_volume +=
         std::accumulate(fe_values.intV_shapeI.begin(), fe_values.intV_shapeI.end(), 0.0);
     }
@@ -101,7 +101,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
 
     std::stringstream ss;
     ss << "Point source at " << location_.PrintStr() << " assigned to cell "
-       << grid.local_cells[sub.cell_local_id].global_id_ << " with shape values [ ";
+       << grid.local_cells[sub.cell_local_id].global_id << " with shape values [ ";
     for (const auto& value : sub.shape_values)
       ss << value << " ";
     ss << "] and volume weight " << sub.volume_weight / total_volume;

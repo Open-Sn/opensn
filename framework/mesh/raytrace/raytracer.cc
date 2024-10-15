@@ -21,7 +21,7 @@ RayTracerOutputInformation
 RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
   if (not cell_sizes_.empty())
-    SetTolerancesFromCellSize(cell_sizes_[cell.local_id_]);
+    SetTolerancesFromCellSize(cell_sizes_[cell.local_id]);
 
   RayTracerOutputInformation oi;
 
@@ -43,7 +43,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     if (function_depth < 5)
     {
       // Nudge particle towards centroid
-      Vector3 v_p_i_cc = (cell.centroid_ - pos_i);
+      Vector3 v_p_i_cc = (cell.centroid - pos_i);
       Vector3 pos_i_nudged = pos_i + v_p_i_cc * epsilon_nudge_;
 
       oi = TraceRay(cell, pos_i_nudged, omega_i, function_depth + 1);
@@ -54,7 +54,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     if (function_depth < 7)
     {
       // Nudge particle away from line between location and cell center
-      Vector3 v_p_i_cc = (cell.centroid_ - pos_i).Cross(omega_i);
+      Vector3 v_p_i_cc = (cell.centroid - pos_i).Cross(omega_i);
       Vector3 pos_i_nudged = pos_i + v_p_i_cc * epsilon_nudge_;
 
       oi = TraceRay(cell, pos_i_nudged, omega_i, function_depth + 1);
@@ -68,14 +68,14 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
            << ((backward_tolerance_hit) ? " Backward tolerance hit. " : "")
            << "For particle xyz=" << pos_i.PrintS() << " uvw=" << omega_i.PrintS() << " "
            << (pos_i + extension_distance_ * omega_i).PrintS() << " " << extension_distance_
-           << " in cell " << cell.global_id_ << " with vertices: \n";
+           << " in cell " << cell.global_id << " with vertices: \n";
 
     const auto& grid = Grid();
 
-    for (auto vi : cell.vertex_ids_)
+    for (auto vi : cell.vertex_ids)
       outstr << grid.vertices[vi].PrintS() << "\n";
 
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       outstr << "Face with centroid: " << face.centroid.PrintS() << " ";
       outstr << "n=" << face.normal.PrintS() << "\n";
@@ -84,27 +84,27 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     }
 
     outstr << "o Cell\n";
-    for (auto& vid : cell.vertex_ids_)
+    for (auto& vid : cell.vertex_ids)
     {
       auto& v = grid.vertices[vid];
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       auto& v = face.centroid;
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
-    for (size_t f = 0; f < cell.faces_.size(); ++f)
+    for (size_t f = 0; f < cell.faces.size(); ++f)
     {
-      auto& face = cell.faces_[f];
+      auto& face = cell.faces[f];
       outstr << "f ";
       for (auto vid : face.vertex_ids)
       {
         size_t ref_cell_id = 0;
-        for (size_t cid = 0; cid < cell.vertex_ids_.size(); ++cid)
-          if (cell.vertex_ids_[cid] == vid)
+        for (size_t cid = 0; cid < cell.vertex_ids.size(); ++cid)
+          if (cell.vertex_ids[cid] == vid)
             ref_cell_id = cid + 1;
 
         outstr << ref_cell_id << "// ";
@@ -123,14 +123,14 @@ RayTracerOutputInformation
 RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i)
 {
   const auto cell_type = cell.Type();
-  const double cell_char_length = cell_sizes_[cell.local_id_];
+  const double cell_char_length = cell_sizes_[cell.local_id];
   const auto& grid = reference_grid_;
 
   bool intersects_cell = false;
   Vector3 I;
 
   size_t f = 0;
-  for (const auto& face : cell.faces_)
+  for (const auto& face : cell.faces)
   {
     if (face.normal.Dot(omega_i) > 0.0)
     {
@@ -192,7 +192,7 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
     oi.distance_to_surface = (I - pos_i).Norm();
     oi.pos_f = I;
     oi.destination_face_index = f;
-    oi.destination_face_neighbor = cell.global_id_;
+    oi.destination_face_neighbor = cell.global_id;
     oi.particle_lost = false;
   }
   else
@@ -213,7 +213,7 @@ RayTracer::TraceSlab(const Cell& cell,
   Vector3 intersection_point;
   std::pair<double, double> weights;
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -222,11 +222,11 @@ RayTracer::TraceSlab(const Cell& cell,
   int num_faces = 2;
   for (int f = 0; f < num_faces; f++)
   {
-    uint64_t fpi = cell.vertex_ids_[f]; // face point index
+    uint64_t fpi = cell.vertex_ids[f]; // face point index
     Vector3 face_point = grid.vertices[fpi];
 
     bool intersects = CheckPlaneLineIntersect(
-      cell.faces_[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
+      cell.faces[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
 
     double D = weights.first * d_extend;
 
@@ -236,7 +236,7 @@ RayTracer::TraceSlab(const Cell& cell,
       oi.pos_f = intersection_point;
 
       oi.destination_face_index = f;
-      oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
+      oi.destination_face_neighbor = cell.faces[f].neighbor_id;
       intersection_found = true;
       break;
     }
@@ -256,7 +256,7 @@ RayTracer::TracePolygon(const Cell& cell,
   const auto& grid = Grid();
   Vector3 ip; // intersection point
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -264,22 +264,22 @@ RayTracer::TracePolygon(const Cell& cell,
 
   std::vector<RayTracerOutputInformation> face_intersections;
 
-  size_t num_faces = cell.faces_.size();
+  size_t num_faces = cell.faces.size();
   face_intersections.reserve(num_faces);
   for (int f = 0; f < num_faces; f++)
   {
-    if (cell.faces_[f].normal.Dot(omega_i) < 0.0)
+    if (cell.faces[f].normal.Dot(omega_i) < 0.0)
       continue;
 
     RayTracerOutputInformation face_oi;
 
-    uint64_t fpi = cell.faces_[f].vertex_ids[0]; // face point index 0
-    uint64_t fpf = cell.faces_[f].vertex_ids[1]; // face point index 1
+    uint64_t fpi = cell.faces[f].vertex_ids[0]; // face point index 0
+    uint64_t fpf = cell.faces[f].vertex_ids[1]; // face point index 1
     const Vector3& face_point_i = grid.vertices[fpi];
     const Vector3& face_point_f = grid.vertices[fpf];
 
     bool intersects = CheckLineIntersectStrip(
-      face_point_i, face_point_f, cell.faces_[f].normal, pos_i, pos_f_line, ip);
+      face_point_i, face_point_f, cell.faces[f].normal, pos_i, pos_f_line, ip);
 
     double D = (ip - pos_i).Norm();
 
@@ -289,7 +289,7 @@ RayTracer::TracePolygon(const Cell& cell,
       face_oi.pos_f = ip;
 
       face_oi.destination_face_index = f;
-      face_oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
+      face_oi.destination_face_neighbor = cell.faces[f].neighbor_id;
       intersection_found = true;
       face_intersections.emplace_back(std::move(face_oi));
       if (not perform_concavity_checks_)
@@ -332,11 +332,11 @@ RayTracer::TracePolyhedron(const Cell& cell,
 
   std::vector<RayTracerOutputInformation> triangle_intersections;
 
-  size_t num_faces = cell.faces_.size();
+  size_t num_faces = cell.faces.size();
   triangle_intersections.reserve(num_faces * 4); // Guessing 4 tris per face
   for (int f = 0; f < num_faces; f++)
   {
-    const auto& face = cell.faces_[f];
+    const auto& face = cell.faces[f];
 
     size_t num_sides = face.vertex_ids.size();
     for (size_t s = 0; s < num_sides; s++)
@@ -347,7 +347,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
                                               : face.vertex_ids[0]; // else
       const auto& v0 = grid.vertices[v0_index];
       const auto& v1 = grid.vertices[v1_index];
-      const auto& v2 = cell.faces_[f].centroid;
+      const auto& v2 = cell.faces[f].centroid;
 
       auto v01 = v1 - v0;
       auto v02 = v2 - v0;
@@ -366,7 +366,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
         triangle_oi.pos_f = ip;
 
         triangle_oi.destination_face_index = f;
-        triangle_oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
+        triangle_oi.destination_face_neighbor = cell.faces[f].neighbor_id;
 
         intersection_found = true;
         triangle_intersections.emplace_back(std::move(triangle_oi));
@@ -614,10 +614,10 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   // segment lengths from the strip defined by v0 to vc.
   if (cell.Type() == CellType::POLYGON)
   {
-    for (auto& face : cell.faces_) // edges
+    for (auto& face : cell.faces) // edges
     {
       const auto& v0 = grid.vertices[face.vertex_ids[0]];
-      const auto& vc = cell.centroid_;
+      const auto& vc = cell.centroid;
 
       auto n0 = (vc - v0).Cross(khat).Normalized();
 
@@ -636,9 +636,9 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   }
   else if (cell.Type() == CellType::POLYHEDRON)
   {
-    auto& vcc = cell.centroid_;
+    auto& vcc = cell.centroid;
 
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       auto& vfc = face.centroid;
 

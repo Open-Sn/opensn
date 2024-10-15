@@ -42,10 +42,10 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
 
   std::vector<bool> cell_bndry_flags(num_local_cells, false);
   for (const auto& cell : grid.local_cells)
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor)
       {
-        cell_bndry_flags[cell.local_id_] = true;
+        cell_bndry_flags[cell.local_id] = true;
         break;
       }
 
@@ -80,13 +80,13 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
 
   for (const auto& cell : grid.local_cells)
   {
-    if (cell_bndry_flags[cell.local_id_])
+    if (cell_bndry_flags[cell.local_id])
     {
-      CellData cell_data(cell.faces_.size());
+      CellData cell_data(cell.faces.size());
 
-      for (size_t f = 0; f < cell.faces_.size(); ++f)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
-        auto& face = cell.faces_[f];
+        auto& face = cell.faces[f];
         size_t face_num_nodes = face.vertex_ids.size();
         FaceData face_data;
 
@@ -96,8 +96,8 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
           for (size_t i = 0; i < face_num_nodes; ++i)
           {
             std::vector<double> face_node_data =
-              boundary_function_->Evaluate(cell.global_id_,
-                                           cell.material_id_,
+              boundary_function_->Evaluate(cell.global_id,
+                                           cell.material_id,
                                            f,
                                            i,
                                            grid.vertices[face.vertex_ids[i]],

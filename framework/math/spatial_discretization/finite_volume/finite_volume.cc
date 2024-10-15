@@ -66,7 +66,7 @@ FiniteVolume::CreateCellMappings()
       case CellType::POLYHEDRON:
       {
         mapping = make_unique<FiniteVolumeMapping>(
-          ref_grid_, cell, cell.centroid_, std::vector<std::vector<int>>(cell.faces_.size(), {-1}));
+          ref_grid_, cell, cell.centroid, std::vector<std::vector<int>>(cell.faces.size(), {-1}));
         break;
       }
       default:
@@ -116,7 +116,7 @@ FiniteVolume::OrderNodes()
   for (uint64_t gid : neighbor_gids)
   {
     const auto& cell = ref_grid_.cells[gid];
-    sorted_nb_gids[cell.partition_id_].push_back(gid);
+    sorted_nb_gids[cell.partition_id].push_back(gid);
   }
 
   // Communicate neighbor ids requiring mapping
@@ -137,7 +137,7 @@ FiniteVolume::OrderNodes()
         throw std::logic_error(mapping_error);
 
       const auto& local_cell = ref_grid_.cells[gid];
-      local_ids.push_back(local_cell.local_id_);
+      local_ids.push_back(local_cell.local_id);
     } // for gid
   }   // for pid_list_pair
 
@@ -197,7 +197,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
         nodal_nnz_in_diag[i] += 1;
 
-        for (auto& face : cell.faces_)
+        for (auto& face : cell.faces)
         {
           if (not face.has_neighbor)
             continue;
@@ -229,24 +229,24 @@ FiniteVolume::MapDOF(const Cell& cell,
     return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                num_local_cells * block_id + cell.local_id_;
+                num_local_cells * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
       address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                cell.local_id_ * num_unknowns + block_id;
+                cell.local_id * num_unknowns + block_id;
   }
   else
   {
-    const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id_);
+    const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
-                locJ_block_size_[cell.partition_id_] * block_id + ghost_local_id;
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
+                locJ_block_size_[cell.partition_id] * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
                 ghost_local_id * num_unknowns + block_id;
   }
 
@@ -270,18 +270,18 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
     return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id_;
+      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(cell.local_id_) * num_unknowns + block_id;
+      address = static_cast<int64_t>(cell.local_id) * num_unknowns + block_id;
   }
   else
   {
     const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
     const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
-    const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id_);
+    const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(num_local_dofs) +

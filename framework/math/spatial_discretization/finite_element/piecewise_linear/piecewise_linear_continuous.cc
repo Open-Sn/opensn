@@ -66,7 +66,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
   for (const auto& cell : ref_grid_.local_cells)
-    for (uint64_t node_id : cell.vertex_ids_)
+    for (uint64_t node_id : cell.vertex_ids)
       ls_node_ids_set.insert(node_id);
 
   // Build node partition subscriptions
@@ -85,8 +85,8 @@ PieceWiseLinearContinuous::OrderNodes()
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
     const auto& ghost_cell = ref_grid_.cells[ghost_id];
-    for (const uint64_t vid : ghost_cell.vertex_ids_)
-      ls_node_ids_psubs[vid].insert(ghost_cell.partition_id_);
+    for (const uint64_t vid : ghost_cell.vertex_ids)
+      ls_node_ids_psubs[vid].insert(ghost_cell.partition_id);
   } // for ghost_id
 
   // Build lists of local- and non-local nodes
@@ -470,7 +470,7 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
                                   const unsigned int unknown_id,
                                   const unsigned int component) const
 {
-  const uint64_t vertex_id = cell.vertex_ids_[node];
+  const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
                        std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
@@ -508,7 +508,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
                                        const unsigned int unknown_id,
                                        const unsigned int component) const
 {
-  const uint64_t vertex_id = cell.vertex_ids_[node];
+  const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");
   const int64_t node_global_id = node_mapping_.at(vertex_id);

@@ -68,7 +68,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
     int cell_local_id = spls.item_id[csoi];
     const auto& cell = grid.local_cells[cell_local_id];
 
-    local_so_cell_mapping[cell.local_id_] = csoi; // Set mapping
+    local_so_cell_mapping[cell.local_id] = csoi; // Set mapping
 
     SlotDynamics(cell, spds, grid_face_histogram, lock_boxes, delayed_lock_box);
 
@@ -128,11 +128,11 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
   // Loop over faces but process only incident faces
   std::vector<short> inco_face_face_category;
-  inco_face_face_category.reserve(cell.faces_.size());
-  for (int f = 0; f < cell.faces_.size(); f++)
+  inco_face_face_category.reserve(cell.faces.size());
+  for (int f = 0; f < cell.faces.size(); f++)
   {
-    const CellFace& face = cell.faces_[f];
-    const auto& orientation = spds.CellFaceOrientations()[cell.local_id_][f];
+    const CellFace& face = cell.faces[f];
+    const auto& orientation = spds.CellFaceOrientations()[cell.local_id][f];
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Incident face
     if (orientation == FaceOrientation::INCOMING)
@@ -154,7 +154,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
-          int c = cell.local_id_;
+          int c = cell.local_id;
           int d = face.GetNeighborLocalID(grid);
 
           if ((a == c) and (b == d))
@@ -192,7 +192,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         if (not found)
         {
           log.LogAllError() << "Lock-box location not found in call to "
-                            << "InitializeAlphaElements. Local Cell " << cell.local_id_ << " face "
+                            << "InitializeAlphaElements. Local Cell " << cell.local_id << " face "
                             << f << " looking for cell " << face.GetNeighborLocalID(grid)
                             << " face " << ass_face << " cat: " << face_categ
                             << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
@@ -209,13 +209,13 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
   // Loop over faces but process only outgoing faces
   std::vector<int> outb_face_slot_indices;
   std::vector<short> outb_face_face_category;
-  outb_face_slot_indices.reserve(cell.faces_.size());
-  outb_face_face_category.reserve(cell.faces_.size());
-  for (int f = 0; f < cell.faces_.size(); f++)
+  outb_face_slot_indices.reserve(cell.faces.size());
+  outb_face_face_category.reserve(cell.faces.size());
+  for (int f = 0; f < cell.faces.size(); f++)
   {
-    const CellFace& face = cell.faces_[f];
-    int cell_g_index = cell.global_id_;
-    const auto& orientation = spds.CellFaceOrientations()[cell.local_id_][f];
+    const CellFace& face = cell.faces[f];
+    int cell_g_index = cell.global_id;
+    const auto& orientation = spds.CellFaceOrientations()[cell.local_id][f];
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Outgoing face
     if (orientation == FaceOrientation::OUTGOING)
@@ -234,7 +234,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
-          int c = cell.local_id_;
+          int c = cell.local_id;
           int d = face.GetNeighborLocalID(grid);
 
           if ((a == c) and (b == d))
@@ -342,14 +342,14 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::LocalIncidentMapping");
 
   const MeshContinuum& grid = spds.Grid();
-  auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id_];
+  auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id];
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
   // Loop over faces but process only incident faces
-  for (short f = 0; f < cell.faces_.size(); f++)
+  for (short f = 0; f < cell.faces.size(); f++)
   {
-    const CellFace& face = cell.faces_[f];
-    const auto& orienation = spds.CellFaceOrientations()[cell.local_id_][f];
+    const CellFace& face = cell.faces[f];
+    const auto& orienation = spds.CellFaceOrientations()[cell.local_id][f];
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Incident face
     if (orienation == FaceOrientation::INCOMING)
@@ -364,12 +364,12 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
 
         // Find associated face counter for slot lookup
         const auto& adj_cell = grid.cells[face.neighbor_id];
-        const int adj_so_index = local_so_cell_mapping[adj_cell.local_id_];
-        const auto& face_oris = spds.CellFaceOrientations()[adj_cell.local_id_];
+        const int adj_so_index = local_so_cell_mapping[adj_cell.local_id];
+        const auto& face_oris = spds.CellFaceOrientations()[adj_cell.local_id];
         int ass_f_counter = -1;
 
         int out_f = -1;
-        for (size_t af = 0; af < adj_cell.faces_.size(); ++af)
+        for (size_t af = 0; af < adj_cell.faces.size(); ++af)
         {
           if (face_oris[af] == FaceOrientation::OUTGOING)
           {
@@ -646,10 +646,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
   const MeshContinuum& grid = spds.Grid();
 
   // Loop over faces but process only incident faces
-  for (short f = 0; f < cell.faces_.size(); f++)
+  for (short f = 0; f < cell.faces.size(); f++)
   {
-    const CellFace& face = cell.faces_[f];
-    const auto& orientation = spds.CellFaceOrientations()[cell.local_id_][f];
+    const CellFace& face = cell.faces[f];
+    const auto& orientation = spds.CellFaceOrientations()[cell.local_id][f];
 
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Incident face
     if (orientation == FaceOrientation::INCOMING)

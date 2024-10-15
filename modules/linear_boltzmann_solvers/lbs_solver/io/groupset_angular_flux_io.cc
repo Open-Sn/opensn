@@ -80,7 +80,7 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
           const uint64_t dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
           const double value = src[dof_map];
 
-          file.write((char*)&cell.global_id_, sizeof(uint64_t));
+          file.write((char*)&cell.global_id, sizeof(uint64_t));
           file.write((char*)&i, sizeof(uint64_t));
           file.write((char*)&n, sizeof(uint64_t));
           file.write((char*)&g, sizeof(uint64_t));

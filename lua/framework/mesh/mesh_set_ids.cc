@@ -78,10 +78,10 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
   int local_num_cells_modified = 0;
   for (auto& cell : grid.local_cells)
   {
-    int new_matid = LuaCall<int>(L, lua_fname, cell.centroid_, cell.material_id_);
-    if (cell.material_id_ != new_matid)
+    int new_matid = LuaCall<int>(L, lua_fname, cell.centroid, cell.material_id);
+    if (cell.material_id != new_matid)
     {
-      cell.material_id_ = new_matid;
+      cell.material_id = new_matid;
       ++local_num_cells_modified;
     }
   } // for local cell
@@ -90,11 +90,11 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = grid.cells[ghost_id];
-    int new_matid = LuaCall<int>(L, lua_fname, cell.centroid_, cell.material_id_);
+    int new_matid = LuaCall<int>(L, lua_fname, cell.centroid, cell.material_id);
 
-    if (cell.material_id_ != new_matid)
+    if (cell.material_id != new_matid)
     {
-      cell.material_id_ = new_matid;
+      cell.material_id = new_matid;
       ++local_num_cells_modified;
     }
   } // for ghost cell id
@@ -129,7 +129,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
 
   int local_num_faces_modified = 0;
   for (auto& cell : grid.local_cells)
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
         auto boundary_name =
@@ -151,7 +151,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = grid.cells[ghost_id];
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
         auto boundary_name =

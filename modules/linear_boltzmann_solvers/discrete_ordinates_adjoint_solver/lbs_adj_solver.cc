@@ -90,7 +90,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
   // Reorient phi-moments for reverse angle
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    const auto& cell_view = cell_transport_views_[cell.local_id_];
+    const auto& cell_view = cell_transport_views_[cell.local_id];
     const int num_nodes = cell_view.NumNodes();
 
     for (int i = 0; i < num_nodes; ++i)
@@ -117,12 +117,12 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
   // Material sources
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    if (matid_to_src_map_.count(cell.material_id_) == 0)
+    if (matid_to_src_map_.count(cell.material_id) == 0)
       continue; // Skip if no src
 
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& source = matid_to_src_map_[cell.material_id_];
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& source = matid_to_src_map_[cell.material_id];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id];
 
     for (const auto& group : groups_)
     {
@@ -148,7 +148,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
     for (const auto& subscriber : point_source.Subscribers())
     {
       const auto& cell = grid_ptr_->local_cells[subscriber.cell_local_id];
-      const auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& transport_view = cell_transport_views_[cell.local_id];
       const auto& source_strength = point_source.Strength();
       const auto& shape_values = subscriber.shape_values;
 
@@ -221,9 +221,9 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& cell_view = cell_transport_views_[cell.local_id_];
+      const auto& cell_view = cell_transport_views_[cell.local_id];
       const int num_nodes = cell_view.NumNodes();
-      const auto& fe_values = unit_cell_matrices_[cell.local_id_];
+      const auto& fe_values = unit_cell_matrices_[cell.local_id];
 
       std::vector<MGVec4> nodal_p1_moments(num_nodes);
       for (int i = 0; i < num_nodes; ++i)
@@ -267,7 +267,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
         } // for node i
         cell_p1_avg /= volume_total;
 
-        cell_avg_p1_moments[cell.local_id_][g] = cell_p1_avg;
+        cell_avg_p1_moments[cell.local_id][g] = cell_p1_avg;
       } // for g
     }   // for cell
   }
@@ -281,11 +281,11 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
     {
       for (int g : set_group_numbers)
       {
-        const auto& p1_moments = cell_avg_p1_moments[cell.local_id_][g];
+        const auto& p1_moments = cell_avg_p1_moments[cell.local_id][g];
 
         auto a_b = MakeExpRepFromP1({p1_moments[0], p1_moments[1], p1_moments[2], p1_moments[3]});
 
-        cell_exp_reps[cell.local_id_][g] = std::make_pair(a_b[0], a_b[1]);
+        cell_exp_reps[cell.local_id][g] = std::make_pair(a_b[0], a_b[1]);
       } // for g
     }   // for cell
   }
@@ -350,10 +350,10 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      MGVec4 p1_moments = cell_avg_p1_moments[cell.local_id_];
-      VecOfABCoeffsPair exp_rep = cell_exp_reps[cell.local_id_];
+      MGVec4 p1_moments = cell_avg_p1_moments[cell.local_id];
+      VecOfABCoeffsPair exp_rep = cell_exp_reps[cell.local_id];
 
-      auto cell_global_id = static_cast<uint64_t>(cell.global_id_);
+      auto cell_global_id = static_cast<uint64_t>(cell.global_id);
       for (int group : set_group_numbers)
       {
         auto g = static_cast<unsigned int>(group);

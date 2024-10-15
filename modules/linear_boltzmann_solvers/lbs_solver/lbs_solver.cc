@@ -913,16 +913,16 @@ LBSSolver::InitializeMaterials()
   std::set<int> unique_material_ids;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0)
+    unique_material_ids.insert(cell.material_id);
+    if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
-    unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0)
+    unique_material_ids.insert(cell.material_id);
+    if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
@@ -1030,8 +1030,8 @@ LBSSolver::InitializeMaterials()
   if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& xs_ptr = matid_to_xs_map_[cell.material_id_];
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& xs_ptr = matid_to_xs_map_[cell.material_id];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
       transport_view.ReassignXS(*xs_ptr);
     }
@@ -1086,7 +1086,7 @@ LBSSolver::ComputeUnitIntegrals()
   auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t cell_num_faces = cell.faces_.size();
+    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -1175,7 +1175,7 @@ LBSSolver::ComputeUnitIntegrals()
   unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell, *swf_ptr);
+    unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell, *swf_ptr);
 
   const auto ghost_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
@@ -1318,23 +1318,23 @@ LBSSolver::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
-    int mat_id = cell.material_id_;
+    int mat_id = cell.material_id;
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id_].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI[i];
 
     size_t cell_phi_address = block_MG_counter;
 
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
     std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
     bool cell_on_boundary = false;
     int f = 0;
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -1396,9 +1396,9 @@ LBSSolver::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     CellFaceNodalMapping cell_nodal_mapping;
-    cell_nodal_mapping.reserve(cell.faces_.size());
+    cell_nodal_mapping.reserve(cell.faces.size());
 
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
@@ -1505,7 +1505,7 @@ LBSSolver::InitializeBoundaries()
   {
     std::set<uint64_t> local_unique_bids_set;
     for (const auto& cell : grid_ptr_->local_cells)
-      for (const auto& face : cell.faces_)
+      for (const auto& face : cell.faces)
         if (not face.has_neighbor)
           local_unique_bids_set.insert(face.neighbor_id);
 
@@ -1556,7 +1556,7 @@ LBSSolver::InitializeBoundaries()
         const double EPSILON = 1.0e-12;
         std::unique_ptr<Vector3> n_ptr = nullptr;
         for (const auto& cell : grid_ptr_->local_cells)
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
             if (not face.has_neighbor and face.neighbor_id == bid)
             {
               if (not n_ptr)
@@ -1774,7 +1774,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.material_id_]->SigmaSGtoG();
+    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->SigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; i++)
     {
@@ -1918,7 +1918,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& S = matid_to_xs_map_[cell.material_id_]->TransferMatrix(0);
+    const auto& S = matid_to_xs_map_[cell.material_id]->TransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1961,7 +1961,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id_).spectrum;
+    const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id).spectrum;
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -2119,9 +2119,9 @@ LBSSolver::UpdateFieldFunctions()
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.NumNodes();
 
-      const auto& Vi = unit_cell_matrices_[cell.local_id_].intV_shapeI;
+      const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
-      const auto& xs = matid_to_xs_map_.at(cell.material_id_);
+      const auto& xs = matid_to_xs_map_.at(cell.material_id);
 
       if (not xs->IsFissionable())
         continue;
@@ -2221,8 +2221,8 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
   double local_production = 0.0;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.XS();
@@ -2272,8 +2272,8 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
   double local_fission_rate = 0.0;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.XS();
@@ -2315,8 +2315,8 @@ LBSSolver::ComputePrecursors()
   // Loop over cells
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
     const double cell_volume = transport_view.Volume();
 
     // Obtain xs
@@ -2327,7 +2327,7 @@ LBSSolver::ComputePrecursors()
     // Loop over precursors
     for (uint64_t j = 0; j < xs.NumPrecursors(); ++j)
     {
-      size_t dof = cell.local_id_ * J + j;
+      size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];
       const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
@@ -2424,9 +2424,9 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2473,9 +2473,9 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2504,9 +2504,9 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2558,9 +2558,9 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2592,9 +2592,9 @@ LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2629,9 +2629,9 @@ LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2682,9 +2682,9 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -2736,9 +2736,9 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {

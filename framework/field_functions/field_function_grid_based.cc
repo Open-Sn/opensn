@@ -276,7 +276,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
       {
         const size_t num_nodes = sdm->GetCellNumNodes(cell);
 
-        if (num_nodes == cell.vertex_ids_.size())
+        if (num_nodes == cell.vertex_ids.size())
         {
           double node_average = 0.0;
           for (int n = 0; n < num_nodes; ++n)
@@ -303,7 +303,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
           } // for node
           node_average /= static_cast<double>(num_nodes);
           cell_array->InsertNextValue(node_average);
-          for (int n = 0; n < cell.vertex_ids_.size(); ++n)
+          for (int n = 0; n < cell.vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

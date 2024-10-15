@@ -63,11 +63,11 @@ SimTest01_FV(const InputParameters&)
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const int64_t imap = sdm.MapDOF(cell, 0);
 
-    const auto& xp = cell.centroid_;
+    const auto& xp = cell.centroid;
     const double V = cell_mapping.CellVolume();
 
     size_t f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       const auto Af = face.normal * cell_mapping.FaceArea(f);
 
@@ -76,7 +76,7 @@ SimTest01_FV(const InputParameters&)
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
 
-        const auto& xn = adj_cell.centroid_;
+        const auto& xn = adj_cell.centroid;
 
         const auto xpn = xn - xp;
 

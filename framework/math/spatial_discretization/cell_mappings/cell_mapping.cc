@@ -90,8 +90,8 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
   {
     case CellType::SLAB:
     {
-      const auto& v0 = grid.vertices[cell.vertex_ids_[0]];
-      const auto& v1 = grid.vertices[cell.vertex_ids_[1]];
+      const auto& v0 = grid.vertices[cell.vertex_ids[0]];
+      const auto& v1 = grid.vertices[cell.vertex_ids[1]];
 
       volume = (v1 - v0).Norm();
       areas = {1.0, 1.0};
@@ -100,15 +100,15 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
     case CellType::POLYGON:
     {
       volume = 0.0;
-      const auto& v2 = cell.centroid_;
+      const auto& v2 = cell.centroid;
 
-      size_t num_faces = cell.faces_.size();
+      size_t num_faces = cell.faces.size();
       areas.reserve(num_faces);
 
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const uint64_t v0i = cell.faces_[f].vertex_ids[0];
-        const uint64_t v1i = cell.faces_[f].vertex_ids[1];
+        const uint64_t v0i = cell.faces[f].vertex_ids[0];
+        const uint64_t v1i = cell.faces[f].vertex_ids[1];
 
         const auto& v0 = grid.vertices[v0i];
         const auto& v1 = grid.vertices[v1i];
@@ -128,13 +128,13 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
     case CellType::POLYHEDRON:
     {
       volume = 0.0;
-      const auto& vcc = cell.centroid_;
+      const auto& vcc = cell.centroid;
 
-      size_t num_faces = cell.faces_.size();
+      size_t num_faces = cell.faces.size();
       areas.assign(num_faces, 0.0);
       for (size_t f = 0; f < num_faces; f++)
       {
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const size_t num_edges = face.vertex_ids.size();
         for (size_t e = 0; e < num_edges; ++e)
         {
@@ -143,7 +143,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
           uint64_t v1i = face.vertex_ids[ep1];
 
           const auto& v0 = grid.vertices[v0i];
-          const auto& v1 = cell.faces_[f].centroid;
+          const auto& v1 = cell.faces[f].centroid;
           const auto& v2 = grid.vertices[v1i];
           const auto& v3 = vcc;
 

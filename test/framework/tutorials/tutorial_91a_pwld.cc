@@ -122,7 +122,7 @@ SimTest91_PWLD(const InputParameters&)
   // Make material source term
   for (const auto& cell : grid.local_cells)
   {
-    const auto& cc = cell.centroid_;
+    const auto& cc = cell.centroid;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
@@ -169,7 +169,7 @@ SimTest91_PWLD(const InputParameters&)
     cell_Gmatrices.push_back(std::move(IntV_shapeI_gradshapeJ));
     cell_Mmatrices.push_back(std::move(IntV_shapeI_shapeJ));
 
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     VecMatDbl faces_Mmatrices;
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -216,10 +216,10 @@ SimTest91_PWLD(const InputParameters&)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid.cells[cell_global_id];
-    const auto cell_local_id = cell.local_id_;
+    const auto cell_local_id = cell.local_id;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
 
     const std::vector<double> zero_vector(num_groups, 0.0);
 
@@ -237,7 +237,7 @@ SimTest91_PWLD(const InputParameters&)
     // Surface integrals
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       const double mu = omega.Dot(face.normal);
 
       if (mu < 0.0)
@@ -256,7 +256,7 @@ SimTest91_PWLD(const InputParameters&)
             if (face.has_neighbor)
             {
               const auto& adj_cell = grid.cells[face.neighbor_id];
-              const int aj = cell_adj_mapping[cell.local_id_][f][fj];
+              const int aj = cell_adj_mapping[cell.local_id][f][fj];
               const int64_t ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
             }

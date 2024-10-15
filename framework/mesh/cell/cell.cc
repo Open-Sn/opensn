@@ -50,39 +50,39 @@ CellTypeName(const CellType type)
 Cell::Cell(const Cell& other)
   : cell_type_(other.cell_type_),
     cell_sub_type_(other.cell_sub_type_),
-    global_id_(other.global_id_),
-    local_id_(other.local_id_),
-    partition_id_(other.partition_id_),
-    centroid_(other.centroid_),
-    material_id_(other.material_id_),
-    vertex_ids_(other.vertex_ids_),
-    faces_(other.faces_)
+    global_id(other.global_id),
+    local_id(other.local_id),
+    partition_id(other.partition_id),
+    centroid(other.centroid),
+    material_id(other.material_id),
+    vertex_ids(other.vertex_ids),
+    faces(other.faces)
 {
 }
 
 Cell::Cell(Cell&& other) noexcept
   : cell_type_(other.cell_type_),
     cell_sub_type_(other.cell_sub_type_),
-    global_id_(other.global_id_),
-    local_id_(other.local_id_),
-    partition_id_(other.partition_id_),
-    centroid_(other.centroid_),
-    material_id_(other.material_id_),
-    vertex_ids_(std::move(other.vertex_ids_)),
-    faces_(std::move(other.faces_))
+    global_id(other.global_id),
+    local_id(other.local_id),
+    partition_id(other.partition_id),
+    centroid(other.centroid),
+    material_id(other.material_id),
+    vertex_ids(std::move(other.vertex_ids)),
+    faces(std::move(other.faces))
 {
 }
 
 Cell&
 Cell::operator=(const Cell& other)
 {
-  global_id_ = other.global_id_;
-  local_id_ = other.local_id_;
-  partition_id_ = other.partition_id_;
-  centroid_ = other.centroid_;
-  material_id_ = other.material_id_;
-  vertex_ids_ = other.vertex_ids_;
-  faces_ = other.faces_;
+  global_id = other.global_id;
+  local_id = other.local_id;
+  partition_id = other.partition_id;
+  centroid = other.centroid;
+  material_id = other.material_id;
+  vertex_ids = other.vertex_ids;
+  faces = other.faces;
 
   return *this;
 }
@@ -97,7 +97,7 @@ CellFace::IsNeighborLocal(const MeshContinuum& grid) const
 
   auto& adj_cell = grid.cells[neighbor_id];
 
-  return (adj_cell.partition_id_ == static_cast<uint64_t>(opensn::mpi_comm.rank()));
+  return (adj_cell.partition_id == static_cast<uint64_t>(opensn::mpi_comm.rank()));
 }
 
 int
@@ -110,7 +110,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
 
   auto& adj_cell = grid.cells[neighbor_id];
 
-  return static_cast<int>(adj_cell.partition_id_);
+  return static_cast<int>(adj_cell.partition_id);
 }
 
 uint64_t
@@ -123,10 +123,10 @@ CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 
   auto& adj_cell = grid.cells[neighbor_id];
 
-  if (adj_cell.partition_id_ != opensn::mpi_comm.rank())
+  if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
 
-  return adj_cell.local_id_;
+  return adj_cell.local_id;
 }
 
 int
@@ -151,7 +151,7 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
 
   // Loop over adj cell faces
   int af = -1;
-  for (const auto& adj_face : adj_cell.faces_)
+  for (const auto& adj_face : adj_cell.faces)
   {
     ++af;
     std::set<uint64_t> afvids(adj_face.vertex_ids.begin(),
@@ -171,11 +171,11 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
     outstr << "Could not find associated face in call to "
            << "CellFace::GetNeighborAssociatedFace.\n"
            << "Reference face with centroid at: " << cur_face.centroid.PrintS() << "\n"
-           << "Adjacent cell: " << adj_cell.global_id_ << "\n";
-    for (size_t afi = 0; afi < adj_cell.faces_.size(); afi++)
+           << "Adjacent cell: " << adj_cell.global_id << "\n";
+    for (size_t afi = 0; afi < adj_cell.faces.size(); afi++)
     {
       outstr << "Adjacent cell face " << afi << " centroid "
-             << adj_cell.faces_[afi].centroid.PrintS();
+             << adj_cell.faces[afi].centroid.PrintS();
     }
     throw std::runtime_error(outstr.str());
   }
@@ -301,23 +301,23 @@ Cell::Serialize() const
 {
   ByteArray raw;
 
-  raw.Write<uint64_t>(global_id_);
-  raw.Write<uint64_t>(local_id_);
-  raw.Write<uint64_t>(partition_id_);
-  raw.Write<double>(centroid_.x);
-  raw.Write<double>(centroid_.y);
-  raw.Write<double>(centroid_.z);
-  raw.Write<int>(material_id_);
+  raw.Write<uint64_t>(global_id);
+  raw.Write<uint64_t>(local_id);
+  raw.Write<uint64_t>(partition_id);
+  raw.Write<double>(centroid.x);
+  raw.Write<double>(centroid.y);
+  raw.Write<double>(centroid.z);
+  raw.Write<int>(material_id);
 
   raw.Write<CellType>(cell_type_);
   raw.Write<CellType>(cell_sub_type_);
 
-  raw.Write<size_t>(vertex_ids_.size());
-  for (uint64_t vid : vertex_ids_)
+  raw.Write<size_t>(vertex_ids.size());
+  for (uint64_t vid : vertex_ids)
     raw.Write<uint64_t>(vid);
 
-  raw.Write<size_t>(faces_.size());
-  for (const auto& face : faces_)
+  raw.Write<size_t>(faces.size());
+  for (const auto& face : faces)
     raw.Append(face.Serialize());
 
   return raw;
@@ -338,23 +338,23 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   auto cell_sub_type = raw.Read<CellType>(address, &address);
 
   Cell cell(cell_type, cell_sub_type);
-  cell.global_id_ = cell_global_id;
-  cell.local_id_ = cell_local_id;
-  cell.partition_id_ = cell_prttn_id;
-  cell.centroid_.x = cell_centroid_x;
-  cell.centroid_.y = cell_centroid_y;
-  cell.centroid_.z = cell_centroid_z;
-  cell.material_id_ = cell_matrl_id;
+  cell.global_id = cell_global_id;
+  cell.local_id = cell_local_id;
+  cell.partition_id = cell_prttn_id;
+  cell.centroid.x = cell_centroid_x;
+  cell.centroid.y = cell_centroid_y;
+  cell.centroid.z = cell_centroid_z;
+  cell.material_id = cell_matrl_id;
 
   auto num_vertex_ids = raw.Read<size_t>(address, &address);
-  cell.vertex_ids_.reserve(num_vertex_ids);
+  cell.vertex_ids.reserve(num_vertex_ids);
   for (size_t v = 0; v < num_vertex_ids; ++v)
-    cell.vertex_ids_.push_back(raw.Read<uint64_t>(address, &address));
+    cell.vertex_ids.push_back(raw.Read<uint64_t>(address, &address));
 
   auto num_faces = raw.Read<size_t>(address, &address);
-  cell.faces_.reserve(num_faces);
+  cell.faces.reserve(num_faces);
   for (size_t f = 0; f < num_faces; ++f)
-    cell.faces_.push_back(CellFace::DeSerialize(raw, address));
+    cell.faces.push_back(CellFace::DeSerialize(raw, address));
 
   return cell;
 }
@@ -366,23 +366,23 @@ Cell::ToString() const
 
   outstr << "cell_type: " << CellTypeName(cell_type_) << "\n";
   outstr << "cell_sub_type: " << CellTypeName(cell_sub_type_) << "\n";
-  outstr << "global_id: " << global_id_ << "\n";
-  outstr << "local_id: " << local_id_ << "\n";
-  outstr << "partition_id: " << partition_id_ << "\n";
-  outstr << "centroid: " << centroid_.PrintS() << "\n";
-  outstr << "material_id: " << material_id_ << "\n";
+  outstr << "global_id: " << global_id << "\n";
+  outstr << "local_id: " << local_id << "\n";
+  outstr << "partition_id: " << partition_id << "\n";
+  outstr << "centroid: " << centroid.PrintS() << "\n";
+  outstr << "material_id: " << material_id << "\n";
 
-  outstr << "num_vertex_ids: " << vertex_ids_.size() << "\n";
+  outstr << "num_vertex_ids: " << vertex_ids.size() << "\n";
   {
     size_t counter = 0;
-    for (uint64_t vid : vertex_ids_)
+    for (uint64_t vid : vertex_ids)
       outstr << "vid" << counter++ << ": " << vid << "\n";
   }
 
   {
-    outstr << "num_faces: " << faces_.size() << "\n";
+    outstr << "num_faces: " << faces.size() << "\n";
     size_t f = 0;
-    for (const auto& face : faces_)
+    for (const auto& face : faces)
       outstr << "Face " << f++ << ":\n" << face.ToString();
   }
 
@@ -394,12 +394,12 @@ Cell::RecomputeCentroidsAndNormals(const MeshContinuum& grid)
 {
   const auto k_hat = Vector3(0, 0, 1);
 
-  centroid_ = Vector3(0, 0, 0);
-  for (uint64_t vid : vertex_ids_)
-    centroid_ += grid.vertices[vid];
-  centroid_ /= static_cast<double>(vertex_ids_.size());
+  centroid = Vector3(0, 0, 0);
+  for (uint64_t vid : vertex_ids)
+    centroid += grid.vertices[vid];
+  centroid /= static_cast<double>(vertex_ids.size());
 
-  for (auto& face : faces_)
+  for (auto& face : faces)
   {
     face.RecomputeCentroid(grid);
 

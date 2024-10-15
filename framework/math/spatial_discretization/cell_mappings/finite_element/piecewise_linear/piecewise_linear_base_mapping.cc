@@ -26,19 +26,19 @@ PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
 std::vector<std::vector<int>>
 PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 {
-  const size_t num_faces = cell.faces_.size();
+  const size_t num_faces = cell.faces.size();
   std::vector<std::vector<int>> mappings;
   mappings.reserve(num_faces);
-  for (auto& face : cell.faces_)
+  for (auto& face : cell.faces)
   {
     std::vector<int> face_dof_mapping;
     face_dof_mapping.reserve(face.vertex_ids.size());
     for (uint64_t fvid : face.vertex_ids)
     {
       int mapping = -1;
-      for (size_t ci = 0; ci < cell.vertex_ids_.size(); ci++)
+      for (size_t ci = 0; ci < cell.vertex_ids.size(); ci++)
       {
-        if (fvid == cell.vertex_ids_[ci])
+        if (fvid == cell.vertex_ids[ci])
         {
           mapping = static_cast<int>(ci);
           break;
@@ -62,9 +62,9 @@ std::vector<Vector3>
 PieceWiseLinearBaseMapping::GetVertexLocations(const MeshContinuum& grid, const Cell& cell)
 {
   std::vector<Vector3> verts;
-  verts.reserve(cell.vertex_ids_.size());
+  verts.reserve(cell.vertex_ids.size());
 
-  for (const auto vid : cell.vertex_ids_)
+  for (const auto vid : cell.vertex_ids)
     verts.push_back(grid.vertices[vid]);
 
   return verts;

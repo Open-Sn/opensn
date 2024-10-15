@@ -489,7 +489,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
       }   // for unknown u
     }     // for node i
 
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
       if (face.has_neighbor)
         if (not grid.IsCellLocal(face.neighbor_id))
           for (const uint64_t vid : face.vertex_ids)
@@ -507,7 +507,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      if (vid_set.find(cell.vertex_ids_[i]) == vid_set.end())
+      if (vid_set.find(cell.vertex_ids[i]) == vid_set.end())
         continue;
 
       for (size_t u = 0; u < num_unknowns; ++u)

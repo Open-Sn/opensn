@@ -42,7 +42,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   local_graph_edges.insert(opensn::mpi_comm.rank()); // add current location
   for (auto& cell : local_cells)
   {
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       if (face.has_neighbor)
         if (not face.IsNeighborLocal(*this))
@@ -108,7 +108,7 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
   for (auto& cell : local_cells)
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
         local_bndry_ids_set.insert(face.neighbor_id);
 
@@ -130,7 +130,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   // Fill histogram
   std::vector<size_t> face_size_histogram;
   for (const auto& cell : local_cells)
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
       face_size_histogram.push_back(face.vertex_ids.size());
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
@@ -252,7 +252,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
-  const auto& adj_face = adj_cell.faces_[associated_face];
+  const auto& adj_face = adj_cell.faces[associated_face];
 
   for (auto cfvid : cur_face.vertex_ids)
   {
@@ -298,7 +298,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
   {
     bool found = false;
     short acv = 0;
-    for (auto acvid : adj_cell.vertex_ids_)
+    for (auto acvid : adj_cell.vertex_ids)
     {
       if (cfvid == acvid)
       {
@@ -323,16 +323,16 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
 size_t
 MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f)
 {
-  const auto& ccface = cur_cell.faces_[f]; // current cell face
+  const auto& ccface = cur_cell.faces[f]; // current cell face
   std::set<uint64_t> ccface_vids;
   for (auto vid : ccface.vertex_ids)
     ccface_vids.insert(vid);
 
   size_t fmap;
   bool map_found = false;
-  for (size_t af = 0; af < adj_cell.faces_.size(); af++)
+  for (size_t af = 0; af < adj_cell.faces.size(); af++)
   {
-    const auto& acface = adj_cell.faces_[af]; // adjacent cell face
+    const auto& acface = adj_cell.faces[af]; // adjacent cell face
 
     std::set<uint64_t> acface_vids;
     for (auto vid : acface.vertex_ids)
@@ -378,7 +378,7 @@ MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
   size_t count = 0;
   for (const auto& cell : local_cells)
-    if (log_vol.Inside(cell.centroid_))
+    if (log_vol.Inside(cell.centroid))
       ++count;
   mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
   return count;
@@ -391,8 +391,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 
   if (cell.Type() == CellType::SLAB)
   {
-    const auto& v0 = grid_ref.vertices[cell.vertex_ids_[0]];
-    const auto& v1 = grid_ref.vertices[cell.vertex_ids_[1]];
+    const auto& v0 = grid_ref.vertices[cell.vertex_ids[0]];
+    const auto& v1 = grid_ref.vertices[cell.vertex_ids[1]];
 
     // Check each cell edge. A point inside the cell will return a negative value. A point on either
     // edge will return a zero value, and a point outside the cell will return a positive value.
@@ -404,7 +404,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     // Check each face of the polygon. A point inside the face will give a negative value, a point
     // on the face will give a zero value, and a point outside the face will give a positive value.
     // If the point is inside all faces, it is inside the polygon.
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       const auto& vcp = point - face.centroid;
       if (vcp.Dot(face.normal) > 0.0)
@@ -430,8 +430,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
       return false;
     };
 
-    const auto& vcc = cell.centroid_;
-    for (const auto& face : cell.faces_)
+    const auto& vcc = cell.centroid;
+    for (const auto& face : cell.faces)
     {
       const auto& vfc = face.centroid;
       const size_t num_sides = face.vertex_ids.size();
@@ -498,10 +498,10 @@ MeshContinuum::MakeCellOrthoSizes() const
   std::vector<Vector3> cell_ortho_sizes(local_cells.size());
   for (const auto& cell : local_cells)
   {
-    Vector3 vmin = vertices[cell.vertex_ids_.front()];
+    Vector3 vmin = vertices[cell.vertex_ids.front()];
     Vector3 vmax = vmin;
 
-    for (const auto vid : cell.vertex_ids_)
+    for (const auto vid : cell.vertex_ids)
     {
       const auto& vertex = vertices[vid];
       vmin.x = std::min(vertex.x, vmin.x);
@@ -513,7 +513,7 @@ MeshContinuum::MakeCellOrthoSizes() const
       vmax.z = std::max(vertex.z, vmax.z);
     }
 
-    cell_ortho_sizes[cell.local_id_] = vmax - vmin;
+    cell_ortho_sizes[cell.local_id] = vmax - vmin;
   } // for cell
 
   return cell_ortho_sizes;
@@ -556,7 +556,7 @@ MeshContinuum::GetLocalBoundingBox() const
   bool initialized = false;
   for (const auto& cell : local_cells)
   {
-    for (const uint64_t vid : cell.vertex_ids_)
+    for (const uint64_t vid : cell.vertex_ids)
     {
       const auto& vertex = vertices[vid];
       if (not initialized)
@@ -584,11 +584,11 @@ void
 MeshContinuum::SetUniformMaterialID(int mat_id)
 {
   for (auto& cell : local_cells)
-    cell.material_id_ = mat_id;
+    cell.material_id = mat_id;
 
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].material_id_ = mat_id;
+    cells[ghost_id].material_id = mat_id;
 }
 
 void
@@ -597,9 +597,9 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense
   int num_cells_modified = 0;
   for (auto& cell : local_cells)
   {
-    if (log_vol.Inside(cell.centroid_) and sense)
+    if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell.material_id_ = mat_id;
+      cell.material_id = mat_id;
       ++num_cells_modified;
     }
   }
@@ -608,8 +608,8 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = cells[ghost_id];
-    if (log_vol.Inside(cell.centroid_) and sense)
-      cell.material_id_ = mat_id;
+    if (log_vol.Inside(cell.centroid) and sense)
+      cell.material_id = mat_id;
   }
 
   int global_num_cells_modified;
@@ -633,7 +633,7 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
   int num_faces_modified = 0;
   for (auto& cell : local_cells)
   {
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       if (face.has_neighbor)
         continue;

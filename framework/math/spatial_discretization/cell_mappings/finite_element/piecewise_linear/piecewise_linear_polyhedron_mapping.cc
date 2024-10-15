@@ -15,21 +15,21 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   const TetrahedraQuadrature& volume_quadrature,
   const TriangleQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
-      ref_grid, polyh_cell, polyh_cell.vertex_ids_.size(), MakeFaceNodeMapping(polyh_cell)),
+      ref_grid, polyh_cell, polyh_cell.vertex_ids.size(), MakeFaceNodeMapping(polyh_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
   // Assign cell centre
-  const Vector3& vcc = polyh_cell.centroid_;
-  alphac_ = 1.0 / static_cast<double>(polyh_cell.vertex_ids_.size());
+  const Vector3& vcc = polyh_cell.centroid;
+  alphac_ = 1.0 / static_cast<double>(polyh_cell.vertex_ids.size());
 
   // For each face
-  size_t num_faces = polyh_cell.faces_.size();
+  size_t num_faces = polyh_cell.faces.size();
   face_data_.reserve(num_faces);
   face_betaf_.reserve(num_faces);
   for (size_t f = 0; f < num_faces; f++)
   {
-    const CellFace& face = polyh_cell.faces_[f];
+    const CellFace& face = polyh_cell.faces[f];
     FEface_data face_f_data;
 
     face_f_data.normal = face.normal;
@@ -139,12 +139,12 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
         newSideMap.part_of_face = false;
         const uint64_t s0 = face_data_[f].sides[s].v_index[0];
         const uint64_t s1 = face_data_[f].sides[s].v_index[1];
-        if (polyh_cell.vertex_ids_[i] == s0)
+        if (polyh_cell.vertex_ids[i] == s0)
         {
           newSideMap.index = 0;
           newSideMap.part_of_face = true;
         }
-        else if (polyh_cell.vertex_ids_[i] == s1)
+        else if (polyh_cell.vertex_ids[i] == s1)
         {
           newSideMap.index = 2;
           newSideMap.part_of_face = true;
@@ -152,9 +152,9 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
         else
         {
           newSideMap.index = -1;
-          for (size_t v = 0; v < polyh_cell.faces_[f].vertex_ids.size(); v++)
+          for (size_t v = 0; v < polyh_cell.faces[f].vertex_ids.size(); v++)
           {
-            if (polyh_cell.vertex_ids_[i] == polyh_cell.faces_[f].vertex_ids[v])
+            if (polyh_cell.vertex_ids[i] == polyh_cell.faces[f].vertex_ids[v])
             {
               newSideMap.part_of_face = true;
               break;

@@ -74,10 +74,10 @@ void
 CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 {
   cell_ = cell_ptr;
-  cell_local_id_ = cell_ptr->local_id_;
+  cell_local_id_ = cell_ptr->local_id;
   cell_mapping_ = &discretization_.GetCellMapping(*cell_);
-  cell_transport_view_ = &cell_transport_views_[cell_->local_id_];
-  cell_num_faces_ = cell_->faces_.size();
+  cell_transport_view_ = &cell_transport_views_[cell_->local_id];
+  cell_num_faces_ = cell_->faces.size();
   cell_num_nodes_ = cell_mapping_->NumNodes();
 
   // Get cell matrices
@@ -105,7 +105,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   std::vector<double> face_mu_values(cell_num_faces_);
 
   const auto& rho = densities_[cell_local_id_];
-  const auto& sigma_t = xs_.at(cell_->material_id_)->SigmaTotal();
+  const auto& sigma_t = xs_.at(cell_->material_id)->SigmaTotal();
 
   // as = angle set
   // ss = subset
@@ -126,7 +126,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
     // Update face orientations
     for (int f = 0; f < cell_num_faces_; ++f)
-      face_mu_values[f] = omega.Dot(cell_->faces_[f].normal);
+      face_mu_values[f] = omega.Dot(cell_->faces[f].normal);
 
     // Surface integrals
     for (int f = 0; f < cell_num_faces_; ++f)
@@ -134,7 +134,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       if (face_orientations[f] != FaceOrientation::INCOMING)
         continue;
 
-      const auto& face = cell_->faces_[f];
+      const auto& face = cell_->faces[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       auto face_nodal_mapping = &fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, f);
@@ -149,7 +149,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       }
       else if (not is_boundary_face)
       {
-        psi_upwnd_data_block = &fluds_->GetNonLocalUpwindData(cell_->global_id_, f);
+        psi_upwnd_data_block = &fluds_->GetNonLocalUpwindData(cell_->global_id, f);
       }
 
       // IntSf_mu_psi_Mij_dA
@@ -269,7 +269,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       if (face_orientations[f] != FaceOrientation::OUTGOING)
         continue;
 
-      const auto& face = cell_->faces_[f];
+      const auto& face = cell_->faces[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =

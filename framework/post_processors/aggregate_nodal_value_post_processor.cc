@@ -56,13 +56,13 @@ AggregateNodalValuePostProcessor::Initialize()
   {
     cell_local_ids_.reserve(grid.local_cells.size());
     for (const auto& cell : grid.local_cells)
-      cell_local_ids_.push_back(cell.local_id_);
+      cell_local_ids_.push_back(cell.local_id);
   }
   else
   {
     for (const auto& cell : grid.local_cells)
-      if (logical_volume_ptr_->Inside(cell.centroid_))
-        cell_local_ids_.push_back(cell.local_id_);
+      if (logical_volume_ptr_->Inside(cell.centroid))
+        cell_local_ids_.push_back(cell.local_id);
   }
 
   initialized_ = true;

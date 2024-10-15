@@ -298,7 +298,7 @@ CFEMDiffusionSolver::Execute()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto imat = cell.material_id_;
+    const auto imat = cell.material_id;
     const size_t num_nodes = cell_mapping.NumNodes();
     MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
     std::vector<double> cell_rhs(num_nodes, 0.0);
@@ -327,10 +327,10 @@ CFEMDiffusionSolver::Execute()
     std::vector<int> dirichlet_count(num_nodes, 0);
     std::vector<double> dirichlet_value(num_nodes, 0.0);
 
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       // not a boundary face
       if (face.has_neighbor)
         continue;

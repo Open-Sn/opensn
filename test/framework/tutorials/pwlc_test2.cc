@@ -91,10 +91,10 @@ SimTest04_PWLC(const InputParameters& params)
 
     // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       if (face.has_neighbor)
         continue;
 

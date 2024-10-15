@@ -26,7 +26,7 @@ public:
     : CellMapping(grid,
                   cell,
                   1,
-                  {cell.centroid_},
+                  {cell.centroid},
                   std::move(face_node_mappings),
                   &CellMapping::ComputeCellVolumeAndAreas)
   {

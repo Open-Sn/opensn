@@ -177,11 +177,11 @@ AngleAggregation::InitializeReflectingBCs()
         cell_vec.resize(num_local_cells);
         for (const auto& cell : grid_->local_cells)
         {
-          const uint64_t c = cell.local_id_;
+          const uint64_t c = cell.local_id;
 
           // Check cell on ref bndry
           bool on_ref_bndry = false;
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
           {
             if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {
@@ -193,9 +193,9 @@ AngleAggregation::InitializeReflectingBCs()
             continue;
 
           // If cell on ref bndry
-          cell_vec[c].resize(cell.faces_.size());
+          cell_vec[c].resize(cell.faces.size());
           int f = 0;
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
           {
             if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {

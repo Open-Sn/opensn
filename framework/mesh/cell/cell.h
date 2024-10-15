@@ -90,14 +90,14 @@ private:
   const CellType cell_sub_type_;
 
 public:
-  uint64_t global_id_ = 0;
-  uint64_t local_id_ = 0;
-  uint64_t partition_id_ = 0;
-  Vector3 centroid_;
-  int material_id_ = -1;
+  uint64_t global_id = 0;
+  uint64_t local_id = 0;
+  uint64_t partition_id = 0;
+  Vector3 centroid;
+  int material_id = -1;
 
-  std::vector<uint64_t> vertex_ids_;
-  std::vector<CellFace> faces_;
+  std::vector<uint64_t> vertex_ids;
+  std::vector<CellFace> faces;
 
 public:
   /// Copy constructor

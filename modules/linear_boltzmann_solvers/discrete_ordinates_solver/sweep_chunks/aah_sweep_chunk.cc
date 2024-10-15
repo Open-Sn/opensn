@@ -72,14 +72,14 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     auto& cell = grid_.local_cells[cell_local_id];
     auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
-    auto cell_num_faces = cell.faces_.size();
+    auto cell_num_faces = cell.faces.size();
     auto cell_num_nodes = cell_mapping.NumNodes();
 
     const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
-    const auto& rho = densities_[cell.local_id_];
-    const auto& sigma_t = xs_.at(cell.material_id_)->SigmaTotal();
+    const auto& rho = densities_[cell.local_id];
+    const auto& sigma_t = xs_.at(cell.material_id)->SigmaTotal();
 
     // Get cell matrices
     const auto& G = unit_cell_matrices_[cell_local_id].intV_shapeI_gradshapeJ;
@@ -109,7 +109,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces_[f].normal);
+        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
 
       // Surface integrals
       int in_face_counter = -1;
@@ -118,7 +118,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces_[f];
+        auto& cell_face = cell.faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -238,7 +238,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           continue;
 
         out_face_counter++;
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =

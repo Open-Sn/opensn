@@ -11,7 +11,7 @@ VolumetricFiniteElementData
 FiniteVolumeMapping::MakeVolumetricFiniteElementData() const
 {
   return VolumetricFiniteElementData({0},
-                                     {{cell_.centroid_}},
+                                     {{cell_.centroid}},
                                      {{1.0}},
                                      {{Vector3(0, 0, 0)}},
                                      {volume_},

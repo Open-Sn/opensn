@@ -36,8 +36,8 @@ FieldFunctionInterpolationVolume::Initialize()
 
   // Find cells inside volume
   for (const auto& cell : grid.local_cells)
-    if (logical_volume_->Inside(cell.centroid_))
-      cell_local_ids_inside_logvol_.push_back(cell.local_id_);
+    if (logical_volume_->Inside(cell.centroid))
+      cell_local_ids_inside_logvol_.push_back(cell.local_id);
 }
 
 void
@@ -92,7 +92,7 @@ FieldFunctionInterpolationVolume::Execute()
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
           op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
-        function_value = oper_function_->Evaluate(ff_value, cell.material_id_);
+        function_value = oper_function_->Evaluate(ff_value, cell.material_id);
 
       local_volume += fe_vol_data.JxW(qp);
       local_sum += function_value * fe_vol_data.JxW(qp);

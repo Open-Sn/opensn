@@ -293,9 +293,9 @@ FVDiffusionSolver::Execute()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell_P);
     const double volume_P = cell_mapping.CellVolume(); // Volume of present cell
-    const auto& x_cc_P = cell_P.centroid_;
+    const auto& x_cc_P = cell_P.centroid;
 
-    const auto imat = cell_P.material_id_;
+    const auto imat = cell_P.material_id;
 
     const double sigma_a = sigma_a_function_->Evaluate(imat, x_cc_P);
     const double q_ext = q_ext_function_->Evaluate(imat, x_cc_P);
@@ -305,9 +305,9 @@ FVDiffusionSolver::Execute()
     MatSetValue(A_, imap, imap, sigma_a * volume_P, ADD_VALUES);
     VecSetValue(b_, imap, q_ext * volume_P, ADD_VALUES);
 
-    for (size_t f = 0; f < cell_P.faces_.size(); ++f)
+    for (size_t f = 0; f < cell_P.faces.size(); ++f)
     {
-      const auto& face = cell_P.faces_[f];
+      const auto& face = cell_P.faces[f];
       const auto& x_fc = face.centroid;
       const auto x_PF = x_fc - x_cc_P;
       const auto A_f = cell_mapping.FaceArea(f);
@@ -316,8 +316,8 @@ FVDiffusionSolver::Execute()
       if (face.has_neighbor)
       {
         const auto& cell_N = grid.cells[face.neighbor_id];
-        const int jmat = cell_N.material_id_;
-        const auto& x_cc_N = cell_N.centroid_;
+        const int jmat = cell_N.material_id;
+        const auto& x_cc_N = cell_N.centroid;
         const auto x_PN = x_cc_N - x_cc_P;
 
         const double D_N = d_coef_function_->Evaluate(jmat, x_cc_N);

@@ -26,10 +26,10 @@ SpatialDiscretization::GetCellMapping(const Cell& cell) const
                                      "GetCellMapping";
   try
   {
-    if (Grid().IsCellLocal(cell.global_id_))
-      return *cell_mappings_.at(cell.local_id_);
+    if (Grid().IsCellLocal(cell.global_id))
+      return *cell_mappings_.at(cell.local_id);
     else
-      return *nb_cell_mappings_.at(cell.global_id_);
+      return *nb_cell_mappings_.at(cell.global_id);
   }
   catch (const std::out_of_range& oor)
   {
@@ -93,14 +93,14 @@ std::pair<std::set<uint32_t>, std::set<uint32_t>>
 SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
 {
   const auto& cell_mapping = GetCellMapping(cell);
-  const size_t num_faces = cell.faces_.size();
+  const size_t num_faces = cell.faces.size();
   const size_t num_nodes = cell_mapping.NumNodes();
 
   // Determine which nodes are on the boundary
   std::set<uint32_t> boundary_nodes;
   for (size_t f = 0; f < num_faces; ++f)
   {
-    if (not cell.faces_[f].has_neighbor)
+    if (not cell.faces[f].has_neighbor)
     {
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -127,13 +127,13 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
   {
     const auto& cell_mapping = this->GetCellMapping(cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
 
     std::vector<std::vector<int>> per_face_adj_mapping;
 
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)

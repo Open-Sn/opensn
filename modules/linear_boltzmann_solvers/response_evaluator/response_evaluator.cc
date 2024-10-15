@@ -331,13 +331,13 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
     for (const auto& cell : grid.local_cells)
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& transport_view = transport_views[cell.local_id_];
-      const auto& fe_values = unit_cell_matrices[cell.local_id_];
+      const auto& transport_view = transport_views[cell.local_id];
+      const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto num_cell_nodes = cell_mapping.NumNodes();
 
-      if (material_sources_.count(cell.material_id_) > 0)
+      if (material_sources_.count(cell.material_id) > 0)
       {
-        const auto& src = material_sources_.at(cell.material_id_);
+        const auto& src = material_sources_.at(cell.material_id);
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -363,10 +363,10 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       for (const auto& cell : grid.local_cells)
       {
         const auto& cell_mapping = discretization.GetCellMapping(cell);
-        const auto& fe_values = unit_cell_matrices[cell.local_id_];
+        const auto& fe_values = unit_cell_matrices[cell.local_id];
 
         size_t f = 0;
-        for (const auto& face : cell.faces_)
+        for (const auto& face : cell.faces)
         {
           if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
@@ -375,7 +375,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid.vertices[cell.vertex_ids_[i]];
+              const auto& node = grid.vertices[cell.vertex_ids[i]];
               const auto& intF_shapeI = fe_values.intS_shapeI[f][i];
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);
@@ -409,7 +409,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
     for (const auto& subscriber : point_source.Subscribers())
     {
       const auto& cell = grid.local_cells[subscriber.cell_local_id];
-      const auto& transport_view = transport_views[cell.local_id_];
+      const auto& transport_view = transport_views[cell.local_id];
 
       const auto& src = point_source.Strength();
       const auto& vol_wt = subscriber.volume_weight;
@@ -429,8 +429,8 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
     for (const uint64_t local_id : volumetric_source.GetSubscribers())
     {
       const auto& cell = grid.local_cells[local_id];
-      const auto& transport_view = transport_views[cell.local_id_];
-      const auto& fe_values = unit_cell_matrices[cell.local_id_];
+      const auto& transport_view = transport_views[cell.local_id];
+      const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
       const auto num_cell_nodes = transport_view.NumNodes();

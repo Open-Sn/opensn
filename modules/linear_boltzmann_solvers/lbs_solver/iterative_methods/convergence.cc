@@ -49,8 +49,8 @@ ComputePointwisePhiChange(
   double pw_change = 0.0;
   for (const auto& cell : grid_ptr->local_cells)
   {
-    auto& transport_view = cell_transport_views[cell.local_id_];
-    for (auto i = 0; i < cell.vertex_ids_.size(); ++i)
+    auto& transport_view = cell_transport_views[cell.local_id];
+    for (auto i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
       {

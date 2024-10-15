@@ -337,7 +337,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
     // Loop over cells
     for (const auto& cell : grid.local_cells)
     {
-      const auto& transport_view = transport_views[cell.local_id_];
+      const auto& transport_view = transport_views[cell.local_id];
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
       // Compute node-wise, groupset wise tensors
@@ -377,7 +377,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
 
       // Loop over cell faces
       int f = 0;
-      for (const auto& face : cell.faces_)
+      for (const auto& face : cell.faces)
       {
         if (not face.has_neighbor)
         {
@@ -445,16 +445,16 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
   // Build the source
   for (const auto& cell : grid.local_cells)
   {
-    const auto& rho = lbs_solver_.DensitiesLocal()[cell.local_id_];
+    const auto& rho = lbs_solver_.DensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto nodes = cell_mapping.GetNodeLocations();
     const auto num_cell_nodes = cell_mapping.NumNodes();
-    const auto num_cell_faces = cell.faces_.size();
+    const auto num_cell_faces = cell.faces.size();
 
-    const auto& fe_values = unit_cell_matrices[cell.local_id_];
-    const auto& K = K_tensor_matrices_[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices[cell.local_id];
+    const auto& K = K_tensor_matrices_[cell.local_id];
 
-    const auto& xs = matid_to_xs_map.at(cell.material_id_);
+    const auto& xs = matid_to_xs_map.at(cell.material_id);
     const auto& sigma_tr = xs->SigmaTransport();
 
     // Volumetric term
@@ -498,7 +498,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
     // Surface terms
     for (int f = 0; f < num_cell_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       const auto& normal = face.normal;
       const auto& face_G = fe_values.intS_shapeI_gradshapeJ[f];
       const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
@@ -673,11 +673,11 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& fe_values = unit_cell_matrices[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices[cell.local_id];
 
     // Loop over faces
     int f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -753,7 +753,7 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
   // Test the nodal source against diffusion test functions
   for (const auto& cell : grid.local_cells)
   {
-    const auto& M = unit_cell_matrices[cell.local_id_].intV_shapeI_shapeJ;
+    const auto& M = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.NumNodes();
     for (int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -875,7 +875,7 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
                                qp_data.ShapeGrad(i, qp)[dimension_ > 1 ? k : 2] *
                                qp_data.ShapeGrad(j, qp)[dimension_ > 1 ? l : 2] * qp_data.JxW(qp);
       }
-    K_tensor_matrices_[cell.local_id_] = K;
+    K_tensor_matrices_[cell.local_id] = K;
   }
 
   opensn::mpi_comm.barrier();
@@ -905,7 +905,7 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
 
       // Loop over faces
       int f = 0;
-      for (const auto& face : cell.faces_)
+      for (const auto& face : cell.faces)
       {
         const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -1098,7 +1098,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     // Determine vertices that lie on a partition boundary. This is done
     // to later add PWLD DoFs from non-locally owned cells that correspond to
     // a PWLC DoF
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
       if (face.has_neighbor)
         if (not grid.IsCellLocal(face.neighbor_id))
           for (const uint64_t vertex_id : face.vertex_ids)
@@ -1115,7 +1115,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     const auto& vol = cell_mapping.CellVolume();
 
     for (int i = 0; i < cell_mapping.NumNodes(); ++i)
-      if (pvids.find(cell.vertex_ids_[i]) != pvids.end())
+      if (pvids.find(cell.vertex_ids[i]) != pvids.end())
         for (int u = 0; u < uk_man.unknowns.size(); ++u)
           for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
           {

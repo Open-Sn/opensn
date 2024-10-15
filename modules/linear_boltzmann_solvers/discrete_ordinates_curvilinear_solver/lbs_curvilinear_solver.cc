@@ -205,7 +205,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   };
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -371,7 +371,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    secondary_unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell);
+    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";
