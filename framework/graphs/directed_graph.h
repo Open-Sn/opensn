@@ -42,17 +42,17 @@ public:
     GraphVertex& operator[](size_t v);
 
     /// Internal iterator class for vertex accessor.
-    class iterator
+    class Iterator
     {
     public:
       VertexAccessor& ref_block;
       size_t ref_element;
 
-      iterator(VertexAccessor& block, size_t i) : ref_block(block), ref_element(i) {}
+      Iterator(VertexAccessor& block, size_t i) : ref_block(block), ref_element(i) {}
 
-      iterator operator++()
+      Iterator operator++()
       {
-        iterator i = *this;
+        Iterator i = *this;
         bool stop = false;
         do
         {
@@ -65,7 +65,7 @@ public:
         } while (not stop);
         return i;
       }
-      iterator operator++(int junk)
+      Iterator operator++(int junk)
       {
         bool stop = false;
         do
@@ -81,11 +81,11 @@ public:
       }
       GraphVertex& operator*() { return ref_block.vertices_[ref_element]; }
       GraphVertex* operator->() { return &(ref_block.vertices_[ref_element]); }
-      bool operator==(const iterator& rhs) const { return ref_element == rhs.ref_element; }
-      bool operator!=(const iterator& rhs) const { return ref_element != rhs.ref_element; }
+      bool operator==(const Iterator& rhs) const { return ref_element == rhs.ref_element; }
+      bool operator!=(const Iterator& rhs) const { return ref_element != rhs.ref_element; }
     };
 
-    iterator begin()
+    Iterator begin()
     {
       size_t count = 0;
       if (vertex_valid_flags_.empty())
@@ -104,7 +104,7 @@ public:
       }
     }
 
-    iterator end() { return {*this, vertices_.size()}; }
+    Iterator end() { return {*this, vertices_.size()}; }
 
     size_t size() { return vertices_.size(); }
 
