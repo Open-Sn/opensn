@@ -219,7 +219,7 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   std::array<Vector3, 4>& radii_vectors_xy_tilde,
   std::array<double, 4>& sub_sub_sqr_areas)
 {
-  FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
+  FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
   DynamicVector<double> rho = {d, d, d, d};
@@ -246,7 +246,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
   auto& SA_i = sub_sub_sqr_areas;
 
   // Declare algorithm utilities
-  FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
+  FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
   DynamicVector<double> rho = {d, d, d, d};
