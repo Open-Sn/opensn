@@ -31,11 +31,11 @@ enum class AngleSetStatus
 
 struct Task
 {
-  unsigned int num_dependencies_;
-  std::vector<uint64_t> successors_;
-  uint64_t reference_id_;
-  const Cell* cell_ptr_;
-  bool completed_ = false;
+  unsigned int num_dependencies;
+  std::vector<uint64_t> successors;
+  uint64_t reference_id;
+  const Cell* cell_ptr;
+  bool completed = false;
 };
 
 /**

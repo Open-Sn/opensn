@@ -50,7 +50,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   auto tasks_who_received_data = async_comm_.ReceiveData();
 
   for (const uint64_t task_number : tasks_who_received_data)
-    --current_task_list_[task_number].num_dependencies_;
+    --current_task_list_[task_number].num_dependencies;
 
   async_comm_.SendData();
 
@@ -66,17 +66,17 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     a_task_executed = false;
     for (auto& cell_task : current_task_list_)
     {
-      if (not cell_task.completed_)
+      if (not cell_task.completed)
         all_tasks_completed = false;
-      if (cell_task.num_dependencies_ == 0 and not cell_task.completed_)
+      if (cell_task.num_dependencies == 0 and not cell_task.completed)
       {
-        sweep_chunk.SetCell(cell_task.cell_ptr_, *this);
+        sweep_chunk.SetCell(cell_task.cell_ptr, *this);
         sweep_chunk.Sweep(*this);
 
-        for (uint64_t local_task_num : cell_task.successors_)
-          --current_task_list_[local_task_num].num_dependencies_;
+        for (uint64_t local_task_num : cell_task.successors)
+          --current_task_list_[local_task_num].num_dependencies;
 
-        cell_task.completed_ = true;
+        cell_task.completed = true;
         a_task_executed = true;
         async_comm_.SendData();
       }
