@@ -181,7 +181,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
-          if ((lock_box_slot.first == face.neighbor_id_) and (lock_box_slot.second == ass_face))
+          if ((static_cast<uint64_t>(lock_box_slot.first) == face.neighbor_id_) and
+              (lock_box_slot.second == ass_face))
           {
             lock_box_slot.first = -1;
             lock_box_slot.second = -1;
