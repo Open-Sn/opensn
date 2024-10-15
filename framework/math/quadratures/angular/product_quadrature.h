@@ -29,8 +29,8 @@ protected:
   ProductQuadrature() : AngularQuadrature(AngularQuadratureType::ProductQuadrature) {}
 
 public:
-  std::vector<double> polar_ang_;
-  std::vector<double> azimu_ang_;
+  std::vector<double> polar_ang;
+  std::vector<double> azimu_ang;
 
   ~ProductQuadrature() override = default;
 

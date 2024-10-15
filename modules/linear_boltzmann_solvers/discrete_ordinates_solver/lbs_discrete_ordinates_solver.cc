@@ -1063,15 +1063,15 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       {
         const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
-        const auto num_azi = product_quad.azimu_ang_.size();
-        const auto num_pol = product_quad.polar_ang_.size();
+        const auto num_azi = product_quad.azimu_ang.size();
+        const auto num_pol = product_quad.polar_ang.size();
 
         // Make two separate list of polar angles
         // One upward-pointing and one downward
         std::vector<size_t> upward_polar_ids;
         std::vector<size_t> dnward_polar_ids;
         for (size_t p = 0; p < num_pol; ++p)
-          if (product_quad.polar_ang_[p] > M_PI_2)
+          if (product_quad.polar_ang[p] > M_PI_2)
             upward_polar_ids.push_back(p);
           else
             dnward_polar_ids.push_back(p);

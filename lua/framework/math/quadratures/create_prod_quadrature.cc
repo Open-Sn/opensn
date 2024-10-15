@@ -43,8 +43,8 @@ CreateProductQuadrature(lua_State* L)
 
     if (verbose)
     {
-      opensn::log.Log() << "Created Gauss-Legendre Quadrature with " << new_quad->azimu_ang_.size()
-                        << " azimuthal angles and " << new_quad->polar_ang_.size()
+      opensn::log.Log() << "Created Gauss-Legendre Quadrature with " << new_quad->azimu_ang.size()
+                        << " azimuthal angles and " << new_quad->polar_ang.size()
                         << " polar angles.";
     }
 
@@ -68,8 +68,8 @@ CreateProductQuadrature(lua_State* L)
     if (verbose)
     {
       opensn::log.Log() << "Created Gauss-Legendre-Chebyshev Quadrature with "
-                        << new_quad->azimu_ang_.size() << " azimuthal angles and "
-                        << new_quad->polar_ang_.size() << " polar angles.";
+                        << new_quad->azimu_ang.size() << " azimuthal angles and "
+                        << new_quad->polar_ang.size() << " polar angles.";
     }
 
     return LuaReturn(L, index);
@@ -95,8 +95,8 @@ CreateProductQuadrature(lua_State* L)
 
     if (verbose)
     {
-      opensn::log.Log() << "Created Custom Quadrature with " << new_quad->azimu_ang_.size()
-                        << " azimuthal angles and " << new_quad->polar_ang_.size()
+      opensn::log.Log() << "Created Custom Quadrature with " << new_quad->azimu_ang.size()
+                        << " azimuthal angles and " << new_quad->polar_ang.size()
                         << " polar angles.";
     }
 
