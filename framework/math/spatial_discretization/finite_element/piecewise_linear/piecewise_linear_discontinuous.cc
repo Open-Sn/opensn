@@ -183,9 +183,9 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     // Local adjacent cell connections
     for (auto& face : cell.faces_)
     {
-      if (face.has_neighbor_ and face.IsNeighborLocal(ref_grid_))
+      if (face.has_neighbor and face.IsNeighborLocal(ref_grid_))
       {
-        const auto& adj_cell = ref_grid_.cells[face.neighbor_id_];
+        const auto& adj_cell = ref_grid_.cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (int i = 0; i < num_nodes; ++i)
@@ -207,9 +207,9 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     // Local adjacent cell connections
     for (auto& face : cell.faces_)
     {
-      if (face.has_neighbor_ and (not face.IsNeighborLocal(ref_grid_)))
+      if (face.has_neighbor and (not face.IsNeighborLocal(ref_grid_)))
       {
-        const auto& adj_cell = ref_grid_.cells[face.neighbor_id_];
+        const auto& adj_cell = ref_grid_.cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (int i = 0; i < cell_mapping.NumNodes(); ++i)

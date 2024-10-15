@@ -126,7 +126,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
     // Update face orientations
     for (int f = 0; f < cell_num_faces_; ++f)
-      face_mu_values[f] = omega.Dot(cell_->faces_[f].normal_);
+      face_mu_values[f] = omega.Dot(cell_->faces_[f].normal);
 
     // Surface integrals
     for (int f = 0; f < cell_num_faces_; ++f)
@@ -136,7 +136,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
       const auto& face = cell_->faces_[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
-      const bool is_boundary_face = not face.has_neighbor_;
+      const bool is_boundary_face = not face.has_neighbor;
       auto face_nodal_mapping = &fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, f);
 
       const std::vector<double>* psi_upwnd_data_block = nullptr;
@@ -180,7 +180,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
             psi = fluds_->GetNonLocalUpwindPsi(*psi_upwnd_data_block, adj_face_node, as_ss_idx);
           }
           else
-            psi = angle_set.PsiBoundary(face.neighbor_id_,
+            psi = angle_set.PsiBoundary(face.neighbor_id,
                                         direction_num,
                                         cell_local_id_,
                                         f,
@@ -271,9 +271,9 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
       const auto& face = cell_->faces_[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
-      const bool is_boundary_face = not face.has_neighbor_;
+      const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =
-        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
+        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
       const auto& IntF_shapeI = IntS_shapeI_[f];
 
       const int locality = cell_transport_view_->FaceLocality(f);
@@ -285,7 +285,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         auto& async_comm = *angle_set.GetCommunicator();
         size_t data_size = num_face_nodes * group_angle_stride_;
         psi_dnwnd_data = &async_comm.InitGetDownwindMessageData(locality,
-                                                                face.neighbor_id_,
+                                                                face.neighbor_id,
                                                                 face_nodal_mapping.associated_face_,
                                                                 angle_set.GetID(),
                                                                 data_size);
@@ -313,7 +313,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
         }
         else if (is_reflecting_boundary_face)
           psi = angle_set.PsiReflected(
-            face.neighbor_id_, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
+            face.neighbor_id, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
         if (psi)
         {
           if (not is_boundary_face or is_reflecting_boundary_face)

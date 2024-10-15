@@ -100,7 +100,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
   std::set<uint32_t> boundary_nodes;
   for (size_t f = 0; f < num_faces; ++f)
   {
-    if (not cell.faces_[f].has_neighbor_)
+    if (not cell.faces_[f].has_neighbor)
     {
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -136,9 +136,9 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       const auto& face = cell.faces_[f];
       const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id_];
+        const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.NumNodes();

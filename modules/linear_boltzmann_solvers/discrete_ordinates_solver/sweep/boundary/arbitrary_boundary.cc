@@ -43,7 +43,7 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
   std::vector<bool> cell_bndry_flags(num_local_cells, false);
   for (const auto& cell : grid.local_cells)
     for (const auto& face : cell.faces_)
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
         cell_bndry_flags[cell.local_id_] = true;
         break;
@@ -87,10 +87,10 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
       for (size_t f = 0; f < cell.faces_.size(); ++f)
       {
         auto& face = cell.faces_[f];
-        size_t face_num_nodes = face.vertex_ids_.size();
+        size_t face_num_nodes = face.vertex_ids.size();
         FaceData face_data;
 
-        if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id_)
+        if (not face.has_neighbor and face.neighbor_id == boundary_id_)
         {
           face_data.reserve(face_num_nodes);
           for (size_t i = 0; i < face_num_nodes; ++i)
@@ -100,8 +100,8 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
                                            cell.material_id_,
                                            f,
                                            i,
-                                           grid.vertices[face.vertex_ids_[i]],
-                                           face.normal_,
+                                           grid.vertices[face.vertex_ids[i]],
+                                           face.normal,
                                            angle_indices,
                                            angle_vectors,
                                            phi_theta_angles,

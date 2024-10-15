@@ -73,11 +73,11 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_ and not suppress_bcs_)
+      if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0)
-          bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id) > 0)
+          bc = bcs_.at(face.neighbor_id);
 
         if (bc.type != BCType::DIRICHLET)
           continue;
@@ -135,11 +135,11 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_ and not suppress_bcs_)
+        if (not face.has_neighbor and not suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -271,11 +271,11 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_ and suppress_bcs_)
+      if (not face.has_neighbor and suppress_bcs_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0)
-          bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id) > 0)
+          bc = bcs_.at(face.neighbor_id);
 
         if (bc.type != BCType::DIRICHLET)
           continue;
@@ -328,11 +328,11 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_ and suppress_bcs_)
+        if (not face.has_neighbor and suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -415,11 +415,11 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (not face.has_neighbor_ and not suppress_bcs_)
+      if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
-        if (bcs_.count(face.neighbor_id_) > 0)
-          bc = bcs_.at(face.neighbor_id_);
+        if (bcs_.count(face.neighbor_id) > 0)
+          bc = bcs_.at(face.neighbor_id);
 
         if (bc.type != BCType::DIRICHLET)
           continue;
@@ -458,11 +458,11 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        if (not face.has_neighbor_ and not suppress_bcs_)
+        if (not face.has_neighbor and not suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {

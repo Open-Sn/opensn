@@ -238,7 +238,7 @@ SimTest91_PWLD(const InputParameters&)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      const double mu = omega.Dot(face.normal_);
+      const double mu = omega.Dot(face.normal);
 
       if (mu < 0.0)
       {
@@ -253,9 +253,9 @@ SimTest91_PWLD(const InputParameters&)
             const int j = cell_mapping.MapFaceNode(f, fj);
 
             const double* upwind_psi = zero_vector.data();
-            if (face.has_neighbor_)
+            if (face.has_neighbor)
             {
-              const auto& adj_cell = grid.cells[face.neighbor_id_];
+              const auto& adj_cell = grid.cells[face.neighbor_id];
               const int aj = cell_adj_mapping[cell.local_id_][f][fj];
               const int64_t ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];

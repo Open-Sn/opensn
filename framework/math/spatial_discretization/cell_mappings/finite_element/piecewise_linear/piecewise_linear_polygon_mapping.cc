@@ -29,8 +29,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   {
     const CellFace& face = poly_cell.faces_[side];
 
-    const auto& v0 = ref_grid_.vertices[face.vertex_ids_[0]];
-    const auto& v1 = ref_grid_.vertices[face.vertex_ids_[1]];
+    const auto& v0 = ref_grid_.vertices[face.vertex_ids[0]];
+    const auto& v1 = ref_grid_.vertices[face.vertex_ids[1]];
     Vector3 v2 = vc_;
 
     Vector3 sidev01 = v1 - v0;
@@ -42,8 +42,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     triangle_data.detJ = sidedetJ;
     triangle_data.detJ_surf = sidev01.Norm();
 
-    triangle_data.v_index[0] = face.vertex_ids_[0];
-    triangle_data.v_index[1] = face.vertex_ids_[1];
+    triangle_data.v_index[0] = face.vertex_ids[0];
+    triangle_data.v_index[1] = face.vertex_ids[1];
 
     triangle_data.v0 = v0;
 
@@ -69,7 +69,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     triangle_data.JTinv.SetIJ(2, 2, 0.0);
 
     // Set face normal
-    triangle_data.normal = face.normal_;
+    triangle_data.normal = face.normal;
 
     sides_.push_back(triangle_data);
   }
@@ -84,11 +84,11 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
       side_mapping[side] = -1;
 
       const CellFace& face = poly_cell.faces_[side];
-      if (face.vertex_ids_[0] == vindex)
+      if (face.vertex_ids[0] == vindex)
       {
         side_mapping[side] = 0;
       }
-      if (face.vertex_ids_[1] == vindex)
+      if (face.vertex_ids[1] == vindex)
       {
         side_mapping[side] = 1;
       }

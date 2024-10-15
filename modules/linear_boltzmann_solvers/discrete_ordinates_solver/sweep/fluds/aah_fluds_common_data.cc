@@ -141,7 +141,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ LOCAL CELL DEPENDENCE
       if (face.IsNeighborLocal(grid))
       {
-        size_t num_face_dofs = face.vertex_ids_.size();
+        size_t num_face_dofs = face.vertex_ids.size();
         size_t face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
 
         inco_face_face_category.push_back(static_cast<short>(face_categ));
@@ -181,7 +181,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
-          if ((lock_box_slot.first == face.neighbor_id_) and (lock_box_slot.second == ass_face))
+          if ((lock_box_slot.first == face.neighbor_id) and (lock_box_slot.second == ass_face))
           {
             lock_box_slot.first = -1;
             lock_box_slot.second = -1;
@@ -220,7 +220,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Outgoing face
     if (orientation == FaceOrientation::OUTGOING)
     {
-      size_t num_face_dofs = face.vertex_ids_.size();
+      size_t num_face_dofs = face.vertex_ids.size();
       size_t face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
 
       outb_face_face_category.push_back(static_cast<short>(face_categ));
@@ -281,13 +281,13 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       }
 
       // Non-local outgoing
-      if (face.has_neighbor_ and (not face.IsNeighborLocal(grid)))
+      if (face.has_neighbor and (not face.IsNeighborLocal(grid)))
       {
         int locJ = face.GetNeighborPartitionID(grid);
         int deplocI = spds.MapLocJToDeplocI(locJ);
         int face_slot = deplocI_face_dof_count[deplocI];
 
-        deplocI_face_dof_count[deplocI] += face.vertex_ids_.size();
+        deplocI_face_dof_count[deplocI] += face.vertex_ids.size();
 
         nonlocal_outb_face_deplocI_slot.emplace_back(deplocI, face_slot);
 
@@ -318,7 +318,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
     if (cell_view.first == cell_g_index)
     {
       cell_already_there = true;
-      cell_view.second.emplace_back(face_slot, face.vertex_ids_);
+      cell_view.second.emplace_back(face_slot, face.vertex_ids);
       break;
     }
   }
@@ -328,7 +328,7 @@ AAH_FLUDSCommonData::AddFaceViewToDepLocI(int deplocI,
   {
     CompactCellView new_cell_view;
     new_cell_view.first = cell_g_index;
-    new_cell_view.second.emplace_back(face_slot, face.vertex_ids_);
+    new_cell_view.second.emplace_back(face_slot, face.vertex_ids);
 
     deplocI_cell_views[deplocI].push_back(new_cell_view);
   }
@@ -363,7 +363,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         dof_mapping.second = cell_nodal_mapping[f].face_node_mapping_;
 
         // Find associated face counter for slot lookup
-        const auto& adj_cell = grid.cells[face.neighbor_id_];
+        const auto& adj_cell = grid.cells[face.neighbor_id];
         const int adj_so_index = local_so_cell_mapping[adj_cell.local_id_];
         const auto& face_oris = spds.CellFaceOrientations()[adj_cell.local_id_];
         int ass_f_counter = -1;
@@ -654,7 +654,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Incident face
     if (orientation == FaceOrientation::INCOMING)
     {
-      if ((face.has_neighbor_) and (!face.IsNeighborLocal(grid)))
+      if ((face.has_neighbor) and (!face.IsNeighborLocal(grid)))
       {
         // Find prelocI
         int locJ = face.GetNeighborPartitionID(grid);
@@ -666,7 +666,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int ass_cell = -1;
           for (int c = 0; c < prelocI_cell_views[prelocI].size(); c++)
           {
-            if (prelocI_cell_views[prelocI][c].first == face.neighbor_id_)
+            if (prelocI_cell_views[prelocI][c].first == face.neighbor_id)
             {
               ass_cell = c;
               break;
@@ -676,12 +676,12 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           {
             log.LogAll() << "Required predecessor cell not located in call to"
                          << " InitializeBetaElements. locJ=" << locJ << " prelocI=" << prelocI
-                         << " cell=" << face.neighbor_id_;
+                         << " cell=" << face.neighbor_id;
             Exit(EXIT_FAILURE);
           }
 
           // Find associated face
-          std::set<int> cfvids(face.vertex_ids_.begin(), face.vertex_ids_.end());
+          std::set<int> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
           CompactCellView* adj_cell_view = &prelocI_cell_views[prelocI][ass_cell];
           int ass_face = -1, af = -1;
           for (auto& adj_face : adj_cell_view->second)
@@ -710,12 +710,12 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[ass_face].first;
           std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
-          for (int fv = 0; fv < face.vertex_ids_.size(); fv++)
+          for (int fv = 0; fv < face.vertex_ids.size(); fv++)
           {
             bool match_found = false;
             for (int afv = 0; afv < ass_face_verts->size(); afv++)
             {
-              if (face.vertex_ids_[fv] == ass_face_verts->operator[](afv))
+              if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
               {
                 match_found = true;
                 dof_mapping.second.push_back(afv);
@@ -750,7 +750,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int ass_cell = -1;
           for (int c = 0; c < delayed_prelocI_cell_views[delayed_preLocI].size(); c++)
           {
-            if (delayed_prelocI_cell_views[delayed_preLocI][c].first == face.neighbor_id_)
+            if (delayed_prelocI_cell_views[delayed_preLocI][c].first == face.neighbor_id)
             {
               ass_cell = c;
               break;
@@ -760,7 +760,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           {
             log.LogAll() << "Required predecessor cell not located in call to"
                          << " InitializeBetaElements. locJ=" << locJ
-                         << " delayed prelocI=" << delayed_preLocI << " cell=" << face.neighbor_id_;
+                         << " delayed prelocI=" << delayed_preLocI << " cell=" << face.neighbor_id;
             Exit(EXIT_FAILURE);
           }
 
@@ -773,9 +773,9 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             for (int afv = 0; afv < adj_cell_view->second[af].second.size(); afv++)
             {
               bool match_found = false;
-              for (int fv = 0; fv < face.vertex_ids_.size(); fv++)
+              for (int fv = 0; fv < face.vertex_ids.size(); fv++)
               {
-                if (adj_cell_view->second[af].second[afv] == face.vertex_ids_[fv])
+                if (adj_cell_view->second[af].second[afv] == face.vertex_ids[fv])
                 {
                   match_found = true;
                   break;
@@ -805,12 +805,12 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[ass_face].first;
           std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
-          for (int fv = 0; fv < face.vertex_ids_.size(); fv++)
+          for (int fv = 0; fv < face.vertex_ids.size(); fv++)
           {
             bool match_found = false;
             for (int afv = 0; afv < ass_face_verts->size(); afv++)
             {
-              if (face.vertex_ids_[fv] == ass_face_verts->operator[](afv))
+              if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
               {
                 match_found = true;
                 dof_mapping.second.push_back(afv);

@@ -22,8 +22,8 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(const Cell& slab_cell,
   Vector3 v01 = v1 - v0_;
   h_ = v01.Norm();
 
-  normals_[0] = slab_cell.faces_[0].normal_;
-  normals_[1] = slab_cell.faces_[1].normal_;
+  normals_[0] = slab_cell.faces_[0].normal;
+  normals_[1] = slab_cell.faces_[1].normal;
 }
 
 double

@@ -32,14 +32,14 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
     const CellFace& face = polyh_cell.faces_[f];
     FEface_data face_f_data;
 
-    face_f_data.normal = face.normal_;
+    face_f_data.normal = face.normal;
 
-    face_betaf_.push_back(1.0 / static_cast<double>(face.vertex_ids_.size()));
+    face_betaf_.push_back(1.0 / static_cast<double>(face.vertex_ids.size()));
 
-    const Vector3& vfc = face.centroid_;
+    const Vector3& vfc = face.centroid;
 
     // For each edge
-    const size_t num_edges = face.vertex_ids_.size();
+    const size_t num_edges = face.vertex_ids.size();
     face_f_data.sides.reserve(num_edges);
     for (size_t e = 0; e < num_edges; ++e)
     {
@@ -47,8 +47,8 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
 
       // Assign vertices of tetrahedron
       size_t ep1 = (e < (num_edges - 1)) ? e + 1 : 0;
-      uint64_t v0index = face.vertex_ids_[e];
-      uint64_t v1index = face.vertex_ids_[ep1];
+      uint64_t v0index = face.vertex_ids[e];
+      uint64_t v1index = face.vertex_ids[ep1];
       side_data.v_index.resize(2, -1);
       side_data.v_index[0] = v0index;
       side_data.v_index[1] = v1index;
@@ -69,7 +69,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       // First we compute the rotation matrix which will rotate
       // any vector in natural coordinates to the same reference
       // frame as the current face.
-      Vector3 normal = face.normal_ * -1.0;
+      Vector3 normal = face.normal * -1.0;
       Vector3 tangent = v02.Cross(normal);
       tangent = tangent / tangent.Norm();
       Vector3 binorm = v02 / v02.Norm();
@@ -152,9 +152,9 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
         else
         {
           newSideMap.index = -1;
-          for (size_t v = 0; v < polyh_cell.faces_[f].vertex_ids_.size(); v++)
+          for (size_t v = 0; v < polyh_cell.faces_[f].vertex_ids.size(); v++)
           {
-            if (polyh_cell.vertex_ids_[i] == polyh_cell.faces_[f].vertex_ids_[v])
+            if (polyh_cell.vertex_ids_[i] == polyh_cell.faces_[f].vertex_ids[v])
             {
               newSideMap.part_of_face = true;
               break;

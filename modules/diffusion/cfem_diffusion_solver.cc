@@ -332,16 +332,16 @@ CFEMDiffusionSolver::Execute()
     {
       const auto& face = cell.faces_[f];
       // not a boundary face
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
         continue;
 
-      const auto& bndry = boundaries_[face.neighbor_id_];
+      const auto& bndry = boundaries_[face.neighbor_id];
 
       // Robin boundary
       if (bndry.type == BoundaryType::Robin)
       {
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-        const size_t num_face_nodes = face.vertex_ids_.size();
+        const size_t num_face_nodes = face.vertex_ids.size();
 
         const auto& aval = bndry.values[0];
         const auto& bval = bndry.values[1];
@@ -384,7 +384,7 @@ CFEMDiffusionSolver::Execute()
       // Dirichlet boundary
       if (bndry.type == BoundaryType::Dirichlet)
       {
-        const size_t num_face_nodes = face.vertex_ids_.size();
+        const size_t num_face_nodes = face.vertex_ids.size();
 
         const auto& boundary_value = bndry.values[0];
 

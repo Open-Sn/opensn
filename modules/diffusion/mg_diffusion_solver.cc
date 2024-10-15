@@ -795,17 +795,17 @@ MGDiffusionSolver::AssembleAbext()
     {
       const auto& face = cell.faces_[f];
       // not a boundary face
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
         continue;
 
-      auto& bndry = boundaries_[face.neighbor_id_];
+      auto& bndry = boundaries_[face.neighbor_id];
 
       // Robin boundary
       //   for two-grid, it is homogenous Robin
       if (bndry.type == BoundaryType::Robin)
       {
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-        const size_t num_face_nodes = face.vertex_ids_.size();
+        const size_t num_face_nodes = face.vertex_ids.size();
 
         auto& aval = bndry.mg_values[0];
         auto& bval = bndry.mg_values[1];

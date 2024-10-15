@@ -77,9 +77,9 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
 
     for (auto& face : cell.faces_)
     {
-      outstr << "Face with centroid: " << face.centroid_.PrintS() << " ";
-      outstr << "n=" << face.normal_.PrintS() << "\n";
-      for (auto vi : face.vertex_ids_)
+      outstr << "Face with centroid: " << face.centroid.PrintS() << " ";
+      outstr << "n=" << face.normal.PrintS() << "\n";
+      for (auto vi : face.vertex_ids)
         outstr << grid.vertices[vi].PrintS() << "\n";
     }
 
@@ -92,7 +92,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
 
     for (auto& face : cell.faces_)
     {
-      auto& v = face.centroid_;
+      auto& v = face.centroid;
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
@@ -100,7 +100,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     {
       auto& face = cell.faces_[f];
       outstr << "f ";
-      for (auto vid : face.vertex_ids_)
+      for (auto vid : face.vertex_ids)
       {
         size_t ref_cell_id = 0;
         for (size_t cid = 0; cid < cell.vertex_ids_.size(); ++cid)
@@ -132,14 +132,14 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
   size_t f = 0;
   for (const auto& face : cell.faces_)
   {
-    if (face.normal_.Dot(omega_i) > 0.0)
+    if (face.normal.Dot(omega_i) > 0.0)
     {
       ++f;
       continue /*the loop*/;
     }
 
-    const auto& p0 = grid.vertices[face.vertex_ids_[0]];
-    const auto& n = face.normal_;
+    const auto& p0 = grid.vertices[face.vertex_ids[0]];
+    const auto& n = face.normal;
 
     const auto ppos_i = p0 - pos_i;
     const double d = ppos_i.Dot(omega_i);
@@ -152,13 +152,13 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
     } // SLAB
     else if (cell_type == CellType::POLYGON)
     {
-      const auto& p1 = grid.vertices[face.vertex_ids_[1]];
+      const auto& p1 = grid.vertices[face.vertex_ids[1]];
       intersects_cell = CheckLineIntersectStrip(p0, p1, n, pos_i, pos_ext, I);
     } // POLYGON
     else if (cell_type == CellType::POLYHEDRON)
     {
-      const auto& vids = face.vertex_ids_;
-      const size_t num_sides = face.vertex_ids_.size();
+      const auto& vids = face.vertex_ids;
+      const size_t num_sides = face.vertex_ids.size();
       for (size_t s = 0; s < num_sides; ++s)
       {
         uint64_t v0i = vids[s];
@@ -166,7 +166,7 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
 
         const auto& v0 = grid.vertices[v0i];
         const auto& v1 = grid.vertices[v1i];
-        const auto& v2 = face.centroid_;
+        const auto& v2 = face.centroid;
 
         const auto v01 = v1 - v0;
         const auto v02 = v2 - v0;
@@ -213,7 +213,7 @@ RayTracer::TraceSlab(const Cell& cell,
   Vector3 intersection_point;
   std::pair<double, double> weights;
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal_));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -226,7 +226,7 @@ RayTracer::TraceSlab(const Cell& cell,
     Vector3 face_point = grid.vertices[fpi];
 
     bool intersects = CheckPlaneLineIntersect(
-      cell.faces_[f].normal_, face_point, pos_i, pos_f_line, intersection_point, &weights);
+      cell.faces_[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
 
     double D = weights.first * d_extend;
 
@@ -236,7 +236,7 @@ RayTracer::TraceSlab(const Cell& cell,
       oi.pos_f = intersection_point;
 
       oi.destination_face_index = f;
-      oi.destination_face_neighbor = cell.faces_[f].neighbor_id_;
+      oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
       intersection_found = true;
       break;
     }
@@ -256,7 +256,7 @@ RayTracer::TracePolygon(const Cell& cell,
   const auto& grid = Grid();
   Vector3 ip; // intersection point
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal_));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces_[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -268,18 +268,18 @@ RayTracer::TracePolygon(const Cell& cell,
   face_intersections.reserve(num_faces);
   for (int f = 0; f < num_faces; f++)
   {
-    if (cell.faces_[f].normal_.Dot(omega_i) < 0.0)
+    if (cell.faces_[f].normal.Dot(omega_i) < 0.0)
       continue;
 
     RayTracerOutputInformation face_oi;
 
-    uint64_t fpi = cell.faces_[f].vertex_ids_[0]; // face point index 0
-    uint64_t fpf = cell.faces_[f].vertex_ids_[1]; // face point index 1
+    uint64_t fpi = cell.faces_[f].vertex_ids[0]; // face point index 0
+    uint64_t fpf = cell.faces_[f].vertex_ids[1]; // face point index 1
     const Vector3& face_point_i = grid.vertices[fpi];
     const Vector3& face_point_f = grid.vertices[fpf];
 
     bool intersects = CheckLineIntersectStrip(
-      face_point_i, face_point_f, cell.faces_[f].normal_, pos_i, pos_f_line, ip);
+      face_point_i, face_point_f, cell.faces_[f].normal, pos_i, pos_f_line, ip);
 
     double D = (ip - pos_i).Norm();
 
@@ -289,7 +289,7 @@ RayTracer::TracePolygon(const Cell& cell,
       face_oi.pos_f = ip;
 
       face_oi.destination_face_index = f;
-      face_oi.destination_face_neighbor = cell.faces_[f].neighbor_id_;
+      face_oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
       intersection_found = true;
       face_intersections.emplace_back(std::move(face_oi));
       if (not perform_concavity_checks_)
@@ -338,16 +338,16 @@ RayTracer::TracePolyhedron(const Cell& cell,
   {
     const auto& face = cell.faces_[f];
 
-    size_t num_sides = face.vertex_ids_.size();
+    size_t num_sides = face.vertex_ids.size();
     for (size_t s = 0; s < num_sides; s++)
     {
-      size_t v0_index = face.vertex_ids_[s];
+      size_t v0_index = face.vertex_ids[s];
       size_t v1_index = (s < (num_sides - 1)) ? // if not last vertex
-                          face.vertex_ids_[s + 1]
-                                              : face.vertex_ids_[0]; // else
+                          face.vertex_ids[s + 1]
+                                              : face.vertex_ids[0]; // else
       const auto& v0 = grid.vertices[v0_index];
       const auto& v1 = grid.vertices[v1_index];
-      const auto& v2 = cell.faces_[f].centroid_;
+      const auto& v2 = cell.faces_[f].centroid;
 
       auto v01 = v1 - v0;
       auto v02 = v2 - v0;
@@ -366,7 +366,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
         triangle_oi.pos_f = ip;
 
         triangle_oi.destination_face_index = f;
-        triangle_oi.destination_face_neighbor = cell.faces_[f].neighbor_id_;
+        triangle_oi.destination_face_neighbor = cell.faces_[f].neighbor_id;
 
         intersection_found = true;
         triangle_intersections.emplace_back(std::move(triangle_oi));
@@ -616,7 +616,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   {
     for (auto& face : cell.faces_) // edges
     {
-      const auto& v0 = grid.vertices[face.vertex_ids_[0]];
+      const auto& v0 = grid.vertices[face.vertex_ids[0]];
       const auto& vc = cell.centroid_;
 
       auto n0 = (vc - v0).Cross(khat).Normalized();
@@ -640,10 +640,10 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
 
     for (auto& face : cell.faces_)
     {
-      auto& vfc = face.centroid_;
+      auto& vfc = face.centroid;
 
       // Face center to vertex segments
-      for (auto vi : face.vertex_ids_)
+      for (auto vi : face.vertex_ids)
       {
         auto& vert = grid.vertices[vi];
 
@@ -661,11 +661,11 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
       } // for edge
 
       // Face edge to cell center segments
-      for (int v = 0; v < face.vertex_ids_.size(); ++v)
+      for (int v = 0; v < face.vertex_ids.size(); ++v)
       {
-        uint64_t vid_0 = face.vertex_ids_[v];
+        uint64_t vid_0 = face.vertex_ids[v];
         uint64_t vid_1 =
-          (v < (face.vertex_ids_.size() - 1)) ? face.vertex_ids_[v + 1] : face.vertex_ids_[0];
+          (v < (face.vertex_ids.size() - 1)) ? face.vertex_ids[v + 1] : face.vertex_ids[0];
 
         auto& v0 = grid.vertices[vid_0];
         auto& v1 = grid.vertices[vid_1];

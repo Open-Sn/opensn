@@ -368,9 +368,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         size_t f = 0;
         for (const auto& face : cell.faces_)
         {
-          if (not face.has_neighbor_ and boundary_sources_.count(face.neighbor_id_) > 0)
+          if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
-            const auto bndry_id = face.neighbor_id_;
+            const auto bndry_id = face.neighbor_id;
             const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
@@ -383,7 +383,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
               for (size_t n = 0; n < num_gs_angles; ++n)
               {
                 const auto& omega = quadrature->omegas[n];
-                const auto mu = omega.Dot(face.normal_);
+                const auto mu = omega.Dot(face.normal);
                 if (mu < 0.0)
                 {
                   const auto& wt = quadrature->weights[n];

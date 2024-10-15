@@ -95,10 +95,10 @@ SimTest04_PWLC(const InputParameters& params)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
         continue;
 
-      const size_t num_face_nodes = face.vertex_ids_.size();
+      const size_t num_face_nodes = face.vertex_ids.size();
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
       {
         const uint i = cell_mapping.MapFaceNode(f, fi);

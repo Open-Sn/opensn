@@ -490,9 +490,9 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     }     // for node i
 
     for (const auto& face : cell.faces_)
-      if (face.has_neighbor_)
-        if (not grid.IsCellLocal(face.neighbor_id_))
-          for (const uint64_t vid : face.vertex_ids_)
+      if (face.has_neighbor)
+        if (not grid.IsCellLocal(face.neighbor_id))
+          for (const uint64_t vid : face.vertex_ids)
             partition_bndry_vertex_id_set.insert(vid);
   } // for local cell
 

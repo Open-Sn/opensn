@@ -81,10 +81,10 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
     {
       // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
-      const double mu = omega.Dot(face.normal_);
+      const double mu = omega.Dot(face.normal);
 
       bool owns_face = true;
-      if (face.has_neighbor_ and cell.global_id_ > face.neighbor_id_)
+      if (face.has_neighbor and cell.global_id_ > face.neighbor_id)
         owns_face = false;
 
       if (owns_face)
@@ -96,9 +96,9 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 
         cell_face_orientations_[cell.local_id_][f] = orientation;
 
-        if (face.has_neighbor_ and grid_.IsCellLocal(face.neighbor_id_))
+        if (face.has_neighbor and grid_.IsCellLocal(face.neighbor_id))
         {
-          const auto& adj_cell = grid_.cells[face.neighbor_id_];
+          const auto& adj_cell = grid_.cells[face.neighbor_id];
           const auto ass_face = face.GetNeighborAssociatedFace(grid_);
           auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id_][ass_face];
 
@@ -116,15 +116,15 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
           }
         }
       } // if face owned
-      else if (face.has_neighbor_ and not grid_.IsCellLocal(face.neighbor_id_))
+      else if (face.has_neighbor and not grid_.IsCellLocal(face.neighbor_id))
       {
-        const auto& adj_cell = grid_.cells[face.neighbor_id_];
+        const auto& adj_cell = grid_.cells[face.neighbor_id];
         const auto ass_face = face.GetNeighborAssociatedFace(grid_);
         const auto& adj_face = adj_cell.faces_[ass_face];
 
         auto& cur_face_ori = cell_face_orientations_[cell.local_id_][f];
 
-        const double adj_mu = omega.Dot(adj_face.normal_);
+        const double adj_mu = omega.Dot(adj_face.normal);
         if (adj_mu > tolerance)
           orientation = FOOUTGOING;
         else if (adj_mu < tolerance)
@@ -155,12 +155,12 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
     size_t f = 0;
     for (auto& face : cell.faces_)
     {
-      const double mu = omega.Dot(face.normal_);
+      const double mu = omega.Dot(face.normal);
       // If outgoing determine if it is to a local cell
       if (cell_face_orientations_[cell.local_id_][f] == FOOUTGOING)
       {
         // If it is a cell and not bndry
-        if (face.has_neighbor_)
+        if (face.has_neighbor)
         {
           // If it is in the current location
           if (face.IsNeighborLocal(grid_))
@@ -176,7 +176,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       else
       {
         // if it is a cell and not bndry
-        if (face.has_neighbor_ and not face.IsNeighborLocal(grid_))
+        if (face.has_neighbor and not face.IsNeighborLocal(grid_))
           location_dependencies.insert(face.GetNeighborPartitionID(grid_));
       }
       ++f;
@@ -205,11 +205,11 @@ SPDS::PrintedGhostedGraph() const
 
         for (const auto& face : cell.faces_)
         {
-          if (face.has_neighbor_ and (not grid_.IsCellLocal(face.neighbor_id_)))
-            std::cout << "  " << face.neighbor_id_
+          if (face.has_neighbor and (not grid_.IsCellLocal(face.neighbor_id)))
+            std::cout << "  " << face.neighbor_id
                       << " [shape=\"circle\", style=filled fillcolor=red "
                          "fontcolor=white] //proc="
-                      << grid_.cells[face.neighbor_id_].partition_id_ << "\n";
+                      << grid_.cells[face.neighbor_id].partition_id_ << "\n";
         }
       }
 
@@ -219,12 +219,12 @@ SPDS::PrintedGhostedGraph() const
       {
         for (const auto& face : cell.faces_)
         {
-          if (face.has_neighbor_ and (cell.global_id_ > face.neighbor_id_))
+          if (face.has_neighbor and (cell.global_id_ > face.neighbor_id))
           {
-            if (omega_.Dot(face.normal_) > tolerance)
-              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id_ << "\n";
-            else if (omega_.Dot(face.normal_) < tolerance)
-              std::cout << "  " << face.neighbor_id_ << " -> " << cell.global_id_ << "\n";
+            if (omega_.Dot(face.normal) > tolerance)
+              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id << "\n";
+            else if (omega_.Dot(face.normal) < tolerance)
+              std::cout << "  " << face.neighbor_id << " -> " << cell.global_id_ << "\n";
           } // if outgoing
         }
       }
@@ -235,13 +235,13 @@ SPDS::PrintedGhostedGraph() const
         const auto& cell = grid_.cells[global_id];
         for (const auto& face : cell.faces_)
         {
-          if (face.has_neighbor_ and (cell.global_id_ > face.neighbor_id_) and
-              grid_.IsCellLocal(face.neighbor_id_))
+          if (face.has_neighbor and (cell.global_id_ > face.neighbor_id) and
+              grid_.IsCellLocal(face.neighbor_id))
           {
-            if (omega_.Dot(face.normal_) > tolerance)
-              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id_ << "\n";
-            else if (omega_.Dot(face.normal_) < tolerance)
-              std::cout << "  " << face.neighbor_id_ << " -> " << cell.global_id_ << "\n";
+            if (omega_.Dot(face.normal) > tolerance)
+              std::cout << "  " << cell.global_id_ << " -> " << face.neighbor_id << "\n";
+            else if (omega_.Dot(face.normal) < tolerance)
+              std::cout << "  " << face.neighbor_id << " -> " << cell.global_id_ << "\n";
           } // if outgoing
         }
       }

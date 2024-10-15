@@ -870,11 +870,11 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       {
         for (auto& face : cell.faces_)
         {
-          if (not face.has_neighbor_)
+          if (not face.has_neighbor)
           {
             faces_to_export.push_back(face);
 
-            for (int vid : face.vertex_ids_)
+            for (int vid : face.vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
         }   // for face
@@ -905,7 +905,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     // Write face normals
     for (const auto& face : faces_to_export)
     {
-      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal.x, face.normal.y, face.normal.z);
     }
 
     // Write faces
@@ -915,7 +915,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       normal_counter++;
       fprintf(of, "f");
 
-      for (auto v_g_index : face.vertex_ids_)
+      for (auto v_g_index : face.vertex_ids)
         fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
       fprintf(of, "\n");
@@ -959,13 +959,13 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
 
           for (const auto& face : cell.faces_)
           {
-            int adjcell_glob_index = face.neighbor_id_;
+            int adjcell_glob_index = face.neighbor_id;
 
             if (adjcell_glob_index < 0)
             {
               faces_to_export.push_back(face);
 
-              for (auto vid : face.vertex_ids_)
+              for (auto vid : face.vertex_ids)
                 nodes_set.insert(vid);
             } // if boundary
             else
@@ -976,7 +976,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
               {
                 faces_to_export.push_back(face);
 
-                for (auto vid : face.vertex_ids_)
+                for (auto vid : face.vertex_ids)
                   nodes_set.insert(vid);
               } // if material mismatch
             }   // if neighbor cell
@@ -1006,7 +1006,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       // Write face normals
       for (const auto& face : faces_to_export)
       {
-        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal.x, face.normal.y, face.normal.z);
       }
 
       // Write faces
@@ -1016,7 +1016,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
         normal_counter++;
         fprintf(of, "f");
 
-        for (auto v_g_index : face.vertex_ids_)
+        for (auto v_g_index : face.vertex_ids)
           fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
         fprintf(of, "\n");
@@ -1151,8 +1151,8 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     int f = 0;
     for (const auto& face : cell.faces_)
     {
-      if (not face.has_neighbor_)
-        boundary_id_faces_map[face.neighbor_id_].push_back(
+      if (not face.has_neighbor)
+        boundary_id_faces_map[face.neighbor_id].push_back(
           {&face, cell.global_id_, face_mapping[f]});
       ++f;
     }
@@ -1179,7 +1179,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids_)
+        for (uint64_t vid : face_info.face_ptr->vertex_ids)
           vid_set.insert(vid);
 
       // Build vertex map
@@ -1235,7 +1235,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids_)
+        for (uint64_t vid : face_info.face_ptr->vertex_ids)
           vid_set.insert(vid);
 
       // Build vertex map

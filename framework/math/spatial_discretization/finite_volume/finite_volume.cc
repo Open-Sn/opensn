@@ -199,7 +199,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
         for (auto& face : cell.faces_)
         {
-          if (not face.has_neighbor_)
+          if (not face.has_neighbor)
             continue;
 
           if (face.IsNeighborLocal(ref_grid_))

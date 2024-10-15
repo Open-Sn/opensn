@@ -336,16 +336,16 @@ DFEMDiffusionSolver::Execute()
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      const auto& n_f = face.normal_;
+      const auto& n_f = face.normal;
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell, f);
 
       // interior face
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id_];
+        const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
@@ -453,7 +453,7 @@ DFEMDiffusionSolver::Execute()
       } // internal face
       else
       { // boundary face
-        const auto& bndry = boundaries_[face.neighbor_id_];
+        const auto& bndry = boundaries_[face.neighbor_id];
         // Robin boundary
         if (bndry.type == BoundaryType::Robin)
         {

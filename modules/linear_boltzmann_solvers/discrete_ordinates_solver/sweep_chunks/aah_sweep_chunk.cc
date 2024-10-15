@@ -109,7 +109,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces_[f].normal_);
+        face_mu_values[f] = omega.Dot(cell.faces_[f].normal);
 
       // Surface integrals
       int in_face_counter = -1;
@@ -120,7 +120,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 
         auto& cell_face = cell.faces_[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
-        const bool is_boundary_face = not cell_face.has_neighbor_;
+        const bool is_boundary_face = not cell_face.has_neighbor;
 
         if (is_local_face)
           ++in_face_counter;
@@ -146,7 +146,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
             else if (not is_boundary_face)
               psi = fluds.NLUpwindPsi(preloc_face_counter, fj, 0, as_ss_idx);
             else
-              psi = angle_set.PsiBoundary(cell_face.neighbor_id_,
+              psi = angle_set.PsiBoundary(cell_face.neighbor_id,
                                           direction_num,
                                           cell_local_id,
                                           f,
@@ -240,9 +240,9 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
         out_face_counter++;
         const auto& face = cell.faces_[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
-        const bool is_boundary_face = not face.has_neighbor_;
+        const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
+          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
         const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
 
         if (not is_boundary_face and not is_local_face)
@@ -267,7 +267,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
             psi = angle_set.PsiReflected(
-              face.neighbor_id_, direction_num, cell_local_id, f, fi, gs_ss_begin);
+              face.neighbor_id, direction_num, cell_local_id, f, fi, gs_ss_begin);
           else
             continue;
 

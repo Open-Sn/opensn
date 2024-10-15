@@ -659,9 +659,9 @@ DiscreteOrdinatesSolver::ComputeBalance()
     {
       const auto& face = cell.faces_[f];
 
-      if (not face.has_neighbor_) // Boundary face
+      if (not face.has_neighbor) // Boundary face
       {
-        const auto& bndry = sweep_boundaries_[face.neighbor_id_];
+        const auto& bndry = sweep_boundaries_[face.neighbor_id];
 
         if (bndry->IsReflecting())
         {
@@ -676,11 +676,11 @@ DiscreteOrdinatesSolver::ComputeBalance()
             {
               const auto& omega = groupset.quadrature_->omegas[n];
               const double wt = groupset.quadrature_->weights[n];
-              const double mu = omega.Dot(face.normal_);
+              const double mu = omega.Dot(face.normal);
 
               if (mu < 0.0)
               {
-                for (int fi = 0; fi < face.vertex_ids_.size(); ++fi)
+                for (int fi = 0; fi < face.vertex_ids.size(); ++fi)
                 {
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f][i];
@@ -789,7 +789,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
     unsigned int f = 0;
     for (const auto& face : cell.faces_)
     {
-      if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id)
+      if (not face.has_neighbor and face.neighbor_id == boundary_id)
       {
         const auto& int_f_shape_i = fe_values.intS_shapeI[f];
         const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
@@ -800,7 +800,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
           {
             const auto& omega = quadrature->omegas[n];
             const auto& weight = quadrature->weights[n];
-            const auto mu = omega.Dot(face.normal_);
+            const auto mu = omega.Dot(face.normal);
             if (mu > 0.0)
             {
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -872,10 +872,10 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
       for (const auto& face : cell.faces_)
       {
         // If face is on the specified boundary...
-        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id_);
-        if (not face.has_neighbor_ and it != boundary_ids.end())
+        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id);
+        if (not face.has_neighbor and it != boundary_ids.end())
         {
-          auto& bndry_leakage = local_leakage[face.neighbor_id_];
+          auto& bndry_leakage = local_leakage[face.neighbor_id];
           const auto& int_f_shape_i = fe_values.intS_shapeI[f];
           const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
           for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
@@ -885,7 +885,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
             {
               const auto& omega = quadrature->omegas[n];
               const auto& weight = quadrature->weights[n];
-              const auto mu = omega.Dot(face.normal_);
+              const auto mu = omega.Dot(face.normal);
               if (mu <= 0.0)
                 continue;
 

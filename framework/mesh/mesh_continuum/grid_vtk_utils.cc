@@ -72,13 +72,13 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
     size_t num_faces = cell.faces_.size();
     for (auto& face : cell.faces_)
     {
-      size_t num_fverts = face.vertex_ids_.size();
+      size_t num_fverts = face.vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
       for (size_t fv = 0; fv < num_fverts; fv++)
       {
         size_t v = 0;
         for (size_t cv = 0; cv < num_verts; ++cv)
-          if (cell.vertex_ids_[cv] == face.vertex_ids_[fv])
+          if (cell.vertex_ids_[cv] == face.vertex_ids[fv])
           {
             v = cv;
             break;
@@ -194,13 +194,13 @@ UploadCellGeometryContinuous(const Cell& cell,
         size_t num_faces = cell.faces_.size();
         for (auto& face : cell.faces_)
         {
-          size_t num_fverts = face.vertex_ids_.size();
+          size_t num_fverts = face.vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
           for (size_t fv = 0; fv < num_fverts; fv++)
           {
             size_t v = 0;
             for (size_t cv = 0; cv < num_verts; ++cv)
-              if (cell.vertex_ids_[cv] == face.vertex_ids_[fv])
+              if (cell.vertex_ids_[cv] == face.vertex_ids[fv])
               {
                 v = cv;
                 break;
@@ -232,10 +232,10 @@ UploadFaceGeometry(const CellFace& cell_face,
                    const std::vector<uint64_t>& vertex_map,
                    vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  const size_t num_verts = cell_face.vertex_ids_.size();
+  const size_t num_verts = cell_face.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
-  for (uint64_t vid : cell_face.vertex_ids_)
+  for (uint64_t vid : cell_face.vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 
   if (num_verts == 1)

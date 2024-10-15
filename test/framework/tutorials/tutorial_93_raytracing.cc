@@ -249,8 +249,8 @@ SimTest93_RayTracing(const InputParameters&)
         const auto& f = destination_info.destination_face_index;
         const auto& current_cell_face = cell.faces_[f];
 
-        if (current_cell_face.has_neighbor_)
-          particle.cell_id = current_cell_face.neighbor_id_;
+        if (current_cell_face.has_neighbor)
+          particle.cell_id = current_cell_face.neighbor_id;
         else
           particle.alive = false; // Death at the boundary
       }

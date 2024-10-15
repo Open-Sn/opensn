@@ -44,7 +44,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   {
     for (auto& face : cell.faces_)
     {
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
         if (not face.IsNeighborLocal(*this))
           local_graph_edges.insert(face.GetNeighborPartitionID(*this));
     } // for f
@@ -109,8 +109,8 @@ MeshContinuum::GetDomainUniqueBoundaryIDs() const
   std::set<uint64_t> local_bndry_ids_set;
   for (auto& cell : local_cells)
     for (auto& face : cell.faces_)
-      if (not face.has_neighbor_)
-        local_bndry_ids_set.insert(face.neighbor_id_);
+      if (not face.has_neighbor)
+        local_bndry_ids_set.insert(face.neighbor_id);
 
   // Vectorify it
   std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(), local_bndry_ids_set.end());
@@ -131,7 +131,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   std::vector<size_t> face_size_histogram;
   for (const auto& cell : local_cells)
     for (const auto& face : cell.faces_)
-      face_size_histogram.push_back(face.vertex_ids_.size());
+      face_size_histogram.push_back(face.vertex_ids.size());
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
 
@@ -243,22 +243,22 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
 {
   const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
   // Check face validity
-  OpenSnLogicalErrorIf(not cur_face.has_neighbor_,
+  OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  auto& adj_cell = cells[cur_face.neighbor_id_];
+  auto& adj_cell = cells[cur_face.neighbor_id];
 
-  dof_mapping.reserve(cur_face.vertex_ids_.size());
+  dof_mapping.reserve(cur_face.vertex_ids.size());
 
   const auto& adj_face = adj_cell.faces_[associated_face];
 
-  for (auto cfvid : cur_face.vertex_ids_)
+  for (auto cfvid : cur_face.vertex_ids)
   {
     bool found = false;
     short afv = 0;
-    for (auto afvid : adj_face.vertex_ids_)
+    for (auto afvid : adj_face.vertex_ids)
     {
       if (cfvid == afvid)
       {
@@ -274,7 +274,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
       log.LogAllError() << "Face DOF mapping failed in call to "
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
                            "node."
-                        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+                        << cur_face.neighbor_id << " " << cur_face.centroid.PrintS();
       Exit(EXIT_FAILURE);
     }
   }
@@ -285,16 +285,16 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                                           std::vector<short>& dof_mapping) const
 {
   // Check face validity
-  OpenSnLogicalErrorIf(not cur_face.has_neighbor_,
+  OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  auto& adj_cell = cells[cur_face.neighbor_id_];
+  auto& adj_cell = cells[cur_face.neighbor_id];
 
-  dof_mapping.reserve(cur_face.vertex_ids_.size());
+  dof_mapping.reserve(cur_face.vertex_ids.size());
 
-  for (auto cfvid : cur_face.vertex_ids_)
+  for (auto cfvid : cur_face.vertex_ids)
   {
     bool found = false;
     short acv = 0;
@@ -314,7 +314,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
       log.LogAllError() << "Face DOF mapping failed in call to "
                         << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
                            "node."
-                        << cur_face.neighbor_id_ << " " << cur_face.centroid_.PrintS();
+                        << cur_face.neighbor_id << " " << cur_face.centroid.PrintS();
       Exit(EXIT_FAILURE);
     }
   }
@@ -325,7 +325,7 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned 
 {
   const auto& ccface = cur_cell.faces_[f]; // current cell face
   std::set<uint64_t> ccface_vids;
-  for (auto vid : ccface.vertex_ids_)
+  for (auto vid : ccface.vertex_ids)
     ccface_vids.insert(vid);
 
   size_t fmap;
@@ -335,7 +335,7 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned 
     const auto& acface = adj_cell.faces_[af]; // adjacent cell face
 
     std::set<uint64_t> acface_vids;
-    for (auto vid : acface.vertex_ids_)
+    for (auto vid : acface.vertex_ids)
       acface_vids.insert(vid);
 
     if (acface_vids == ccface_vids)
@@ -406,8 +406,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     // If the point is inside all faces, it is inside the polygon.
     for (const auto& face : cell.faces_)
     {
-      const auto& vcp = point - face.centroid_;
-      if (vcp.Dot(face.normal_) > 0.0)
+      const auto& vcp = point - face.centroid;
+      if (vcp.Dot(face.normal) > 0.0)
         return false;
     }
   }
@@ -433,15 +433,15 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     const auto& vcc = cell.centroid_;
     for (const auto& face : cell.faces_)
     {
-      const auto& vfc = face.centroid_;
-      const size_t num_sides = face.vertex_ids_.size();
+      const auto& vfc = face.centroid;
+      const size_t num_sides = face.vertex_ids.size();
 
       for (size_t side = 0; side < num_sides; ++side)
       {
         const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
-        const auto& v0 = grid_ref.vertices[face.vertex_ids_[side]];
+        const auto& v0 = grid_ref.vertices[face.vertex_ids[side]];
         const auto& v1 = vfc;
-        const auto& v2 = grid_ref.vertices[face.vertex_ids_[sp1]];
+        const auto& v2 = grid_ref.vertices[face.vertex_ids[sp1]];
         const auto& v3 = vcc;
 
         std::vector<std::tuple<Vector3, Vector3, Vector3>> tet_faces = {
@@ -635,11 +635,11 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
   {
     for (auto& face : cell.faces_)
     {
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
         continue;
-      if (log_vol.Inside(face.centroid_) and sense)
+      if (log_vol.Inside(face.centroid) and sense)
       {
-        face.neighbor_id_ = bndry_id;
+        face.neighbor_id = bndry_id;
         ++num_faces_modified;
       }
     }

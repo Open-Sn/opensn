@@ -296,14 +296,14 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   {
     CellFace newFace;
 
-    newFace.has_neighbor_ = raw_face.has_neighbor;
-    newFace.neighbor_id_ = raw_face.neighbor;
+    newFace.has_neighbor = raw_face.has_neighbor;
+    newFace.neighbor_id = raw_face.neighbor;
 
-    newFace.vertex_ids_ = raw_face.vertex_ids;
+    newFace.vertex_ids = raw_face.vertex_ids;
     auto vfc = Vector3(0.0, 0.0, 0.0);
-    for (auto fvid : newFace.vertex_ids_)
+    for (auto fvid : newFace.vertex_ids)
       vfc = vfc + vertices.at(fvid);
-    newFace.centroid_ = vfc / static_cast<double>(newFace.vertex_ids_.size());
+    newFace.centroid = vfc / static_cast<double>(newFace.vertex_ids.size());
 
     if (cell->Type() == CellType::SLAB)
     {
@@ -311,9 +311,9 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       // the normal is -khat. If it is the second face then
       // it is +khat.
       if (face_counter == 0)
-        newFace.normal_ = Vector3(0.0, 0.0, -1.0);
+        newFace.normal = Vector3(0.0, 0.0, -1.0);
       else
-        newFace.normal_ = Vector3(0.0, 0.0, 1.0);
+        newFace.normal = Vector3(0.0, 0.0, 1.0);
     }
     else if (cell->Type() == CellType::POLYGON)
     {
@@ -321,11 +321,11 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       // the first vertex and form a vector with the face
       // centroid. The normal is then just khat
       // cross-product with this vector.
-      uint64_t fvid = newFace.vertex_ids_[0];
-      auto vec_vvc = vertices.at(fvid) - newFace.centroid_;
+      uint64_t fvid = newFace.vertex_ids[0];
+      auto vec_vvc = vertices.at(fvid) - newFace.centroid;
 
-      newFace.normal_ = Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
-      newFace.normal_.Normalize();
+      newFace.normal = Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
+      newFace.normal.Normalize();
     }
     else if (cell->Type() == CellType::POLYHEDRON)
     {
@@ -333,27 +333,27 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       // which can be multifaceted. Here we need the
       // average normal over all the facets computed
       // using an area-weighted average.
-      const size_t num_face_verts = newFace.vertex_ids_.size();
+      const size_t num_face_verts = newFace.vertex_ids.size();
       double total_area = 0.0;
       for (size_t fv = 0; fv < num_face_verts; ++fv)
       {
         size_t fvp1 = (fv < (num_face_verts - 1)) ? fv + 1 : 0;
 
-        uint64_t fvid_m = newFace.vertex_ids_[fv];
-        uint64_t fvid_p = newFace.vertex_ids_[fvp1];
+        uint64_t fvid_m = newFace.vertex_ids[fv];
+        uint64_t fvid_p = newFace.vertex_ids[fvp1];
 
-        auto leg_m = vertices.at(fvid_m) - newFace.centroid_;
-        auto leg_p = vertices.at(fvid_p) - newFace.centroid_;
+        auto leg_m = vertices.at(fvid_m) - newFace.centroid;
+        auto leg_p = vertices.at(fvid_p) - newFace.centroid;
 
         auto vn = leg_m.Cross(leg_p);
 
         double area = 0.5 * vn.Norm();
         total_area += area;
 
-        newFace.normal_ = newFace.normal_ + area * vn.Normalized();
+        newFace.normal = newFace.normal + area * vn.Normalized();
       }
-      newFace.normal_ = newFace.normal_ / total_area;
-      newFace.normal_.Normalize();
+      newFace.normal = newFace.normal / total_area;
+      newFace.normal.Normalize();
     }
     ++face_counter;
 

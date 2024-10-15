@@ -117,14 +117,14 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     for (size_t f = 0; f < num_faces; ++f)
       if (cell_face_orientations_[cell.local_id_][f] == INCOMING)
       {
-        if (cell.faces_[f].has_neighbor_)
+        if (cell.faces_[f].has_neighbor)
           ++num_dependencies;
       }
       else if (cell_face_orientations_[cell.local_id_][f] == OUTGOING)
       {
         const auto& face = cell.faces_[f];
-        if (face.has_neighbor_ and grid.IsCellLocal(face.neighbor_id_))
-          succesors.push_back(grid.cells[face.neighbor_id_].local_id_);
+        if (face.has_neighbor and grid.IsCellLocal(face.neighbor_id))
+          succesors.push_back(grid.cells[face.neighbor_id].local_id_);
       }
 
     task_list_.push_back({num_dependencies, succesors, cell.local_id_, &cell, false});

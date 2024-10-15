@@ -107,8 +107,8 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
 
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const uint64_t v0i = cell.faces_[f].vertex_ids_[0];
-        const uint64_t v1i = cell.faces_[f].vertex_ids_[1];
+        const uint64_t v0i = cell.faces_[f].vertex_ids[0];
+        const uint64_t v1i = cell.faces_[f].vertex_ids[1];
 
         const auto& v0 = grid.vertices[v0i];
         const auto& v1 = grid.vertices[v1i];
@@ -135,15 +135,15 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
       for (size_t f = 0; f < num_faces; f++)
       {
         const auto& face = cell.faces_[f];
-        const size_t num_edges = face.vertex_ids_.size();
+        const size_t num_edges = face.vertex_ids.size();
         for (size_t e = 0; e < num_edges; ++e)
         {
           size_t ep1 = (e < (num_edges - 1)) ? e + 1 : 0;
-          uint64_t v0i = face.vertex_ids_[e];
-          uint64_t v1i = face.vertex_ids_[ep1];
+          uint64_t v0i = face.vertex_ids[e];
+          uint64_t v1i = face.vertex_ids[ep1];
 
           const auto& v0 = grid.vertices[v0i];
-          const auto& v1 = cell.faces_[f].centroid_;
+          const auto& v1 = cell.faces_[f].centroid;
           const auto& v2 = grid.vertices[v1i];
           const auto& v3 = vcc;
 

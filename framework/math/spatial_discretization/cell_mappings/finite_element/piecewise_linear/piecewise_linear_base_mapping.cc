@@ -32,8 +32,8 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
   for (auto& face : cell.faces_)
   {
     std::vector<int> face_dof_mapping;
-    face_dof_mapping.reserve(face.vertex_ids_.size());
-    for (uint64_t fvid : face.vertex_ids_)
+    face_dof_mapping.reserve(face.vertex_ids.size());
+    for (uint64_t fvid : face.vertex_ids)
     {
       int mapping = -1;
       for (size_t ci = 0; ci < cell.vertex_ids_.size(); ci++)

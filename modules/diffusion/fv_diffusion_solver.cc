@@ -308,14 +308,14 @@ FVDiffusionSolver::Execute()
     for (size_t f = 0; f < cell_P.faces_.size(); ++f)
     {
       const auto& face = cell_P.faces_[f];
-      const auto& x_fc = face.centroid_;
+      const auto& x_fc = face.centroid;
       const auto x_PF = x_fc - x_cc_P;
       const auto A_f = cell_mapping.FaceArea(f);
-      const auto A_f_n = A_f * face.normal_;
+      const auto A_f_n = A_f * face.normal;
 
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& cell_N = grid.cells[face.neighbor_id_];
+        const auto& cell_N = grid.cells[face.neighbor_id];
         const int jmat = cell_N.material_id_;
         const auto& x_cc_N = cell_N.centroid_;
         const auto x_PN = x_cc_N - x_cc_P;
@@ -334,7 +334,7 @@ FVDiffusionSolver::Execute()
       } // internal face
       else
       {
-        const auto& bndry = boundaries_[face.neighbor_id_];
+        const auto& bndry = boundaries_[face.neighbor_id];
 
         if (bndry.type == BoundaryType::Robin)
         {

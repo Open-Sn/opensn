@@ -1336,9 +1336,9 @@ LBSSolver::InitializeParrays()
     int f = 0;
     for (auto& face : cell.faces_)
     {
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
-        Vector3& n = face.normal_;
+        Vector3& n = face.normal;
 
         int boundary_id = -1;
         if (n.Dot(ihat) < -0.999)
@@ -1355,7 +1355,7 @@ LBSSolver::InitializeParrays()
           boundary_id = ZMAX;
 
         if (boundary_id >= 0)
-          face.neighbor_id_ = boundary_id;
+          face.neighbor_id = boundary_id;
         cell_on_boundary = true;
 
         face_local_flags[f] = false;
@@ -1366,7 +1366,7 @@ LBSSolver::InitializeParrays()
         const int neighbor_partition = face.GetNeighborPartitionID(*grid_ptr_);
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id_];
+        neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id];
       }
 
       ++f;
@@ -1404,7 +1404,7 @@ LBSSolver::InitializeParrays()
       std::vector<short> cell_node_mapping;
       int ass_face = -1;
 
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
         grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
         grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
@@ -1506,8 +1506,8 @@ LBSSolver::InitializeBoundaries()
     std::set<uint64_t> local_unique_bids_set;
     for (const auto& cell : grid_ptr_->local_cells)
       for (const auto& face : cell.faces_)
-        if (not face.has_neighbor_)
-          local_unique_bids_set.insert(face.neighbor_id_);
+        if (not face.has_neighbor)
+          local_unique_bids_set.insert(face.neighbor_id);
 
     std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                             local_unique_bids_set.end());
@@ -1557,11 +1557,11 @@ LBSSolver::InitializeBoundaries()
         std::unique_ptr<Vector3> n_ptr = nullptr;
         for (const auto& cell : grid_ptr_->local_cells)
           for (const auto& face : cell.faces_)
-            if (not face.has_neighbor_ and face.neighbor_id_ == bid)
+            if (not face.has_neighbor and face.neighbor_id == bid)
             {
               if (not n_ptr)
-                n_ptr = std::make_unique<Vector3>(face.normal_);
-              if (std::fabs(face.normal_.Dot(*n_ptr) - 1.0) > EPSILON)
+                n_ptr = std::make_unique<Vector3>(face.normal);
+              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
                 throw std::logic_error(fname +
                                        ": Not all face normals are, within tolerance, locally the "
                                        "same for the reflecting boundary condition requested.");

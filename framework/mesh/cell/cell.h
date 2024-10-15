@@ -40,15 +40,15 @@ class CellFace
 {
 public:
   /// A list of the vertices
-  std::vector<uint64_t> vertex_ids_;
+  std::vector<uint64_t> vertex_ids;
   /// The average/geometric normal
-  Vector3 normal_;
+  Vector3 normal;
   /// The face centroid
-  Vector3 centroid_;
+  Vector3 centroid;
   /// Flag indicating whether face has a neighbor
-  bool has_neighbor_ = false;
+  bool has_neighbor = false;
   /// If face has neighbor, contains the global_id. Otherwise contains boundary_id.
-  uint64_t neighbor_id_ = 0;
+  uint64_t neighbor_id = 0;
 
 public:
   /// Determines the neighbor's partition and whether its local or not.

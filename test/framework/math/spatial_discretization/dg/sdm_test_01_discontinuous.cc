@@ -141,15 +141,15 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      const auto& n_f = face.normal_;
+      const auto& n_f = face.normal;
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell_mapping, f);
 
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id_];
+        const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);

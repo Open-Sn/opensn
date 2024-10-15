@@ -379,7 +379,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
       int f = 0;
       for (const auto& face : cell.faces_)
       {
-        if (not face.has_neighbor_)
+        if (not face.has_neighbor)
         {
           const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
           for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -402,7 +402,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
               {
                 const auto& wt = quad->weights[d];
                 const auto& omega = quad->omegas[d];
-                const auto mu = std::fabs(omega.Dot(face.normal_));
+                const auto mu = std::fabs(omega.Dot(face.normal));
 
                 const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
                 beta[g] += wt * (mu - bfac) * psi[gs][psi_dof];
@@ -499,14 +499,14 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
     for (int f = 0; f < num_cell_faces; ++f)
     {
       const auto& face = cell.faces_[f];
-      const auto& normal = face.normal_;
+      const auto& normal = face.normal;
       const auto& face_G = fe_values.intS_shapeI_gradshapeJ[f];
       const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
 
       // Interior face terms
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& nbr_cell = grid.cells[face.neighbor_id_];
+        const auto& nbr_cell = grid.cells[face.neighbor_id];
         const auto& nbr_cell_mapping = pwld.GetCellMapping(nbr_cell);
         const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
 
@@ -539,7 +539,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
               // Get the SM tensor DoFs
               const auto jmmap = pwld.MapDOFLocal(cell, jm, tensor_uk_man_, g, 0);
               const auto jpmap =
-                grid.IsCellLocal(face.neighbor_id_)
+                grid.IsCellLocal(face.neighbor_id)
                   ? pwld.MapDOFLocal(nbr_cell, jp, tensor_uk_man_, g, 0)
                   : tensors_->MapGhostToLocal(pwld.MapDOF(nbr_cell, jp, tensor_uk_man_, g, 0));
 
@@ -609,11 +609,11 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       }   // if face has neighbor
 
       // Boundary face terms
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id_) == 1)
-          bc = diffusion_solver_->BCS().at(face.neighbor_id_);
+        if (diffusion_solver_->BCS().count(face.neighbor_id) == 1)
+          bc = diffusion_solver_->BCS().at(face.neighbor_id);
 
         // Contribute the boundary closure term to the diffusion source term.
         // This term is the sum of the integrated incident and outgoing
@@ -679,11 +679,11 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
     int f = 0;
     for (const auto& face : cell.faces_)
     {
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id_))
-          bc = diffusion_solver_->BCS().at(face.neighbor_id_);
+        if (diffusion_solver_->BCS().count(face.neighbor_id))
+          bc = diffusion_solver_->BCS().at(face.neighbor_id);
 
         if (bc.type == BCType::ROBIN)
         {
@@ -920,7 +920,7 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
           // |\Omega \cdot \hat{n}| divided by the sum of the quadrature weights.
           double val = 0.0;
           for (int d = 0; d < num_gs_dirs; ++d)
-            val += quad->weights[d] * std::fabs(quad->omegas[d].Dot(face.normal_));
+            val += quad->weights[d] * std::fabs(quad->omegas[d].Dot(face.normal));
           bndry_factors_[imap][gs] = val / wt_sum;
         }
         ++f;
@@ -1099,9 +1099,9 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     // to later add PWLD DoFs from non-locally owned cells that correspond to
     // a PWLC DoF
     for (const auto& face : cell.faces_)
-      if (face.has_neighbor_)
-        if (not grid.IsCellLocal(face.neighbor_id_))
-          for (const uint64_t vertex_id : face.vertex_ids_)
+      if (face.has_neighbor)
+        if (not grid.IsCellLocal(face.neighbor_id))
+          for (const uint64_t vertex_id : face.vertex_ids)
             partition_vertex_ids.insert(vertex_id);
   } // for local cell
 

@@ -183,7 +183,7 @@ AngleAggregation::InitializeReflectingBCs()
           bool on_ref_bndry = false;
           for (const auto& face : cell.faces_)
           {
-            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {
               on_ref_bndry = true;
               break;
@@ -197,10 +197,10 @@ AngleAggregation::InitializeReflectingBCs()
           int f = 0;
           for (const auto& face : cell.faces_)
           {
-            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {
               cell_vec[c][f].clear();
-              cell_vec[c][f].resize(face.vertex_ids_.size(), std::vector<double>(num_groups_, 0.0));
+              cell_vec[c][f].resize(face.vertex_ids.size(), std::vector<double>(num_groups_, 0.0));
             }
             ++f;
           }
