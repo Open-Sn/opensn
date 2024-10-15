@@ -47,8 +47,8 @@ CBC_ASynchronousCommunicator::SendData()
       const size_t data_size = data.size();
 
       BufferItem& buffer_item = locI_buffer_map[locI];
-      buffer_item.destination_ = locI;
-      auto& buffer_array = buffer_item.data_array_;
+      buffer_item.destination = locI;
+      auto& buffer_array = buffer_item.data_array;
       buffer_array.Write(cell_global_id);
       buffer_array.Write(face_id);
       buffer_array.Write(data_size);
@@ -66,20 +66,20 @@ CBC_ASynchronousCommunicator::SendData()
   bool all_messages_sent = true;
   for (auto& buffer_item : send_buffer_)
   {
-    if (not buffer_item.send_initiated_)
+    if (not buffer_item.send_initiated)
     {
-      const int locJ = buffer_item.destination_;
+      const int locJ = buffer_item.destination;
       auto& comm = comm_set_.LocICommunicator(locJ);
       auto dest = comm_set_.MapIonJ(locJ, locJ);
       auto tag = static_cast<int>(angle_set_id_);
-      buffer_item.mpi_request_ = comm.isend(dest, tag, buffer_item.data_array_.Data());
-      buffer_item.send_initiated_ = true;
+      buffer_item.mpi_request = comm.isend(dest, tag, buffer_item.data_array.Data());
+      buffer_item.send_initiated = true;
     }
 
-    if (not buffer_item.completed_)
+    if (not buffer_item.completed)
     {
-      if (mpi::test(buffer_item.mpi_request_))
-        buffer_item.completed_ = true;
+      if (mpi::test(buffer_item.mpi_request))
+        buffer_item.completed = true;
       else
         all_messages_sent = false;
     }

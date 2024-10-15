@@ -59,11 +59,11 @@ protected:
 
   struct BufferItem
   {
-    int destination_ = 0;
-    mpi::Request mpi_request_;
-    bool send_initiated_ = false;
-    bool completed_ = false;
-    ByteArray data_array_;
+    int destination = 0;
+    mpi::Request mpi_request;
+    bool send_initiated = false;
+    bool completed = false;
+    ByteArray data_array;
   };
   std::vector<BufferItem> send_buffer_;
 };
