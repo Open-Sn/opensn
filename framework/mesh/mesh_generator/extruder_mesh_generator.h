@@ -12,8 +12,8 @@ struct ExtrusionLayer
 {
   static InputParameters GetInputParameters();
 
-  const double height_;
-  const uint32_t num_sub_layers_;
+  const double height;
+  const uint32_t num_sub_layers;
 };
 
 class ExtruderMeshGenerator : public MeshGenerator
