@@ -41,24 +41,24 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("AahSweepChunk::Sweep");
 
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
 
   auto gs_ss_size = grp_ss_info.ss_size;
   auto gs_ss_begin = grp_ss_info.ss_begin;
-  auto gs_gi = groupset_.groups_[gs_ss_begin].id;
+  auto gs_gi = groupset_.groups[gs_ss_begin].id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
 
   auto& fluds = dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
-  const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
-  const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
+  const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
+  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
   std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
                                         std::vector<double>(max_num_cell_dofs_));
   std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
                                          std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups_.size(),
+  std::vector<std::vector<double>> b(groupset_.groups.size(),
                                      std::vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
@@ -93,8 +93,8 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
-      auto omega = groupset_.quadrature_->omegas[direction_num];
-      auto wt = groupset_.quadrature_->weights[direction_num];
+      auto omega = groupset_.quadrature->omegas[direction_num];
+      auto wt = groupset_.quadrature->weights[direction_num];
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;

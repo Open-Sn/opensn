@@ -79,7 +79,7 @@ PowerIterationKEigenSCDSA::Initialize()
   PowerIterationKEigen::Initialize();
 
   // Make UnknownManager
-  const size_t num_gs_groups = front_gs_.groups_.size();
+  const size_t num_gs_groups = front_gs_.groups.size();
   UnknownManager uk_man;
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -88,7 +88,7 @@ PowerIterationKEigenSCDSA::Initialize()
 
   // Make xs map
   auto matid_2_mgxs_map = PackGroupsetXS(
-    lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id, front_gs_.groups_.back().id);
+    lbs_solver_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
@@ -305,8 +305,8 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                        : diff_sdm.GetNumLocalDOFs(diff_uk_man);
@@ -352,8 +352,8 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                        : diff_sdm.GetNumLocalDOFs(diff_uk_man);

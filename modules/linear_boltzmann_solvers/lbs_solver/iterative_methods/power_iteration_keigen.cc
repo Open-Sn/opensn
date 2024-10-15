@@ -37,7 +37,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
 
   auto& front_gs = groupsets.front();
-  auto& front_wgs_solver = lbs_solver.GetWGSSolvers()[front_gs.id_];
+  auto& front_wgs_solver = lbs_solver.GetWGSSolvers()[front_gs.id];
   auto frons_wgs_context = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver->GetContext());
 
   double F_prev = 1.0;

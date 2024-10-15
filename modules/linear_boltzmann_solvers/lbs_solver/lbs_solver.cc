@@ -825,7 +825,7 @@ LBSSolver::PerformInputChecks()
   int grpset_counter = 0;
   for (auto& group_set : groupsets_)
   {
-    if (group_set.groups_.empty())
+    if (group_set.groups.empty())
     {
       log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to groupset "
                         << grpset_counter << ".";
@@ -880,10 +880,10 @@ LBSSolver::PrintSimHeader()
     {
       char buf_pol[20];
 
-      outstr << "\n***** Groupset " << groupset.id_ << " *****\n"
+      outstr << "\n***** Groupset " << groupset.id << " *****\n"
              << "Groups:\n";
       int counter = 0;
-      for (auto group : groupset.groups_)
+      for (auto group : groupset.groups)
       {
         snprintf(buf_pol, 20, "%5d ", group.id);
         outstr << std::string(buf_pol);
@@ -1204,8 +1204,8 @@ LBSSolver::InitializeGroupsets()
   {
     // Build groupset angular flux unknown manager
     groupset.psi_uk_man_.unknowns.clear();
-    size_t num_angles = groupset.quadrature_->abscissae.size();
-    size_t gs_num_groups = groupset.groups_.size();
+    size_t num_angles = groupset.quadrature->abscissae.size();
+    size_t gs_num_groups = groupset.groups.size();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
 
     const auto VarVecN = UnknownType::VECTOR_N;
@@ -1224,13 +1224,13 @@ LBSSolver::ComputeNumberOfMoments()
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeNumberOfMoments");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature_->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature_->GetMomentToHarmonicsIndexMap())
+    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
+        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
       throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
                              "Moment-to-Harmonics mapping differs between "
                              "groupsets_, which is not allowed.");
 
-  num_moments_ = (int)groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap().size();
+  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
 
   if (num_moments_ == 0)
     throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
@@ -1632,10 +1632,10 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitWGDSA");
 
-  if (groupset.apply_wgdsa_)
+  if (groupset.apply_wgdsa)
   {
     // Make UnknownManager
-    const size_t num_gs_groups = groupset.groups_.size();
+    const size_t num_gs_groups = groupset.groups.size();
     opensn::UnknownManager uk_man;
     uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -1644,7 +1644,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     // Make xs map
     auto matid_2_mgxs_map =
-      PackGroupsetXS(matid_to_xs_map_, groupset.groups_.front().id, groupset.groups_.back().id);
+      PackGroupsetXS(matid_to_xs_map_, groupset.groups.front().id, groupset.groups.back().id);
 
     // Create solver
     const auto& sdm = *discretization_;
@@ -1659,10 +1659,10 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
                                                        true);
     ParameterBlock block;
 
-    solver->options.residual_tolerance = groupset.wgdsa_tol_;
-    solver->options.max_iters = groupset.wgdsa_max_iters_;
-    solver->options.verbose = groupset.wgdsa_verbose_;
-    solver->options.additional_options_string = groupset.wgdsa_string_;
+    solver->options.residual_tolerance = groupset.wgdsa_tol;
+    solver->options.max_iters = groupset.wgdsa_max_iters;
+    solver->options.verbose = groupset.wgdsa_verbose;
+    solver->options.additional_options_string = groupset.wgdsa_string;
 
     solver->Initialize();
 
@@ -1670,7 +1670,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     solver->AssembleAand_b(dummy_rhs);
 
-    groupset.wgdsa_solver_ = solver;
+    groupset.wgdsa_solver = solver;
   }
 }
 
@@ -1679,8 +1679,8 @@ LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpWGDSA");
 
-  if (groupset.apply_wgdsa_)
-    groupset.wgdsa_solver_ = nullptr;
+  if (groupset.apply_wgdsa)
+    groupset.wgdsa_solver = nullptr;
 }
 
 std::vector<double>
@@ -1689,11 +1689,11 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
@@ -1728,11 +1728,11 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1761,11 +1761,11 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
   delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
@@ -1800,11 +1800,11 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1830,7 +1830,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitTGDSA");
 
-  if (groupset.apply_tgdsa_)
+  if (groupset.apply_tgdsa)
   {
     // Make UnknownManager
     const auto& uk_man = discretization_->UNITARY_UNKNOWN_MANAGER;
@@ -1874,10 +1874,10 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
                                                        false,
                                                        true);
 
-    solver->options.residual_tolerance = groupset.tgdsa_tol_;
-    solver->options.max_iters = groupset.tgdsa_max_iters_;
-    solver->options.verbose = groupset.tgdsa_verbose_;
-    solver->options.additional_options_string = groupset.tgdsa_string_;
+    solver->options.residual_tolerance = groupset.tgdsa_tol;
+    solver->options.max_iters = groupset.tgdsa_max_iters;
+    solver->options.verbose = groupset.tgdsa_verbose;
+    solver->options.additional_options_string = groupset.tgdsa_string;
 
     solver->Initialize();
 
@@ -1885,7 +1885,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 
     solver->AssembleAand_b(dummy_rhs);
 
-    groupset.tgdsa_solver_ = solver;
+    groupset.tgdsa_solver = solver;
   }
 }
 
@@ -1894,8 +1894,8 @@ LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpTGDSA");
 
-  if (groupset.apply_tgdsa_)
-    groupset.tgdsa_solver_ = nullptr;
+  if (groupset.apply_tgdsa)
+    groupset.tgdsa_solver = nullptr;
 }
 
 void
@@ -1908,8 +1908,8 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
   delta_phi_local.assign(local_node_count_, 0.0);
@@ -1951,8 +1951,8 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
@@ -2417,8 +2417,8 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id;
-  int gsf = groupset.groups_.back().id;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -2466,8 +2466,8 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id;
-  int gsf = groupset.groups_.back().id;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -2499,8 +2499,8 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::GSScopedCopyPrimarySTLvectors");
 
-  int gsi = groupset.groups_.front().id;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -2553,8 +2553,8 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -2676,8 +2676,8 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id;
-    int gsf = groupset.groups_.back().id;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -2730,8 +2730,8 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id;
-    int gsf = groupset.groups_.back().id;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)

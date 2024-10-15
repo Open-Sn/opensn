@@ -65,11 +65,11 @@ LBSSolverIO::WriteAngularFluxes(
   {
     // Write macro groupset info
     const auto& uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature_;
+    const auto& quadrature = groupset.quadrature;
 
-    const uint64_t groupset_id = groupset.id_;
+    const uint64_t groupset_id = groupset.id;
     const uint64_t num_gs_angles = quadrature->omegas.size();
-    const uint64_t num_gs_groups = groupset.groups_.size();
+    const uint64_t num_gs_groups = groupset.groups.size();
 
     file.write((char*)&groupset_id, sizeof(uint64_t));
     file.write((char*)&num_gs_angles, sizeof(uint64_t));
@@ -152,10 +152,10 @@ LBSSolverIO::ReadAngularFluxes(
     // Check compatibility with system groupset macro info
     const auto& groupset = groupsets.at(file_groupset_id);
     const auto& uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature_;
+    const auto& quadrature = groupset.quadrature;
 
     const uint64_t num_gs_angles = quadrature->omegas.size();
-    const uint64_t num_gs_groups = groupset.groups_.size();
+    const uint64_t num_gs_groups = groupset.groups.size();
 
     OpenSnLogicalErrorIf(file_groupset_id != dest.size(),
                          "Incompatible groupset id found in file " + file_name +

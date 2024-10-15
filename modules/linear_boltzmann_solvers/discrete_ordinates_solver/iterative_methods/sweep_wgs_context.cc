@@ -26,7 +26,7 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
     sweep_chunk(std::move(swp_chnk)),
     sweep_scheduler(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
                                                     : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
-                    *groupset.angle_agg_,
+                    *groupset.angle_agg,
                     *sweep_chunk),
     lbs_ss_solver(lbs_solver)
 {
@@ -40,7 +40,7 @@ SweepWGSContext::PreSetupCallback()
   if (log_info_)
   {
     std::string method_name;
-    switch (groupset_.iterative_method_)
+    switch (groupset_.iterative_method)
     {
       case IterativeMethod::KRYLOV_RICHARDSON:
         method_name = "KRYLOV_RICHARDSON";
@@ -58,10 +58,10 @@ SweepWGSContext::PreSetupCallback()
         method_name = "KRYLOV_GMRES";
     }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset_.id_ << " with " << method_name
+              << "********** Solving groupset " << groupset_.id << " with " << method_name
               << ".\n\n"
-              << "Quadrature number of angles: " << groupset_.quadrature_->abscissae.size() << "\n"
-              << "Groups " << groupset_.groups_.front().id << " " << groupset_.groups_.back().id
+              << "Quadrature number of angles: " << groupset_.quadrature->abscissae.size() << "\n"
+              << "Groups " << groupset_.groups.front().id << " " << groupset_.groups.back().id
               << "\n\n";
   }
 }
@@ -76,7 +76,7 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
   PC pc;
   KSPGetPC(ksp, &pc);
 
-  if (groupset_.apply_wgdsa_ or groupset_.apply_tgdsa_)
+  if (groupset_.apply_wgdsa or groupset_.apply_tgdsa)
   {
     PCSetType(pc, PCSHELL);
     PCShellSetApply(pc, (PCShellPtr)WGDSA_TGDSA_PreConditionerMult);
@@ -96,14 +96,14 @@ SweepWGSContext::SystemSize()
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
   const size_t num_moments = lbs_solver_.NumMoments();
 
-  const size_t groupset_numgrps = groupset_.groups_.size();
-  const auto num_delayed_psi_info = groupset_.angle_agg_->GetNumDelayedAngularDOFs();
+  const size_t groupset_numgrps = groupset_.groups.size();
+  const auto num_delayed_psi_info = groupset_.angle_agg->GetNumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t globl_size =
     globl_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
-  const size_t num_angles = groupset_.quadrature_->abscissae.size();
-  const size_t num_psi_global = globl_node_count * num_angles * groupset_.groups_.size();
+  const size_t num_angles = groupset_.quadrature->abscissae.size();
+  const size_t num_psi_global = globl_node_count * num_angles * groupset_.groups.size();
   const size_t num_delayed_psi_globl = num_delayed_psi_info.second;
 
   if (log_info_)
@@ -171,8 +171,8 @@ SweepWGSContext::PostSolveCallback()
     for (auto time : sweep_times)
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
-    size_t num_angles = groupset_.quadrature_->abscissae.size();
-    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
+    size_t num_angles = groupset_.quadrature->abscissae.size();
+    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups.size();
 
     log.Log() << "\n       Average sweep time (s):        "
               << tot_sweep_time / static_cast<double>(sweep_times.size())

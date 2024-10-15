@@ -24,39 +24,39 @@ class LBSSolver;
 class LBSGroupset : public Object
 {
 public:
-  int id_;
-  std::vector<LBSGroup> groups_;
-  std::shared_ptr<AngularQuadrature> quadrature_;
-  std::shared_ptr<AngleAggregation> angle_agg_;
-  UniqueSOGroupings unique_so_groupings_;
-  DirIDToSOMap dir_id_to_so_map_;
+  int id;
+  std::vector<LBSGroup> groups;
+  std::shared_ptr<AngularQuadrature> quadrature;
+  std::shared_ptr<AngleAggregation> angle_agg;
+  UniqueSOGroupings unique_so_groupings;
+  DirIDToSOMap dir_id_to_so_map;
 
-  int master_num_grp_subsets_;
-  int master_num_ang_subsets_;
+  int master_num_grp_subsets;
+  int master_num_ang_subsets;
 
-  std::vector<SubSetInfo> grp_subset_infos_;
+  std::vector<SubSetInfo> grp_subset_infos;
 
-  IterativeMethod iterative_method_;
-  AngleAggregationType angleagg_method_;
-  double residual_tolerance_;
-  int max_iterations_;
-  int gmres_restart_intvl_;
+  IterativeMethod iterative_method;
+  AngleAggregationType angleagg_method;
+  double residual_tolerance;
+  int max_iterations;
+  int gmres_restart_intvl;
 
-  bool allow_cycles_;
+  bool allow_cycles;
 
-  bool apply_wgdsa_;
-  bool apply_tgdsa_;
-  int wgdsa_max_iters_;
-  int tgdsa_max_iters_;
-  double wgdsa_tol_;
-  double tgdsa_tol_;
-  bool wgdsa_verbose_;
-  bool tgdsa_verbose_;
-  std::string wgdsa_string_;
-  std::string tgdsa_string_;
+  bool apply_wgdsa;
+  bool apply_tgdsa;
+  int wgdsa_max_iters;
+  int tgdsa_max_iters;
+  double wgdsa_tol;
+  double tgdsa_tol;
+  bool wgdsa_verbose;
+  bool tgdsa_verbose;
+  std::string wgdsa_string;
+  std::string tgdsa_string;
 
-  std::shared_ptr<DiffusionMIPSolver> wgdsa_solver_ = nullptr;
-  std::shared_ptr<DiffusionMIPSolver> tgdsa_solver_ = nullptr;
+  std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
+  std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
 
   struct TwoGridAccelerationInfo
   {

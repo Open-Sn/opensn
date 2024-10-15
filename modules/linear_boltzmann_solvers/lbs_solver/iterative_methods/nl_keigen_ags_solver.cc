@@ -41,7 +41,7 @@ NLKEigenvalueAGSSolver::PreSetupCallback()
 
   auto& lbs_solver = nl_context_ptr->lbs_solver_;
   for (auto& groupset : lbs_solver.Groupsets())
-    nl_context_ptr->groupset_ids.push_back(groupset.id_);
+    nl_context_ptr->groupset_ids.push_back(groupset.id);
 }
 
 void

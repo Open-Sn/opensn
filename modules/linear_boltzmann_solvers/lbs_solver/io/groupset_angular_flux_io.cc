@@ -59,13 +59,13 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_gs_angles = groupset.quadrature_->abscissae.size();
-  const uint64_t num_gs_groups = groupset.groups_.size();
+  const uint64_t num_gs_angles = groupset.quadrature->abscissae.size();
+  const uint64_t num_gs_groups = groupset.groups.size();
   const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(src.size() != num_local_gs_dofs,
                        "Incompatible angular flux vector provided for groupset " +
-                         std::to_string(groupset.id_) + ".");
+                         std::to_string(groupset.id) + ".");
 
   file.write((char*)&num_local_nodes, sizeof(uint64_t));
   file.write((char*)&num_gs_angles, sizeof(uint64_t));
@@ -109,7 +109,7 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   std::vector<double>& dest =
     opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PsiNewLocal().at(groupset_id);
 
-  log.Log() << "Reading groupset " << groupset.id_ << " angular flux file " << file_base;
+  log.Log() << "Reading groupset " << groupset.id << " angular flux file " << file_base;
 
   // Read the header
   const int num_bytes = 320;
@@ -133,18 +133,18 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_gs_angles = groupset.quadrature_->abscissae.size();
-  const uint64_t num_gs_groups = groupset.groups_.size();
+  const uint64_t num_gs_angles = groupset.quadrature->abscissae.size();
+  const uint64_t num_gs_groups = groupset.groups.size();
   const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
                        "Incompatible number of local nodes found in file " + file_name + ".");
   OpenSnLogicalErrorIf(file_num_gs_angles != num_gs_angles,
                        "Incompatible number of groupset angles found in file " + file_name +
-                         " for groupset " + std::to_string(groupset.id_) + ".");
+                         " for groupset " + std::to_string(groupset.id) + ".");
   OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
                        "Incompatible number of groupset groups found in file " + file_name +
-                         " for groupset " + std::to_string(groupset.id_) + ".");
+                         " for groupset " + std::to_string(groupset.id) + ".");
 
   // Read the angular flux data
   dest.assign(num_local_gs_dofs, 0.0);

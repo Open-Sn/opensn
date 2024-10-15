@@ -121,7 +121,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   for (size_t gs = 0; gs < groupsets_.size(); ++gs)
   {
     //  angular quadrature type must be compatible with coordinate system
-    const auto angular_quad_ptr = groupsets_[gs].quadrature_;
+    const auto angular_quad_ptr = groupsets_[gs].quadrature;
     switch (coord_system_type_)
     {
       case CoordinateSystemType::CYLINDRICAL:
@@ -162,7 +162,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     }
 
     //  angle aggregation type must be compatible with coordinate system
-    const auto angleagg_method = groupsets_[gs].angleagg_method_;
+    const auto angleagg_method = groupsets_[gs].angleagg_method;
     switch (coord_system_type_)
     {
       case CoordinateSystemType::CYLINDRICAL:
@@ -387,7 +387,7 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        cell_transport_views_,
                                                        densities_local_,
                                                        phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        q_moments_local_,
                                                        groupset,
                                                        matid_to_xs_map_,

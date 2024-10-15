@@ -55,8 +55,8 @@ ComputePointwisePhiChange(
       for (auto id : groupset_ids)
       {
         auto& groupset = lbs_solver.Groupsets()[id];
-        auto gsi = groupset.groups_.front().id;
-        for (auto g = 0; g < groupset.groups_.size(); ++g)
+        auto gsi = groupset.groups.front().id;
+        for (auto g = 0; g < groupset.groups.size(); ++g)
         {
           auto m0g_idx = transport_view.MapDOF(i, 0, gsi + g);
           double max_phi = std::max(fabs(phi_new[m0g_idx]), fabs(phi_old[m0g_idx]));

@@ -77,8 +77,8 @@ DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
     CleanUpTGDSA(groupset);
 
     // Reset sweep orderings
-    if (groupset.angle_agg_ != nullptr)
-      groupset.angle_agg_->angle_set_groups.clear();
+    if (groupset.angle_agg != nullptr)
+      groupset.angle_agg->angle_set_groups.clear();
   }
 }
 
@@ -94,7 +94,7 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
   size_t num_globl_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
-    const auto num_delayed_psi_info = groupset.angle_agg_->GetNumDelayedAngularDOFs();
+    const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
     num_local_psi_dofs += num_delayed_psi_info.first;
     num_globl_psi_dofs += num_delayed_psi_info.second;
   }
@@ -148,7 +148,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       options_.verbose_inner_iterations,
       sweep_chunk);
 
-    if (groupset.iterative_method_ == IterativeMethod::CLASSIC_RICHARDSON)
+    if (groupset.iterative_method == IterativeMethod::CLASSIC_RICHARDSON)
       wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(sweep_wgs_context_ptr));
     else
       wgs_solvers_.push_back(std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr));
@@ -181,16 +181,16 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
     {
       case PhiSTLOption::PHI_NEW:
       {
-        auto psi = groupset.angle_agg_->GetNewDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
-        groupset.angle_agg_->SetNewDelayedAngularDOFsFromSTLVector(psi);
+        groupset.angle_agg->SetNewDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
       case PhiSTLOption::PHI_OLD:
       {
-        auto psi = groupset.angle_agg_->GetOldDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
-        groupset.angle_agg_->SetOldDelayedAngularDOFsFromSTLVector(psi);
+        groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
     }
@@ -220,8 +220,8 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id;
-  int gsf = groupset.groups_.back().id;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -246,10 +246,10 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   switch (which_phi)
   {
     case PhiSTLOption::PHI_NEW:
-      groupset.angle_agg_->AppendNewDelayedAngularDOFsToArray(index, x_ref);
+      groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, x_ref);
       break;
     case PhiSTLOption::PHI_OLD:
-      groupset.angle_agg_->AppendOldDelayedAngularDOFsToArray(index, x_ref);
+      groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x_ref);
       break;
   }
 
@@ -279,8 +279,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id;
-  int gsf = groupset.groups_.back().id;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
@@ -305,10 +305,10 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   switch (which_phi)
   {
     case PhiSTLOption::PHI_NEW:
-      groupset.angle_agg_->SetNewDelayedAngularDOFsFromArray(index, x_ref);
+      groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, x_ref);
       break;
     case PhiSTLOption::PHI_OLD:
-      groupset.angle_agg_->SetOldDelayedAngularDOFsFromArray(index, x_ref);
+      groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x_ref);
   }
 
   VecRestoreArrayRead(x, &x_ref);
@@ -347,8 +347,8 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -368,9 +368,9 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
   }       // for cell
 
   if (from_which_phi == PhiSTLOption::PHI_NEW and to_which_phi == PhiSTLOption::PHI_OLD)
-    groupset.angle_agg_->SetDelayedPsiOld2New();
+    groupset.angle_agg->SetDelayedPsiOld2New();
   if (from_which_phi == PhiSTLOption::PHI_OLD and to_which_phi == PhiSTLOption::PHI_NEW)
-    groupset.angle_agg_->SetDelayedPsiNew2Old();
+    groupset.angle_agg->SetDelayedPsiNew2Old();
 }
 
 void
@@ -400,8 +400,8 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id;
-    int gsf = groupset.groups_.back().id;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -425,10 +425,10 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
     switch (which_phi)
     {
       case PhiSTLOption::PHI_NEW:
-        groupset.angle_agg_->AppendNewDelayedAngularDOFsToArray(index, x_ref);
+        groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, x_ref);
         break;
       case PhiSTLOption::PHI_OLD:
-        groupset.angle_agg_->AppendOldDelayedAngularDOFsToArray(index, x_ref);
+        groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x_ref);
         break;
     }
   } // for groupset id
@@ -463,8 +463,8 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id;
-    int gsf = groupset.groups_.back().id;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
@@ -488,10 +488,10 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
     switch (which_phi)
     {
       case PhiSTLOption::PHI_NEW:
-        groupset.angle_agg_->SetNewDelayedAngularDOFsFromArray(index, x_ref);
+        groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, x_ref);
         break;
       case PhiSTLOption::PHI_OLD:
-        groupset.angle_agg_->SetOldDelayedAngularDOFsFromArray(index, x_ref);
+        groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x_ref);
     }
   } // for groupset id
 
@@ -505,10 +505,10 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
 
   for (const auto& groupset : groupsets_)
   {
-    int gs = groupset.id_;
+    int gs = groupset.id;
 
     // Moment map for flux moments
-    const auto& moment_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
+    const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
     // Angular flux info
     auto& psi = psi_new_local_[gs];
@@ -518,7 +518,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     std::map<int, int> reversed_angle_map;
     if (options_.save_angular_flux)
     {
-      const auto& omegas = groupset.quadrature_->omegas;
+      const auto& omegas = groupset.quadrature->omegas;
       const auto num_gs_angles = omegas.size();
 
       // Go through angles until all are paired
@@ -556,9 +556,9 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
       } // for angle m
     }   // if saving angular flux
 
-    const auto num_gs_groups = groupset.groups_.size();
-    const auto gsg_i = groupset.groups_.front().id;
-    const auto gsg_f = groupset.groups_.back().id;
+    const auto num_gs_groups = groupset.groups.size();
+    const auto gsg_i = groupset.groups.front().id;
+    const auto gsg_f = groupset.groups.back().id;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
@@ -611,7 +611,7 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 
   for (const auto& cell : grid_ptr_->local_cells)
     for (int f = 0; f < cell.faces.size(); ++f)
-      for (auto& group : groupset.groups_)
+      for (auto& group : groupset.groups)
         cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id);
 }
 
@@ -672,10 +672,10 @@ DiscreteOrdinatesSolver::ComputeBalance()
         {
           for (const auto& groupset : groupsets_)
           {
-            for (int n = 0; n < groupset.quadrature_->omegas.size(); ++n)
+            for (int n = 0; n < groupset.quadrature->omegas.size(); ++n)
             {
-              const auto& omega = groupset.quadrature_->omegas[n];
-              const double wt = groupset.quadrature_->weights[n];
+              const auto& omega = groupset.quadrature->omegas[n];
+              const double wt = groupset.quadrature->weights[n];
               const double mu = omega.Dot(face.normal);
 
               if (mu < 0.0)
@@ -685,7 +685,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f][i];
 
-                  for (const auto& group : groupset.groups_)
+                  for (const auto& group : groupset.groups)
                   {
                     const int g = group.id;
                     const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g, 0);
@@ -771,13 +771,13 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
   const auto& sdm = *discretization_;
   const auto& groupset = groupsets_.at(groupset_id);
   const auto& psi_uk_man = groupset.psi_uk_man_;
-  const auto& quadrature = groupset.quadrature_;
+  const auto& quadrature = groupset.quadrature;
 
   const auto num_gs_angles = quadrature->omegas.size();
-  const auto num_gs_groups = groupset.groups_.size();
+  const auto num_gs_groups = groupset.groups.size();
 
-  const auto gsi = groupset.groups_.front().id;
-  const auto gsf = groupset.groups_.back().id;
+  const auto gsi = groupset.groups.front().id;
+  const auto gsf = groupset.groups.back().id;
 
   // Start integration
   std::vector<double> local_leakage(num_gs_groups, 0.0);
@@ -854,11 +854,11 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
   {
     const auto& groupset = groupsets_.at(gs);
     const auto& psi_uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature_;
+    const auto& quadrature = groupset.quadrature;
 
     const auto num_gs_angles = quadrature->omegas.size();
-    const auto num_gs_groups = groupset.groups_.size();
-    const auto first_gs_group = groupset.groups_.front().id;
+    const auto num_gs_groups = groupset.groups.size();
+    const auto first_gs_group = groupset.groups.front().id;
 
     const auto& psi_gs = psi_new_local_[gs];
 
@@ -935,12 +935,12 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   std::map<std::shared_ptr<AngularQuadrature>, bool> quadrature_allow_cycles_map_;
   for (auto& groupset : groupsets_)
   {
-    if (quadrature_unq_so_grouping_map_.count(groupset.quadrature_) == 0)
-      quadrature_unq_so_grouping_map_[groupset.quadrature_] = AssociateSOsAndDirections(
-        *grid_ptr_, *groupset.quadrature_, groupset.angleagg_method_, options_.geometry_type);
+    if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
+      quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
+        *grid_ptr_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
 
-    if (quadrature_allow_cycles_map_.count(groupset.quadrature_) == 0)
-      quadrature_allow_cycles_map_[groupset.quadrature_] = groupset.allow_cycles_;
+    if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)
+      quadrature_allow_cycles_map_[groupset.quadrature] = groupset.allow_cycles;
   }
 
   // Build sweep orderings
@@ -1179,18 +1179,18 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitFluxDataStructures");
 
-  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
+  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature];
 
   const auto& unique_so_groupings = quadrature_sweep_info.first;
   const auto& dir_id_to_so_map = quadrature_sweep_info.second;
 
-  const size_t gs_num_grps = groupset.groups_.size();
-  const size_t gs_num_ss = groupset.grp_subset_infos_.size();
+  const size_t gs_num_grps = groupset.groups.size();
+  const size_t gs_num_ss = groupset.grp_subset_infos.size();
 
   // Passing the sweep boundaries
   //                                            to the angle aggregation
-  groupset.angle_agg_ = std::make_shared<AngleAggregation>(
-    sweep_boundaries_, num_groups_, gs_num_ss, groupset.quadrature_, grid_ptr_);
+  groupset.angle_agg = std::make_shared<AngleAggregation>(
+    sweep_boundaries_, num_groups_, gs_num_ss, groupset.quadrature, grid_ptr_);
 
   AngleSetGroup angle_set_group;
   size_t angle_set_id = 0;
@@ -1199,15 +1199,15 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     const size_t master_dir_id = so_grouping.front();
     const size_t so_id = dir_id_to_so_map.at(master_dir_id);
 
-    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature_][so_id];
-    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature_][so_id];
+    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature][so_id];
+    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature][so_id];
 
     // Compute direction subsets
-    const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
+    const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets);
 
     for (size_t gs_ss = 0; gs_ss < gs_num_ss; gs_ss++)
     {
-      const size_t gs_ss_size = groupset.grp_subset_infos_[gs_ss].ss_size;
+      const size_t gs_ss_size = groupset.grp_subset_infos[gs_ss].ss_size;
       for (const auto& dir_ss_info : dir_subsets)
       {
         const auto& dir_ss_begin = dir_ss_info.ss_begin;
@@ -1249,7 +1249,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
             std::make_shared<CBC_FLUDS>(gs_ss_size,
                                         angle_indices.size(),
                                         dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                        psi_new_local_[groupset.id_],
+                                        psi_new_local_[groupset.id],
                                         groupset.psi_uk_man_,
                                         *discretization_);
 
@@ -1270,7 +1270,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     }   // for gs_ss
   }     // for so_grouping
 
-  groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
+  groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
     log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
@@ -1291,7 +1291,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        cell_transport_views_,
                                                        densities_local_,
                                                        phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        q_moments_local_,
                                                        groupset,
                                                        matid_to_xs_map_,
@@ -1303,7 +1303,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
   else if (sweep_type_ == "CBC")
   {
     auto sweep_chunk = std::make_shared<CbcSweepChunk>(phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        *grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,

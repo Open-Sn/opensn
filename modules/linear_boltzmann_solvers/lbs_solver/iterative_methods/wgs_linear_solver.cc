@@ -18,14 +18,14 @@ namespace opensn
 {
 
 WGSLinearSolver::WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr)
-  : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method_),
+  : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method),
                  gs_context_ptr)
 {
   auto& groupset = gs_context_ptr->groupset_;
   auto& solver_tol_options = this->ToleranceOptions();
-  solver_tol_options.residual_absolute = groupset.residual_tolerance_;
-  solver_tol_options.maximum_iterations = groupset.max_iterations_;
-  solver_tol_options.gmres_restart_interval = groupset.gmres_restart_intvl_;
+  solver_tol_options.residual_absolute = groupset.residual_tolerance;
+  solver_tol_options.maximum_iterations = groupset.max_iterations;
+  solver_tol_options.gmres_restart_interval = groupset.gmres_restart_intvl;
 }
 
 WGSLinearSolver::~WGSLinearSolver()

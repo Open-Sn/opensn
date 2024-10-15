@@ -82,10 +82,10 @@ DiscreteOrdinatesAdjointSolver::Execute()
   log.Log() << "LBAdjointSolver: post-processing.";
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
-    for (const auto& group : groupset.groups_)
+    for (const auto& group : groupset.groups)
       set_group_numbers.insert(group.id);
 
-  const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
 
   // Reorient phi-moments for reverse angle
   for (const auto& cell : grid_ptr_->local_cells)
@@ -207,10 +207,10 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   // Determine cell averaged importance map
   std::set<int> set_group_numbers;
   for (const auto& groupset : groupsets_)
-    for (const auto& group : groupset.groups_)
+    for (const auto& group : groupset.groups)
       set_group_numbers.insert(group.id);
 
-  const auto& m_to_ell_em_map = groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
 
   using MGVec4 = std::vector<VectorN<4>>; // 0 = phi, 1 = J_x, 2 = J_y, 3 = J_z
   const size_t num_groups = set_group_numbers.size();

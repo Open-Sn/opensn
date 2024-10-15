@@ -59,11 +59,11 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
-  gs_gi_ = groupset_.groups_[gs_ss_begin_].id;
+  gs_gi_ = groupset_.groups[gs_ss_begin_].id;
 
   surface_source_active_ = IsSurfaceSourceActive();
   group_stride_ = angle_set.GetNumGroups();
@@ -90,14 +90,14 @@ CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 void
 CbcSweepChunk::Sweep(AngleSet& angle_set)
 {
-  const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
-  const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
+  const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
+  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
   std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
                                         std::vector<double>(max_num_cell_dofs_));
   std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
                                          std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups_.size(),
+  std::vector<std::vector<double>> b(groupset_.groups.size(),
                                      std::vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
@@ -113,8 +113,8 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
   {
     auto direction_num = as_angle_indices[as_ss_idx];
-    auto omega = groupset_.quadrature_->omegas[direction_num];
-    auto wt = groupset_.quadrature_->weights[direction_num];
+    auto omega = groupset_.quadrature->omegas[direction_num];
+    auto wt = groupset_.quadrature->weights[direction_num];
 
     // Reset right-hand side
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)

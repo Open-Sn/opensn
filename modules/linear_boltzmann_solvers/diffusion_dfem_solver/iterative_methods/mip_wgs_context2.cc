@@ -33,7 +33,7 @@ MIPWGSContext2::PreSetupCallback()
   if (log_info_)
   {
     std::string method_name;
-    switch (groupset_.iterative_method_)
+    switch (groupset_.iterative_method)
     {
       case IterativeMethod::KRYLOV_RICHARDSON:
         method_name = "KRYLOV_RICHARDSON";
@@ -48,7 +48,7 @@ MIPWGSContext2::PreSetupCallback()
         method_name = "KRYLOV_GMRES";
     }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset_.id_ << " with " << method_name
+              << "********** Solving groupset " << groupset_.id << " with " << method_name
               << ".\n\n";
   }
 }
@@ -61,7 +61,7 @@ MIPWGSContext2::SetPreconditioner(KSP& solver)
   PC pc;
   KSPGetPC(ksp, &pc);
 
-  if (groupset_.apply_tgdsa_)
+  if (groupset_.apply_tgdsa)
   {
     PCSetType(pc, PCSHELL);
     PCShellSetApply(pc, (PCShellPtr)MIP_TGDSA_PreConditionerMult);
@@ -78,7 +78,7 @@ MIPWGSContext2::SystemSize()
   const size_t local_node_count = lbs_solver_.LocalNodeCount();
   const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
 
-  const size_t groupset_numgrps = groupset_.groups_.size();
+  const size_t groupset_numgrps = groupset_.groups.size();
   const size_t local_size = local_node_count * groupset_numgrps;
   const size_t globl_size = globl_node_count * groupset_numgrps;
 
@@ -89,7 +89,7 @@ void
 MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op_;
-  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset_.id_];
+  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset_.id];
 
   lbs_solver_.PhiNewLocal() = lbs_solver_.QMomentsLocal();
 
