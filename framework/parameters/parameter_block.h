@@ -289,61 +289,61 @@ public:
   }
 
   // Iterator
-  class iterator
+  class Iterator
   {
   public:
     ParameterBlock& ref_block;
     size_t ref_id;
 
-    iterator(ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
+    Iterator(ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
 
-    iterator operator++()
+    Iterator operator++()
     {
-      iterator i = *this;
+      Iterator i = *this;
       ref_id++;
       return i;
     }
-    iterator operator++(int)
+    Iterator operator++(int)
     {
       ref_id++;
       return *this;
     }
 
     ParameterBlock& operator*() { return ref_block.parameters_[ref_id]; }
-    bool operator==(const iterator& rhs) const { return ref_id == rhs.ref_id; }
-    bool operator!=(const iterator& rhs) const { return ref_id != rhs.ref_id; }
+    bool operator==(const Iterator& rhs) const { return ref_id == rhs.ref_id; }
+    bool operator!=(const Iterator& rhs) const { return ref_id != rhs.ref_id; }
   };
 
-  class const_iterator
+  class ConstIterator
   {
   public:
     const ParameterBlock& ref_block;
     size_t ref_id;
 
-    const_iterator(const ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
+    ConstIterator(const ParameterBlock& block, size_t i) : ref_block(block), ref_id(i) {}
 
-    const_iterator operator++()
+    ConstIterator operator++()
     {
-      const_iterator i = *this;
+      ConstIterator i = *this;
       ref_id++;
       return i;
     }
-    const_iterator operator++(int)
+    ConstIterator operator++(int)
     {
       ref_id++;
       return *this;
     }
 
     const ParameterBlock& operator*() { return ref_block.parameters_[ref_id]; }
-    bool operator==(const const_iterator& rhs) const { return ref_id == rhs.ref_id; }
-    bool operator!=(const const_iterator& rhs) const { return ref_id != rhs.ref_id; }
+    bool operator==(const ConstIterator& rhs) const { return ref_id == rhs.ref_id; }
+    bool operator!=(const ConstIterator& rhs) const { return ref_id != rhs.ref_id; }
   };
 
-  iterator begin() { return {*this, 0}; }
-  iterator end() { return {*this, parameters_.size()}; }
+  Iterator begin() { return {*this, 0}; }
+  Iterator end() { return {*this, parameters_.size()}; }
 
-  const_iterator begin() const { return {*this, 0}; }
-  const_iterator end() const { return {*this, parameters_.size()}; }
+  ConstIterator begin() const { return {*this, 0}; }
+  ConstIterator end() const { return {*this, parameters_.size()}; }
 
   /**
    * Given a reference to a string, recursively travels the parameter tree and print values into
