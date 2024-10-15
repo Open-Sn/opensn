@@ -5,6 +5,7 @@
 
 #include "framework/graphs/directed_graph_vertex.h"
 #include <stack>
+#include <vector>
 
 namespace opensn
 {
