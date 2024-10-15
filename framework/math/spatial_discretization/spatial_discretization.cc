@@ -187,8 +187,8 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
   const auto& ukidT = to_vec_uk_id;
   try
   {
-    const auto& ukA = from_vec_uk_structure.unknowns_.at(from_vec_uk_id);
-    const auto& ukB = to_vec_uk_structure.unknowns_.at(to_vec_uk_id);
+    const auto& ukA = from_vec_uk_structure.unknowns.at(from_vec_uk_id);
+    const auto& ukB = to_vec_uk_structure.unknowns.at(to_vec_uk_id);
 
     if (ukA.num_components != ukB.num_components)
       throw std::logic_error(fname + " Unknowns do not have the "

@@ -1203,7 +1203,7 @@ LBSSolver::InitializeGroupsets()
   for (auto& groupset : groupsets_)
   {
     // Build groupset angular flux unknown manager
-    groupset.psi_uk_man_.unknowns_.clear();
+    groupset.psi_uk_man_.unknowns.clear();
     size_t num_angles = groupset.quadrature_->abscissae.size();
     size_t gs_num_groups = groupset.groups_.size();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
@@ -1248,11 +1248,11 @@ LBSSolver::InitializeParrays()
 
   // Initialize unknown
   // structure
-  flux_moments_uk_man_.unknowns_.clear();
+  flux_moments_uk_man_.unknowns.clear();
   for (size_t m = 0; m < num_moments_; m++)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
-    flux_moments_uk_man_.unknowns_.back().text_name = "m" + std::to_string(m);
+    flux_moments_uk_man_.unknowns.back().text_name = "m" + std::to_string(m);
   }
 
   // Compute local # of dof

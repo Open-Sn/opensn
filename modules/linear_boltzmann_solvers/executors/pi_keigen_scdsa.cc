@@ -390,7 +390,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
 
   log.Log() << "Number of global dofs" << num_globl_dofs;
 
-  const size_t num_unknowns = uk_man.unknowns_.size();
+  const size_t num_unknowns = uk_man.unknowns.size();
 
   // Build a list of global ids
   std::set<int64_t> global_dof_ids_set;
@@ -407,7 +407,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_comps = uk_man.unknowns_[u].num_components;
+        const size_t num_comps = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_comps; ++c)
         {
           const int64_t dof_map = sdm.MapDOF(cell, i, uk_man, u, c);
@@ -452,7 +452,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   const auto& grid = pwld_sdm.Grid();
 
-  const size_t num_unknowns = uk_man.unknowns_.size();
+  const size_t num_unknowns = uk_man.unknowns.size();
 
   const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
 
@@ -472,7 +472,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
@@ -512,7 +512,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map_globl = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
@@ -550,7 +550,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);

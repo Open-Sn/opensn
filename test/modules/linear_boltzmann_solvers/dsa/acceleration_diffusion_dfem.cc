@@ -184,7 +184,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   // Make Field-Function
   auto ff =
-    std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
+    std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns.front());
 
   ff->UpdateFieldVector(x_vector);
 

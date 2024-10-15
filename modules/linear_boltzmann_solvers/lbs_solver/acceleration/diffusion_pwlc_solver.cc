@@ -52,7 +52,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
@@ -249,7 +249,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
@@ -393,7 +393,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector;
   VecGetArrayRead(petsc_q_vector, &q_vector);

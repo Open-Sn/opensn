@@ -1083,8 +1083,8 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto& vol = cell_mapping.CellVolume();
     for (int i = 0; i < cell_mapping.NumNodes(); ++i)
-      for (int u = 0; u < uk_man.unknowns_.size(); ++u)
-        for (int c = 0; c < uk_man.unknowns_[u].num_components; ++c)
+      for (int u = 0; u < uk_man.unknowns.size(); ++u)
+        for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
         {
           const auto pwld_dof = pwld.MapDOFLocal(cell, i, uk_man, u, c);
           const auto pwlc_dof = pwlc.MapDOFLocal(cell, i, uk_man, u, c);
@@ -1116,8 +1116,8 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
 
     for (int i = 0; i < cell_mapping.NumNodes(); ++i)
       if (pvids.find(cell.vertex_ids_[i]) != pvids.end())
-        for (int u = 0; u < uk_man.unknowns_.size(); ++u)
-          for (int c = 0; c < uk_man.unknowns_[u].num_components; ++c)
+        for (int u = 0; u < uk_man.unknowns.size(); ++u)
+          for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
           {
             const auto pwld_global_dof = pwld.MapDOF(cell, i, uk_man, u, c);
             const auto pwlc_global_dof = pwlc.MapDOF(cell, i, uk_man, u, c);
@@ -1142,8 +1142,8 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   {
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     for (int i = 0; i < cell_mapping.NumNodes(); ++i)
-      for (int u = 0; u < uk_man.unknowns_.size(); ++u)
-        for (int c = 0; c < uk_man.unknowns_[u].num_components; ++c)
+      for (int u = 0; u < uk_man.unknowns.size(); ++u)
+        for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
         {
           const auto pwld_dof = pwld.MapDOFLocal(cell, i, uk_man, u, c);
           const auto pwlc_dof = pwlc.MapDOFLocal(cell, i, uk_man, u, c);
@@ -1165,7 +1165,7 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     for (int i = 0; i < cell_mapping.NumNodes(); ++i)
       for (int u = 0; u < uk_man.NumberOfUnknowns(); ++u)
-        for (int c = 0; c < uk_man.unknowns_[u].NumComponents(); ++c)
+        for (int c = 0; c < uk_man.unknowns[u].NumComponents(); ++c)
           ghost_ids.insert(pwld.MapDOF(cell, i, uk_man, u, c));
   }
   return {ghost_ids.begin(), ghost_ids.end()};

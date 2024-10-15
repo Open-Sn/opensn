@@ -435,7 +435,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -448,7 +448,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -478,7 +478,7 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   int64_t address = -1;
   if (storage == UnknownStorageType::BLOCK)
@@ -515,7 +515,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   const int64_t local_id = node_global_id - static_cast<int64_t>(local_block_address_);
   const bool is_local = not(local_id < 0 or local_id >= local_base_block_size_);
@@ -573,8 +573,8 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
   const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();
-  const auto storage = unknown_manager.dof_storage_type_;
-  const size_t num_unknowns = unknown_manager.unknowns_.size();
+  const auto storage = unknown_manager.dof_storage_type;
+  const size_t num_unknowns = unknown_manager.unknowns.size();
 
   for (const auto& vid_gnid : ghost_node_mapping_)
   {
@@ -582,7 +582,7 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
 
     for (size_t u = 0; u < num_unknowns; ++u)
     {
-      const auto& unkn = unknown_manager.unknowns_[u];
+      const auto& unkn = unknown_manager.unknowns[u];
       const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {

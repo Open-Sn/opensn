@@ -61,7 +61,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
 
@@ -409,7 +409,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_groups = uk_man_.unknowns_.front().num_components;
+    const size_t num_groups = uk_man_.unknowns.front().num_components;
 
     const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
 
@@ -597,7 +597,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
@@ -889,7 +889,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
@@ -1036,7 +1036,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector;
   VecGetArrayRead(petsc_q_vector, &q_vector);

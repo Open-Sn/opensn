@@ -175,7 +175,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                    std::vector<int64_t>& nodal_nnz_off_diag,
                                    const UnknownManager& unknown_manager) const
 {
-  unsigned int num_uk = unknown_manager.unknowns_.size();          // Number of unknowns
+  unsigned int num_uk = unknown_manager.unknowns.size();           // Number of unknowns
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
 
   nodal_nnz_in_diag.clear();
@@ -188,7 +188,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
   for (int uk = 0; uk < num_uk; ++uk)
   {
-    const unsigned int num_comps = unknown_manager.unknowns_[uk].num_components;
+    const unsigned int num_comps = unknown_manager.unknowns[uk].num_components;
     for (int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : ref_grid_.local_cells)
@@ -219,7 +219,7 @@ FiniteVolume::MapDOF(const Cell& cell,
                      const unsigned int unknown_id,
                      const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
@@ -260,7 +260,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
                           const unsigned int unknown_id,
                           const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
@@ -310,14 +310,14 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 
   std::vector<uint64_t> ghost_cell_ids = ref_grid_.cells.GetGhostGlobalIDs();
 
-  const size_t num_uks = unknown_manager.unknowns_.size();
+  const size_t num_uks = unknown_manager.unknowns.size();
 
   for (const auto cell_id : ghost_cell_ids)
   {
     const auto& cell = ref_grid_.cells[cell_id];
     for (size_t u = 0; u < num_uks; ++u)
     {
-      const auto& unkn = unknown_manager.unknowns_[u];
+      const auto& unkn = unknown_manager.unknowns[u];
       const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {

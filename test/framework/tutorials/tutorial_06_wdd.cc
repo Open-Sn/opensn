@@ -340,8 +340,8 @@ ComputeRelativePWChange(const MeshContinuum& grid,
                         const std::vector<double>& in_phi_old)
 {
   double pw_change = 0.0;
-  const size_t num_moments = phi_uk_man.unknowns_.size();
-  const size_t num_groups = phi_uk_man.unknowns_.front().num_components;
+  const size_t num_moments = phi_uk_man.unknowns.size();
+  const size_t num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid.local_cells)
   {
@@ -395,8 +395,8 @@ SetSource(const MeshContinuum& grid,
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);
 
-  const size_t num_moments = phi_uk_man.unknowns_.size();
-  const size_t num_groups = phi_uk_man.unknowns_.front().num_components;
+  const size_t num_moments = phi_uk_man.unknowns.size();
+  const size_t num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid.local_cells)
   {

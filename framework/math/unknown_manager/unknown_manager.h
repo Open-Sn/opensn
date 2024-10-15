@@ -117,18 +117,18 @@ class UnknownManager
 {
 private:
 public:
-  std::vector<Unknown> unknowns_;
-  UnknownStorageType dof_storage_type_;
+  std::vector<Unknown> unknowns;
+  UnknownStorageType dof_storage_type;
 
   // Constructors
   explicit UnknownManager(UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
   }
 
   UnknownManager(std::initializer_list<std::pair<UnknownType, unsigned int>> unknown_info_list,
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     for (const auto& uk_info : unknown_info_list)
       AddUnknown(uk_info.first, uk_info.second);
@@ -136,7 +136,7 @@ public:
 
   explicit UnknownManager(const std::vector<Unknown>& unknown_info_list,
                           UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     for (const auto& uk : unknown_info_list)
       AddUnknown(uk.type, uk.num_components);
@@ -144,7 +144,7 @@ public:
 
   UnknownManager(std::initializer_list<Unknown> unknowns,
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     size_t ukid = 0;
     for (const auto& uk : unknowns)
@@ -171,17 +171,14 @@ public:
     return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
   }
 
-  size_t NumberOfUnknowns() const { return unknowns_.size(); }
-  const Unknown& GetUnknown(size_t id) const { return unknowns_[id]; }
+  size_t NumberOfUnknowns() const { return unknowns.size(); }
+  const Unknown& GetUnknown(size_t id) const { return unknowns[id]; }
 
-  void SetDOFStorageType(const UnknownStorageType storage_type)
-  {
-    dof_storage_type_ = storage_type;
-  }
+  void SetDOFStorageType(const UnknownStorageType storage_type) { dof_storage_type = storage_type; }
 
-  UnknownStorageType GetDOFStorageType() const { return dof_storage_type_; }
+  UnknownStorageType GetDOFStorageType() const { return dof_storage_type; }
 
-  void Clear() { unknowns_.clear(); }
+  void Clear() { unknowns.clear(); }
 
   /**
    * Adds an unknown to the manager. This method will figure out where the last unknown ends and

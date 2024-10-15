@@ -234,7 +234,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -247,7 +247,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -271,7 +271,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
                                      const unsigned int unknown_id,
                                      const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
@@ -340,7 +340,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
                                           const unsigned int unknown_id,
                                           const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
