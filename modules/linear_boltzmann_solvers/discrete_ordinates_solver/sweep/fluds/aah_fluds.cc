@@ -17,9 +17,10 @@ AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommon
 
   // Adjusting for different group aggregate
   for (auto& val : common_data_.local_psi_n_block_stride)
-    local_psi_Gn_block_strideG.push_back(val * num_groups_);
+    local_psi_Gn_block_strideG_.push_back(val * num_groups_);
 
-  delayed_local_psi_Gn_block_strideG = common_data_.delayed_local_psi_Gn_block_stride * num_groups_;
+  delayed_local_psi_Gn_block_strideG_ =
+    common_data_.delayed_local_psi_Gn_block_stride * num_groups_;
 }
 
 double*
@@ -30,7 +31,7 @@ AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, i
 
   if (fc >= 0)
   {
-    size_t index = local_psi_Gn_block_strideG[fc] * n +
+    size_t index = local_psi_Gn_block_strideG_[fc] * n +
                    common_data_.so_cell_outb_face_slot_indices[cell_so_index][outb_face_counter] *
                      common_data_.local_psi_stride[fc] * num_groups_ +
                    face_dof * num_groups_;
@@ -39,7 +40,7 @@ AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, i
   }
   else
   {
-    size_t index = delayed_local_psi_Gn_block_strideG * n +
+    size_t index = delayed_local_psi_Gn_block_strideG_ * n +
                    common_data_.so_cell_outb_face_slot_indices[cell_so_index][outb_face_counter] *
                      common_data_.delayed_local_psi_stride * num_groups_ +
                    face_dof * num_groups_;
@@ -84,7 +85,7 @@ AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int 
   if (fc >= 0)
   {
     size_t index =
-      local_psi_Gn_block_strideG[fc] * n +
+      local_psi_Gn_block_strideG_[fc] * n +
       common_data_.so_cell_inco_face_dof_indices[cell_so_index][inc_face_counter].slot_address *
         common_data_.local_psi_stride[fc] * num_groups_ +
       common_data_.so_cell_inco_face_dof_indices[cell_so_index][inc_face_counter]
@@ -97,7 +98,7 @@ AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int 
   else
   {
     size_t index =
-      delayed_local_psi_Gn_block_strideG * n +
+      delayed_local_psi_Gn_block_strideG_ * n +
       common_data_.so_cell_inco_face_dof_indices[cell_so_index][inc_face_counter].slot_address *
         common_data_.delayed_local_psi_stride * num_groups_ +
       common_data_.so_cell_inco_face_dof_indices[cell_so_index][inc_face_counter]
