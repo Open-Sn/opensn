@@ -18,11 +18,11 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   auto gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
-  LBSSolver& solver = gs_context_ptr->lbs_solver_;
-  LBSGroupset& groupset = gs_context_ptr->groupset_;
+  LBSSolver& solver = gs_context_ptr->lbs_solver;
+  LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_delta = gs_context_ptr->lbs_solver_.PhiNewLocal();
+  auto& phi_delta = gs_context_ptr->lbs_solver.PhiNewLocal();
   solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply TGDSA

@@ -68,8 +68,8 @@ PowerIterationKEigen::Initialize()
 
     OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
 
-    wgs_context->lhs_src_scope_.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
-    wgs_context->rhs_src_scope_.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
+    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
+    wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
   ags_solver_->Verbosity(lbs_solver_.Options().verbose_ags_iterations);
@@ -150,7 +150,7 @@ PowerIterationKEigen::Execute()
   {
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    total_num_sweeps += wgs_context->counter_applications_of_inv_op_;
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
   }
 
   log.Log() << "\n";

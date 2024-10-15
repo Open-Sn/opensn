@@ -37,10 +37,10 @@ SweepWGSContext::PreSetupCallback()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::PreSetupCallback");
 
-  if (log_info_)
+  if (log_info)
   {
     std::string method_name;
-    switch (groupset_.iterative_method)
+    switch (groupset.iterative_method)
     {
       case IterativeMethod::KRYLOV_RICHARDSON:
         method_name = "KRYLOV_RICHARDSON";
@@ -58,10 +58,9 @@ SweepWGSContext::PreSetupCallback()
         method_name = "KRYLOV_GMRES";
     }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset_.id << " with " << method_name
-              << ".\n\n"
-              << "Quadrature number of angles: " << groupset_.quadrature->abscissae.size() << "\n"
-              << "Groups " << groupset_.groups.front().id << " " << groupset_.groups.back().id
+              << "********** Solving groupset " << groupset.id << " with " << method_name << ".\n\n"
+              << "Quadrature number of angles: " << groupset.quadrature->abscissae.size() << "\n"
+              << "Groups " << groupset.groups.front().id << " " << groupset.groups.back().id
               << "\n\n";
   }
 }
@@ -76,7 +75,7 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
   PC pc;
   KSPGetPC(ksp, &pc);
 
-  if (groupset_.apply_wgdsa or groupset_.apply_tgdsa)
+  if (groupset.apply_wgdsa or groupset.apply_tgdsa)
   {
     PCSetType(pc, PCSHELL);
     PCShellSetApply(pc, (PCShellPtr)WGDSA_TGDSA_PreConditionerMult);
@@ -92,21 +91,21 @@ SweepWGSContext::SystemSize()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
-  const size_t local_node_count = lbs_solver_.LocalNodeCount();
-  const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
-  const size_t num_moments = lbs_solver_.NumMoments();
+  const size_t local_node_count = lbs_solver.LocalNodeCount();
+  const size_t globl_node_count = lbs_solver.GlobalNodeCount();
+  const size_t num_moments = lbs_solver.NumMoments();
 
-  const size_t groupset_numgrps = groupset_.groups.size();
-  const auto num_delayed_psi_info = groupset_.angle_agg->GetNumDelayedAngularDOFs();
+  const size_t groupset_numgrps = groupset.groups.size();
+  const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t globl_size =
     globl_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
-  const size_t num_angles = groupset_.quadrature->abscissae.size();
-  const size_t num_psi_global = globl_node_count * num_angles * groupset_.groups.size();
+  const size_t num_angles = groupset.quadrature->abscissae.size();
+  const size_t num_psi_global = globl_node_count * num_angles * groupset.groups.size();
   const size_t num_delayed_psi_globl = num_delayed_psi_info.second;
 
-  if (log_info_)
+  if (log_info)
   {
     log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
               << "Number of lagged angular unknowns: " << num_delayed_psi_globl << "("
@@ -124,9 +123,9 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
 
-  ++counter_applications_of_inv_op_;
+  ++counter_applications_of_inv_op;
   const bool use_bndry_source_flag =
-    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver_.Options().use_src_moments);
+    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.Options().use_src_moments);
 
   sweep_scheduler.SetBoundarySourceActiveFlag(use_bndry_source_flag);
 
@@ -156,23 +155,22 @@ SweepWGSContext::PostSolveCallback()
   // currently used in OpenSn). This step also zeros out balance variables and computes the correct
   // in-flow and out-flow. Classic Richardson calls this solely to compute balance quantities (note
   // that it does cost us an extra sweep that is technically not necessary).
-  lbs_ss_solver.ZeroOutflowBalanceVars(groupset_);
-  const auto scope = lhs_src_scope_ | rhs_src_scope_;
-  set_source_function_(groupset_, lbs_solver_.QMomentsLocal(), lbs_solver_.PhiOldLocal(), scope);
-  sweep_scheduler.SetDestinationPhi(lbs_solver_.PhiNewLocal());
+  lbs_ss_solver.ZeroOutflowBalanceVars(groupset);
+  const auto scope = lhs_src_scope | rhs_src_scope;
+  set_source_function(groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
+  sweep_scheduler.SetDestinationPhi(lbs_solver.PhiNewLocal());
   ApplyInverseTransportOperator(scope);
-  lbs_solver_.GSScopedCopyPrimarySTLvectors(
-    groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+  lbs_solver.GSScopedCopyPrimarySTLvectors(groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
-  if (log_info_)
+  if (log_info)
   {
     double tot_sweep_time = 0.0;
     auto num_sweeps = static_cast<double>(sweep_times.size());
     for (auto time : sweep_times)
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
-    size_t num_angles = groupset_.quadrature->abscissae.size();
-    size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups.size();
+    size_t num_angles = groupset.quadrature->abscissae.size();
+    size_t num_unknowns = lbs_solver.GlobalNodeCount() * num_angles * groupset.groups.size();
 
     log.Log() << "\n       Average sweep time (s):        "
               << tot_sweep_time / static_cast<double>(sweep_times.size())

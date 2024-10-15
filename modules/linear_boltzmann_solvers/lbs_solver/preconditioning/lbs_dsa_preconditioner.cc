@@ -18,11 +18,11 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   auto gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
-  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
-  LBSGroupset& groupset = gs_context_ptr->groupset_;
+  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver;
+  LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr->lbs_solver_.PhiNewLocal();
+  auto& phi_new_local = gs_context_ptr->lbs_solver.PhiNewLocal();
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply WGDSA
@@ -58,11 +58,11 @@ int
 WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
 {
   // Shorten some names
-  LBSSolver& lbs_solver = gs_context_ptr.lbs_solver_;
-  LBSGroupset& groupset = gs_context_ptr.groupset_;
+  LBSSolver& lbs_solver = gs_context_ptr.lbs_solver;
+  LBSGroupset& groupset = gs_context_ptr.groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr.lbs_solver_.PhiNewLocal();
+  auto& phi_new_local = gs_context_ptr.lbs_solver.PhiNewLocal();
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply WGDSA

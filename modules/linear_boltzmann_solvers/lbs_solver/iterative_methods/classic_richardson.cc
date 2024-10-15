@@ -31,11 +31,11 @@ ClassicRichardson::Solve()
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   gs_context_ptr->PreSetupCallback();
 
-  auto& groupset = gs_context_ptr->groupset_;
-  auto& lbs_solver = gs_context_ptr->lbs_solver_;
+  auto& groupset = gs_context_ptr->groupset;
+  auto& lbs_solver = gs_context_ptr->lbs_solver;
   auto& phi_old = lbs_solver.PhiOldLocal();
   auto& phi_new = lbs_solver.PhiNewLocal();
-  const auto scope = gs_context_ptr->lhs_src_scope_ | gs_context_ptr->rhs_src_scope_;
+  const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();
   psi_old_.resize(groupset.angle_agg->GetNumDelayedAngularDOFs().first, 0.0);
 
@@ -44,7 +44,7 @@ ClassicRichardson::Solve()
   for (int k = 0; k < groupset.max_iterations; ++k)
   {
     lbs_solver.QMomentsLocal() = saved_q_moments_local_;
-    gs_context_ptr->set_source_function_(groupset, lbs_solver.QMomentsLocal(), phi_old, scope);
+    gs_context_ptr->set_source_function(groupset, lbs_solver.QMomentsLocal(), phi_old, scope);
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Apply WGDSA

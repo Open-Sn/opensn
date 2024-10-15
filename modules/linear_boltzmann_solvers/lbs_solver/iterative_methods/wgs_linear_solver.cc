@@ -18,10 +18,10 @@ namespace opensn
 {
 
 WGSLinearSolver::WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr)
-  : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset_.iterative_method),
+  : LinearSolver(IterativeMethodPETScName(gs_context_ptr->groupset.iterative_method),
                  gs_context_ptr)
 {
-  auto& groupset = gs_context_ptr->groupset_;
+  auto& groupset = gs_context_ptr->groupset;
   auto& solver_tol_options = this->ToleranceOptions();
   solver_tol_options.residual_absolute = groupset.residual_tolerance;
   solver_tol_options.maximum_iterations = groupset.max_iterations;
@@ -135,8 +135,8 @@ WGSLinearSolver::SetInitialGuess()
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
-  auto& groupset = gs_context_ptr->groupset_;
-  auto& lbs_solver = gs_context_ptr->lbs_solver_;
+  auto& groupset = gs_context_ptr->groupset;
+  auto& lbs_solver = gs_context_ptr->lbs_solver;
 
   lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, x_, PhiSTLOption::PHI_OLD);
 
@@ -146,7 +146,7 @@ WGSLinearSolver::SetInitialGuess()
   if (init_guess_norm > 1.0e-10)
   {
     KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
-    if (gs_context_ptr->log_info_)
+    if (gs_context_ptr->log_info)
       log.Log() << "Using phi_old as initial guess.";
   }
 }
@@ -158,10 +158,10 @@ WGSLinearSolver::SetRHS()
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
-  auto& groupset = gs_context_ptr->groupset_;
-  auto& lbs_solver = gs_context_ptr->lbs_solver_;
+  auto& groupset = gs_context_ptr->groupset;
+  auto& lbs_solver = gs_context_ptr->lbs_solver;
 
-  if (gs_context_ptr->log_info_)
+  if (gs_context_ptr->log_info)
     log.Log() << program_timer.GetTimeString() << " Computing b";
 
   // SetSource for RHS
@@ -172,8 +172,8 @@ WGSLinearSolver::SetRHS()
 
   if (not single_richardson)
   {
-    const auto scope = gs_context_ptr->rhs_src_scope_ | ZERO_INCOMING_DELAYED_PSI;
-    gs_context_ptr->set_source_function_(
+    const auto scope = gs_context_ptr->rhs_src_scope | ZERO_INCOMING_DELAYED_PSI;
+    gs_context_ptr->set_source_function(
       groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     // Apply transport operator
@@ -200,8 +200,8 @@ WGSLinearSolver::SetRHS()
   // RHS, and just suppress the kspsolve part.
   else
   {
-    const auto scope = gs_context_ptr->rhs_src_scope_ | gs_context_ptr->lhs_src_scope_;
-    gs_context_ptr->set_source_function_(
+    const auto scope = gs_context_ptr->rhs_src_scope | gs_context_ptr->lhs_src_scope;
+    gs_context_ptr->set_source_function(
       groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
 
     // Apply transport operator
@@ -246,8 +246,8 @@ WGSLinearSolver::PostSolveCallback()
   // Copy x to local solution
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
-  auto& groupset = gs_context_ptr->groupset_;
-  auto& lbs_solver = gs_context_ptr->lbs_solver_;
+  auto& groupset = gs_context_ptr->groupset;
+  auto& lbs_solver = gs_context_ptr->lbs_solver;
 
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_NEW);
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_OLD);

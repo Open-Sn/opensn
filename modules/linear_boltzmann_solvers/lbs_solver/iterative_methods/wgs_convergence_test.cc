@@ -53,12 +53,12 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
 
   // Print iteration information
   std::string offset;
-  if (context->groupset_.apply_wgdsa or context->groupset_.apply_tgdsa)
+  if (context->groupset.apply_wgdsa or context->groupset.apply_tgdsa)
     offset = std::string("    ");
 
   std::stringstream iter_info;
   iter_info << program_timer.GetTimeString() << " " << offset << "WGS groups ["
-            << context->groupset_.groups.front().id << "-" << context->groupset_.groups.back().id
+            << context->groupset.groups.front().id << "-" << context->groupset.groups.back().id
             << "]"
             << " Iteration " << std::setw(5) << n << " Residual " << std::setw(9)
             << scaled_residual;
@@ -69,7 +69,7 @@ GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* conv
     iter_info << " CONVERGED\n";
   }
 
-  if (context->log_info_)
+  if (context->log_info)
     log.Log() << iter_info.str() << std::endl;
 
   return KSP_CONVERGED_ITERATING;

@@ -25,8 +25,8 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
     if (not wgs_context)
       throw std::logic_error(fname + ": Cast failed.");
 
-    wgs_context->lhs_src_scope_ = APPLY_WGS_SCATTER_SOURCES;
-    wgs_context->rhs_src_scope_ = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
+    wgs_context->lhs_src_scope = APPLY_WGS_SCATTER_SOURCES;
+    wgs_context->rhs_src_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
   }
 
   auto& q_moments_local = lbs_solver.QMomentsLocal();
@@ -99,7 +99,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Number of Sweeps:" << frons_wgs_context->counter_applications_of_inv_op_ << ")"
+            << " (Number of Sweeps:" << frons_wgs_context->counter_applications_of_inv_op << ")"
             << "\n";
   log.Log() << "\n";
 }

@@ -30,10 +30,10 @@ MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
 void
 MIPWGSContext2::PreSetupCallback()
 {
-  if (log_info_)
+  if (log_info)
   {
     std::string method_name;
-    switch (groupset_.iterative_method)
+    switch (groupset.iterative_method)
     {
       case IterativeMethod::KRYLOV_RICHARDSON:
         method_name = "KRYLOV_RICHARDSON";
@@ -48,7 +48,7 @@ MIPWGSContext2::PreSetupCallback()
         method_name = "KRYLOV_GMRES";
     }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset_.id << " with " << method_name
+              << "********** Solving groupset " << groupset.id << " with " << method_name
               << ".\n\n";
   }
 }
@@ -61,7 +61,7 @@ MIPWGSContext2::SetPreconditioner(KSP& solver)
   PC pc;
   KSPGetPC(ksp, &pc);
 
-  if (groupset_.apply_tgdsa)
+  if (groupset.apply_tgdsa)
   {
     PCSetType(pc, PCSHELL);
     PCShellSetApply(pc, (PCShellPtr)MIP_TGDSA_PreConditionerMult);
@@ -75,10 +75,10 @@ MIPWGSContext2::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 MIPWGSContext2::SystemSize()
 {
-  const size_t local_node_count = lbs_solver_.LocalNodeCount();
-  const size_t globl_node_count = lbs_solver_.GlobalNodeCount();
+  const size_t local_node_count = lbs_solver.LocalNodeCount();
+  const size_t globl_node_count = lbs_solver.GlobalNodeCount();
 
-  const size_t groupset_numgrps = groupset_.groups.size();
+  const size_t groupset_numgrps = groupset.groups.size();
   const size_t local_size = local_node_count * groupset_numgrps;
   const size_t globl_size = globl_node_count * groupset_numgrps;
 
@@ -88,20 +88,20 @@ MIPWGSContext2::SystemSize()
 void
 MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 {
-  ++counter_applications_of_inv_op_;
-  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset_.id];
+  ++counter_applications_of_inv_op;
+  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset.id];
 
-  lbs_solver_.PhiNewLocal() = lbs_solver_.QMomentsLocal();
+  lbs_solver.PhiNewLocal() = lbs_solver.QMomentsLocal();
 
   Vec work_vector;
   VecDuplicate(mip_solver.RHS(), &work_vector);
 
-  lbs_solver_.SetGSPETScVecFromPrimarySTLvector(groupset_, work_vector, PhiSTLOption::PHI_NEW);
+  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   mip_solver.Assemble_b(work_vector);
   mip_solver.Solve(work_vector);
 
-  lbs_solver_.SetPrimarySTLvectorFromGSPETScVec(groupset_, work_vector, PhiSTLOption::PHI_NEW);
+  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   VecDestroy(&work_vector);
 }
@@ -109,8 +109,7 @@ MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 void
 MIPWGSContext2::PostSolveCallback()
 {
-  lbs_solver_.GSScopedCopyPrimarySTLvectors(
-    groupset_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+  lbs_solver.GSScopedCopyPrimarySTLvectors(groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
 
 } // namespace opensn
