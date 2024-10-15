@@ -112,11 +112,11 @@ private:
   std::map<uint64_t, MGBoundary> boundaries_;
 
 protected:
-  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map;
+  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map_;
 
-  std::map<int, std::shared_ptr<IsotropicMultiGroupSource>> matid_to_src_map;
+  std::map<int, std::shared_ptr<IsotropicMultiGroupSource>> matid_to_src_map_;
 
-  std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
+  std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo_;
   //  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;
 
 public:
