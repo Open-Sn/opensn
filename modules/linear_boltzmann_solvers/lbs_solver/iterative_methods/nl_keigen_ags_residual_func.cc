@@ -19,7 +19,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   NLKEigenAGSContext* nl_context_ptr;
   SNESGetApplicationContext(snes, &nl_context_ptr);
 
-  auto& lbs_solver = nl_context_ptr->lbs_solver_;
+  auto& lbs_solver = nl_context_ptr->lbs_solver;
   const auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& q_moments_local = lbs_solver.QMomentsLocal();
 

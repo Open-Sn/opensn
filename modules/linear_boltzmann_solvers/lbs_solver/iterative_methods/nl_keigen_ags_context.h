@@ -16,13 +16,13 @@ class LBSSolver;
 
 struct NLKEigenAGSContext : public NonLinearSolverContext
 {
-  LBSSolver& lbs_solver_;
-  KResidualFunctionContext kresid_func_context_;
+  LBSSolver& lbs_solver;
+  KResidualFunctionContext kresid_func_context;
 
   std::vector<int> groupset_ids;
 
   explicit NLKEigenAGSContext(LBSSolver& lbs_solver)
-    : lbs_solver_(lbs_solver), kresid_func_context_({lbs_solver.TextName(), 1.0})
+    : lbs_solver(lbs_solver), kresid_func_context({lbs_solver.TextName(), 1.0})
   {
   }
 

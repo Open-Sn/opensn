@@ -92,7 +92,7 @@ NonLinearKEigen::Execute()
   if (lbs_solver_.Options().use_precursors)
   {
     lbs_solver_.ComputePrecursors();
-    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context_.k_eff);
+    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
   lbs_solver_.UpdateFieldFunctions();
