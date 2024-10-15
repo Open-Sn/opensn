@@ -261,9 +261,9 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
     for (uint c = 0; c < num_comps; ++c)
     {
-      std::string component_name = ff_ptr->Name() + unknown.text_name_;
+      std::string component_name = ff_ptr->Name() + unknown.text_name;
       if (num_comps > 1)
-        component_name += unknown.component_text_names_[c];
+        component_name += unknown.component_text_names[c];
 
       vtkNew<vtkDoubleArray> point_array;
       vtkNew<vtkDoubleArray> cell_array;

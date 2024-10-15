@@ -22,17 +22,17 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
   if (unk_type == UnknownType::SCALAR)
   {
     unknowns_.emplace_back(UnknownType::SCALAR, 1, last_unknown_end + 1);
-    unknowns_.back().text_name_ = "Unknown_" + std::to_string(unknowns_.size() - 1);
+    unknowns_.back().text_name = "Unknown_" + std::to_string(unknowns_.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_2)
   {
     unknowns_.emplace_back(UnknownType::VECTOR_2, 2, last_unknown_end + 1);
-    unknowns_.back().text_name_ = "Unknown_" + std::to_string(unknowns_.size() - 1);
+    unknowns_.back().text_name = "Unknown_" + std::to_string(unknowns_.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_3)
   {
     unknowns_.emplace_back(UnknownType::VECTOR_3, 3, last_unknown_end + 1);
-    unknowns_.back().text_name_ = "Unknown_" + std::to_string(unknowns_.size() - 1);
+    unknowns_.back().text_name = "Unknown_" + std::to_string(unknowns_.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_N)
   {
@@ -44,7 +44,7 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
     }
 
     unknowns_.emplace_back(UnknownType::VECTOR_N, dimension, last_unknown_end + 1);
-    unknowns_.back().text_name_ = "Unknown_" + std::to_string(unknowns_.size() - 1);
+    unknowns_.back().text_name = "Unknown_" + std::to_string(unknowns_.size() - 1);
   }
   else if (unk_type == UnknownType::TENSOR)
   {
@@ -102,7 +102,7 @@ UnknownManager::SetUnknownNumOffBlockConnections(unsigned int unknown_id, int nu
     Exit(EXIT_FAILURE);
   }
 
-  for (auto& val : unknowns_[unknown_id].num_off_block_connections_)
+  for (auto& val : unknowns_[unknown_id].num_off_block_connections)
     val = num_conn;
 }
 
@@ -121,7 +121,7 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_i
     Exit(EXIT_FAILURE);
   }
 
-  if (component < 0 or component >= unknowns_[unknown_id].num_components_)
+  if (component < 0 or component >= unknowns_[unknown_id].num_components)
   {
     log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
                          " illegal component index. "
@@ -129,7 +129,7 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(unsigned int unknown_i
     Exit(EXIT_FAILURE);
   }
 
-  unknowns_[unknown_id].num_off_block_connections_[component] = num_conn;
+  unknowns_[unknown_id].num_off_block_connections[component] = num_conn;
 }
 
 void
@@ -145,7 +145,7 @@ UnknownManager::SetUnknownTextName(unsigned int unknown_id, const std::string& t
     Exit(EXIT_FAILURE);
   }
 
-  unknowns_[unknown_id].text_name_ = text_name;
+  unknowns_[unknown_id].text_name = text_name;
 }
 
 void
@@ -163,7 +163,7 @@ UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
     Exit(EXIT_FAILURE);
   }
 
-  if (component < 0 or component >= unknowns_[unknown_id].num_components_)
+  if (component < 0 or component >= unknowns_[unknown_id].num_components)
   {
     log.LogAllError() << "UnknownManager failed call to SetUnknownComponentTextName,"
                          " illegal component index. "
@@ -171,7 +171,7 @@ UnknownManager::SetUnknownComponentTextName(unsigned int unknown_id,
     Exit(EXIT_FAILURE);
   }
 
-  unknowns_[unknown_id].component_text_names_[component] = text_name;
+  unknowns_[unknown_id].component_text_names[component] = text_name;
 }
 
 } // namespace opensn

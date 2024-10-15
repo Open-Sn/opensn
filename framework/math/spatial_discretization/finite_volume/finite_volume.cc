@@ -188,7 +188,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
   for (int uk = 0; uk < num_uk; ++uk)
   {
-    const unsigned int num_comps = unknown_manager.unknowns_[uk].num_components_;
+    const unsigned int num_comps = unknown_manager.unknowns_[uk].num_components;
     for (int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : ref_grid_.local_cells)
@@ -318,7 +318,7 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
     for (size_t u = 0; u < num_uks; ++u)
     {
       const auto& unkn = unknown_manager.unknowns_[u];
-      const size_t num_comps = unkn.num_components_;
+      const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {
         const int64_t dofmap = MapDOF(cell, 0, unknown_manager, u, c);

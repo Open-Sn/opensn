@@ -583,7 +583,7 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
     for (size_t u = 0; u < num_unknowns; ++u)
     {
       const auto& unkn = unknown_manager.unknowns_[u];
-      const size_t num_comps = unkn.num_components_;
+      const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {
         size_t block_id = unknown_manager.MapUnknown(u, c);

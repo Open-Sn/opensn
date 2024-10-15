@@ -190,11 +190,11 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
     const auto& ukA = from_vec_uk_structure.unknowns_.at(from_vec_uk_id);
     const auto& ukB = to_vec_uk_structure.unknowns_.at(to_vec_uk_id);
 
-    if (ukA.num_components_ != ukB.num_components_)
+    if (ukA.num_components != ukB.num_components)
       throw std::logic_error(fname + " Unknowns do not have the "
                                      "same number of components");
 
-    const size_t num_comps = ukA.num_components_;
+    const size_t num_comps = ukA.num_components;
 
     for (const auto& cell : ref_grid_.local_cells)
     {
