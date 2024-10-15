@@ -94,7 +94,6 @@ LBSReadSourceMoments(lua_State* L)
   const auto file_base = LuaArg<std::string>(L, 2);
   auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
-  // Get pointer to solver
   auto& lbs_solver =
     opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
@@ -114,7 +113,6 @@ LBSReadFluxMoments(lua_State* L)
   const auto file_base = LuaArg<std::string>(L, 2);
   auto single_file_flag = LuaArgOptional<bool>(L, 3, false);
 
-  // Get pointer to solver
   auto& lbs_solver =
     opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
   LBSSolverIO::ReadFluxMoments(lbs_solver, file_base, single_file_flag);
