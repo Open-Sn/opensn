@@ -14,9 +14,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   NLKEigenDiffContext* nl_context_ptr;
   SNESGetApplicationContext(snes, &nl_context_ptr);
 
-  auto& diff_solver = nl_context_ptr->diff_solver_;
+  auto& diff_solver = nl_context_ptr->diff_solver;
 
-  auto& lbs_solver = nl_context_ptr->lbs_solver_;
+  auto& lbs_solver = nl_context_ptr->lbs_solver;
   auto& groupsets = lbs_solver.Groupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
   auto& front_gs = groupsets.front();
@@ -25,11 +25,11 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto phi_temp = phi_old_local;
 
-  const auto& phi_l = nl_context_ptr->phi_l_;
-  const auto& phi_lph_i = nl_context_ptr->phi_lph_i_;
-  const auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1_;
+  const auto& phi_l = nl_context_ptr->phi_l;
+  const auto& phi_lph_i = nl_context_ptr->phi_lph_i;
+  const auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1;
   const auto& k_l = nl_context_ptr->k_l;
-  const auto& Sf = nl_context_ptr->Sf_;
+  const auto& Sf = nl_context_ptr->Sf;
 
   // Lambdas
   auto SetLBSFissionSource = [&active_set_source_function, &front_gs](
@@ -110,7 +110,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   //  opensn::log.Log() << Phi0FissionProdL2Norm(delta_phi) << " " << lambda;
 
-  nl_context_ptr->kresid_func_context_.k_eff = lambda;
+  nl_context_ptr->kresid_func_context.k_eff = lambda;
 
   return 0;
 }

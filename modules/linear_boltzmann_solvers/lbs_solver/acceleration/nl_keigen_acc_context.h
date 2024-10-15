@@ -14,37 +14,37 @@ namespace opensn
 
 struct NLKEigenDiffContext : public NonLinearSolverContext
 {
-  DiffusionMIPSolver& diff_solver_;
-  LBSSolver& lbs_solver_;
-  int verbosity_level_;
-  KResidualFunctionContext kresid_func_context_;
+  DiffusionMIPSolver& diff_solver;
+  LBSSolver& lbs_solver;
+  int verbosity_level;
+  KResidualFunctionContext kresid_func_context;
 
-  size_t diff_num_local_dofs_;
+  size_t diff_num_local_dofs;
 
-  std::vector<double> phi_l_;
-  std::vector<double> phi_lph_i_;
-  std::vector<double> phi_lph_ip1_;
-  std::vector<double> Sf_;
+  std::vector<double> phi_l;
+  std::vector<double> phi_lph_i;
+  std::vector<double> phi_lph_ip1;
+  std::vector<double> Sf;
   double k_l = 1.0;
 
   explicit NLKEigenDiffContext(DiffusionMIPSolver& diff_solver,
                                LBSSolver& lbs_solver,
                                int verbosity_level)
-    : diff_solver_(diff_solver),
-      lbs_solver_(lbs_solver),
-      verbosity_level_(verbosity_level),
-      kresid_func_context_({diff_solver.TextName(), 1.0}),
-      diff_num_local_dofs_(diff_solver_.GetNumPhiIterativeUnknowns().first)
+    : diff_solver(diff_solver),
+      lbs_solver(lbs_solver),
+      verbosity_level(verbosity_level),
+      kresid_func_context({diff_solver.TextName(), 1.0}),
+      diff_num_local_dofs(diff_solver.GetNumPhiIterativeUnknowns().first)
   {
   }
 
   std::vector<double> PhiVecToSTLVec(Vec phi) const
   {
-    std::vector<double> output(diff_num_local_dofs_, 0.0);
+    std::vector<double> output(diff_num_local_dofs, 0.0);
 
     const double* phi_raw;
     VecGetArrayRead(phi, &phi_raw);
-    for (size_t i = 0; i < diff_num_local_dofs_; ++i)
+    for (size_t i = 0; i < diff_num_local_dofs; ++i)
       output[i] = phi_raw[i];
     VecRestoreArrayRead(phi, &phi_raw);
 
@@ -55,7 +55,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   {
     double* phi_raw;
     VecGetArray(phi, &phi_raw);
-    for (size_t i = 0; i < diff_num_local_dofs_; ++i)
+    for (size_t i = 0; i < diff_num_local_dofs; ++i)
       phi_raw[i] = input[i];
     VecRestoreArray(phi, &phi_raw);
   }
