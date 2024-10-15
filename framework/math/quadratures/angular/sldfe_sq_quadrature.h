@@ -63,8 +63,8 @@ public:
     ISOLATED,
     //    MULTI_VARIATE_SECANT
   };
-  QuadraturePointOptimization qp_optimization_type_ = QuadraturePointOptimization::EMPIRICAL;
-  std::string output_filename_prefix_;
+  QuadraturePointOptimization qp_optimization_type = QuadraturePointOptimization::EMPIRICAL;
+  std::string output_filename_prefix;
 
 private:
   /// Inscribed cude side length
@@ -74,7 +74,7 @@ private:
   std::vector<SphericalQuadrilateral> initial_octant_SQs_;
 
 public:
-  std::vector<SphericalQuadrilateral> deployed_SQs_;
+  std::vector<SphericalQuadrilateral> deployed_SQs;
 
 private:
   std::vector<std::vector<SphericalQuadrilateral>> deployed_SQs_history_;
