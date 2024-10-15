@@ -143,7 +143,7 @@ VectorGhostCommunicator::VectorGhostCommunicator(VectorGhostCommunicator&& other
 int64_t
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
-  OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map_.count(ghost_id) == 0,
+  OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map.count(ghost_id) == 0,
                           "The given ghost id does not belong to this communicator.");
 
   // Get the position within the ghost id vector of the given ghost id
@@ -164,10 +164,10 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
                             std::to_string(local_size_ + ghost_ids_.size()));
 
   // Serialize the data that needs to be sent
-  const size_t send_size = cached_parallel_data_.local_ids_to_send_.size();
+  const size_t send_size = cached_parallel_data_.local_ids_to_send.size();
   std::vector<double> send_data;
   send_data.reserve(send_size);
-  for (const int64_t local_id : cached_parallel_data_.local_ids_to_send_)
+  for (const int64_t local_id : cached_parallel_data_.local_ids_to_send)
     send_data.push_back(ghosted_vector[local_id]);
 
   // Create serialized storage for the data to be received
@@ -176,11 +176,11 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
 
   // Communicate the ghost data
   comm_.all_to_all(send_data,
-                   cached_parallel_data_.sendcounts_,
-                   cached_parallel_data_.senddispls_,
+                   cached_parallel_data_.sendcounts,
+                   cached_parallel_data_.senddispls,
                    recv_data,
-                   cached_parallel_data_.recvcounts_,
-                   cached_parallel_data_.recvdispls_);
+                   cached_parallel_data_.recvcounts,
+                   cached_parallel_data_.recvdispls);
 
   // Lastly, populate the local vector with ghost data. All ghost data is
   // appended to the back of the local vector. Using the mapping between
@@ -188,7 +188,7 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
   // ordering of the ghost indices, this can be accomplished.
   for (size_t k = 0; k < recv_size; ++k)
     ghosted_vector[local_size_ + k] =
-      recv_data[cached_parallel_data_.ghost_to_recv_map_.at(ghost_ids_[k])];
+      recv_data[cached_parallel_data_.ghost_to_recv_map.at(ghost_ids_[k])];
 }
 
 std::vector<double>
