@@ -113,8 +113,8 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
   {
     auto direction_num = as_angle_indices[as_ss_idx];
-    auto omega = groupset_.quadrature_->omegas_[direction_num];
-    auto wt = groupset_.quadrature_->weights_[direction_num];
+    auto omega = groupset_.quadrature_->omegas[direction_num];
+    auto wt = groupset_.quadrature_->weights[direction_num];
 
     // Reset right-hand side
     for (int gsg = 0; gsg < gs_ss_size_; ++gsg)

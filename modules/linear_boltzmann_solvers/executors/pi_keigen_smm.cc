@@ -329,7 +329,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
   {
     const auto& psi_uk_man = groupset.psi_uk_man_;
     const auto& quad = groupset.quadrature_;
-    const auto num_gs_dirs = quad->omegas_.size();
+    const auto num_gs_dirs = quad->omegas.size();
 
     const auto first_grp = groupset.groups_.front().id_;
     const auto num_gs_groups = groupset.groups_.size();
@@ -354,8 +354,8 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
           // Perform the quad integration
           for (int d = 0; d < num_gs_dirs; ++d)
           {
-            const auto& omega = quad->omegas_[d];
-            const auto& wt = quad->weights_[d];
+            const auto& omega = quad->omegas[d];
+            const auto& wt = quad->weights[d];
 
             const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
             const auto coeff = wt * psi[gs][psi_dof];
@@ -400,8 +400,8 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
               // Perform the quadrature integration
               for (int d = 0; d < num_gs_dirs; ++d)
               {
-                const auto& wt = quad->weights_[d];
-                const auto& omega = quad->omegas_[d];
+                const auto& wt = quad->weights[d];
+                const auto& omega = quad->omegas[d];
                 const auto mu = std::fabs(omega.Dot(face.normal_));
 
                 const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
@@ -895,8 +895,8 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
   for (const auto& groupset : lbs_solver_.Groupsets())
   {
     const auto& quad = groupset.quadrature_;
-    const auto num_gs_dirs = quad->omegas_.size();
-    const auto wt_sum = std::accumulate(quad->weights_.begin(), quad->weights_.end(), 0.0);
+    const auto num_gs_dirs = quad->omegas.size();
+    const auto wt_sum = std::accumulate(quad->weights.begin(), quad->weights.end(), 0.0);
 
     // Loop over cells
     for (const auto& cell : grid.local_cells)
@@ -920,7 +920,7 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
           // |\Omega \cdot \hat{n}| divided by the sum of the quadrature weights.
           double val = 0.0;
           for (int d = 0; d < num_gs_dirs; ++d)
-            val += quad->weights_[d] * std::fabs(quad->omegas_[d].Dot(face.normal_));
+            val += quad->weights[d] * std::fabs(quad->omegas[d].Dot(face.normal_));
           bndry_factors_[imap][gs] = val / wt_sum;
         }
         ++f;

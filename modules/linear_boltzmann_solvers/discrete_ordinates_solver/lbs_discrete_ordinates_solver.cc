@@ -518,7 +518,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     std::map<int, int> reversed_angle_map;
     if (options_.save_angular_flux)
     {
-      const auto& omegas = groupset.quadrature_->omegas_;
+      const auto& omegas = groupset.quadrature_->omegas;
       const auto num_gs_angles = omegas.size();
 
       // Go through angles until all are paired
@@ -672,10 +672,10 @@ DiscreteOrdinatesSolver::ComputeBalance()
         {
           for (const auto& groupset : groupsets_)
           {
-            for (int n = 0; n < groupset.quadrature_->omegas_.size(); ++n)
+            for (int n = 0; n < groupset.quadrature_->omegas.size(); ++n)
             {
-              const auto& omega = groupset.quadrature_->omegas_[n];
-              const double wt = groupset.quadrature_->weights_[n];
+              const auto& omega = groupset.quadrature_->omegas[n];
+              const double wt = groupset.quadrature_->weights[n];
               const double mu = omega.Dot(face.normal_);
 
               if (mu < 0.0)
@@ -773,7 +773,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
   const auto& psi_uk_man = groupset.psi_uk_man_;
   const auto& quadrature = groupset.quadrature_;
 
-  const auto num_gs_angles = quadrature->omegas_.size();
+  const auto num_gs_angles = quadrature->omegas.size();
   const auto num_gs_groups = groupset.groups_.size();
 
   const auto gsi = groupset.groups_.front().id_;
@@ -798,8 +798,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
           const auto i = cell_mapping.MapFaceNode(f, fi);
           for (unsigned int n = 0; n < num_gs_angles; ++n)
           {
-            const auto& omega = quadrature->omegas_[n];
-            const auto& weight = quadrature->weights_[n];
+            const auto& omega = quadrature->omegas[n];
+            const auto& weight = quadrature->weights[n];
             const auto mu = omega.Dot(face.normal_);
             if (mu > 0.0)
             {
@@ -856,7 +856,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
     const auto& psi_uk_man = groupset.psi_uk_man_;
     const auto& quadrature = groupset.quadrature_;
 
-    const auto num_gs_angles = quadrature->omegas_.size();
+    const auto num_gs_angles = quadrature->omegas.size();
     const auto num_gs_groups = groupset.groups_.size();
     const auto first_gs_group = groupset.groups_.front().id_;
 
@@ -883,8 +883,8 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
             const auto i = cell_mapping.MapFaceNode(f, fi);
             for (unsigned int n = 0; n < num_gs_angles; ++n)
             {
-              const auto& omega = quadrature->omegas_[n];
-              const auto& weight = quadrature->weights_[n];
+              const auto& omega = quadrature->omegas[n];
+              const auto& weight = quadrature->weights[n];
               const auto mu = omega.Dot(face.normal_);
               if (mu <= 0.0)
                 continue;
@@ -955,7 +955,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         continue;
 
       const size_t master_dir_id = so_grouping.front();
-      const auto& omega = quadrature->omegas_[master_dir_id];
+      const auto& omega = quadrature->omegas[master_dir_id];
 
       bool verbose = false;
       if (not verbose_sweep_angles_.empty())
@@ -1019,9 +1019,9 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
   const std::string fname = __FUNCTION__;
 
   // Checks
-  if (quadrature.omegas_.empty())
+  if (quadrature.omegas.empty())
     throw std::logic_error(fname + ": Quadrature with no omegas cannot be used.");
-  if (quadrature.weights_.empty())
+  if (quadrature.weights.empty())
     throw std::logic_error(fname + ": Quadrature with no weights cannot be used.");
 
   // Build groupings
@@ -1035,7 +1035,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     // the direction indices.
     case AngleAggregationType::SINGLE:
     {
-      const size_t num_dirs = quadrature.omegas_.size();
+      const size_t num_dirs = quadrature.omegas.size();
       for (size_t n = 0; n < num_dirs; ++n)
         unq_so_grps.push_back({n});
       break;
@@ -1053,7 +1053,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type_;
+      const auto quad_type = quadrature.type;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using polar angle aggregation for "
                                        "which only Product-type quadratures are supported.");
@@ -1118,7 +1118,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                   "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type_;
+      const auto quad_type = quadrature.type;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using azimuthal angle aggregation for "
                                        "which only Product-type quadratures are supported.");
@@ -1133,7 +1133,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;
           for (const auto& dir_id : dir_set.second)
-            if (quadrature.abscissae_[dir_id].phi > M_PI_2)
+            if (quadrature.abscissae[dir_id].phi > M_PI_2)
               group1.push_back(dir_id);
             else
               group2.push_back(dir_id);

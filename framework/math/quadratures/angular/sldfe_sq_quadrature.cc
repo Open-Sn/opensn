@@ -638,9 +638,9 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
 void
 SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
 {
-  abscissae_.clear();
-  weights_.clear();
-  omegas_.clear();
+  abscissae.clear();
+  weights.clear();
+  omegas.clear();
 
   for (const auto& sq : deployed_SQs_)
   {
@@ -657,9 +657,9 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
 
       const auto abscissa = QuadraturePointPhiTheta(phi, theta);
 
-      abscissae_.push_back(abscissa);
-      weights_.push_back(weight);
-      omegas_.push_back(omega);
+      abscissae.push_back(abscissa);
+      weights.push_back(weight);
+      omegas.push_back(omega);
     }
   }
 }

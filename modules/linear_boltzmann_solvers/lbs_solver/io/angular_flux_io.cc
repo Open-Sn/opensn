@@ -68,7 +68,7 @@ LBSSolverIO::WriteAngularFluxes(
     const auto& quadrature = groupset.quadrature_;
 
     const uint64_t groupset_id = groupset.id_;
-    const uint64_t num_gs_angles = quadrature->omegas_.size();
+    const uint64_t num_gs_angles = quadrature->omegas.size();
     const uint64_t num_gs_groups = groupset.groups_.size();
 
     file.write((char*)&groupset_id, sizeof(uint64_t));
@@ -154,7 +154,7 @@ LBSSolverIO::ReadAngularFluxes(
     const auto& uk_man = groupset.psi_uk_man_;
     const auto& quadrature = groupset.quadrature_;
 
-    const uint64_t num_gs_angles = quadrature->omegas_.size();
+    const uint64_t num_gs_angles = quadrature->omegas.size();
     const uint64_t num_gs_groups = groupset.groups_.size();
 
     OpenSnLogicalErrorIf(file_groupset_id != dest.size(),

@@ -59,7 +59,7 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_gs_angles = groupset.quadrature_->abscissae_.size();
+  const uint64_t num_gs_angles = groupset.quadrature_->abscissae.size();
   const uint64_t num_gs_groups = groupset.groups_.size();
   const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
 
@@ -133,7 +133,7 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_gs_angles = groupset.quadrature_->abscissae_.size();
+  const uint64_t num_gs_angles = groupset.quadrature_->abscissae.size();
   const uint64_t num_gs_groups = groupset.groups_.size();
   const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
 

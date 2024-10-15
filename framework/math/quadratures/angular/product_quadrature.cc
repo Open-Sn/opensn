@@ -15,12 +15,12 @@ namespace opensn
 void
 ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
                                    const std::vector<double>& polar,
-                                   const std::vector<double>& weights,
+                                   const std::vector<double>& wts,
                                    bool verbose)
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
-  size_t Nw = weights.size();
+  size_t Nw = wts.size();
 
   if (Nw != Na * Np)
   {
@@ -49,8 +49,8 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
   for (unsigned int j = 0; j < Np; ++j)
     map_directions_.emplace(j, std::vector<unsigned int>());
 
-  abscissae_.clear();
-  weights_.clear();
+  abscissae.clear();
+  weights.clear();
   std::stringstream ostr;
   double weight_sum = 0.0;
   for (unsigned int i = 0; i < Na; ++i)
@@ -61,10 +61,10 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
       const auto abscissa = QuadraturePointPhiTheta(azimu_ang_[i], polar_ang_[j]);
 
-      abscissae_.emplace_back(abscissa);
+      abscissae.emplace_back(abscissa);
 
-      const double weight = weights[i * Np + j];
-      weights_.emplace_back(weight);
+      const double weight = wts[i * Np + j];
+      weights.emplace_back(weight);
       weight_sum += weight;
 
       if (verbose)
@@ -82,15 +82,15 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
   }
 
   // Create omega list
-  omegas_.clear();
-  for (const auto& qpoint : abscissae_)
+  omegas.clear();
+  for (const auto& qpoint : abscissae)
   {
     Vector3 new_omega;
     new_omega.x = sin(qpoint.theta) * cos(qpoint.phi);
     new_omega.y = sin(qpoint.theta) * sin(qpoint.phi);
     new_omega.z = cos(qpoint.theta);
 
-    omegas_.emplace_back(new_omega);
+    omegas.emplace_back(new_omega);
 
     if (verbose)
       log.Log() << "Quadrature angle=" << new_omega.PrintS();
@@ -131,8 +131,8 @@ ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
     {
       const auto pmap = new_polar_map[p];
       const auto dmap = GetAngleNum(pmap, a);
-      new_weights.push_back(weights_[dmap]);
-      weight_sum += weights_[dmap];
+      new_weights.push_back(weights[dmap]);
+      weight_sum += weights[dmap];
     }
 
   if (normalization > 0.0)

@@ -93,8 +93,8 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
-      auto omega = groupset_.quadrature_->omegas_[direction_num];
-      auto wt = groupset_.quadrature_->weights_[direction_num];
+      auto omega = groupset_.quadrature_->omegas[direction_num];
+      auto wt = groupset_.quadrature_->weights[direction_num];
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;

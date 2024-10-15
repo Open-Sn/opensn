@@ -76,9 +76,9 @@ SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool ve
   // Product quadrature initialization
   // Compute weights, abscissae $(0, \vartheta_{p})$ and direction vectors
   // $\omega_{p} := ((1-\mu_{p}^{2})^{1/2}, 0, \mu_{p})$
-  weights_.clear();
-  abscissae_.clear();
-  omegas_.clear();
+  weights.clear();
+  abscissae.clear();
+  omegas.clear();
   for (size_t p = 0; p < polar_quad.weights.size(); ++p)
   {
     const auto pol_wei = polar_quad.weights[p];
@@ -89,13 +89,13 @@ SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool ve
     const auto abscissa = QuadraturePointPhiTheta(0, std::acos(pol_abs));
     const auto omega = Vector3(pol_com, 0, pol_abs);
 
-    weights_.emplace_back(weight);
-    abscissae_.emplace_back(abscissa);
-    omegas_.emplace_back(omega);
+    weights.emplace_back(weight);
+    abscissae.emplace_back(abscissa);
+    omegas.emplace_back(omega);
   }
-  weights_.shrink_to_fit();
-  abscissae_.shrink_to_fit();
-  omegas_.shrink_to_fit();
+  weights.shrink_to_fit();
+  abscissae.shrink_to_fit();
+  omegas.shrink_to_fit();
 
   // Map of direction indices
   map_directions_.clear();
@@ -122,13 +122,13 @@ SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool ve
       log.Log() << std::endl;
     }
     log.Log() << "curvilinear product quadrature : spherical" << std::endl;
-    for (size_t k = 0; k < weights_.size(); ++k)
-      log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
-                << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
-                << ", omega = " << omegas_[k].PrintStr()
+    for (size_t k = 0; k < weights.size(); ++k)
+      log.Log() << "angle index " << k << ": weight = " << weights[k] << ", (phi, theta) = ("
+                << abscissae[k].phi << ", " << abscissae[k].theta << ")"
+                << ", omega = " << omegas[k].PrintStr()
                 << ", fac_diamond_difference = " << fac_diamond_difference_[k]
                 << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
-    const auto sum_weights = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+    const auto sum_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
     log.Log() << "sum(weights) = " << sum_weights << std::endl;
   }
 }
@@ -136,19 +136,19 @@ SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool ve
 void
 SphericalQuadrature::InitializeParameters()
 {
-  fac_diamond_difference_.resize(weights_.size(), 1);
-  fac_streaming_operator_.resize(weights_.size(), 0);
+  fac_diamond_difference_.resize(weights.size(), 1);
+  fac_streaming_operator_.resize(weights.size(), 0);
 
   // Interface quantities initialised to starting direction values
   double alpha_interface = 0;
-  std::vector<double> mu_interface(2, omegas_[map_directions_[0].front()].z);
+  std::vector<double> mu_interface(2, omegas[map_directions_[0].front()].z);
 
   // Initialization permits to forego start direction and final direction
   for (size_t p = 1; p < map_directions_.size() - 1; ++p)
   {
     const auto k = map_directions_[p][0];
-    const auto w_p = weights_[k];
-    const auto mu_p = omegas_[k].z;
+    const auto w_p = weights[k];
+    const auto mu_p = omegas[k].z;
 
     alpha_interface -= w_p * mu_p;
 

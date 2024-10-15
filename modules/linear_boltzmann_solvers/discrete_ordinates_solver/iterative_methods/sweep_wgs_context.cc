@@ -60,7 +60,7 @@ SweepWGSContext::PreSetupCallback()
     log.Log() << "\n\n"
               << "********** Solving groupset " << groupset_.id_ << " with " << method_name
               << ".\n\n"
-              << "Quadrature number of angles: " << groupset_.quadrature_->abscissae_.size() << "\n"
+              << "Quadrature number of angles: " << groupset_.quadrature_->abscissae.size() << "\n"
               << "Groups " << groupset_.groups_.front().id_ << " " << groupset_.groups_.back().id_
               << "\n\n";
   }
@@ -102,7 +102,7 @@ SweepWGSContext::SystemSize()
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t globl_size =
     globl_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
-  const size_t num_angles = groupset_.quadrature_->abscissae_.size();
+  const size_t num_angles = groupset_.quadrature_->abscissae.size();
   const size_t num_psi_global = globl_node_count * num_angles * groupset_.groups_.size();
   const size_t num_delayed_psi_globl = num_delayed_psi_info.second;
 
@@ -171,7 +171,7 @@ SweepWGSContext::PostSolveCallback()
     for (auto time : sweep_times_)
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
-    size_t num_angles = groupset_.quadrature_->abscissae_.size();
+    size_t num_angles = groupset_.quadrature_->abscissae.size();
     size_t num_unknowns = lbs_solver_.GlobalNodeCount() * num_angles * groupset_.groups_.size();
 
     log.Log() << "\n       Average sweep time (s):        "

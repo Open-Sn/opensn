@@ -49,7 +49,7 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
         break;
       }
 
-  size_t num_angles = quadrature.omegas_.size();
+  size_t num_angles = quadrature.omegas.size();
 
   std::vector<int> angle_indices;
   std::vector<Vector3> angle_vectors;
@@ -65,10 +65,10 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
   for (int n = 0; n < num_angles_int; ++n)
     angle_indices.emplace_back(n);
   for (int n = 0; n < num_angles_int; ++n)
-    angle_vectors.emplace_back(quadrature.omegas_[n]);
+    angle_vectors.emplace_back(quadrature.omegas[n]);
   for (int n = 0; n < num_angles_int; ++n)
   {
-    auto& abscissae = quadrature.abscissae_[n];
+    auto& abscissae = quadrature.abscissae[n];
     double phi = abscissae.phi;
     double theta = abscissae.theta;
     phi_theta_angles.emplace_back(std::make_pair(phi, theta));
