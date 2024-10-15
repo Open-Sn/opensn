@@ -182,7 +182,10 @@ PRKSolver::Step()
   else
     OpenSnLogicalError("Unsupported time integration scheme.");
 
-  period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
+  if ((std::abs(x_t_[0]) > 1e-12) && std::abs((x_tp1_[0] / x_t_[0]) - 1.) > 1e-12)
+    period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
+  else
+    period_tph_ = 0.0;
 
   if (period_tph_ > 0.0 and period_tph_ > 1.0e6)
     period_tph_ = 1.0e6;
