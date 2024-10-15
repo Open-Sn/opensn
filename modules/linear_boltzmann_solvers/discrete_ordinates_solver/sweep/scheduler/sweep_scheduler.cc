@@ -59,13 +59,13 @@ SweepScheduler::InitializeAlgoDOG()
 
   // Load all anglesets in preperation for sorting
   // Loop over angleset groups
-  for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); q++)
+  for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); ++q)
   {
     AngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
 
     // Loop over anglesets in group
     size_t num_anglesets = angleset_group.AngleSets().size();
-    for (size_t as = 0; as < num_anglesets; as++)
+    for (size_t as = 0; as < num_anglesets; ++as)
     {
       auto angleset = angleset_group.AngleSets()[as];
       const auto& spds = dynamic_cast<const SPDS_AdamsAdamsHawkins&>(angleset->GetSPDS());
@@ -74,9 +74,9 @@ SweepScheduler::InitializeAlgoDOG()
 
       // Find location depth
       int loc_depth = -1;
-      for (size_t level = 0; level < leveled_graph.size(); level++)
+      for (size_t level = 0; level < leveled_graph.size(); ++level)
       {
-        for (size_t index = 0; index < leveled_graph[level].item_id.size(); index++)
+        for (size_t index = 0; index < leveled_graph[level].item_id.size(); ++index)
         {
           if (leveled_graph[level].item_id[index] == opensn::mpi_comm.rank())
           {

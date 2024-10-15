@@ -44,15 +44,15 @@ SimTest93_RayTracing(const InputParameters&)
   // Build harmonic map
   std::vector<std::pair<int, int>> m_to_ell_em_map;
   if (dimension == 1)
-    for (int ell = 0; ell <= scattering_order; ell++)
+    for (int ell = 0; ell <= scattering_order; ++ell)
       m_to_ell_em_map.emplace_back(ell, 0);
   else if (dimension == 2)
-    for (int ell = 0; ell <= scattering_order; ell++)
+    for (int ell = 0; ell <= scattering_order; ++ell)
       for (int m = -ell; m <= ell; m += 2)
         m_to_ell_em_map.emplace_back(ell, m);
   else if (dimension == 3)
-    for (int ell = 0; ell <= scattering_order; ell++)
-      for (int m = -ell; m <= ell; m++)
+    for (int ell = 0; ell <= scattering_order; ++ell)
+      for (int m = -ell; m <= ell; ++m)
         m_to_ell_em_map.emplace_back(ell, m);
 
   // Make SDM

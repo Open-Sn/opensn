@@ -67,7 +67,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   vertices.clear();
   vertices.resize(num_nodes);
 
-  for (int n = 0; n < num_nodes; n++)
+  for (int n = 0; n < num_nodes; ++n)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
@@ -176,7 +176,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_elems))
     throw std::logic_error(fname + ": Failed to read number of elements.");
 
-  for (int n = 0; n < num_elems; n++)
+  for (int n = 0; n < num_elems; ++n)
   {
     int elem_type, num_tags, physical_reg, tag, element_index;
 
@@ -190,7 +190,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     if (not(iss >> physical_reg))
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
-    for (int i = 1; i < num_tags; i++)
+    for (int i = 1; i < num_tags; ++i)
       if (not(iss >> tag))
         throw std::logic_error(fname + ": Failed when reading tags.");
 
@@ -220,7 +220,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_elems))
     throw std::logic_error(fname + ": Failed to read number of elements.");
 
-  for (int n = 0; n < num_elems; n++)
+  for (int n = 0; n < num_elems; ++n)
   {
     int elem_type, num_tags, physical_reg, tag, element_index;
 
@@ -234,7 +234,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     if (not(iss >> physical_reg))
       throw std::logic_error(fname + ": Failed while reading physical region.");
 
-    for (int i = 1; i < num_tags; i++)
+    for (int i = 1; i < num_tags; ++i)
       if (not(iss >> tag))
         throw std::logic_error(fname + ": Failed when reading tags.");
 
@@ -319,7 +319,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
     else if (elem_type == 2 or elem_type == 3) // 3-node triangle or 4-node quadrangle
     {
       size_t num_verts = cell.vertex_ids.size();
-      for (size_t e = 0; e < num_verts; e++)
+      for (size_t e = 0; e < num_verts; ++e)
       {
         size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
         UnpartitionedMesh::LightWeightFace face;

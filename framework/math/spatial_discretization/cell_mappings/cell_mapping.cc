@@ -132,7 +132,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
 
       size_t num_faces = cell.faces_.size();
       areas.assign(num_faces, 0.0);
-      for (size_t f = 0; f < num_faces; f++)
+      for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces_[f];
         const size_t num_edges = face.vertex_ids_.size();

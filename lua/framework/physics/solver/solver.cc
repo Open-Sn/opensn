@@ -177,7 +177,7 @@ SolverGetFieldFunctionList(lua_State* L)
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   std::vector<size_t> ff_handles;
-  for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ff++)
+  for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ++ff)
   {
     int pff_count = -1;
     bool found = false;

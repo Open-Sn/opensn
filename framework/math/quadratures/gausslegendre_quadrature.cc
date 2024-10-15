@@ -102,7 +102,7 @@ GaussLegendreQuadrature::Initialize(unsigned int N,
 
       // Compute the weights
       weights.resize(N, 1.0);
-      for (size_t k = 0; k < qpoints.size(); k++)
+      for (size_t k = 0; k < qpoints.size(); ++k)
       {
         weights[k] =
           2.0 * (1.0 - qpoints[k][0] * qpoints[k][0]) /
@@ -147,7 +147,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
   double delta = 2.0 / num_search_intvls;
   std::vector<double> xk(N, 0.0);
   int counter = -1;
-  for (size_t i = 0; i < num_search_intvls; i++)
+  for (size_t i = 0; i < num_search_intvls; ++i)
   {
     double x_i = -1.0 + i * delta;
     double x_ip1 = x_i + delta;
@@ -163,9 +163,9 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
   //  - a = block bracket containing the second derivative
   //  - b = denominator
   //  - c = everything but xold
-  for (int k = 0; k < N; k++)
+  for (int k = 0; k < N; ++k)
   {
-    for (size_t iteration = 0; iteration < max_iters; iteration++)
+    for (size_t iteration = 0; iteration < max_iters; ++iteration)
     {
       double xold = xk[k];
       double f = Legendre(N, xold);        // Function evaluation
@@ -174,7 +174,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
 
       // Compute sum 1
       double S1 = 0.0;
-      for (int i = 0; i <= (k - 1); i++)
+      for (int i = 0; i <= (k - 1); ++i)
         S1 += 1.0 / (xk[k] - xk[i]);
 
       // Compute B at x_k
@@ -182,7 +182,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
 
       // Compute sum 2
       double S2 = 0.0;
-      for (int i = 0; i <= (k - 1); i++)
+      for (int i = 0; i <= (k - 1); ++i)
         S2 += 1.0 / (xk[k] - xk[i]) / (xk[k] - xk[i]);
 
       // Compute final formula

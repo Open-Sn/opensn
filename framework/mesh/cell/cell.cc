@@ -172,7 +172,7 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
            << "CellFace::GetNeighborAssociatedFace.\n"
            << "Reference face with centroid at: " << cur_face.centroid_.PrintS() << "\n"
            << "Adjacent cell: " << adj_cell.global_id_ << "\n";
-    for (size_t afi = 0; afi < adj_cell.faces_.size(); afi++)
+    for (size_t afi = 0; afi < adj_cell.faces_.size(); ++afi)
     {
       outstr << "Adjacent cell face " << afi << " centroid "
              << adj_cell.faces_[afi].centroid_.PrintS();

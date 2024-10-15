@@ -220,7 +220,7 @@ RayTracer::TraceSlab(const Cell& cell,
   Vector3 pos_f_line = pos_i + omega_i * d_extend;
 
   int num_faces = 2;
-  for (int f = 0; f < num_faces; f++)
+  for (int f = 0; f < num_faces; ++f)
   {
     uint64_t fpi = cell.vertex_ids_[f]; // face point index
     Vector3 face_point = grid.vertices[fpi];
@@ -266,7 +266,7 @@ RayTracer::TracePolygon(const Cell& cell,
 
   size_t num_faces = cell.faces_.size();
   face_intersections.reserve(num_faces);
-  for (int f = 0; f < num_faces; f++)
+  for (int f = 0; f < num_faces; ++f)
   {
     if (cell.faces_[f].normal_.Dot(omega_i) < 0.0)
       continue;
@@ -334,12 +334,12 @@ RayTracer::TracePolyhedron(const Cell& cell,
 
   size_t num_faces = cell.faces_.size();
   triangle_intersections.reserve(num_faces * 4); // Guessing 4 tris per face
-  for (int f = 0; f < num_faces; f++)
+  for (int f = 0; f < num_faces; ++f)
   {
     const auto& face = cell.faces_[f];
 
     size_t num_sides = face.vertex_ids_.size();
-    for (size_t s = 0; s < num_sides; s++)
+    for (size_t s = 0; s < num_sides; ++s)
     {
       size_t v0_index = face.vertex_ids_[s];
       size_t v1_index = (s < (num_sides - 1)) ? // if not last vertex
@@ -564,7 +564,7 @@ CheckPlaneTetIntersect(const Vector3& plane_normal,
   bool current_sense = false;
 
   size_t num_points = tet_points.size();
-  for (size_t i = 0; i < num_points; i++)
+  for (size_t i = 0; i < num_points; ++i)
   {
     Vector3 v = tet_points[i] - plane_point;
     double dotp = plane_normal.Dot(v);

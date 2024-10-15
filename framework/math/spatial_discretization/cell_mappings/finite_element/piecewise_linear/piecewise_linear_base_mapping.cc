@@ -36,7 +36,7 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
     for (uint64_t fvid : face.vertex_ids_)
     {
       int mapping = -1;
-      for (size_t ci = 0; ci < cell.vertex_ids_.size(); ci++)
+      for (size_t ci = 0; ci < cell.vertex_ids_.size(); ++ci)
       {
         if (fvid == cell.vertex_ids_[ci])
         {

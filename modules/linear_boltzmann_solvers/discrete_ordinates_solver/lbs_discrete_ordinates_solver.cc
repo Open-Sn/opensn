@@ -229,12 +229,12 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   {
     auto& transport_view = cell_transport_views_[cell.local_id_];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids_.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           x_ref[index] = (*y_ptr)[mapping + g]; // Offset on purpose
@@ -288,12 +288,12 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   {
     auto& transport_view = cell_transport_views_[cell.local_id_];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids_.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           (*y_ptr)[mapping + g] = x_ref[index];
@@ -354,12 +354,12 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
   {
     auto& transport_view = cell_transport_views_[cell.local_id_];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids_.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           (*y_ptr)[mapping + g] = (*x_src_ptr)[mapping + g];
         } // for g
@@ -408,12 +408,12 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
     {
       auto& transport_view = cell_transport_views_[cell.local_id_];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids_.size(); ++i)
       {
-        for (int m = 0; m < num_moments_; m++)
+        for (int m = 0; m < num_moments_; ++m)
         {
           size_t mapping = transport_view.MapDOF(i, m, gsi);
-          for (int g = 0; g < gss; g++)
+          for (int g = 0; g < gss; ++g)
           {
             index++;
             x_ref[index] = (*y_ptr)[mapping + g]; // Offset on purpose
@@ -471,12 +471,12 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
     {
       auto& transport_view = cell_transport_views_[cell.local_id_];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids_.size(); ++i)
       {
-        for (int m = 0; m < num_moments_; m++)
+        for (int m = 0; m < num_moments_; ++m)
         {
           size_t mapping = transport_view.MapDOF(i, m, gsi);
-          for (int g = 0; g < gss; g++)
+          for (int g = 0; g < gss; ++g)
           {
             index++;
             (*y_ptr)[mapping + g] = x_ref[index];
@@ -1205,7 +1205,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     // Compute direction subsets
     const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
 
-    for (size_t gs_ss = 0; gs_ss < gs_num_ss; gs_ss++)
+    for (size_t gs_ss = 0; gs_ss < gs_num_ss; ++gs_ss)
     {
       const size_t gs_ss_size = groupset.grp_subset_infos_[gs_ss].ss_size;
       for (const auto& dir_ss_info : dir_subsets)

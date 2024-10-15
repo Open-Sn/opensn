@@ -71,7 +71,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     if (first_word == "v")
     {
       Vector3 newVertex;
-      for (int k = 1; k <= 3; k++)
+      for (int k = 1; k <= 3; ++k)
       {
         // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -119,7 +119,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       cell->material_id = material_id;
 
       // Populate vertex-ids
-      for (size_t k = 1; k <= number_of_verts; k++)
+      for (size_t k = 1; k <= number_of_verts; ++k)
       {
         // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);

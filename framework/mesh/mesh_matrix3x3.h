@@ -71,7 +71,7 @@ struct Matrix3x3
   /// Copy constructor
   Matrix3x3& operator=(const Matrix3x3& inM)
   {
-    for (int k = 0; k < 9; k++)
+    for (int k = 0; k < 9; ++k)
       this->vals[k] = inM.vals[k];
     return *this;
   }
@@ -80,7 +80,7 @@ struct Matrix3x3
   Matrix3x3 operator+(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
-    for (int k = 0; k < 9; k++)
+    for (int k = 0; k < 9; ++k)
       oM.vals[k] = this->vals[k] + inM.vals[k];
     return oM;
   }
@@ -89,7 +89,7 @@ struct Matrix3x3
   Matrix3x3 operator-(const Matrix3x3& inM)
   {
     Matrix3x3 oM;
-    for (int k = 0; k < 9; k++)
+    for (int k = 0; k < 9; ++k)
       oM.vals[k] = this->vals[k] - inM.vals[k];
     return oM;
   }
@@ -98,7 +98,7 @@ struct Matrix3x3
   Matrix3x3 operator*(const double value)
   {
     Matrix3x3 oM;
-    for (int k = 0; k < 9; k++)
+    for (int k = 0; k < 9; ++k)
     {
       oM.vals[k] = this->vals[k] * value;
     }
@@ -111,9 +111,9 @@ struct Matrix3x3
     double i_vec[] = {vec.x, vec.y, vec.z};
     double o_vec[] = {0.0, 0.0, 0.0};
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         o_vec[i] += this->GetIJ(i, j) * i_vec[j];
       }
@@ -173,7 +173,7 @@ struct Matrix3x3
     double det = 0.0;
 
     int sign = -1;
-    for (int j = 0; j < 3; j++)
+    for (int j = 0; j < 3; ++j)
     {
       int k = j + 3 * row;
       sign *= -1;
@@ -190,12 +190,12 @@ struct Matrix3x3
     double a[] = {0.0, 0.0, 0.0, 0.0};
 
     int k = -1;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
       if (i == ir)
         continue;
 
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         if (j == jr)
           continue;
@@ -213,9 +213,9 @@ struct Matrix3x3
   Matrix3x3 Transpose()
   {
     Matrix3x3 oM;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         int kO = j + 3 * i;
         int kI = i + 3 * j;
@@ -233,9 +233,9 @@ struct Matrix3x3
     Matrix3x3 oMT;
 
     // Compute matrix of minors
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         oM.SetIJ(i, j, MinorIJ(i, j));
       }
@@ -243,9 +243,9 @@ struct Matrix3x3
 
     // Compute matrix of cofactors
     int sign = -1;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         sign *= -1;
         oM.SetIJ(i, j, oM.GetIJ(i, j) * sign);
@@ -265,9 +265,9 @@ struct Matrix3x3
   friend std::ostream& operator<<(std::ostream& out, Matrix3x3& inM)
   {
     out << "[";
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         out << inM.GetIJ(i, j) << " ";
       }
@@ -284,9 +284,9 @@ struct Matrix3x3
   {
     std::stringstream out;
     out << "[";
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-      for (int j = 0; j < 3; j++)
+      for (int j = 0; j < 3; ++j)
       {
         out << GetIJ(i, j) << " ";
       }

@@ -50,7 +50,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     local_DG.AddVertex();
 
   // Create graph edges
-  for (int c = 0; c < num_loc_cells; c++)
+  for (int c = 0; c < num_loc_cells; ++c)
     for (auto& successor : cell_successors[c])
       local_DG.AddEdge(c, successor.first, successor.second);
 

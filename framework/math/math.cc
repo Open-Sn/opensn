@@ -58,9 +58,9 @@ PrintMatrix(const MatDbl& A)
   else
     std::cout << "A has no rows" << std::endl;
 
-  for (size_t i = 0; i < AR; i++)
+  for (size_t i = 0; i < AR; ++i)
   {
-    for (size_t j = 0; j < AC; j++)
+    for (size_t j = 0; j < AC; ++j)
     {
       std::cout << A[i][j] << ' ';
     }
@@ -95,8 +95,8 @@ Transpose(const MatDbl& A)
     AC = A[0].size();
 
   MatDbl T(AC, std::vector<double>(AR));
-  for (size_t i = 0; i < AR; i++)
-    for (size_t j = 0; j < AC; j++)
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
       T[j][i] = A[i][j];
   return T;
 }
@@ -113,7 +113,7 @@ SwapRow(size_t r1, size_t r2, MatDbl& A)
 
   assert(r1 >= 0 and r1 < AR and r2 >= 0 and r2 < AR);
 
-  for (size_t j = 0; j < AC; j++)
+  for (size_t j = 0; j < AC; ++j)
     std::swap(A[r1][j], A[r2][j]);
 }
 
@@ -127,7 +127,7 @@ SwapColumn(size_t c1, size_t c2, MatDbl& A)
   if (A.size())
     assert(c1 >= 0 and c1 < A[0].size() and c2 >= 0 and c2 < A[0].size());
 
-  for (size_t i = 0; i < AR; i++)
+  for (size_t i = 0; i < AR; ++i)
     std::swap(A[i][c1], A[i][c2]);
 }
 
@@ -141,8 +141,8 @@ MatMul(const MatDbl& A, const double c)
 
   MatDbl B(R, std::vector<double>(C, 0.));
 
-  for (size_t i = 0; i < R; i++)
-    for (size_t j = 0; j < C; j++)
+  for (size_t i = 0; i < R; ++i)
+    for (size_t j = 0; j < C; ++j)
       B[i][j] = A[i][j] * c;
 
   return B;
@@ -159,9 +159,9 @@ MatMul(const MatDbl& A, const std::vector<double>& x)
 
   std::vector<double> b(R, 0.0);
 
-  for (size_t i = 0; i < R; i++)
+  for (size_t i = 0; i < R; ++i)
   {
-    for (size_t j = 0; j < C; j++)
+    for (size_t j = 0; j < C; ++j)
       b[i] += A[i][j] * x[j];
   }
 
@@ -186,9 +186,9 @@ MatMul(const MatDbl& A, const MatDbl& B)
 
   MatDbl C(CR, std::vector<double>(CC, 0.));
 
-  for (size_t i = 0; i < CR; i++)
-    for (size_t j = 0; j < CC; j++)
-      for (size_t k = 0; k < Cs; k++)
+  for (size_t i = 0; i < CR; ++i)
+    for (size_t j = 0; j < CC; ++j)
+      for (size_t k = 0; k < Cs; ++k)
         C[i][j] += A[i][k] * B[k][j];
 
   return C;
@@ -211,8 +211,8 @@ MatAdd(const MatDbl& A, const MatDbl& B)
 
   MatDbl C(AR, std::vector<double>(AC, 0.0));
 
-  for (size_t i = 0; i < AR; i++)
-    for (size_t j = 0; j < AC; j++)
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
       C[i][j] = A[i][j] + B[i][j];
 
   return C;
@@ -235,8 +235,8 @@ MatSubtract(const MatDbl& A, const MatDbl& B)
 
   MatDbl C(AR, std::vector<double>(AC, 0.0));
 
-  for (size_t i = 0; i < AR; i++)
-    for (size_t j = 0; j < AC; j++)
+  for (size_t i = 0; i < AR; ++i)
+    for (size_t j = 0; j < AC; ++j)
       C[i][j] = B[i][j] - A[i][j];
 
   return C;
@@ -277,7 +277,7 @@ Determinant(const MatDbl& A)
   else
   {
     double det = 0;
-    for (size_t n = 0; n < R; n++)
+    for (size_t n = 0; n < R; ++n)
     {
       std::vector<std::vector<double>> M = SubMatrix(0, n, A);
       double pm = ((n + 1) % 2) * 2.0 - 1.0;
@@ -356,12 +356,12 @@ InverseGEPivoting(const MatDbl& A)
 
   std::vector<std::vector<double>> M(R, std::vector<double>(R, 0.));
 
-  for (unsigned int i = 0; i < R; i++)
+  for (unsigned int i = 0; i < R; ++i)
     M[i][i] = 1.0;
 
   std::vector<std::vector<double>> B = A;
 
-  for (unsigned int c = 0; c < R; c++)
+  for (unsigned int c = 0; c < R; ++c)
   {
     // Find a row with the largest pivot value
     unsigned int max_row = c; // nzr = non-zero row
@@ -376,14 +376,14 @@ InverseGEPivoting(const MatDbl& A)
     }
 
     // Eliminate non-zero values
-    for (unsigned int r = 0; r < R; r++)
+    for (unsigned int r = 0; r < R; ++r)
     {
       if (r != c)
       {
         double g = B[r][c] / B[c][c];
         if (B[r][c] != 0)
         {
-          for (unsigned int k = 0; k < R; k++)
+          for (unsigned int k = 0; k < R; ++k)
           {
             B[r][k] -= B[c][k] * g;
             M[r][k] -= M[c][k] * g;
@@ -394,7 +394,7 @@ InverseGEPivoting(const MatDbl& A)
       else
       {
         double g = 1 / B[c][c];
-        for (unsigned int k = 0; k < R; k++)
+        for (unsigned int k = 0; k < R; ++k)
         {
           B[r][k] *= g;
           M[r][k] *= g;
@@ -587,7 +587,7 @@ Dot(const std::vector<double>& x, const std::vector<double>& y)
   size_t n = x.size();
   double val = 0.0;
 
-  for (size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; ++i)
     val += x[i] * y[i];
 
   return val;
@@ -612,7 +612,7 @@ Vec1Norm(const std::vector<double>& x)
   size_t n = x.size();
   double val = 0.0;
 
-  for (size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; ++i)
     val += std::fabs(x[i]);
 
   return val;
@@ -625,7 +625,7 @@ Vec2Norm(const std::vector<double>& x)
   size_t n = x.size();
   double val = 0.0;
 
-  for (size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; ++i)
     val += x[i] * x[i];
 
   return std::sqrt(val);
@@ -638,7 +638,7 @@ VecInfinityNorm(const std::vector<double>& x)
   size_t n = x.size();
   double val = 0.0;
 
-  for (size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; ++i)
     val += std::max(std::fabs(x[i]), val);
 
   return val;
@@ -651,7 +651,7 @@ VecPNorm(const std::vector<double>& x, const double& p)
   size_t n = x.size();
   double val = 0.0;
 
-  for (size_t i = 0; i != n; i++)
+  for (size_t i = 0; i != n; ++i)
     val += std::pow(std::fabs(x[i]), p);
 
   return std::pow(val, 1.0 / p);

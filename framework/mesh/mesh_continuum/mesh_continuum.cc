@@ -59,7 +59,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   log.Log0Verbose1() << "Communicating local connections.";
 
   std::vector<std::vector<int>> global_graph(opensn::mpi_comm.size(), std::vector<int>());
-  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
   {
     int locI_num_connections = static_cast<int>(local_connections.size());
     mpi_comm.broadcast(locI_num_connections, locI);
@@ -72,7 +72,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   }
 
   // Broadcast local connections
-  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
     mpi_comm.broadcast(global_graph[locI].data(), global_graph[locI].size(), locI);
 
   log.Log0Verbose1() << "Done communicating local connections.";
@@ -83,7 +83,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   std::vector<mpi::Group> location_groups;
   location_groups.resize(opensn::mpi_comm.size());
 
-  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
     location_groups[locI] = world_group.include(global_graph[locI]);
 
   // Build communicators
@@ -91,7 +91,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   log.Log0Verbose1() << "Building communicators.";
   communicators.resize(opensn::mpi_comm.size());
 
-  for (int locI = 0; locI < opensn::mpi_comm.size(); locI++)
+  for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
     communicators[locI] = mpi_comm.create(location_groups[locI], 0);
 
   log.Log0Verbose1() << "Done building communicators.";
@@ -330,7 +330,7 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned 
 
   size_t fmap;
   bool map_found = false;
-  for (size_t af = 0; af < adj_cell.faces_.size(); af++)
+  for (size_t af = 0; af < adj_cell.faces_.size(); ++af)
   {
     const auto& acface = adj_cell.faces_[af]; // adjacent cell face
 

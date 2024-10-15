@@ -47,9 +47,9 @@ LBSGetScalarFieldFunctionList(lua_State* L)
   // Building table of handles
   std::vector<size_t> ff_handles;
   // Flux moments first
-  for (int g = 0; g < lbs_solver.NumGroups(); g++)
+  for (int g = 0; g < lbs_solver.NumGroups(); ++g)
   {
-    for (int m = 0; m < lbs_solver.NumMoments(); m++)
+    for (int m = 0; m < lbs_solver.NumMoments(); ++m)
     {
       const size_t ff = lbs_solver.MapPhiFieldFunction(g, m);
       auto local_ff = lbs_solver.GetFieldFunctions()[ff];

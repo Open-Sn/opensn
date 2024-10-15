@@ -938,7 +938,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
         << "MeshIO::ToOBJ: No mesh will be exported because there are no physics materials present";
     }
 
-    for (int mat = 0; mat < material_stack.size(); mat++)
+    for (int mat = 0; mat < material_stack.size(); ++mat)
     {
       std::string mat_base_name = file_base_name + std::string("_m") + std::to_string(mat);
       std::string mat_file_name = mat_base_name + std::string(".obj");

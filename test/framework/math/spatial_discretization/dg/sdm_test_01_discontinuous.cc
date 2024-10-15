@@ -198,11 +198,11 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
         // Dk = 0.5* n dot nabla bk
 
         // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-        for (int i = 0; i < num_nodes; i++)
+        for (int i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
 
-          for (int fj = 0; fj < num_face_nodes; fj++)
+          for (int fj = 0; fj < num_face_nodes; ++fj)
           {
             const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
             const int jp = MapFaceNodeDisc(cell_mapping,
@@ -226,7 +226,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
         }   // for i
 
         // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
-        for (int fi = 0; fi < num_face_nodes; fi++)
+        for (int fi = 0; fi < num_face_nodes; ++fi)
         {
           const int im = cell_mapping.MapFaceNode(f, fi); // i-minus
           const int ip = MapFaceNodeDisc(cell_mapping,
@@ -239,7 +239,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
           const int64_t immap = sdm.MapDOF(cell, im, OneDofPerNode, 0, 0);
           const int64_t ipmap = sdm.MapDOF(adj_cell, ip, OneDofPerNode, 0, 0);
 
-          for (int j = 0; j < num_nodes; j++)
+          for (int j = 0; j < num_nodes; ++j)
           {
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 
@@ -294,11 +294,11 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
         // Dk = n dot nabla bk
 
         // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-        for (size_t i = 0; i < num_nodes; i++)
+        for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
 
-          for (size_t j = 0; j < num_nodes; j++)
+          for (size_t j = 0; j < num_nodes; ++j)
           {
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 

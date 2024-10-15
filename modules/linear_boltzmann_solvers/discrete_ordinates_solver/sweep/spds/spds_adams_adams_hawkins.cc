@@ -51,7 +51,7 @@ SPDS_AdamsAdamsHawkins::SPDS_AdamsAdamsHawkins(const Vector3& omega,
     local_DG.AddVertex();
 
   // Create graph edges
-  for (int c = 0; c < num_loc_cells; c++)
+  for (int c = 0; c < num_loc_cells; ++c)
     for (auto& successor : cell_successors[c])
       local_DG.AddEdge(c, successor.first, successor.second);
 
@@ -126,12 +126,12 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
     log.Log0Verbose1() << program_timer.GetTimeString() << " Building Task Dependency Graphs.";
 
     // Add vertices to the graph
-    for (int loc = 0; loc < opensn::mpi_comm.size(); loc++)
+    for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
       TDG.AddVertex();
 
     // Add dependencies
-    for (int loc = 0; loc < opensn::mpi_comm.size(); loc++)
-      for (int dep = 0; dep < global_dependencies[loc].size(); dep++)
+    for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
+      for (int dep = 0; dep < global_dependencies[loc].size(); ++dep)
         TDG.AddEdge(global_dependencies[loc][dep], loc);
 
     // Remove cyclic dependencies
@@ -217,7 +217,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   // id is in the TDG
   std::vector<int> glob_order_mapping(opensn::mpi_comm.size(), -1);
 
-  for (int k = 0; k < opensn::mpi_comm.size(); k++)
+  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
   {
     int loc = glob_linear_sweep_order[k];
     glob_order_mapping[loc] = k;
@@ -229,7 +229,7 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
   std::vector<int> glob_sweep_order_rank(opensn::mpi_comm.size(), -1);
 
   int abs_max_rank = 0;
-  for (int k = 0; k < opensn::mpi_comm.size(); k++)
+  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
   {
     int loc = glob_linear_sweep_order[k];
     if (global_dependencies[loc].empty())
@@ -254,11 +254,11 @@ SPDS_AdamsAdamsHawkins::BuildTaskDependencyGraph(
 
   // Generate TDG structure
   log.Log0Verbose1() << program_timer.GetTimeString() << " Generating TDG structure.";
-  for (int r = 0; r <= abs_max_rank; r++)
+  for (int r = 0; r <= abs_max_rank; ++r)
   {
     STDG new_stdg;
 
-    for (int k = 0; k < opensn::mpi_comm.size(); k++)
+    for (int k = 0; k < opensn::mpi_comm.size(); ++k)
     {
       if (glob_sweep_order_rank[k] == r)
         new_stdg.item_id.push_back(glob_linear_sweep_order[k]);
