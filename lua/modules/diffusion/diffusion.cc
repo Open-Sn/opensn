@@ -5,7 +5,7 @@
 #include "lua/framework/math/functions/lua_scalar_spatial_material_function.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
-#include "framework/physics/solver_base/solver.h"
+#include "framework/physics/solver.h"
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
 #include "modules/diffusion/fv_diffusion_solver.h"
