@@ -27,7 +27,7 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
   size_t num_verts = cell.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
-  for (size_t v = 0; v < num_verts; v++)
+  for (size_t v = 0; v < num_verts; ++v)
   {
     uint64_t vgi = cell.vertex_ids[v];
     std::vector<double> d_node(3);
@@ -74,7 +74,7 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
     {
       size_t num_fverts = face.vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
-      for (size_t fv = 0; fv < num_fverts; fv++)
+      for (size_t fv = 0; fv < num_fverts; ++fv)
       {
         size_t v = 0;
         for (size_t cv = 0; cv < num_verts; ++cv)
@@ -131,7 +131,7 @@ UploadCellGeometryContinuous(const Cell& cell,
   size_t num_verts = cell.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
-  for (size_t v = 0; v < num_verts; v++)
+  for (size_t v = 0; v < num_verts; ++v)
     cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell.vertex_ids[v]]);
 
   if (cell.Type() == CellType::SLAB)
@@ -196,7 +196,7 @@ UploadCellGeometryContinuous(const Cell& cell,
         {
           size_t num_fverts = face.vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
-          for (size_t fv = 0; fv < num_fverts; fv++)
+          for (size_t fv = 0; fv < num_fverts; ++fv)
           {
             size_t v = 0;
             for (size_t cv = 0; cv < num_verts; ++cv)

@@ -96,7 +96,7 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, std::vector<double>&
 
   if ((xi >= -1.0e-6) and (xi <= 1.0 + 1.0e-6))
   {
-    for (int i = 0; i < num_nodes_; i++)
+    for (int i = 0; i < num_nodes_; ++i)
     {
       if (i == 0)
         shape_values[i] = 1.0 - xi;
@@ -147,7 +147,7 @@ PieceWiseLinearSlabMapping::MakeVolumetricFiniteElementData() const
 
   V_shape_value.reserve(num_nodes_);
   V_shape_grad.reserve(num_nodes_);
-  for (size_t i = 0; i < num_nodes_; i++)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     std::vector<double> node_shape_value;
     std::vector<Vector3> node_shape_grad;
@@ -219,7 +219,7 @@ PieceWiseLinearSlabMapping::MakeSurfaceFiniteElementData(size_t face_index) cons
 
   F_shape_value.reserve(num_nodes_);
   F_shape_grad.reserve(num_nodes_);
-  for (size_t i = 0; i < num_nodes_; i++)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     std::vector<double> node_shape_value;
     std::vector<Vector3> node_shape_grad;

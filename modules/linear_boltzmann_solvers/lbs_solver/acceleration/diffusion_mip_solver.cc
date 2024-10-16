@@ -83,15 +83,15 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       const double sigr_g = xs.sigR[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0; // entry may accumulate over j
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
         {
           const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
           double entry_aij = 0.0;
@@ -179,11 +179,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-          for (int i = 0; i < num_nodes; i++)
+          for (int i = 0; i < num_nodes; ++i)
           {
             const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-            for (int fj = 0; fj < num_face_nodes; fj++)
+            for (int fj = 0; fj < num_face_nodes; ++fj)
             {
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
               const int jp =
@@ -203,7 +203,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           }   // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
-          for (int fi = 0; fi < num_face_nodes; fi++)
+          for (int fi = 0; fi < num_face_nodes; ++fi)
           {
             const int im = cell_mapping.MapFaceNode(f, fi); // i-minus
             const int ip =
@@ -211,7 +211,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             const int64_t immap = sdm_.MapDOF(cell, im, uk_man_, 0, g);
             const int64_t ipmap = sdm_.MapDOF(adj_cell, ip, uk_man_, 0, g);
 
-            for (int j = 0; j < num_nodes; j++)
+            for (int j = 0; j < num_nodes; ++j)
             {
               const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -283,11 +283,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             // Dk = n dot nabla bk
 
             // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-            for (size_t i = 0; i < num_nodes; i++)
+            for (size_t i = 0; i < num_nodes; ++i)
             {
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              for (size_t j = 0; j < num_nodes; j++)
+              for (size_t j = 0; j < num_nodes; ++j)
               {
                 const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -327,14 +327,14 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(aval) >= 1.0e-12)
               {
-                for (size_t fj = 0; fj < num_face_nodes; fj++)
+                for (size_t fj = 0; fj < num_face_nodes; ++fj)
                 {
                   const int j = cell_mapping.MapFaceNode(f, fj);
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
@@ -420,16 +420,16 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0; // entry may accumulate over j
         if (not source_function_)
-          for (size_t j = 0; j < num_nodes; j++)
+          for (size_t j = 0; j < num_nodes; ++j)
           {
             for (size_t qp : fe_vol_data.QuadraturePointIndices())
             {
@@ -510,11 +510,11 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             // Dk = 0.5* n dot nabla bk
 
             // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-            for (size_t i = 0; i < num_nodes; i++)
+            for (size_t i = 0; i < num_nodes; ++i)
             {
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              for (size_t j = 0; j < num_nodes; j++)
+              for (size_t j = 0; j < num_nodes; ++j)
               {
                 Vector3 vec_aij;
                 for (size_t qp : fe_srf_data.QuadraturePointIndices())
@@ -550,7 +550,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -620,15 +620,15 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       const double sigr_g = xs.sigR[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
         {
           const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -702,11 +702,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-          for (int i = 0; i < num_nodes; i++)
+          for (int i = 0; i < num_nodes; ++i)
           {
             const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-            for (int fj = 0; fj < num_face_nodes; fj++)
+            for (int fj = 0; fj < num_face_nodes; ++fj)
             {
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
               const int jp =
@@ -722,7 +722,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           }   // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
-          for (int fi = 0; fi < num_face_nodes; fi++)
+          for (int fi = 0; fi < num_face_nodes; ++fi)
           {
             const int im = cell_mapping.MapFaceNode(f, fi); // i-minus
             const int ip =
@@ -730,7 +730,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             const int64_t immap = sdm_.MapDOF(cell, im, uk_man_, 0, g);
             const int64_t ipmap = sdm_.MapDOF(adj_cell, ip, uk_man_, 0, g);
 
-            for (int j = 0; j < num_nodes; j++)
+            for (int j = 0; j < num_nodes; ++j)
             {
               const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -785,11 +785,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             // Dk = n dot nabla bk
 
             // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-            for (size_t i = 0; i < num_nodes; i++)
+            for (size_t i = 0; i < num_nodes; ++i)
             {
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              for (size_t j = 0; j < num_nodes; j++)
+              for (size_t j = 0; j < num_nodes; ++j)
               {
                 const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -811,14 +811,14 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(aval) >= 1.0e-12)
               {
-                for (size_t fj = 0; fj < num_face_nodes; fj++)
+                for (size_t fj = 0; fj < num_face_nodes; ++fj)
                 {
                   const int j = cell_mapping.MapFaceNode(f, fj);
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
@@ -910,15 +910,15 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
           entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -978,11 +978,11 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
             // Dk = n dot nabla bk
 
             // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-            for (size_t i = 0; i < num_nodes; i++)
+            for (size_t i = 0; i < num_nodes; ++i)
             {
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              for (size_t j = 0; j < num_nodes; j++)
+              for (size_t j = 0; j < num_nodes; ++j)
               {
                 const double aij =
                   -Dg * n_f.Dot(intS_shapeI_gradshapeJ[j][i] + intS_shapeI_gradshapeJ[i][j]);
@@ -1000,7 +1000,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -1060,15 +1060,15 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
           entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -1128,11 +1128,11 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
             // Dk = n dot nabla bk
 
             // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-            for (size_t i = 0; i < num_nodes; i++)
+            for (size_t i = 0; i < num_nodes; ++i)
             {
               const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              for (size_t j = 0; j < num_nodes; j++)
+              for (size_t j = 0; j < num_nodes; ++j)
               {
                 const double aij =
                   -Dg * n_f.Dot(intS_shapeI_gradshapeJ[j][i] + intS_shapeI_gradshapeJ[i][j]);
@@ -1150,7 +1150,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);

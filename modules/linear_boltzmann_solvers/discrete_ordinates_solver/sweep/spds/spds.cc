@@ -17,7 +17,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
 {
   CALI_CXX_MARK_SCOPE("SPDS::MapLocJToPrelocI");
 
-  for (int i = 0; i < location_dependencies_.size(); i++)
+  for (int i = 0; i < location_dependencies_.size(); ++i)
   {
     if (location_dependencies_[i] == locJ)
     {
@@ -25,7 +25,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
     }
   }
 
-  for (int i = 0; i < delayed_location_dependencies_.size(); i++)
+  for (int i = 0; i < delayed_location_dependencies_.size(); ++i)
   {
     if (delayed_location_dependencies_[i] == locJ)
     {
@@ -43,7 +43,7 @@ SPDS::MapLocJToDeplocI(int locJ) const
 {
   CALI_CXX_MARK_SCOPE("SPDS::MapLocJToDeploc");
 
-  for (int i = 0; i < location_successors_.size(); i++)
+  for (int i = 0; i < location_successors_.size(); ++i)
   {
     if (location_successors_[i] == locJ)
     {

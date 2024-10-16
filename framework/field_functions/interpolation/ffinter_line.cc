@@ -42,7 +42,7 @@ FieldFunctionInterpolationLine::Initialize()
   local_cells_.reserve(estimated_local_size);
   for (const auto& cell : grid.local_cells)
   {
-    for (int p = 0; p < number_of_points_; p++)
+    for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
       if (grid.CheckPointInsideCell(cell, point))

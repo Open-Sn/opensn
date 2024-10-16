@@ -325,7 +325,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
       const int64_t lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -333,7 +333,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
       double* output_mapped = &output_phi_local[diff_phi_map];
       const double* phi_in_mapped = &phi_data[lbs_phi_map];
 
-      for (size_t g = 0; g < gss; g++)
+      for (size_t g = 0; g < gss; ++g)
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
@@ -365,7 +365,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
       const int64_t lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -373,7 +373,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
       const double* input_mapped = &input[diff_phi_map];
       double* output_mapped = &output[lbs_phi_map];
 
-      for (int g = 0; g < gss; g++)
+      for (int g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
   }   // for cell

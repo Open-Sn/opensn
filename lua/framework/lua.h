@@ -424,7 +424,7 @@ LuaArgAsType(lua_State* L, int index)
     std::vector<T, A> values;
     const size_t sz = lua_rawlen(L, index);
     values.resize(sz);
-    for (size_t i = 0; i < sz; i++)
+    for (size_t i = 0; i < sz; ++i)
     {
       LuaPush(L, i + 1);
       lua_gettable(L, index);

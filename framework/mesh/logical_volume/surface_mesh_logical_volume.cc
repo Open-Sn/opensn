@@ -107,7 +107,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
   // Expensive pass
   // Getting to here means the cheap pass produced
   // a negative and now we need to do more work.
-  for (size_t f = 0; f < surf_mesh_->GetTriangles().size(); f++)
+  for (size_t f = 0; f < surf_mesh_->GetTriangles().size(); ++f)
   {
     Vector3 fc = surf_mesh_->GetTriangles()[f].face_centroid;
     Vector3 p_to_fc = fc - point;
@@ -123,7 +123,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
     if (sense < (0.0 - tolerance))
     {
       good_to_go = false;
-      for (size_t fi = 0; fi < surf_mesh_->GetTriangles().size(); fi++)
+      for (size_t fi = 0; fi < surf_mesh_->GetTriangles().size(); ++fi)
       {
         if (fi == f)
           continue; // Skip same face

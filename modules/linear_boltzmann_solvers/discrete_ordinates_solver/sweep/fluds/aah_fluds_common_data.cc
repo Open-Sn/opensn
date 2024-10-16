@@ -63,7 +63,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   so_cell_inco_face_face_category_.reserve(spls.item_id.size());
   so_cell_outb_face_slot_indices_.reserve(spls.item_id.size());
   so_cell_outb_face_face_category_.reserve(spls.item_id.size());
-  for (int csoi = 0; csoi < spls.item_id.size(); csoi++)
+  for (int csoi = 0; csoi < spls.item_id.size(); ++csoi)
   {
     int cell_local_id = spls.item_id[csoi];
     const auto& cell = grid.local_cells[cell_local_id];
@@ -80,7 +80,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   // PERFORM INCIDENT MAPPING
   // Loop over cells in sweep order
   so_cell_inco_face_dof_indices_.reserve(spls.item_id.size());
-  for (int csoi = 0; csoi < spls.item_id.size(); csoi++)
+  for (int csoi = 0; csoi < spls.item_id.size(); ++csoi)
   {
     int cell_local_id = spls.item_id[csoi];
     const auto& cell = grid.local_cells[cell_local_id];
@@ -129,7 +129,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
   // Loop over faces but process only incident faces
   std::vector<short> inco_face_face_category;
   inco_face_face_category.reserve(cell.faces.size());
-  for (int f = 0; f < cell.faces.size(); f++)
+  for (int f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
     const auto& orientation = spds.CellFaceOrientations()[cell.local_id][f];
@@ -211,7 +211,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
   std::vector<short> outb_face_face_category;
   outb_face_slot_indices.reserve(cell.faces.size());
   outb_face_face_category.reserve(cell.faces.size());
-  for (int f = 0; f < cell.faces.size(); f++)
+  for (int f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
     int cell_g_index = cell.global_id;
@@ -261,7 +261,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
       // Find a open slot
       bool slot_found = false;
-      for (int k = 0; k < lock_box.size(); k++)
+      for (int k = 0; k < lock_box.size(); ++k)
       {
         if (lock_box[k].first < 0)
         {
@@ -346,7 +346,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
   // Loop over faces but process only incident faces
-  for (short f = 0; f < cell.faces.size(); f++)
+  for (short f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
     const auto& orienation = spds.CellFaceOrientations()[cell.local_id][f];
@@ -420,7 +420,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   std::vector<mpi::Request> send_requests;
   send_requests.resize(location_successors.size());
   std::vector<std::vector<int>> multi_face_indices(location_successors.size(), std::vector<int>());
-  for (int deplocI = 0; deplocI < location_successors.size(); deplocI++)
+  for (int deplocI = 0; deplocI < location_successors.size(); ++deplocI)
   {
     int locJ = location_successors[deplocI];
 
@@ -446,7 +446,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   delayed_prelocI_cell_views_.resize(delayed_location_dependencies.size(),
                                      std::vector<CompactCellView>());
   delayed_prelocI_face_dof_count_.resize(delayed_location_dependencies.size(), 0);
-  for (int prelocI = 0; prelocI < delayed_location_dependencies.size(); prelocI++)
+  for (int prelocI = 0; prelocI < delayed_location_dependencies.size(); ++prelocI)
   {
     int locJ = delayed_location_dependencies[prelocI];
 
@@ -468,7 +468,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   const auto& location_dependencies = spds.GetLocationDependencies();
   prelocI_cell_views_.resize(location_dependencies.size(), std::vector<CompactCellView>());
   prelocI_face_dof_count_.resize(location_dependencies.size(), 0);
-  for (int prelocI = 0; prelocI < location_dependencies.size(); prelocI++)
+  for (int prelocI = 0; prelocI < location_dependencies.size(); ++prelocI)
   {
     int locJ = location_dependencies[prelocI];
 
@@ -480,7 +480,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   }
 
   // Send successor information
-  for (int deplocI = 0; deplocI < location_successors.size(); deplocI++)
+  for (int deplocI = 0; deplocI < location_successors.size(); ++deplocI)
   {
     int locJ = location_successors[deplocI];
 
@@ -502,7 +502,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   }
 
   // Verify sends completed
-  for (int deplocI = 0; deplocI < location_successors.size(); deplocI++)
+  for (int deplocI = 0; deplocI < location_successors.size(); ++deplocI)
     mpi::wait(send_requests[deplocI]);
   multi_face_indices.clear();
   multi_face_indices.shrink_to_fit();
@@ -513,7 +513,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   // cellviews on the partition interfaces.
 
   // Loop over cells in sorder
-  for (int csoi = 0; csoi < spls.item_id.size(); csoi++)
+  for (int csoi = 0; csoi < spls.item_id.size(); ++csoi)
   {
     int cell_local_index = spls.item_id[csoi];
     const auto& cell = grid.local_cells[cell_local_index];
@@ -563,21 +563,21 @@ AAH_FLUDSCommonData::SerializeCellInfo(std::vector<CompactCellView>& cell_views,
   // deserialization process.
   // It is followed by a positive number which is the store location
   // of the face
-  for (size_t c = 0; c < num_cells; c++)
+  for (size_t c = 0; c < num_cells; ++c)
   {
     int glob_index = -cell_views[c].first - 1;
 
     std::vector<CompactFaceView>& cell_face_views = cell_views[c].second;
 
     size_t num_faces = cell_face_views.size();
-    for (size_t f = 0; f < num_faces; f++)
+    for (size_t f = 0; f < num_faces; ++f)
     {
       face_indices.push_back(glob_index);
       face_indices.push_back(cell_face_views[f].first);
       std::vector<uint64_t>& face_vertices = cell_face_views[f].second;
 
       size_t num_verts = face_vertices.size();
-      for (int fi = 0; fi < num_verts; fi++)
+      for (int fi = 0; fi < num_verts; ++fi)
       {
         face_indices.push_back(static_cast<int>(face_vertices[fi]));
       }
@@ -647,7 +647,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
   const MeshContinuum& grid = spds.Grid();
 
   // Loop over faces but process only incident faces
-  for (short f = 0; f < cell.faces.size(); f++)
+  for (short f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
     const auto& orientation = spds.CellFaceOrientations()[cell.local_id][f];
@@ -665,7 +665,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
         {
           // Find the cell in prelocI cell views
           int ass_cell = -1;
-          for (int c = 0; c < prelocI_cell_views_[prelocI].size(); c++)
+          for (int c = 0; c < prelocI_cell_views_[prelocI].size(); ++c)
           {
             if (prelocI_cell_views_[prelocI][c].first == face.neighbor_id)
             {
@@ -711,10 +711,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[ass_face].first;
           std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
-          for (int fv = 0; fv < face.vertex_ids.size(); fv++)
+          for (int fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;
-            for (int afv = 0; afv < ass_face_verts->size(); afv++)
+            for (int afv = 0; afv < ass_face_verts->size(); ++afv)
             {
               if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
               {
@@ -749,7 +749,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int delayed_preLocI = abs(prelocI) - 1;
           // Find the cell in prelocI cell views
           int ass_cell = -1;
-          for (int c = 0; c < delayed_prelocI_cell_views_[delayed_preLocI].size(); c++)
+          for (int c = 0; c < delayed_prelocI_cell_views_[delayed_preLocI].size(); ++c)
           {
             if (delayed_prelocI_cell_views_[delayed_preLocI][c].first == face.neighbor_id)
             {
@@ -768,13 +768,13 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           // Find associated face
           CompactCellView* adj_cell_view = &delayed_prelocI_cell_views_[delayed_preLocI][ass_cell];
           int ass_face = -1;
-          for (int af = 0; af < adj_cell_view->second.size(); af++)
+          for (int af = 0; af < adj_cell_view->second.size(); ++af)
           {
             bool face_matches = true;
-            for (int afv = 0; afv < adj_cell_view->second[af].second.size(); afv++)
+            for (int afv = 0; afv < adj_cell_view->second[af].second.size(); ++afv)
             {
               bool match_found = false;
-              for (int fv = 0; fv < face.vertex_ids.size(); fv++)
+              for (int fv = 0; fv < face.vertex_ids.size(); ++fv)
               {
                 if (adj_cell_view->second[af].second[afv] == face.vertex_ids[fv])
                 {
@@ -806,10 +806,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[ass_face].first;
           std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
-          for (int fv = 0; fv < face.vertex_ids.size(); fv++)
+          for (int fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;
-            for (int afv = 0; afv < ass_face_verts->size(); afv++)
+            for (int afv = 0; afv < ass_face_verts->size(); ++afv)
             {
               if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
               {

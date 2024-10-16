@@ -470,14 +470,14 @@ DFEMDiffusionSolver::Execute()
           if (std::fabs(bval) < 1e-8)
             throw std::logic_error("if b=0, this is a Dirichlet BC, not a Robin BC");
 
-          for (size_t fi = 0; fi < num_face_nodes; fi++)
+          for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const uint i = cell_mapping.MapFaceNode(f, fi);
             const int64_t ir = sdm.MapDOF(cell, i);
 
             if (std::fabs(aval) >= 1.0e-12)
             {
-              for (size_t fj = 0; fj < num_face_nodes; fj++)
+              for (size_t fj = 0; fj < num_face_nodes; ++fj)
               {
                 const uint j = cell_mapping.MapFaceNode(f, fj);
                 const int64_t jr = sdm.MapDOF(cell, j);
@@ -543,11 +543,11 @@ DFEMDiffusionSolver::Execute()
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-          for (size_t i = 0; i < num_nodes; i++)
+          for (size_t i = 0; i < num_nodes; ++i)
           {
             const int64_t imap = sdm.MapDOF(cell, i);
 
-            for (size_t j = 0; j < num_nodes; j++)
+            for (size_t j = 0; j < num_nodes; ++j)
             {
               const int64_t jmap = sdm.MapDOF(cell, j);
 

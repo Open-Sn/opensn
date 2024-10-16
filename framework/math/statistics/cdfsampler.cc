@@ -36,7 +36,7 @@ CDFSampler::SubIntvl::SubIntvl(std::string offset,
     else
     {
       sub_intvls.resize(subdiv_factor);
-      for (int i = 0; i < subdiv_factor; i++)
+      for (int i = 0; i < subdiv_factor; ++i)
       {
         int beg = ibin + i * intvl_size;
         int end = ibin + (i + 1) * intvl_size - 1;
@@ -84,7 +84,7 @@ CDFSampler::CDFSampler(std::vector<double>& cdf, int subdiv_factor, int final_re
   else
   {
     sub_intvls_.resize(this->subdiv_factor_);
-    for (int i = 0; i < this->subdiv_factor_; i++)
+    for (int i = 0; i < this->subdiv_factor_; ++i)
     {
       int beg = i * intvl_size;
       int end = (i + 1) * intvl_size - 1;
@@ -116,13 +116,13 @@ CDFSampler::Sample(double x)
 
     // Sample sub-intvls for range
     int num_sub_intvls = sub_intvls_.size();
-    for (int s = 0; s < num_sub_intvls; s++)
+    for (int s = 0; s < num_sub_intvls; ++s)
     {
       if (sub_intvls_[s]->Sample(x, range))
         break;
     }
 
-    for (int k = range.first; k <= range.second; k++)
+    for (int k = range.first; k <= range.second; ++k)
     {
       if (k == 0)
       {
@@ -180,7 +180,7 @@ CDFSampler::SubIntvl::Sample(double x, std::pair<int, int>& range)
   else
   {
     int num_sub_intvls = sub_intvls.size();
-    for (int s = 0; s < num_sub_intvls; s++)
+    for (int s = 0; s < num_sub_intvls; ++s)
     {
       if (sub_intvls[s]->Sample(x, range))
         return true;
@@ -249,7 +249,7 @@ SampleCDF(double x, std::vector<double> cdf_bin)
     ret_val = cdf_size - 1;
   else
   {
-    for (int k = lookup_i; k <= lookup_f; k++)
+    for (int k = lookup_i; k <= lookup_f; ++k)
     {
       if (k == 0)
       {

@@ -24,7 +24,7 @@ Legendre(int N, double x)
     return x;
   }
 
-  for (int n = 2; n <= N; n++)
+  for (int n = 2; n <= N; ++n)
   {
     int ns = n - 1;
     Pnp1 = ((2.0 * ns + 1) / (ns + 1.0)) * x * Pn - (ns / (ns + 1.0)) * Pnm1;

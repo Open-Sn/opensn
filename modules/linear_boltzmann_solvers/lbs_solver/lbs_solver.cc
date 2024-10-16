@@ -1249,7 +1249,7 @@ LBSSolver::InitializeParrays()
   // Initialize unknown
   // structure
   flux_moments_uk_man_.unknowns.clear();
-  for (size_t m = 0; m < num_moments_; m++)
+  for (size_t m = 0; m < num_moments_; ++m)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
     flux_moments_uk_man_.unknowns.back().text_name = "m" + std::to_string(m);
@@ -1444,7 +1444,7 @@ LBSSolver::InitializeFieldFunctions()
 
   for (size_t g = 0; g < groups_.size(); ++g)
   {
-    for (size_t m = 0; m < num_moments_; m++)
+    for (size_t m = 0; m < num_moments_; ++m)
     {
       std::string prefix;
       if (options_.field_function_prefix_option == "prefix")
@@ -1702,7 +1702,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
       const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -1710,7 +1710,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
 
-      for (size_t g = 0; g < gss; g++)
+      for (size_t g = 0; g < gss; ++g)
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
@@ -1739,7 +1739,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
       const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -1747,7 +1747,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];
 
-      for (int g = 0; g < gss; g++)
+      for (int g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
   }   // for cell
@@ -1776,7 +1776,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto& sigma_s = matid_to_xs_map_[cell.material_id]->SigmaSGtoG();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
       const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -1784,7 +1784,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
 
-      for (size_t g = 0; g < gss; g++)
+      for (size_t g = 0; g < gss; ++g)
       {
         delta_phi_mapped[g] = sigma_s[gsi + g] * phi_in_mapped[g];
       } // for g
@@ -1811,7 +1811,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    for (size_t i = 0; i < num_nodes; i++)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
       const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
@@ -1819,7 +1819,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
 
-      for (int g = 0; g < gss; g++)
+      for (int g = 0; g < gss; ++g)
         phi_new_mapped[g] += delta_phi_mapped[g];
     } // for dof
   }   // for cell
@@ -2426,12 +2426,12 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           x_ref[index] = (*y_ptr)[mapping + g]; // Offset on purpose
@@ -2475,12 +2475,12 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           (*y_ptr)[mapping + g] = x_ref[index];
@@ -2506,12 +2506,12 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           y[mapping + g] = x[mapping + g];
         } // for g
@@ -2560,12 +2560,12 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           (*y_ptr)[mapping + g] = (*x_src_ptr)[mapping + g];
         } // for g
@@ -2594,12 +2594,12 @@ LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           x_ref[index] = y[mapping + g]; // Offset on purpose
@@ -2631,12 +2631,12 @@ LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
   {
     auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments_; m++)
+      for (int m = 0; m < num_moments_; ++m)
       {
         size_t mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; g++)
+        for (int g = 0; g < gss; ++g)
         {
           index++;
           y[mapping + g] = x_ref[index];
@@ -2684,12 +2684,12 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
     {
       auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); ++i)
       {
-        for (int m = 0; m < num_moments_; m++)
+        for (int m = 0; m < num_moments_; ++m)
         {
           size_t mapping = transport_view.MapDOF(i, m, gsi);
-          for (int g = 0; g < gss; g++)
+          for (int g = 0; g < gss; ++g)
           {
             index++;
             x_ref[index] = (*y_ptr)[mapping + g]; // Offset on purpose
@@ -2738,12 +2738,12 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
     {
       auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); ++i)
       {
-        for (int m = 0; m < num_moments_; m++)
+        for (int m = 0; m < num_moments_; ++m)
         {
           size_t mapping = transport_view.MapDOF(i, m, gsi);
-          for (int g = 0; g < gss; g++)
+          for (int g = 0; g < gss; ++g)
           {
             index++;
             (*y_ptr)[mapping + g] = x_ref[index];

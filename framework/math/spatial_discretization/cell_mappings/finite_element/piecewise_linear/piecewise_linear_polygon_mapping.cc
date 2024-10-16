@@ -25,7 +25,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   vc_ = poly_cell.centroid;
 
   // Calculate legs and determinants
-  for (int side = 0; side < num_of_subtris_; side++)
+  for (int side = 0; side < num_of_subtris_; ++side)
   {
     const CellFace& face = poly_cell.faces[side];
 
@@ -75,11 +75,11 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   }
 
   // Compute node to side mapping
-  for (int v = 0; v < poly_cell.vertex_ids.size(); v++)
+  for (int v = 0; v < poly_cell.vertex_ids.size(); ++v)
   {
     const uint64_t vindex = poly_cell.vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
-    for (int side = 0; side < num_of_subtris_; side++)
+    for (int side = 0; side < num_of_subtris_; ++side)
     {
       side_mapping[side] = -1;
 
@@ -185,7 +185,7 @@ PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
 double
 PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
 {
-  for (int s = 0; s < num_of_subtris_; s++)
+  for (int s = 0; s < num_of_subtris_; ++s)
   {
     const auto& p0 = ref_grid_.vertices[sides_[s].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
@@ -224,7 +224,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
                                            std::vector<double>& shape_values) const
 {
   shape_values.resize(num_nodes_, 0.0);
-  for (int s = 0; s < num_of_subtris_; s++)
+  for (int s = 0; s < num_of_subtris_; ++s)
   {
     const auto& p0 = ref_grid_.vertices[sides_[s].v_index[0]];
     Vector3 xi_eta_zeta = sides_[s].Jinv * (xyz - p0);
@@ -235,7 +235,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
     // Determine if inside tet
     if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and ((xi + eta) <= (1.0 + 1.0e-12)))
     {
-      for (int i = 0; i < num_nodes_; i++)
+      for (int i = 0; i < num_nodes_; ++i)
       {
         int index = node_to_side_map_[i][s];
         double value = 0.0;
@@ -264,7 +264,7 @@ PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const Vector3& xyz) c
   Vector3 grad_r;
   Vector3 grad;
 
-  for (int e = 0; e < num_of_subtris_; e++)
+  for (int e = 0; e < num_of_subtris_; ++e)
   {
     const auto& p0 = ref_grid_.vertices[sides_[e].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
@@ -332,7 +332,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
 
   V_shape_value.reserve(num_nodes_);
   V_shape_grad.reserve(num_nodes_);
-  for (size_t i = 0; i < num_nodes_; i++)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     std::vector<double> node_shape_value;
     std::vector<Vector3> node_shape_grad;
@@ -340,7 +340,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
     node_shape_value.reserve(ttl_num_vol_qpoints);
     node_shape_grad.reserve(ttl_num_vol_qpoints);
 
-    for (size_t s = 0; s < sides_.size(); s++)
+    for (size_t s = 0; s < sides_.size(); ++s)
     {
       for (const auto& qpoint : volume_quadrature_.qpoints)
       {
@@ -408,7 +408,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
 
   F_shape_value.reserve(num_nodes_);
   F_shape_grad.reserve(num_nodes_);
-  for (size_t i = 0; i < num_nodes_; i++)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     std::vector<double> node_shape_value;
     std::vector<Vector3> node_shape_grad;

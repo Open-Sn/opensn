@@ -22,7 +22,7 @@ struct Face
 
   Face()
   {
-    for (int k = 0; k < 3; k++)
+    for (int k = 0; k < 3; ++k)
     {
       v_index[k] = -1;
       n_index[k] = -1;
@@ -51,7 +51,7 @@ struct Face
 
   Face& operator=(const Face& that)
   {
-    for (int k = 0; k < 3; k++)
+    for (int k = 0; k < 3; ++k)
     {
       v_index[k] = that.v_index[k];
       n_index[k] = that.n_index[k];

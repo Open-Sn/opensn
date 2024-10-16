@@ -470,7 +470,7 @@ struct VectorNX
   /// prints the vector to standard cout
   void Print() const
   {
-    for (int i = 0; i < N - 1; i++)
+    for (int i = 0; i < N - 1; ++i)
       std::cout << elements[i] << " ";
     std::cout << elements[N - 1];
   }

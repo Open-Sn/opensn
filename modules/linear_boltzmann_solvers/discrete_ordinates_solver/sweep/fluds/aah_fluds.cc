@@ -185,7 +185,7 @@ AAH_FLUDS::AllocateInternalLocalPsi(size_t num_grps, size_t num_angles)
 {
   local_psi_.resize(common_data_.num_face_categories_);
   // fc = face category
-  for (size_t fc = 0; fc < common_data_.num_face_categories_; fc++)
+  for (size_t fc = 0; fc < common_data_.num_face_categories_; ++fc)
   {
     local_psi_[fc].resize(common_data_.local_psi_stride_[fc] *
                             common_data_.local_psi_max_elements_[fc] * num_grps * num_angles,
@@ -197,7 +197,7 @@ void
 AAH_FLUDS::AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs)
 {
   deplocI_outgoing_psi_.resize(num_loc_sucs, std::vector<double>());
-  for (size_t deplocI = 0; deplocI < num_loc_sucs; deplocI++)
+  for (size_t deplocI = 0; deplocI < num_loc_sucs; ++deplocI)
   {
     deplocI_outgoing_psi_[deplocI].resize(
       common_data_.deplocI_face_dof_count_[deplocI] * num_grps * num_angles, 0.0);
@@ -221,7 +221,7 @@ void
 AAH_FLUDS::AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
 {
   prelocI_outgoing_psi_.resize(num_loc_deps, std::vector<double>());
-  for (size_t prelocI = 0; prelocI < num_loc_deps; prelocI++)
+  for (size_t prelocI = 0; prelocI < num_loc_deps; ++prelocI)
   {
     prelocI_outgoing_psi_[prelocI].resize(
       common_data_.prelocI_face_dof_count_[prelocI] * num_grps * num_angles, 0.0);
@@ -239,7 +239,7 @@ AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
   delayed_prelocI_outgoing_psi_old_.clear();
   delayed_prelocI_outgoing_psi_old_.resize(num_loc_deps);
 
-  for (int prelocI = 0; prelocI < num_loc_deps; prelocI++)
+  for (int prelocI = 0; prelocI < num_loc_deps; ++prelocI)
   {
     const int num_nodes = common_data_.delayed_prelocI_face_dof_count_[prelocI];
 

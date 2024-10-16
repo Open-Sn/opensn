@@ -23,7 +23,7 @@ SparseMatrix::SparseMatrix(const SparseMatrix& matrix)
   rowI_values.resize(row_size_, std::vector<double>());
   rowI_indices.resize(row_size_, std::vector<size_t>());
 
-  for (size_t i = 0; i < matrix.rowI_values.size(); i++)
+  for (size_t i = 0; i < matrix.rowI_values.size(); ++i)
   {
     rowI_values[i] = (matrix.rowI_values[i]);
     rowI_indices[i] = (matrix.rowI_indices[i]);
@@ -101,7 +101,7 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   }
 
   // Assign values
-  for (size_t i = 0; i < num_rows; i++)
+  for (size_t i = 0; i < num_rows; ++i)
   {
     auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), i);
     bool already_there = (relative_location != rowI_indices[i].end());
@@ -191,9 +191,9 @@ SparseMatrix::PrintStr() const
 {
   std::stringstream out;
 
-  for (size_t i = 0; i < row_size_; i++)
+  for (size_t i = 0; i < row_size_; ++i)
   {
-    for (size_t j = 0; j < col_size_; j++)
+    for (size_t j = 0; j < col_size_; ++j)
     {
       auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
       bool non_zero = (relative_location != rowI_indices[i].end());

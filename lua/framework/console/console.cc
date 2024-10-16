@@ -177,7 +177,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
     {
       std::vector<std::string> args;
       args.resize(argc);
-      for (int i = 0; i < argc; i++)
+      for (int i = 0; i < argc; ++i)
         args[i] = std::string(argv[i]);
       LuaSetGlobal(L, "Args", args);
     }

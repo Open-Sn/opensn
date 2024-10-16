@@ -95,17 +95,17 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       const double sigr_g = xs.sigR[g];
 
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         if (node_is_dirichlet[i].first)
           continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
         {
           const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
@@ -166,14 +166,14 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(aval) >= 1.0e-12)
               {
-                for (size_t fj = 0; fj < num_face_nodes; fj++)
+                for (size_t fj = 0; fj < num_face_nodes; ++fj)
                 {
                   const int j = cell_mapping.MapFaceNode(f, fj);
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
@@ -290,20 +290,20 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     {
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         if (node_is_dirichlet[i].first)
           continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
         {
           if (node_is_dirichlet[j].first)
           {
@@ -357,7 +357,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
@@ -434,17 +434,17 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     {
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
-      for (size_t j = 0; j < num_nodes; j++)
+      for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
-      for (size_t i = 0; i < num_nodes; i++)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         if (node_is_dirichlet[i])
           continue;
         const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
-        for (size_t j = 0; j < num_nodes; j++)
+        for (size_t j = 0; j < num_nodes; ++j)
           entry_rhs_i += intV_shapeI_shapeJ[i][j] * qg[j];
 
         VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
@@ -486,7 +486,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
             if (std::fabs(bval) < 1.0e-12)
               continue; // a and f assumed zero
 
-            for (size_t fi = 0; fi < num_face_nodes; fi++)
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
               const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);

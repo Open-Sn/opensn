@@ -37,7 +37,7 @@ std::ostream&
 operator<<(std::ostream& os, SurfaceMesh& that)
 {
   std::vector<Face>::const_iterator curface;
-  for (curface = that.GetTriangles().begin(); curface != that.GetTriangles().end(); curface++)
+  for (curface = that.GetTriangles().begin(); curface != that.GetTriangles().end(); ++curface)
   {
     long index = std::distance(that.GetTriangles().begin(), curface);
     os << "Face " << index << " v:";
@@ -46,7 +46,7 @@ operator<<(std::ostream& os, SurfaceMesh& that)
     os << curface->v_index[2] << "  ";
 
     os << "e:";
-    for (int e = 0; e < 3; e++)
+    for (int e = 0; e < 3; ++e)
     {
       os << "[" << curface->e_index[e][0] << ",";
       os << curface->e_index[e][1] << ",";
@@ -66,7 +66,7 @@ SurfaceMesh::CheckNegativeSense(double x, double y, double z)
 
   // Loop through each face
   std::vector<Face>::iterator cur_face;
-  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); cur_face++)
+  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
   {
     // Get a vertex (first one)
     Vector3 p;
@@ -152,7 +152,7 @@ SurfaceMesh::UpdateInternalConnectivity()
   // Loop over cells and determine which cells subscribe to a vertex
   // Triangles
   size_t num_tri_faces = faces_.size();
-  for (size_t tf = 0; tf < num_tri_faces; tf++)
+  for (size_t tf = 0; tf < num_tri_faces; ++tf)
   {
     auto& try_face = faces_[tf];
     for (int v = 0; v < 3; ++v)
@@ -160,7 +160,7 @@ SurfaceMesh::UpdateInternalConnectivity()
   }
   // Polygons
   size_t num_poly_faces = poly_faces_.size();
-  for (size_t pf = 0; pf < num_poly_faces; pf++)
+  for (size_t pf = 0; pf < num_poly_faces; ++pf)
   {
     auto poly_face = poly_faces_[pf];
     for (auto v : poly_face->v_indices)
@@ -171,7 +171,7 @@ SurfaceMesh::UpdateInternalConnectivity()
   // Triangles
   for (auto curFace : faces_)
   {
-    for (int e = 0; e < 3; e++)
+    for (int e = 0; e < 3; ++e)
     {
       int* curface_edge = curFace.e_index[e];
       int vi = curface_edge[0];
@@ -182,7 +182,7 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto& other_face = faces_[ofi];
 
-        for (size_t e2 = 0; e2 < 3; e2++)
+        for (size_t e2 = 0; e2 < 3; ++e2)
         {
           if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
@@ -198,7 +198,7 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto& other_face = faces_[ofi];
 
-        for (size_t e2 = 0; e2 < 3; e2++)
+        for (size_t e2 = 0; e2 < 3; ++e2)
         {
           if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
@@ -225,7 +225,7 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto other_face = poly_faces_[ofi];
 
-        for (size_t e2 = 0; e2 < other_face->edges.size(); e2++)
+        for (size_t e2 = 0; e2 < other_face->edges.size(); ++e2)
         {
           if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
@@ -241,7 +241,7 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto other_face = poly_faces_[ofi];
 
-        for (size_t e2 = 0; e2 < other_face->edges.size(); e2++)
+        for (size_t e2 = 0; e2 < other_face->edges.size(); ++e2)
         {
           if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
@@ -286,7 +286,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     if (first_word == "v")
     {
       Vector3 newVertex;
-      for (int k = 1; k <= 3; k++)
+      for (int k = 1; k <= 3; ++k)
       {
         // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -325,7 +325,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     if (first_word.compare("vt") == 0)
     {
       Vector3 newVertex;
-      for (int k = 1; k <= 2; k++)
+      for (int k = 1; k <= 2; ++k)
       {
         // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -370,7 +370,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     if (first_word.compare("vn") == 0)
     {
       Vector3 newNormal;
-      for (int k = 1; k <= 3; k++)
+      for (int k = 1; k <= 3; ++k)
       {
         // Extract sub word
         beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -419,7 +419,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
       {
         auto newFace = std::make_shared<Face>();
 
-        for (int k = 1; k <= 3; k++)
+        for (int k = 1; k <= 3; ++k)
         {
           // Extract sub word
           beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -494,7 +494,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
       {
         auto newFace = std::make_shared<PolyFace>();
 
-        for (int k = 1; k <= number_of_verts; k++)
+        for (int k = 1; k <= number_of_verts; ++k)
         {
           // Extract sub word
           beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
@@ -551,7 +551,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           }
         }
 
-        for (int v = 0; v < (newFace->v_indices.size()); v++)
+        for (int v = 0; v < (newFace->v_indices.size()); ++v)
         {
           std::vector<int> side_indices(4);
 
@@ -617,7 +617,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
 
   // Calculate face properties
   std::vector<Face>::iterator curFace;
-  for (curFace = this->faces_.begin(); curFace != this->faces_.end(); curFace++)
+  for (curFace = this->faces_.begin(); curFace != this->faces_.end(); ++curFace)
   {
     // Calculate geometrical normal
     Vector3 vA = this->vertices_.at(curFace->v_index[0]);
@@ -643,11 +643,11 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     // Compute face center
     curFace->face_centroid = (vA + vB + vC) / 3.0;
   }
-  for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); curPFace++)
+  for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); ++curPFace)
   {
     Vector3 centroid;
     int num_verts = (*curPFace)->v_indices.size();
-    for (int v = 0; v < num_verts; v++)
+    for (int v = 0; v < num_verts; ++v)
       centroid = centroid + vertices_[(*curPFace)->v_indices[v]];
 
     centroid = centroid / num_verts;
@@ -692,7 +692,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   char line[250];
   file >> num_verts;
   file.getline(line, 250);
-  for (int v = 1; v <= num_verts; v++)
+  for (int v = 1; v <= num_verts; ++v)
   {
     int vert_index;
     Vector3 vertex;
@@ -717,7 +717,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
 
   file >> num_tris;
   file.getline(line, 250);
-  for (int v = 1; v <= num_tris; v++)
+  for (int v = 1; v <= num_tris; ++v)
   {
     int tri_index;
     auto newFace = std::make_shared<PolyFace>();
@@ -731,7 +731,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
     newFace->v_indices[1] = v1 - 1;
     newFace->v_indices[2] = v2 - 1;
 
-    for (int e = 0; e < 3; e++)
+    for (int e = 0; e < 3; ++e)
     {
       std::vector<int> side_indices(4);
 
@@ -759,7 +759,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
 
   // Calculate face properties
   std::vector<Face>::iterator curFace;
-  for (curFace = this->faces_.begin(); curFace != this->faces_.end(); curFace++)
+  for (curFace = this->faces_.begin(); curFace != this->faces_.end(); ++curFace)
   {
     // Calculate geometrical normal
     Vector3 vA = this->vertices_.at(curFace->v_index[0]);
@@ -785,11 +785,11 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
     // Compute face center
     curFace->face_centroid = (vA + vB + vC) / 3.0;
   }
-  for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); curPFace++)
+  for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); ++curPFace)
   {
     Vector3 centroid;
     int num_verts = (*curPFace)->v_indices.size();
-    for (int v = 0; v < num_verts; v++)
+    for (int v = 0; v < num_verts; ++v)
       centroid = centroid + vertices_[(*curPFace)->v_indices[v]];
 
     centroid = centroid / num_verts;
@@ -872,7 +872,7 @@ SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
       new_face->v_indices.push_back(vert_ij_map[i + 1][j + 1]);
       new_face->v_indices.push_back(vert_ij_map[i + 1][j]);
 
-      for (int v = 0; v < (new_face->v_indices.size()); v++)
+      for (int v = 0; v < (new_face->v_indices.size()); ++v)
       {
         std::vector<int> side_indices(4);
         side_indices[0] = new_face->v_indices[v];
@@ -895,7 +895,7 @@ SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
   {
     Vector3 centroid;
     int num_verts = poly_face->v_indices.size();
-    for (int v = 0; v < num_verts; v++)
+    for (int v = 0; v < num_verts; ++v)
       centroid = centroid + surf_mesh->vertices_[poly_face->v_indices[v]];
 
     centroid = centroid / num_verts;
@@ -954,7 +954,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
   vertices_.resize(num_nodes);
 
-  for (int n = 0; n < num_nodes; n++)
+  for (int n = 0; n < num_nodes; ++n)
   {
     std::getline(file, line);
     iss = std::istringstream(line);
@@ -993,7 +993,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     Exit(EXIT_FAILURE);
   }
 
-  for (int n = 0; n < num_elems; n++)
+  for (int n = 0; n < num_elems; ++n)
   {
     int elem_type, num_tags, physical_reg, tag, element_index;
     auto newFace = std::make_shared<PolyFace>();
@@ -1013,7 +1013,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       Exit(EXIT_FAILURE);
     }
 
-    for (int i = 1; i < num_tags; i++)
+    for (int i = 1; i < num_tags; ++i)
       if (not(iss >> tag))
       {
         log.LogAllError() << "Failed when reading tags.\n";
@@ -1025,7 +1025,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
       const int num_nodes = 3;
 
       int nodes[num_nodes];
-      for (int i = 0; i < num_nodes; i++)
+      for (int i = 0; i < num_nodes; ++i)
         if (not(iss >> nodes[i]))
         {
           log.LogAllError() << "Failed when reading element node index.\n";
@@ -1033,7 +1033,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
         }
 
       newFace->v_indices.resize(num_nodes);
-      for (int i = 0; i < num_nodes; i++)
+      for (int i = 0; i < num_nodes; ++i)
         newFace->v_indices[i] = nodes[i] - 1;
     }
     else if (elem_type == 3)
@@ -1049,7 +1049,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
         }
 
       newFace->v_indices.resize(num_nodes);
-      for (int i = 0; i < num_nodes; i++)
+      for (int i = 0; i < num_nodes; ++i)
         newFace->v_indices[i] = nodes[i] - 1;
     }
     else
@@ -1059,7 +1059,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
     const size_t total_nodes = newFace->v_indices.size();
 
-    for (size_t e = 0; e < total_nodes; e++)
+    for (size_t e = 0; e < total_nodes; ++e)
     {
       std::vector<int> side_indices(total_nodes);
       side_indices[0] = newFace->v_indices[e];
@@ -1087,7 +1087,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     Vector3 centroid;
     size_t num_verts = poly_face->v_indices.size();
 
-    for (size_t v = 0; v < num_verts; v++)
+    for (size_t v = 0; v < num_verts; ++v)
       centroid = centroid + vertices_[poly_face->v_indices[v]];
 
     centroid = centroid / static_cast<double>(num_verts);
@@ -1121,12 +1121,12 @@ SurfaceMesh::ExportToOBJFile(const char* fileName)
   fprintf(outputFile, "o %s\n", "OpenSnTriMesh");
 
   std::vector<Vector3>::iterator cur_v;
-  for (cur_v = this->vertices_.begin(); cur_v != this->vertices_.end(); cur_v++)
+  for (cur_v = this->vertices_.begin(); cur_v != this->vertices_.end(); ++cur_v)
   {
     fprintf(outputFile, "v %9.6f %9.6f %9.6f\n", cur_v->x, cur_v->y, cur_v->z);
   }
 
-  for (unsigned ell = 0; ell < this->lines_.size(); ell++)
+  for (unsigned ell = 0; ell < this->lines_.size(); ++ell)
   {
     fprintf(outputFile, "l %d %d \n", lines_[ell].v_index[0] + 1, lines_[ell].v_index[1] + 1);
   }
@@ -1142,7 +1142,7 @@ SurfaceMesh::ExportToOBJFile(const char* fileName)
     fprintf(outputFile, "s off\n");
 
     std::vector<Face>::iterator cur_face;
-    for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); cur_face++)
+    for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
     {
       fprintf(outputFile,
               "f %d//1 %d//1 %d//1\n",
@@ -1187,13 +1187,13 @@ SurfaceMesh::ExportToPolyFile(const char* fileName)
   }
 
   fprintf(outputFile, "%lu 2 0 0\n", vertices_.size());
-  for (int v = 0; v < vertices_.size(); v++)
+  for (int v = 0; v < vertices_.size(); ++v)
   {
     fprintf(outputFile, "%d %.15f %.15f 0\n", v + 1, vertices_[v].x, vertices_[v].y);
   }
 
   fprintf(outputFile, "%lu 0\n", lines_.size());
-  for (int e = 0; e < lines_.size(); e++)
+  for (int e = 0; e < lines_.size(); ++e)
   {
     fprintf(outputFile, "%d %d %d\n", e + 1, lines_[e].v_index[0] + 1, lines_[e].v_index[1] + 1);
   }
@@ -1212,7 +1212,7 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
   Vector3 khat(0.0, 0.0, 1.0);
 
   // Loop over angles
-  for (int a = 0; a < num_angles; a++)
+  for (int a = 0; a < num_angles; ++a)
   {
     double varphi = 0.5 * dvarphi + a * dvarphi;
 
@@ -1224,16 +1224,16 @@ SurfaceMesh::CheckCyclicDependencies(int num_angles)
     // Add all polyfaces to graph
     DirectedGraph G;
     size_t num_loc_cells = poly_faces_.size();
-    for (size_t c = 0; c < num_loc_cells; c++)
+    for (size_t c = 0; c < num_loc_cells; ++c)
       G.AddVertex();
 
     // Now construct dependencies
-    for (size_t c = 0; c < num_loc_cells; c++)
+    for (size_t c = 0; c < num_loc_cells; ++c)
     {
       auto face = poly_faces_[c];
 
       size_t num_edges = face->edges.size();
-      for (size_t e = 0; e < num_edges; e++)
+      for (size_t e = 0; e < num_edges; ++e)
       {
         int v0i = face->edges[e][0];
         int v1i = face->edges[e][1];
@@ -1298,13 +1298,13 @@ SurfaceMesh::GetMeshStats()
   size_t num_loc_cells = poly_faces_.size();
   areas.resize(num_loc_cells);
   double max_area = 0.0;
-  for (size_t c = 0; c < num_loc_cells; c++)
+  for (size_t c = 0; c < num_loc_cells; ++c)
   {
     auto face = poly_faces_[c];
 
     size_t num_edges = face->edges.size();
     double area = 0.0;
-    for (size_t e = 0; e < num_edges; e++)
+    for (size_t e = 0; e < num_edges; ++e)
     {
       int v0i = face->edges[e][0];
       int v1i = face->edges[e][1];
@@ -1332,14 +1332,14 @@ SurfaceMesh::GetMeshStats()
   histo_bins.resize(10);
   histo.resize(10, 0);
   histo_bins[0] = max_area * 1.05;
-  for (int i = 1; i < 10; i++)
+  for (int i = 1; i < 10; ++i)
     histo_bins[i] = histo_bins[i - 1] / 2.0;
 
   // Polulate histogram
   for (auto area : areas)
   {
     int home_bin = 9;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; ++i)
     {
 
       if (area <= histo_bins[i])
@@ -1351,7 +1351,7 @@ SurfaceMesh::GetMeshStats()
   } // for areas
 
   std::stringstream output;
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; ++i)
   {
     char buff[100];
     snprintf(buff, 100, "%11.3e", histo_bins[i]);
@@ -1448,7 +1448,7 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
   // Copy all faces from surface
   std::vector<Face> unsorted_faces;
   std::vector<Face>::iterator cur_face;
-  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); cur_face++)
+  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
   {
     unsorted_faces.push_back((*cur_face));
   }
@@ -1465,16 +1465,16 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
 
   // Reverse iterate over unsorted
   std::vector<Face>::reverse_iterator us_face;
-  for (us_face = unsorted_faces.rbegin(); us_face != unsorted_faces.rend(); us_face++)
+  for (us_face = unsorted_faces.rbegin(); us_face != unsorted_faces.rend(); ++us_face)
   {
     bool matchFound = false;
 
     // Check if it can be matched
     FaceListCollection::iterator existing_list;
     for (existing_list = co_planar_lists.begin(); existing_list != co_planar_lists.end();
-         existing_list++)
+         ++existing_list)
     {
-      for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); cur_face++)
+      for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); ++cur_face)
       {
         Vector3 n1 = cur_face->geometric_normal;
         Vector3 n2 = us_face->geometric_normal;
@@ -1511,14 +1511,14 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
   // Loop over co_planar lists
   FaceListCollection::iterator existing_list;
   for (existing_list = co_planar_lists.begin(); existing_list != co_planar_lists.end();
-       existing_list++)
+       ++existing_list)
   {
     // Inner patch collection
     FaceListCollection inner_patch_list_collection;
 
     // Add all the faces of this collection to an unused list
     std::vector<Face> unused_faces;
-    for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); cur_face++)
+    for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); ++cur_face)
     {
       unused_faces.push_back((*cur_face));
     }
@@ -1534,21 +1534,21 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
     {
       bool updateMade = false;
       std::vector<Face>::iterator us_face_f; // Forward iterator
-      for (us_face_f = unused_faces.begin(); us_face_f != unused_faces.end(); us_face_f++)
+      for (us_face_f = unused_faces.begin(); us_face_f != unused_faces.end(); ++us_face_f)
       {
         // Try to to find a home
         FaceListCollection::iterator inner_list;
         for (inner_list = inner_patch_list_collection.begin();
              inner_list != inner_patch_list_collection.end();
-             inner_list++)
+             ++inner_list)
         {
-          for (cur_face = (*inner_list)->begin(); cur_face != (*inner_list)->end(); cur_face++)
+          for (cur_face = (*inner_list)->begin(); cur_face != (*inner_list)->end(); ++cur_face)
           {
             // Check if any vertices match
-            for (int e = 0; e < 3; e++)
+            for (int e = 0; e < 3; ++e)
             {
               int vi = (*us_face_f).v_index[e];
-              for (int e2 = 0; e2 < 3; e2++)
+              for (int e2 = 0; e2 < 3; ++e2)
               {
                 int vf = (*cur_face).v_index[e2];
 
@@ -1595,7 +1595,7 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
     FaceListCollection::iterator inner_list;
     for (inner_list = inner_patch_list_collection.begin();
          inner_list != inner_patch_list_collection.end();
-         inner_list++)
+         ++inner_list)
     {
       patch_list_collection.push_back(*inner_list);
     }
@@ -1606,27 +1606,27 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
   // Create surfaces for each patch
   FaceListCollection::iterator outer_patch;
   for (outer_patch = patch_list_collection.begin(); outer_patch != patch_list_collection.end();
-       outer_patch++)
+       ++outer_patch)
   {
 
     auto new_surface = std::make_shared<SurfaceMesh>();
 
     std::vector<std::vector<int>> vertex_mapping;
 
-    for (cur_face = (*outer_patch)->begin(); cur_face != (*outer_patch)->end(); cur_face++)
+    for (cur_face = (*outer_patch)->begin(); cur_face != (*outer_patch)->end(); ++cur_face)
     {
       // Copy the face
       Face newFace = (*cur_face);
 
       // Copy and map vertices
-      for (int e = 0; e < 3; e++)
+      for (int e = 0; e < 3; ++e)
       {
         int vi = newFace.v_index[e];
 
         // Check if vertex already there
         bool already_there = false;
         std::vector<int> already_there_mapping;
-        for (auto cur_map = vertex_mapping.begin(); cur_map != vertex_mapping.end(); cur_map++)
+        for (auto cur_map = vertex_mapping.begin(); cur_map != vertex_mapping.end(); ++cur_map)
         {
           if ((*cur_map)[0] == vi)
           {
@@ -1665,7 +1665,7 @@ SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
       newFace.e_index[2][0] = newFace.v_index[2];
       newFace.e_index[2][1] = newFace.v_index[0];
 
-      for (int e = 0; e < 3; e++)
+      for (int e = 0; e < 3; ++e)
       {
         newFace.e_index[e][2] = -1;
         newFace.e_index[e][3] = -1;
