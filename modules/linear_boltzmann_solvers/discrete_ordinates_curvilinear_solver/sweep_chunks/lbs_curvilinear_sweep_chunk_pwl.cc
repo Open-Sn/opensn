@@ -42,7 +42,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<CurvilinearQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<CurvilinearQuadrature>(groupset_.quadrature);
 
   if (curvilinear_product_quadrature == nullptr)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
@@ -51,7 +51,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
   //  configure unknown manager for quantities that depend on polar level
   const size_t dir_map_size = curvilinear_product_quadrature->GetDirectionMap().size();
   for (size_t m = 0; m < dir_map_size; ++m)
-    unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups_.size());
+    unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
 
   //  allocate storage for sweeping dependency
   const unsigned int n_dof = discretization_primary.GetNumLocalDOFs(unknown_manager_);
@@ -71,29 +71,29 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
 void
 SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 {
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos_[angle_set.GetGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
 
   auto gs_ss_size = grp_ss_info.ss_size;
   auto gs_ss_begin = grp_ss_info.ss_begin;
-  auto gs_gi = groupset_.groups_[gs_ss_begin].id_;
+  auto gs_gi = groupset_.groups[gs_ss_begin].id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
 
   auto& fluds = dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
-  const auto& m2d_op = groupset_.quadrature_->GetMomentToDiscreteOperator();
-  const auto& d2m_op = groupset_.quadrature_->GetDiscreteToMomentOperator();
+  const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
+  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
   std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
                                         std::vector<double>(max_num_cell_dofs_));
   std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
                                          std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups_.size(),
+  std::vector<std::vector<double>> b(groupset_.groups.size(),
                                      std::vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<opensn::CurvilinearQuadrature>(groupset_.quadrature_);
+    std::dynamic_pointer_cast<opensn::CurvilinearQuadrature>(groupset_.quadrature);
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
@@ -105,14 +105,14 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
     auto& cell = grid_.local_cells[cell_local_id];
     auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
-    auto cell_num_faces = cell.faces_.size();
+    auto cell_num_faces = cell.faces.size();
     auto cell_num_nodes = cell_mapping.NumNodes();
 
     const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
-    const auto& rho = densities_[cell.local_id_];
-    const auto& sigma_t = xs_.at(cell.material_id_)->SigmaTotal();
+    const auto& rho = densities_[cell.local_id];
+    const auto& sigma_t = xs_.at(cell.material_id)->SigmaTotal();
 
     // Get cell matrices
     const auto& G = unit_cell_matrices_[cell_local_id].intV_shapeI_gradshapeJ;
@@ -127,8 +127,8 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
-      auto omega = groupset_.quadrature_->omegas_[direction_num];
-      auto wt = groupset_.quadrature_->weights_[direction_num];
+      auto omega = groupset_.quadrature->omegas[direction_num];
+      auto wt = groupset_.quadrature->weights[direction_num];
 
       const auto polar_level = map_polar_level_[direction_num];
       const auto fac_diamond_difference =
@@ -160,7 +160,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces_[f].normal_);
+        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
 
       // Surface integrals
       int in_face_counter = -1;
@@ -169,9 +169,9 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces_[f];
+        auto& cell_face = cell.faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
-        const bool is_boundary_face = not cell_face.has_neighbor_;
+        const bool is_boundary_face = not cell_face.has_neighbor;
 
         if (is_local_face)
           ++in_face_counter;
@@ -208,7 +208,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
               //  Thanks to the verifications performed during initialisation,
               //  at this point it is necessary to confirm only the orientation.
               const bool incident_on_symmetric_boundary =
-                (cell_face.normal_.Dot(normal_vector_boundary_) < -0.999999);
+                (cell_face.normal.Dot(normal_vector_boundary_) < -0.999999);
               if (!incident_on_symmetric_boundary)
               {
                 for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -219,7 +219,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
                   {
                     const int j = cell_mapping.MapFaceNode(f, fj);
 
-                    psi = angle_set.PsiBoundary(cell_face.neighbor_id_,
+                    psi = angle_set.PsiBoundary(cell_face.neighbor_id,
                                                 direction_num,
                                                 cell_local_id,
                                                 f,
@@ -317,11 +317,11 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           continue;
 
         out_face_counter++;
-        const auto& face = cell.faces_[f];
+        const auto& face = cell.faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
-        const bool is_boundary_face = not face.has_neighbor_;
+        const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id_]->IsReflecting());
+          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
         const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
 
         if (not is_boundary_face and not is_local_face)
@@ -346,7 +346,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
             psi = angle_set.PsiReflected(
-              face.neighbor_id_, direction_num, cell_local_id, f, fi, gs_ss_begin);
+              face.neighbor_id, direction_num, cell_local_id, f, fi, gs_ss_begin);
           else
             continue;
 

@@ -61,19 +61,19 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components_;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
 
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     // For component/group
     for (size_t g = 0; g < num_groups; ++g)
@@ -123,22 +123,22 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
-        const auto& n_f = face.normal_;
+        const auto& face = cell.faces[f];
+        const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
         const double hm = HPerpendicular(cell, f);
 
-        if (face.has_neighbor_)
+        if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_.cells[face.neighbor_id_];
+          const auto& adj_cell = grid_.cells[face.neighbor_id];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
-          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);
+          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
@@ -230,8 +230,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         else
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -405,13 +405,13 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_groups = uk_man_.unknowns_.front().num_components_;
+    const size_t num_groups = uk_man_.unknowns.front().num_components;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     // For component/group
     for (size_t g = 0; g < num_groups; ++g)
@@ -450,18 +450,18 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
-        const auto& n_f = face.normal_;
+        const auto& face = cell.faces[f];
+        const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_ and not suppress_bcs_)
+        if (not face.has_neighbor and not suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -597,21 +597,21 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components_;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -646,8 +646,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
-        const auto& n_f = face.normal_;
+        const auto& face = cell.faces[f];
+        const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -656,15 +656,15 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (face.has_neighbor_)
+        if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_.cells[face.neighbor_id_];
+          const auto& adj_cell = grid_.cells[face.neighbor_id];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
-          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id_);
+          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
@@ -745,8 +745,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
         else
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -889,20 +889,20 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components_;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -927,8 +927,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
-        const auto& n_f = face.normal_;
+        const auto& face = cell.faces[f];
+        const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -937,11 +937,11 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_ and not suppress_bcs_)
+        if (not face.has_neighbor and not suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -1036,7 +1036,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns_.front().num_components_;
+  const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector;
   VecGetArrayRead(petsc_q_vector, &q_vector);
@@ -1044,15 +1044,15 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_.local_cells)
   {
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id_);
+    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
 
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -1077,8 +1077,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces_[f];
-        const auto& n_f = face.normal_;
+        const auto& face = cell.faces[f];
+        const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -1087,11 +1087,11 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
         const double hm = HPerpendicular(cell, f);
 
-        if (not face.has_neighbor_ and not suppress_bcs_)
+        if (not face.has_neighbor and not suppress_bcs_)
         {
           BoundaryCondition bc;
-          if (bcs_.count(face.neighbor_id_) > 0)
-            bc = bcs_.at(face.neighbor_id_);
+          if (bcs_.count(face.neighbor_id) > 0)
+            bc = bcs_.at(face.neighbor_id);
 
           if (bc.type == BCType::DIRICHLET)
           {
@@ -1183,8 +1183,8 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const auto& cell_mapping = sdm_.GetCellMapping(cell);
   double hp;
 
-  const size_t num_faces = cell.faces_.size();
-  const size_t num_vertices = cell.vertex_ids_.size();
+  const size_t num_faces = cell.faces.size();
+  const size_t num_vertices = cell.vertex_ids.size();
 
   const double volume = cell_mapping.CellVolume();
   const double face_area = cell_mapping.FaceArea(f);

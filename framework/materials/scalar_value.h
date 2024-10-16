@@ -11,12 +11,15 @@ namespace opensn
 /// Simple scalar-valued material property.
 class ScalarValue : public MaterialProperty
 {
-public:
+private:
   double value_ = 1.0;
 
+public:
   ScalarValue() : MaterialProperty(PropertyType::SCALAR_VALUE) {}
 
   double GetScalarValue() override { return value_; }
+
+  void Set(double value) { value_ = value; }
 };
 
 } // namespace opensn

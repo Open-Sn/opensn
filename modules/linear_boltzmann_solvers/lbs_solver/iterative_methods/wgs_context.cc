@@ -15,12 +15,12 @@ WGSContext::WGSContext(LBSSolver& lbs_solver,
                        SourceFlags rhs_scope,
                        bool log_info)
   : LinearSolverContext(),
-    lbs_solver_(lbs_solver),
-    groupset_(groupset),
-    set_source_function_(set_source_function),
-    lhs_src_scope_(lhs_scope),
-    rhs_src_scope_(rhs_scope),
-    log_info_(log_info)
+    lbs_solver(lbs_solver),
+    groupset(groupset),
+    set_source_function(set_source_function),
+    lhs_src_scope(lhs_scope),
+    rhs_src_scope(rhs_scope),
+    log_info(log_info)
 {
   this->residual_scale_type = ResidualScaleType::RHS_PRECONDITIONED_NORM;
 }
@@ -34,19 +34,19 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   MatShellGetContext(matrix, &gs_context_ptr);
 
   // Shorten some names
-  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver_;
-  LBSGroupset& groupset = gs_context_ptr->groupset_;
+  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver;
+  LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy krylov action_vector into local
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, action_vector, PhiSTLOption::PHI_OLD);
 
   // Setting the source using updated phi_old
-  auto& q_moments_local = lbs_solver_.QMomentsLocal();
+  auto& q_moments_local = lbs_solver.QMomentsLocal();
   q_moments_local.assign(q_moments_local.size(), 0.0);
-  set_source_function_(groupset, q_moments_local, lbs_solver.PhiOldLocal(), lhs_src_scope_);
+  set_source_function(groupset, q_moments_local, lbs_solver.PhiOldLocal(), lhs_src_scope);
 
   // Apply transport operator
-  gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope_);
+  gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);
 
   // Copy local into operating vector
   // We copy the STL data to the operating vector

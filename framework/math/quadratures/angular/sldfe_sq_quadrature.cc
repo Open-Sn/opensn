@@ -219,7 +219,7 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   std::array<Vector3, 4>& radii_vectors_xy_tilde,
   std::array<double, 4>& sub_sub_sqr_areas)
 {
-  FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
+  FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
   DynamicVector<double> rho = {d, d, d, d};
@@ -246,7 +246,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
   auto& SA_i = sub_sub_sqr_areas;
 
   // Declare algorithm utilities
-  FUNCTION_WEIGHT_FROM_RHO ComputeWeights(
+  FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
   DynamicVector<double> rho = {d, d, d, d};
@@ -372,7 +372,7 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
     SA_i[i] = ComputeSphericalQuadrilateralArea(sub_sub_square_xyz[i]);
 
   // Apply optimization
-  if (qp_optimization_type_ == QuadraturePointOptimization::CENTROID)
+  if (qp_optimization_type == QuadraturePointOptimization::CENTROID)
     for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 4; ++j)
@@ -382,9 +382,9 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
 
       sq.sub_sqr_weights[i] = SA_i[i];
     } // for i
-  else if (qp_optimization_type_ == QuadraturePointOptimization::EMPIRICAL)
+  else if (qp_optimization_type == QuadraturePointOptimization::EMPIRICAL)
     EmpiricalQPOptimization(sq, legendre, vc, vctoi, SA_i);
-  else if (qp_optimization_type_ == QuadraturePointOptimization::ISOLATED)
+  else if (qp_optimization_type == QuadraturePointOptimization::ISOLATED)
     IsolatedQPOptimization(sq, legendre, vc, vctoi, SA_i);
 }
 
@@ -502,15 +502,15 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
 void
 SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
 {
-  deployed_SQs_.clear(); // just to be sure
-  deployed_SQs_.reserve(initial_octant_SQs_.size() * 8);
+  deployed_SQs.clear(); // just to be sure
+  deployed_SQs.reserve(initial_octant_SQs_.size() * 8);
 
   // Define modifying variables
   Vector3 octant_mod(1.0, 1.0, 1.0);
 
   // Top NE octant, no change
   for (auto& sq : initial_octant_SQs_)
-    deployed_SQs_.push_back(sq);
+    deployed_SQs.push_back(sq);
 
   // Top NW octant
   octant_mod = Vector3(-1.0, 1.0, 1.0);
@@ -526,7 +526,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Top SW octant
@@ -543,7 +543,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Top SE octant
@@ -560,7 +560,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Bot NE octant
@@ -577,7 +577,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Bot NW octant
@@ -594,7 +594,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Bot SW octant
@@ -611,7 +611,7 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Bot SE octant
@@ -628,21 +628,21 @@ SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
       xyz = xyz * octant_mod;
     new_sq.octant_modifier = octant_mod;
 
-    deployed_SQs_.push_back(new_sq);
+    deployed_SQs.push_back(new_sq);
   }
 
   // Make history entry
-  deployed_SQs_history_.push_back(deployed_SQs_);
+  deployed_SQs_history_.push_back(deployed_SQs);
 }
 
 void
 SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
 {
-  abscissae_.clear();
-  weights_.clear();
-  omegas_.clear();
+  abscissae.clear();
+  weights.clear();
+  omegas.clear();
 
-  for (const auto& sq : deployed_SQs_)
+  for (const auto& sq : deployed_SQs)
   {
     for (int i = 0; i < 4; ++i)
     {
@@ -657,9 +657,9 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
 
       const auto abscissa = QuadraturePointPhiTheta(phi, theta);
 
-      abscissae_.push_back(abscissa);
-      weights_.push_back(weight);
-      omegas_.push_back(omega);
+      abscissae.push_back(abscissa);
+      weights.push_back(weight);
+      omegas.push_back(omega);
     }
   }
 }
@@ -807,9 +807,9 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   log.Log() << "Printing SLDFE-Quadrature to file.";
 
   std::ofstream vert_file, cell_file, points_file, python_file;
-  vert_file.open(output_filename_prefix_ + "verts.txt");
+  vert_file.open(output_filename_prefix + "verts.txt");
   {
-    for (const auto& sq : deployed_SQs_)
+    for (const auto& sq : deployed_SQs)
       for (int v = 0; v < 4; ++v)
       {
         auto& v0 = sq.vertices_xyz_prime[v];
@@ -826,10 +826,10 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   vert_file.close();
 
-  cell_file.open(output_filename_prefix_ + "cells.txt");
+  cell_file.open(output_filename_prefix + "cells.txt");
   {
     int vi = 0;
-    for (const auto& sq : deployed_SQs_)
+    for (const auto& sq : deployed_SQs)
     {
       for (const auto& vert : sq.vertices_xyz)
         for (int d = 0; d <= 10; ++d)
@@ -839,9 +839,9 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   cell_file.close();
 
-  points_file.open(output_filename_prefix_ + "points.txt");
+  points_file.open(output_filename_prefix + "points.txt");
   {
-    for (auto& sq : deployed_SQs_)
+    for (auto& sq : deployed_SQs)
     {
       int ss = -1;
       for (const auto& point : sq.sub_sqr_points)
@@ -856,7 +856,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   points_file.close();
 
-  python_file.open(output_filename_prefix_ + "python.py");
+  python_file.open(output_filename_prefix + "python.py");
   python_file << "import matplotlib.pyplot as plt\n"
                  "from mpl_toolkits import mplot3d\n"
                  "import mpl_toolkits.mplot3d.art3d as art3d\n"
@@ -869,7 +869,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "#====================================== Read vertices\n"
                  "verts = []\n"
                  "verts_file = open(\""
-              << output_filename_prefix_
+              << output_filename_prefix
               << "verts.txt\")\n"
                  "for line in verts_file:\n"
                  "    words = line.split()\n"
@@ -881,7 +881,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "#====================================== Read cells\n"
                  "cells = []\n"
                  "cells_file = open(\""
-              << output_filename_prefix_
+              << output_filename_prefix
               << "cells.txt\")\n"
                  "for line in cells_file:\n"
                  "    words = line.split()\n"
@@ -895,7 +895,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "points = []\n"
                  "weightsum=0.0\n"
                  "points_file = open(\""
-              << output_filename_prefix_
+              << output_filename_prefix
               << "points.txt\")\n"
                  "for line in points_file:\n"
                  "    words = line.split()\n"
@@ -1040,12 +1040,12 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
   auto ref_dir_n = ref_dir.Normalized();
   double mu_cone = cos(cone_size);
   std::vector<SphericalQuadrilateral> new_deployment;
-  new_deployment.reserve(deployed_SQs_.size());
+  new_deployment.reserve(deployed_SQs.size());
 
   GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
   int num_refined = 0;
-  for (auto& sq : deployed_SQs_)
+  for (auto& sq : deployed_SQs)
   {
     bool sq_to_be_split = false;
 
@@ -1065,8 +1065,8 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
     }
   }
 
-  deployed_SQs_.clear();
-  deployed_SQs_ = new_deployment;
+  deployed_SQs.clear();
+  deployed_SQs = new_deployment;
   deployed_SQs_history_.push_back(new_deployment);
 
   PopulateQuadratureAbscissae();

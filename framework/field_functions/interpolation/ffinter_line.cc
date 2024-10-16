@@ -48,7 +48,7 @@ FieldFunctionInterpolationLine::Initialize()
       if (grid.CheckPointInsideCell(cell, point))
       {
         local_interpolation_points_.push_back(point);
-        local_cells_.push_back(cell.local_id_);
+        local_cells_.push_back(cell.local_id);
       }
     }
   }

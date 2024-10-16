@@ -43,7 +43,7 @@ GetProductQuadrature(lua_State* L)
   try
   {
     auto ang_quad = opensn::angular_quadrature_stack.at(handle);
-    if (ang_quad->type_ == AngularQuadratureType::ProductQuadrature)
+    if (ang_quad->type == AngularQuadratureType::ProductQuadrature)
       quad = std::static_pointer_cast<ProductQuadrature>(ang_quad);
     else
     {
@@ -59,9 +59,9 @@ GetProductQuadrature(lua_State* L)
   }
 
   std::vector<LuaQuadData> quad_data;
-  quad_data.resize(quad->weights_.size());
-  for (size_t n = 0; n < quad->weights_.size(); ++n)
-    quad_data[n] = {quad->weights_[n], quad->abscissae_[n].theta, quad->abscissae_[n].phi};
+  quad_data.resize(quad->weights.size());
+  for (size_t n = 0; n < quad->weights.size(); ++n)
+    quad_data[n] = {quad->weights[n], quad->abscissae[n].theta, quad->abscissae[n].phi};
   return LuaReturn(L, quad_data);
 }
 

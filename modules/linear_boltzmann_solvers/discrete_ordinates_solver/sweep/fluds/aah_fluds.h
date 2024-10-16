@@ -25,9 +25,9 @@ private:
   // local_psi_n_block_stride[fc]. Given face category fc, the value is
   // total number of faces that store information in this category's buffer
   // per angle
-  std::vector<size_t> local_psi_Gn_block_strideG; // Custom G
+  std::vector<size_t> local_psi_Gn_block_strideG_; // Custom G
 
-  size_t delayed_local_psi_Gn_block_strideG; // Custom G
+  size_t delayed_local_psi_Gn_block_strideG_; // Custom G
 
   std::vector<std::vector<double>> local_psi_;
   std::vector<double> delayed_local_psi_;

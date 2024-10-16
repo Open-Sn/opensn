@@ -23,7 +23,7 @@ private:
   SchedulingAlgorithm scheduler_type_;
   AngleAggregation& angle_agg_;
 
-  struct RULE_VALUES
+  struct RuleValues
   {
     std::shared_ptr<AngleSet> angle_set;
     int depth_of_graph;
@@ -32,7 +32,7 @@ private:
     int sign_of_omegaz;
     size_t set_index;
 
-    explicit RULE_VALUES(std::shared_ptr<AngleSet>& ref_as) : angle_set(ref_as)
+    explicit RuleValues(std::shared_ptr<AngleSet>& ref_as) : angle_set(ref_as)
     {
       depth_of_graph = 0;
       set_index = 0;
@@ -41,7 +41,7 @@ private:
       sign_of_omegaz = 1;
     }
   };
-  std::vector<RULE_VALUES> rule_values_;
+  std::vector<RuleValues> rule_values_;
 
   SweepChunk& sweep_chunk_;
 

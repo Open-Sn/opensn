@@ -60,14 +60,14 @@ void
 DiffusionDFEMSolver::InitializeWGSSolvers()
 {
   // Initialize groupset solvers
-  gs_mip_solvers_.assign(groupsets_.size(), nullptr);
+  gs_mip_solvers.assign(groupsets_.size(), nullptr);
   const size_t num_groupsets = groupsets_.size();
   for (size_t gs = 0; gs < num_groupsets; ++gs)
   {
     const auto& groupset = groupsets_[gs];
 
     // Make UnknownManager
-    const size_t gs_G = groupset.groups_.size();
+    const size_t gs_G = groupset.groups.size();
     opensn::UnknownManager uk_man;
     uk_man.AddUnknown(UnknownType::VECTOR_N, gs_G);
 
@@ -107,7 +107,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       std::vector<double> sigR(gs_G, 0.0);
 
       size_t g = 0;
-      for (size_t gprime = groupset.groups_.front().id_; gprime <= groupset.groups_.back().id_;
+      for (size_t gprime = groupset.groups.front().id; gprime <= groupset.groups.back().id;
            ++gprime)
       {
         Dg[g] = diffusion_coeff[gprime];
@@ -130,10 +130,10 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
                                                        false,
                                                        true);
 
-    solver->options.residual_tolerance = groupset.wgdsa_tol_;
-    solver->options.max_iters = groupset.wgdsa_max_iters_;
-    solver->options.verbose = groupset.wgdsa_verbose_;
-    solver->options.additional_options_string = groupset.wgdsa_string_;
+    solver->options.residual_tolerance = groupset.wgdsa_tol;
+    solver->options.max_iters = groupset.wgdsa_max_iters;
+    solver->options.verbose = groupset.wgdsa_verbose;
+    solver->options.additional_options_string = groupset.wgdsa_string;
 
     solver->Initialize();
 
@@ -141,7 +141,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 
     solver->AssembleAand_b(dummy_rhs);
 
-    gs_mip_solvers_[gs] = solver;
+    gs_mip_solvers[gs] = solver;
   } // for groupset
 
   wgs_solvers_.clear(); // this is required

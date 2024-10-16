@@ -18,13 +18,13 @@ class LBSSolver;
 
 struct WGSContext : public LinearSolverContext
 {
-  LBSSolver& lbs_solver_;
-  LBSGroupset& groupset_;
-  const SetSourceFunction& set_source_function_;
-  SourceFlags lhs_src_scope_;
-  SourceFlags rhs_src_scope_;
-  bool log_info_ = true;
-  size_t counter_applications_of_inv_op_ = 0;
+  LBSSolver& lbs_solver;
+  LBSGroupset& groupset;
+  const SetSourceFunction& set_source_function;
+  SourceFlags lhs_src_scope;
+  SourceFlags rhs_src_scope;
+  bool log_info = true;
+  size_t counter_applications_of_inv_op = 0;
 
   WGSContext(LBSSolver& lbs_solver,
              LBSGroupset& groupset,

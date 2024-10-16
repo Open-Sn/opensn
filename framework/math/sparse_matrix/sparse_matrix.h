@@ -23,9 +23,9 @@ private:
 
 public:
   /// rowI_indices[i] is a vector indices j for the non-zero columns.
-  std::vector<std::vector<size_t>> rowI_indices_;
+  std::vector<std::vector<size_t>> rowI_indices;
   /// rowI_values[i] corresponds to column indices and contains the non-zero value.
-  std::vector<std::vector<double>> rowI_values_;
+  std::vector<std::vector<double>> rowI_values;
 
 public:
   /// Constructor with number of rows and columns constructor.
@@ -99,8 +99,8 @@ public:
 
   public:
     RowIteratorContext(SparseMatrix& matrix, size_t ref_row)
-      : ref_col_ids_(matrix.rowI_indices_[ref_row]),
-        ref_col_vals_(matrix.rowI_values_[ref_row]),
+      : ref_col_ids_(matrix.rowI_indices[ref_row]),
+        ref_col_vals_(matrix.rowI_values[ref_row]),
         ref_row_(ref_row)
     {
     }
@@ -154,8 +154,8 @@ public:
 
   public:
     ConstRowIteratorContext(const SparseMatrix& matrix, size_t ref_row)
-      : ref_col_ids_(matrix.rowI_indices_[ref_row]),
-        ref_col_vals_(matrix.rowI_values_[ref_row]),
+      : ref_col_ids_(matrix.rowI_indices[ref_row]),
+        ref_col_vals_(matrix.rowI_values[ref_row]),
         ref_row_(ref_row)
     {
     }
@@ -217,11 +217,11 @@ public:
     void Advance()
     {
       ref_col_++;
-      if (ref_col_ >= sp_matrix.rowI_indices_[ref_row_].size())
+      if (ref_col_ >= sp_matrix.rowI_indices[ref_row_].size())
       {
         ref_row_++;
         ref_col_ = 0;
-        while ((ref_row_ < sp_matrix.row_size_) and (sp_matrix.rowI_indices_[ref_row_].empty()))
+        while ((ref_row_ < sp_matrix.row_size_) and (sp_matrix.rowI_indices[ref_row_].empty()))
           ref_row_++;
       }
     }
@@ -241,8 +241,8 @@ public:
     EntryReference operator*()
     {
       return {ref_row_,
-              sp_matrix.rowI_indices_[ref_row_][ref_col_],
-              sp_matrix.rowI_values_[ref_row_][ref_col_]};
+              sp_matrix.rowI_indices[ref_row_][ref_col_],
+              sp_matrix.rowI_values[ref_row_][ref_col_]};
     }
     bool operator==(const EntriesIterator& rhs) const
     {

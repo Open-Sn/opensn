@@ -75,7 +75,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   for (const auto& cell : ref_grid_.local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
-    cell_local_block_address_[cell.local_id_] = static_cast<int64_t>(local_node_count);
+    cell_local_block_address_[cell.local_id] = static_cast<int64_t>(local_node_count);
     local_node_count += cell_mapping.NumNodes();
   }
 
@@ -103,11 +103,11 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   for (uint64_t global_id : ref_grid_.cells.GetGhostGlobalIDs())
   {
     const auto& cell = ref_grid_.cells[global_id];
-    const int locI = static_cast<int>(cell.partition_id_);
+    const int locI = static_cast<int>(cell.partition_id);
 
     std::vector<uint64_t>& locI_cell_id_list = ghost_cell_ids_consolidated[locI];
 
-    locI_cell_id_list.push_back(cell.global_id_);
+    locI_cell_id_list.push_back(cell.global_id);
   }
 
   // AllToAll to get query cell-ids
@@ -125,7 +125,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
       const auto& cell = ref_grid_.cells[cell_global_id];
 
       const uint64_t cell_block_address =
-        local_block_address_ + cell_local_block_address_[cell.local_id_];
+        local_block_address_ + cell_local_block_address_[cell.local_id];
       map_list.push_back(cell_block_address);
     }
   }
@@ -181,11 +181,11 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     }
 
     // Local adjacent cell connections
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
-      if (face.has_neighbor_ and face.IsNeighborLocal(ref_grid_))
+      if (face.has_neighbor and face.IsNeighborLocal(ref_grid_))
       {
-        const auto& adj_cell = ref_grid_.cells[face.neighbor_id_];
+        const auto& adj_cell = ref_grid_.cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (int i = 0; i < num_nodes; ++i)
@@ -205,11 +205,11 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     const auto& cell_mapping = GetCellMapping(cell);
 
     // Local adjacent cell connections
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
-      if (face.has_neighbor_ and (not face.IsNeighborLocal(ref_grid_)))
+      if (face.has_neighbor and (not face.IsNeighborLocal(ref_grid_)))
       {
-        const auto& adj_cell = ref_grid_.cells[face.neighbor_id_];
+        const auto& adj_cell = ref_grid_.cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (int i = 0; i < cell_mapping.NumNodes(); ++i)
@@ -234,7 +234,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   nodal_nnz_in_diag.resize(local_base_block_size_ * N, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_ * N, 0);
 
-  if (unknown_manager.dof_storage_type_ == UnknownStorageType::NODAL)
+  if (unknown_manager.dof_storage_type == UnknownStorageType::NODAL)
   {
     int ir = -1;
     for (int i = 0; i < local_base_block_size_; ++i)
@@ -247,7 +247,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
       } // for j
     }   // for i
   }
-  else if (unknown_manager.dof_storage_type_ == UnknownStorageType::BLOCK)
+  else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
     int ir = -1;
     for (int j = 0; j < N; ++j)
@@ -271,24 +271,24 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
                                      const unsigned int unknown_id,
                                      const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
-                        cell_local_block_address_[cell.local_id_] +
+                        cell_local_block_address_[cell.local_id] +
                         local_base_block_size_ * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
-                        cell_local_block_address_[cell.local_id_] * num_unknowns +
+                        cell_local_block_address_[cell.local_id] * num_unknowns +
                         node * num_unknowns + block_id;
       return address;
     }
@@ -299,7 +299,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
     bool found = false;
     for (auto neighbor_info : neighbor_cell_block_address_)
     {
-      if (neighbor_info.first == cell.global_id_)
+      if (neighbor_info.first == cell.global_id)
       {
         found = true;
         break;
@@ -310,15 +310,15 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
     if (not found)
     {
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                        << "with global index " << cell.global_id_ << " and partition-ID "
-                        << cell.partition_id_;
+                        << "with global index " << cell.global_id << " and partition-ID "
+                        << cell.partition_id;
       Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
-                        locJ_block_size_[cell.partition_id_] * block_id + node;
+                        locJ_block_size_[cell.partition_id] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
@@ -340,23 +340,23 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
                                           const unsigned int unknown_id,
                                           const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = static_cast<int64_t>(cell_local_block_address_[cell.local_id_]) +
+      int64_t address = static_cast<int64_t>(cell_local_block_address_[cell.local_id]) +
                         local_base_block_size_ * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
       int64_t address =
-        static_cast<int64_t>(cell_local_block_address_[cell.local_id_] * num_unknowns) +
+        static_cast<int64_t>(cell_local_block_address_[cell.local_id] * num_unknowns) +
         node * num_unknowns + block_id;
       return address;
     }
@@ -367,7 +367,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
     bool found = false;
     for (auto neighbor_info : neighbor_cell_block_address_)
     {
-      if (neighbor_info.first == cell.global_id_)
+      if (neighbor_info.first == cell.global_id)
       {
         found = true;
         break;
@@ -378,15 +378,15 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
     if (not found)
     {
       log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                        << "with global index " << cell.global_id_ << " and partition-ID "
-                        << cell.partition_id_;
+                        << "with global index " << cell.global_id << " and partition-ID "
+                        << cell.partition_id;
       Exit(EXIT_FAILURE);
     }
 
     if (storage == UnknownStorageType::BLOCK)
     {
       int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
-                        locJ_block_size_[cell.partition_id_] * block_id + node;
+                        locJ_block_size_[cell.partition_id] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)

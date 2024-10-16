@@ -868,13 +868,13 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     {
       if (cell.Type() == CellType::POLYHEDRON)
       {
-        for (auto& face : cell.faces_)
+        for (auto& face : cell.faces)
         {
-          if (not face.has_neighbor_)
+          if (not face.has_neighbor)
           {
             faces_to_export.push_back(face);
 
-            for (int vid : face.vertex_ids_)
+            for (int vid : face.vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
         }   // for face
@@ -905,7 +905,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     // Write face normals
     for (const auto& face : faces_to_export)
     {
-      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+      fprintf(of, "vn %.4f %.4f %.4f\n", face.normal.x, face.normal.y, face.normal.z);
     }
 
     // Write faces
@@ -915,7 +915,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       normal_counter++;
       fprintf(of, "f");
 
-      for (auto v_g_index : face.vertex_ids_)
+      for (auto v_g_index : face.vertex_ids)
         fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
       fprintf(of, "\n");
@@ -954,29 +954,29 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       {
         if (cell.Type() == CellType::POLYHEDRON)
         {
-          if (cell.material_id_ != mat)
+          if (cell.material_id != mat)
             continue;
 
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
           {
-            int adjcell_glob_index = face.neighbor_id_;
+            int adjcell_glob_index = face.neighbor_id;
 
             if (adjcell_glob_index < 0)
             {
               faces_to_export.push_back(face);
 
-              for (auto vid : face.vertex_ids_)
+              for (auto vid : face.vertex_ids)
                 nodes_set.insert(vid);
             } // if boundary
             else
             {
               auto& adj_cell = grid->cells[adjcell_glob_index];
 
-              if (adj_cell.material_id_ != mat)
+              if (adj_cell.material_id != mat)
               {
                 faces_to_export.push_back(face);
 
-                for (auto vid : face.vertex_ids_)
+                for (auto vid : face.vertex_ids)
                   nodes_set.insert(vid);
               } // if material mismatch
             }   // if neighbor cell
@@ -1006,7 +1006,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       // Write face normals
       for (const auto& face : faces_to_export)
       {
-        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal_.x, face.normal_.y, face.normal_.z);
+        fprintf(of, "vn %.4f %.4f %.4f\n", face.normal.x, face.normal.y, face.normal.z);
       }
 
       // Write faces
@@ -1016,7 +1016,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
         normal_counter++;
         fprintf(of, "f");
 
-        for (auto v_g_index : face.vertex_ids_)
+        for (auto v_g_index : face.vertex_ids)
           fprintf(of, " %d//%d", node_mapping[v_g_index], normal_counter);
 
         fprintf(of, "\n");
@@ -1046,7 +1046,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   std::map<int, CellType> block_id_map;
   for (const auto& cell : grid->local_cells)
   {
-    const int mat_id = cell.material_id_;
+    const int mat_id = cell.material_id;
     if (block_id_map.count(mat_id) == 0)
       block_id_map[mat_id] = cell.SubType();
     else
@@ -1095,11 +1095,11 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
         throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.SubType()) +
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
-      block_id_list->InsertNextValue(cell.material_id_);
+      block_id_list->InsertNextValue(cell.material_id);
       max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id_ + 1));
+      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id + 1));
     } // for local cells
 
     // Set arrays
@@ -1134,7 +1134,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     // matches that of Exodus but VTK assumes the incoming mesh to be conformant to VTK and
     // therefore, internally performs a mapping. Fortunately, the only relevant cell-types, for
     // which a special mapping is required, are the prisms and hexes.
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     std::vector<int> face_mapping(num_faces, 0);
     if (cell.SubType() == CellType::WEDGE)
       face_mapping = {2, 3, 4, 0, 1};
@@ -1142,18 +1142,17 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       face_mapping = {2, 1, 3, 0, 4, 5};
     else
     {
-      for (size_t f = 0; f < cell.faces_.size(); ++f)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
         face_mapping[f] = static_cast<int>(f);
     }
 
     // Here we store face information as a triplet, i.e., a face pointer, the id of the cell owning
     // it, and the local face index (relative to the cell) of the face.
     int f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
-      if (not face.has_neighbor_)
-        boundary_id_faces_map[face.neighbor_id_].push_back(
-          {&face, cell.global_id_, face_mapping[f]});
+      if (not face.has_neighbor)
+        boundary_id_faces_map[face.neighbor_id].push_back({&face, cell.global_id, face_mapping[f]});
       ++f;
     }
   }
@@ -1179,7 +1178,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids_)
+        for (uint64_t vid : face_info.face_ptr->vertex_ids)
           vid_set.insert(vid);
 
       // Build vertex map
@@ -1235,7 +1234,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids_)
+        for (uint64_t vid : face_info.face_ptr->vertex_ids)
           vid_set.insert(vid);
 
       // Build vertex map

@@ -24,12 +24,12 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
                                 vtkNew<vtkPoints>& points,
                                 vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  size_t num_verts = cell.vertex_ids_.size();
+  size_t num_verts = cell.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
   for (size_t v = 0; v < num_verts; v++)
   {
-    uint64_t vgi = cell.vertex_ids_[v];
+    uint64_t vgi = cell.vertex_ids[v];
     std::vector<double> d_node(3);
     d_node[0] = grid.vertices[vgi].x;
     d_node[1] = grid.vertices[vgi].y;
@@ -69,16 +69,16 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
 
-    size_t num_faces = cell.faces_.size();
-    for (auto& face : cell.faces_)
+    size_t num_faces = cell.faces.size();
+    for (auto& face : cell.faces)
     {
-      size_t num_fverts = face.vertex_ids_.size();
+      size_t num_fverts = face.vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
       for (size_t fv = 0; fv < num_fverts; fv++)
       {
         size_t v = 0;
         for (size_t cv = 0; cv < num_verts; ++cv)
-          if (cell.vertex_ids_[cv] == face.vertex_ids_[fv])
+          if (cell.vertex_ids[cv] == face.vertex_ids[fv])
           {
             v = cv;
             break;
@@ -128,11 +128,11 @@ UploadCellGeometryContinuous(const Cell& cell,
                              const std::vector<uint64_t>& vertex_map,
                              vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  size_t num_verts = cell.vertex_ids_.size();
+  size_t num_verts = cell.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
   for (size_t v = 0; v < num_verts; v++)
-    cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell.vertex_ids_[v]]);
+    cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell.vertex_ids[v]]);
 
   if (cell.Type() == CellType::SLAB)
   {
@@ -191,16 +191,16 @@ UploadCellGeometryContinuous(const Cell& cell,
     {
       case CellType::POLYHEDRON:
       {
-        size_t num_faces = cell.faces_.size();
-        for (auto& face : cell.faces_)
+        size_t num_faces = cell.faces.size();
+        for (auto& face : cell.faces)
         {
-          size_t num_fverts = face.vertex_ids_.size();
+          size_t num_fverts = face.vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
           for (size_t fv = 0; fv < num_fverts; fv++)
           {
             size_t v = 0;
             for (size_t cv = 0; cv < num_verts; ++cv)
-              if (cell.vertex_ids_[cv] == face.vertex_ids_[fv])
+              if (cell.vertex_ids[cv] == face.vertex_ids[fv])
               {
                 v = cv;
                 break;
@@ -232,10 +232,10 @@ UploadFaceGeometry(const CellFace& cell_face,
                    const std::vector<uint64_t>& vertex_map,
                    vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  const size_t num_verts = cell_face.vertex_ids_.size();
+  const size_t num_verts = cell_face.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
-  for (uint64_t vid : cell_face.vertex_ids_)
+  for (uint64_t vid : cell_face.vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 
   if (num_verts == 1)
@@ -553,7 +553,7 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
       UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
     else
     {
-      for (uint64_t vid : cell.vertex_ids_)
+      for (uint64_t vid : cell.vertex_ids)
       {
         const auto& vertex = grid.vertices[vid];
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
@@ -563,8 +563,8 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
     }
 
-    material_array->InsertNextValue(cell.material_id_);
-    partition_id_array->InsertNextValue(cell.partition_id_);
+    material_array->InsertNextValue(cell.material_id);
+    partition_id_array->InsertNextValue(cell.partition_id);
   } // for local cells
   ugrid->SetPoints(points);
 

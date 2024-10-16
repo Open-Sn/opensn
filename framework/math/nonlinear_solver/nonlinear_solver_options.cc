@@ -60,22 +60,22 @@ NonLinearSolverOptions::GetInputParameters()
 
 NonLinearSolverOptions::NonLinearSolverOptions(const InputParameters& params)
   : Object(params),
-    nl_method_(params.GetParamValue<std::string>("nl_method")),
-    l_method_(params.GetParamValue<std::string>("l_method")),
-    pc_options_(params.GetParam("pc_options")),
-    petsc_snes_type_(params.GetParamValue<std::string>("petsc_snes_type")),
-    nl_rel_tol_(params.GetParamValue<double>("nl_rel_tol")),
-    nl_abs_tol_(params.GetParamValue<double>("nl_abs_tol")),
-    nl_sol_tol_(params.GetParamValue<double>("nl_sol_tol")),
-    nl_max_its_(params.GetParamValue<int>("nl_max_its")),
-    nl_max_r_evaluations_(params.GetParamValue<int>("nl_max_r_evaluations")),
-    l_max_failed_iterations_(params.GetParamValue<int>("l_max_failed_iterations")),
-    l_rel_tol_(params.GetParamValue<double>("l_rel_tol")),
-    l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
-    l_div_tol_(params.GetParamValue<double>("l_div_tol")),
-    l_max_its_(params.GetParamValue<int>("l_max_its")),
-    l_gmres_restart_intvl_(params.GetParamValue<int>("l_gmres_restart_intvl")),
-    l_gmres_breakdown_tol_(params.GetParamValue<double>("l_gmres_breakdown_tol"))
+    nl_method(params.GetParamValue<std::string>("nl_method")),
+    l_method(params.GetParamValue<std::string>("l_method")),
+    pc_options(params.GetParam("pc_options")),
+    petsc_snes_type(params.GetParamValue<std::string>("petsc_snes_type")),
+    nl_rel_tol(params.GetParamValue<double>("nl_rel_tol")),
+    nl_abs_tol(params.GetParamValue<double>("nl_abs_tol")),
+    nl_sol_tol(params.GetParamValue<double>("nl_sol_tol")),
+    nl_max_its(params.GetParamValue<int>("nl_max_its")),
+    nl_max_r_evaluations(params.GetParamValue<int>("nl_max_r_evaluations")),
+    l_max_failed_iterations(params.GetParamValue<int>("l_max_failed_iterations")),
+    l_rel_tol(params.GetParamValue<double>("l_rel_tol")),
+    l_abs_tol(params.GetParamValue<double>("l_abs_tol")),
+    l_div_tol(params.GetParamValue<double>("l_div_tol")),
+    l_max_its(params.GetParamValue<int>("l_max_its")),
+    l_gmres_restart_intvl(params.GetParamValue<int>("l_gmres_restart_intvl")),
+    l_gmres_breakdown_tol(params.GetParamValue<double>("l_gmres_breakdown_tol"))
 {
 }
 

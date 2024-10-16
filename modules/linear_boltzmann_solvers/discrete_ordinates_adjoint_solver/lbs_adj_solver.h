@@ -42,7 +42,7 @@ public:
   void ExportImportanceMap(const std::string& file_name);
 
 public:
-  std::vector<std::vector<double>> flux_moment_buffers_;
+  std::vector<std::vector<double>> flux_moment_buffers;
 
 public:
   /// Returns the input parameters.

@@ -121,7 +121,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   for (size_t gs = 0; gs < groupsets_.size(); ++gs)
   {
     //  angular quadrature type must be compatible with coordinate system
-    const auto angular_quad_ptr = groupsets_[gs].quadrature_;
+    const auto angular_quad_ptr = groupsets_[gs].quadrature;
     switch (coord_system_type_)
     {
       case CoordinateSystemType::CYLINDRICAL:
@@ -132,7 +132,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
-                            << static_cast<int>(angular_quad_ptr->type_)
+                            << static_cast<int>(angular_quad_ptr->type)
                             << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
         }
@@ -146,7 +146,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
-                            << static_cast<int>(angular_quad_ptr->type_)
+                            << static_cast<int>(angular_quad_ptr->type)
                             << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
         }
@@ -162,7 +162,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
     }
 
     //  angle aggregation type must be compatible with coordinate system
-    const auto angleagg_method = groupsets_[gs].angleagg_method_;
+    const auto angleagg_method = groupsets_[gs].angleagg_method;
     switch (coord_system_type_)
     {
       case CoordinateSystemType::CYLINDRICAL:
@@ -205,14 +205,14 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   };
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
         bool face_orthogonal = false;
         for (size_t d = 0; d < unit_normal_vectors.size(); ++d)
         {
-          const auto n_dot_e = face.normal_.Dot(unit_normal_vectors[d]);
+          const auto n_dot_e = face.normal.Dot(unit_normal_vectors[d]);
           if (n_dot_e > 0.999999)
           {
             face_orthogonal = true;
@@ -220,7 +220,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
           }
           else if (n_dot_e < -0.999999)
           {
-            for (const auto& v_id : face.vertex_ids_)
+            for (const auto& v_id : face.vertex_ids)
             {
               const auto& vertex = grid_ptr_->vertices[v_id];
               if (std::abs(vertex[d]) > 1.0e-12)
@@ -371,7 +371,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    secondary_unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell);
+    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";
@@ -387,7 +387,7 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        cell_transport_views_,
                                                        densities_local_,
                                                        phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        q_moments_local_,
                                                        groupset,
                                                        matid_to_xs_map_,

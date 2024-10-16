@@ -85,24 +85,24 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
   {
     std::set<int> blk_ids;
     for (const auto& cell : lbs_solver.Grid().local_cells)
-      if (logvol_->Inside(cell.centroid_))
+      if (logvol_->Inside(cell.centroid))
       {
-        blk_ids.insert(cell.material_id_);
-        subscribers_.push_back(cell.local_id_);
+        blk_ids.insert(cell.material_id);
+        subscribers_.push_back(cell.local_id);
       }
   }
   else if (not logvol_ and not block_ids_.empty())
   {
     for (const auto& cell : lbs_solver.Grid().local_cells)
-      if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
-        subscribers_.push_back(cell.local_id_);
+      if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
+        subscribers_.push_back(cell.local_id);
   }
   else
   {
     for (const auto& cell : lbs_solver.Grid().local_cells)
-      if (logvol_->Inside(cell.centroid_) and
-          std::find(block_ids_.begin(), block_ids_.end(), cell.material_id_) != block_ids_.end())
-        subscribers_.push_back(cell.local_id_);
+      if (logvol_->Inside(cell.centroid) and
+          std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
+        subscribers_.push_back(cell.local_id);
   }
 
   num_local_subsribers_ = subscribers_.size();
@@ -116,7 +116,7 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 std::vector<double>
 VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
 {
-  if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id_) == 0)
+  if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
     return std::vector<double>(num_groups, 0.0);
   else if (not function_)
     return strength_;

@@ -14,16 +14,16 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(const Cell& slab_cell,
   : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
     volume_quadrature_(volume_quadrature)
 {
-  v0i_ = slab_cell.vertex_ids_[0];
-  v1i_ = slab_cell.vertex_ids_[1];
+  v0i_ = slab_cell.vertex_ids[0];
+  v1i_ = slab_cell.vertex_ids[1];
   v0_ = ref_grid_.vertices[v0i_];
   const auto& v1 = ref_grid_.vertices[v1i_];
 
   Vector3 v01 = v1 - v0_;
   h_ = v01.Norm();
 
-  normals_[0] = slab_cell.faces_[0].normal_;
-  normals_[1] = slab_cell.faces_[1].normal_;
+  normals_[0] = slab_cell.faces[0].normal;
+  normals_[1] = slab_cell.faces[1].normal;
 }
 
 double

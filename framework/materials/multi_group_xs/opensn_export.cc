@@ -139,10 +139,10 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
 
       const auto& matrix = TransferMatrix(ell);
 
-      for (size_t g = 0; g < matrix.rowI_values_.size(); ++g)
+      for (size_t g = 0; g < matrix.rowI_values.size(); ++g)
       {
-        const auto& col_indices = matrix.rowI_indices_[g];
-        const auto& col_values = matrix.rowI_values_[g];
+        const auto& col_indices = matrix.rowI_indices[g];
+        const auto& col_values = matrix.rowI_values[g];
         for (size_t k = 0; k < col_indices.size(); ++k)
           ofile << "M_GPRIME_G_VAL " << ell << " " << col_indices[k] << " " << g << " "
                 << col_values[k] << "\n";

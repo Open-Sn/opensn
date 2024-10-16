@@ -98,7 +98,7 @@ AngleAggregation::InitializeReflectingBCs()
   {
     if (bndry->IsReflecting())
     {
-      size_t tot_num_angles = quadrature_->abscissae_.size();
+      size_t tot_num_angles = quadrature_->abscissae.size();
       size_t num_local_cells = grid_->local_cells.size();
       auto& rbndry = (ReflectingBoundary&)(*bndry);
 
@@ -111,7 +111,7 @@ AngleAggregation::InitializeReflectingBCs()
       // Determine reflected angle and check that it is within the quadrature
       for (int n = 0; n < tot_num_angles; ++n)
       {
-        const Vector3& omega_n = quadrature_->omegas_[n];
+        const Vector3& omega_n = quadrature_->omegas[n];
         Vector3 omega_reflected;
 
         switch (rbndry.CoordType())
@@ -145,7 +145,7 @@ AngleAggregation::InitializeReflectingBCs()
 
         auto& index_map = rbndry.GetReflectedAngleIndexMap();
         for (int nstar = 0; nstar < tot_num_angles; ++nstar)
-          if (omega_reflected.Dot(quadrature_->omegas_[nstar]) > (1.0 - epsilon))
+          if (omega_reflected.Dot(quadrature_->omegas[nstar]) > (1.0 - epsilon))
           {
             index_map[n] = nstar;
             break;
@@ -154,7 +154,7 @@ AngleAggregation::InitializeReflectingBCs()
         if (index_map[n] < 0)
           throw std::logic_error(
             fname + ": Reflected angle not found for angle " + std::to_string(n) +
-            " with direction " + quadrature_->omegas_[n].PrintStr() +
+            " with direction " + quadrature_->omegas[n].PrintStr() +
             ". This can happen for two reasons: i) A quadrature is used that is not symmetric "
             "about the axis associated with the reflected boundary, or ii) the reflecting boundary "
             "is not aligned with any reflecting axis of the quadrature.");
@@ -169,7 +169,7 @@ AngleAggregation::InitializeReflectingBCs()
       for (int n = 0; n < tot_num_angles; ++n)
       {
         // Only continue if omega is outgoing
-        if (quadrature_->omegas_[n].Dot(rbndry.Normal()) < 0.0)
+        if (quadrature_->omegas[n].Dot(rbndry.Normal()) < 0.0)
           continue;
 
         // For cells
@@ -177,13 +177,13 @@ AngleAggregation::InitializeReflectingBCs()
         cell_vec.resize(num_local_cells);
         for (const auto& cell : grid_->local_cells)
         {
-          const uint64_t c = cell.local_id_;
+          const uint64_t c = cell.local_id;
 
           // Check cell on ref bndry
           bool on_ref_bndry = false;
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
           {
-            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {
               on_ref_bndry = true;
               break;
@@ -193,14 +193,14 @@ AngleAggregation::InitializeReflectingBCs()
             continue;
 
           // If cell on ref bndry
-          cell_vec[c].resize(cell.faces_.size());
+          cell_vec[c].resize(cell.faces.size());
           int f = 0;
-          for (const auto& face : cell.faces_)
+          for (const auto& face : cell.faces)
           {
-            if ((not face.has_neighbor_) and (face.normal_.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
             {
               cell_vec[c][f].clear();
-              cell_vec[c][f].resize(face.vertex_ids_.size(), std::vector<double>(num_groups_, 0.0));
+              cell_vec[c][f].resize(face.vertex_ids.size(), std::vector<double>(num_groups_, 0.0));
             }
             ++f;
           }

@@ -66,7 +66,7 @@ FiniteVolume::CreateCellMappings()
       case CellType::POLYHEDRON:
       {
         mapping = make_unique<FiniteVolumeMapping>(
-          ref_grid_, cell, cell.centroid_, std::vector<std::vector<int>>(cell.faces_.size(), {-1}));
+          ref_grid_, cell, cell.centroid, std::vector<std::vector<int>>(cell.faces.size(), {-1}));
         break;
       }
       default:
@@ -116,7 +116,7 @@ FiniteVolume::OrderNodes()
   for (uint64_t gid : neighbor_gids)
   {
     const auto& cell = ref_grid_.cells[gid];
-    sorted_nb_gids[cell.partition_id_].push_back(gid);
+    sorted_nb_gids[cell.partition_id].push_back(gid);
   }
 
   // Communicate neighbor ids requiring mapping
@@ -137,7 +137,7 @@ FiniteVolume::OrderNodes()
         throw std::logic_error(mapping_error);
 
       const auto& local_cell = ref_grid_.cells[gid];
-      local_ids.push_back(local_cell.local_id_);
+      local_ids.push_back(local_cell.local_id);
     } // for gid
   }   // for pid_list_pair
 
@@ -175,7 +175,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                    std::vector<int64_t>& nodal_nnz_off_diag,
                                    const UnknownManager& unknown_manager) const
 {
-  unsigned int num_uk = unknown_manager.unknowns_.size();          // Number of unknowns
+  unsigned int num_uk = unknown_manager.unknowns.size();           // Number of unknowns
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
 
   nodal_nnz_in_diag.clear();
@@ -188,7 +188,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
   for (int uk = 0; uk < num_uk; ++uk)
   {
-    const unsigned int num_comps = unknown_manager.unknowns_[uk].num_components_;
+    const unsigned int num_comps = unknown_manager.unknowns[uk].num_components;
     for (int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : ref_grid_.local_cells)
@@ -197,9 +197,9 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
         nodal_nnz_in_diag[i] += 1;
 
-        for (auto& face : cell.faces_)
+        for (auto& face : cell.faces)
         {
-          if (not face.has_neighbor_)
+          if (not face.has_neighbor)
             continue;
 
           if (face.IsNeighborLocal(ref_grid_))
@@ -219,7 +219,7 @@ FiniteVolume::MapDOF(const Cell& cell,
                      const unsigned int unknown_id,
                      const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
@@ -229,24 +229,24 @@ FiniteVolume::MapDOF(const Cell& cell,
     return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                num_local_cells * block_id + cell.local_id_;
+                num_local_cells * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
       address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                cell.local_id_ * num_unknowns + block_id;
+                cell.local_id * num_unknowns + block_id;
   }
   else
   {
-    const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id_);
+    const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
-                locJ_block_size_[cell.partition_id_] * block_id + ghost_local_id;
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
+                locJ_block_size_[cell.partition_id] * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id_]) * num_unknowns +
+      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
                 ghost_local_id * num_unknowns + block_id;
   }
 
@@ -260,7 +260,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
                           const unsigned int unknown_id,
                           const unsigned int component) const
 {
-  auto storage = unknown_manager.dof_storage_type_;
+  auto storage = unknown_manager.dof_storage_type;
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
@@ -270,18 +270,18 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
     return -1;
 
   int64_t address = -1;
-  if (cell.partition_id_ == opensn::mpi_comm.rank())
+  if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id_;
+      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(cell.local_id_) * num_unknowns + block_id;
+      address = static_cast<int64_t>(cell.local_id) * num_unknowns + block_id;
   }
   else
   {
     const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
     const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
-    const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id_);
+    const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(num_local_dofs) +
@@ -310,15 +310,15 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 
   std::vector<uint64_t> ghost_cell_ids = ref_grid_.cells.GetGhostGlobalIDs();
 
-  const size_t num_uks = unknown_manager.unknowns_.size();
+  const size_t num_uks = unknown_manager.unknowns.size();
 
   for (const auto cell_id : ghost_cell_ids)
   {
     const auto& cell = ref_grid_.cells[cell_id];
     for (size_t u = 0; u < num_uks; ++u)
     {
-      const auto& unkn = unknown_manager.unknowns_[u];
-      const size_t num_comps = unkn.num_components_;
+      const auto& unkn = unknown_manager.unknowns[u];
+      const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {
         const int64_t dofmap = MapDOF(cell, 0, unknown_manager, u, c);

@@ -11,7 +11,7 @@ namespace opensn
 class DiffusionDFEMSolver : public LBSSolver
 {
 public:
-  std::vector<std::shared_ptr<DiffusionMIPSolver>> gs_mip_solvers_;
+  std::vector<std::shared_ptr<DiffusionMIPSolver>> gs_mip_solvers;
 
 public:
   explicit DiffusionDFEMSolver(const InputParameters& params);

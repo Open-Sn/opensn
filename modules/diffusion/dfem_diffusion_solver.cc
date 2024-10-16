@@ -301,7 +301,7 @@ DFEMDiffusionSolver::Execute()
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto imat = cell.material_id_;
+    const auto imat = cell.material_id;
     MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
     std::vector<double> cell_rhs(num_nodes, 0.0);
 
@@ -332,26 +332,26 @@ DFEMDiffusionSolver::Execute()
     } // for i
 
     // Assemble face terms
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces_[f];
-      const auto& n_f = face.normal_;
+      const auto& face = cell.faces[f];
+      const auto& n_f = face.normal;
       const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell, f);
 
       // interior face
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id_];
+        const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp_neigh = HPerpendicular(adj_cell, acf);
 
-        const auto imat_neigh = adj_cell.material_id_;
+        const auto imat_neigh = adj_cell.material_id;
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
@@ -453,7 +453,7 @@ DFEMDiffusionSolver::Execute()
       } // internal face
       else
       { // boundary face
-        const auto& bndry = boundaries_[face.neighbor_id_];
+        const auto& bndry = boundaries_[face.neighbor_id];
         // Robin boundary
         if (bndry.type == BoundaryType::Robin)
         {
@@ -619,8 +619,8 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   double hp;
 
-  const size_t num_faces = cell.faces_.size();
-  const size_t num_vertices = cell.vertex_ids_.size();
+  const size_t num_faces = cell.faces.size();
+  const size_t num_vertices = cell.vertex_ids.size();
 
   const double volume = cell_mapping.CellVolume();
   const double face_area = cell_mapping.FaceArea(f);

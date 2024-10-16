@@ -42,14 +42,14 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
 
   std::vector<bool> cell_bndry_flags(num_local_cells, false);
   for (const auto& cell : grid.local_cells)
-    for (const auto& face : cell.faces_)
-      if (not face.has_neighbor_)
+    for (const auto& face : cell.faces)
+      if (not face.has_neighbor)
       {
-        cell_bndry_flags[cell.local_id_] = true;
+        cell_bndry_flags[cell.local_id] = true;
         break;
       }
 
-  size_t num_angles = quadrature.omegas_.size();
+  size_t num_angles = quadrature.omegas.size();
 
   std::vector<int> angle_indices;
   std::vector<Vector3> angle_vectors;
@@ -65,10 +65,10 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
   for (int n = 0; n < num_angles_int; ++n)
     angle_indices.emplace_back(n);
   for (int n = 0; n < num_angles_int; ++n)
-    angle_vectors.emplace_back(quadrature.omegas_[n]);
+    angle_vectors.emplace_back(quadrature.omegas[n]);
   for (int n = 0; n < num_angles_int; ++n)
   {
-    auto& abscissae = quadrature.abscissae_[n];
+    auto& abscissae = quadrature.abscissae[n];
     double phi = abscissae.phi;
     double theta = abscissae.theta;
     phi_theta_angles.emplace_back(std::make_pair(phi, theta));
@@ -80,28 +80,28 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
 
   for (const auto& cell : grid.local_cells)
   {
-    if (cell_bndry_flags[cell.local_id_])
+    if (cell_bndry_flags[cell.local_id])
     {
-      CellData cell_data(cell.faces_.size());
+      CellData cell_data(cell.faces.size());
 
-      for (size_t f = 0; f < cell.faces_.size(); ++f)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
-        auto& face = cell.faces_[f];
-        size_t face_num_nodes = face.vertex_ids_.size();
+        auto& face = cell.faces[f];
+        size_t face_num_nodes = face.vertex_ids.size();
         FaceData face_data;
 
-        if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id_)
+        if (not face.has_neighbor and face.neighbor_id == boundary_id_)
         {
           face_data.reserve(face_num_nodes);
           for (size_t i = 0; i < face_num_nodes; ++i)
           {
             std::vector<double> face_node_data =
-              boundary_function_->Evaluate(cell.global_id_,
-                                           cell.material_id_,
+              boundary_function_->Evaluate(cell.global_id,
+                                           cell.material_id,
                                            f,
                                            i,
-                                           grid.vertices[face.vertex_ids_[i]],
-                                           face.normal_,
+                                           grid.vertices[face.vertex_ids[i]],
+                                           face.normal,
                                            angle_indices,
                                            angle_vectors,
                                            phi_theta_angles,

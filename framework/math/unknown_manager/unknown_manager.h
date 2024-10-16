@@ -31,40 +31,40 @@ enum class UnknownStorageType
 class Unknown
 {
 public:
-  const UnknownType type_;
-  const unsigned int num_components_;
-  const unsigned int map_begin_;
-  std::string text_name_;
-  std::vector<std::string> component_text_names_;
-  std::vector<int> num_off_block_connections_;
+  const UnknownType type;
+  const unsigned int num_components;
+  const unsigned int map_begin;
+  std::string text_name;
+  std::vector<std::string> component_text_names;
+  std::vector<int> num_off_block_connections;
 
 public:
   explicit Unknown(UnknownType type, unsigned int num_components = 1, unsigned int map_begin = 0)
-    : type_(type),
-      num_components_((type_ == UnknownType::SCALAR)     ? 1
-                      : (type_ == UnknownType::VECTOR_2) ? 2
-                      : (type_ == UnknownType::VECTOR_3) ? 3
-                                                         : num_components),
-      map_begin_(map_begin)
+    : type(type),
+      num_components((type == UnknownType::SCALAR)     ? 1
+                     : (type == UnknownType::VECTOR_2) ? 2
+                     : (type == UnknownType::VECTOR_3) ? 3
+                                                       : num_components),
+      map_begin(map_begin)
   {
-    component_text_names_.resize(num_components_, std::string());
-    for (unsigned int c = 0; c < num_components_; ++c)
+    component_text_names.resize(num_components, std::string());
+    for (unsigned int c = 0; c < num_components; ++c)
     {
 
       char buffer[100];
       snprintf(buffer, 100, " %03d", c);
-      component_text_names_[c] = buffer;
+      component_text_names[c] = buffer;
     }
-    num_off_block_connections_.resize(num_components_, 0);
+    num_off_block_connections.resize(num_components, 0);
   }
 
   unsigned int GetMap(unsigned int component_number = 0) const
   {
     unsigned int map_value = 0;
-    switch (type_)
+    switch (type)
     {
       case UnknownType::SCALAR:
-        if (component_number >= num_components_)
+        if (component_number >= num_components)
           throw std::out_of_range("Attempting to access component " +
                                   std::to_string(component_number) +
                                   ">=1"
@@ -72,34 +72,34 @@ public:
         map_value = 0;
         break;
       case UnknownType::VECTOR_2:
-        if (component_number >= num_components_)
+        if (component_number >= num_components)
           throw std::out_of_range("Attempting to access component " +
                                   std::to_string(component_number) +
                                   ">=2"
                                   " for a VECTOR_2 unknown.");
-        map_value = map_begin_ + component_number;
+        map_value = map_begin + component_number;
         break;
       case UnknownType::VECTOR_3:
-        if (component_number >= num_components_)
+        if (component_number >= num_components)
           throw std::out_of_range("Attempting to access component " +
                                   std::to_string(component_number) +
                                   ">=3"
                                   " for a VECTOR_3 unknown.");
-        map_value = map_begin_ + component_number;
+        map_value = map_begin + component_number;
         break;
       case UnknownType::VECTOR_N:
-        if (component_number >= num_components_)
+        if (component_number >= num_components)
           throw std::out_of_range(
             "Attempting to access component " + std::to_string(component_number) +
-            ">=" + std::to_string(num_components_) + " for a VECTOR_N unknown.");
-        map_value = map_begin_ + component_number;
+            ">=" + std::to_string(num_components) + " for a VECTOR_N unknown.");
+        map_value = map_begin + component_number;
         break;
       case UnknownType::TENSOR:
-        if (component_number >= num_components_)
-          throw std::out_of_range(
-            "Attempting to access component " + std::to_string(component_number) +
-            ">=" + std::to_string(num_components_) + " for a TENSOR unknown.");
-        map_value = map_begin_ + component_number;
+        if (component_number >= num_components)
+          throw std::out_of_range("Attempting to access component " +
+                                  std::to_string(component_number) +
+                                  ">=" + std::to_string(num_components) + " for a TENSOR unknown.");
+        map_value = map_begin + component_number;
         break;
       default:
         break;
@@ -107,9 +107,9 @@ public:
 
     return map_value;
   }
-  unsigned int GetMapEnd() const { return map_begin_ + num_components_ - 1; }
+  unsigned int GetMapEnd() const { return map_begin + num_components - 1; }
 
-  unsigned int NumComponents() const { return num_components_; }
+  unsigned int NumComponents() const { return num_components; }
 };
 
 /// General object for the management of unknowns in mesh-based mathematical model.
@@ -117,18 +117,18 @@ class UnknownManager
 {
 private:
 public:
-  std::vector<Unknown> unknowns_;
-  UnknownStorageType dof_storage_type_;
+  std::vector<Unknown> unknowns;
+  UnknownStorageType dof_storage_type;
 
   // Constructors
   explicit UnknownManager(UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
   }
 
   UnknownManager(std::initializer_list<std::pair<UnknownType, unsigned int>> unknown_info_list,
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     for (const auto& uk_info : unknown_info_list)
       AddUnknown(uk_info.first, uk_info.second);
@@ -136,23 +136,23 @@ public:
 
   explicit UnknownManager(const std::vector<Unknown>& unknown_info_list,
                           UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     for (const auto& uk : unknown_info_list)
-      AddUnknown(uk.type_, uk.num_components_);
+      AddUnknown(uk.type, uk.num_components);
   }
 
   UnknownManager(std::initializer_list<Unknown> unknowns,
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
-    : dof_storage_type_(storage_type)
+    : dof_storage_type(storage_type)
   {
     size_t ukid = 0;
     for (const auto& uk : unknowns)
     {
-      AddUnknown(uk.type_, uk.num_components_);
-      SetUnknownTextName(ukid, uk.text_name_);
+      AddUnknown(uk.type, uk.num_components);
+      SetUnknownTextName(ukid, uk.text_name);
       size_t compid = 0;
-      for (const auto& comp_text_name : uk.component_text_names_)
+      for (const auto& comp_text_name : uk.component_text_names)
       {
         SetUnknownComponentTextName(ukid, compid, comp_text_name);
         ++compid;
@@ -171,17 +171,14 @@ public:
     return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
   }
 
-  size_t NumberOfUnknowns() const { return unknowns_.size(); }
-  const Unknown& GetUnknown(size_t id) const { return unknowns_[id]; }
+  size_t NumberOfUnknowns() const { return unknowns.size(); }
+  const Unknown& GetUnknown(size_t id) const { return unknowns[id]; }
 
-  void SetDOFStorageType(const UnknownStorageType storage_type)
-  {
-    dof_storage_type_ = storage_type;
-  }
+  void SetDOFStorageType(const UnknownStorageType storage_type) { dof_storage_type = storage_type; }
 
-  UnknownStorageType GetDOFStorageType() const { return dof_storage_type_; }
+  UnknownStorageType GetDOFStorageType() const { return dof_storage_type; }
 
-  void Clear() { unknowns_.clear(); }
+  void Clear() { unknowns.clear(); }
 
   /**
    * Adds an unknown to the manager. This method will figure out where the last unknown ends and

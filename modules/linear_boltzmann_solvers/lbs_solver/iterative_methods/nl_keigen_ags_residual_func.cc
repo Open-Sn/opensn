@@ -19,7 +19,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   NLKEigenAGSContext* nl_context_ptr;
   SNESGetApplicationContext(snes, &nl_context_ptr);
 
-  auto& lbs_solver = nl_context_ptr->lbs_solver_;
+  auto& lbs_solver = nl_context_ptr->lbs_solver;
   const auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& q_moments_local = lbs_solver.QMomentsLocal();
 
@@ -27,7 +27,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   std::vector<int> groupset_ids;
   for (const auto& groupset : lbs_solver.Groupsets())
-    groupset_ids.push_back(groupset.id_);
+    groupset_ids.push_back(groupset.id);
 
   // Disassemble phi vector
   lbs_solver.SetPrimarySTLvectorFromMultiGSPETScVecFrom(groupset_ids, phi, PhiSTLOption::PHI_OLD);
@@ -46,8 +46,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   // Now add MS phi
   for (auto& groupset : lbs_solver.Groupsets())
   {
-    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
-    const bool supress_wgs = wgs_context.lhs_src_scope_ & SUPPRESS_WG_SCATTER;
+    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id);
+    const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (supress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
@@ -58,7 +58,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   // After this phi_new = DLinv(MSD phi + 1/k FD phi)
   for (auto& groupset : lbs_solver.Groupsets())
   {
-    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
+    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id);
     wgs_context.ApplyInverseTransportOperator(SourceFlags());
   }
 
@@ -71,11 +71,11 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   for (auto& groupset : lbs_solver.Groupsets())
   {
-    if ((groupset.apply_wgdsa_ or groupset.apply_tgdsa_) and lbs_solver.Groupsets().size() > 1)
+    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_solver.Groupsets().size() > 1)
       throw std::logic_error(fname + ": Preconditioning currently only supports"
                                      "single groupset simulations.");
 
-    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id_);
+    auto& wgs_context = lbs_solver.GetWGSContext(groupset.id);
     WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
   }
 

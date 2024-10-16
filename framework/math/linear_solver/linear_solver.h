@@ -30,7 +30,7 @@ public:
     int maximum_iterations = 100;
     int gmres_restart_interval = 100;
     double gmres_breakdown_tolerance = 1.0e6;
-  } tolerance_options_;
+  } tolerance_options;
 
   LinearSolver(const std::string& iterative_method,
                std::shared_ptr<LinearSolverContext> context_ptr);
@@ -41,7 +41,7 @@ public:
 
   virtual ~LinearSolver();
 
-  ToleranceOptions& ToleranceOptions() { return tolerance_options_; }
+  ToleranceOptions& ToleranceOptions() { return tolerance_options; }
   void ApplyToleranceOptions();
 
   std::shared_ptr<LinearSolverContext>& GetContext() { return context_ptr_; }

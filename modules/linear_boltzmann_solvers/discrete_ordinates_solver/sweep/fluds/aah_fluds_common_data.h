@@ -47,33 +47,33 @@ public:
 
 protected:
   friend class AAH_FLUDS;
-  int largest_face = 0;
+  int largest_face_ = 0;
   /// Number of face categories
-  size_t num_face_categories = 0;
+  size_t num_face_categories_ = 0;
   /// Group-angle-faceDOF stride per cat
-  std::vector<size_t> local_psi_stride;
+  std::vector<size_t> local_psi_stride_;
   /// Number of faces in each cat
-  std::vector<size_t> local_psi_max_elements;
+  std::vector<size_t> local_psi_max_elements_;
   /// Group-angle-faceDOF stride delayed cat
-  size_t delayed_local_psi_stride = 0;
+  size_t delayed_local_psi_stride_ = 0;
   /// Number of faces in delayed cat
-  size_t delayed_local_psi_max_elements = 0;
+  size_t delayed_local_psi_max_elements_ = 0;
 
   /**
    * local_psi_n_block_stride[fc]. Given face category fc, the value is
    * total number of faces that store information in this category's buffer
    * per angle
    */
-  std::vector<size_t> local_psi_n_block_stride;
-  std::vector<size_t> local_psi_Gn_block_strideG;
-  size_t delayed_local_psi_Gn_block_stride = 0;
-  size_t delayed_local_psi_Gn_block_strideG = 0;
+  std::vector<size_t> local_psi_n_block_stride_;
+  std::vector<size_t> local_psi_Gn_block_strideG_;
+  size_t delayed_local_psi_Gn_block_stride_ = 0;
+  size_t delayed_local_psi_Gn_block_strideG_ = 0;
 
   /**
    * This is a small vector [deplocI] that holds the number of face dofs for each dependent
    * location.
    */
-  std::vector<int> deplocI_face_dof_count;
+  std::vector<int> deplocI_face_dof_count_;
 
   /**
    * This is a vector [dependent_location][unordered_cell_index]
@@ -85,25 +85,25 @@ protected:
    * Filled during slot-dynamics.
    * Cleared after beta-pass.
    */
-  std::vector<std::vector<CompactCellView>> deplocI_cell_views;
+  std::vector<std::vector<CompactCellView>> deplocI_cell_views_;
 
   /**
    * This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in
    * the local psi vector where the first face dof will store its data
    */
-  std::vector<std::vector<int>> so_cell_outb_face_slot_indices;
+  std::vector<std::vector<int>> so_cell_outb_face_slot_indices_;
 
   /**
    * This is a vector [cell_sweep_order_index][outgoing_face_count]  which holds the face
    * categorization for the face. i.e. the local psi vector that hold faces of the same category.
    */
-  std::vector<std::vector<short>> so_cell_outb_face_face_category;
+  std::vector<std::vector<short>> so_cell_outb_face_face_category_;
 
   /**
    * This is a vector [cell_sweep_order_index][incoming_face_count] which holds the face
    * categorization for the face. i.e. the local  psi vector that hold faces of the same category.
    */
-  std::vector<std::vector<short>> so_cell_inco_face_face_category;
+  std::vector<std::vector<short>> so_cell_inco_face_face_category_;
 
   /**
    * This is a vector [cell_sweep_order_index][incoming_face_count] that will hold a structure.
@@ -111,13 +111,13 @@ protected:
    * struct.upwind_dof_mapping is a mapping of each of this face's dofs to the upwinded face's dofs
    */
 private:
-  std::vector<std::vector<INCOMING_FACE_INFO>> so_cell_inco_face_dof_indices;
+  std::vector<std::vector<INCOMING_FACE_INFO>> so_cell_inco_face_dof_indices_;
 
   /**
    * This is a vector [non_local_outgoing_face_count]  that maps a face to a dependent location and
    * associated slot index
    */
-  std::vector<std::pair<int, int>> nonlocal_outb_face_deplocI_slot;
+  std::vector<std::pair<int, int>> nonlocal_outb_face_deplocI_slot_;
 
 private:
   /**
@@ -130,25 +130,25 @@ private:
    * Filled in beta-pass
    * Cleared after beta-pass.
    */
-  std::vector<std::vector<CompactCellView>> prelocI_cell_views;
-  std::vector<std::vector<CompactCellView>> delayed_prelocI_cell_views;
+  std::vector<std::vector<CompactCellView>> prelocI_cell_views_;
+  std::vector<std::vector<CompactCellView>> delayed_prelocI_cell_views_;
 
   /**
    * This is a small vector [prelocI] that holds the number of  face dofs for each predecessor
    * location.
    */
-  std::vector<int> prelocI_face_dof_count;
-  std::vector<int> delayed_prelocI_face_dof_count;
+  std::vector<int> prelocI_face_dof_count_;
+  std::vector<int> delayed_prelocI_face_dof_count_;
 
   /**
    * This is a vector [nonlocal_inc_face_counter] containing AlphaPairs. AlphaPair-first is the
    * prelocI index and AlphaPair-second is a BetaPair. The BetaPair-first is the slot where
    * the face storage begins and BetaPair-second is a dof mapping
    */
-  std::vector<std::pair<int, std::pair<int, std::vector<int>>>> nonlocal_inc_face_prelocI_slot_dof;
+  std::vector<std::pair<int, std::pair<int, std::vector<int>>>> nonlocal_inc_face_prelocI_slot_dof_;
 
   std::vector<std::pair<int, std::pair<int, std::vector<int>>>>
-    delayed_nonlocal_inc_face_prelocI_slot_dof;
+    delayed_nonlocal_inc_face_prelocI_slot_dof_;
 
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
 

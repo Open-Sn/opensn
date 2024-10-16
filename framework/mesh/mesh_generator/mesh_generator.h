@@ -56,9 +56,9 @@ public:
   template <typename T>
   struct STLVertexListHelper : public VertexListHelper
   {
-    explicit STLVertexListHelper(const T& list) : list_(list) {}
-    const Vector3& at(uint64_t vid) const override { return list_.at(vid); };
-    const T& list_;
+    explicit STLVertexListHelper(const T& list) : list(list) {}
+    const Vector3& at(uint64_t vid) const override { return list.at(vid); };
+    const T& list;
   };
 
 protected:

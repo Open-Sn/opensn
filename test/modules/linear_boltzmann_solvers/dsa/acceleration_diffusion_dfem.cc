@@ -78,7 +78,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t cell_num_faces = cell.faces_.size();
+    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -141,14 +141,14 @@ acceleration_Diffusion_DFEM(const InputParameters&)
       }   // for i
     }     // for f
 
-    unit_cell_matrices[cell.local_id_] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
-                                                          {},
-                                                          IntV_shapeI_shapeJ,
-                                                          IntV_shapeI,
+    unit_cell_matrices[cell.local_id] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
+                                                         {},
+                                                         IntV_shapeI_shapeJ,
+                                                         IntV_shapeI,
 
-                                                          IntS_shapeI_shapeJ,
-                                                          IntS_shapeI_gradshapeJ,
-                                                          IntS_shapeI};
+                                                         IntS_shapeI_shapeJ,
+                                                         IntS_shapeI_gradshapeJ,
+                                                         IntS_shapeI};
   } // for cell
 
   auto mms_phi_function = CreateFunction("MMS_phi");
@@ -184,7 +184,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   // Make Field-Function
   auto ff =
-    std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns_.front());
+    std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns.front());
 
   ff->UpdateFieldVector(x_vector);
 

@@ -50,10 +50,10 @@ public:
       max_num_cell_dofs_(max_num_cell_dofs),
       save_angular_flux_(not destination_psi.empty()),
       groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *
-                                   groupset_.groups_.size()),
-      groupset_group_stride_(groupset_.groups_.size()),
-      destination_phi(&destination_phi),
-      destination_psi(&destination_psi)
+                                   groupset_.groups.size()),
+      groupset_group_stride_(groupset_.groups.size()),
+      destination_phi_(&destination_phi),
+      destination_psi_(&destination_psi)
   {
   }
 
@@ -72,28 +72,28 @@ protected:
   friend class SweepScheduler;
 
   /// Sets the location where flux moments are to be written.
-  void SetDestinationPhi(std::vector<double>& phi) { destination_phi = (&phi); }
+  void SetDestinationPhi(std::vector<double>& phi) { destination_phi_ = (&phi); }
 
   /// Sets all elements of the output vector to zero.
-  void ZeroDestinationPhi() { (*destination_phi).assign((*destination_phi).size(), 0.0); }
+  void ZeroDestinationPhi() { (*destination_phi_).assign((*destination_phi_).size(), 0.0); }
 
   /// Returns a reference to the output flux moments vector.
-  std::vector<double>& GetDestinationPhi() { return *destination_phi; }
+  std::vector<double>& GetDestinationPhi() { return *destination_phi_; }
 
   /// Sets the location where angular fluxes are to be written.
-  void SetDestinationPsi(std::vector<double>& psi) { destination_psi = (&psi); }
+  void SetDestinationPsi(std::vector<double>& psi) { destination_psi_ = (&psi); }
 
   /// Sets all elements of the output angular flux vector to zero.
-  void ZeroDestinationPsi() { (*destination_psi).assign((*destination_psi).size(), 0.0); }
+  void ZeroDestinationPsi() { (*destination_psi_).assign((*destination_psi_).size(), 0.0); }
 
   /// Returns a reference to the output angular flux vector.
-  std::vector<double>& GetDestinationPsi() { return *destination_psi; }
+  std::vector<double>& GetDestinationPsi() { return *destination_psi_; }
 
   /// Activates or deactives the surface src flag.
-  void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active = flag_value; }
+  void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active_ = flag_value; }
 
   /// Returns the surface src-active flag.
-  bool IsSurfaceSourceActive() const { return surface_source_active; }
+  bool IsSurfaceSourceActive() const { return surface_source_active_; }
 
   const MeshContinuum& grid_;
   const SpatialDiscretization& discretization_;
@@ -110,9 +110,9 @@ protected:
   const size_t groupset_group_stride_;
 
 private:
-  std::vector<double>* destination_phi;
-  std::vector<double>* destination_psi;
-  bool surface_source_active = false;
+  std::vector<double>* destination_phi_;
+  std::vector<double>* destination_psi_;
+  bool surface_source_active_ = false;
 };
 
 } // namespace opensn

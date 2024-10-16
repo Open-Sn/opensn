@@ -96,8 +96,8 @@ MultiGroupXSPushLuaTable(lua_State* L, std::shared_ptr<MultiGroupXS> xs)
       {
         for (unsigned int g = 0; g < matrix.NumRows(); ++g)
         {
-          const auto& col_indices = matrix.rowI_indices_[g];
-          const auto& col_values = matrix.rowI_values_[g];
+          const auto& col_indices = matrix.rowI_indices[g];
+          const auto& col_values = matrix.rowI_values[g];
           size_t num_vals = col_values.size();
 
           LuaPush(L, g + 1);

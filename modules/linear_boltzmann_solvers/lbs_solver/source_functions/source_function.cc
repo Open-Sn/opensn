@@ -36,11 +36,11 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& densities = lbs_solver_.DensitiesLocal();
 
   // Get group setup
-  gs_i_ = static_cast<size_t>(groupset.groups_.front().id_);
-  gs_f_ = static_cast<size_t>(groupset.groups_.back().id_);
+  gs_i_ = static_cast<size_t>(groupset.groups.front().id);
+  gs_f_ = static_cast<size_t>(groupset.groups.back().id);
 
-  first_grp_ = static_cast<size_t>(lbs_solver_.Groups().front().id_);
-  last_grp_ = static_cast<size_t>(lbs_solver_.Groups().back().id_);
+  first_grp_ = static_cast<size_t>(lbs_solver_.Groups().front().id);
+  last_grp_ = static_cast<size_t>(lbs_solver_.Groups().back().id);
 
   default_zero_src_.assign(lbs_solver_.Groups().size(), 0.0);
 
@@ -50,22 +50,22 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto num_moments = lbs_solver_.NumMoments();
   const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
 
-  const auto& m_to_ell_em_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
   // Apply all nodal sources
   const auto& grid = lbs_solver_.Grid();
   for (const auto& cell : grid.local_cells)
   {
-    const auto& rho = densities[cell.local_id_];
-    const auto& transport_view = cell_transport_views[cell.local_id_];
+    const auto& rho = densities[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.Volume();
 
     // Obtain xs
     const auto& xs = transport_view.XS();
 
     std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
-    if (matid_to_src_map.count(cell.material_id_) > 0)
-      P0_src = matid_to_src_map.at(cell.material_id_);
+    if (matid_to_src_map.count(cell.material_id) > 0)
+      P0_src = matid_to_src_map.at(cell.material_id);
 
     const auto& S = xs.TransferMatrices();
     const auto& F = xs.ProductionMatrix();
@@ -191,8 +191,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
   const auto& transport_views = lbs_solver_.GetCellTransportViews();
 
-  const auto gs_i = groupset.groups_.front().id_;
-  const auto gs_f = groupset.groups_.back().id_;
+  const auto gs_i = groupset.groups.front().id;
+  const auto gs_f = groupset.groups.back().id;
 
   // Apply point sources
   if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
@@ -231,8 +231,8 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
   const auto num_groups = lbs_solver_.NumGroups();
 
-  const auto gs_i = groupset.groups_.front().id_;
-  const auto gs_f = groupset.groups_.back().id_;
+  const auto gs_i = groupset.groups.front().id;
+  const auto gs_f = groupset.groups.back().id;
 
   // Go through each volumetric source, and its subscribing cells
   if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)

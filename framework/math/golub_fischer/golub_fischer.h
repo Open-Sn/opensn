@@ -46,9 +46,9 @@ namespace opensn
 class GolubFischer
 {
 public:
-  std::vector<std::pair<double, double>> xn_wn_;
-  std::vector<double> alpha_;
-  std::vector<double> beta_;
+  std::vector<std::pair<double, double>> xn_wn;
+  std::vector<double> alpha;
+  std::vector<double> beta;
 
 public:
   /**

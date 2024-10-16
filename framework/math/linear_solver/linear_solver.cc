@@ -31,10 +31,10 @@ void
 LinearSolver::ApplyToleranceOptions()
 {
   KSPSetTolerances(ksp_,
-                   tolerance_options_.residual_relative,
-                   tolerance_options_.residual_absolute,
-                   tolerance_options_.residual_divergence,
-                   tolerance_options_.maximum_iterations);
+                   tolerance_options.residual_relative,
+                   tolerance_options.residual_absolute,
+                   tolerance_options.residual_divergence,
+                   tolerance_options.maximum_iterations);
 }
 
 void
@@ -95,8 +95,8 @@ LinearSolver::Setup()
 
   if (iterative_method_ == "gmres")
   {
-    KSPGMRESSetRestart(ksp_, tolerance_options_.gmres_restart_interval);
-    KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options_.gmres_breakdown_tolerance);
+    KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval);
+    KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance);
   }
 
   KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);

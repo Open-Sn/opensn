@@ -196,8 +196,8 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
         const auto& Sm_other = xsecs[x]->TransferMatrix(m);
         for (size_t g = 0; g < num_groups_; ++g)
         {
-          const auto& cols = Sm_other.rowI_indices_[g];
-          const auto& vals = Sm_other.rowI_values_[g];
+          const auto& cols = Sm_other.rowI_indices[g];
+          const auto& vals = Sm_other.rowI_values[g];
           for (size_t t = 0; t < cols.size(); ++t)
             Sm.InsertAdd(g, t, vals[t]);
         }
@@ -262,8 +262,8 @@ MultiGroupXS::ComputeAbsorption()
       double sigma_s = 0.0;
       for (size_t row = 0; row < S0.NumRows(); ++row)
       {
-        const auto& cols = S0.rowI_indices_[row];
-        const auto& vals = S0.rowI_values_[row];
+        const auto& cols = S0.rowI_indices[row];
+        const auto& vals = S0.rowI_values[row];
         for (size_t t = 0; t < cols.size(); ++t)
         {
           if (cols[t] == g)
@@ -305,8 +305,8 @@ MultiGroupXS::ComputeDiffusionParameters()
     {
       for (size_t gp = 0; gp < num_groups_; ++gp)
       {
-        const auto& cols = S[1].rowI_indices_[gp];
-        const auto& vals = S[1].rowI_values_[gp];
+        const auto& cols = S[1].rowI_indices[gp];
+        const auto& vals = S[1].rowI_values[gp];
         for (size_t t = 0; t < cols.size(); ++t)
           if (cols[t] == g)
           {
@@ -334,8 +334,8 @@ MultiGroupXS::ComputeDiffusionParameters()
     // Determine within group scattering
     if (not S.empty())
     {
-      const auto& cols = S[0].rowI_indices_[g];
-      const auto& vals = S[0].rowI_values_[g];
+      const auto& cols = S[0].rowI_indices[g];
+      const auto& vals = S[0].rowI_values[g];
       for (size_t t = 0; t < cols.size(); ++t)
       {
         if (cols[t] == g)
@@ -401,9 +401,9 @@ MultiGroupXS::TransposeTransferAndProduction()
     SparseMatrix S_ell_transpose(num_groups_, num_groups_);
     for (size_t g = 0; g < num_groups_; ++g)
     {
-      const size_t row_len = S_ell.rowI_indices_[g].size();
-      const size_t* col_ptr = S_ell.rowI_indices_[g].data();
-      const double* val_ptr = S_ell.rowI_values_[g].data();
+      const size_t row_len = S_ell.rowI_indices[g].size();
+      const size_t* col_ptr = S_ell.rowI_indices[g].data();
+      const double* val_ptr = S_ell.rowI_values[g].data();
 
       for (size_t j = 0; j < row_len; ++j)
         S_ell_transpose.Insert(*col_ptr++, g, *val_ptr++);

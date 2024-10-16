@@ -684,12 +684,12 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
     for (size_t j = 0; j <= pp_sub_list.size(); ++j)
     {
       if (j == 0)
-        value_matrix[t + 1][j] = std::to_string(front_time_hist[t + offset].time_);
+        value_matrix[t + 1][j] = std::to_string(front_time_hist[t + offset].time);
       else
       {
         const auto& pp = pp_sub_list.at(j - 1);
         value_matrix[t + 1][j] =
-          pp->ConvertValueToString(pp->GetTimeHistory().at(t + offset).value_);
+          pp->ConvertValueToString(pp->GetTimeHistory().at(t + offset).value);
       }
     } // for j
   }   // for t

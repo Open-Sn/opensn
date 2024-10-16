@@ -77,8 +77,8 @@ DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
     CleanUpTGDSA(groupset);
 
     // Reset sweep orderings
-    if (groupset.angle_agg_ != nullptr)
-      groupset.angle_agg_->angle_set_groups.clear();
+    if (groupset.angle_agg != nullptr)
+      groupset.angle_agg->angle_set_groups.clear();
   }
 }
 
@@ -94,7 +94,7 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
   size_t num_globl_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
-    const auto num_delayed_psi_info = groupset.angle_agg_->GetNumDelayedAngularDOFs();
+    const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
     num_local_psi_dofs += num_delayed_psi_info.first;
     num_globl_psi_dofs += num_delayed_psi_info.second;
   }
@@ -148,7 +148,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       options_.verbose_inner_iterations,
       sweep_chunk);
 
-    if (groupset.iterative_method_ == IterativeMethod::CLASSIC_RICHARDSON)
+    if (groupset.iterative_method == IterativeMethod::CLASSIC_RICHARDSON)
       wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(sweep_wgs_context_ptr));
     else
       wgs_solvers_.push_back(std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr));
@@ -181,16 +181,16 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
     {
       case PhiSTLOption::PHI_NEW:
       {
-        auto psi = groupset.angle_agg_->GetNewDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
-        groupset.angle_agg_->SetNewDelayedAngularDOFsFromSTLVector(psi);
+        groupset.angle_agg->SetNewDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
       case PhiSTLOption::PHI_OLD:
       {
-        auto psi = groupset.angle_agg_->GetOldDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
-        groupset.angle_agg_->SetOldDelayedAngularDOFsFromSTLVector(psi);
+        groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
     }
@@ -220,16 +220,16 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -246,10 +246,10 @@ DiscreteOrdinatesSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& gr
   switch (which_phi)
   {
     case PhiSTLOption::PHI_NEW:
-      groupset.angle_agg_->AppendNewDelayedAngularDOFsToArray(index, x_ref);
+      groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, x_ref);
       break;
     case PhiSTLOption::PHI_OLD:
-      groupset.angle_agg_->AppendOldDelayedAngularDOFsToArray(index, x_ref);
+      groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x_ref);
       break;
   }
 
@@ -279,16 +279,16 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -305,10 +305,10 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& gr
   switch (which_phi)
   {
     case PhiSTLOption::PHI_NEW:
-      groupset.angle_agg_->SetNewDelayedAngularDOFsFromArray(index, x_ref);
+      groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, x_ref);
       break;
     case PhiSTLOption::PHI_OLD:
-      groupset.angle_agg_->SetOldDelayedAngularDOFsFromArray(index, x_ref);
+      groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x_ref);
   }
 
   VecRestoreArrayRead(x, &x_ref);
@@ -347,14 +347,14 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id_;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -368,9 +368,9 @@ DiscreteOrdinatesSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groups
   }       // for cell
 
   if (from_which_phi == PhiSTLOption::PHI_NEW and to_which_phi == PhiSTLOption::PHI_OLD)
-    groupset.angle_agg_->SetDelayedPsiOld2New();
+    groupset.angle_agg->SetDelayedPsiOld2New();
   if (from_which_phi == PhiSTLOption::PHI_OLD and to_which_phi == PhiSTLOption::PHI_NEW)
-    groupset.angle_agg_->SetDelayedPsiNew2Old();
+    groupset.angle_agg->SetDelayedPsiNew2Old();
 }
 
 void
@@ -400,15 +400,15 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -425,10 +425,10 @@ DiscreteOrdinatesSolver::SetMultiGSPETScVecFromPrimarySTLvector(
     switch (which_phi)
     {
       case PhiSTLOption::PHI_NEW:
-        groupset.angle_agg_->AppendNewDelayedAngularDOFsToArray(index, x_ref);
+        groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, x_ref);
         break;
       case PhiSTLOption::PHI_OLD:
-        groupset.angle_agg_->AppendOldDelayedAngularDOFsToArray(index, x_ref);
+        groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x_ref);
         break;
     }
   } // for groupset id
@@ -463,15 +463,15 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
   {
     auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -488,10 +488,10 @@ DiscreteOrdinatesSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(
     switch (which_phi)
     {
       case PhiSTLOption::PHI_NEW:
-        groupset.angle_agg_->SetNewDelayedAngularDOFsFromArray(index, x_ref);
+        groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, x_ref);
         break;
       case PhiSTLOption::PHI_OLD:
-        groupset.angle_agg_->SetOldDelayedAngularDOFsFromArray(index, x_ref);
+        groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x_ref);
     }
   } // for groupset id
 
@@ -505,10 +505,10 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
 
   for (const auto& groupset : groupsets_)
   {
-    int gs = groupset.id_;
+    int gs = groupset.id;
 
     // Moment map for flux moments
-    const auto& moment_map = groupset.quadrature_->GetMomentToHarmonicsIndexMap();
+    const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
     // Angular flux info
     auto& psi = psi_new_local_[gs];
@@ -518,7 +518,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     std::map<int, int> reversed_angle_map;
     if (options_.save_angular_flux)
     {
-      const auto& omegas = groupset.quadrature_->omegas_;
+      const auto& omegas = groupset.quadrature->omegas;
       const auto num_gs_angles = omegas.size();
 
       // Go through angles until all are paired
@@ -556,13 +556,13 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
       } // for angle m
     }   // if saving angular flux
 
-    const auto num_gs_groups = groupset.groups_.size();
-    const auto gsg_i = groupset.groups_.front().id_;
-    const auto gsg_f = groupset.groups_.back().id_;
+    const auto num_gs_groups = groupset.groups.size();
+    const auto gsg_i = groupset.groups.front().id;
+    const auto gsg_f = groupset.groups.back().id;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& transport_view = cell_transport_views_[cell.local_id];
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {
         // Reorient flux moments
@@ -610,9 +610,9 @@ DiscreteOrdinatesSolver::ZeroOutflowBalanceVars(LBSGroupset& groupset)
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::ZeroOutflowBalanceVars");
 
   for (const auto& cell : grid_ptr_->local_cells)
-    for (int f = 0; f < cell.faces_.size(); ++f)
-      for (auto& group : groupset.groups_)
-        cell_transport_views_[cell.local_id_].ZeroOutflow(f, group.id_);
+    for (int f = 0; f < cell.faces.size(); ++f)
+      for (auto& group : groupset.groups)
+        cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id);
 }
 
 void
@@ -645,8 +645,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = discretization_->GetCellMapping(cell);
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
     const size_t num_nodes = transport_view.NumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
@@ -655,13 +655,13 @@ DiscreteOrdinatesSolver::ComputeBalance()
     // non-reflective boundaries, only the cosines that are negative are added to the inflow
     // integral. For reflective boundaries, it is expected that, upon convergence, inflow = outflow
     // (within numerical tolerances set by the user).
-    for (int f = 0; f < cell.faces_.size(); ++f)
+    for (int f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
 
-      if (not face.has_neighbor_) // Boundary face
+      if (not face.has_neighbor) // Boundary face
       {
-        const auto& bndry = sweep_boundaries_[face.neighbor_id_];
+        const auto& bndry = sweep_boundaries_[face.neighbor_id];
 
         if (bndry->IsReflecting())
         {
@@ -672,23 +672,23 @@ DiscreteOrdinatesSolver::ComputeBalance()
         {
           for (const auto& groupset : groupsets_)
           {
-            for (int n = 0; n < groupset.quadrature_->omegas_.size(); ++n)
+            for (int n = 0; n < groupset.quadrature->omegas.size(); ++n)
             {
-              const auto& omega = groupset.quadrature_->omegas_[n];
-              const double wt = groupset.quadrature_->weights_[n];
-              const double mu = omega.Dot(face.normal_);
+              const auto& omega = groupset.quadrature->omegas[n];
+              const double wt = groupset.quadrature->weights[n];
+              const double mu = omega.Dot(face.normal);
 
               if (mu < 0.0)
               {
-                for (int fi = 0; fi < face.vertex_ids_.size(); ++fi)
+                for (int fi = 0; fi < face.vertex_ids.size(); ++fi)
                 {
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f][i];
 
-                  for (const auto& group : groupset.groups_)
+                  for (const auto& group : groupset.groups)
                   {
-                    const int g = group.id_;
-                    const double psi = *bndry->PsiIncoming(cell.local_id_, f, fi, n, g, 0);
+                    const int g = group.id;
+                    const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g, 0);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                   } // for group
                 }   // for fi
@@ -700,9 +700,9 @@ DiscreteOrdinatesSolver::ComputeBalance()
     }               // for f
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
-    for (int f = 0; f < cell.faces_.size(); ++f)
+    for (int f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell.faces_[f];
+      const auto& face = cell.faces[f];
       for (int g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
     }
@@ -771,25 +771,25 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
   const auto& sdm = *discretization_;
   const auto& groupset = groupsets_.at(groupset_id);
   const auto& psi_uk_man = groupset.psi_uk_man_;
-  const auto& quadrature = groupset.quadrature_;
+  const auto& quadrature = groupset.quadrature;
 
-  const auto num_gs_angles = quadrature->omegas_.size();
-  const auto num_gs_groups = groupset.groups_.size();
+  const auto num_gs_angles = quadrature->omegas.size();
+  const auto num_gs_groups = groupset.groups.size();
 
-  const auto gsi = groupset.groups_.front().id_;
-  const auto gsf = groupset.groups_.back().id_;
+  const auto gsi = groupset.groups.front().id;
+  const auto gsf = groupset.groups.back().id;
 
   // Start integration
   std::vector<double> local_leakage(num_gs_groups, 0.0);
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id];
 
     unsigned int f = 0;
-    for (const auto& face : cell.faces_)
+    for (const auto& face : cell.faces)
     {
-      if (not face.has_neighbor_ and face.neighbor_id_ == boundary_id)
+      if (not face.has_neighbor and face.neighbor_id == boundary_id)
       {
         const auto& int_f_shape_i = fe_values.intS_shapeI[f];
         const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
@@ -798,9 +798,9 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
           const auto i = cell_mapping.MapFaceNode(f, fi);
           for (unsigned int n = 0; n < num_gs_angles; ++n)
           {
-            const auto& omega = quadrature->omegas_[n];
-            const auto& weight = quadrature->weights_[n];
-            const auto mu = omega.Dot(face.normal_);
+            const auto& omega = quadrature->omegas[n];
+            const auto& weight = quadrature->weights[n];
+            const auto mu = omega.Dot(face.normal);
             if (mu > 0.0)
             {
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -854,11 +854,11 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
   {
     const auto& groupset = groupsets_.at(gs);
     const auto& psi_uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature_;
+    const auto& quadrature = groupset.quadrature;
 
-    const auto num_gs_angles = quadrature->omegas_.size();
-    const auto num_gs_groups = groupset.groups_.size();
-    const auto first_gs_group = groupset.groups_.front().id_;
+    const auto num_gs_angles = quadrature->omegas.size();
+    const auto num_gs_groups = groupset.groups.size();
+    const auto first_gs_group = groupset.groups.front().id;
 
     const auto& psi_gs = psi_new_local_[gs];
 
@@ -866,16 +866,16 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = discretization_->GetCellMapping(cell);
-      const auto& fe_values = unit_cell_matrices_.at(cell.local_id_);
+      const auto& fe_values = unit_cell_matrices_.at(cell.local_id);
 
       unsigned int f = 0;
-      for (const auto& face : cell.faces_)
+      for (const auto& face : cell.faces)
       {
         // If face is on the specified boundary...
-        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id_);
-        if (not face.has_neighbor_ and it != boundary_ids.end())
+        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id);
+        if (not face.has_neighbor and it != boundary_ids.end())
         {
-          auto& bndry_leakage = local_leakage[face.neighbor_id_];
+          auto& bndry_leakage = local_leakage[face.neighbor_id];
           const auto& int_f_shape_i = fe_values.intS_shapeI[f];
           const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
           for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
@@ -883,9 +883,9 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
             const auto i = cell_mapping.MapFaceNode(f, fi);
             for (unsigned int n = 0; n < num_gs_angles; ++n)
             {
-              const auto& omega = quadrature->omegas_[n];
-              const auto& weight = quadrature->weights_[n];
-              const auto mu = omega.Dot(face.normal_);
+              const auto& omega = quadrature->omegas[n];
+              const auto& weight = quadrature->weights[n];
+              const auto mu = omega.Dot(face.normal);
               if (mu <= 0.0)
                 continue;
 
@@ -935,12 +935,12 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   std::map<std::shared_ptr<AngularQuadrature>, bool> quadrature_allow_cycles_map_;
   for (auto& groupset : groupsets_)
   {
-    if (quadrature_unq_so_grouping_map_.count(groupset.quadrature_) == 0)
-      quadrature_unq_so_grouping_map_[groupset.quadrature_] = AssociateSOsAndDirections(
-        *grid_ptr_, *groupset.quadrature_, groupset.angleagg_method_, options_.geometry_type);
+    if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
+      quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
+        *grid_ptr_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
 
-    if (quadrature_allow_cycles_map_.count(groupset.quadrature_) == 0)
-      quadrature_allow_cycles_map_[groupset.quadrature_] = groupset.allow_cycles_;
+    if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)
+      quadrature_allow_cycles_map_[groupset.quadrature] = groupset.allow_cycles;
   }
 
   // Build sweep orderings
@@ -955,7 +955,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         continue;
 
       const size_t master_dir_id = so_grouping.front();
-      const auto& omega = quadrature->omegas_[master_dir_id];
+      const auto& omega = quadrature->omegas[master_dir_id];
 
       bool verbose = false;
       if (not verbose_sweep_angles_.empty())
@@ -1019,9 +1019,9 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
   const std::string fname = __FUNCTION__;
 
   // Checks
-  if (quadrature.omegas_.empty())
+  if (quadrature.omegas.empty())
     throw std::logic_error(fname + ": Quadrature with no omegas cannot be used.");
-  if (quadrature.weights_.empty())
+  if (quadrature.weights.empty())
     throw std::logic_error(fname + ": Quadrature with no weights cannot be used.");
 
   // Build groupings
@@ -1035,7 +1035,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     // the direction indices.
     case AngleAggregationType::SINGLE:
     {
-      const size_t num_dirs = quadrature.omegas_.size();
+      const size_t num_dirs = quadrature.omegas.size();
       for (size_t n = 0; n < num_dirs; ++n)
         unq_so_grps.push_back({n});
       break;
@@ -1053,7 +1053,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type_;
+      const auto quad_type = quadrature.type;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using polar angle aggregation for "
                                        "which only Product-type quadratures are supported.");
@@ -1063,15 +1063,15 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       {
         const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
-        const auto num_azi = product_quad.azimu_ang_.size();
-        const auto num_pol = product_quad.polar_ang_.size();
+        const auto num_azi = product_quad.azimu_ang.size();
+        const auto num_pol = product_quad.polar_ang.size();
 
         // Make two separate list of polar angles
         // One upward-pointing and one downward
         std::vector<size_t> upward_polar_ids;
         std::vector<size_t> dnward_polar_ids;
         for (size_t p = 0; p < num_pol; ++p)
-          if (product_quad.polar_ang_[p] > M_PI_2)
+          if (product_quad.polar_ang[p] > M_PI_2)
             upward_polar_ids.push_back(p);
           else
             dnward_polar_ids.push_back(p);
@@ -1118,7 +1118,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
                   "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type_;
+      const auto quad_type = quadrature.type;
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using azimuthal angle aggregation for "
                                        "which only Product-type quadratures are supported.");
@@ -1133,7 +1133,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;
           for (const auto& dir_id : dir_set.second)
-            if (quadrature.abscissae_[dir_id].phi > M_PI_2)
+            if (quadrature.abscissae[dir_id].phi > M_PI_2)
               group1.push_back(dir_id);
             else
               group2.push_back(dir_id);
@@ -1179,18 +1179,18 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitFluxDataStructures");
 
-  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature_];
+  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature];
 
   const auto& unique_so_groupings = quadrature_sweep_info.first;
   const auto& dir_id_to_so_map = quadrature_sweep_info.second;
 
-  const size_t gs_num_grps = groupset.groups_.size();
-  const size_t gs_num_ss = groupset.grp_subset_infos_.size();
+  const size_t gs_num_grps = groupset.groups.size();
+  const size_t gs_num_ss = groupset.grp_subset_infos.size();
 
   // Passing the sweep boundaries
   //                                            to the angle aggregation
-  groupset.angle_agg_ = std::make_shared<AngleAggregation>(
-    sweep_boundaries_, num_groups_, gs_num_ss, groupset.quadrature_, grid_ptr_);
+  groupset.angle_agg = std::make_shared<AngleAggregation>(
+    sweep_boundaries_, num_groups_, gs_num_ss, groupset.quadrature, grid_ptr_);
 
   AngleSetGroup angle_set_group;
   size_t angle_set_id = 0;
@@ -1199,15 +1199,15 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     const size_t master_dir_id = so_grouping.front();
     const size_t so_id = dir_id_to_so_map.at(master_dir_id);
 
-    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature_][so_id];
-    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature_][so_id];
+    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature][so_id];
+    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature][so_id];
 
     // Compute direction subsets
-    const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets_);
+    const auto dir_subsets = MakeSubSets(so_grouping.size(), groupset.master_num_ang_subsets);
 
     for (size_t gs_ss = 0; gs_ss < gs_num_ss; gs_ss++)
     {
-      const size_t gs_ss_size = groupset.grp_subset_infos_[gs_ss].ss_size;
+      const size_t gs_ss_size = groupset.grp_subset_infos[gs_ss].ss_size;
       for (const auto& dir_ss_info : dir_subsets)
       {
         const auto& dir_ss_begin = dir_ss_info.ss_begin;
@@ -1249,7 +1249,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
             std::make_shared<CBC_FLUDS>(gs_ss_size,
                                         angle_indices.size(),
                                         dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                        psi_new_local_[groupset.id_],
+                                        psi_new_local_[groupset.id],
                                         groupset.psi_uk_man_,
                                         *discretization_);
 
@@ -1270,7 +1270,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
     }   // for gs_ss
   }     // for so_grouping
 
-  groupset.angle_agg_->angle_set_groups.push_back(std::move(angle_set_group));
+  groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
     log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
@@ -1291,7 +1291,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        cell_transport_views_,
                                                        densities_local_,
                                                        phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        q_moments_local_,
                                                        groupset,
                                                        matid_to_xs_map_,
@@ -1303,7 +1303,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
   else if (sweep_type_ == "CBC")
   {
     auto sweep_chunk = std::make_shared<CbcSweepChunk>(phi_new_local_,
-                                                       psi_new_local_[groupset.id_],
+                                                       psi_new_local_[groupset.id],
                                                        *grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,

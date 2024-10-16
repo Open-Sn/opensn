@@ -96,29 +96,29 @@ LBSGroupset::GetInputParameters()
 // list. But, delegating constructors won't work here, and repeating the initialization is worse,
 // in my opinion, than an init method.
 void
-LBSGroupset::Init(int id)
+LBSGroupset::Init(int aid)
 {
-  id_ = id;
-  quadrature_ = nullptr;
-  angle_agg_ = nullptr;
-  master_num_grp_subsets_ = 1;
-  master_num_ang_subsets_ = 1;
-  iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
-  angleagg_method_ = AngleAggregationType::POLAR;
-  residual_tolerance_ = 1.0e-6;
-  max_iterations_ = 200;
-  gmres_restart_intvl_ = 30;
-  allow_cycles_ = false;
-  apply_wgdsa_ = false;
-  apply_tgdsa_ = false;
-  wgdsa_max_iters_ = 30;
-  tgdsa_max_iters_ = 30;
-  wgdsa_tol_ = 1.0e-4;
-  tgdsa_tol_ = 1.0e-4;
-  wgdsa_verbose_ = false;
-  tgdsa_verbose_ = false;
-  wgdsa_solver_ = nullptr;
-  tgdsa_solver_ = nullptr;
+  id = aid;
+  quadrature = nullptr;
+  angle_agg = nullptr;
+  master_num_grp_subsets = 1;
+  master_num_ang_subsets = 1;
+  iterative_method = IterativeMethod::KRYLOV_RICHARDSON;
+  angleagg_method = AngleAggregationType::POLAR;
+  residual_tolerance = 1.0e-6;
+  max_iterations = 200;
+  gmres_restart_intvl = 30;
+  allow_cycles = false;
+  apply_wgdsa = false;
+  apply_tgdsa = false;
+  wgdsa_max_iters = 30;
+  tgdsa_max_iters = 30;
+  wgdsa_tol = 1.0e-4;
+  tgdsa_tol = 1.0e-4;
+  wgdsa_verbose = false;
+  tgdsa_verbose = false;
+  wgdsa_solver = nullptr;
+  tgdsa_solver = nullptr;
 }
 
 LBSGroupset::LBSGroupset()
@@ -151,7 +151,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   {
     for (size_t g = from; g <= to; ++g)
     {
-      groups_.push_back(lbs_solver.Groups().at(g));
+      groups.push_back(lbs_solver.Groups().at(g));
     }
   }
   catch (const std::exception& exc)
@@ -163,54 +163,54 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
       "for all groups.");
   }
 
-  master_num_grp_subsets_ = params.GetParamValue<int>("groupset_num_subsets");
+  master_num_grp_subsets = params.GetParamValue<int>("groupset_num_subsets");
 
   // Add quadrature
   const size_t quad_handle = params.GetParamValue<size_t>("angular_quadrature_handle");
-  quadrature_ = GetStackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
+  quadrature = GetStackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
   if (angle_agg_typestr == "polar")
-    angleagg_method_ = AngleAggregationType::POLAR;
+    angleagg_method = AngleAggregationType::POLAR;
   else if (angle_agg_typestr == "single")
-    angleagg_method_ = AngleAggregationType::SINGLE;
+    angleagg_method = AngleAggregationType::SINGLE;
   else if (angle_agg_typestr == "azimuthal")
-    angleagg_method_ = AngleAggregationType::AZIMUTHAL;
+    angleagg_method = AngleAggregationType::AZIMUTHAL;
 
-  master_num_ang_subsets_ = params.GetParamValue<int>("angle_aggregation_num_subsets");
+  master_num_ang_subsets = params.GetParamValue<int>("angle_aggregation_num_subsets");
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
   if (inner_linear_method == "krylov_richardson")
-    iterative_method_ = IterativeMethod::KRYLOV_RICHARDSON;
+    iterative_method = IterativeMethod::KRYLOV_RICHARDSON;
   else if (inner_linear_method == "classic_richardson")
-    iterative_method_ = IterativeMethod::CLASSIC_RICHARDSON;
+    iterative_method = IterativeMethod::CLASSIC_RICHARDSON;
   else if (inner_linear_method == "gmres")
-    iterative_method_ = IterativeMethod::KRYLOV_GMRES;
+    iterative_method = IterativeMethod::KRYLOV_GMRES;
   else if (inner_linear_method == "bicgstab")
-    iterative_method_ = IterativeMethod::KRYLOV_BICGSTAB;
+    iterative_method = IterativeMethod::KRYLOV_BICGSTAB;
 
-  gmres_restart_intvl_ = params.GetParamValue<int>("gmres_restart_interval");
-  allow_cycles_ = params.GetParamValue<bool>("allow_cycles");
-  residual_tolerance_ = params.GetParamValue<double>("l_abs_tol");
-  max_iterations_ = params.GetParamValue<int>("l_max_its");
+  gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
+  allow_cycles = params.GetParamValue<bool>("allow_cycles");
+  residual_tolerance = params.GetParamValue<double>("l_abs_tol");
+  max_iterations = params.GetParamValue<int>("l_max_its");
 
   // DSA
-  apply_wgdsa_ = params.GetParamValue<bool>("apply_wgdsa");
-  apply_tgdsa_ = params.GetParamValue<bool>("apply_tgdsa");
+  apply_wgdsa = params.GetParamValue<bool>("apply_wgdsa");
+  apply_tgdsa = params.GetParamValue<bool>("apply_tgdsa");
 
-  wgdsa_tol_ = params.GetParamValue<double>("wgdsa_l_abs_tol");
-  tgdsa_tol_ = params.GetParamValue<double>("tgdsa_l_abs_tol");
+  wgdsa_tol = params.GetParamValue<double>("wgdsa_l_abs_tol");
+  tgdsa_tol = params.GetParamValue<double>("tgdsa_l_abs_tol");
 
-  wgdsa_max_iters_ = params.GetParamValue<int>("wgdsa_l_max_its");
-  tgdsa_max_iters_ = params.GetParamValue<int>("tgdsa_l_max_its");
+  wgdsa_max_iters = params.GetParamValue<int>("wgdsa_l_max_its");
+  tgdsa_max_iters = params.GetParamValue<int>("tgdsa_l_max_its");
 
-  wgdsa_verbose_ = params.GetParamValue<bool>("wgdsa_verbose");
-  tgdsa_verbose_ = params.GetParamValue<bool>("tgdsa_verbose");
+  wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
+  tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");
 
-  wgdsa_string_ = params.GetParamValue<std::string>("wgdsa_petsc_options");
-  tgdsa_string_ = params.GetParamValue<std::string>("tgdsa_petsc_options");
+  wgdsa_string = params.GetParamValue<std::string>("wgdsa_petsc_options");
+  tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
 void
@@ -219,16 +219,16 @@ LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, GeometryType ge
   if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
       geometry_type == GeometryType::ONED_SPHERICAL)
   {
-    quadrature_->BuildDiscreteToMomentOperator(scattering_order, 1);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order, 1);
   }
   else if (geometry_type == GeometryType::TWOD_CARTESIAN or
            geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
-    quadrature_->BuildDiscreteToMomentOperator(scattering_order, 2);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order, 2);
   }
   else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
-    quadrature_->BuildDiscreteToMomentOperator(scattering_order, 3);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order, 3);
   }
 }
 
@@ -238,28 +238,28 @@ LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, GeometryType ge
   if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
       geometry_type == GeometryType::ONED_SPHERICAL)
   {
-    quadrature_->BuildMomentToDiscreteOperator(scattering_order, 1);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order, 1);
   }
   else if (geometry_type == GeometryType::TWOD_CARTESIAN or
            geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
-    quadrature_->BuildMomentToDiscreteOperator(scattering_order, 2);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order, 2);
   }
   else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
-    quadrature_->BuildMomentToDiscreteOperator(scattering_order, 3);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order, 3);
   }
 }
 
 void
 LBSGroupset::BuildSubsets()
 {
-  grp_subset_infos_ = MakeSubSets(groups_.size(), master_num_grp_subsets_);
+  grp_subset_infos = MakeSubSets(groups.size(), master_num_grp_subsets);
   {
     size_t ss = 0;
-    for (const auto& info : grp_subset_infos_)
+    for (const auto& info : grp_subset_infos)
     {
-      log.Log() << "Groupset " << id_ << " has group-subset " << ss << " " << info.ss_begin << "->"
+      log.Log() << "Groupset " << id << " has group-subset " << ss << " " << info.ss_begin << "->"
                 << info.ss_end;
       ++ss;
     }

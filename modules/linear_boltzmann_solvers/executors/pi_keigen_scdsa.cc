@@ -79,7 +79,7 @@ PowerIterationKEigenSCDSA::Initialize()
   PowerIterationKEigen::Initialize();
 
   // Make UnknownManager
-  const size_t num_gs_groups = front_gs_.groups_.size();
+  const size_t num_gs_groups = front_gs_.groups.size();
   UnknownManager uk_man;
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -88,7 +88,7 @@ PowerIterationKEigenSCDSA::Initialize()
 
   // Make xs map
   auto matid_2_mgxs_map = PackGroupsetXS(
-    lbs_solver_.GetMatID2XSMap(), front_gs_.groups_.front().id_, front_gs_.groups_.back().id_);
+    lbs_solver_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();
@@ -283,7 +283,7 @@ PowerIterationKEigenSCDSA::Execute()
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op_ << ")"
+            << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op << ")"
             << "\n";
 
   if (lbs_solver_.Options().use_precursors)
@@ -305,8 +305,8 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                        : diff_sdm.GetNumLocalDOFs(diff_uk_man);
@@ -352,8 +352,8 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
                                        ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                        : diff_sdm.GetNumLocalDOFs(diff_uk_man);
@@ -390,7 +390,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
 
   log.Log() << "Number of global dofs" << num_globl_dofs;
 
-  const size_t num_unknowns = uk_man.unknowns_.size();
+  const size_t num_unknowns = uk_man.unknowns.size();
 
   // Build a list of global ids
   std::set<int64_t> global_dof_ids_set;
@@ -407,7 +407,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_comps = uk_man.unknowns_[u].num_components_;
+        const size_t num_comps = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_comps; ++c)
         {
           const int64_t dof_map = sdm.MapDOF(cell, i, uk_man, u, c);
@@ -452,7 +452,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   const auto& grid = pwld_sdm.Grid();
 
-  const size_t num_unknowns = uk_man.unknowns_.size();
+  const size_t num_unknowns = uk_man.unknowns.size();
 
   const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
 
@@ -472,7 +472,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components_;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
@@ -489,10 +489,10 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
       }   // for unknown u
     }     // for node i
 
-    for (const auto& face : cell.faces_)
-      if (face.has_neighbor_)
-        if (not grid.IsCellLocal(face.neighbor_id_))
-          for (const uint64_t vid : face.vertex_ids_)
+    for (const auto& face : cell.faces)
+      if (face.has_neighbor)
+        if (not grid.IsCellLocal(face.neighbor_id))
+          for (const uint64_t vid : face.vertex_ids)
             partition_bndry_vertex_id_set.insert(vid);
   } // for local cell
 
@@ -507,12 +507,12 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      if (vid_set.find(cell.vertex_ids_[i]) == vid_set.end())
+      if (vid_set.find(cell.vertex_ids[i]) == vid_set.end())
         continue;
 
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components_;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map_globl = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
@@ -550,7 +550,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
     {
       for (size_t u = 0; u < num_unknowns; ++u)
       {
-        const size_t num_components = uk_man.unknowns_[u].num_components_;
+        const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);

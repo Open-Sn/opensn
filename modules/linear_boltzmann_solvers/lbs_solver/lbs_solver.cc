@@ -825,7 +825,7 @@ LBSSolver::PerformInputChecks()
   int grpset_counter = 0;
   for (auto& group_set : groupsets_)
   {
-    if (group_set.groups_.empty())
+    if (group_set.groups.empty())
     {
       log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to groupset "
                         << grpset_counter << ".";
@@ -880,12 +880,12 @@ LBSSolver::PrintSimHeader()
     {
       char buf_pol[20];
 
-      outstr << "\n***** Groupset " << groupset.id_ << " *****\n"
+      outstr << "\n***** Groupset " << groupset.id << " *****\n"
              << "Groups:\n";
       int counter = 0;
-      for (auto group : groupset.groups_)
+      for (auto group : groupset.groups)
       {
-        snprintf(buf_pol, 20, "%5d ", group.id_);
+        snprintf(buf_pol, 20, "%5d ", group.id);
         outstr << std::string(buf_pol);
         counter++;
         if (counter == 12)
@@ -913,16 +913,16 @@ LBSSolver::InitializeMaterials()
   std::set<int> unique_material_ids;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0)
+    unique_material_ids.insert(cell.material_id);
+    if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
-    unique_material_ids.insert(cell.material_id_);
-    if (cell.material_id_ < 0)
+    unique_material_ids.insert(cell.material_id);
+    if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
@@ -1030,8 +1030,8 @@ LBSSolver::InitializeMaterials()
   if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& xs_ptr = matid_to_xs_map_[cell.material_id_];
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      const auto& xs_ptr = matid_to_xs_map_[cell.material_id];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
       transport_view.ReassignXS(*xs_ptr);
     }
@@ -1086,7 +1086,7 @@ LBSSolver::ComputeUnitIntegrals()
   auto ComputeCellUnitIntegrals = [&sdm](const Cell& cell, const SpatialWeightFunction& swf)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t cell_num_faces = cell.faces_.size();
+    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -1175,7 +1175,7 @@ LBSSolver::ComputeUnitIntegrals()
   unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_ptr_->local_cells)
-    unit_cell_matrices_[cell.local_id_] = ComputeCellUnitIntegrals(cell, *swf_ptr);
+    unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell, *swf_ptr);
 
   const auto ghost_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
@@ -1203,9 +1203,9 @@ LBSSolver::InitializeGroupsets()
   for (auto& groupset : groupsets_)
   {
     // Build groupset angular flux unknown manager
-    groupset.psi_uk_man_.unknowns_.clear();
-    size_t num_angles = groupset.quadrature_->abscissae_.size();
-    size_t gs_num_groups = groupset.groups_.size();
+    groupset.psi_uk_man_.unknowns.clear();
+    size_t num_angles = groupset.quadrature->abscissae.size();
+    size_t gs_num_groups = groupset.groups.size();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
 
     const auto VarVecN = UnknownType::VECTOR_N;
@@ -1224,13 +1224,13 @@ LBSSolver::ComputeNumberOfMoments()
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeNumberOfMoments");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature_->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature_->GetMomentToHarmonicsIndexMap())
+    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
+        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
       throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
                              "Moment-to-Harmonics mapping differs between "
                              "groupsets_, which is not allowed.");
 
-  num_moments_ = (int)groupsets_.front().quadrature_->GetMomentToHarmonicsIndexMap().size();
+  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
 
   if (num_moments_ == 0)
     throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
@@ -1248,11 +1248,11 @@ LBSSolver::InitializeParrays()
 
   // Initialize unknown
   // structure
-  flux_moments_uk_man_.unknowns_.clear();
+  flux_moments_uk_man_.unknowns.clear();
   for (size_t m = 0; m < num_moments_; m++)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
-    flux_moments_uk_man_.unknowns_.back().text_name_ = "m" + std::to_string(m);
+    flux_moments_uk_man_.unknowns.back().text_name = "m" + std::to_string(m);
   }
 
   // Compute local # of dof
@@ -1318,27 +1318,27 @@ LBSSolver::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
-    int mat_id = cell.material_id_;
+    int mat_id = cell.material_id;
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id_].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI[i];
 
     size_t cell_phi_address = block_MG_counter;
 
-    const size_t num_faces = cell.faces_.size();
+    const size_t num_faces = cell.faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
     std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
     bool cell_on_boundary = false;
     int f = 0;
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
-        Vector3& n = face.normal_;
+        Vector3& n = face.normal;
 
         int boundary_id = -1;
         if (n.Dot(ihat) < -0.999)
@@ -1355,7 +1355,7 @@ LBSSolver::InitializeParrays()
           boundary_id = ZMAX;
 
         if (boundary_id >= 0)
-          face.neighbor_id_ = boundary_id;
+          face.neighbor_id = boundary_id;
         cell_on_boundary = true;
 
         face_local_flags[f] = false;
@@ -1366,7 +1366,7 @@ LBSSolver::InitializeParrays()
         const int neighbor_partition = face.GetNeighborPartitionID(*grid_ptr_);
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id_];
+        neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id];
       }
 
       ++f;
@@ -1396,15 +1396,15 @@ LBSSolver::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     CellFaceNodalMapping cell_nodal_mapping;
-    cell_nodal_mapping.reserve(cell.faces_.size());
+    cell_nodal_mapping.reserve(cell.faces.size());
 
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
       int ass_face = -1;
 
-      if (face.has_neighbor_)
+      if (face.has_neighbor)
       {
         grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
         grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
@@ -1505,9 +1505,9 @@ LBSSolver::InitializeBoundaries()
   {
     std::set<uint64_t> local_unique_bids_set;
     for (const auto& cell : grid_ptr_->local_cells)
-      for (const auto& face : cell.faces_)
-        if (not face.has_neighbor_)
-          local_unique_bids_set.insert(face.neighbor_id_);
+      for (const auto& face : cell.faces)
+        if (not face.has_neighbor)
+          local_unique_bids_set.insert(face.neighbor_id);
 
     std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                             local_unique_bids_set.end());
@@ -1556,12 +1556,12 @@ LBSSolver::InitializeBoundaries()
         const double EPSILON = 1.0e-12;
         std::unique_ptr<Vector3> n_ptr = nullptr;
         for (const auto& cell : grid_ptr_->local_cells)
-          for (const auto& face : cell.faces_)
-            if (not face.has_neighbor_ and face.neighbor_id_ == bid)
+          for (const auto& face : cell.faces)
+            if (not face.has_neighbor and face.neighbor_id == bid)
             {
               if (not n_ptr)
-                n_ptr = std::make_unique<Vector3>(face.normal_);
-              if (std::fabs(face.normal_.Dot(*n_ptr) - 1.0) > EPSILON)
+                n_ptr = std::make_unique<Vector3>(face.normal);
+              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
                 throw std::logic_error(fname +
                                        ": Not all face normals are, within tolerance, locally the "
                                        "same for the reflecting boundary condition requested.");
@@ -1632,10 +1632,10 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitWGDSA");
 
-  if (groupset.apply_wgdsa_)
+  if (groupset.apply_wgdsa)
   {
     // Make UnknownManager
-    const size_t num_gs_groups = groupset.groups_.size();
+    const size_t num_gs_groups = groupset.groups.size();
     opensn::UnknownManager uk_man;
     uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -1644,7 +1644,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     // Make xs map
     auto matid_2_mgxs_map =
-      PackGroupsetXS(matid_to_xs_map_, groupset.groups_.front().id_, groupset.groups_.back().id_);
+      PackGroupsetXS(matid_to_xs_map_, groupset.groups.front().id, groupset.groups.back().id);
 
     // Create solver
     const auto& sdm = *discretization_;
@@ -1659,10 +1659,10 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
                                                        true);
     ParameterBlock block;
 
-    solver->options.residual_tolerance = groupset.wgdsa_tol_;
-    solver->options.max_iters = groupset.wgdsa_max_iters_;
-    solver->options.verbose = groupset.wgdsa_verbose_;
-    solver->options.additional_options_string = groupset.wgdsa_string_;
+    solver->options.residual_tolerance = groupset.wgdsa_tol;
+    solver->options.max_iters = groupset.wgdsa_max_iters;
+    solver->options.verbose = groupset.wgdsa_verbose;
+    solver->options.additional_options_string = groupset.wgdsa_string;
 
     solver->Initialize();
 
@@ -1670,7 +1670,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     solver->AssembleAand_b(dummy_rhs);
 
-    groupset.wgdsa_solver_ = solver;
+    groupset.wgdsa_solver = solver;
   }
 }
 
@@ -1679,8 +1679,8 @@ LBSSolver::CleanUpWGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpWGDSA");
 
-  if (groupset.apply_wgdsa_)
-    groupset.wgdsa_solver_ = nullptr;
+  if (groupset.apply_wgdsa)
+    groupset.wgdsa_solver = nullptr;
 }
 
 std::vector<double>
@@ -1689,11 +1689,11 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
@@ -1728,11 +1728,11 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1761,11 +1761,11 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
   delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
@@ -1774,7 +1774,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.material_id_]->SigmaSGtoG();
+    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->SigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; i++)
     {
@@ -1800,11 +1800,11 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver_->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1830,7 +1830,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::InitTGDSA");
 
-  if (groupset.apply_tgdsa_)
+  if (groupset.apply_tgdsa)
   {
     // Make UnknownManager
     const auto& uk_man = discretization_->UNITARY_UNKNOWN_MANAGER;
@@ -1874,10 +1874,10 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
                                                        false,
                                                        true);
 
-    solver->options.residual_tolerance = groupset.tgdsa_tol_;
-    solver->options.max_iters = groupset.tgdsa_max_iters_;
-    solver->options.verbose = groupset.tgdsa_verbose_;
-    solver->options.additional_options_string = groupset.tgdsa_string_;
+    solver->options.residual_tolerance = groupset.tgdsa_tol;
+    solver->options.max_iters = groupset.tgdsa_max_iters;
+    solver->options.verbose = groupset.tgdsa_verbose;
+    solver->options.additional_options_string = groupset.tgdsa_string;
 
     solver->Initialize();
 
@@ -1885,7 +1885,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 
     solver->AssembleAand_b(dummy_rhs);
 
-    groupset.tgdsa_solver_ = solver;
+    groupset.tgdsa_solver = solver;
   }
 }
 
@@ -1894,8 +1894,8 @@ LBSSolver::CleanUpTGDSA(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::CleanUpTGDSA");
 
-  if (groupset.apply_tgdsa_)
-    groupset.tgdsa_solver_ = nullptr;
+  if (groupset.apply_tgdsa)
+    groupset.tgdsa_solver = nullptr;
 }
 
 void
@@ -1908,8 +1908,8 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
   delta_phi_local.assign(local_node_count_, 0.0);
@@ -1918,7 +1918,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& S = matid_to_xs_map_[cell.material_id_]->TransferMatrix(0);
+    const auto& S = matid_to_xs_map_[cell.material_id]->TransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1951,8 +1951,8 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups_.front().id_;
-  const size_t gss = groupset.groups_.size();
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
@@ -1961,7 +1961,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id_).spectrum;
+    const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id).spectrum;
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -2119,9 +2119,9 @@ LBSSolver::UpdateFieldFunctions()
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.NumNodes();
 
-      const auto& Vi = unit_cell_matrices_[cell.local_id_].intV_shapeI;
+      const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
-      const auto& xs = matid_to_xs_map_.at(cell.material_id_);
+      const auto& xs = matid_to_xs_map_.at(cell.material_id);
 
       if (not xs->IsFissionable())
         continue;
@@ -2214,15 +2214,15 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionProduction");
 
-  const int first_grp = groups_.front().id_;
-  const int last_grp = groups_.back().id_;
+  const int first_grp = groups_.front().id;
+  const int last_grp = groups_.back().id;
 
   // Loop over local cells
   double local_production = 0.0;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.XS();
@@ -2265,15 +2265,15 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeFissionRate");
 
-  const int first_grp = groups_.front().id_;
-  const int last_grp = groups_.back().id_;
+  const int first_grp = groups_.front().id;
+  const int last_grp = groups_.back().id;
 
   // Loop over local cells
   double local_fission_rate = 0.0;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id_];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.XS();
@@ -2315,8 +2315,8 @@ LBSSolver::ComputePrecursors()
   // Loop over cells
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    const auto& fe_values = unit_cell_matrices_[cell.local_id_];
-    const auto& transport_view = cell_transport_views_[cell.local_id_];
+    const auto& fe_values = unit_cell_matrices_[cell.local_id];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
     const double cell_volume = transport_view.Volume();
 
     // Obtain xs
@@ -2327,7 +2327,7 @@ LBSSolver::ComputePrecursors()
     // Loop over precursors
     for (uint64_t j = 0; j < xs.NumPrecursors(); ++j)
     {
-      size_t dof = cell.local_id_ * J + j;
+      size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];
       const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
@@ -2352,8 +2352,8 @@ LBSSolver::SetPhiVectorScalarValues(std::vector<double>& phi_vector, double valu
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::SetPhiVectorScalarValues");
 
-  const size_t first_grp = groups_.front().id_;
-  const size_t final_grp = groups_.back().id_;
+  const size_t first_grp = groups_.front().id;
+  const size_t final_grp = groups_.back().id;
   const auto& sdm = *discretization_;
 
   for (const auto& cell : grid_ptr_->local_cells)
@@ -2417,16 +2417,16 @@ LBSSolver::SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
   double* x_ref;
   VecGetArray(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2466,16 +2466,16 @@ LBSSolver::SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 
-  int gsi = groupset.groups_.front().id_;
-  int gsf = groupset.groups_.back().id_;
+  int gsi = groupset.groups.front().id;
+  int gsf = groupset.groups.back().id;
   int gss = gsf - gsi + 1;
 
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2499,14 +2499,14 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::GSScopedCopyPrimarySTLvectors");
 
-  int gsi = groupset.groups_.front().id_;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2553,14 +2553,14 @@ LBSSolver::GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
       throw std::logic_error("GSScopedCopyPrimarySTLvectors");
   }
 
-  int gsi = groupset.groups_.front().id_;
-  size_t gss = groupset.groups_.size();
+  int gsi = groupset.groups.front().id;
+  size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2592,9 +2592,9 @@ LBSSolver::SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2629,9 +2629,9 @@ LBSSolver::SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
   int64_t index = -1;
   for (const auto& cell : grid_ptr_->local_cells)
   {
-    auto& transport_view = cell_transport_views_[cell.local_id_];
+    auto& transport_view = cell_transport_views_[cell.local_id];
 
-    for (int i = 0; i < cell.vertex_ids_.size(); i++)
+    for (int i = 0; i < cell.vertex_ids.size(); i++)
     {
       for (int m = 0; m < num_moments_; m++)
       {
@@ -2676,15 +2676,15 @@ LBSSolver::SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groups
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {
@@ -2730,15 +2730,15 @@ LBSSolver::SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& gr
   {
     const auto& groupset = groupsets_.at(gs_id);
 
-    int gsi = groupset.groups_.front().id_;
-    int gsf = groupset.groups_.back().id_;
+    int gsi = groupset.groups.front().id;
+    int gsf = groupset.groups.back().id;
     int gss = gsf - gsi + 1;
 
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      auto& transport_view = cell_transport_views_[cell.local_id_];
+      auto& transport_view = cell_transport_views_[cell.local_id];
 
-      for (int i = 0; i < cell.vertex_ids_.size(); i++)
+      for (int i = 0; i < cell.vertex_ids.size(); i++)
       {
         for (int m = 0; m < num_moments_; m++)
         {

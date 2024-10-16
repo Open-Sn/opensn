@@ -17,7 +17,7 @@ namespace opensn
 namespace SimplifiedLDFESQ
 {
 struct SphericalQuadrilateral;
-struct FUNCTION_WEIGHT_FROM_RHO;
+struct FunctionWeightFromRho;
 class Quadrature;
 
 /**
@@ -63,8 +63,8 @@ public:
     ISOLATED,
     //    MULTI_VARIATE_SECANT
   };
-  QuadraturePointOptimization qp_optimization_type_ = QuadraturePointOptimization::EMPIRICAL;
-  std::string output_filename_prefix_;
+  QuadraturePointOptimization qp_optimization_type = QuadraturePointOptimization::EMPIRICAL;
+  std::string output_filename_prefix;
 
 private:
   /// Inscribed cude side length
@@ -74,13 +74,13 @@ private:
   std::vector<SphericalQuadrilateral> initial_octant_SQs_;
 
 public:
-  std::vector<SphericalQuadrilateral> deployed_SQs_;
+  std::vector<SphericalQuadrilateral> deployed_SQs;
 
 private:
   std::vector<std::vector<SphericalQuadrilateral>> deployed_SQs_history_;
 
 public:
-  friend struct FUNCTION_WEIGHT_FROM_RHO;
+  friend struct FunctionWeightFromRho;
   Quadrature() : AngularQuadrature(AngularQuadratureType::SLDFESQ) {}
 
   virtual ~Quadrature() {}
@@ -163,7 +163,7 @@ private:
  * This is a utility function that encapsulates all the necessary functionality to determine shape
  * function coefficients and integrate accross a spherical quadrilateral.
  */
-struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
+struct SimplifiedLDFESQ::FunctionWeightFromRho
 {
   Quadrature& sldfesq;
   Vector3& centroid_xy_tilde;
@@ -179,11 +179,11 @@ struct SimplifiedLDFESQ::FUNCTION_WEIGHT_FROM_RHO
   /// Legendre quadrature weights
   std::vector<double>& lqw;
 
-  FUNCTION_WEIGHT_FROM_RHO(SimplifiedLDFESQ::Quadrature& sldfesq,
-                           Vector3& centroid_xy_tilde,
-                           std::array<Vector3, 4>& radii_vectors_xy_tilde,
-                           SphericalQuadrilateral& sq,
-                           GaussLegendreQuadrature& legendre_quadrature)
+  FunctionWeightFromRho(SimplifiedLDFESQ::Quadrature& sldfesq,
+                        Vector3& centroid_xy_tilde,
+                        std::array<Vector3, 4>& radii_vectors_xy_tilde,
+                        SphericalQuadrilateral& sq,
+                        GaussLegendreQuadrature& legendre_quadrature)
     : sldfesq(sldfesq),
       centroid_xy_tilde(centroid_xy_tilde),
       radii_vectors_xy_tilde(radii_vectors_xy_tilde),

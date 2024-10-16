@@ -31,9 +31,9 @@ class PostProcessor : public Object, public EventSubscriber
 public:
   struct TimeHistoryEntry
   {
-    size_t t_index_;
-    double time_;
-    ParameterBlock value_;
+    size_t t_index;
+    double time;
+    ParameterBlock value;
   };
 
   /// Returns the name of the post-processors.

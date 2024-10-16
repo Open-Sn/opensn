@@ -28,20 +28,20 @@ void
 NonLinearSolver::ApplyToleranceOptions()
 {
   SNESSetTolerances(nl_solver_,
-                    options_.nl_abs_tol_,
-                    options_.nl_rel_tol_,
-                    options_.nl_sol_tol_,
-                    options_.nl_max_its_,
-                    options_.nl_max_r_evaluations_);
-  SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations_);
+                    options_.nl_abs_tol,
+                    options_.nl_rel_tol,
+                    options_.nl_sol_tol,
+                    options_.nl_max_its,
+                    options_.nl_max_r_evaluations);
+  SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations);
   KSP ksp;
   SNESGetKSP(nl_solver_, &ksp);
   KSPSetTolerances(
-    ksp, options_.l_rel_tol_, options_.l_abs_tol_, options_.l_div_tol_, options_.l_max_its_);
-  if (options_.l_method_ == "gmres")
+    ksp, options_.l_rel_tol, options_.l_abs_tol, options_.l_div_tol, options_.l_max_its);
+  if (options_.l_method == "gmres")
   {
-    KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl_);
-    KSPGMRESSetBreakdownTolerance(ksp, options_.l_gmres_breakdown_tol_);
+    KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl);
+    KSPGMRESSetBreakdownTolerance(ksp, options_.l_gmres_breakdown_tol);
   }
   KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
 }
@@ -93,8 +93,8 @@ NonLinearSolver::Setup()
 
   SNESSetOptionsPrefix(nl_solver_, solver_name_.c_str());
 
-  SNESSetType(nl_solver_, options_.petsc_snes_type_.c_str());
-  if (options_.nl_method_ == "LINEAR")
+  SNESSetType(nl_solver_, options_.petsc_snes_type.c_str());
+  if (options_.nl_method == "LINEAR")
     SNESSetType(nl_solver_, SNESKSPONLY);
   SNESLineSearch linesearch;
   SNESGetLineSearch(nl_solver_, &linesearch);
@@ -102,7 +102,7 @@ NonLinearSolver::Setup()
 
   KSP ksp;
   SNESGetKSP(nl_solver_, &ksp);
-  KSPSetType(ksp, options_.l_method_.c_str());
+  KSPSetType(ksp, options_.l_method.c_str());
 
   KSPSetOptionsPrefix(ksp, solver_name_.c_str());
 

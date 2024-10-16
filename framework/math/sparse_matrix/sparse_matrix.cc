@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/sparse_matrix/math_sparse_matrix.h"
+#include "framework/math/sparse_matrix/sparse_matrix.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <iomanip>
@@ -13,20 +13,20 @@ namespace opensn
 SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
   : row_size_(num_rows), col_size_(num_cols)
 {
-  rowI_values_.resize(num_rows, std::vector<double>());
-  rowI_indices_.resize(num_rows, std::vector<size_t>());
+  rowI_values.resize(num_rows, std::vector<double>());
+  rowI_indices.resize(num_rows, std::vector<size_t>());
 }
 
 SparseMatrix::SparseMatrix(const SparseMatrix& matrix)
   : row_size_(matrix.NumRows()), col_size_(matrix.NumCols())
 {
-  rowI_values_.resize(row_size_, std::vector<double>());
-  rowI_indices_.resize(row_size_, std::vector<size_t>());
+  rowI_values.resize(row_size_, std::vector<double>());
+  rowI_indices.resize(row_size_, std::vector<size_t>());
 
-  for (size_t i = 0; i < matrix.rowI_values_.size(); i++)
+  for (size_t i = 0; i < matrix.rowI_values.size(); i++)
   {
-    rowI_values_[i] = (matrix.rowI_values_[i]);
-    rowI_indices_[i] = (matrix.rowI_indices_[i]);
+    rowI_values[i] = (matrix.rowI_values[i]);
+    rowI_indices[i] = (matrix.rowI_indices[i]);
   }
 }
 
@@ -43,18 +43,18 @@ SparseMatrix::Insert(size_t i, size_t j, double value)
     Exit(EXIT_FAILURE);
   }
 
-  auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
-  bool already_there = (relative_location != rowI_indices_[i].end());
+  auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
+  bool already_there = (relative_location != rowI_indices[i].end());
 
   if (already_there)
   {
-    size_t jr = relative_location - rowI_indices_[i].begin();
-    rowI_values_[i][jr] = value;
+    size_t jr = relative_location - rowI_indices[i].begin();
+    rowI_values[i][jr] = value;
   }
   else
   {
-    rowI_values_[i].push_back(value);
-    rowI_indices_[i].push_back(j);
+    rowI_values[i].push_back(value);
+    rowI_indices[i].push_back(j);
   }
 }
 
@@ -71,18 +71,18 @@ SparseMatrix::InsertAdd(size_t i, size_t j, double value)
     Exit(EXIT_FAILURE);
   }
 
-  auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
-  bool already_there = (relative_location != rowI_indices_[i].end());
+  auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
+  bool already_there = (relative_location != rowI_indices[i].end());
 
   if (already_there)
   {
-    size_t jr = relative_location - rowI_indices_[i].begin();
-    rowI_values_[i][jr] += value;
+    size_t jr = relative_location - rowI_indices[i].begin();
+    rowI_values[i][jr] += value;
   }
   else
   {
-    rowI_values_[i].push_back(value);
-    rowI_indices_[i].push_back(j);
+    rowI_values[i].push_back(value);
+    rowI_indices[i].push_back(j);
   }
 }
 
@@ -91,9 +91,9 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
 {
   CheckInitialized();
 
-  size_t num_rows = rowI_values_.size();
+  size_t num_rows = rowI_values.size();
   // Check size
-  if (diag.size() != rowI_values_.size())
+  if (diag.size() != rowI_values.size())
   {
     log.LogAllError() << "Incompatible matrix-vector size encountered "
                       << "in call to SparseMatrix::SetDiagonal.";
@@ -103,18 +103,18 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   // Assign values
   for (size_t i = 0; i < num_rows; i++)
   {
-    auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), i);
-    bool already_there = (relative_location != rowI_indices_[i].end());
+    auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), i);
+    bool already_there = (relative_location != rowI_indices[i].end());
 
     if (already_there)
     {
-      size_t jr = relative_location - rowI_indices_[i].begin();
-      rowI_values_[i][jr] = diag[i];
+      size_t jr = relative_location - rowI_indices[i].begin();
+      rowI_values[i][jr] = diag[i];
     }
     else
     {
-      rowI_values_[i].push_back(diag[i]);
-      rowI_indices_[i].push_back(i);
+      rowI_values[i].push_back(diag[i]);
+      rowI_indices[i].push_back(i);
     }
   } // for i
 }
@@ -123,7 +123,7 @@ double
 SparseMatrix::ValueIJ(size_t i, size_t j) const
 {
   double retval = 0.0;
-  if ((i < 0) or (i >= rowI_indices_.size()))
+  if ((i < 0) or (i >= rowI_indices.size()))
   {
     log.LogAllError() << "Index i out of bounds"
                       << " in call to SparseMatrix::ValueIJ"
@@ -131,14 +131,14 @@ SparseMatrix::ValueIJ(size_t i, size_t j) const
     Exit(EXIT_FAILURE);
   }
 
-  if (not rowI_indices_[i].empty())
+  if (not rowI_indices[i].empty())
   {
-    auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
-    bool non_zero = (relative_location != rowI_indices_[i].end());
+    auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
+    bool non_zero = (relative_location != rowI_indices[i].end());
     if (non_zero)
     {
-      size_t jr = relative_location - rowI_indices_[i].begin();
-      retval = rowI_values_[i][jr];
+      size_t jr = relative_location - rowI_indices[i].begin();
+      retval = rowI_values[i][jr];
     }
   }
   return retval;
@@ -147,10 +147,10 @@ SparseMatrix::ValueIJ(size_t i, size_t j) const
 void
 SparseMatrix::Compress()
 {
-  for (size_t i = 0; i < rowI_indices_.size(); ++i)
+  for (size_t i = 0; i < rowI_indices.size(); ++i)
   {
-    auto& indices = rowI_indices_[i];
-    auto& values = rowI_values_[i];
+    auto& indices = rowI_indices[i];
+    auto& values = rowI_values[i];
 
     // Copy row indexes and values into vector of pairs
     std::vector<std::pair<size_t, double>> target;
@@ -195,14 +195,13 @@ SparseMatrix::PrintStr() const
   {
     for (size_t j = 0; j < col_size_; j++)
     {
-      auto relative_location = std::find(rowI_indices_[i].begin(), rowI_indices_[i].end(), j);
-      bool non_zero = (relative_location != rowI_indices_[i].end());
+      auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
+      bool non_zero = (relative_location != rowI_indices[i].end());
 
       if (non_zero)
       {
-        size_t jr = relative_location - rowI_indices_[i].begin();
-        out << std::setprecision(2) << std::scientific << std::setw(9) << rowI_values_[i][jr]
-            << " ";
+        size_t jr = relative_location - rowI_indices[i].begin();
+        out << std::setprecision(2) << std::scientific << std::setw(9) << rowI_values[i][jr] << " ";
       }
       else
       {
@@ -218,7 +217,7 @@ SparseMatrix::PrintStr() const
 void
 SparseMatrix::CheckInitialized() const
 {
-  if (rowI_values_.empty())
+  if (rowI_values.empty())
   {
     log.LogAllError() << "Illegal call to unitialized SparseMatrix matrix.";
     Exit(EXIT_FAILURE);
@@ -245,7 +244,7 @@ SparseMatrix::begin()
   // Find first non-empty row
   size_t nerow = row_size_; // nerow = non-empty row
   for (size_t r = 0; r < row_size_; ++r)
-    if (not rowI_indices_[r].empty())
+    if (not rowI_indices[r].empty())
     {
       nerow = r;
       break;

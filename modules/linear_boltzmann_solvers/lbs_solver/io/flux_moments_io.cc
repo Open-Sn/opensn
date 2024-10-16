@@ -76,7 +76,7 @@ LBSSolverIO::WriteFluxMoments(
   // Write nodal positions
   for (const auto& cell : grid.local_cells)
   {
-    const uint64_t cell_global_id = cell.global_id_;
+    const uint64_t cell_global_id = cell.global_id;
     const uint64_t num_cell_nodes = discretization.GetCellNumNodes(cell);
 
     file.write((char*)&cell_global_id, sizeof(uint64_t));
@@ -97,7 +97,7 @@ LBSSolverIO::WriteFluxMoments(
       for (uint64_t m = 0; m < num_moments; ++m)
         for (uint64_t g = 0; g < num_groups; ++g)
         {
-          const uint64_t cell_global_id = cell.global_id_;
+          const uint64_t cell_global_id = cell.global_id;
           const uint64_t dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
           const double value = src[dof_map];
 

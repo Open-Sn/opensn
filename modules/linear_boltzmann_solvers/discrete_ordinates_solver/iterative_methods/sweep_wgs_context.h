@@ -13,11 +13,11 @@ namespace opensn
 
 struct SweepWGSContext : public WGSContext
 {
-  std::shared_ptr<SweepChunk> sweep_chunk_;
-  SweepScheduler sweep_scheduler_;
-  std::vector<double> sweep_times_;
+  std::shared_ptr<SweepChunk> sweep_chunk;
+  SweepScheduler sweep_scheduler;
+  std::vector<double> sweep_times;
 
-  DiscreteOrdinatesSolver& lbs_ss_solver_;
+  DiscreteOrdinatesSolver& lbs_ss_solver;
 
   SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                   LBSGroupset& groupset,

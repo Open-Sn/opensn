@@ -53,14 +53,14 @@ protected:
   virtual void MakeHarmonicIndices(unsigned int scattering_order, int dimension);
 
 public:
-  const AngularQuadratureType type_;
-  std::vector<QuadraturePointPhiTheta> abscissae_;
-  std::vector<double> weights_;
-  std::vector<Vector3> omegas_;
+  const AngularQuadratureType type;
+  std::vector<QuadraturePointPhiTheta> abscissae;
+  std::vector<double> weights;
+  std::vector<Vector3> omegas;
 
-  AngularQuadrature() : type_(AngularQuadratureType::Arbitrary) {}
+  AngularQuadrature() : type(AngularQuadratureType::Arbitrary) {}
 
-  explicit AngularQuadrature(AngularQuadratureType type) : type_(type) {}
+  explicit AngularQuadrature(AngularQuadratureType type) : type(type) {}
 
   virtual ~AngularQuadrature() = default;
 

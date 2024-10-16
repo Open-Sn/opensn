@@ -37,11 +37,11 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 
   for (auto& cell : vol_cont->local_cells)
   {
-    for (auto& face : cell.faces_)
+    for (auto& face : cell.faces)
     {
-      if (not face.has_neighbor_)
+      if (not face.has_neighbor)
       {
-        Vector3& n = face.normal_;
+        Vector3& n = face.normal;
 
         std::string boundary_name;
         if (n.Dot(ihat) < -0.999)
@@ -59,7 +59,7 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 
         uint64_t bndry_id = vol_cont->MakeBoundaryID(boundary_name);
 
-        face.neighbor_id_ = bndry_id;
+        face.neighbor_id = bndry_id;
 
         vol_cont->GetBoundaryIDMap()[bndry_id] = boundary_name;
       }

@@ -18,24 +18,24 @@ AngularQuadrature::OptimizeForPolarSymmetry(const double normalization)
   std::vector<double> new_weights;
   std::vector<Vector3> new_omegas;
 
-  const size_t num_dirs = omegas_.size();
+  const size_t num_dirs = omegas.size();
   double weight_sum = 0.0;
   for (size_t d = 0; d < num_dirs; ++d)
-    if (omegas_[d].z > 0.0)
+    if (omegas[d].z > 0.0)
     {
-      new_abscissae.emplace_back(abscissae_[d]);
-      new_weights.emplace_back(weights_[d]);
-      new_omegas.emplace_back(omegas_[d]);
-      weight_sum += weights_[d];
+      new_abscissae.emplace_back(abscissae[d]);
+      new_weights.emplace_back(weights[d]);
+      new_omegas.emplace_back(omegas[d]);
+      weight_sum += weights[d];
     }
 
   if (normalization > 0.0)
     for (double& w : new_weights)
       w *= normalization / weight_sum;
 
-  abscissae_ = std::move(new_abscissae);
-  weights_ = std::move(new_weights);
-  omegas_ = std::move(new_omegas);
+  abscissae = std::move(new_abscissae);
+  weights = std::move(new_weights);
+  omegas = std::move(new_omegas);
 }
 
 void
@@ -65,7 +65,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, 
   d2m_op_.clear();
   MakeHarmonicIndices(scattering_order, dimension);
 
-  const size_t num_angles = abscissae_.size();
+  const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
   for (const auto& ell_em : m_to_ell_em_map_)
@@ -75,9 +75,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order, 
 
     for (int n = 0; n < num_angles; n++)
     {
-      const auto& cur_angle = abscissae_[n];
+      const auto& cur_angle = abscissae[n];
       double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-      double w = weights_[n];
+      double w = weights[n];
       cur_mom.push_back(value * w);
     }
 
@@ -111,10 +111,10 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, 
   m2d_op_.clear();
   MakeHarmonicIndices(scattering_order, dimension);
 
-  const size_t num_angles = abscissae_.size();
+  const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
-  const auto normalization = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+  const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
   for (const auto& ell_em : m_to_ell_em_map_)
   {
@@ -123,7 +123,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, 
 
     for (int n = 0; n < num_angles; n++)
     {
-      const auto& cur_angle = abscissae_[n];
+      const auto& cur_angle = abscissae[n];
       double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
                      Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
       cur_mom.push_back(value);
@@ -208,10 +208,10 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
   {
     const auto abscissa = QuadraturePointPhiTheta(azimuthal[i], polar[i]);
 
-    abscissae_.push_back(abscissa);
+    abscissae.push_back(abscissa);
 
     const double weight = weights[i];
-    weights_.push_back(weight);
+    weights.push_back(weight);
     weight_sum += weight;
 
     if (verbose)
@@ -228,14 +228,14 @@ AngularQuadratureCustom::AngularQuadratureCustom(std::vector<double>& azimuthal,
   }
 
   // Create omega list
-  for (const auto& qpoint : abscissae_)
+  for (const auto& qpoint : abscissae)
   {
     Vector3 new_omega;
     new_omega.x = sin(qpoint.theta) * cos(qpoint.phi);
     new_omega.y = sin(qpoint.theta) * sin(qpoint.phi);
     new_omega.z = cos(qpoint.theta);
 
-    omegas_.push_back(new_omega);
+    omegas.push_back(new_omega);
   }
 
   if (verbose)

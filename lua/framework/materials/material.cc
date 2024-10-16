@@ -130,7 +130,7 @@ MatSetProperty(lua_State* L)
     if (op_type == static_cast<int>(OperationType::SINGLE_VALUE))
     {
       const auto value = LuaArg<double>(L, 4);
-      property->value_ = value;
+      property->Set(value);
       opensn::log.Log0Verbose1() << "Scalar value for material at index " << material_handle
                                  << " set to " << value;
     }
