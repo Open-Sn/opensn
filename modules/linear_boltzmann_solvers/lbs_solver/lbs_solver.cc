@@ -42,7 +42,7 @@ OpenSnRegisterSyntaxBlockInNamespace(lbs, OptionsBlock, LBSSolver::OptionsBlock)
 
 OpenSnRegisterSyntaxBlockInNamespace(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
-LBSSolver::LBSSolver(const std::string& text_name) : Solver(text_name)
+LBSSolver::LBSSolver(const std::string& name) : Solver(name)
 {
 }
 
@@ -870,7 +870,7 @@ LBSSolver::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << TextName() << "\n\n"
+    outstr << "\nInitializing LBS SteadyStateSolver with name: " << Name() << "\n\n"
            << "Scattering order    : " << options_.scattering_order << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
@@ -1252,7 +1252,7 @@ LBSSolver::InitializeParrays()
   for (size_t m = 0; m < num_moments_; ++m)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, groups_.size());
-    flux_moments_uk_man_.unknowns.back().text_name = "m" + std::to_string(m);
+    flux_moments_uk_man_.unknowns.back().name = "m" + std::to_string(m);
   }
 
   // Compute local # of dof
@@ -1454,15 +1454,15 @@ LBSSolver::InitializeFieldFunctions()
           prefix += "_";
       }
       if (options_.field_function_prefix_option == "solver_name")
-        prefix = TextName() + "_";
+        prefix = Name() + "_";
 
       char buff[100];
       snprintf(
         buff, 99, "%sphi_g%03d_m%02d", prefix.c_str(), static_cast<int>(g), static_cast<int>(m));
-      const std::string text_name = std::string(buff);
+      const std::string name = std::string(buff);
 
       auto group_ff = std::make_shared<FieldFunctionGridBased>(
-        text_name, discretization_, Unknown(UnknownType::SCALAR));
+        name, discretization_, Unknown(UnknownType::SCALAR));
 
       field_function_stack.push_back(group_ff);
       field_functions_.push_back(group_ff);
@@ -1482,7 +1482,7 @@ LBSSolver::InitializeFieldFunctions()
         prefix += "_";
     }
     if (options_.field_function_prefix_option == "solver_name")
-      prefix = TextName() + "_";
+      prefix = Name() + "_";
 
     auto power_ff = std::make_shared<FieldFunctionGridBased>(
       prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
@@ -1649,7 +1649,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_WGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,
@@ -1865,7 +1865,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(TextName() + "_TGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_TGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,

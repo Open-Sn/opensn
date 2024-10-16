@@ -34,8 +34,8 @@ public:
   const UnknownType type;
   const unsigned int num_components;
   const unsigned int map_begin;
-  std::string text_name;
-  std::vector<std::string> component_text_names;
+  std::string name;
+  std::vector<std::string> component_names;
   std::vector<int> num_off_block_connections;
 
 public:
@@ -47,13 +47,13 @@ public:
                                                        : num_components),
       map_begin(map_begin)
   {
-    component_text_names.resize(num_components, std::string());
+    component_names.resize(num_components, std::string());
     for (unsigned int c = 0; c < num_components; ++c)
     {
 
       char buffer[100];
       snprintf(buffer, 100, " %03d", c);
-      component_text_names[c] = buffer;
+      component_names[c] = buffer;
     }
     num_off_block_connections.resize(num_components, 0);
   }
@@ -146,19 +146,19 @@ public:
                  UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type(storage_type)
   {
-    size_t ukid = 0;
+    size_t uk_id = 0;
     for (const auto& uk : unknowns)
     {
       AddUnknown(uk.type, uk.num_components);
-      SetUnknownTextName(ukid, uk.text_name);
-      size_t compid = 0;
-      for (const auto& comp_text_name : uk.component_text_names)
+      SetUnknownName(uk_id, uk.name);
+      size_t comp_id = 0;
+      for (const auto& comp_name : uk.component_names)
       {
-        SetUnknownComponentTextName(ukid, compid, comp_text_name);
-        ++compid;
+        SetUnknownComponentName(uk_id, comp_id, comp_name);
+        ++comp_id;
       }
 
-      ++ukid;
+      ++uk_id;
     }
   }
 
@@ -187,7 +187,7 @@ public:
   unsigned int AddUnknown(UnknownType unk_type, unsigned int dimension = 0);
 
   /// Maps the unknown's component within the storage of a node.
-  unsigned int MapUnknown(unsigned int unknown_id, unsigned int component = 0) const;
+  unsigned int MapUnknown(int unknown_id, unsigned int component = 0) const;
 
   /// Determines the total number of components over all unknowns.
   unsigned int GetTotalUnknownStructureSize() const;
@@ -196,20 +196,19 @@ public:
    * Sets the number of off block connections for the given unknown. All the components will be set
    * to the same amount.
    */
-  void SetUnknownNumOffBlockConnections(unsigned int unknown_id, int num_conn);
+  void SetUnknownNumOffBlockConnections(int unknown_id, int num_conn);
 
   /// Sets the number of off block connections for the given unknown-component pair.
-  void SetUnknownComponentNumOffBlockConnections(unsigned int unknown_id,
-                                                 unsigned int component,
-                                                 int num_conn);
+  void
+  SetUnknownComponentNumOffBlockConnections(int unknown_id, unsigned int component, int num_conn);
 
-  /// Sets a text name for the indicated unknown
-  void SetUnknownTextName(unsigned int unknown_id, const std::string& text_name);
+  /// Sets a unk_name for the indicated unknown
+  void SetUnknownName(int unknown_id, const std::string& unk_name);
 
-  /// Sets the text name to be associated with each component of the unknown.
-  void SetUnknownComponentTextName(unsigned int unknown_id,
-                                   unsigned int component,
-                                   const std::string& text_name);
+  /// Sets the component_name to be associated with each component of the unknown.
+  void SetUnknownComponentName(int unknown_id,
+                               unsigned int component,
+                               const std::string& component_name);
 
   ~UnknownManager() = default;
 };

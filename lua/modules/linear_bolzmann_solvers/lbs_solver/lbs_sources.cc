@@ -65,7 +65,7 @@ AddVolumetricSource(lua_State* L)
   lbs_solver.AddVolumetricSource(std::move(
     opensn::GetStackItem<opensn::VolumetricSource>(object_stack, src_handle, __FUNCTION__)));
 
-  opensn::log.Log() << lbs_solver.TextName() << ": Added volumetric source.";
+  opensn::log.Log() << lbs_solver.Name() << ": Added volumetric source.";
   return LuaReturn(L);
 }
 
