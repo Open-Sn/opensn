@@ -193,7 +193,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   outstr.str(std::string());
   outstr << "A total of " << face_categories_list.size() << " bins were created:\n";
 
-  size_t bin_counter = -1;
+  int64_t bin_counter = -1;
   for (auto bins : face_categories_list)
   {
     outstr << "Bin " << ++bin_counter << ": " << bins.second << " faces with max face dofs "

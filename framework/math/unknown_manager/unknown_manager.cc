@@ -13,7 +13,7 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
   auto& log = Logger::GetInstance();
 
-  unsigned int last_unknown_end = -1;
+  int last_unknown_end = -1;
   if (not unknowns_.empty())
     last_unknown_end = unknowns_.back().GetMapEnd();
 

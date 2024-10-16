@@ -329,7 +329,10 @@ MultiGroupXS::ComputeDiffusionParameters()
 
     // Compute the diffusion coefficient
     // Cap the value for when sigma_t - sigma_1 is near zero
-    diffusion_coeff_[g] = std::fmin(1.0e12, 1.0 / 3.0 / (sigma_t_[g] - sigma_1));
+    if ((sigma_t_[g] - sigma_1) < 1.0e-12)
+      diffusion_coeff_[g] = 1.0e12;
+    else
+      diffusion_coeff_[g] = 1.0 / 3.0 / (sigma_t_[g] - sigma_1);
 
     // Determine within group scattering
     if (not S.empty())
