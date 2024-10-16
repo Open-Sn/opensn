@@ -588,6 +588,50 @@
     ]
   },
   {
+    "file": "transport_3d_6a_dist_mesh.lua",
+    "comment": "3D LinearBSolver test distributed mesh configuration A",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 1.131566e-01,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 7.340585e-04,
+        "abs_tol": 1.0e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6b_dist_mesh.lua",
+    "comment": "3D LinearBSolver test distributed mesh configuration B",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 1.131566e-01,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 7.340585e-04,
+        "abs_tol": 1.0e-9
+      }
+    ]
+  },
+  {
     "file": "reed_balance.lua",
     "comment": "1D LinearBSolver Reed problem with balance printout",
     "num_procs": 1,
