@@ -11,7 +11,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/linear_solver/linear_solver.h"
-#include "framework/physics/solver_base/solver.h"
+#include "framework/physics/solver.h"
 #include <petscksp.h>
 #include <chrono>
 
