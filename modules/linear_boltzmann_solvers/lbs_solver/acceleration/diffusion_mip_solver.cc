@@ -28,7 +28,7 @@ DiffusionMIPSolver::SetReferenceSolutionFunction(std::shared_ptr<ScalarSpatialFu
   ref_solution_function_ = function;
 }
 
-DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
+DiffusionMIPSolver::DiffusionMIPSolver(std::string name,
                                        const opensn::SpatialDiscretization& sdm,
                                        const UnknownManager& uk_man,
                                        std::map<uint64_t, BoundaryCondition> bcs,
@@ -36,7 +36,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string text_name,
                                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
                                        const bool suppress_bcs,
                                        const bool verbose)
-  : DiffusionSolver(std::move(text_name),
+  : DiffusionSolver(std::move(name),
                     sdm,
                     uk_man,
                     std::move(bcs),

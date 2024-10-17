@@ -38,21 +38,21 @@ Solver::GetInputParameters()
 }
 
 Solver::Solver(std::string name)
-  : timestepper_(InitTimeStepper(GetInputParameters())), text_name_(std::move(name))
+  : timestepper_(InitTimeStepper(GetInputParameters())), name_(std::move(name))
 {
 }
 
 Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
   : basic_options_(options),
     timestepper_(InitTimeStepper(GetInputParameters())),
-    text_name_(std::move(name))
+    name_(std::move(name))
 {
 }
 
 Solver::Solver(const InputParameters& params)
   : Object(params),
     timestepper_(InitTimeStepper(params)),
-    text_name_(params.GetParamValue<std::string>("name"))
+    name_(params.GetParamValue<std::string>("name"))
 {
 }
 
@@ -102,9 +102,9 @@ Solver::InitTimeStepper(const InputParameters& params)
 }
 
 std::string
-Solver::TextName() const
+Solver::Name() const
 {
-  return text_name_;
+  return name_;
 }
 
 BasicOptions&
@@ -148,25 +148,25 @@ Solver::GetFieldFunctions() const
 void
 Solver::Initialize()
 {
-  log.Log() << "\"Initialize()\" method not defined for " << TextName();
+  log.Log() << "\"Initialize()\" method not defined for " << Name();
 }
 
 void
 Solver::Execute()
 {
-  log.Log() << "\"Execute()\" method not defined for " << TextName();
+  log.Log() << "\"Execute()\" method not defined for " << Name();
 }
 
 void
 Solver::Step()
 {
-  log.Log() << "\"Step()\" method not defined for " << TextName();
+  log.Log() << "\"Step()\" method not defined for " << Name();
 }
 
 void
 Solver::Advance()
 {
-  log.Log() << "\"Advance()\" method not defined for " << TextName();
+  log.Log() << "\"Advance()\" method not defined for " << Name();
 }
 
 ParameterBlock

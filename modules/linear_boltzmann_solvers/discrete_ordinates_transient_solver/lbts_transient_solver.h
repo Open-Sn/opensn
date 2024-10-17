@@ -55,7 +55,7 @@ protected:
   std::vector<double> fission_rate_local_;
 
 public:
-  explicit DiscOrdTransientSolver(const std::string& in_text_name);
+  explicit DiscOrdTransientSolver(const std::string& name);
 
   void Initialize() override;
   void Execute() override;

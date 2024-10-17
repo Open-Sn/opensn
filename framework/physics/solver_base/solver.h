@@ -28,7 +28,7 @@ public:
   explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
 
-  std::string TextName() const;
+  std::string Name() const;
 
   BasicOptions& GetBasicOptions();
   const BasicOptions& GetBasicOptions() const;
@@ -78,8 +78,10 @@ protected:
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:
+  const std::string name_;
+
+private:
   static std::shared_ptr<TimeStepper> InitTimeStepper(const InputParameters& params);
-  const std::string text_name_;
 };
 
 } // namespace opensn

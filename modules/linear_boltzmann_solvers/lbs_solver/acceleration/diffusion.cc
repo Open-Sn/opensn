@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-DiffusionSolver::DiffusionSolver(std::string text_name,
+DiffusionSolver::DiffusionSolver(std::string name,
                                  const opensn::SpatialDiscretization& sdm,
                                  const UnknownManager& uk_man,
                                  std::map<uint64_t, BoundaryCondition> bcs,
@@ -20,7 +20,7 @@ DiffusionSolver::DiffusionSolver(std::string text_name,
                                  const bool suppress_bcs,
                                  const bool requires_ghosts,
                                  const bool verbose)
-  : text_name_(std::move(text_name)),
+  : name_(std::move(name)),
     grid_(sdm.Grid()),
     sdm_(sdm),
     uk_man_(uk_man),
@@ -46,9 +46,9 @@ DiffusionSolver::~DiffusionSolver()
 }
 
 std::string
-DiffusionSolver::TextName() const
+DiffusionSolver::Name() const
 {
-  return text_name_;
+  return name_;
 }
 
 const Vec&
@@ -107,10 +107,10 @@ void
 DiffusionSolver::Initialize()
 {
   if (options.verbose)
-    log.Log() << text_name_ << ": Initializing PETSc items";
+    log.Log() << name_ << ": Initializing PETSc items";
 
   if (options.verbose)
-    log.Log() << text_name_ << ": Global number of DOFs=" << num_global_dofs_;
+    log.Log() << name_ << ": Global number of DOFs=" << num_global_dofs_;
 
   opensn::mpi_comm.barrier();
   log.Log() << "Sparsity pattern";
@@ -143,7 +143,7 @@ DiffusionSolver::Initialize()
 
   // Create KSP
   KSPCreate(opensn::mpi_comm, &ksp_);
-  KSPSetOptionsPrefix(ksp_, text_name_.c_str());
+  KSPSetOptionsPrefix(ksp_, name_.c_str());
   KSPSetType(ksp_, KSPCG);
 
   KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters);
@@ -169,7 +169,7 @@ DiffusionSolver::Initialize()
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
   for (const auto& option : pc_options)
-    PetscOptionsInsertString(nullptr, ("-" + text_name_ + option).c_str());
+    PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str());
 
   PetscOptionsInsertString(nullptr, options.additional_options_string.c_str());
 

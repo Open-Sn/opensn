@@ -116,32 +116,32 @@ SolverSetBasicOption(lua_State* L)
     {
       case VaryingDataType::VOID:
       case VaryingDataType::ARBITRARY_BYTES:
-        throw std::logic_error("Solver:" + solver.TextName() + " option:" + option_name +
+        throw std::logic_error("Solver:" + solver.Name() + " option:" + option_name +
                                " is of invalid type."
                                " This indicates an implementation problem.");
       case VaryingDataType::STRING:
         LuaCheckArgs<int, std::string, std::string>(L, fname);
         option.SetStringValue(LuaArg<std::string>(L, 3));
-        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                          << " set to " << option.StringValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.Name() << " option:" << option_name << " set to "
+                          << option.StringValue() << ".";
         break;
       case VaryingDataType::BOOL:
         LuaCheckArgs<int, std::string, bool>(L, fname);
         option.SetBoolValue(LuaArg<bool>(L, 3));
-        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                          << " set to " << ((option.BoolValue()) ? "true" : "false") << ".";
+        opensn::log.Log() << "Solver:" << solver.Name() << " option:" << option_name << " set to "
+                          << ((option.BoolValue()) ? "true" : "false") << ".";
         break;
       case VaryingDataType::INTEGER:
         LuaCheckArgs<int, std::string, int>(L, fname);
         option.SetIntegerValue(LuaArg<int>(L, 3));
-        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                          << " set to " << option.IntegerValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.Name() << " option:" << option_name << " set to "
+                          << option.IntegerValue() << ".";
         break;
       case VaryingDataType::FLOAT:
         LuaCheckArgs<int, std::string, double>(L, fname);
         option.SetFloatValue(LuaArg<double>(L, 3));
-        opensn::log.Log() << "Solver:" << solver.TextName() << " option:" << option_name
-                          << " set to " << option.FloatValue() << ".";
+        opensn::log.Log() << "Solver:" << solver.Name() << " option:" << option_name << " set to "
+                          << option.FloatValue() << ".";
         break;
     }
   }
@@ -162,7 +162,7 @@ SolverGetName(lua_State* L)
 
   const auto solver_handle = LuaArg<int>(L, 1);
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
-  auto name = solver.TextName();
+  auto name = solver.Name();
   return LuaReturn(L, name);
 }
 
