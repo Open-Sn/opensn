@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/physics/basic_options/basic_options.h"
+#include "framework/data_types/basic_options.h"
 
 namespace opensn
 {
