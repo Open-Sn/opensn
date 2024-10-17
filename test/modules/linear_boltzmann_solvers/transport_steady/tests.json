@@ -803,5 +803,24 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "angular_io_1d.lua",
+    "comment": "1D AngularFlux IO Test",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Leakage-Diff1=",
+        "goldvalue": 0.000,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Leakage-Diff2=",
+        "goldvalue": 0.000,
+        "abs_tol": 0.0001
+      }
+    ]
   }
 ]
