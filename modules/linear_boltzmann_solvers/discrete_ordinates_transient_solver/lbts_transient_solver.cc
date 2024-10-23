@@ -13,10 +13,10 @@
 namespace lbs
 {
 
-DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string& in_text_name)
-  : DiscOrdKEigenvalueSolver(in_text_name)
+DiscOrdTransientSolver::DiscOrdTransientSolver(const std::string& name)
+  : DiscOrdKEigenvalueSolver(name)
 {
-  opensn::log.Log() << TextName() << " created.";
+  opensn::log.Log() << Name() << " created.";
 }
 
 DiscOrdTransientSolver::~DiscOrdTransientSolver()
@@ -26,7 +26,7 @@ DiscOrdTransientSolver::~DiscOrdTransientSolver()
 void
 DiscOrdTransientSolver::Initialize()
 {
-  opensn::log.Log() << "Initializing " << TextName() << ".";
+  opensn::log.Log() << "Initializing " << Name() << ".";
   options_.save_angular_flux = true;
   DiscOrdKEigenvalueSolver::Initialize();
   DiscOrdKEigenvalueSolver::Execute();
@@ -36,7 +36,7 @@ DiscOrdTransientSolver::Initialize()
     const double FR = ComputeFissionRate(phi_new_local_);
     char buff[200];
     snprintf(buff, 200, " Initial Fission Rate FR=%12.6g", FR);
-    opensn::log.Log() << TextName() << buff;
+    opensn::log.Log() << Name() << buff;
   }
 
   // Compute auxiliary vectors
@@ -54,7 +54,7 @@ DiscOrdTransientSolver::Initialize()
              " Beta=%.2f [pcm] reactivity=%.3f [$]",
              beta * 1e5,
              (1.0 - 1.0 / GetKeff()) / beta);
-    opensn::log.Log() << TextName() << buff;
+    opensn::log.Log() << Name() << buff;
   }
 
   // Initialize source func
@@ -68,7 +68,7 @@ DiscOrdTransientSolver::Initialize()
 void
 DiscOrdTransientSolver::Execute()
 {
-  opensn::log.Log() << "Executing " << TextName() << ".";
+  opensn::log.Log() << "Executing " << Name() << ".";
 
   const int max_num_steps = transient_options_.max_time_steps;
   const double max_time = transient_options_.t_final;
@@ -90,14 +90,14 @@ DiscOrdTransientSolver::Execute()
 
   UpdateFieldFunctions();
 
-  opensn::log.Log() << "Done Executing " << TextName() << ".";
+  opensn::log.Log() << "Done Executing " << Name() << ".";
 }
 
 void
 DiscOrdTransientSolver::Step()
 {
   if (transient_options_.verbosity_level >= 2)
-    opensn::log.Log() << TextName() << " Stepping with dt " << dt_;
+    opensn::log.Log() << Name() << " Stepping with dt " << dt_;
 
   phi_old_local_ = phi_prev_local_;
 
@@ -151,7 +151,7 @@ DiscOrdTransientSolver::Step()
   {
     char buff[200];
     snprintf(buff, 200, " dt=%.1e time=%10.4g FR=%12.6g", dt_, time_ + dt_, FR_new);
-    opensn::log.Log() << TextName() << buff;
+    opensn::log.Log() << Name() << buff;
   }
 
   UpdateFieldFunctions();

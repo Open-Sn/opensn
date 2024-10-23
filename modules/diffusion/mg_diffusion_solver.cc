@@ -266,7 +266,7 @@ void
 MGDiffusionSolver::Initialize()
 {
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << TextName()
+            << program_timer.GetTimeString() << " " << Name()
             << ": Initializing CFEM Multigroup Diffusion solver ";
 
   // Get grid
@@ -384,16 +384,16 @@ MGDiffusionSolver::Initialize()
     for (uint g = 0; g < num_groups_; ++g)
     {
       std::string solver_name;
-      if (not TextName().empty())
-        solver_name = TextName() + "-";
+      if (not Name().empty())
+        solver_name = Name() + "-";
 
       char buff[100];
       int dummy = snprintf(buff, 4, "%03d", g);
 
-      std::string text_name = solver_name + "Flux_g" + std::string(buff);
+      std::string name = solver_name + "Flux_g" + std::string(buff);
 
       auto initial_field_function =
-        std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+        std::make_shared<FieldFunctionGridBased>(name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
       field_functions_.push_back(initial_field_function);
       field_function_stack.push_back(initial_field_function);
@@ -909,7 +909,7 @@ MGDiffusionSolver::Execute()
   // Create Krylov Solver
   // setup KSP once for all
   petsc_solver_ = CreateCommonKrylovSolverSetup(A_.front(),
-                                                TextName(),
+                                                Name(),
                                                 KSPCG,
                                                 PCGAMG,
                                                 0.0,

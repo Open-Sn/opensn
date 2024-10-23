@@ -73,7 +73,7 @@ public:
   ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const;
 
 protected:
-  explicit DiscreteOrdinatesSolver(const std::string& text_name);
+  explicit DiscreteOrdinatesSolver(const std::string& name);
 
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;

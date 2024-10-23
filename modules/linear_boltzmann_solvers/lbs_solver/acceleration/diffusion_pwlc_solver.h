@@ -11,7 +11,7 @@ namespace opensn
 class DiffusionPWLCSolver : public DiffusionSolver
 {
 public:
-  DiffusionPWLCSolver(std::string text_name,
+  DiffusionPWLCSolver(std::string name,
                       const opensn::SpatialDiscretization& sdm,
                       const UnknownManager& uk_man,
                       std::map<uint64_t, BoundaryCondition> bcs,

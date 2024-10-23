@@ -86,13 +86,13 @@ DiffusionSolverBase::InitFieldFunctions()
   if (field_functions_.empty())
   {
     std::string solver_name;
-    if (not TextName().empty())
-      solver_name = TextName() + "-";
+    if (not Name().empty())
+      solver_name = Name() + "-";
 
-    std::string text_name = solver_name + "phi";
+    std::string name = solver_name + "phi";
 
     auto initial_field_function =
-      std::make_shared<FieldFunctionGridBased>(text_name, sdm_ptr_, Unknown(UnknownType::SCALAR));
+      std::make_shared<FieldFunctionGridBased>(name, sdm_ptr_, Unknown(UnknownType::SCALAR));
 
     field_functions_.push_back(initial_field_function);
     field_function_stack.push_back(initial_field_function);
