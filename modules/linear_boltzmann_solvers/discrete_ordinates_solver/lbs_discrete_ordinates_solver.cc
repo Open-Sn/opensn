@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_set/cbc_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah_spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_set/aah_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
@@ -935,8 +935,10 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   for (auto& groupset : groupsets_)
   {
     if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
+    {
       quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
         *grid_ptr_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
+    }
 
     if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)
       quadrature_allow_cycles_map_[groupset.quadrature] = groupset.allow_cycles;
@@ -944,65 +946,159 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 
   // Build sweep orderings
   quadrature_spds_map_.clear();
-  for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
+  if (sweep_type_ == "AAH")
   {
-    const auto& unique_so_groupings = info.first;
+    // Creating an AAH SPDS can be an expensive operation. We break it into 3 phases to that we can
+    // distribute the work via MPI:
+    // 1) Initialize AAH SPDS for a specific angle
+    // 2) Generate the feedback arc set (FAS) for the global sweep graph
+    // 3) Build the global sweep task dependency graph (TDG)
 
-    for (const auto& so_grouping : unique_so_groupings)
+    // Initalize SPDS. All ranks initialize a SPDS for each angleset.
+    for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
     {
-      if (so_grouping.empty())
-        continue;
+      int id = 0;
+      const auto& unique_so_groupings = info.first;
+      for (const auto& so_grouping : unique_so_groupings)
+      {
+        if (so_grouping.empty())
+          continue;
 
-      const size_t master_dir_id = so_grouping.front();
-      const auto& omega = quadrature->omegas[master_dir_id];
+        const size_t master_dir_id = so_grouping.front();
+        const auto& omega = quadrature->omegas[master_dir_id];
+        const auto new_swp_order = std::make_shared<AAH_SPDS>(
+          id, omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
+        quadrature_spds_map_[quadrature].push_back(new_swp_order);
+        ++id;
+      }
+    }
 
-      bool verbose = false;
-      if (not verbose_sweep_angles_.empty())
-        for (const size_t dir_id : verbose_sweep_angles_)
-          if (VectorListHas(so_grouping, dir_id))
+    // Generate the global sweep FAS for each SPDS. This is an expensive operation. It is
+    // distributed via MPI so that multiple MPI ranks can compute the FAS for one or more SPDS
+    // independently.
+    for (const auto& quadrature : quadrature_spds_map_)
+    {
+      for (const auto& spds : quadrature.second)
+      {
+        auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
+        auto id = aah_spds->GetId();
+        if (opensn::mpi_comm.rank() == (id % opensn::mpi_comm.size()))
+          aah_spds->BuildGlobalSweepFAS();
+      }
+    }
+
+    // Communicate edges to be removed for each SPDS to all ranks.
+    std::vector<int> local_edges_to_remove;
+    for (const auto& quadrature : quadrature_spds_map_)
+    {
+      for (const auto& spds : quadrature.second)
+      {
+        auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
+        auto id = aah_spds->GetId();
+        if ((id % opensn::mpi_comm.size()) == opensn::mpi_comm.rank())
+        {
+          auto edges_to_remove = aah_spds->GetGlobalSweepFAS();
+          local_edges_to_remove.push_back(id);
+          local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
+          local_edges_to_remove.insert(
+            local_edges_to_remove.end(), edges_to_remove.begin(), edges_to_remove.end());
+        }
+      }
+    }
+
+    int local_size = static_cast<int>(local_edges_to_remove.size());
+    std::vector<int> recvcounts(opensn::mpi_comm.size(), 0);
+    std::vector<int> displs(opensn::mpi_comm.size(), 0);
+    mpi_comm.all_gather(local_size, recvcounts);
+
+    int total_size = 0;
+    for (int i = 0; i < recvcounts.size(); ++i)
+    {
+      displs[i] = total_size;
+      total_size += recvcounts[i];
+    }
+
+    std::vector<int> global_edges_to_remove(total_size, 0);
+    mpi_comm.all_gather(local_edges_to_remove, global_edges_to_remove, recvcounts, displs);
+
+    // Unpack the gathered data and update SPDS on all ranks.
+    int offset = 0;
+    while (offset < global_edges_to_remove.size())
+    {
+      int spds_id = global_edges_to_remove[offset++];
+      int num_edges = global_edges_to_remove[offset++];
+      std::vector<int> edges;
+      for (int i = 0; i < num_edges; ++i)
+        edges.emplace_back(global_edges_to_remove[offset++]);
+
+      for (const auto& quadrature : quadrature_spds_map_)
+      {
+        for (const auto& spds : quadrature.second)
+        {
+          auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
+          if (aah_spds->GetId() == spds_id)
           {
-            verbose = true;
+            aah_spds->SetGlobalSweepFAS(edges);
             break;
           }
-
-      if (sweep_type_ == "AAH")
-      {
-        const auto new_swp_order = std::make_shared<SPDS_AdamsAdamsHawkins>(
-          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature], verbose);
-        quadrature_spds_map_[quadrature].push_back(new_swp_order);
+        }
       }
-      else if (sweep_type_ == "CBC")
-      {
-        const auto new_swp_order = std::make_shared<CBC_SPDS>(
-          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature], verbose);
-        quadrature_spds_map_[quadrature].push_back(new_swp_order);
-      }
-      else
-        OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     }
-  } // quadrature info-pack
+
+    // Build TDG for each SPDS on all ranks.
+    for (const auto& quadrature : quadrature_spds_map_)
+      for (const auto& spds : quadrature.second)
+        std::static_pointer_cast<AAH_SPDS>(spds)->BuildGlobalSweepTDG();
+  }
+  else if (sweep_type_ == "CBC")
+  {
+    // Build SPDS
+    for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
+    {
+      const auto& unique_so_groupings = info.first;
+      for (const auto& so_grouping : unique_so_groupings)
+      {
+        if (so_grouping.empty())
+          continue;
+
+        const size_t master_dir_id = so_grouping.front();
+        const auto& omega = quadrature->omegas[master_dir_id];
+        const auto new_swp_order = std::make_shared<CBC_SPDS>(
+          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
+        quadrature_spds_map_[quadrature].push_back(new_swp_order);
+      }
+    }
+  }
+  else
+    OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+
+  opensn::mpi_comm.barrier();
 
   // Build FLUDS templates
   quadrature_fluds_commondata_map_.clear();
-  for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
+  if (sweep_type_ == "AAH")
   {
-    for (const auto& spds : spds_list)
+    for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
     {
-      if (sweep_type_ == "AAH")
+      for (const auto& spds : spds_list)
       {
         quadrature_fluds_commondata_map_[quadrature].push_back(
           std::make_unique<AAH_FLUDSCommonData>(
             grid_nodal_mappings_, *spds, *grid_face_histogram_));
       }
-      else if (sweep_type_ == "CBC")
+    }
+  }
+  else if (sweep_type_ == "CBC")
+  {
+    for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
+    {
+      for (const auto& spds : spds_list)
       {
         quadrature_fluds_commondata_map_[quadrature].push_back(
           std::make_unique<CBC_FLUDSCommonData>(*spds, grid_nodal_mappings_));
       }
-      else
-        OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     }
-  } // for quadrature spds-list pair
+  }
 
   log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
 }

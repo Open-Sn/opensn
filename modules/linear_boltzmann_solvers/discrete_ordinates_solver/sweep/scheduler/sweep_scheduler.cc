@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/scheduler/sweep_scheduler.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/spds_adams_adams_hawkins.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah_spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -68,7 +68,7 @@ SweepScheduler::InitializeAlgoDOG()
     for (size_t as = 0; as < num_anglesets; ++as)
     {
       auto angleset = angleset_group.AngleSets()[as];
-      const auto& spds = dynamic_cast<const SPDS_AdamsAdamsHawkins&>(angleset->GetSPDS());
+      const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
 
       const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
 

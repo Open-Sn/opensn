@@ -5,7 +5,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/graphs/directed_graph.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -1202,87 +1201,6 @@ SurfaceMesh::ExportToPolyFile(const char* fileName)
 
   fclose(outputFile);
   printf("Exported mesh to %s\n", fileName);
-}
-
-void
-SurfaceMesh::CheckCyclicDependencies(int num_angles)
-{
-  double tolerance = 1.0e-8;
-  double dvarphi = 2.0 * M_PI / num_angles;
-  Vector3 khat(0.0, 0.0, 1.0);
-
-  // Loop over angles
-  for (int a = 0; a < num_angles; ++a)
-  {
-    double varphi = 0.5 * dvarphi + a * dvarphi;
-
-    Vector3 omega;
-    omega.x = cos(varphi);
-    omega.y = sin(varphi);
-    omega.z = 0.0;
-
-    // Add all polyfaces to graph
-    DirectedGraph G;
-    size_t num_loc_cells = poly_faces_.size();
-    for (size_t c = 0; c < num_loc_cells; ++c)
-      G.AddVertex();
-
-    // Now construct dependencies
-    for (size_t c = 0; c < num_loc_cells; ++c)
-    {
-      auto face = poly_faces_[c];
-
-      size_t num_edges = face->edges.size();
-      for (size_t e = 0; e < num_edges; ++e)
-      {
-        int v0i = face->edges[e][0];
-        int v1i = face->edges[e][1];
-
-        Vector3 v01 = vertices_[v1i] - vertices_[v0i];
-        Vector3 n = v01.Cross(khat);
-        n = n / n.Norm();
-
-        double mu = omega.Dot(n);
-        int neighbor = face->edges[e][2];
-        if ((mu > (0.0 + tolerance)) and (neighbor >= 0))
-        {
-          G.AddEdge(c, neighbor);
-        } // if outgoing
-      }   // for edge
-    }     // for cell
-
-    // Generic topological sorting
-    //    using gVertex = boost::graph_traits<CHI_D_GRAPH>::vertex_descriptor;
-    //
-    //    boost::property_map<CHI_D_GRAPH, boost::vertex_index_t>::type
-    //      index_map = get(boost::vertex_index, G);
-    //
-    //    std::vector<gVertex> sorted_list;
-    //    try{
-    //      boost::topological_sort(G,std::back_inserter(sorted_list));
-    //    }
-    //    catch (const boost::bad_graph& exc)
-    //    {
-    //      log.LogAllError()
-    //        << "Function CheckCyclicDependencies. Detected cyclic depency.";
-    //     Exit(EXIT_FAILURE);
-    //    }
-
-    auto topological_order = G.GenerateTopologicalSort();
-    if (topological_order.empty())
-    {
-      log.LogAllError() << "Function CheckCyclicDependencies. Detected cyclic depency.";
-      Exit(EXIT_FAILURE);
-    }
-
-    // Cleanup
-    G.Clear();
-  } // for angles
-
-  GetMeshStats();
-
-  log.Log() << "Cyclic dependency check complete. No cycles or "
-            << "bad mesh elements were detected";
 }
 
 void

@@ -150,7 +150,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
         // Check if part of cyclic dependency
         bool is_cyclic = false;
-        for (auto cyclic_dependency : spds.GetLocalCyclicDependencies())
+        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
@@ -230,7 +230,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       // Check if part of cyclic dependency
       if (face.IsNeighborLocal(grid))
       {
-        for (auto cyclic_dependency : spds.GetLocalCyclicDependencies())
+        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
