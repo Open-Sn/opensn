@@ -32,7 +32,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::InitializeAlphaElements");
 
   const MeshContinuum& grid = spds.Grid();
-  const SPLS& spls = spds.GetSPLS();
+  const SPLS& spls = spds.LocalSubgrid();
 
   // Initialize face categorization
   num_face_categories_ = grid_face_histogram.NumberOfFaceHistogramBins();
@@ -43,7 +43,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   local_psi_Gn_block_strideG_.resize(num_face_categories_, 0);
 
   // Initialize dependent locations
-  size_t num_of_deplocs = spds.GetLocationSuccessors().size();
+  size_t num_of_deplocs = spds.LocationSuccessors().size();
   deplocI_face_dof_count_.resize(num_of_deplocs, 0);
   deplocI_cell_views_.resize(num_of_deplocs);
 
@@ -150,7 +150,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 
         // Check if part of cyclic dependency
         bool is_cyclic = false;
-        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
+        for (auto cyclic_dependency : spds.LocalSweepFAS())
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
@@ -230,7 +230,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       // Check if part of cyclic dependency
       if (face.IsNeighborLocal(grid))
       {
-        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
+        for (auto cyclic_dependency : spds.LocalSweepFAS())
         {
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
@@ -405,7 +405,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::InitializeBetaElements");
 
   const MeshContinuum& grid = spds.Grid();
-  const SPLS& spls = spds.GetSPLS();
+  const SPLS& spls = spds.LocalSubgrid();
 
   //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   // The first two major steps here are: Send delayed successor information
@@ -415,8 +415,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   // information, the information might not have been sent yet.
 
   // Send delayed successor information
-  const auto& location_successors = spds.GetLocationSuccessors();
-  const auto& delayed_location_successors = spds.GetDelayedLocationSuccessors();
+  const auto& location_successors = spds.LocationSuccessors();
+  const auto& delayed_location_successors = spds.DelayedLocationSuccessors();
   std::vector<mpi::Request> send_requests;
   send_requests.resize(location_successors.size());
   std::vector<std::vector<int>> multi_face_indices(location_successors.size(), std::vector<int>());
@@ -442,7 +442,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   }
 
   // Receive delayed predecessor information
-  const auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
+  const auto& delayed_location_dependencies = spds.DelayedLocationDependencies();
   delayed_prelocI_cell_views_.resize(delayed_location_dependencies.size(),
                                      std::vector<CompactCellView>());
   delayed_prelocI_face_dof_count_.resize(delayed_location_dependencies.size(), 0);
@@ -465,7 +465,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   // follows the TDG.
 
   // Receive predecessor information
-  const auto& location_dependencies = spds.GetLocationDependencies();
+  const auto& location_dependencies = spds.LocationDependencies();
   prelocI_cell_views_.resize(location_dependencies.size(), std::vector<CompactCellView>());
   prelocI_face_dof_count_.resize(location_dependencies.size(), 0);
   for (int prelocI = 0; prelocI < location_dependencies.size(); ++prelocI)

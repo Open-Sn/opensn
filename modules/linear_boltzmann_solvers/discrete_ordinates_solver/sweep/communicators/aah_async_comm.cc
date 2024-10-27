@@ -88,7 +88,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   };
 
   // Predecessor locations
-  const size_t num_dependencies = spds.GetLocationDependencies().size();
+  const size_t num_dependencies = spds.LocationDependencies().size();
   preloc_msg_data_.resize(num_dependencies);
   preloc_msg_received_.resize(num_dependencies);
 
@@ -96,8 +96,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   {
     size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
-    const auto source =
-      comm_set_.MapIonJ(spds.GetLocationDependencies()[i], opensn::mpi_comm.rank());
+    const auto source = comm_set_.MapIonJ(spds.LocationDependencies()[i], opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
     preloc_msg_data_[i].reserve(message_count);
@@ -117,7 +116,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   }
 
   // Delayed predecessor locations
-  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  const size_t num_delayed_dependencies = spds.DelayedLocationDependencies().size();
   delayed_preloc_msg_data_.resize(num_delayed_dependencies);
   delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
@@ -126,7 +125,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
     const auto source =
-      comm_set_.MapIonJ(spds.GetDelayedLocationDependencies()[i], opensn::mpi_comm.rank());
+      comm_set_.MapIonJ(spds.DelayedLocationDependencies()[i], opensn::mpi_comm.rank());
 
     size_t pre_block_pos = 0;
     delayed_preloc_msg_data_[i].reserve(message_count);
@@ -148,7 +147,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   }
 
   // Successor locations
-  const auto& location_successors = spds.GetLocationSuccessors();
+  const auto& location_successors = spds.LocationSuccessors();
   const size_t num_successors = location_successors.size();
   size_t total_deploc_messages = 0;
   deploc_msg_data_.resize(num_successors);
@@ -183,7 +182,7 @@ void
 AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 {
   const auto& spds = fluds_.GetSPDS();
-  const auto num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  const auto num_delayed_dependencies = spds.DelayedLocationDependencies().size();
   fluds_.AllocateDelayedPrelocIOutgoingPsi(num_groups_, num_angles_, num_delayed_dependencies);
   fluds_.AllocateDelayedLocalPsi(num_groups_, num_angles_);
 }
@@ -195,7 +194,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  const size_t num_delayed_dependencies = spds.DelayedLocationDependencies().size();
 
   bool all_messages_received = true;
   for (size_t i = 0; i < num_delayed_dependencies; ++i)
@@ -232,7 +231,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-  const size_t num_dependencies = spds.GetLocationDependencies().size();
+  const size_t num_dependencies = spds.LocationDependencies().size();
 
   // Resize FLUDS non-local incoming data
   if (not upstream_data_initialized_)
@@ -275,7 +274,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
   CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::SendDownstreamPsi");
 
   const auto& spds = fluds_.GetSPDS();
-  const auto& location_successors = spds.GetLocationSuccessors();
+  const auto& location_successors = spds.LocationSuccessors();
   const size_t num_successors = location_successors.size();
 
   for (size_t i = 0, req = 0; i < num_successors; ++i)
@@ -303,7 +302,7 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     fluds_.AllocateInternalLocalPsi(num_groups_, num_angles_);
 
     // Resize FLUDS non-local outgoing data
-    fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.GetLocationSuccessors().size());
+    fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.LocationSuccessors().size());
 
     data_initialized_ = true;
   }

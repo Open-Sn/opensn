@@ -217,8 +217,10 @@ def InstallBoostPackage(pkg: str,
 
         package_log_file = open(package_log_filename, "w")
 
-        print(f"Installing {pkg.upper()} {ver} headers in \"{pkg_install_dir}/include/boost\"", flush=True)
-        log_file.write(f"Installing {pkg.upper()} {ver} headers to \"{pkg_install_dir}/include/boost\"")
+        print(f"Installing {pkg.upper()} {ver} headers in \"{pkg_install_dir}/include/boost\"",
+              flush=True)
+        log_file.write(f"Installing {pkg.upper()} {ver} headers to\
+                       \"{pkg_install_dir}/include/boost\"")
         log_file.write(f" See {package_log_filename}\n")
         log_file.flush()
 

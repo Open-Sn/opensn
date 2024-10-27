@@ -22,10 +22,10 @@ public:
   AAH_SPDS(int id, const Vector3& omega, const MeshContinuum& grid, bool allow_cycles);
 
   /// Returns the id of this SPDS.
-  int GetId() { return id_; }
+  int Id() { return id_; }
 
-  /// Return the levelize sweep global sweep TDG.
-  const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }
+  /// Return the levelized global sweep TDG.
+  const std::vector<STDG>& GlobalSweepPlanes() const { return global_sweep_planes_; }
 
   /// Builds the Feedback Arc Set (FAS) for the global sweep.
   void BuildGlobalSweepFAS();
@@ -34,7 +34,7 @@ public:
   void BuildGlobalSweepTDG();
 
   /// Returns the global sweep FAS as a vector of edges.
-  std::vector<int> GetGlobalSweepFAS() { return global_sweep_fas_; }
+  std::vector<int> GlobalSweepFAS() { return global_sweep_fas_; }
 
   /**
    * Sets the global sweep FAS.

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah_spds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -37,7 +37,7 @@ AAH_SPDS::AAH_SPDS(int id, const Vector3& omega, const MeshContinuum& grid, bool
   // Create local cell graph
   Graph local_cell_graph(num_loc_cells);
 
-  for (int c = 0; c < num_loc_cells; ++c)
+  for (auto c = 0; c < num_loc_cells; ++c)
     for (auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_cell_graph);
 
@@ -78,7 +78,8 @@ AAH_SPDS::BuildGlobalSweepFAS()
     for (int dep : global_dependencies_[loc])
       boost::add_edge(dep, loc, 1.0, global_tdg);
 
-  // Remove cycles
+  // Remove cycles and generate the feedback arc set (FAS). The FAS is the list of edges that must
+  // be removed from the graph to make it acyclic.
   if (allow_cycles_)
   {
     auto edges_to_remove = RemoveCyclicDependencies(global_tdg);

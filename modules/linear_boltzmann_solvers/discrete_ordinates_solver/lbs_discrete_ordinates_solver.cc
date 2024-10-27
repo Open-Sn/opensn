@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/cbc_spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_set/cbc_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah_spds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/spds/aah.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_set/aah_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
@@ -948,13 +948,16 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
   quadrature_spds_map_.clear();
   if (sweep_type_ == "AAH")
   {
-    // Creating an AAH SPDS can be an expensive operation. We break it into 3 phases to that we can
-    // distribute the work via MPI:
-    // 1) Initialize AAH SPDS for a specific angle
-    // 2) Generate the feedback arc set (FAS) for the global sweep graph
-    // 3) Build the global sweep task dependency graph (TDG)
+    // Creating an AAH SPDS can be an expensive operation. We break it up into multiple phases so
+    // so that we can distribute the work across MPI ranks:
+    // 1) Initialize the SPDS for each angleset. This is done by all ranks.
+    // 2) For each SPDS, generate the feedback arc set (FAS) for the global sweep graph. Angelsets
+    //    are distributed as evenly as possible across MPI ranks.
+    // 3) Gather the FAS for each SPDS on all ranks.
+    // 4) Build the global sweep task dependency graph (TDG) for each SPDS.
 
     // Initalize SPDS. All ranks initialize a SPDS for each angleset.
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Initializing AAH SPDS.";
     for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
     {
       int id = 0;
@@ -976,28 +979,30 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     // Generate the global sweep FAS for each SPDS. This is an expensive operation. It is
     // distributed via MPI so that multiple MPI ranks can compute the FAS for one or more SPDS
     // independently.
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep FAS for each SPDS.";
     for (const auto& quadrature : quadrature_spds_map_)
     {
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->GetId();
+        auto id = aah_spds->Id();
         if (opensn::mpi_comm.rank() == (id % opensn::mpi_comm.size()))
           aah_spds->BuildGlobalSweepFAS();
       }
     }
 
-    // Communicate edges to be removed for each SPDS to all ranks.
+    // Communicate the FAS for each SPDS to all ranks.
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Gather FAS for each SPDS.";
     std::vector<int> local_edges_to_remove;
     for (const auto& quadrature : quadrature_spds_map_)
     {
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->GetId();
+        auto id = aah_spds->Id();
         if ((id % opensn::mpi_comm.size()) == opensn::mpi_comm.rank())
         {
-          auto edges_to_remove = aah_spds->GetGlobalSweepFAS();
+          auto edges_to_remove = aah_spds->GlobalSweepFAS();
           local_edges_to_remove.push_back(id);
           local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
           local_edges_to_remove.insert(
@@ -1007,19 +1012,20 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
 
     int local_size = static_cast<int>(local_edges_to_remove.size());
-    std::vector<int> recvcounts(opensn::mpi_comm.size(), 0);
-    std::vector<int> displs(opensn::mpi_comm.size(), 0);
-    mpi_comm.all_gather(local_size, recvcounts);
+    std::vector<int> receive_counts(opensn::mpi_comm.size(), 0);
+    std::vector<int> displacements(opensn::mpi_comm.size(), 0);
+    mpi_comm.all_gather(local_size, receive_counts);
 
     int total_size = 0;
-    for (int i = 0; i < recvcounts.size(); ++i)
+    for (auto i = 0; i < receive_counts.size(); ++i)
     {
-      displs[i] = total_size;
-      total_size += recvcounts[i];
+      displacements[i] = total_size;
+      total_size += receive_counts[i];
     }
 
     std::vector<int> global_edges_to_remove(total_size, 0);
-    mpi_comm.all_gather(local_edges_to_remove, global_edges_to_remove, recvcounts, displs);
+    mpi_comm.all_gather(
+      local_edges_to_remove, global_edges_to_remove, receive_counts, displacements);
 
     // Unpack the gathered data and update SPDS on all ranks.
     int offset = 0;
@@ -1028,7 +1034,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       int spds_id = global_edges_to_remove[offset++];
       int num_edges = global_edges_to_remove[offset++];
       std::vector<int> edges;
-      for (int i = 0; i < num_edges; ++i)
+      for (auto i = 0; i < num_edges; ++i)
         edges.emplace_back(global_edges_to_remove[offset++]);
 
       for (const auto& quadrature : quadrature_spds_map_)
@@ -1036,7 +1042,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         for (const auto& spds : quadrature.second)
         {
           auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-          if (aah_spds->GetId() == spds_id)
+          if (aah_spds->Id() == spds_id)
           {
             aah_spds->SetGlobalSweepFAS(edges);
             break;
@@ -1046,9 +1052,27 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
 
     // Build TDG for each SPDS on all ranks.
+    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep TDGs.";
     for (const auto& quadrature : quadrature_spds_map_)
       for (const auto& spds : quadrature.second)
         std::static_pointer_cast<AAH_SPDS>(spds)->BuildGlobalSweepTDG();
+
+    // Print ghosted sweep graph if requested
+    if (not verbose_sweep_angles_.empty())
+    {
+      for (const auto& quadrature : quadrature_spds_map_)
+      {
+        for (const auto& spds : quadrature.second)
+        {
+          for (const size_t dir_id : verbose_sweep_angles_)
+          {
+            auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
+            if (aah_spds->Id() == dir_id)
+              aah_spds->PrintGhostedGraph();
+          }
+        }
+      }
+    }
   }
   else if (sweep_type_ == "CBC")
   {
@@ -1070,7 +1094,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
   }
   else
-    OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+    OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type_ + "\"");
 
   opensn::mpi_comm.barrier();
 

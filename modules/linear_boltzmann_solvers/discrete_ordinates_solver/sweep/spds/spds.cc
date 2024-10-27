@@ -138,7 +138,6 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
   return edges_to_remove;
 }
 
-// Find bi-, tri-, and n-connected SCCs using Tarjan's algorithm
 void
 SPDS::SCCAlgorithm(Vertex u,
                    Graph& g,
@@ -453,7 +452,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 }
 
 void
-SPDS::PrintedGhostedGraph() const
+SPDS::PrintGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 

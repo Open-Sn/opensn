@@ -37,32 +37,29 @@ public:
   /// Return a reference to the MeshContinuum object.
   const MeshContinuum& Grid() const { return grid_; }
 
-  /// Return a referece to the direction vector.
+  /// Return a reference to the direction vector.
   const Vector3& Omega() const { return omega_; }
 
-  /// Return a reference to the associate sweep-plane local subset (SPLS).
-  const SPLS& GetSPLS() const { return spls_; }
+  /// Return a reference to the associated sweep-plane local subset (SPLS).
+  const SPLS& LocalSubgrid() const { return spls_; }
 
   /// Returns the location dependencies for this SPDS.
-  const std::vector<int>& GetLocationDependencies() const { return location_dependencies_; }
+  const std::vector<int>& LocationDependencies() const { return location_dependencies_; }
 
   /// Returns the location successors for this SPDS.
-  const std::vector<int>& GetLocationSuccessors() const { return location_successors_; }
+  const std::vector<int>& LocationSuccessors() const { return location_successors_; }
 
   /// Returns the delayed location dependencies for this SPDS.
-  const std::vector<int>& GetDelayedLocationDependencies() const
+  const std::vector<int>& DelayedLocationDependencies() const
   {
     return delayed_location_dependencies_;
   }
 
   /// Returns the delayed location successors for this SPDS.
-  const std::vector<int>& GetDelayedLocationSuccessors() const
-  {
-    return delayed_location_successors_;
-  }
+  const std::vector<int>& DelayedLocationSuccessors() const { return delayed_location_successors_; }
 
   /// Returns the feedback arc set (FAS) for the local cell sweep graph.
-  const std::vector<std::pair<int, int>>& GetLocalSweepFAS() const { return local_sweep_fas_; }
+  const std::vector<std::pair<int, int>>& LocalSweepFAS() const { return local_sweep_fas_; }
 
   /// Return the cell face orientations for this SPDS.
   const std::vector<std::vector<FaceOrientation>>& CellFaceOrientations() const
@@ -84,6 +81,8 @@ public:
   /// Maps location J to a dependent location.
   int MapLocJToDeplocI(int locJ) const;
 
+  void PrintGhostedGraph() const;
+
   virtual ~SPDS() = default;
 
 protected:
@@ -100,9 +99,7 @@ protected:
                                  std::set<int>& location_successors,
                                  std::vector<std::set<std::pair<int, double>>>& cell_successors);
 
-  void PrintedGhostedGraph() const;
-
-  /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the give graph.
+  /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.
   std::vector<std::vector<Vertex>> FindSCCs(Graph& g);
 
   /**
@@ -127,11 +124,11 @@ protected:
                     std::vector<std::vector<Vertex>>& SCCs);
 
   /**
-   * @brief Finds an approximate minimum feedback arc set (FAS) to break cycles in the graph.
+   * Finds an approximate minimum feedback arc set (FAS) to break cycles in the graph.
    *
-   * @param g The graph being analyzed.
-   * @param scc_vertices Vertices within the current strongly connected component.
-   * @return Vector of pairs representing edges to remove to break cycles.
+   * \param g The graph being analyzed.
+   * \param scc_vertices Vertices within the current strongly connected component.
+   * \return Vector of pairs representing edges to remove to break cycles.
    */
   std::vector<std::pair<int, int>> FindApproxMinimumFAS(Graph& g,
                                                         std::vector<Vertex>& scc_vertices);
@@ -149,7 +146,7 @@ protected:
   std::vector<int> location_successors_;
   /// Delayed location dependencies.
   std::vector<int> delayed_location_dependencies_;
-  /// Delayed locaton successors.
+  /// Delayed location successors.
   std::vector<int> delayed_location_successors_;
   /// Vector of edges representing the FAS used to break cycles in the local cell sweep graph.
   std::vector<std::pair<int, int>> local_sweep_fas_;

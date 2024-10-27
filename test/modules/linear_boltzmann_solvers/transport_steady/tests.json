@@ -464,7 +464,7 @@
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    63",
+        "key": "WGS groups [63-167] Iteration    59",
         "wordnum": 9,
         "gold": "CONVERGED"
       },
@@ -472,14 +472,14 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    54",
         "wordnum": 8,
-        "gold": 7.92062e-07,
+        "gold": 7.24474e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    63",
+        "key": "WGS groups [63-167] Iteration    59",
         "wordnum": 8,
-        "gold": 8.1975e-07,
+        "gold": 8.17903e-07,
         "abs_tol": 1e-09
       }
     ]

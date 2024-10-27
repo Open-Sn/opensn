@@ -159,6 +159,9 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
   log.Log() << "\n" << outstr.str() << "\n\n";
 
   log.LogAllVerbose2() << opensn::mpi_comm.rank() << "Local cells=" << num_local_cells;
+
+  if (min_num_local_cells == 0)
+    throw std::runtime_error("Partitioning failed. At least one partition contains no cells.");
 }
 
 std::vector<int64_t>
