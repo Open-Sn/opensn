@@ -11,7 +11,7 @@ namespace opensn
 unsigned int
 UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
-  unsigned int last_unknown_end = -1;
+  int last_unknown_end = -1;
   if (not unknowns.empty())
     last_unknown_end = unknowns.back().GetMapEnd();
 
