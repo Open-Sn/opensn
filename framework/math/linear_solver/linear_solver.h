@@ -32,11 +32,7 @@ public:
     double gmres_breakdown_tolerance = 1.0e6;
   } tolerance_options;
 
-  LinearSolver(const std::string& iterative_method,
-               std::shared_ptr<LinearSolverContext> context_ptr);
-
-  LinearSolver(const std::string& solver_name,
-               const std::string& iterative_method,
+  LinearSolver(const std::string& petsc_iterative_method,
                std::shared_ptr<LinearSolverContext> context_ptr);
 
   virtual ~LinearSolver();
@@ -72,8 +68,6 @@ protected:
   virtual void SetRHS() = 0;
   virtual void PostSolveCallback();
 
-  const std::string solver_name_;
-  const std::string iterative_method_;
   std::shared_ptr<LinearSolverContext> context_ptr_ = nullptr;
   Mat A_ = nullptr;
   Vec b_ = nullptr;
@@ -83,6 +77,7 @@ protected:
   int64_t num_global_dofs_ = 0;
 
 private:
+  const std::string petsc_iterative_method_;
   bool system_set_ = false;
   bool suppress_kspsolve_ = false;
 };
