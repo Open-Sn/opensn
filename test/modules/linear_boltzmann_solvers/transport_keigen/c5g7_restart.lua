@@ -50,7 +50,7 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature_handle = pquad,
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_max_its = 5,
       l_abs_tol = 1.0e-10,
       angle_aggregation_type = "polar",

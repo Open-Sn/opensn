@@ -59,7 +59,7 @@ lbs_block = {
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature_handle = gl_quad,
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-9,
       l_max_its = 300,
       gmres_restart_interval = 30,

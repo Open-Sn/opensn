@@ -44,7 +44,7 @@ LBSGroupset::GetInputParameters()
 
   // Iterative method
   params.AddOptionalParameter("inner_linear_method",
-                              "krylov_richardson",
+                              "petsc_richardson",
                               "The iterative method to use for inner linear solves");
   params.AddOptionalParameter(
     "l_abs_tol", 1.0e-6, "Inner linear solver residual absolute tolerance");
@@ -84,7 +84,8 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
     "inner_linear_method",
-    AllowableRangeList::New({"classic_richardson", "krylov_richardson", "gmres", "bicgstab"}));
+    AllowableRangeList::New(
+      {"classic_richardson", "petsc_richardson", "petsc_gmres", "petsc_bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
