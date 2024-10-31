@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/solver_base/solver.h"
+#include "framework/physics/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh.h"
