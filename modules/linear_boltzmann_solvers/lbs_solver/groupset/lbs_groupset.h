@@ -4,12 +4,12 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/lbs_iterative_methods.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_group.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/math/linear_solver/linear_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/utils/utils.h"
 #include "framework/object.h"
@@ -36,7 +36,7 @@ public:
 
   std::vector<SubSetInfo> grp_subset_infos;
 
-  IterativeMethod iterative_method;
+  LinearSolver::IterativeMethod iterative_method;
   AngleAggregationType angleagg_method;
   double residual_tolerance;
   int max_iterations;

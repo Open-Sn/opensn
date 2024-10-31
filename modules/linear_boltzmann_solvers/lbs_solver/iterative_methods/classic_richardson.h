@@ -24,7 +24,7 @@ public:
    * Constructor.
    * \param gs_context_ptr Context Pointer to abstract context.
    */
-  explicit ClassicRichardson(std::shared_ptr<WGSContext> gs_context_ptr);
+  explicit ClassicRichardson(const std::shared_ptr<WGSContext>& gs_context_ptr);
 
   ~ClassicRichardson() override;
 
