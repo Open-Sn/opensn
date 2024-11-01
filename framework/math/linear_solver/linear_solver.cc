@@ -7,16 +7,9 @@
 namespace opensn
 {
 
-LinearSolver::LinearSolver(const std::string& iterative_method,
+LinearSolver::LinearSolver(const std::string& petsc_iterative_method,
                            std::shared_ptr<LinearSolverContext> context_ptr)
-  : solver_name_(iterative_method), iterative_method_(iterative_method), context_ptr_(context_ptr)
-{
-}
-
-LinearSolver::LinearSolver(const std::string& solver_name,
-                           const std::string& iterative_method,
-                           std::shared_ptr<LinearSolverContext> context_ptr)
-  : solver_name_(solver_name), iterative_method_(iterative_method), context_ptr_(context_ptr)
+  : context_ptr_(context_ptr), petsc_iterative_method_(petsc_iterative_method)
 {
 }
 
@@ -83,17 +76,11 @@ LinearSolver::Setup()
 
   KSPCreate(opensn::mpi_comm, &ksp_);
 
-  // In OpenSn the PETSc version of Richardson iteration is referred to as krylov_richardson to
-  // distinguish it from classic Richardson. At this point, we need to convert from
-  // krylov_richardson to the correct PETSc algorithm name.
-  if (iterative_method_ == "krylov_richardson")
-    KSPSetType(ksp_, "richardson");
-  else
-    KSPSetType(ksp_, iterative_method_.c_str());
+  KSPSetType(ksp_, petsc_iterative_method_.c_str());
 
   ApplyToleranceOptions();
 
-  if (iterative_method_ == "gmres")
+  if (petsc_iterative_method_ == "gmres")
   {
     KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval);
     KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance);
