@@ -90,7 +90,7 @@ FieldFunctionInterpolationPoint::Execute()
 }
 
 double
-FieldFunctionInterpolationPoint::GetPointValue() const
+FieldFunctionInterpolationPoint::PointValue() const
 {
   double global_point_value;
   mpi_comm.all_reduce(point_value_, global_point_value, mpi::op::sum<double>());

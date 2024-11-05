@@ -108,7 +108,7 @@ FFInterpolationSetProperty(lua_State* L)
   else if (property == FieldFunctionInterpolationProperty::PROBEPOINT)
   {
     auto& cur_ffi = dynamic_cast<FieldFunctionInterpolationPoint&>(*p_ffi);
-    cur_ffi.GetPointOfInterest() = LuaArg<Vector3>(L, 3);
+    cur_ffi.PointOfInterest() = LuaArg<Vector3>(L, 3);
   }
   else if (property == FieldFunctionInterpolationProperty::FIRSTPOINT)
   {

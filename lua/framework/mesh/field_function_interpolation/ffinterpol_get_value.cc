@@ -31,7 +31,7 @@ FFInterpolationGetValue(lua_State* L)
   if (p_ffi->Type() == FieldFunctionInterpolationType::POINT)
   {
     auto& cur_ffi_point = dynamic_cast<opensn::FieldFunctionInterpolationPoint&>(*p_ffi);
-    double value = cur_ffi_point.GetPointValue();
+    double value = cur_ffi_point.PointValue();
     return LuaReturn(L, value);
   }
   else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)

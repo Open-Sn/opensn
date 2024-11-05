@@ -29,13 +29,13 @@ public:
 
   virtual ~FieldFunctionInterpolationPoint() {}
 
-  Vector3& GetPointOfInterest() { return point_of_interest_; }
+  Vector3& PointOfInterest() { return point_of_interest_; }
 
   void Initialize() override;
 
   void Execute() override;
 
   /// Gets the value of the field function evaluation at the point.
-  double GetPointValue() const;
+  double PointValue() const;
 };
 } // namespace opensn
