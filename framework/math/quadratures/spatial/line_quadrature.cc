@@ -12,7 +12,7 @@ LineQuadrature::LineQuadrature(QuadratureOrder order) : SpatialQuadrature(order)
   auto glq = GaussLegendreQuadrature(order);
   qpoints = glq.qpoints;
   weights = glq.weights;
-  range_ = glq.GetRange();
+  range_ = glq.Range();
   SetRange({0, 1});
 }
 

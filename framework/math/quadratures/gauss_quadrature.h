@@ -36,9 +36,9 @@ public:
 
   static InputParameters GetInputParameters();
 
-  QuadratureOrder GetOrder() { return order_; }
+  QuadratureOrder Order() { return order_; }
 
-  const std::pair<double, double>& GetRange() const { return range_; }
+  const std::pair<double, double>& Range() const { return range_; }
 
   void SetRange(const std::pair<double, double>& range);
 };

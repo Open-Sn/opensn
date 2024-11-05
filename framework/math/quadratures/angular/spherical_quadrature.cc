@@ -49,8 +49,8 @@ SphericalQuadrature::Initialize(const GaussQuadrature& quad_polar, const bool ve
                                 "polar quadrature weights sum to zero.");
 
   // Defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
-      std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
+  if (std::abs(polar_quad.Range().first - polar_quad_span.first) > eps or
+      std::abs(polar_quad.Range().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
   // Abscissae sorted in ascending order

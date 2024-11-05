@@ -77,8 +77,8 @@ CylindricalQuadrature::Initialize(const GaussQuadrature& quad_polar,
                                 "polar quadrature weights sum to zero.");
 
   // Defined on range [-1;+1]
-  if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
-      std::abs(polar_quad.GetRange().second - polar_quad_span.second) > eps)
+  if (std::abs(polar_quad.Range().first - polar_quad_span.first) > eps or
+      std::abs(polar_quad.Range().second - polar_quad_span.second) > eps)
     polar_quad.SetRange(polar_quad_span);
 
   // Verifications on azimuthal quadrature
@@ -102,8 +102,8 @@ CylindricalQuadrature::Initialize(const GaussQuadrature& quad_polar,
                                   "azimuthal quadrature weights sum to zero.");
 
     // Defined on range [-1;+1]
-    if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps or
-        std::abs(azimu_quad.GetRange().second - azimu_quad_span.second) > eps)
+    if (std::abs(azimu_quad.Range().first - azimu_quad_span.first) > eps or
+        std::abs(azimu_quad.Range().second - azimu_quad_span.second) > eps)
       azimu_quad.SetRange(azimu_quad_span);
 
     // Abscissae sorted in ascending order
