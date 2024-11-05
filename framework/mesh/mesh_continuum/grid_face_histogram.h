@@ -28,7 +28,7 @@ public:
   size_t MapFaceHistogramBins(size_t num_face_verts) const;
 
   /// Finds the amount of vertices per face for the given bin.
-  size_t GetFaceHistogramBinDOFSize(size_t bin_number) const;
+  size_t FaceHistogramBinDOFSize(size_t bin_number) const;
 };
 
 } // namespace opensn

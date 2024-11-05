@@ -91,7 +91,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   for (size_t fc = 0; fc < num_face_categories_; ++fc)
   {
-    local_psi_stride_[fc] = grid_face_histogram.GetFaceHistogramBinDOFSize(fc);
+    local_psi_stride_[fc] = grid_face_histogram.FaceHistogramBinDOFSize(fc);
     local_psi_max_elements_[fc] = lock_boxes[fc].size();
     local_psi_n_block_stride_[fc] = local_psi_stride_[fc] * lock_boxes[fc].size();
     local_psi_Gn_block_strideG_[fc] = local_psi_n_block_stride_[fc] * /*G=*/1;
