@@ -80,9 +80,9 @@ PrintPostProcessors(const InputParameters& params)
     OpenSnInvalidArgument("The array is of type ARRAY<" + ParameterBlockTypeName(first_param_type) +
                           ">. Only ARRAY<STRING> or ARRAY<INTEGER> is allowed.");
 
-  auto& printer = PostProcessorPrinter::GetInstance();
+  auto& printer = PostProcessorPrinter::Instance();
 
-  const std::string output = printer.GetPrintedPostProcessors(pp_list);
+  const std::string output = printer.PrintedPostProcessors(pp_list);
   log.Log() << output;
 
   return ParameterBlock{};

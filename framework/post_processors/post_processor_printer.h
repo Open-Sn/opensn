@@ -37,7 +37,7 @@ enum class ScalarPPTableFormat : int
 class PostProcessorPrinter
 {
 public:
-  static PostProcessorPrinter& GetInstance();
+  static PostProcessorPrinter& Instance();
 
   PostProcessorPrinter(const PostProcessorPrinter&) = delete;
   PostProcessorPrinter operator=(const PostProcessorPrinter&) = delete;
@@ -61,7 +61,7 @@ public:
   void SetCSVFilename(const std::string& csv_filename);
 
   /// A manual means to print a post processor.
-  std::string GetPrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
+  std::string PrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const;
 
 private:
   PostProcessorPrinter();
@@ -94,11 +94,11 @@ private:
   static void PrintArbitraryPPsToCSV(std::ofstream& csvfile,
                                      const std::vector<const PostProcessor*>& pp_list);
 
-  static std::vector<const PostProcessor*> GetScalarPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> ScalarPostProcessorsList(const Event& event);
 
-  static std::vector<const PostProcessor*> GetVectorPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> VectorPostProcessorsList(const Event& event);
 
-  static std::vector<const PostProcessor*> GetArbitraryPostProcessorsList(const Event& event);
+  static std::vector<const PostProcessor*> ArbitraryPostProcessorsList(const Event& event);
 
   static std::vector<std::vector<std::string>>
   BuildPPHistoryMatrix(size_t timehistsize,

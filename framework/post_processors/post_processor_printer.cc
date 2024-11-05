@@ -16,7 +16,7 @@ namespace opensn
 {
 
 std::shared_ptr<PPPrinterSubscribeHelper> PostProcessorPrinter::helper_ptr_ =
-  std::make_shared<PPPrinterSubscribeHelper>(PostProcessorPrinter::GetInstance());
+  std::make_shared<PPPrinterSubscribeHelper>(PostProcessorPrinter::Instance());
 
 static char OpenSnJoinWords(unique_var_name_ppp_, __COUNTER__) =
   PostProcessorPrinter::SubscribeToSystemWideEventPublisher();
@@ -39,7 +39,7 @@ PostProcessorPrinter::PostProcessorPrinter()
 }
 
 PostProcessorPrinter&
-PostProcessorPrinter::GetInstance()
+PostProcessorPrinter::Instance()
 {
   static PostProcessorPrinter instance;
 
@@ -130,7 +130,7 @@ PostProcessorPrinter::ReceiveEventUpdate(const Event& event)
 void
 PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 {
-  const auto scalar_pps = GetScalarPostProcessorsList(event);
+  const auto scalar_pps = ScalarPostProcessorsList(event);
   {
     if (not print_scalar_time_history_)
       PrintPPsLatestValuesOnly("SCALAR", scalar_pps, event);
@@ -143,7 +143,7 @@ PostProcessorPrinter::PrintPostProcessors(const Event& event) const
       PrintPPsLatestValuesOnly("SCALAR", scalar_pps, event);
   }
 
-  const auto vector_pps = GetVectorPostProcessorsList(event);
+  const auto vector_pps = VectorPostProcessorsList(event);
   {
     if (not print_vector_time_history_)
       PrintPPsLatestValuesOnly("VECTOR", vector_pps, event);
@@ -161,8 +161,7 @@ PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 }
 
 std::string
-PostProcessorPrinter::GetPrintedPostProcessors(
-  const std::vector<const PostProcessor*>& pp_list) const
+PostProcessorPrinter::PrintedPostProcessors(const std::vector<const PostProcessor*>& pp_list) const
 {
   std::stringstream outstr;
 
@@ -490,9 +489,9 @@ PostProcessorPrinter::PrintPPsSubTimeHistory(
 void
 PostProcessorPrinter::PrintCSVFile(const Event& event) const
 {
-  const auto scalar_pps = GetScalarPostProcessorsList(event);
-  const auto vector_pps = GetVectorPostProcessorsList(event);
-  const auto arbitr_pps = GetArbitraryPostProcessorsList(event);
+  const auto scalar_pps = ScalarPostProcessorsList(event);
+  const auto vector_pps = VectorPostProcessorsList(event);
+  const auto arbitr_pps = ArbitraryPostProcessorsList(event);
 
   std::ofstream csvfile;
   csvfile.open(csv_filename_, std::ios::out);
@@ -599,7 +598,7 @@ PostProcessorPrinter::PrintArbitraryPPsToCSV(std::ofstream& csvfile,
 }
 
 std::vector<const PostProcessor*>
-PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
+PostProcessorPrinter::ScalarPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
   for (const auto& pp : postprocessor_stack)
@@ -618,7 +617,7 @@ PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
 }
 
 std::vector<const PostProcessor*>
-PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
+PostProcessorPrinter::VectorPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
   for (const auto& pp : postprocessor_stack)
@@ -637,7 +636,7 @@ PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
 }
 
 std::vector<const PostProcessor*>
-PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
+PostProcessorPrinter::ArbitraryPostProcessorsList(const Event& event)
 {
   std::vector<const PostProcessor*> scalar_pp_list;
   for (const auto& pp : postprocessor_stack)

@@ -104,7 +104,7 @@ GetSyntax_PPPrinterSetOptions()
 ParameterBlock
 PostProcessorPrinterSetOptions(const InputParameters& params)
 {
-  auto& printer = PostProcessorPrinter::GetInstance();
+  auto& printer = PostProcessorPrinter::Instance();
 
   const auto& set_params = params.ParametersAtAssignment().Param("arg0");
 
