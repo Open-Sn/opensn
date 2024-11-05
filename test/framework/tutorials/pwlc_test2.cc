@@ -25,7 +25,7 @@ SimTest04_PWLC(const InputParameters& params)
   opensn::log.Log() << "Coding Tutorial 4";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = CurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();

@@ -168,7 +168,7 @@ FVDiffusionSolver::Initialize()
             << program_timer.TimeString() << " " << Name() << ": Initializing FV Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentMesh();
+  grid_ptr_ = CurrentMesh();
   const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");

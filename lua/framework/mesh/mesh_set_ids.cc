@@ -32,7 +32,7 @@ MeshSetUniformMaterialID(lua_State* L)
 
   auto mat_id = LuaArg<int>(L, 1);
 
-  auto vol_cont = GetCurrentMesh();
+  auto vol_cont = CurrentMesh();
   vol_cont->SetUniformMaterialID(mat_id);
   mpi_comm.barrier();
   opensn::log.Log() << program_timer.TimeString() << " Done setting material id " << mat_id
@@ -55,7 +55,7 @@ MeshSetMaterialIDFromLogicalVolume(lua_State* L)
 
   opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Setting material id from logical volume.";
-  std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
+  std::shared_ptr<MeshContinuum> mesh = CurrentMesh();
   mesh->SetMaterialIDFromLogical(lv, sense, mat_id);
 
   return LuaReturn(L);
@@ -73,7 +73,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
   const auto lua_fname = LuaArg<std::string>(L, 1);
 
   // Get back mesh
-  MeshContinuum& grid = *GetCurrentMesh();
+  MeshContinuum& grid = *CurrentMesh();
 
   int local_num_cells_modified = 0;
   for (auto& cell : grid.local_cells)
@@ -122,7 +122,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Setting boundary id from lua function.";
 
-  MeshContinuum& grid = *GetCurrentMesh();
+  MeshContinuum& grid = *CurrentMesh();
 
   // Check if name already has id
   auto& grid_boundary_id_map = grid.BoundaryIDMap();
@@ -195,7 +195,7 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
     opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
 
   opensn::log.Log() << program_timer.TimeString() << " Setting boundary id from logical volume.";
-  std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
+  std::shared_ptr<MeshContinuum> mesh = CurrentMesh();
   mesh->SetBoundaryIDFromLogical(log_vol, sense, boundary_name);
 
   return LuaReturn(L);

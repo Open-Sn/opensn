@@ -10,7 +10,7 @@ namespace opensn
 {
 
 std::shared_ptr<MeshContinuum>
-GetCurrentMesh()
+CurrentMesh()
 {
   if (mesh_stack.empty())
     throw std::logic_error(

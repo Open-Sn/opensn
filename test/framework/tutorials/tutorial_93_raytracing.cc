@@ -24,7 +24,7 @@ SimTest93_RayTracing(const InputParameters&)
   opensn::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = CurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();

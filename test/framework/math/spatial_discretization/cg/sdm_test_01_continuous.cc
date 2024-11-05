@@ -37,7 +37,7 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   const bool export_vtk = params.Has("export_vtk") and params.ParamValue<bool>("export_vtk");
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = CurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();

@@ -29,7 +29,7 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 {
   opensn::log.Log() << program_timer.TimeString() << " Setting orthogonal boundaries.";
 
-  auto vol_cont = GetCurrentMesh();
+  auto vol_cont = CurrentMesh();
 
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);

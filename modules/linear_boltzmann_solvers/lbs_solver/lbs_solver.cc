@@ -840,7 +840,7 @@ LBSSolver::PerformInputChecks()
     Exit(EXIT_FAILURE);
   }
 
-  grid_ptr_ = GetCurrentMesh();
+  grid_ptr_ = CurrentMesh();
 
   if (grid_ptr_ == nullptr)
   {

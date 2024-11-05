@@ -24,7 +24,7 @@ MeshExportToOBJ(lua_State* L)
   const auto file_name = LuaArg<std::string>(L, 1);
   bool per_material = LuaArgOptional<bool>(L, 2, false);
 
-  auto grid = opensn::GetCurrentMesh();
+  auto grid = opensn::CurrentMesh();
   opensn::MeshIO::ToOBJ(grid, file_name.c_str(), per_material);
 
   return LuaReturn(L);
@@ -38,7 +38,7 @@ MeshExportToPVTU(lua_State* L)
 
   const auto file_name = LuaArg<std::string>(L, 1);
 
-  auto grid = opensn::GetCurrentMesh();
+  auto grid = opensn::CurrentMesh();
   opensn::MeshIO::ToPVTU(grid, file_name);
 
   return LuaReturn(L);
@@ -54,7 +54,7 @@ MeshExportToExodusII(lua_State* L)
   bool write_node_sets = LuaArgOptional<bool>(L, 2, true);
   bool write_side_sets = LuaArgOptional<bool>(L, 3, true);
 
-  auto grid = opensn::GetCurrentMesh();
+  auto grid = opensn::CurrentMesh();
   opensn::MeshIO::ToExodusII(grid, file_name, write_node_sets, write_side_sets);
 
   return LuaReturn(L);

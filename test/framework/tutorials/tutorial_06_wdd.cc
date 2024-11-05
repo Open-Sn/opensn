@@ -44,7 +44,7 @@ SimTest06_WDD(const InputParameters&)
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = CurrentMesh();
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();

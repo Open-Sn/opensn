@@ -71,7 +71,7 @@ struct OrthoMeshAttributes
 };
 
 /// Obtains the current mesh from the global stack.
-std::shared_ptr<MeshContinuum> GetCurrentMesh();
+std::shared_ptr<MeshContinuum> CurrentMesh();
 
 } // namespace opensn
 
