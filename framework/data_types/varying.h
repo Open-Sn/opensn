@@ -370,7 +370,7 @@ public:
 
   /// Returns values of type bool if able.
   template <typename T>
-  BoolType<T> GetValue() const
+  BoolType<T> Value() const
   {
     CheckTypeMatch(type_, VaryingDataType::BOOL);
 
@@ -379,7 +379,7 @@ public:
 
   /// Returns floating point values if able.
   template <typename T>
-  FloatType<T> GetValue() const
+  FloatType<T> Value() const
   {
     CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
@@ -390,7 +390,7 @@ public:
 
   /// Returns a string if able.
   template <typename T>
-  StringType<T> GetValue() const
+  StringType<T> Value() const
   {
     CheckTypeMatch(type_, VaryingDataType::STRING);
 
@@ -399,7 +399,7 @@ public:
 
   /// Returns a signed integer if able.
   template <typename T>
-  SignedIntegerType<T> GetValue() const
+  SignedIntegerType<T> Value() const
   {
     CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
@@ -410,7 +410,7 @@ public:
 
   /// Returns an unsigned integer if able.
   template <typename T>
-  UnsignedIntegerType<T> GetValue() const
+  UnsignedIntegerType<T> Value() const
   {
     CheckTypeMatch(type_, VaryingDataType::INTEGER);
 

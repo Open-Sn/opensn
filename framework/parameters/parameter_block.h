@@ -216,7 +216,7 @@ public:
                              ParameterBlockTypeName(Type()));
     try
     {
-      return Value().GetValue<T>();
+      return Value().Value<T>();
     }
     catch (const std::exception& exc)
     {
