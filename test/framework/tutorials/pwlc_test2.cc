@@ -28,7 +28,7 @@ SimTest04_PWLC(const InputParameters& params)
   auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
@@ -216,7 +216,7 @@ SimTest04_PWLC(const InputParameters& params)
   global_error = std::sqrt(global_error);
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
-                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
+                    << " Num-cells: " << grid.GlobalNumberOfCells();
 
   return ParameterBlock();
 }

@@ -321,7 +321,7 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
   header_bytes[399] = '\0';
 
   // Process each location
-  uint64_t num_global_cells = grid_ptr_->GetGlobalNumberOfCells();
+  uint64_t num_global_cells = grid_ptr_->GlobalNumberOfCells();
   for (int locationJ = 0; locationJ < opensn::mpi_comm.size(); ++locationJ)
   {
     log.LogAll() << "  Barrier at " << locationJ;

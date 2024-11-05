@@ -29,11 +29,11 @@ public:
   void SetDimension(unsigned int dim) { dim_ = dim; }
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
-  uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
+  uint64_t GlobalVertexCount() const { return global_vertex_count_; }
 
-  std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
+  std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
 
-  const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
+  const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
 
   /**
    * Makes a bndry id given a name. If the bndry name already exists,
@@ -83,7 +83,7 @@ public:
    * Check whether a cell is a boundary by checking if the key is found in the native or foreign
    * cell maps.
    */
-  static int GetCellDimension(const Cell& cell);
+  static int CellDimension(const Cell& cell);
 
   /**
    * Creates a mapping of the current face local-ids to the adjacent face's local ids.
@@ -123,13 +123,13 @@ public:
   /**
    * Returns the total number of global cells.
    */
-  size_t GetGlobalNumberOfCells() const;
+  size_t GlobalNumberOfCells() const;
 
   /**
    * Builds and returns a vector of unique boundary id's present in
    * the mesh.
    */
-  std::vector<uint64_t> GetDomainUniqueBoundaryIDs() const;
+  std::vector<uint64_t> DomainUniqueBoundaryIDs() const;
 
   /**
    * Counts the number of cells within a logical volume across all partitions.
@@ -152,7 +152,7 @@ public:
   /**
    * Gets and orthogonal mesh interface object.
    */
-  std::array<size_t, 3> GetIJKInfo() const;
+  std::array<size_t, 3> IJKInfo() const;
 
   /**
    * Provides a mapping from cell ijk indices to global ids.
@@ -165,7 +165,7 @@ public:
    */
   std::vector<Vector3> MakeCellOrthoSizes() const;
 
-  std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
+  std::pair<Vector3, Vector3> LocalBoundingBox() const;
 
   /**
    * Sets material id's for all cells to the specified material id.

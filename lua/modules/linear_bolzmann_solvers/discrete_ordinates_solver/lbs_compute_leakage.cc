@@ -36,7 +36,7 @@ ComputeLeakage(lua_State* L)
       bndry_ids.push_back(supported_boundary_names.at(name));
   }
   else
-    bndry_ids = solver.Grid().GetDomainUniqueBoundaryIDs();
+    bndry_ids = solver.Grid().DomainUniqueBoundaryIDs();
 
   // Compute the leakage
   const auto leakage = solver.ComputeLeakage(bndry_ids);

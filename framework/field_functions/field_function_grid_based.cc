@@ -50,7 +50,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     discretization_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(GetCurrentMesh()->GetLocalBoundingBox())
+    local_grid_bounding_box_(GetCurrentMesh()->LocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
@@ -60,7 +60,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->Grid().LocalBoundingBox())
 {
 }
 
@@ -72,7 +72,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->Grid().LocalBoundingBox())
 {
   OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->LocalSize(),
                           "Constructor called with incompatible size field vector.");
@@ -88,7 +88,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->Grid().LocalBoundingBox())
 {
   ghosted_field_vector_->Set(field_value);
 }

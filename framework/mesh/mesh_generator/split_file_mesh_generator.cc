@@ -393,7 +393,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
   auto grid_ptr = MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
+  grid_ptr->BoundaryIDMap() = mesh_info.boundary_id_map;
 
   auto& cells = mesh_info.cells;
   auto& vertices = mesh_info.vertices;

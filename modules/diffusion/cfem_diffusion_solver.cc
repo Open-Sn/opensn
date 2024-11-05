@@ -180,12 +180,12 @@ CFEMDiffusionSolver::Initialize()
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
 
-  log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid.DomainUniqueBoundaryIDs();
 
-  const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
+  const auto& grid_boundary_id_map = grid_ptr_->BoundaryIDMap();
   for (uint64_t bndry_id : globl_unique_bndry_ids)
   {
     if (grid_boundary_id_map.count(bndry_id) == 0)

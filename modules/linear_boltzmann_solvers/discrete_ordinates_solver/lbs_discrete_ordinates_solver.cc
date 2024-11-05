@@ -835,7 +835,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
                        "The option `save_angular_flux` must be set to `true` in order "
                        "to compute outgoing currents.");
 
-  const auto unique_bids = grid_ptr_->GetDomainUniqueBoundaryIDs();
+  const auto unique_bids = grid_ptr_->DomainUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)
   {
     const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);

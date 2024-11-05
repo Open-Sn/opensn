@@ -275,7 +275,7 @@ MGDiffusionSolver::Initialize()
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
 
-  log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Add unique material ids
   std::set<int> unique_material_ids;
@@ -304,7 +304,7 @@ MGDiffusionSolver::Initialize()
   InitializeMaterials(unique_material_ids);
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid.DomainUniqueBoundaryIDs();
   SetBCs(globl_unique_bndry_ids);
 
   // Make SDM
@@ -657,7 +657,7 @@ MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
 
   log.Log() << "Max boundary id identified: " << max_boundary_id;
 
-  const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
+  const auto& grid_boundary_id_map = grid_ptr_->BoundaryIDMap();
   for (uint64_t bndry_id : globl_unique_bndry_ids)
   {
     if (grid_boundary_id_map.count(bndry_id) == 0)

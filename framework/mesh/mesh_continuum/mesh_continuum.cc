@@ -100,7 +100,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
 }
 
 std::vector<uint64_t>
-MeshContinuum::GetDomainUniqueBoundaryIDs() const
+MeshContinuum::DomainUniqueBoundaryIDs() const
 {
   opensn::mpi_comm.barrier();
   log.LogAllVerbose1() << "Identifying unique boundary-ids.";
@@ -217,7 +217,7 @@ MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
 }
 
 int
-MeshContinuum::GetCellDimension(const Cell& cell)
+MeshContinuum::CellDimension(const Cell& cell)
 {
   switch (cell.Type())
   {
@@ -462,7 +462,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 }
 
 std::array<size_t, 3>
-MeshContinuum::GetIJKInfo() const
+MeshContinuum::IJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
   if (Type() != MeshType::ORTHOGONAL)
@@ -478,7 +478,7 @@ MeshContinuum::MakeIJKToGlobalIDMapping() const
   if (Type() != MeshType::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
-  const auto ijk_info = this->GetIJKInfo();
+  const auto ijk_info = this->IJKInfo();
   const auto Nx = static_cast<int64_t>(ijk_info[0]);
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
@@ -537,7 +537,7 @@ MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 }
 
 std::pair<Vector3, Vector3>
-MeshContinuum::GetLocalBoundingBox() const
+MeshContinuum::LocalBoundingBox() const
 {
   Vector3 xyz_min;
   Vector3 xyz_max;
@@ -573,7 +573,7 @@ MeshContinuum::GetLocalBoundingBox() const
 }
 
 size_t
-MeshContinuum::GetGlobalNumberOfCells() const
+MeshContinuum::GlobalNumberOfCells() const
 {
   size_t num_cells = local_cells_.size();
   mpi_comm.all_reduce(num_cells, mpi::op::sum<size_t>());
@@ -626,7 +626,7 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
                                         const std::string& boundary_name)
 {
   // Check if name already has id
-  auto& grid_bndry_id_map = GetBoundaryIDMap();
+  auto& grid_bndry_id_map = BoundaryIDMap();
   uint64_t bndry_id = MakeBoundaryID(boundary_name);
 
   // Loop over cells

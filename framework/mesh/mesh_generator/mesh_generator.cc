@@ -208,7 +208,7 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
   // Convert mesh
   auto grid_ptr = MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() = input_umesh->BoundaryIDMap();
+  grid_ptr->BoundaryIDMap() = input_umesh->BoundaryIDMap();
 
   auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
   size_t cell_globl_id = 0;

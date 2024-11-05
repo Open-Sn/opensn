@@ -34,10 +34,10 @@ SimTest91_PWLD(const InputParameters&)
   auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make Orthogonal mapping
-  const auto ijk_info = grid.GetIJKInfo();
+  const auto ijk_info = grid.IJKInfo();
   const auto& ijk_mapping = grid.MakeIJKToGlobalIDMapping();
 
   const auto Nx = static_cast<int64_t>(ijk_info[0]);

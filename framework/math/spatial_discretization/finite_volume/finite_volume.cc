@@ -166,7 +166,7 @@ FiniteVolume::OrderNodes()
   } // for pid_list_pair
 
   local_base_block_size_ = ref_grid_.local_cells.size();
-  globl_base_block_size_ = ref_grid_.GetGlobalNumberOfCells();
+  globl_base_block_size_ = ref_grid_.GlobalNumberOfCells();
 }
 
 void

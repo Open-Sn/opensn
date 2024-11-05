@@ -55,7 +55,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
   auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make SDM method
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");

@@ -888,7 +888,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     fprintf(of, "o %s\n", file_base_name.c_str());
 
     // Develop node mapping and write them
-    std::vector<int> node_mapping(grid->GetGlobalVertexCount(), -1);
+    std::vector<int> node_mapping(grid->GlobalVertexCount(), -1);
 
     int node_counter = 0;
     for (auto node : nodes_set)
@@ -989,7 +989,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       fprintf(of, "o %s\n", mat_base_name.c_str());
 
       // Develop node mapping and write them
-      std::vector<int> node_mapping(grid->GetGlobalVertexCount(), -1);
+      std::vector<int> node_mapping(grid->GlobalVertexCount(), -1);
 
       int node_counter = 0;
       for (auto node : nodes_set)
@@ -1076,8 +1076,8 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     block_id_list->SetName("BlockID");
 
     // Load vertices
-    std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
-    const size_t num_verts = grid->GetGlobalVertexCount();
+    std::vector<uint64_t> vertex_map(grid->GlobalVertexCount(), 0);
+    const size_t num_verts = grid->GlobalVertexCount();
     for (size_t v = 0; v < num_verts; ++v)
     {
       vertex_map[v] = v;
@@ -1096,7 +1096,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
       block_id_list->InsertNextValue(cell.material_id);
-      max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
+      max_dimension = std::max(max_dimension, MeshContinuum::CellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
       global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id + 1));
@@ -1162,7 +1162,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   vtkNew<vtkMultiBlockDataSet> sidesets_blocks;
   for (const auto& [bndry_id, face_list] : boundary_id_faces_map)
   {
-    const std::string block_name = grid->GetBoundaryIDMap().at(bndry_id);
+    const std::string block_name = grid->BoundaryIDMap().at(bndry_id);
     log.Log0Verbose1() << "bid: " + std::to_string(bndry_id) + " name=\"" + block_name + "\"";
 
     // NodeSet
@@ -1182,7 +1182,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
           vid_set.insert(vid);
 
       // Build vertex map
-      std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
+      std::vector<uint64_t> vertex_map(grid->GlobalVertexCount(), 0);
       {
         uint64_t mapped_id = 0;
         for (uint64_t vid : vid_set)
@@ -1238,7 +1238,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
           vid_set.insert(vid);
 
       // Build vertex map
-      std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
+      std::vector<uint64_t> vertex_map(grid->GlobalVertexCount(), 0);
       {
         uint64_t mapped_id = 0;
         for (uint64_t vid : vid_set)

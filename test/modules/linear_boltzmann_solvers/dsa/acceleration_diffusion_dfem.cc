@@ -48,7 +48,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
@@ -229,7 +229,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   global_error = std::sqrt(global_error);
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
-                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
+                    << " Num-cells: " << grid.GlobalNumberOfCells();
 
   return ParameterBlock();
 }

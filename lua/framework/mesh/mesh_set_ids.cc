@@ -125,7 +125,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   MeshContinuum& grid = *GetCurrentMesh();
 
   // Check if name already has id
-  auto& grid_boundary_id_map = grid.GetBoundaryIDMap();
+  auto& grid_boundary_id_map = grid.BoundaryIDMap();
 
   int local_num_faces_modified = 0;
   for (auto& cell : grid.local_cells)

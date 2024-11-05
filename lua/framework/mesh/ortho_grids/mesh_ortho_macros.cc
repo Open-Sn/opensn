@@ -61,7 +61,7 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
 
         face.neighbor_id = bndry_id;
 
-        vol_cont->GetBoundaryIDMap()[bndry_id] = boundary_name;
+        vol_cont->BoundaryIDMap()[bndry_id] = boundary_name;
       }
     }
   }

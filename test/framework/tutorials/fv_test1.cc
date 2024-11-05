@@ -26,7 +26,7 @@ SimTest01_FV(const InputParameters&)
   auto grid_ptr = GetCurrentMesh();
   const auto& grid = *grid_ptr;
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = FiniteVolume::New(grid);

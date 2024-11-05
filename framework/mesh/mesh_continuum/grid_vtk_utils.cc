@@ -539,8 +539,8 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
   std::vector<uint64_t> vertex_map;
   if (not discontinuous)
   {
-    vertex_map.assign(grid.GetGlobalVertexCount(), 0);
-    const size_t num_verts = grid.GetGlobalVertexCount();
+    vertex_map.assign(grid.GlobalVertexCount(), 0);
+    const size_t num_verts = grid.GlobalVertexCount();
     for (size_t v = 0; v < num_verts; ++v)
       vertex_map[v] = v;
   }
