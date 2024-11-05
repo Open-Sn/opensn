@@ -148,15 +148,15 @@ PieceWiseLinearPolygonMapping::SideGradShape_x(uint32_t side, uint32_t i) const
   if (index == 0)
   {
 
-    value = sides_[side].JTinv.GetIJ(0, 0) * -1.0 + sides_[side].JTinv.GetIJ(0, 1) * -1.0;
+    value = sides_[side].JTinv.IJ(0, 0) * -1.0 + sides_[side].JTinv.IJ(0, 1) * -1.0;
   }
   if (index == 1)
   {
 
-    value = sides_[side].JTinv.GetIJ(0, 0) * 1.0 + sides_[side].JTinv.GetIJ(0, 1) * 0.0;
+    value = sides_[side].JTinv.IJ(0, 0) * 1.0 + sides_[side].JTinv.IJ(0, 1) * 0.0;
   }
 
-  value += beta_ * (sides_[side].JTinv.GetIJ(0, 0) * 0.0 + sides_[side].JTinv.GetIJ(0, 1) * 1.0);
+  value += beta_ * (sides_[side].JTinv.IJ(0, 0) * 0.0 + sides_[side].JTinv.IJ(0, 1) * 1.0);
 
   return value;
 }
@@ -169,15 +169,15 @@ PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
   if (index == 0)
   {
 
-    value = sides_[side].JTinv.GetIJ(1, 0) * -1.0 + sides_[side].JTinv.GetIJ(1, 1) * -1.0;
+    value = sides_[side].JTinv.IJ(1, 0) * -1.0 + sides_[side].JTinv.IJ(1, 1) * -1.0;
   }
   if (index == 1)
   {
 
-    value = sides_[side].JTinv.GetIJ(1, 0) * 1.0 + sides_[side].JTinv.GetIJ(1, 1) * 0.0;
+    value = sides_[side].JTinv.IJ(1, 0) * 1.0 + sides_[side].JTinv.IJ(1, 1) * 0.0;
   }
 
-  value += beta_ * (sides_[side].JTinv.GetIJ(1, 0) * 0.0 + sides_[side].JTinv.GetIJ(1, 1) * 1.0);
+  value += beta_ * (sides_[side].JTinv.IJ(1, 0) * 0.0 + sides_[side].JTinv.IJ(1, 1) * 1.0);
 
   return value;
 }

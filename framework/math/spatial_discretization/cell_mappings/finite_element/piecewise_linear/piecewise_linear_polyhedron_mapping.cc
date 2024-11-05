@@ -320,9 +320,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
   }
   tetdfdz += alphac_ * TetGradShape_z(3);
 
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(0, 0) * tetdfdx;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(0, 1) * tetdfdy;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(0, 2) * tetdfdz;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(0, 0) * tetdfdx;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(0, 1) * tetdfdy;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(0, 2) * tetdfdz;
 
   return value;
 }
@@ -360,9 +360,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
   }
   tetdfdz += alphac_ * TetGradShape_z(3);
 
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(1, 0) * tetdfdx;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(1, 1) * tetdfdy;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(1, 2) * tetdfdz;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(1, 0) * tetdfdx;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(1, 1) * tetdfdy;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(1, 2) * tetdfdz;
 
   return value;
 }
@@ -400,9 +400,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
   }
   tetdfdz += alphac_ * TetGradShape_z(3);
 
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(2, 0) * tetdfdx;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(2, 1) * tetdfdy;
-  value += face_data_[face_index].sides[side_index].JTinv.GetIJ(2, 2) * tetdfdz;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(2, 0) * tetdfdx;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(2, 1) * tetdfdy;
+  value += face_data_[face_index].sides[side_index].JTinv.IJ(2, 2) * tetdfdz;
 
   return value;
 }

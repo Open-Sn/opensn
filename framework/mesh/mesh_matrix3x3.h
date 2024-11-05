@@ -115,7 +115,7 @@ struct Matrix3x3
     {
       for (int j = 0; j < 3; ++j)
       {
-        o_vec[i] += this->GetIJ(i, j) * i_vec[j];
+        o_vec[i] += this->IJ(i, j) * i_vec[j];
       }
     }
     Vector3 oV(o_vec[0], o_vec[1], o_vec[2]);
@@ -137,7 +137,7 @@ struct Matrix3x3
   }
 
   /// Obtain a copy of the value at row i and column j.
-  double GetIJ(int i, int j) const
+  double IJ(int i, int j) const
   {
     int k = j + 3 * i;
     return vals[k];
@@ -178,7 +178,7 @@ struct Matrix3x3
       int k = j + 3 * row;
       sign *= -1;
 
-      det += sign * GetIJ(row, j) * MinorIJ(row, j);
+      det += sign * IJ(row, j) * MinorIJ(row, j);
     }
 
     return det;
@@ -248,7 +248,7 @@ struct Matrix3x3
       for (int j = 0; j < 3; ++j)
       {
         sign *= -1;
-        oM.SetIJ(i, j, oM.GetIJ(i, j) * sign);
+        oM.SetIJ(i, j, oM.IJ(i, j) * sign);
       }
     }
 
@@ -269,7 +269,7 @@ struct Matrix3x3
     {
       for (int j = 0; j < 3; ++j)
       {
-        out << inM.GetIJ(i, j) << " ";
+        out << inM.IJ(i, j) << " ";
       }
       if (i != 2)
         out << "\n";
@@ -288,7 +288,7 @@ struct Matrix3x3
     {
       for (int j = 0; j < 3; ++j)
       {
-        out << GetIJ(i, j) << " ";
+        out << IJ(i, j) << " ";
       }
       if (i != 2)
         out << "\n ";
