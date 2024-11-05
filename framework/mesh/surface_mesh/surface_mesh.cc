@@ -36,9 +36,9 @@ std::ostream&
 operator<<(std::ostream& os, SurfaceMesh& that)
 {
   std::vector<Face>::const_iterator curface;
-  for (curface = that.GetTriangles().begin(); curface != that.GetTriangles().end(); ++curface)
+  for (curface = that.Triangles().begin(); curface != that.Triangles().end(); ++curface)
   {
-    long index = std::distance(that.GetTriangles().begin(), curface);
+    long index = std::distance(that.Triangles().begin(), curface);
     os << "Face " << index << " v:";
     os << curface->v_index[0] << "->";
     os << curface->v_index[1] << "->";
@@ -1204,7 +1204,7 @@ SurfaceMesh::ExportToPolyFile(const char* fileName)
 }
 
 void
-SurfaceMesh::GetMeshStats()
+SurfaceMesh::MeshStats()
 {
   std::vector<double> areas;
   std::vector<double> histo_bins;

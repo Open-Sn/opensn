@@ -37,11 +37,11 @@ protected:
   std::vector<int> physical_region_map_;
 
 public:
-  const std::vector<Vector3>& GetVertices() const { return vertices_; }
+  const std::vector<Vector3>& Vertices() const { return vertices_; }
 
-  const std::vector<Face>& GetTriangles() const { return faces_; }
+  const std::vector<Face>& Triangles() const { return faces_; }
 
-  const std::vector<std::shared_ptr<PolyFace>>& GetPolygons() const { return poly_faces_; }
+  const std::vector<std::shared_ptr<PolyFace>>& Polygons() const { return poly_faces_; }
 
   SurfaceMesh();
   ~SurfaceMesh();
@@ -96,7 +96,7 @@ public:
   void ExtractOpenEdgesToObj(const char* fileName);
 
   /// Gets simple mesh statistics.
-  void GetMeshStats();
+  void MeshStats();
 
   /**
    * Computes load balancing parameters from a set of predictive cuts.
