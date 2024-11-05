@@ -141,13 +141,13 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       const double* psi_local_face_upwnd_data = nullptr;
       if (is_local_face)
       {
-        psi_upwnd_data_block = &fluds_->GetLocalUpwindDataBlock();
-        psi_local_face_upwnd_data = fluds_->GetLocalCellUpwindPsi(
-          *psi_upwnd_data_block, *cell_transport_view_->FaceNeighbor(f));
+        psi_upwnd_data_block = &fluds_->LocalUpwindDataBlock();
+        psi_local_face_upwnd_data =
+          fluds_->LocalCellUpwindPsi(*psi_upwnd_data_block, *cell_transport_view_->FaceNeighbor(f));
       }
       else if (not is_boundary_face)
       {
-        psi_upwnd_data_block = &fluds_->GetNonLocalUpwindData(cell_->global_id, f);
+        psi_upwnd_data_block = &fluds_->NonLocalUpwindData(cell_->global_id, f);
       }
 
       // IntSf_mu_psi_Mij_dA
@@ -175,7 +175,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           {
             assert(psi_upwnd_data_block);
             const unsigned int adj_face_node = face_nodal_mapping->face_node_mapping_[fj];
-            psi = fluds_->GetNonLocalUpwindPsi(*psi_upwnd_data_block, adj_face_node, as_ss_idx);
+            psi = fluds_->NonLocalUpwindPsi(*psi_upwnd_data_block, adj_face_node, as_ss_idx);
           }
           else
             psi = angle_set.PsiBoundary(face.neighbor_id,

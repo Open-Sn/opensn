@@ -27,16 +27,16 @@ public:
 
   const FLUDSCommonData& CommonData() const;
 
-  const std::vector<double>& GetLocalUpwindDataBlock() const;
+  const std::vector<double>& LocalUpwindDataBlock() const;
 
-  const double* GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell);
+  const double* LocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell);
 
-  const std::vector<double>& GetNonLocalUpwindData(uint64_t cell_global_id,
-                                                   unsigned int face_id) const;
+  const std::vector<double>& NonLocalUpwindData(uint64_t cell_global_id,
+                                                unsigned int face_id) const;
 
-  const double* GetNonLocalUpwindPsi(const std::vector<double>& psi_data,
-                                     unsigned int face_node_mapped,
-                                     unsigned int angle_set_index);
+  const double* NonLocalUpwindPsi(const std::vector<double>& psi_data,
+                                  unsigned int face_node_mapped,
+                                  unsigned int angle_set_index);
 
   void ClearLocalAndReceivePsi() override { deplocs_outgoing_messages_.clear(); }
   void ClearSendPsi() override {}
