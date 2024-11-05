@@ -46,7 +46,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     {
       if (face.has_neighbor)
         if (not face.IsNeighborLocal(*this))
-          local_graph_edges.insert(face.GetNeighborPartitionID(*this));
+          local_graph_edges.insert(face.NeighborPartitionID(*this));
     } // for f
   }   // for local cells
 
@@ -241,7 +241,7 @@ void
 MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                                       std::vector<short>& dof_mapping) const
 {
-  const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
+  const int associated_face = cur_face.NeighborAssociatedFace(*this);
   // Check face validity
   OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "

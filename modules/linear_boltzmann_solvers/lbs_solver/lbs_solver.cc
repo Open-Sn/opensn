@@ -1360,7 +1360,7 @@ LBSSolver::InitializeParrays()
       } // if bndry
       else
       {
-        const int neighbor_partition = face.GetNeighborPartitionID(*grid_ptr_);
+        const int neighbor_partition = face.NeighborPartitionID(*grid_ptr_);
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
         neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id];
@@ -1405,7 +1405,7 @@ LBSSolver::InitializeParrays()
       {
         grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
         grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
-        ass_face = face.GetNeighborAssociatedFace(*grid_ptr_);
+        ass_face = face.NeighborAssociatedFace(*grid_ptr_);
       }
 
       cell_nodal_mapping.emplace_back(ass_face, face_node_mapping, cell_node_mapping);

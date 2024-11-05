@@ -366,7 +366,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
         if (face.has_neighbor and grid_.IsCellLocal(face.neighbor_id))
         {
           const auto& adj_cell = grid_.cells[face.neighbor_id];
-          const auto ass_face = face.GetNeighborAssociatedFace(grid_);
+          const auto ass_face = face.NeighborAssociatedFace(grid_);
           auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][ass_face];
 
           switch (orientation)
@@ -386,7 +386,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       else if (face.has_neighbor and not grid_.IsCellLocal(face.neighbor_id))
       {
         const auto& adj_cell = grid_.cells[face.neighbor_id];
-        const auto ass_face = face.GetNeighborAssociatedFace(grid_);
+        const auto ass_face = face.NeighborAssociatedFace(grid_);
         const auto& adj_face = adj_cell.faces[ass_face];
 
         auto& cur_face_ori = cell_face_orientations_[cell.local_id][f];
@@ -433,10 +433,10 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
           if (face.IsNeighborLocal(grid_))
           {
             double weight = mu * face.ComputeFaceArea(grid_);
-            cell_successors[c].insert(std::make_pair(face.GetNeighborLocalID(grid_), weight));
+            cell_successors[c].insert(std::make_pair(face.NeighborLocalID(grid_), weight));
           }
           else
-            location_successors.insert(face.GetNeighborPartitionID(grid_));
+            location_successors.insert(face.NeighborPartitionID(grid_));
         }
       }
       // If not outgoing determine what it is dependent on
@@ -444,7 +444,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       {
         // if it is a cell and not bndry
         if (face.has_neighbor and not face.IsNeighborLocal(grid_))
-          location_dependencies.insert(face.GetNeighborPartitionID(grid_));
+          location_dependencies.insert(face.NeighborPartitionID(grid_));
       }
       ++f;
     } // for face

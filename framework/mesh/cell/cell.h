@@ -55,13 +55,13 @@ public:
   bool IsNeighborLocal(const MeshContinuum& grid) const;
 
   /// Determines the neighbor's partition.
-  int GetNeighborPartitionID(const MeshContinuum& grid) const;
+  int NeighborPartitionID(const MeshContinuum& grid) const;
 
   /// Determines the neighbor's local id.
-  uint64_t GetNeighborLocalID(const MeshContinuum& grid) const;
+  uint64_t NeighborLocalID(const MeshContinuum& grid) const;
 
   /// Determines the neighbor's associated face.
-  int GetNeighborAssociatedFace(const MeshContinuum& grid) const;
+  int NeighborAssociatedFace(const MeshContinuum& grid) const;
 
 public:
   /// Computes the face area.

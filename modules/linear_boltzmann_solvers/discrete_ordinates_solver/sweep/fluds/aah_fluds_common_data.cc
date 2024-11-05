@@ -155,7 +155,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
           int c = cell.local_id;
-          int d = face.GetNeighborLocalID(grid);
+          int d = face.NeighborLocalID(grid);
 
           if ((a == c) and (b == d))
           {
@@ -175,7 +175,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           continue;
 
         // Find associated face for dof mapping and lock box
-        auto ass_face = (short)face.GetNeighborAssociatedFace(grid);
+        auto ass_face = (short)face.NeighborAssociatedFace(grid);
 
         // Now find the cell (index,face) pair in the lock box and empty slot
         bool found = false;
@@ -194,8 +194,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         {
           log.LogAllError() << "Lock-box location not found in call to "
                             << "InitializeAlphaElements. Local Cell " << cell.local_id << " face "
-                            << f << " looking for cell " << face.GetNeighborLocalID(grid)
-                            << " face " << ass_face << " cat: " << face_categ
+                            << f << " looking for cell " << face.NeighborLocalID(grid) << " face "
+                            << ass_face << " cat: " << face_categ
                             << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
           Exit(EXIT_FAILURE);
         }
@@ -236,7 +236,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           int a = cyclic_dependency.first;
           int b = cyclic_dependency.second;
           int c = cell.local_id;
-          int d = face.GetNeighborLocalID(grid);
+          int d = face.NeighborLocalID(grid);
 
           if ((a == c) and (b == d))
           {
@@ -284,7 +284,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       // Non-local outgoing
       if (face.has_neighbor and (not face.IsNeighborLocal(grid)))
       {
-        int locJ = face.GetNeighborPartitionID(grid);
+        int locJ = face.NeighborPartitionID(grid);
         int deplocI = spds.MapLocJToDeplocI(locJ);
         int face_slot = deplocI_face_dof_count_[deplocI];
 
@@ -659,7 +659,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
       if ((face.has_neighbor) and (!face.IsNeighborLocal(grid)))
       {
         // Find prelocI
-        int locJ = face.GetNeighborPartitionID(grid);
+        int locJ = face.NeighborPartitionID(grid);
         int prelocI = spds.MapLocJToPrelocI(locJ);
 
         if (prelocI >= 0)

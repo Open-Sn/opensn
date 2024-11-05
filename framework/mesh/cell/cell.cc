@@ -101,7 +101,7 @@ CellFace::IsNeighborLocal(const MeshContinuum& grid) const
 }
 
 int
-CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
+CellFace::NeighborPartitionID(const MeshContinuum& grid) const
 {
   if (not has_neighbor)
     return -1;
@@ -114,7 +114,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
 }
 
 uint64_t
-CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
+CellFace::NeighborLocalID(const MeshContinuum& grid) const
 {
   if (not has_neighbor)
     return -1;
@@ -130,7 +130,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 }
 
 int
-CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
+CellFace::NeighborAssociatedFace(const MeshContinuum& grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
