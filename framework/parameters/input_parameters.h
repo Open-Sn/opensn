@@ -70,7 +70,7 @@ public:
    * documentation.
    */
   void SetGeneralDescription(const std::string& description) { general_description_ = description; }
-  std::string GetGeneralDescription() const { return general_description_; }
+  std::string GeneralDescription() const { return general_description_; }
 
   /// Space separated list of doxygen group names to which this documentation should belong.
   void SetDocGroup(const std::string& doc_group) { doc_group_ = doc_group; }
@@ -79,10 +79,10 @@ public:
   void LinkParameterToBlock(const std::string& param_name, const std::string& block_name);
 
   /// Gets any linkage information of a parameter.
-  std::string GetParameterDocumentationLink(const std::string& param_name) const;
+  std::string ParameterDocumentationLink(const std::string& param_name) const;
 
   /// Returns the parameter's doc string.
-  std::string GetParameterDocString(const std::string& param_name);
+  std::string ParameterDocString(const std::string& param_name);
 
 private:
   using ParameterBlock::AddParameter;

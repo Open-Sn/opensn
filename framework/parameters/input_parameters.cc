@@ -138,7 +138,7 @@ InputParameters::LinkParameterToBlock(const std::string& param_name, const std::
 }
 
 std::string
-InputParameters::GetParameterDocumentationLink(const std::string& param_name) const
+InputParameters::ParameterDocumentationLink(const std::string& param_name) const
 {
   if (parameter_link_.count(param_name) > 0)
     return parameter_link_.at(param_name);
@@ -146,7 +146,7 @@ InputParameters::GetParameterDocumentationLink(const std::string& param_name) co
 }
 
 std::string
-InputParameters::GetParameterDocString(const std::string& param_name)
+InputParameters::ParameterDocString(const std::string& param_name)
 {
   OpenSnInvalidArgumentIf(parameter_doc_string_.count(param_name) == 0,
                           "Invalid parameter \"" + param_name + "\".");
@@ -241,7 +241,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
     if (not params.Has(req_param_name))
       err_stream << "Required param \"" << req_param_name
-                 << "\" not supplied.\ndoc-string: " << GetParameterDocString(req_param_name)
+                 << "\" not supplied.\ndoc-string: " << ParameterDocString(req_param_name)
                  << "\nEnsure the parameter given is supplied or not nil";
   }
 
@@ -332,7 +332,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
         err_stream << "Invalid parameter type \"" << ParameterBlockTypeName(param.Type())
                    << "\" for parameter \"" << param_name << "\". Expecting type \""
                    << ParameterBlockTypeName(input_param.Type()) << "\".\n"
-                   << "doc-string: " << GetParameterDocString(param_name);
+                   << "doc-string: " << ParameterDocString(param_name);
         continue;
       } // if not mismatch allowed
     }   // if type mismatch
@@ -419,7 +419,7 @@ InputParameters::DumpParameters() const
   log.Log() << "CLASS_NAME " << class_name_;
 
   log.Log() << "DESCRIPTION_BEGIN";
-  std::cout << GetGeneralDescription() << "\n";
+  std::cout << GeneralDescription() << "\n";
   log.Log() << "DESCRIPTION_END\n";
 
   log.Log() << "DOC_GROUP " << doc_group_;
@@ -466,7 +466,7 @@ InputParameters::DumpParameters() const
       log.Log() << sp4 << "DOC_STRING_END";
     }
 
-    const auto& linkage = GetParameterDocumentationLink(param_name);
+    const auto& linkage = ParameterDocumentationLink(param_name);
     if (not linkage.empty())
     {
       log.Log() << sp4 << "LINKS " << linkage;
