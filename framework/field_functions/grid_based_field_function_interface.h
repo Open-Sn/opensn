@@ -23,7 +23,7 @@ public:
 
   explicit GridBasedFieldFunctionInterface(const InputParameters& params);
 
-  FieldFunctionGridBased* GetGridBasedFieldFunction() const;
+  FieldFunctionGridBased* GridBasedFieldFunction() const;
 };
 
 } // namespace opensn

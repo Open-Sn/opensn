@@ -21,7 +21,7 @@ GridBasedFieldFunctionInterface::GridBasedFieldFunctionInterface(const InputPara
 }
 
 FieldFunctionGridBased*
-GridBasedFieldFunctionInterface::GetGridBasedFieldFunction() const
+GridBasedFieldFunctionInterface::GridBasedFieldFunction() const
 {
   auto* ff_ptr = GetFieldFunction();
 

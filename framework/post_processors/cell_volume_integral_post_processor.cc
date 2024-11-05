@@ -45,7 +45,7 @@ CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputPara
 void
 CellVolumeIntegralPostProcessor::Initialize()
 {
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto* grid_field_function = GridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"
@@ -76,7 +76,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   if (not initialized_)
     Initialize();
 
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto* grid_field_function = GridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"

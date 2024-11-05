@@ -43,7 +43,7 @@ AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputPa
 void
 AggregateNodalValuePostProcessor::Initialize()
 {
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto* grid_field_function = GridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"
@@ -74,7 +74,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   if (not initialized_)
     Initialize();
 
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto* grid_field_function = GridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"
