@@ -76,7 +76,7 @@ public:
   void ZeroDestinationPhi();
 
   /// Returns a reference to the output flux moments vector.
-  std::vector<double>& GetDestinationPhi();
+  std::vector<double>& DestinationPhi();
 
   /// Sets the location where angular fluxes are to be written.
   void SetDestinationPsi(std::vector<double>& destination_psi);
@@ -85,7 +85,7 @@ public:
   void ZeroDestinationPsi();
 
   /// Returns a reference to the output angular flux vector.
-  std::vector<double>& GetDestinationPsi();
+  std::vector<double>& DestinationPsi();
 
   /// Resets all the incoming intra-location and inter-locationcyclic interfaces.
   void ZeroIncomingDelayedPsi();

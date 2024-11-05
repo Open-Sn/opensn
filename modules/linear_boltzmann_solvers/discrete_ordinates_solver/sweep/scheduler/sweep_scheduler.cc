@@ -308,7 +308,7 @@ SweepScheduler::ZeroDestinationPhi()
 }
 
 std::vector<double>&
-SweepScheduler::GetDestinationPhi()
+SweepScheduler::DestinationPhi()
 {
   return sweep_chunk_.GetDestinationPhi();
 }
@@ -326,7 +326,7 @@ SweepScheduler::ZeroDestinationPsi()
 }
 
 std::vector<double>&
-SweepScheduler::GetDestinationPsi()
+SweepScheduler::DestinationPsi()
 {
   return sweep_chunk_.GetDestinationPsi();
 }
