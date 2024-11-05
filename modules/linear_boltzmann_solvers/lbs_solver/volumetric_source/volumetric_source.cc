@@ -50,12 +50,12 @@ VolumetricSource::GetInputParameters()
 VolumetricSource::VolumetricSource(const InputParameters& params)
   : block_ids_(params.ParamVectorValue<int>("block_ids")),
     logvol_(params.ParametersAtAssignment().Has("logical_volume_handle")
-              ? GetStackItemPtrAsType<LogicalVolume>(
+              ? StackItemPtrAsType<LogicalVolume>(
                   object_stack, params.ParamValue<size_t>("logical_volume_handle"))
               : nullptr),
     strength_(params.ParamVectorValue<double>("group_strength")),
     function_(params.ParametersAtAssignment().Has("function_handle")
-                ? GetStackItemPtrAsType<VectorSpatialFunction>(
+                ? StackItemPtrAsType<VectorSpatialFunction>(
                     object_stack, params.ParamValue<size_t>("function_handle"))
                 : nullptr)
 {

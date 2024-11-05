@@ -33,7 +33,7 @@ TransientSolver::TransientSolver(const InputParameters& params)
   : opensn::Solver(params),
     lbs_solver_(
       GetStackItem<LBSSolver>(object_stack, params.ParamValue<size_t>("lbs_solver_handle"))),
-    time_integration_(GetStackItemPtrAsType<TimeIntegration>(
+    time_integration_(StackItemPtrAsType<TimeIntegration>(
       object_stack, params.ParamValue<size_t>("time_integration")))
 {
 }

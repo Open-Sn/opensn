@@ -25,7 +25,7 @@ ExportFieldFunctionToVTK(lua_State* L)
   auto ff_handle = LuaArg<size_t>(L, 1);
   auto base_name = LuaArg<std::string>(L, 2);
 
-  auto ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ff_handle, fname);
+  auto ff_base = opensn::StackItemPtr(opensn::field_function_stack, ff_handle, fname);
   auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
 
   OpenSnLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
@@ -50,7 +50,7 @@ ExportMultiFieldFunctionToVTK(lua_State* L)
   for (std::size_t i = 0; i < ff_handles.size(); ++i)
   {
     std::shared_ptr<FieldFunction> ff_base =
-      opensn::GetStackItemPtr(opensn::field_function_stack, ff_handles[i], fname);
+      opensn::StackItemPtr(opensn::field_function_stack, ff_handles[i], fname);
     auto ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_base);
     OpenSnLogicalErrorIf(not ff, "Only grid-based field functions can be exported");
 

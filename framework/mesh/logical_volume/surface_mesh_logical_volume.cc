@@ -28,7 +28,7 @@ SurfaceMeshLogicalVolume::GetInputParameters()
 
 SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    surf_mesh_(GetStackItemPtrAsType<SurfaceMesh>(
+    surf_mesh_(StackItemPtrAsType<SurfaceMesh>(
       object_stack, params.ParamValue<size_t>("surface_mesh_handle"), __FUNCTION__)),
     xbounds_({1.0e6, -1.0e6}),
     ybounds_({1.0e6, -1.0e6}),

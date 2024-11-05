@@ -47,7 +47,7 @@ LuaApp::Run(int argc, char** argv)
 {
   if (opensn::mpi_comm.rank() == 0)
   {
-    std::cout << opensn::program << " version " << GetVersionStr() << "\n"
+    std::cout << opensn::program << " version " << VersionStr() << "\n"
               << Timer::LocalDateTimeString() << " Running " << opensn::program << " with "
               << opensn::mpi_comm.size() << " processes.\n"
               << opensn::program << " number of arguments supplied: " << argc - 1 << "\n"

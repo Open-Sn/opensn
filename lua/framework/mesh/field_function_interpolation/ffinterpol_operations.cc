@@ -22,7 +22,7 @@ FFInterpolationInitialize(lua_State* L)
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
 
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi = opensn::StackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   p_ffi->Initialize();
   return LuaReturn(L);
@@ -37,7 +37,7 @@ FFInterpolationExecute(lua_State* L)
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
 
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi = opensn::StackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   p_ffi->Execute();
   return LuaReturn(L);

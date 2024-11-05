@@ -62,7 +62,7 @@ FFInterpolationSetProperty(lua_State* L)
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
 
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi = opensn::StackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   // Process properties
   auto property = static_cast<FieldFunctionInterpolationProperty>(LuaArg<int>(L, 2));
@@ -90,7 +90,7 @@ FFInterpolationSetProperty(lua_State* L)
   if (property == FieldFunctionInterpolationProperty::ADD_FIELD_FUNCTION)
   {
     auto ffhandle = LuaArg<size_t>(L, 3);
-    auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
+    auto cur_ff_base = opensn::StackItemPtr(opensn::field_function_stack, ffhandle, fname);
     auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
     p_ffi->FieldFunctions().push_back(cur_ff);
   }
@@ -100,7 +100,7 @@ FFInterpolationSetProperty(lua_State* L)
     for (double handle_d : handle_array)
     {
       const auto ffhandle = static_cast<int>(handle_d);
-      auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
+      auto cur_ff_base = opensn::StackItemPtr(opensn::field_function_stack, ffhandle, fname);
       auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
       p_ffi->FieldFunctions().push_back(cur_ff);
     } // for handle
@@ -195,7 +195,7 @@ FFInterpolationSetProperty(lua_State* L)
 
     auto logvol_hndle = LuaArg<int>(L, 3);
     auto p_logical_volume = std::dynamic_pointer_cast<LogicalVolume>(
-      opensn::GetStackItemPtr(opensn::object_stack, logvol_hndle, fname));
+      opensn::StackItemPtr(opensn::object_stack, logvol_hndle, fname));
 
     if (p_ffi->Type() != FieldFunctionInterpolationType::VOLUME)
     {

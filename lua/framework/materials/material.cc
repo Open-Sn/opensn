@@ -97,7 +97,7 @@ MatSetProperty(lua_State* L)
   const auto op_type = LuaArg<int>(L, 3);
 
   // Get a pointer to the material
-  auto material = opensn::GetStackItemPtr(opensn::material_stack, material_handle, fname);
+  auto material = opensn::StackItemPtr(opensn::material_stack, material_handle, fname);
 
   // Find the index of the material property on the material
   int property_index = -1;
@@ -199,7 +199,7 @@ MatSetProperty(lua_State* L)
 
       const auto xs_handle = LuaArg<int>(L, 4);
       material->properties.at(property_index) = std::dynamic_pointer_cast<MultiGroupXS>(
-        GetStackItemPtr(multigroup_xs_stack, xs_handle, fname));
+        StackItemPtr(multigroup_xs_stack, xs_handle, fname));
 
       opensn::log.Log0Verbose1() << "Cross sections at index " << xs_handle
                                  << " set on material at index " << material_handle << ".";
@@ -272,7 +272,7 @@ MatGetProperty(lua_State* L)
     property_index_name = LuaArg<std::string>(L, 2);
 
   // Get reference to material
-  auto cur_material = opensn::GetStackItemPtr(opensn::material_stack, material_index, fname);
+  auto cur_material = opensn::StackItemPtr(opensn::material_stack, material_index, fname);
 
   // If user supplied name then find property index
   if (not lua_isnumber(L, 2))

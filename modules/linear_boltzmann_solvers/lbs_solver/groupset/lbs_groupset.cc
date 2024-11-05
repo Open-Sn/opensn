@@ -168,7 +168,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
 
   // Add quadrature
   const size_t quad_handle = params.ParamValue<size_t>("angular_quadrature_handle");
-  quadrature = GetStackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
+  quadrature = StackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
 
   // Angle aggregation
   const auto angle_agg_typestr = params.ParamValue<std::string>("angle_aggregation_type");

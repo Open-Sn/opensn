@@ -41,7 +41,7 @@ FieldFunctionInterface::GetFieldFunction() const
   else if (field_function_param_.Type() == ParameterBlockType::INTEGER)
   {
     const auto handle = field_function_param_.Value<size_t>();
-    ref_ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
+    ref_ff_ptr = StackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
   }
   else
     OpenSnInvalidArgument("Argument can only be STRING or INTEGER");

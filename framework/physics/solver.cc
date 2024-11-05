@@ -63,7 +63,7 @@ Solver::InitTimeStepper(const InputParameters& params)
 
   if (user_params.Has("timestepper"))
   {
-    auto stepper = GetStackItemPtrAsType<TimeStepper>(
+    auto stepper = StackItemPtrAsType<TimeStepper>(
       object_stack, params.ParamValue<size_t>("timestepper"), __FUNCTION__);
 
     stepper->SetTimeStepSize(params.ParamValue<double>("dt"));

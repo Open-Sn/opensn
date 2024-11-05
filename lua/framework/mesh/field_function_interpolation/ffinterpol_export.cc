@@ -19,7 +19,7 @@ FFInterpolationExportToCSV(lua_State* L)
 {
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
-  auto p_ffi = opensn::GetStackItemPtr(
+  auto p_ffi = opensn::StackItemPtr(
     opensn::field_func_interpolation_stack, ffihandle, "fieldfunc.ExportToCSV");
   if (p_ffi->Type() != opensn::FieldFunctionInterpolationType::LINE)
     opensn::log.Log0Warning() << "ExportToCSV is only supported for LINE interpolators.";
@@ -36,7 +36,7 @@ FFInterpolationExportToPython(lua_State* L)
 {
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
-  auto p_ffi = opensn::GetStackItemPtr(
+  auto p_ffi = opensn::StackItemPtr(
     opensn::field_func_interpolation_stack, ffihandle, "fieldfunc.ExportToPython");
   if (p_ffi->Type() != opensn::FieldFunctionInterpolationType::SLICE)
     opensn::log.Log0Warning() << "ExportToPython is only supported for SLICEinterpolators.";

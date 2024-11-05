@@ -150,7 +150,7 @@ XSSet(lua_State* L)
   try
   {
     xs = std::dynamic_pointer_cast<MultiGroupXS>(
-      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+      opensn::StackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -205,7 +205,7 @@ XSGet(lua_State* L)
   try
   {
     xs = std::dynamic_pointer_cast<MultiGroupXS>(
-      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle));
+      opensn::StackItemPtr(opensn::multigroup_xs_stack, handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -288,7 +288,7 @@ XSSetCombined(lua_State* L)
   try
   {
     xs = std::dynamic_pointer_cast<MultiGroupXS>(
-      opensn::GetStackItemPtr(opensn::multigroup_xs_stack, xs_handle));
+      opensn::StackItemPtr(opensn::multigroup_xs_stack, xs_handle));
   }
   catch (const std::out_of_range& o)
   {
@@ -348,7 +348,7 @@ XSMakeScaled(lua_State* L)
   std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);
+    xs = opensn::StackItemPtr(opensn::multigroup_xs_stack, handle);
   }
   catch (const std::out_of_range& o)
   {
@@ -374,7 +374,7 @@ XSSetScalingFactor(lua_State* L)
   std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);
+    xs = opensn::StackItemPtr(opensn::multigroup_xs_stack, handle);
   }
   catch (const std::out_of_range& o)
   {
@@ -397,7 +397,7 @@ XSExportToOpenSnFormat(lua_State* L)
   std::shared_ptr<MultiGroupXS> xs;
   try
   {
-    xs = opensn::GetStackItemPtr(opensn::multigroup_xs_stack, handle);
+    xs = opensn::StackItemPtr(opensn::multigroup_xs_stack, handle);
   }
   catch (const std::out_of_range& o)
   {

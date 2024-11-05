@@ -132,9 +132,9 @@ GetStackItem(std::vector<std::shared_ptr<T>>& stack,
  */
 template <class T, class P>
 static std::shared_ptr<T>
-GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
-                      const size_t handle,
-                      const std::string& calling_function_name = "Unknown")
+StackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
+                   const size_t handle,
+                   const std::string& calling_function_name = "Unknown")
 {
   std::shared_ptr<P> item_type_P;
   try
@@ -166,9 +166,9 @@ GetStackItemPtrAsType(std::vector<std::shared_ptr<P>>& stack,
  */
 template <class T>
 static std::shared_ptr<T>&
-GetStackItemPtr(std::vector<std::shared_ptr<T>>& stack,
-                const size_t handle,
-                const std::string& calling_function_name = "Unknown")
+StackItemPtr(std::vector<std::shared_ptr<T>>& stack,
+             const size_t handle,
+             const std::string& calling_function_name = "Unknown")
 {
   try
   {
@@ -189,7 +189,7 @@ int Initialize();
 void Finalize();
 
 /// Gets the version string.
-std::string GetVersionStr();
+std::string VersionStr();
 
 /// Exits the program appropriately.
 void Exit(int error_code);

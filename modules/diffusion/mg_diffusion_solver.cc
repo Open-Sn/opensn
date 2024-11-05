@@ -412,7 +412,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
   for (const int& mat_id : material_ids)
   {
-    auto current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
+    auto current_material = StackItemPtr(material_stack, mat_id, __FUNCTION__);
     materials_list << "Material id " << mat_id;
 
     // Check valid ids

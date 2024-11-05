@@ -47,7 +47,7 @@ Initialize()
   if (use_caliper)
   {
     cali_mgr.add(cali_config.c_str());
-    cali_set_global_string_byname("opensn.version", GetVersionStr().c_str());
+    cali_set_global_string_byname("opensn.version", VersionStr().c_str());
     cali_set_global_string_byname("opensn.input", input_path.c_str());
     cali_mgr.start();
   }
@@ -85,7 +85,7 @@ Exit(int error_code)
 }
 
 std::string
-GetVersionStr()
+VersionStr()
 {
   return PROJECT_VERSION;
 }

@@ -26,7 +26,7 @@ FFInterpolationGetValue(lua_State* L)
   // Get handle to field function
   const auto ffihandle = LuaArg<size_t>(L, 1);
 
-  auto p_ffi = opensn::GetStackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
+  auto p_ffi = opensn::StackItemPtr(opensn::field_func_interpolation_stack, ffihandle, fname);
 
   if (p_ffi->Type() == FieldFunctionInterpolationType::POINT)
   {

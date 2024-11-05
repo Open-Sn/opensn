@@ -939,7 +939,7 @@ LBSSolver::InitializeMaterials()
   {
     materials_list << "Material id " << mat_id;
 
-    const auto& current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
+    const auto& current_material = StackItemPtr(material_stack, mat_id, __FUNCTION__);
 
     // Extract properties
     bool found_transport_xs = false;
