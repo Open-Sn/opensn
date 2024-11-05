@@ -210,7 +210,7 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
 
   grid_ptr->BoundaryIDMap() = input_umesh->BoundaryIDMap();
 
-  auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
+  auto& vertex_subs = input_umesh->VertextCellSubscriptions();
   size_t cell_globl_id = 0;
   for (auto& raw_cell : input_umesh->RawCells())
   {

@@ -71,13 +71,13 @@ public:
   void SetExtruded(bool extruded) { extruded_ = extruded; }
   bool Extruded() const { return extruded_; }
 
-  const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
+  const std::vector<std::set<uint64_t>>& VertextCellSubscriptions() const
   {
     return vertex_cell_subscriptions_;
   }
 
   void AddCell(std::shared_ptr<LightWeightCell> cell) { raw_cells_.push_back(cell); }
-  size_t GetNumberOfCells() const { return raw_cells_.size(); }
+  size_t NumberOfCells() const { return raw_cells_.size(); }
 
   std::vector<std::shared_ptr<LightWeightCell>>& RawCells() { return raw_cells_; }
   const std::vector<std::shared_ptr<LightWeightCell>>& RawCells() const { return raw_cells_; }

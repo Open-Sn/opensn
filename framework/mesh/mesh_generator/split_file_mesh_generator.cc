@@ -130,7 +130,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
 
   OpenSnLogicalErrorIf(not root_dir_created, "Failed to create directory " + dir_path.string());
 
-  const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
+  const auto& vertex_subs = umesh.VertextCellSubscriptions();
   const auto& raw_cells = umesh.RawCells();
   const auto& raw_vertices = umesh.Vertices();
 
