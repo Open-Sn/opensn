@@ -129,9 +129,9 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 
       const auto polar_level = map_polar_level_[direction_num];
       const auto fac_diamond_difference =
-        curvilinear_product_quadrature->GetDiamondDifferenceFactor()[direction_num];
+        curvilinear_product_quadrature->DiamondDifferenceFactor()[direction_num];
       const auto fac_streaming_operator =
-        curvilinear_product_quadrature->GetStreamingOperatorFactor()[direction_num];
+        curvilinear_product_quadrature->StreamingOperatorFactor()[direction_num];
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;

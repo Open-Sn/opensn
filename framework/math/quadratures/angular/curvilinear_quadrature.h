@@ -29,9 +29,9 @@ protected:
   virtual ~CurvilinearQuadrature() = default;
 
 public:
-  const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
+  const std::vector<double>& DiamondDifferenceFactor() const { return fac_diamond_difference_; }
 
-  const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
+  const std::vector<double>& StreamingOperatorFactor() const { return fac_streaming_operator_; }
 };
 
 } // namespace opensn
