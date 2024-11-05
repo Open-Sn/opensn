@@ -25,10 +25,10 @@ public:
   NonLinearSolverOptions& ToleranceOptions() { return options_; }
   void ApplyToleranceOptions();
 
-  std::shared_ptr<NonLinearSolverContext>& GetContext() { return context_ptr_; }
+  std::shared_ptr<NonLinearSolverContext>& Context() { return context_ptr_; }
 
   bool IsConverged() const { return converged_; }
-  std::string GetConvergedReasonString() const;
+  std::string ConvergedReasonString() const;
 
   virtual void Setup();
   virtual void Solve();

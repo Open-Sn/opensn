@@ -163,7 +163,7 @@ NonLinearSolver::Solve()
 }
 
 std::string
-NonLinearSolver::GetConvergedReasonString() const
+NonLinearSolver::ConvergedReasonString() const
 {
   std::stringstream outstr;
   if (converged_)
