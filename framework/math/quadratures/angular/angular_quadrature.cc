@@ -152,7 +152,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order, 
 }
 
 std::vector<std::vector<double>> const&
-AngularQuadrature::GetDiscreteToMomentOperator() const
+AngularQuadrature::DiscreteToMomentOperator() const
 {
   const std::string fname = __FUNCTION__;
   if (not d2m_op_built_)
@@ -163,7 +163,7 @@ AngularQuadrature::GetDiscreteToMomentOperator() const
 }
 
 std::vector<std::vector<double>> const&
-AngularQuadrature::GetMomentToDiscreteOperator() const
+AngularQuadrature::MomentToDiscreteOperator() const
 {
   const std::string fname = __FUNCTION__;
   if (not m2d_op_built_)
@@ -174,7 +174,7 @@ AngularQuadrature::GetMomentToDiscreteOperator() const
 }
 
 const std::vector<AngularQuadrature::HarmonicIndices>&
-AngularQuadrature::GetMomentToHarmonicsIndexMap() const
+AngularQuadrature::MomentToHarmonicsIndexMap() const
 {
   const std::string fname = __FUNCTION__;
   if (not(d2m_op_built_ or m2d_op_built_))

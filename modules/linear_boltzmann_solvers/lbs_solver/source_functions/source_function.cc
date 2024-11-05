@@ -50,7 +50,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto num_moments = lbs_solver_.NumMoments();
   const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
 
-  const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
+  const auto& m_to_ell_em_map = groupset.quadrature->MomentToHarmonicsIndexMap();
 
   // Apply all nodal sources
   const auto& grid = lbs_solver_.Grid();

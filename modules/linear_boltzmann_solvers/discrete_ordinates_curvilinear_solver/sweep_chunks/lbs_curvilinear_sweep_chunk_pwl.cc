@@ -81,8 +81,8 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
   int preloc_face_counter = -1;
 
   auto& fluds = dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
-  const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
-  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
+  const auto& m2d_op = groupset_.quadrature->MomentToDiscreteOperator();
+  const auto& d2m_op = groupset_.quadrature->DiscreteToMomentOperator();
 
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);

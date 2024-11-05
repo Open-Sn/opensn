@@ -85,20 +85,20 @@ public:
    * operator has not been built yet. The operator is accessed as [m][d], where m is the moment
    * index and d is the direction index.
    */
-  std::vector<std::vector<double>> const& GetDiscreteToMomentOperator() const;
+  std::vector<std::vector<double>> const& DiscreteToMomentOperator() const;
 
   /**
    * Returns a reference to the precomputed m2d operator. This will throw a std::logic_error if the
    * operator has not been built yet. The operator is accessed as [m][d], where m is the moment
    * index and d is the direction index.
    */
-  std::vector<std::vector<double>> const& GetMomentToDiscreteOperator() const;
+  std::vector<std::vector<double>> const& MomentToDiscreteOperator() const;
 
   /**
    * Returns a reference to the precomputed harmonic index map. This will throw a std::logic_error
    * if the map has not been built yet.
    */
-  const std::vector<HarmonicIndices>& GetMomentToHarmonicsIndexMap() const;
+  const std::vector<HarmonicIndices>& MomentToHarmonicsIndexMap() const;
 };
 
 class AngularQuadratureCustom : public AngularQuadrature

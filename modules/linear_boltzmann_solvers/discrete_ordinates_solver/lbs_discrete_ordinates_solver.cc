@@ -507,7 +507,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     int gs = groupset.id;
 
     // Moment map for flux moments
-    const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
+    const auto& moment_map = groupset.quadrature->MomentToHarmonicsIndexMap();
 
     // Angular flux info
     auto& psi = psi_new_local_[gs];

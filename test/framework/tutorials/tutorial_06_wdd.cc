@@ -95,9 +95,9 @@ SimTest06_WDD(const InputParameters&)
   quadrature->BuildMomentToDiscreteOperator(scat_order, dimension);
   quadrature->BuildDiscreteToMomentOperator(scat_order, dimension);
 
-  const auto& m2d = quadrature->GetMomentToDiscreteOperator();
-  const auto& d2m = quadrature->GetDiscreteToMomentOperator();
-  const auto& m_ell_em_map = quadrature->GetMomentToHarmonicsIndexMap();
+  const auto& m2d = quadrature->MomentToDiscreteOperator();
+  const auto& d2m = quadrature->DiscreteToMomentOperator();
+  const auto& m_ell_em_map = quadrature->MomentToHarmonicsIndexMap();
 
   const size_t num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas.size();

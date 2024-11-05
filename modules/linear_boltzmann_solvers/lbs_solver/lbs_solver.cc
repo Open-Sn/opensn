@@ -1221,13 +1221,13 @@ LBSSolver::ComputeNumberOfMoments()
   CALI_CXX_MARK_SCOPE("LBSSolver::ComputeNumberOfMoments");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
+    if (groupsets_[gs].quadrature->MomentToHarmonicsIndexMap() !=
+        groupsets_[0].quadrature->MomentToHarmonicsIndexMap())
       throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
                              "Moment-to-Harmonics mapping differs between "
                              "groupsets_, which is not allowed.");
 
-  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
+  num_moments_ = (int)groupsets_.front().quadrature->MomentToHarmonicsIndexMap().size();
 
   if (num_moments_ == 0)
     throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "

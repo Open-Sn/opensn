@@ -43,7 +43,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   auto jorder = Range<int>(0, Ny);
   auto korder = Range<int>(0, Nz);
 
-  const auto& D2M = quad.GetDiscreteToMomentOperator();
+  const auto& D2M = quad.DiscreteToMomentOperator();
 
   int n = 0;
   for (const auto& omega_n : quad.omegas)
