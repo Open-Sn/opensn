@@ -41,13 +41,13 @@ public:
 
   void SetOpposingReflected(bool value) { opposing_reflected_ = value; }
 
-  AngularFluxData& GetBoundaryFluxNew() { return boundary_flux_; }
+  AngularFluxData& BoundaryFluxNew() { return boundary_flux_; }
 
-  AngularFluxData& GetBoundaryFluxOld() { return boundary_flux_old_; }
+  AngularFluxData& BoundaryFluxOld() { return boundary_flux_old_; }
 
-  std::vector<int>& GetReflectedAngleIndexMap() { return reflected_anglenum_; }
+  std::vector<int>& ReflectedAngleIndexMap() { return reflected_anglenum_; }
 
-  std::vector<std::vector<bool>>& GetAngleReadyFlags() { return angle_readyflags_; }
+  std::vector<std::vector<bool>>& AngleReadyFlags() { return angle_readyflags_; }
 
   double* PsiIncoming(uint64_t cell_local_id,
                       unsigned int face_num,
