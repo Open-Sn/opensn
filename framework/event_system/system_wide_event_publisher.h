@@ -11,7 +11,7 @@ namespace opensn
 class SystemWideEventPublisher : public EventPublisher
 {
 public:
-  static SystemWideEventPublisher& GetInstance();
+  static SystemWideEventPublisher& Instance();
 
   /// Deleted copy constructor
   SystemWideEventPublisher(const SystemWideEventPublisher&) = delete;

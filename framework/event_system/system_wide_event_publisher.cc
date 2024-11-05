@@ -11,7 +11,7 @@ SystemWideEventPublisher::SystemWideEventPublisher() : EventPublisher("SystemWid
 }
 
 SystemWideEventPublisher&
-SystemWideEventPublisher::GetInstance()
+SystemWideEventPublisher::Instance()
 {
   static SystemWideEventPublisher instance;
 

@@ -54,7 +54,7 @@ Initialize()
 
   CALI_MARK_BEGIN(opensn::program.c_str());
 
-  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
+  SystemWideEventPublisher::Instance().PublishEvent(Event("ProgramStart"));
 
   // Disable internal HDF error reporting
   H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
@@ -65,7 +65,7 @@ Initialize()
 void
 Finalize()
 {
-  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
+  SystemWideEventPublisher::Instance().PublishEvent(Event("ProgramExecuted"));
   mesh_stack.clear();
   surface_mesh_stack.clear();
   field_func_interpolation_stack.clear();

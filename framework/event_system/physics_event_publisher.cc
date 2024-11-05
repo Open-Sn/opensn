@@ -26,7 +26,7 @@ PhysicsEventPublisher::PublishEvent(const Event& event)
 {
   EventPublisher::PublishEvent(event);
 
-  SystemWideEventPublisher::GetInstance().PublishEvent(event);
+  SystemWideEventPublisher::Instance().PublishEvent(event);
 }
 
 void

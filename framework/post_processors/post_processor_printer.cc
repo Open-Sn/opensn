@@ -51,7 +51,7 @@ PostProcessorPrinter::SubscribeToSystemWideEventPublisher()
 {
   auto helper_ptr = PostProcessorPrinter::helper_ptr_;
 
-  auto& publisher = SystemWideEventPublisher::GetInstance();
+  auto& publisher = SystemWideEventPublisher::Instance();
   auto subscriber_ptr = std::dynamic_pointer_cast<EventSubscriber>(helper_ptr);
 
   OpenSnLogicalErrorIf(not subscriber_ptr,
