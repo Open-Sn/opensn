@@ -20,7 +20,7 @@ public:
   explicit LineQuadrature(QuadratureOrder order);
 
   /// Get the range on which the quadrature is defined.
-  const std::pair<double, double>& GetRange() const { return range_; }
+  const std::pair<double, double>& Range() const { return range_; }
 
   /**
    * Set the range on which the quadrature is defined. Note that calling this method results in
