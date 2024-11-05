@@ -86,7 +86,7 @@ SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
 const std::vector<Vector3>&
 SpatialDiscretization::GetCellNodeLocations(const Cell& cell) const
 {
-  return GetCellMapping(cell).GetNodeLocations();
+  return GetCellMapping(cell).NodeLocations();
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
@@ -126,7 +126,7 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = this->GetCellMapping(cell);
-    const auto& node_locations = cell_mapping.GetNodeLocations();
+    const auto& node_locations = cell_mapping.NodeLocations();
     const size_t num_faces = cell.faces.size();
 
     std::vector<std::vector<int>> per_face_adj_mapping;
@@ -140,7 +140,7 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       {
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
-        const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
+        const auto& adj_node_locations = adj_cell_mapping.NodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.NumNodes();
 
         for (size_t fi = 0; fi < num_face_nodes; ++fi)

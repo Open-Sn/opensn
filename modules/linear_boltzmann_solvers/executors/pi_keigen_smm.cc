@@ -447,7 +447,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
   {
     const auto& rho = lbs_solver_.DensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto nodes = cell_mapping.GetNodeLocations();
+    const auto nodes = cell_mapping.NodeLocations();
     const auto num_cell_nodes = cell_mapping.NumNodes();
     const auto num_cell_faces = cell.faces.size();
 
@@ -508,7 +508,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       {
         const auto& nbr_cell = grid.cells[face.neighbor_id];
         const auto& nbr_cell_mapping = pwld.GetCellMapping(nbr_cell);
-        const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
+        const auto& nbr_nodes = nbr_cell_mapping.NodeLocations();
 
         for (int gsg = 0; gsg < num_gs_groups; ++gsg)
         {

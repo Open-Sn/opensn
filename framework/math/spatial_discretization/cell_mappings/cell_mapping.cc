@@ -49,7 +49,7 @@ CellMapping::NumFaceNodes(size_t face_index) const
 }
 
 const std::vector<std::vector<int>>&
-CellMapping::GetFaceNodeMappings() const
+CellMapping::FaceNodeMappings() const
 {
   return face_node_mappings_;
 }
@@ -170,7 +170,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
 }
 
 const std::vector<Vector3>&
-CellMapping::GetNodeLocations() const
+CellMapping::NodeLocations() const
 {
   return node_locations_;
 }

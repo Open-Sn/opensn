@@ -37,7 +37,7 @@ public:
   /// Returns the number of nodes on the given face.
   size_t NumFaceNodes(size_t face_index) const;
 
-  const std::vector<std::vector<int>>& GetFaceNodeMappings() const;
+  const std::vector<std::vector<int>>& FaceNodeMappings() const;
 
   /// Returns the cell volume.
   double CellVolume() const;
@@ -71,7 +71,7 @@ public:
                                std::vector<Vector3>& gradshape_values) const = 0;
 
   /// Returns the node locations associated with this element.
-  const std::vector<Vector3>& GetNodeLocations() const;
+  const std::vector<Vector3>& NodeLocations() const;
 
   /// Makes the volumetric/internal finite element data for this element.
   virtual VolumetricFiniteElementData MakeVolumetricFiniteElementData() const = 0;

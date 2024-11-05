@@ -298,7 +298,7 @@ DFEMDiffusionSolver::Execute()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto cc_nodes = cell_mapping.GetNodeLocations();
+    const auto cc_nodes = cell_mapping.NodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const auto imat = cell.material_id;
@@ -345,7 +345,7 @@ DFEMDiffusionSolver::Execute()
       {
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
-        const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
+        const auto ac_nodes = adj_cell_mapping.NodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp_neigh = HPerpendicular(adj_cell, acf);
 

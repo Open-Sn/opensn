@@ -104,7 +104,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto& cc_nodes = cell_mapping.GetNodeLocations();
+    const auto& cc_nodes = cell_mapping.NodeLocations();
 
     const double D = 1.0;
 
@@ -151,7 +151,7 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
-        const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
+        const auto ac_nodes = adj_cell_mapping.NodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp = HPerpendicular(adj_cell_mapping, acf);
 

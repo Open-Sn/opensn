@@ -66,7 +66,7 @@ SimTest04_PWLC(const InputParameters& params)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
+    const auto cell_node_xyzs = cell_mapping.NodeLocations();
 
     const size_t num_nodes = cell_mapping.NumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
