@@ -220,7 +220,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
     for (auto& angle_set : angle_set_group.AngleSets())
       angle_set->ResetSweepBuffers();
 
-  for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
+  for (auto& [bid, bndry] : angle_agg_.SimBoundaries())
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {
@@ -274,7 +274,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     for (auto& angle_set : angle_set_group.AngleSets())
       angle_set->ResetSweepBuffers();
 
-  for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
+  for (auto& [bid, bndry] : angle_agg_.SimBoundaries())
   {
     if (bndry->Type() == BoundaryType::REFLECTING)
     {

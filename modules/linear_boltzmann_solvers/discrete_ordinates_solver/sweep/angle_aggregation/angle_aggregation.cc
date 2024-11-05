@@ -238,7 +238,7 @@ AngleAggregation::InitializeReflectingBCs()
 }
 
 std::pair<size_t, size_t>
-AngleAggregation::GetNumDelayedAngularDOFs()
+AngleAggregation::NumDelayedAngularDOFs()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::GetNumDelayedAngularDOFs");
 
@@ -471,13 +471,13 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
 }
 
 std::vector<double>
-AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
+AngleAggregation::NewDelayedAngularDOFsAsSTLVector()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector");
 
   std::vector<double> psi_vector;
 
-  auto psi_size = GetNumDelayedAngularDOFs();
+  auto psi_size = NumDelayedAngularDOFs();
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
@@ -519,7 +519,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector");
 
-  auto psi_size = GetNumDelayedAngularDOFs();
+  auto psi_size = NumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
     throw std::logic_error(std::string(__FUNCTION__) +
@@ -561,13 +561,13 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 }
 
 std::vector<double>
-AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
+AngleAggregation::OldDelayedAngularDOFsAsSTLVector()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector");
 
   std::vector<double> psi_vector;
 
-  auto psi_size = GetNumDelayedAngularDOFs();
+  auto psi_size = NumDelayedAngularDOFs();
   psi_vector.reserve(psi_size.first);
 
   // Opposing reflecting bndries
@@ -609,7 +609,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector");
 
-  auto psi_size = GetNumDelayedAngularDOFs();
+  auto psi_size = NumDelayedAngularDOFs();
   size_t stl_size = stl_vector.size();
   if (stl_size != psi_size.first)
     throw std::logic_error(std::string(__FUNCTION__) +

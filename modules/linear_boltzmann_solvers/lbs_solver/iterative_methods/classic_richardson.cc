@@ -37,7 +37,7 @@ ClassicRichardson::Solve()
   auto& phi_new = lbs_solver.PhiNewLocal();
   const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();
-  psi_old_.resize(groupset.angle_agg->GetNumDelayedAngularDOFs().first, 0.0);
+  psi_old_.resize(groupset.angle_agg->NumDelayedAngularDOFs().first, 0.0);
 
   double pw_phi_change_prev = 1.0;
   bool converged = false;
@@ -71,7 +71,7 @@ ClassicRichardson::Solve()
     double rho = (k == 0) ? 0.0 : sqrt(pw_phi_change / pw_phi_change_prev);
     pw_phi_change_prev = pw_phi_change;
 
-    psi_new_ = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
+    psi_new_ = groupset.angle_agg->NewDelayedAngularDOFsAsSTLVector();
     double pw_psi_change = ComputePointwiseChange(psi_new_, psi_old_);
 
     if ((pw_phi_change < std::max(groupset.residual_tolerance * (1.0 - rho), 1.0e-10)) &&

@@ -77,7 +77,7 @@ SweepWGSContext::SystemSize()
   const size_t num_moments = lbs_solver.NumMoments();
 
   const size_t groupset_numgrps = groupset.groups.size();
-  const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
+  const auto num_delayed_psi_info = groupset.angle_agg->NumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t globl_size =

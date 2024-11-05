@@ -49,11 +49,11 @@ public:
 
   bool IsSetup() const { return is_setup_; }
 
-  size_t GetNumberGroups() const { return num_groups_; }
+  size_t NumberGroups() const { return num_groups_; }
 
-  size_t GetNumberGroupSubsets() const { return num_group_subsets_; }
+  size_t NumberGroupSubsets() const { return num_group_subsets_; }
 
-  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& SimBoundaries() const
   {
     return boundaries_;
   }
@@ -71,7 +71,7 @@ public:
    * Returns a pair of numbers containing the number of delayed angular unknowns both locally and
    * globally, respectively.
    */
-  std::pair<size_t, size_t> GetNumDelayedAngularDOFs();
+  std::pair<size_t, size_t> NumDelayedAngularDOFs();
 
   /// Assembles angular unknowns into the reference vector.
   void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
@@ -86,13 +86,13 @@ public:
   void SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* x_ref);
 
   /// Gets the current values of the angular unknowns as an STL vector.
-  std::vector<double> GetNewDelayedAngularDOFsAsSTLVector();
+  std::vector<double> NewDelayedAngularDOFsAsSTLVector();
 
   /// Gets the current values of the angular unknowns as an STL vector.
   void SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector);
 
   /// Gets the current values of the angular unknowns as an STL vector.
-  std::vector<double> GetOldDelayedAngularDOFsAsSTLVector();
+  std::vector<double> OldDelayedAngularDOFsAsSTLVector();
 
   /// Gets the current values of the angular unknowns as an STL vector.
   void SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector);

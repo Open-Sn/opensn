@@ -93,7 +93,7 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
   size_t num_globl_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
-    const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
+    const auto num_delayed_psi_info = groupset.angle_agg->NumDelayedAngularDOFs();
     num_local_psi_dofs += num_delayed_psi_info.first;
     num_globl_psi_dofs += num_delayed_psi_info.second;
   }
@@ -180,14 +180,14 @@ DiscreteOrdinatesSolver::ScalePhiVector(PhiSTLOption which_phi, double value)
     {
       case PhiSTLOption::PHI_NEW:
       {
-        auto psi = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->NewDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
         groupset.angle_agg->SetNewDelayedAngularDOFsFromSTLVector(psi);
         break;
       }
       case PhiSTLOption::PHI_OLD:
       {
-        auto psi = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+        auto psi = groupset.angle_agg->OldDelayedAngularDOFsAsSTLVector();
         Scale(psi, value);
         groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         break;
