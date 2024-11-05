@@ -54,7 +54,7 @@ public:
    * \return Event code (`ECode`) associated with the event name. If no code is found then
    * `Unknown`.
    */
-  static Event::EventCode GetStandardCode(const std::string& event_name);
+  static Event::EventCode StandardCode(const std::string& event_name);
 };
 
 } // namespace opensn

@@ -7,12 +7,12 @@
 namespace opensn
 {
 
-Event::Event(const std::string& name) : name_(name), code_(Event::GetStandardCode(name)), params_()
+Event::Event(const std::string& name) : name_(name), code_(Event::StandardCode(name)), params_()
 {
 }
 
 Event::Event(const std::string& name, const ParameterBlock& parameter_block)
-  : name_(name), code_(Event::GetStandardCode(name)), params_(parameter_block)
+  : name_(name), code_(Event::StandardCode(name)), params_(parameter_block)
 {
 }
 
@@ -41,7 +41,7 @@ Event::IsSolverEvent() const
 }
 
 Event::EventCode
-Event::GetStandardCode(const std::string& event_name)
+Event::StandardCode(const std::string& event_name)
 {
   static std::map<std::string, Event::EventCode> event_name_2_code_map{
     {"ProgramStart", Event::ProgramStart},
