@@ -111,10 +111,10 @@ public:
   size_t& LastRestartTime();
 
   /// Returns a reference to the map of material ids to XSs.
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
+  const std::map<int, std::shared_ptr<MultiGroupXS>>& MatID2XSMap() const;
 
   /// Returns a reference to the map of material ids to Isotropic Srcs.
-  const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>& GetMatID2IsoSrcMap() const;
+  const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>& MatID2IsoSrcMap() const;
 
   /// Obtains a reference to the grid.
   const MeshContinuum& Grid() const;
@@ -129,7 +129,7 @@ public:
   const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
   /// Returns a reference to the list of local cell transport views.
-  const std::vector<CellLBSView>& GetCellTransportViews() const;
+  const std::vector<CellLBSView>& CellTransportViews() const;
 
   /// Read/Write access to the boundary preferences.
   std::map<uint64_t, BoundaryPreference>& BoundaryPreferences();
@@ -188,11 +188,11 @@ public:
   /// Returns the sweep boundaries as a read only reference
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& SweepBoundaries() const;
 
-  SetSourceFunction GetActiveSetSourceFunction() const;
+  SetSourceFunction ActiveSetSourceFunction() const;
 
   std::shared_ptr<AGSSolver> GetAGSSolver();
 
-  std::vector<std::shared_ptr<LinearSolver>>& GetWGSSolvers();
+  std::vector<std::shared_ptr<LinearSolver>>& WGSSolvers();
 
   WGSContext& GetWGSContext(int groupset_id);
 
@@ -200,13 +200,13 @@ public:
    * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
    * however, the sweep based solvers might include delayed angular fluxes in this number.
    */
-  virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
+  virtual std::pair<size_t, size_t> NumPhiIterativeUnknowns();
 
   /// Gets the local handle of a flux-moment based field function.
   size_t MapPhiFieldFunction(size_t g, size_t m) const;
 
   /// Returns the local handle to the power generation field function, if enabled.
-  size_t GetHandleToPowerGenFieldFunc() const;
+  size_t HandleToPowerGenFieldFunc() const;
 
   void Initialize() override;
 

@@ -27,7 +27,7 @@ public:
 
   const std::string& SweepType() const { return sweep_type_; }
 
-  std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
+  std::pair<size_t, size_t> NumPhiIterativeUnknowns() override;
   void Initialize() override;
   void ScalePhiVector(PhiSTLOption which_phi, double value) override;
   void SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,

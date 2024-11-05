@@ -43,7 +43,7 @@ ComputePointwisePhiChange(
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.PhiOldLocal();
 
   auto grid_ptr = GetCurrentMesh();
-  auto& cell_transport_views = lbs_solver.GetCellTransportViews();
+  auto& cell_transport_views = lbs_solver.CellTransportViews();
   auto num_moments = lbs_solver.NumMoments();
 
   double pw_change = 0.0;

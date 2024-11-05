@@ -131,7 +131,7 @@ PowerIterationKEigenSMM::Initialize()
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
-    lbs_solver_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    lbs_solver_.MatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -317,7 +317,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
 {
   const auto& grid = lbs_solver_.Grid();
   const auto& pwld = lbs_solver_.SpatialDiscretization();
-  const auto& transport_views = lbs_solver_.GetCellTransportViews();
+  const auto& transport_views = lbs_solver_.CellTransportViews();
 
   // Create a local tensor vector, set it to zero
   auto local_tensors = tensors_->MakeLocalVector();
@@ -427,7 +427,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
 {
   const auto& grid = lbs_solver_.Grid();
   const auto& pwld = lbs_solver_.SpatialDiscretization();
-  const auto& matid_to_xs_map = lbs_solver_.GetMatID2XSMap();
+  const auto& matid_to_xs_map = lbs_solver_.MatID2XSMap();
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->SpatialDiscretization();

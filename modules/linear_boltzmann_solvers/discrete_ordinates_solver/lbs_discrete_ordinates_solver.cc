@@ -82,7 +82,7 @@ DiscreteOrdinatesSolver::~DiscreteOrdinatesSolver()
 }
 
 std::pair<size_t, size_t>
-DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
+DiscreteOrdinatesSolver::NumPhiIterativeUnknowns()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;

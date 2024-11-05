@@ -88,7 +88,7 @@ PowerIterationKEigenSCDSA::Initialize()
 
   // Make xs map
   auto matid_2_mgxs_map = PackGroupsetXS(
-    lbs_solver_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    lbs_solver_.MatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
   const auto& sdm = lbs_solver_.SpatialDiscretization();

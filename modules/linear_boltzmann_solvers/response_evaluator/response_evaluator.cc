@@ -319,7 +319,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   const auto& grid = lbs_solver_.Grid();
   const auto& discretization = lbs_solver_.SpatialDiscretization();
-  const auto& transport_views = lbs_solver_.GetCellTransportViews();
+  const auto& transport_views = lbs_solver_.CellTransportViews();
   const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
   const auto num_groups = lbs_solver_.NumGroups();
 

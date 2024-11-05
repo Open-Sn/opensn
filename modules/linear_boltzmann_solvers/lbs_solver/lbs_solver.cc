@@ -205,13 +205,13 @@ LBSSolver::VolumetricSources() const
 }
 
 const std::map<int, std::shared_ptr<MultiGroupXS>>&
-LBSSolver::GetMatID2XSMap() const
+LBSSolver::MatID2XSMap() const
 {
   return matid_to_xs_map_;
 }
 
 const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>&
-LBSSolver::GetMatID2IsoSrcMap() const
+LBSSolver::MatID2IsoSrcMap() const
 {
   return matid_to_src_map_;
 }
@@ -241,7 +241,7 @@ LBSSolver::GetUnitGhostCellMatrices() const
 }
 
 const std::vector<CellLBSView>&
-LBSSolver::GetCellTransportViews() const
+LBSSolver::CellTransportViews() const
 {
   return cell_transport_views_;
 }
@@ -355,7 +355,7 @@ LBSSolver::SweepBoundaries() const
 }
 
 SetSourceFunction
-LBSSolver::GetActiveSetSourceFunction() const
+LBSSolver::ActiveSetSourceFunction() const
 {
   return active_set_source_function_;
 }
@@ -367,7 +367,7 @@ LBSSolver::GetAGSSolver()
 }
 
 std::vector<std::shared_ptr<LinearSolver>>&
-LBSSolver::GetWGSSolvers()
+LBSSolver::WGSSolvers()
 {
   return wgs_solvers_;
 }
@@ -395,7 +395,7 @@ LBSSolver::BoundaryPreferences()
 }
 
 std::pair<size_t, size_t>
-LBSSolver::GetNumPhiIterativeUnknowns()
+LBSSolver::NumPhiIterativeUnknowns()
 {
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.NumLocalDOFs(flux_moments_uk_man_);
@@ -415,7 +415,7 @@ LBSSolver::MapPhiFieldFunction(size_t g, size_t m) const
 }
 
 size_t
-LBSSolver::GetHandleToPowerGenFieldFunc() const
+LBSSolver::HandleToPowerGenFieldFunc() const
 {
   OpenSnLogicalErrorIf(not options_.power_field_function_on,
                        "Called when options_.power_field_function_on == false");

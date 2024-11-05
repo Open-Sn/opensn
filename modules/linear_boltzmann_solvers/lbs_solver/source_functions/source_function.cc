@@ -44,8 +44,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
   default_zero_src_.assign(lbs_solver_.Groups().size(), 0.0);
 
-  const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
-  const auto& matid_to_src_map = lbs_solver_.GetMatID2IsoSrcMap();
+  const auto& cell_transport_views = lbs_solver_.CellTransportViews();
+  const auto& matid_to_src_map = lbs_solver_.MatID2IsoSrcMap();
 
   const auto num_moments = lbs_solver_.NumMoments();
   const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
@@ -189,7 +189,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
 
-  const auto& transport_views = lbs_solver_.GetCellTransportViews();
+  const auto& transport_views = lbs_solver_.CellTransportViews();
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
@@ -228,7 +228,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
   const auto& grid = lbs_solver_.Grid();
   const auto& discretization = lbs_solver_.SpatialDiscretization();
-  const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
+  const auto& cell_transport_views = lbs_solver_.CellTransportViews();
   const auto num_groups = lbs_solver_.NumGroups();
 
   const auto gs_i = groupset.groups.front().id;

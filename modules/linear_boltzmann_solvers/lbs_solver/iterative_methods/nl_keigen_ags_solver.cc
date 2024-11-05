@@ -67,7 +67,7 @@ NLKEigenvalueAGSSolver::SetSystemSize()
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver;
-  auto sizes = lbs_solver.GetNumPhiIterativeUnknowns();
+  auto sizes = lbs_solver.NumPhiIterativeUnknowns();
 
   num_local_dofs_ = static_cast<int64_t>(sizes.first);
   num_globl_dofs_ = static_cast<int64_t>(sizes.second);

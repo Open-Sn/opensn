@@ -23,7 +23,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& phi_old_local = lbs_solver.PhiOldLocal();
   auto& q_moments_local = lbs_solver.QMomentsLocal();
 
-  auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
+  auto active_set_source_function = lbs_solver.ActiveSetSourceFunction();
 
   std::vector<int> groupset_ids;
   for (const auto& groupset : lbs_solver.Groupsets())

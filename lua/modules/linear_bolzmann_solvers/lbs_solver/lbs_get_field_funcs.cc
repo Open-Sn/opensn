@@ -76,7 +76,7 @@ LBSGetPowerFieldFunction(lua_State* L)
     opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, solver_handle, fname);
 
   if (lbs_solver.Options().power_field_function_on)
-    return LuaReturn(L, lbs_solver.GetHandleToPowerGenFieldFunc());
+    return LuaReturn(L, lbs_solver.HandleToPowerGenFieldFunc());
   else
     throw std::logic_error("The power field function is not enabled. Use \"power_field_function_on "
                            "= true\" in the input options to enable it.");

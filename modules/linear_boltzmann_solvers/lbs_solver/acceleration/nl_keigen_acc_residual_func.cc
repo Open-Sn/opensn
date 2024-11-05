@@ -18,7 +18,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto& lbs_solver = nl_context_ptr->lbs_solver;
   auto& groupsets = lbs_solver.Groupsets();
-  auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
+  auto active_set_source_function = lbs_solver.ActiveSetSourceFunction();
   auto& front_gs = groupsets.front();
 
   auto& q_moments_local = lbs_solver.QMomentsLocal();
