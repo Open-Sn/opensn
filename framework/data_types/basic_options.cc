@@ -79,7 +79,7 @@ BasicOptions::AddOption<double>(const std::string& option_name, const double& va
 }
 
 size_t
-BasicOptions::GetOptionIndexFromName(const std::string& option_name) const
+BasicOptions::OptionIndexFromName(const std::string& option_name) const
 {
   size_t index = 0;
   for (const auto& option : options_)

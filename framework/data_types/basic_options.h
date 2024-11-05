@@ -97,7 +97,7 @@ public:
    * corresponding index is returned. If it is not found then a std::out_of_range exception is
    * thrown.
    */
-  size_t GetOptionIndexFromName(const std::string& option_name) const;
+  size_t OptionIndexFromName(const std::string& option_name) const;
 };
 
 } // namespace opensn
