@@ -34,7 +34,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
   int local_max_num_messages = 0;
   for (auto& angsetgrp : angle_agg.angle_set_groups)
     for (auto& angset : angsetgrp.AngleSets())
-      local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
+      local_max_num_messages = std::max(angset->MaxBufferMessages(), local_max_num_messages);
 
   // Reconcile all local maximums
   int global_max_num_messages = 0;
@@ -182,13 +182,13 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       if (status == AngleSetStatus::READY_TO_EXECUTE)
       {
         std::stringstream message_i;
-        message_i << "Angleset " << angleset->GetID() << " executed on location "
+        message_i << "Angleset " << angleset->ID() << " executed on location "
                   << opensn::mpi_comm.rank();
 
         status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
 
         std::stringstream message_f;
-        message_f << "Angleset " << angleset->GetID() << " finished on location "
+        message_f << "Angleset " << angleset->ID() << " finished on location "
                   << opensn::mpi_comm.rank();
       }
 

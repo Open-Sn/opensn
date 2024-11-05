@@ -29,7 +29,7 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
 }
 
 AsynchronousCommunicator*
-CBC_AngleSet::GetCommunicator()
+CBC_AngleSet::Communicator()
 {
   return static_cast<AsynchronousCommunicator*>(&async_comm_);
 }

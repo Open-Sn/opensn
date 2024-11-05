@@ -59,15 +59,15 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GroupSubset()];
 
   gs_ss_size_ = grp_ss_info.ss_size;
   gs_ss_begin_ = grp_ss_info.ss_begin;
   gs_gi_ = groupset_.groups[gs_ss_begin_].id;
 
   surface_source_active_ = IsSurfaceSourceActive();
-  group_stride_ = angle_set.GetNumGroups();
-  group_angle_stride_ = angle_set.GetNumGroups() * angle_set.GetNumAngles();
+  group_stride_ = angle_set.NumGroups();
+  group_angle_stride_ = angle_set.NumGroups() * angle_set.NumAngles();
 }
 
 void
@@ -106,7 +106,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
   // as = angle set
   // ss = subset
-  const std::vector<size_t>& as_angle_indices = angle_set.GetAngleIndices();
+  const std::vector<size_t>& as_angle_indices = angle_set.AngleIndices();
   for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
   {
     auto direction_num = as_angle_indices[as_ss_idx];
@@ -271,7 +271,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =
-        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+        (is_boundary_face and angle_set.Boundaries()[face.neighbor_id]->IsReflecting());
       const auto& IntF_shapeI = IntS_shapeI_[f];
 
       const int locality = cell_transport_view_->FaceLocality(f);
@@ -280,12 +280,12 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       std::vector<double>* psi_dnwnd_data = nullptr;
       if (not is_boundary_face and not is_local_face)
       {
-        auto& async_comm = *angle_set.GetCommunicator();
+        auto& async_comm = *angle_set.Communicator();
         size_t data_size = num_face_nodes * group_angle_stride_;
         psi_dnwnd_data = &async_comm.InitGetDownwindMessageData(locality,
                                                                 face.neighbor_id,
                                                                 face_nodal_mapping.associated_face_,
-                                                                angle_set.GetID(),
+                                                                angle_set.ID(),
                                                                 data_size);
       }
 

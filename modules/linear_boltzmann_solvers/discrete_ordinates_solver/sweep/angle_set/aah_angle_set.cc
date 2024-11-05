@@ -43,7 +43,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   }
 
   // Check upstream data available
-  AngleSetStatus status = async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  AngleSetStatus status = async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->ID()));
 
   // Also check boundaries
   for (auto& [bid, boundary] : boundaries_)
@@ -62,7 +62,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     sweep_chunk.Sweep(*this); // Execute chunk
 
     // Send outgoing psi and clear local and receive buffers
-    async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
+    async_comm_.SendDownstreamPsi(static_cast<int>(this->ID()));
     async_comm_.ClearLocalAndReceiveBuffers();
 
     // Update boundary readiness
@@ -89,7 +89,7 @@ AAH_AngleSet::FlushSendBuffers()
 }
 
 int
-AAH_AngleSet::GetMaxBufferMessages() const
+AAH_AngleSet::MaxBufferMessages() const
 {
   return async_comm_.GetMaxNumMessages();
 }
@@ -110,7 +110,7 @@ AAH_AngleSet::ResetSweepBuffers()
 bool
 AAH_AngleSet::ReceiveDelayedData()
 {
-  return async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
+  return async_comm_.ReceiveDelayedData(static_cast<int>(this->ID()));
 }
 
 const double*

@@ -29,11 +29,11 @@ public:
                size_t group_subset,
                const MPICommunicatorSet& comm_set);
 
-  AsynchronousCommunicator* GetCommunicator() override;
+  AsynchronousCommunicator* Communicator() override;
 
   void InitializeDelayedUpstreamData() override {}
 
-  int GetMaxBufferMessages() const override { return 0; }
+  int MaxBufferMessages() const override { return 0; }
 
   void SetMaxBufferMessages(int new_max) override {}
 

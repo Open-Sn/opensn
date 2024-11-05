@@ -71,7 +71,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
 void
 SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 {
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
+  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GroupSubset()];
 
   auto gs_ss_size = grp_ss_info.ss_size;
   auto gs_ss_begin = grp_ss_info.ss_begin;
@@ -120,7 +120,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
     // Loop over angles in set (as = angleset, ss = subset)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
-    const std::vector<size_t>& as_angle_indices = angle_set.GetAngleIndices();
+    const std::vector<size_t>& as_angle_indices = angle_set.AngleIndices();
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
@@ -318,7 +318,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+          (is_boundary_face and angle_set.Boundaries()[face.neighbor_id]->IsReflecting());
         const auto& IntF_shapeI = unit_cell_matrices_[cell_local_id].intS_shapeI[f];
 
         if (not is_boundary_face and not is_local_face)

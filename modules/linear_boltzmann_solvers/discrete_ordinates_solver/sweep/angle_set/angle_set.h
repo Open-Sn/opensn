@@ -47,7 +47,7 @@ public:
   }
 
   /// Returns the angleset's unique id.
-  size_t GetID() const { return id_; }
+  size_t ID() const { return id_; }
 
   /// Returns a reference to the associated spds.
   const SPDS& GetSPDS() const { return spds_; }
@@ -56,22 +56,19 @@ public:
   FLUDS& GetFLUDS() { return *fluds_; }
 
   /// Return the group subset number.
-  size_t GetGroupSubset() const { return group_subset_; }
+  size_t GroupSubset() const { return group_subset_; }
 
   /// Returns the angle indices associated with this angleset.
-  const std::vector<size_t>& GetAngleIndices() const { return angles_; }
+  const std::vector<size_t>& AngleIndices() const { return angles_; }
 
   /// Returns the angle indices associated with this angleset.
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() { return boundaries_; }
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& Boundaries() { return boundaries_; }
 
-  size_t GetNumGroups() const { return num_groups_; }
+  size_t NumGroups() const { return num_groups_; }
 
-  size_t GetNumAngles() const { return angles_.size(); }
+  size_t NumAngles() const { return angles_.size(); }
 
-  virtual AsynchronousCommunicator* GetCommunicator()
-  {
-    OpenSnLogicalError("Method not implemented");
-  }
+  virtual AsynchronousCommunicator* Communicator() { OpenSnLogicalError("Method not implemented"); }
 
   /**
    * Initializes delayed upstream data. This method gets called when a sweep scheduler is
@@ -80,7 +77,7 @@ public:
   virtual void InitializeDelayedUpstreamData() = 0;
 
   /// Returns the maximum buffer size from the sweepbuffer.
-  virtual int GetMaxBufferMessages() const = 0;
+  virtual int MaxBufferMessages() const = 0;
 
   /// Sets the maximum buffer size for the sweepbuffer.
   virtual void SetMaxBufferMessages(int new_max) = 0;

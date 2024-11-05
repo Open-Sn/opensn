@@ -28,7 +28,7 @@ public:
 
   void InitializeDelayedUpstreamData() override;
 
-  int GetMaxBufferMessages() const override;
+  int MaxBufferMessages() const override;
 
   void SetMaxBufferMessages(int new_max) override;
 
