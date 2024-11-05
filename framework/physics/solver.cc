@@ -76,10 +76,10 @@ Solver::InitTimeStepper(const InputParameters& params)
   }
   else
   {
-    auto& factory = ObjectFactory::GetInstance();
+    auto& factory = ObjectFactory::Instance();
 
     const std::string obj_type = "physics::ConstantTimeStepper";
-    auto valid_params = factory.GetRegisteredObjectParameters(obj_type);
+    auto valid_params = factory.RegisteredObjectParameters(obj_type);
     ParameterBlock custom_params;
 
     if (params.NumParameters() != 0)

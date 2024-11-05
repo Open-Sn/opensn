@@ -33,7 +33,7 @@ SolverCreate(lua_State* L)
   LuaCheckArgs<ParameterBlock>(L, fname);
 
   const auto params = LuaArg<ParameterBlock>(L, 1);
-  const auto& object_maker = ObjectFactory::GetInstance();
+  const auto& object_maker = ObjectFactory::Instance();
   const size_t handle = object_maker.MakeRegisteredObject(params);
   return LuaReturn(L, handle);
 }

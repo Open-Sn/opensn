@@ -19,7 +19,7 @@ GetStatusOfRegistries()
 {
   RegistryStatuses stats;
 
-  const auto& object_factory = ObjectFactory::GetInstance();
+  const auto& object_factory = ObjectFactory::Instance();
   for (const auto& [key, _] : object_factory.Registry())
     stats.objfactory_keys_.push_back(key);
 

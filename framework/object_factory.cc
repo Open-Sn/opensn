@@ -9,7 +9,7 @@ namespace opensn
 {
 
 ObjectFactory&
-ObjectFactory::GetInstance() noexcept
+ObjectFactory::Instance() noexcept
 {
   static ObjectFactory singleton;
   return singleton;
@@ -90,7 +90,7 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
 }
 
 InputParameters
-ObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
+ObjectFactory::RegisteredObjectParameters(const std::string& type) const
 {
   auto iter = object_registry_.find(type);
   OpenSnInvalidArgumentIf(iter == object_registry_.end(),

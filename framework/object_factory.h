@@ -106,7 +106,7 @@ public:
   ObjectFactory& operator=(const ObjectFactory&) = delete;
 
   /// Access to the singleton
-  static ObjectFactory& GetInstance() noexcept;
+  static ObjectFactory& Instance() noexcept;
 
   /// Returns a constant reference to the object registry.
   const std::map<std::string, ObjectRegistryEntry>& Registry() const;
@@ -123,7 +123,7 @@ public:
   template <typename T, typename base_T>
   static char AddObjectToRegistry(const std::string& object_name)
   {
-    auto& object_maker = GetInstance();
+    auto& object_maker = Instance();
 
     const std::string name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
@@ -146,7 +146,7 @@ public:
   template <typename T>
   static char AddObjectToRegistryParamsOnly(const std::string& object_name)
   {
-    auto& object_maker = GetInstance();
+    auto& object_maker = Instance();
 
     const std::string name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
@@ -168,7 +168,7 @@ public:
   static char AddSyntaxBlockToRegistry(const std::string& block_name,
                                        ObjectGetInParamsFunc syntax_function)
   {
-    auto& object_maker = GetInstance();
+    auto& object_maker = Instance();
 
     const std::string name = block_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
@@ -193,7 +193,7 @@ public:
   size_t MakeRegisteredObjectOfType(const std::string& type, const ParameterBlock& params) const;
 
   /// Returns the input parameters of a registered object.
-  InputParameters GetRegisteredObjectParameters(const std::string& type) const;
+  InputParameters RegisteredObjectParameters(const std::string& type) const;
 
   /// Dumps the object registry to stdout.
   void DumpRegister() const;

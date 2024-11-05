@@ -30,7 +30,7 @@ CreateLineQuadrature(lua_State* L)
   params.AddParameter("verbose", verbose);
   params.AddParameter("N", N);
 
-  auto& obj_factory = ObjectFactory::GetInstance();
+  auto& obj_factory = ObjectFactory::Instance();
 
   if (ident == 1) // GAUSS_LEGENDRE
   {

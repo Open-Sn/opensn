@@ -30,7 +30,7 @@ MakeObject(lua_State* L)
   LuaCheckArgs<opensn::ParameterBlock>(L, fname);
 
   const auto params = LuaArg<opensn::ParameterBlock>(L, 1);
-  const auto& object_maker = opensn::ObjectFactory::GetInstance();
+  const auto& object_maker = opensn::ObjectFactory::Instance();
   const auto handle = object_maker.MakeRegisteredObject(params);
   return LuaReturn(L, handle);
 }
@@ -43,7 +43,7 @@ MakeObjectType(lua_State* L)
 
   const auto type = LuaArg<std::string>(L, 1);
   const auto params = LuaArg<opensn::ParameterBlock>(L, 2);
-  const auto& object_maker = opensn::ObjectFactory::GetInstance();
+  const auto& object_maker = opensn::ObjectFactory::Instance();
   const auto handle = object_maker.MakeRegisteredObjectOfType(type, params);
   return LuaReturn(L, handle);
 }

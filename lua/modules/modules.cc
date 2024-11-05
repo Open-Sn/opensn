@@ -43,7 +43,7 @@ LoadRegisteredLuaItems()
 
   // Registering solver-function
   //                                    scope resolution tables
-  const auto& object_maker = ObjectFactory::GetInstance();
+  const auto& object_maker = ObjectFactory::Instance();
   for (const auto& entry : object_maker.Registry())
     Console::SetObjectNamespaceTableStructure(entry.first);
 }

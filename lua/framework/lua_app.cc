@@ -143,7 +143,7 @@ LuaApp::ProcessArguments(int argc, char** argv)
 
     if (result.count("dump-object-registry"))
     {
-      ObjectFactory::GetInstance().DumpRegister();
+      ObjectFactory::Instance().DumpRegister();
       console.DumpRegister();
       return 1;
     }
