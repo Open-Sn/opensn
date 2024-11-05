@@ -42,7 +42,7 @@ PostProcessorGetValue(const InputParameters& params)
 
     for (const auto& pp_ptr : opensn::postprocessor_stack)
       if (pp_ptr->Name() == pp_name)
-        return pp_ptr->GetValue();
+        return pp_ptr->Value();
 
     // If we haven't returned here
     OpenSnInvalidArgument("Post-processor with name \"" + pp_name + "\" not found.");
@@ -53,7 +53,7 @@ PostProcessorGetValue(const InputParameters& params)
     const auto& pp =
       opensn::GetStackItem<PostProcessor>(opensn::postprocessor_stack, pp_handle, __FUNCTION__);
 
-    return pp.GetValue();
+    return pp.Value();
   }
   else
     OpenSnInvalidArgument("Accepts only STRING or INTEGER for arg0.");

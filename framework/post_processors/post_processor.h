@@ -62,8 +62,8 @@ public:
   virtual void Execute(const Event& event_context) = 0;
 
   /// Gets the scalar value currently stored for the post-processor.
-  virtual const ParameterBlock& GetValue() const;
-  virtual const std::vector<TimeHistoryEntry>& GetTimeHistory() const;
+  virtual const ParameterBlock& Value() const;
+  virtual const std::vector<TimeHistoryEntry>& TimeHistory() const;
 
   const std::vector<std::string>& PrintScope() const;
 

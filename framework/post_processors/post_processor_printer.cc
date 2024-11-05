@@ -169,7 +169,7 @@ PostProcessorPrinter::GetPrintedPostProcessors(
   std::vector<std::pair<std::string, std::string>> scalar_ppnames_and_vals;
   for (const auto& pp : pp_list)
   {
-    const auto& value = pp->GetValue();
+    const auto& value = pp->Value();
     const auto value_str = pp->ConvertValueToString(value);
 
     scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
@@ -198,7 +198,7 @@ PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
   std::vector<std::pair<std::string, std::string>> scalar_ppnames_and_vals;
   for (const auto& pp : pp_list)
   {
-    const auto& value = pp->GetValue();
+    const auto& value = pp->Value();
     const auto value_str = pp->ConvertValueToString(value);
 
     scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
@@ -337,7 +337,7 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
 
   for (const auto& pp : pp_list)
   {
-    const size_t time_histsize = pp->GetTimeHistory().size();
+    const size_t time_histsize = pp->TimeHistory().size();
     unq_time_histsizes.insert(time_histsize);
   }
 
@@ -347,7 +347,7 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
   {
     auto& subs = pp_timehist_size_subs[time_histsize];
     for (const auto& pp : pp_list)
-      if (pp->GetTimeHistory().size() == time_histsize)
+      if (pp->TimeHistory().size() == time_histsize)
         subs.push_back(pp);
   }
 
@@ -515,7 +515,7 @@ PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
 
   for (const auto& pp : pp_list)
   {
-    const size_t time_histsize = pp->GetTimeHistory().size();
+    const size_t time_histsize = pp->TimeHistory().size();
     unq_time_histsizes.insert(time_histsize);
   }
 
@@ -525,7 +525,7 @@ PostProcessorPrinter::PrintScalarPPsToCSV(std::ofstream& csvfile,
   {
     auto& subs = pp_timehist_size_subs[time_histsize];
     for (const auto& pp : pp_list)
-      if (pp->GetTimeHistory().size() == time_histsize)
+      if (pp->TimeHistory().size() == time_histsize)
         subs.push_back(pp);
   }
 
@@ -555,7 +555,7 @@ PostProcessorPrinter::PrintVectorPPsToCSV(std::ofstream& csvfile,
   for (const auto& pp : pp_list)
   {
     csvfile << pp->Name() << "\n";
-    const size_t timehistsize = pp->GetTimeHistory().size();
+    const size_t timehistsize = pp->TimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
     {
@@ -581,7 +581,7 @@ PostProcessorPrinter::PrintArbitraryPPsToCSV(std::ofstream& csvfile,
   for (const auto& pp : pp_list)
   {
     csvfile << pp->Name() << "\n";
-    const size_t timehistsize = pp->GetTimeHistory().size();
+    const size_t timehistsize = pp->TimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
     {
@@ -668,7 +668,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
   const size_t num_cols = pp_sub_list.size() + 1; //+1 time column
   const size_t offset = std::max(0, int(timehistsize) - int(time_history_limit));
 
-  const auto& front_time_hist = pp_sub_list.front()->GetTimeHistory();
+  const auto& front_time_hist = pp_sub_list.front()->TimeHistory();
 
   std::vector<std::vector<std::string>> value_matrix(num_rows,
                                                      std::vector<std::string>(num_cols, ""));
@@ -688,8 +688,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
       else
       {
         const auto& pp = pp_sub_list.at(j - 1);
-        value_matrix[t + 1][j] =
-          pp->ConvertValueToString(pp->GetTimeHistory().at(t + offset).value);
+        value_matrix[t + 1][j] = pp->ConvertValueToString(pp->TimeHistory().at(t + offset).value);
       }
     } // for j
   }   // for t
@@ -701,7 +700,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
     for (size_t j = 0; j < pp_sub_list.size(); ++j)
     {
       const auto& pp = pp_sub_list.at(j);
-      value_matrix[t][j + 1] = pp->ConvertValueToString(pp->GetValue());
+      value_matrix[t][j + 1] = pp->ConvertValueToString(pp->Value());
     }
   }
 

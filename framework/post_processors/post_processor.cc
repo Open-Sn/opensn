@@ -158,13 +158,13 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
 }
 
 const ParameterBlock&
-PostProcessor::GetValue() const
+PostProcessor::Value() const
 {
   return value_;
 }
 
 const std::vector<PostProcessor::TimeHistoryEntry>&
-PostProcessor::GetTimeHistory() const
+PostProcessor::TimeHistory() const
 {
   return time_history_;
 }
