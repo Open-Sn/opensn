@@ -48,7 +48,7 @@ SolverInitialize(lua_State* L)
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  PhysicsEventPublisher::GetInstance().SolverInitialize(solver);
+  PhysicsEventPublisher::Instance().SolverInitialize(solver);
 
   return LuaReturn(L);
 }
@@ -63,7 +63,7 @@ SolverExecute(lua_State* L)
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  PhysicsEventPublisher::GetInstance().SolverExecute(solver);
+  PhysicsEventPublisher::Instance().SolverExecute(solver);
 
   return LuaReturn(L);
 }
@@ -78,7 +78,7 @@ SolverStep(lua_State* L)
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  PhysicsEventPublisher::GetInstance().SolverStep(solver);
+  PhysicsEventPublisher::Instance().SolverStep(solver);
 
   return LuaReturn(L);
 }
@@ -93,7 +93,7 @@ SolverAdvance(lua_State* L)
 
   auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
-  PhysicsEventPublisher::GetInstance().SolverAdvance(solver);
+  PhysicsEventPublisher::Instance().SolverAdvance(solver);
 
   return LuaReturn(L);
 }

@@ -15,7 +15,7 @@ PhysicsEventPublisher::PhysicsEventPublisher() : EventPublisher("Physics")
 }
 
 PhysicsEventPublisher&
-PhysicsEventPublisher::GetInstance()
+PhysicsEventPublisher::Instance()
 {
   static PhysicsEventPublisher singleton;
   return singleton;

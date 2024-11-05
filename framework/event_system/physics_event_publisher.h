@@ -15,7 +15,7 @@ class PhysicsEventPublisher : public EventPublisher
 {
 public:
   /// Access to the singleton
-  static PhysicsEventPublisher& GetInstance();
+  static PhysicsEventPublisher& Instance();
 
   /// Deleted copy constructor
   PhysicsEventPublisher(const PhysicsEventPublisher&) = delete;

@@ -139,7 +139,7 @@ PRKSolver::Initialize()
 void
 PRKSolver::Execute()
 {
-  auto& physics_ev_pub = PhysicsEventPublisher::GetInstance();
+  auto& physics_ev_pub = PhysicsEventPublisher::Instance();
 
   while (timestepper_->IsActive())
   {

@@ -130,7 +130,7 @@ PostProcessor::PushOntoStack(std::shared_ptr<Object>& new_object)
 
   OpenSnLogicalErrorIf(not new_subscriber, "Failure to cast PostProcessor to EventSubscriber");
 
-  auto& publisher = PhysicsEventPublisher::GetInstance();
+  auto& publisher = PhysicsEventPublisher::Instance();
   publisher.AddSubscriber(new_subscriber);
 }
 
