@@ -33,15 +33,15 @@ public:
 
   virtual ~FieldFunctionInterpolationLine() {}
 
-  int& GetNumberOfPoints() { return number_of_points_; }
+  int& NumberOfPoints() { return number_of_points_; }
 
   void SetNumberOfPoints(int number) { number_of_points_ = number; }
 
-  Vector3 GetInitialPoint() { return pi_; }
+  Vector3 InitialPoint() { return pi_; }
 
   void SetInitialPoint(Vector3 point) { pi_ = point; }
 
-  Vector3 GetFinalPoint() { return pf_; }
+  Vector3 FinalPoint() { return pf_; }
 
   void SetFinalPoint(Vector3 point) { pf_ = point; }
 
@@ -49,11 +49,11 @@ public:
 
   void Execute() override;
 
-  FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
+  FieldFunctionInterpolationOperation& OperationType() { return op_type_; }
 
   void SetOperationType(FieldFunctionInterpolationOperation type) { op_type_ = type; }
 
-  double GetOpValue() { return op_value_; }
+  double OpValue() { return op_value_; }
 
   void ExportToCSV(std::string base_name) override;
 };
