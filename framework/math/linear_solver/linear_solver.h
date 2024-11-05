@@ -48,11 +48,11 @@ public:
   ToleranceOptions& ToleranceOptions() { return tolerance_options; }
   void ApplyToleranceOptions();
 
-  std::shared_ptr<LinearSolverContext>& GetContext() { return context_ptr_; }
+  std::shared_ptr<LinearSolverContext>& Context() { return context_ptr_; }
 
   /// Sets a flag to suppress the KSPSolve() method from being called.
   void SetKSPSolveSuppressionFlag(bool flag) { suppress_kspsolve_ = flag; }
-  bool GetKSPSolveSuppressionFlag() const { return suppress_kspsolve_; }
+  bool KSPSolveSuppressionFlag() const { return suppress_kspsolve_; }
 
   /// Set up the linaer solver
   virtual void Setup();

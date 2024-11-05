@@ -382,7 +382,7 @@ WGSContext&
 LBSSolver::GetWGSContext(int groupset_id)
 {
   auto& wgs_solver = wgs_solvers_[groupset_id];
-  auto& raw_context = wgs_solver->GetContext();
+  auto& raw_context = wgs_solver->Context();
   auto wgs_context_ptr = std::dynamic_pointer_cast<WGSContext>(raw_context);
   OpenSnLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
   return *wgs_context_ptr;

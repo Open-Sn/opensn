@@ -63,7 +63,7 @@ PowerIterationKEigen::Initialize()
 
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
-    auto context = wgs_solver->GetContext();
+    auto context = wgs_solver->Context();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
 
     OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
@@ -75,7 +75,7 @@ PowerIterationKEigen::Initialize()
   ags_solver_->Verbosity(lbs_solver_.Options().verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_.GetWGSSolvers().at(front_gs_.id);
-  front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
+  front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->Context());
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
@@ -148,7 +148,7 @@ PowerIterationKEigen::Execute()
   int total_num_sweeps = 0;
   for (auto& wgs_solver : lbs_solver_.GetWGSSolvers())
   {
-    auto context = wgs_solver->GetContext();
+    auto context = wgs_solver->Context();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
     total_num_sweeps += wgs_context->counter_applications_of_inv_op;
   }

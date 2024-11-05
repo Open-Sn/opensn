@@ -234,7 +234,7 @@ WGSLinearSolver::PostSolveCallback()
   // We simply restore the q_moments_local vector.
 
   // Get convergence reason
-  if (not GetKSPSolveSuppressionFlag())
+  if (not KSPSolveSuppressionFlag())
   {
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
