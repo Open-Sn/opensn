@@ -58,7 +58,7 @@ public:
                                size_t max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
 
-  size_t GetMaxNumMessages() const { return max_num_messages_; }
+  size_t MaxNumMessages() const { return max_num_messages_; }
 
   void SetMaxNumMessages(size_t count) { max_num_messages_ = count; }
 

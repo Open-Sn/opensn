@@ -91,7 +91,7 @@ AAH_AngleSet::FlushSendBuffers()
 int
 AAH_AngleSet::MaxBufferMessages() const
 {
-  return async_comm_.GetMaxNumMessages();
+  return async_comm_.MaxNumMessages();
 }
 
 void
