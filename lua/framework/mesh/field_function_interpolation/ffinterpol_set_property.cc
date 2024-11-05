@@ -92,7 +92,7 @@ FFInterpolationSetProperty(lua_State* L)
     auto ffhandle = LuaArg<size_t>(L, 3);
     auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
     auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
-    p_ffi->GetFieldFunctions().push_back(cur_ff);
+    p_ffi->FieldFunctions().push_back(cur_ff);
   }
   else if (property == FieldFunctionInterpolationProperty::SET_FIELD_FUNCTIONS)
   {
@@ -102,7 +102,7 @@ FFInterpolationSetProperty(lua_State* L)
       const auto ffhandle = static_cast<int>(handle_d);
       auto cur_ff_base = opensn::GetStackItemPtr(opensn::field_function_stack, ffhandle, fname);
       auto cur_ff = std::dynamic_pointer_cast<FieldFunctionGridBased>(cur_ff_base);
-      p_ffi->GetFieldFunctions().push_back(cur_ff);
+      p_ffi->FieldFunctions().push_back(cur_ff);
     } // for handle
   }
   else if (property == FieldFunctionInterpolationProperty::PROBEPOINT)

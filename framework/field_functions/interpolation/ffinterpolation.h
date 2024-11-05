@@ -60,7 +60,7 @@ public:
   {
   }
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
+  std::vector<std::shared_ptr<FieldFunctionGridBased>>& FieldFunctions()
   {
     return field_functions_;
   }
