@@ -1203,7 +1203,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
           DirIDs dir_ids;
           dir_ids.reserve(polar_ids.size());
           for (const size_t p : polar_ids)
-            dir_ids.push_back(product_quad.GetAngleNum(p, azimuthal_id));
+            dir_ids.push_back(product_quad.AngleNum(p, azimuthal_id));
           unq_so_grps.push_back(std::move(dir_ids));
         };
 
@@ -1247,7 +1247,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
       {
         const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
-        for (const auto& dir_set : product_quad.GetDirectionMap())
+        for (const auto& dir_set : product_quad.DirectionMap())
         {
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;

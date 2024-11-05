@@ -54,14 +54,14 @@ public:
    * Obtains the abscissae index given the indices of the polar angle index and the azimuthal angle
    * index.
    */
-  unsigned int GetAngleNum(const unsigned int polar_angle_index,
-                           const unsigned int azimu_angle_index) const
+  unsigned int AngleNum(const unsigned int polar_angle_index,
+                        const unsigned int azimu_angle_index) const
   {
     return map_directions_.at(polar_angle_index)[azimu_angle_index];
   }
 
   /// Return constant reference to map_directions.
-  const std::map<unsigned int, std::vector<unsigned int>>& GetDirectionMap() const
+  const std::map<unsigned int, std::vector<unsigned int>>& DirectionMap() const
   {
     return map_directions_;
   }

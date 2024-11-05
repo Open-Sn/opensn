@@ -49,7 +49,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
                                 "invalid angular quadrature");
 
   //  configure unknown manager for quantities that depend on polar level
-  const size_t dir_map_size = curvilinear_product_quadrature->GetDirectionMap().size();
+  const size_t dir_map_size = curvilinear_product_quadrature->DirectionMap().size();
   for (size_t m = 0; m < dir_map_size; ++m)
     unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
 
@@ -58,7 +58,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
   psi_sweep_.resize(n_dof);
 
   //  initialise mappings from direction linear index
-  for (const auto& dir_set : curvilinear_product_quadrature->GetDirectionMap())
+  for (const auto& dir_set : curvilinear_product_quadrature->DirectionMap())
     for (const auto& dir_idx : dir_set.second)
       map_polar_level_.emplace(dir_idx, dir_set.first);
 

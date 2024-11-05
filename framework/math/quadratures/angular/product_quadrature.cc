@@ -130,7 +130,7 @@ ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
     for (size_t p = 0; p < new_num_pol; ++p)
     {
       const auto pmap = new_polar_map[p];
-      const auto dmap = GetAngleNum(pmap, a);
+      const auto dmap = AngleNum(pmap, a);
       new_weights.push_back(weights[dmap]);
       weight_sum += weights[dmap];
     }
