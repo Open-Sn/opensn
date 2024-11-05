@@ -378,7 +378,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
 }
 
 std::vector<vtkUGridPtrAndName>
-GetBlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks, int desired_dimension)
+BlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks, int desired_dimension)
 {
   std::vector<vtkUGridPtrAndName> desired_blocks;
   for (auto& ugrid : ugrid_blocks)

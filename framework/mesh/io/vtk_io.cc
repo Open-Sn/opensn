@@ -636,9 +636,9 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
   const int max_dimension = FindHighestDimension(grid_blocks);
   log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
   SetBlockIDArrays(domain_grid_blocks);
@@ -691,9 +691,9 @@ MeshIO::FromVTU(const UnpartitionedMesh::Options& options)
   const int max_dimension = FindHighestDimension(grid_blocks);
   log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, options.material_id_fieldname);
@@ -746,9 +746,9 @@ MeshIO::FromPVTU(const UnpartitionedMesh::Options& options)
   const int max_dimension = FindHighestDimension(grid_blocks);
   log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
@@ -822,9 +822,9 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
   const int max_dimension = FindHighestDimension(grid_blocks);
   log.Log0Verbose1() << "Maximum dimension : " << max_dimension << "\n";
   std::vector<vtkUGridPtrAndName> domain_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension);
   std::vector<vtkUGridPtrAndName> bndry_grid_blocks =
-    GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
+    BlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
   SetBlockIDArrays(domain_grid_blocks);

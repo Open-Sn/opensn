@@ -63,7 +63,7 @@ vtkUGridPtr ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
  * Provides a map of the different grids that have the requested dimension.
  */
 std::vector<vtkUGridPtrAndName>
-GetBlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks, int desired_dimension);
+BlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks, int desired_dimension);
 
 /**
  * Given several unstructured grid blocks, each denoting a material id, this function sets material
