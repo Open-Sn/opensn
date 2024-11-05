@@ -495,7 +495,7 @@ Console::DumpRegister() const
   opensn::log.Log() << "\n\n";
   for (const auto& [key, entry] : function_wrapper_registry_)
   {
-    if (opensn::log.GetVerbosity() == 0)
+    if (opensn::log.Verbosity() == 0)
     {
       opensn::log.Log() << key;
       continue;

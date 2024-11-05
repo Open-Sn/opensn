@@ -18,7 +18,7 @@ namespace opensn
 {
 
 // Global variables
-Logger& log = Logger::GetInstance();
+Logger& log = Logger::Instance();
 mpi::Communicator mpi_comm;
 bool use_caliper = false;
 std::string cali_config("runtime-report(calc.inclusive=true),max_column_width=80");

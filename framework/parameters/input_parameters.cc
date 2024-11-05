@@ -219,7 +219,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   param_block_at_assignment_ = params;
   std::stringstream err_stream;
 
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log0Verbose2() << "Number of parameters " << params.NumParameters();
 
   // Check required parameters
@@ -349,7 +349,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       }
     } // if constraint
 
-    if (log.GetVerbosity() >= 2)
+    if (log.Verbosity() >= 2)
       log.Log0Verbose2() << "Setting parameter " << param_name;
     input_param = param;
   } // for input params

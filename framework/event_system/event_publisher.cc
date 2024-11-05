@@ -21,7 +21,7 @@ EventPublisher::PublishEvent(const Event& event)
   for (auto& subscriber_wptr : subscribers_)
     if (auto subscriber_sptr = subscriber_wptr.lock())
       subscriber_sptr->ReceiveEventUpdate(event);
-  if (log.GetVerbosity() >= 1)
+  if (log.Verbosity() >= 1)
     log.Log0Verbose1() << publisher_name_ << " published event name \"" << event.Name() << "\"";
 }
 

@@ -11,7 +11,7 @@ namespace opensn
 {
 
 Logger&
-Logger::GetInstance() noexcept
+Logger::Instance() noexcept
 {
   static Logger instance;
   return instance;
@@ -158,7 +158,7 @@ Logger::SetVerbosity(int int_level)
 }
 
 int
-Logger::GetVerbosity() const
+Logger::Verbosity() const
 {
   return verbosity_;
 }

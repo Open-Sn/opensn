@@ -149,7 +149,7 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
     }
 
     Execute(event);
-    if (log.GetVerbosity() >= 1)
+    if (log.Verbosity() >= 1)
       log.Log0Verbose1() << "Post processor \"" << Name()
                          << "\" executed on "
                             "event \""

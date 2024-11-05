@@ -97,13 +97,13 @@ private:
   Logger() noexcept;
 
 public:
-  static Logger& GetInstance() noexcept;
+  static Logger& Instance() noexcept;
 
   LogStream Log(LOG_LVL level = LOG_0);
 
   void SetVerbosity(int int_level);
 
-  int GetVerbosity() const;
+  int Verbosity() const;
 
   LogStream Log0() { return Log(LOG_0); }
 

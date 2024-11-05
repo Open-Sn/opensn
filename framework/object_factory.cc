@@ -30,7 +30,7 @@ ObjectFactory::RegistryHasKey(const std::string& key) const
 size_t
 ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
 {
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Making object with type from parameters";
 
   const std::string fname = __PRETTY_FUNCTION__;
@@ -49,7 +49,7 @@ size_t
 ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
                                           const ParameterBlock& params) const
 {
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Making object with specified type";
 
   const std::string fname = __PRETTY_FUNCTION__;
@@ -57,7 +57,7 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   if (object_registry_.count(type) == 0)
     throw std::logic_error(fname + ": No registered type \"" + type + "\" found.");
 
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Making object type " << type;
 
   auto object_entry = object_registry_.at(type);
@@ -71,19 +71,19 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   input_params.SetObjectType(type);
   input_params.SetErrorOriginScope(type);
 
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Assigning parameters for object " << type;
 
   input_params.AssignParameters(params);
 
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Constructing object " << type;
 
   auto new_object = object_entry.constructor_func(input_params);
 
   new_object->PushOntoStack(new_object);
 
-  if (log.GetVerbosity() >= 2)
+  if (log.Verbosity() >= 2)
     log.Log() << "Done making object type " << type << " with handle " << new_object->StackID();
 
   return new_object->StackID();
@@ -107,7 +107,7 @@ ObjectFactory::DumpRegister() const
   log.Log() << "\n\n";
   for (const auto& [key, entry] : object_registry_)
   {
-    if (log.GetVerbosity() == 0)
+    if (log.Verbosity() == 0)
     {
       log.Log() << key;
       continue;

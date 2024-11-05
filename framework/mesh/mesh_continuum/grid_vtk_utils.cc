@@ -354,7 +354,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
     cell_type_count_map[cell_type_name] += 1;
   }
 
-  if (log.GetVerbosity() >= 1)
+  if (log.Verbosity() >= 1)
   {
     std::stringstream outstr;
     /**Lambda to right pad an entry.*/
