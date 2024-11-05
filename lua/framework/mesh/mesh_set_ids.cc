@@ -35,7 +35,7 @@ MeshSetUniformMaterialID(lua_State* L)
   auto vol_cont = GetCurrentMesh();
   vol_cont->SetUniformMaterialID(mat_id);
   mpi_comm.barrier();
-  opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+  opensn::log.Log() << program_timer.TimeString() << " Done setting material id " << mat_id
                     << " to all cells";
 
   return LuaReturn(L);
@@ -53,7 +53,7 @@ MeshSetMaterialIDFromLogicalVolume(lua_State* L)
 
   const auto& lv = opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+  opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Setting material id from logical volume.";
   std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
   mesh->SetMaterialIDFromLogical(lv, sense, mat_id);
@@ -67,7 +67,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
   const std::string fname = "mesh.SetMaterialIDFromLuaFunction";
   LuaCheckArgs<std::string>(L, fname);
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+  opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Setting material id from lua function.";
 
   const auto lua_fname = LuaArg<std::string>(L, 1);
@@ -102,7 +102,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
   int global_num_cells_modified;
   mpi_comm.all_reduce(local_num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+  opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Done setting material id from lua function. "
                              << "Number of cells modified = " << global_num_cells_modified << ".";
 
@@ -119,7 +119,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
 
   const auto lua_fname = LuaArg<std::string>(L, 1);
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+  opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Setting boundary id from lua function.";
 
   MeshContinuum& grid = *GetCurrentMesh();
@@ -172,7 +172,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
   int global_num_faces_modified;
   mpi_comm.all_reduce(local_num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
 
-  opensn::log.Log0Verbose1() << program_timer.GetTimeString()
+  opensn::log.Log0Verbose1() << program_timer.TimeString()
                              << " Done setting boundary id from lua function. "
                              << "Number of cells modified = " << global_num_faces_modified << ".";
 
@@ -194,7 +194,7 @@ MeshSetBoundaryIDFromLogicalVolume(lua_State* L)
   const auto& log_vol =
     opensn::GetStackItem<LogicalVolume>(opensn::object_stack, volume_handle, fname);
 
-  opensn::log.Log() << program_timer.GetTimeString() << " Setting boundary id from logical volume.";
+  opensn::log.Log() << program_timer.TimeString() << " Setting boundary id from logical volume.";
   std::shared_ptr<MeshContinuum> mesh = GetCurrentMesh();
   mesh->SetBoundaryIDFromLogical(log_vol, sense, boundary_name);
 

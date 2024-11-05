@@ -171,7 +171,7 @@ CFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "CFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.TimeString() << " " << Name()
             << ": Initializing CFEM Diffusion solver ";
 
   // Get grid

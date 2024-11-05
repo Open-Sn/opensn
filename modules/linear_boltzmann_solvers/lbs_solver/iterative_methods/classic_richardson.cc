@@ -88,8 +88,8 @@ ClassicRichardson::Solve()
     }
 
     std::stringstream iter_stats;
-    iter_stats << program_timer.GetTimeString() << " WGS groups [" << groupset.groups.front().id
-               << "-" << groupset.groups.back().id << "]:"
+    iter_stats << program_timer.TimeString() << " WGS groups [" << groupset.groups.front().id << "-"
+               << groupset.groups.back().id << "]:"
                << " Iteration = " << std::left << std::setw(5) << k
                << " Point-wise change = " << std::left << std::setw(14) << pw_phi_change
                << " Spectral-radius estimate = " << std::left << std::setw(10) << rho;

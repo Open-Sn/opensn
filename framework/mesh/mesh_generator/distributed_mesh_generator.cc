@@ -40,7 +40,7 @@ DistributedMeshGenerator::Execute()
   const int num_parts = opensn::mpi_comm.size();
   DistributedMeshData mesh_info;
 
-  log.Log() << program_timer.GetTimeString() << " Distributing mesh with " << num_parts << " parts";
+  log.Log() << program_timer.TimeString() << " Distributing mesh with " << num_parts << " parts";
 
   if (rank == 0)
   {
@@ -69,7 +69,7 @@ DistributedMeshGenerator::Execute()
 
   opensn::mpi_comm.barrier();
 
-  log.Log() << program_timer.GetTimeString() << " Mesh successfully distributed";
+  log.Log() << program_timer.TimeString() << " Mesh successfully distributed";
 }
 
 ByteArray

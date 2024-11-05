@@ -214,12 +214,12 @@ UnpartitionedMesh::BuildMeshConnectivity()
       if (not face.has_neighbor)
         ++num_bndry_faces;
 
-  log.Log0Verbose1() << program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.TimeString()
                      << " Number of unconnected faces "
                         "before connectivity: "
                      << num_bndry_faces;
 
-  log.Log() << program_timer.GetTimeString() << " Establishing cell connectivity.";
+  log.Log() << program_timer.TimeString() << " Establishing cell connectivity.";
 
   // Establish internal connectivity
   // Populate vertex subscriptions to internal cells
@@ -234,7 +234,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
     }
   }
 
-  log.Log() << program_timer.GetTimeString() << " Vertex cell subscriptions complete.";
+  log.Log() << program_timer.TimeString() << " Vertex cell subscriptions complete.";
 
   // Process raw cells
   {
@@ -286,14 +286,14 @@ UnpartitionedMesh::BuildMeshConnectivity()
         static_cast<double>(cur_cell_id) / static_cast<double>(num_raw_cells);
       if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)
       {
-        log.Log() << program_timer.GetTimeString() << " Surpassing cell " << cur_cell_id << " of "
+        log.Log() << program_timer.TimeString() << " Surpassing cell " << cur_cell_id << " of "
                   << num_raw_cells << " (" << (aux_counter + 1) * 10 << "%)";
         ++aux_counter;
       }
     } // for cell
   }
 
-  log.Log() << program_timer.GetTimeString() << " Establishing cell boundary connectivity.";
+  log.Log() << program_timer.TimeString() << " Establishing cell boundary connectivity.";
 
   // Establish boundary connectivity
   // Make list of internal cells on the boundary
@@ -357,12 +357,12 @@ UnpartitionedMesh::BuildMeshConnectivity()
       if (not face.has_neighbor)
         ++num_bndry_faces;
 
-  log.Log0Verbose1() << program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.TimeString()
                      << " Number of boundary faces "
                         "after connectivity: "
                      << num_bndry_faces;
 
-  log.Log() << program_timer.GetTimeString() << " Done establishing cell connectivity.";
+  log.Log() << program_timer.TimeString() << " Done establishing cell connectivity.";
 }
 
 void

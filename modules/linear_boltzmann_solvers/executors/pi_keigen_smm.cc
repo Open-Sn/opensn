@@ -284,7 +284,7 @@ PowerIterationKEigenSMM::Execute()
     if (lbs_solver_.Options().verbose_outer_iterations)
     {
       std::stringstream ss;
-      ss << program_timer.GetTimeString() << " "
+      ss << program_timer.TimeString() << " "
          << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(14)
          << std::setprecision(10) << k_eff_ << "  k_eff change " << std::setw(12) << k_eff_change
          << "  phi change " << std::setw(12) << phi_change

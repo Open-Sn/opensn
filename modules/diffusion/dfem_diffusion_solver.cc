@@ -167,7 +167,7 @@ DFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "DFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.TimeString() << " " << Name()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid

@@ -615,7 +615,7 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense
   int global_num_cells_modified;
   mpi_comm.all_reduce(num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
 
-  log.Log0Verbose1() << program_timer.GetTimeString()
+  log.Log0Verbose1() << program_timer.TimeString()
                      << " Done setting material id from logical volume. "
                      << "Number of cells modified = " << global_num_cells_modified << ".";
 }

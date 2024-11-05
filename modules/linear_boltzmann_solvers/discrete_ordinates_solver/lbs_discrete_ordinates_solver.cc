@@ -927,7 +927,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::InitializeSweepDataStructures");
 
-  log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
+  log.Log() << program_timer.TimeString() << " Initializing sweep datastructures.\n";
 
   // Define sweep ordering groups
   quadrature_unq_so_grouping_map_.clear();
@@ -957,7 +957,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     // 4) Build the global sweep task dependency graph (TDG) for each SPDS.
 
     // Initalize SPDS. All ranks initialize a SPDS for each angleset.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Initializing AAH SPDS.";
+    log.Log0Verbose1() << program_timer.TimeString() << " Initializing AAH SPDS.";
     for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
     {
       int id = 0;
@@ -979,7 +979,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     // Generate the global sweep FAS for each SPDS. This is an expensive operation. It is
     // distributed via MPI so that multiple MPI ranks can compute the FAS for one or more SPDS
     // independently.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep FAS for each SPDS.";
+    log.Log0Verbose1() << program_timer.TimeString() << " Build global sweep FAS for each SPDS.";
     for (const auto& quadrature : quadrature_spds_map_)
     {
       for (const auto& spds : quadrature.second)
@@ -992,7 +992,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
 
     // Communicate the FAS for each SPDS to all ranks.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Gather FAS for each SPDS.";
+    log.Log0Verbose1() << program_timer.TimeString() << " Gather FAS for each SPDS.";
     std::vector<int> local_edges_to_remove;
     for (const auto& quadrature : quadrature_spds_map_)
     {
@@ -1052,7 +1052,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
 
     // Build TDG for each SPDS on all ranks.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep TDGs.";
+    log.Log0Verbose1() << program_timer.TimeString() << " Build global sweep TDGs.";
     for (const auto& quadrature : quadrature_spds_map_)
       for (const auto& spds : quadrature.second)
         std::static_pointer_cast<AAH_SPDS>(spds)->BuildGlobalSweepTDG();
@@ -1124,7 +1124,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     }
   }
 
-  log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
+  log.Log() << program_timer.TimeString() << " Done initializing sweep datastructures.\n";
 }
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
@@ -1392,7 +1392,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
+    log.Log() << program_timer.TimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }

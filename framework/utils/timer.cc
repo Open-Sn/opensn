@@ -21,7 +21,7 @@ Timer::Reset()
 }
 
 double
-Timer::GetTime() const
+Timer::Time() const
 {
   using namespace std::chrono;
 
@@ -32,9 +32,9 @@ Timer::GetTime() const
 }
 
 std::string
-Timer::GetTimeString() const
+Timer::TimeString() const
 {
-  double time_sec = this->GetTime() / 1000.0;
+  double time_sec = this->Time() / 1000.0;
   int hours = std::floor(time_sec / 3600);
   int minutes = std::floor((time_sec - 3600 * hours) / 60);
   // Keep seconds as a double since we want fractional seconds
@@ -47,7 +47,7 @@ Timer::GetTimeString() const
 }
 
 std::string
-Timer::GetLocalDateTimeString()
+Timer::LocalDateTimeString()
 {
   using namespace std::chrono;
   std::time_t now = system_clock::to_time_t(system_clock::now());

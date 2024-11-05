@@ -263,8 +263,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)
     {
       if (verbosity_level_ >= 1)
-        log.Log() << program_timer.GetTimeString() << " Surpassing part " << pid << " of "
-                  << num_parts << " (" << (aux_counter + 1) * 10 << "%)";
+        log.Log() << program_timer.TimeString() << " Surpassing part " << pid << " of " << num_parts
+                  << " (" << (aux_counter + 1) * 10 << "%)";
       ++aux_counter;
     }
   } // for p

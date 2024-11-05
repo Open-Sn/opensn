@@ -161,7 +161,7 @@ WGSLinearSolver::SetRHS()
   auto& lbs_solver = gs_context_ptr->lbs_solver;
 
   if (gs_context_ptr->log_info)
-    log.Log() << program_timer.GetTimeString() << " Computing b";
+    log.Log() << program_timer.TimeString() << " Computing b";
 
   // SetSource for RHS
   saved_q_moments_local_ = lbs_solver.QMomentsLocal();

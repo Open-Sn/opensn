@@ -23,13 +23,13 @@ public:
   void Reset();
 
   /// Gets the current timer value in milliseconds.
-  double GetTime() const;
+  double Time() const;
 
   /// Obtains a string in the format of hh:mm::ss.
-  std::string GetTimeString() const;
+  std::string TimeString() const;
 
   /// Obtains a string in the format YYYY-MM-DD hh:mm:ss
-  static std::string GetLocalDateTimeString();
+  static std::string LocalDateTimeString();
 };
 
 /**

@@ -165,8 +165,7 @@ FVDiffusionSolver::Initialize()
 {
   const std::string fname = "FVSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
-            << ": Initializing FV Diffusion solver ";
+            << program_timer.TimeString() << " " << Name() << ": Initializing FV Diffusion solver ";
 
   // Get grid
   grid_ptr_ = GetCurrentMesh();

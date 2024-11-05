@@ -27,7 +27,7 @@ RegisterLuaFunctionInNamespace(MeshSetupOrthogonalBoundaries, mesh, SetupOrthogo
 int
 MeshSetupOrthogonalBoundaries(lua_State* L)
 {
-  opensn::log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
+  opensn::log.Log() << program_timer.TimeString() << " Setting orthogonal boundaries.";
 
   auto vol_cont = GetCurrentMesh();
 
@@ -67,7 +67,7 @@ MeshSetupOrthogonalBoundaries(lua_State* L)
   }
 
   opensn::mpi_comm.barrier();
-  opensn::log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
+  opensn::log.Log() << program_timer.TimeString() << " Done setting orthogonal boundaries.";
 
   return LuaReturn(L);
 }

@@ -48,7 +48,7 @@ LuaApp::Run(int argc, char** argv)
   if (opensn::mpi_comm.rank() == 0)
   {
     std::cout << opensn::program << " version " << GetVersionStr() << "\n"
-              << Timer::GetLocalDateTimeString() << " Running " << opensn::program << " with "
+              << Timer::LocalDateTimeString() << " Running " << opensn::program << " with "
               << opensn::mpi_comm.size() << " processes.\n"
               << opensn::program << " number of arguments supplied: " << argc - 1 << "\n"
               << std::endl;
@@ -75,9 +75,9 @@ LuaApp::Run(int argc, char** argv)
     if (opensn::mpi_comm.rank() == 0)
     {
       std::cout << "\n"
-                << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
-                << Timer::GetLocalDateTimeString() << " " << opensn::program
-                << " finished execution." << std::endl;
+                << "Elapsed execution time: " << program_timer.TimeString() << "\n"
+                << Timer::LocalDateTimeString() << " " << opensn::program << " finished execution."
+                << std::endl;
     }
   }
 

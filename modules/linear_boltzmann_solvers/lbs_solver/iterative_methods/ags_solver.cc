@@ -38,7 +38,7 @@ AGSSolver::Solve()
     }
 
     std::stringstream iter_stats;
-    iter_stats << program_timer.GetTimeString() << " AGS Iteration ";
+    iter_stats << program_timer.TimeString() << " AGS Iteration ";
 
     if (lbs_solver_.Options().ags_pointwise_convergence)
     {

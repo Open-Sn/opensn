@@ -264,7 +264,7 @@ void
 MGDiffusionSolver::Initialize()
 {
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.TimeString() << " " << Name()
             << ": Initializing CFEM Multigroup Diffusion solver ";
 
   // Get grid

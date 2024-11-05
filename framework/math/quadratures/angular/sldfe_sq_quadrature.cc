@@ -76,7 +76,7 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
     log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
 
   // Print Statistics
-  double time = timer.GetTime() / 1000.0;
+  double time = timer.Time() / 1000.0;
   log.Log0Verbose1() << "Number of dirs/octant: " << initial_octant_SQs_.size();
   log.Log0Verbose1() << "Total weight         : " << total_area;
   log.Log0Verbose1() << "Total weight/(pi/2)  : " << total_area / M_PI_2;

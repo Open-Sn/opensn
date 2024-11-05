@@ -50,7 +50,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
 
   // Write the header info
   ofile << "# Exported cross section from OpenSn\n";
-  ofile << "# Date: " << Timer::GetLocalDateTimeString() << "\n";
+  ofile << "# Date: " << Timer::LocalDateTimeString() << "\n";
   ofile << "NUM_GROUPS " << NumGroups() << "\n";
   ofile << "NUM_MOMENTS " << ScatteringOrder() + 1 << "\n";
   if (NumPrecursors() > 0)
