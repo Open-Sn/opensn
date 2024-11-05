@@ -665,7 +665,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
         if (bndry->IsReflecting())
         {
           for (int g = 0; g < num_groups_; ++g)
-            local_in_flow += transport_view.GetOutflow(f, g);
+            local_in_flow += transport_view.Outflow(f, g);
         }
         else
         {
@@ -703,7 +703,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
     {
       const auto& face = cell.faces[f];
       for (int g = 0; g < num_groups_; ++g)
-        local_out_flow += transport_view.GetOutflow(f, g);
+        local_out_flow += transport_view.Outflow(f, g);
     }
 
     // Absorption and sources
