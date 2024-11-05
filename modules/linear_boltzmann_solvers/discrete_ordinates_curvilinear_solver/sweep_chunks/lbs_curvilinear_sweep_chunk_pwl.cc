@@ -94,7 +94,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
-  const auto& spls = spds.LocalSubgrid().item_id;
+  const auto& spls = spds.LocalSubgrid();
   const size_t num_spls = spls.size();
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {

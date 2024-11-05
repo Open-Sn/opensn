@@ -38,17 +38,6 @@ struct Task
   bool completed = false;
 };
 
-/**
- * Sweep Plane Local Subgrid (“spills”), a contiguous collection of cells that defines the lowest
- * level in the SPDS hierarchy. The intent is that the processing “locations” responsible for
- * executing sweeps on this collection of cells can readily read to and write from a common data
- * structure. A SPLS contains one or more entire cellsets — it cannot split a cellset.
- */
-struct SPLS
-{
-  std::vector<int> item_id;
-};
-
 /// Stage Task Dependency Graphs
 struct STDG
 {

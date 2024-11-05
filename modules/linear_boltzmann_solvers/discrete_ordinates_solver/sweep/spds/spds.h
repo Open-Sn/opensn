@@ -40,8 +40,17 @@ public:
   /// Return a reference to the direction vector.
   const Vector3& Omega() const { return omega_; }
 
-  /// Return a reference to the associated sweep-plane local subset (SPLS).
-  const SPLS& LocalSubgrid() const { return spls_; }
+  /**
+   * Return a reference to the Sweep-Plane Local Subgrid (SPLS) associated with this SPDS. A SPLS
+   * (“spills”) is a contiguous collection of cells that is the lowest level in the SPDS hierarchy.
+   * The intent is that the locations responsible for executing sweeps on this collection of cells
+   * can readily read to and write from a common data structure. A SPLS contains one or more entire
+   * cellsets — it cannot split a cellset.
+   */
+  const std::vector<int>& LocalSubgrid() const { return spls_; }
+
+  /// Return a reference to the levelized SPLS.
+  const std::vector<std::vector<int>>& LevelizedLocalSubgrid() const { return levelized_spls_; }
 
   /// Returns the location dependencies for this SPDS.
   const std::vector<int>& LocationDependencies() const { return location_dependencies_; }
@@ -139,7 +148,9 @@ protected:
   /// Reference to the grid.
   const MeshContinuum& grid_;
   /// Sweep-plane local subgrid associated with this SPDS.
-  SPLS spls_;
+  std::vector<int> spls_;
+  /// Levelized sweep-plane local subgrid associated with this SPDS.
+  std::vector<std::vector<int>> levelized_spls_;
   /// Location dependencies.
   std::vector<int> location_dependencies_;
   /// Location successors.

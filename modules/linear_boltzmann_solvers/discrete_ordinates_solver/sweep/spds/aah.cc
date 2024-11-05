@@ -50,14 +50,36 @@ AAH_SPDS::AAH_SPDS(int id, const Vector3& omega, const MeshContinuum& grid, bool
   }
 
   // Generate topological ordering
-  spls_.item_id.clear();
-  boost::topological_sort(local_cell_graph, std::back_inserter(spls_.item_id));
-  std::reverse(spls_.item_id.begin(), spls_.item_id.end());
-  if (spls_.item_id.empty())
+  spls_.clear();
+  boost::topological_sort(local_cell_graph, std::back_inserter(spls_));
+  std::reverse(spls_.begin(), spls_.end());
+  if (spls_.empty())
   {
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
                            "Cycles need to be allowed by the calling application.");
   }
+
+  // Generate levelized spls
+  int max_level = 0;
+  std::vector<int> levels(num_vertices(local_cell_graph), 0);
+  for (auto& v : spls_)
+  {
+    for (auto ei = out_edges(v, local_cell_graph); ei.first != ei.second; ++ei.first)
+    {
+      auto successor = target(*ei.first, local_cell_graph);
+      levels[successor] = std::max(levels[successor], levels[v] + 1);
+      max_level = std::max(max_level, levels[successor]);
+    }
+  }
+  levelized_spls_.resize(max_level + 1);
+  for (auto v = 0; v < num_vertices(local_cell_graph); ++v)
+    levelized_spls_[levels[v]].push_back(v);
+
+  // Regenerate spls to match levelized spls
+  spls_.clear();
+  for (auto& level : levelized_spls_)
+    for (auto& cell : level)
+      spls_.push_back(cell);
 
   // Generate location-to-location dependencies
   global_dependencies_.resize(opensn::mpi_comm.size());
