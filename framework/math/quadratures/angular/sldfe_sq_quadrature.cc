@@ -222,13 +222,13 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
-  DynamicVector<double> rho = {d, d, d, d};
+  Vector<double> rho({d, d, d, d});
 
   auto weights = ComputeWeights(rho);
 
   for (int i = 0; i < 4; ++i)
   {
-    auto xy_tilde = sq_xy_tilde_centroid + rho[i] * radii_vectors_xy_tilde[i];
+    auto xy_tilde = sq_xy_tilde_centroid + rho(i) * radii_vectors_xy_tilde[i];
     auto xyz_prime = sq.rotation_matrix * xy_tilde + sq.translation_vector;
 
     sq.sub_sqr_points[i] = xyz_prime.Normalized();
@@ -249,10 +249,10 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
   FunctionWeightFromRho ComputeWeights(
     *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
   double d = 1.0 / sqrt(3.0);
-  DynamicVector<double> rho = {d, d, d, d};
+  Vector<double> rho({d, d, d, d});
   double epsilon = 1.0e-1;
-  DynamicVector<double> delta = {epsilon, epsilon, epsilon, epsilon};
-  DynamicVector<double> drho_df = {0.0, 0.0, 0.0, 0.0};
+  Vector<double> delta({epsilon, epsilon, epsilon, epsilon});
+  Vector<double> drho_df({0.0, 0.0, 0.0, 0.0});
 
   // Compute initial weights
   auto weights = ComputeWeights(rho);
@@ -265,8 +265,8 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
     //    double fac = 1.0/N;
     //    std::array<std::array<double,4>,N> weights_offset;
 
-    auto weights_offset_pos = ComputeWeights(rho + delta);
-    auto weights_offset_neg = ComputeWeights(rho - delta);
+    auto weights_offset_pos = ComputeWeights(Add(rho, delta));
+    auto weights_offset_neg = ComputeWeights(Subtract(rho, delta));
 
     double rho_change_total = 0.0;
     for (int i = 0; i < 4; ++i)
@@ -274,9 +274,9 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
       double slope = 0.0;
       slope += 0.5 * (weights_offset_pos[i] - weights[i]);
       slope -= 0.5 * (weights_offset_neg[i] - weights[i]);
-      drho_df[i] = delta[i] / slope;
+      drho_df(i) = delta(i) / slope;
 
-      double delta_rho = 1.0 * drho_df[i] * (SA_i[i] - weights[i]);
+      double delta_rho = 1.0 * drho_df(i) * (SA_i[i] - weights[i]);
 
       //      delta = {0.0,0.0,0.0,0.0}; delta[i] = epsilon;
       //      auto weights_offset_pos = ComputeWeights(rho + delta);
@@ -284,10 +284,10 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
       //
       //      double delta_rho = 10.0*slope*(SA_i[i]-weights[i]);
 
-      rho[i] += delta_rho;
-      rho[i] = std::fmax(0.0, rho[i]);
-      rho[i] = std::fmin(1.0, rho[i]);
-      rho_change_total -= 1.0 * drho_df[i] * (weights[i] - SA_i[i]);
+      rho(i) += delta_rho;
+      rho(i) = std::fmax(0.0, rho(i));
+      rho(i) = std::fmin(1.0, rho(i));
+      rho_change_total -= 1.0 * drho_df(i) * (weights[i] - SA_i[i]);
     }
 
     // Update weights
@@ -299,7 +299,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
     log.Log() << "Weights: " << weights[0] << " " << weights[1] << " " << weights[2] << " "
               << weights[3] << " ";
     log.Log() << "Areas: " << SA_i[0] << " " << SA_i[1] << " " << SA_i[2] << " " << SA_i[3] << "\n";
-    log.Log() << "rhos: " << rho[0] << " " << rho[1] << " " << rho[2] << " " << rho[3] << "\n";
+    log.Log() << "rhos: " << rho(0) << " " << rho(1) << " " << rho(2) << " " << rho(3) << "\n";
     log.Log() << k << " " << std::fabs(change);
     log.Log() << "  ";
 
@@ -317,7 +317,7 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
 
   for (int i = 0; i < 4; ++i)
   {
-    auto xy_tilde = sq_xy_tilde_centroid + rho[i] * radii_vectors_xy_tilde[i];
+    auto xy_tilde = sq_xy_tilde_centroid + rho(i) * radii_vectors_xy_tilde[i];
     auto xyz_prime = sq.rotation_matrix * xy_tilde + sq.translation_vector;
     sq.sub_sqr_points[i] = xyz_prime.Normalized();
     sq.sub_sqr_weights[i] = weights[i];
@@ -442,15 +442,15 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
 std::array<double, 4>
 SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   const SphericalQuadrilateral& sq,
-  std::array<DynamicVector<double>, 4>& shape_coeffs,
+  std::array<Vector<double>, 4>& shape_coeffs,
   const std::vector<Vector3>& legendre_qpoints,
   const std::vector<double>& legendre_qweights)
 {
   // Lambda to evaluate LDFE shape func
-  auto EvaluateShapeFunction = [](DynamicVector<double>& shape_coeffs, Vector3& mu_eta_xi)
+  auto EvaluateShapeFunction = [](Vector<double>& shape_coeffs, Vector3& mu_eta_xi)
   {
-    return shape_coeffs[0] + shape_coeffs[1] * mu_eta_xi[0] + shape_coeffs[2] * mu_eta_xi[1] +
-           shape_coeffs[3] * mu_eta_xi[2];
+    return shape_coeffs(0) + shape_coeffs(1) * mu_eta_xi(0) + shape_coeffs(2) * mu_eta_xi(1) +
+           shape_coeffs(3) * mu_eta_xi(2);
   };
 
   // Determine integration bounds

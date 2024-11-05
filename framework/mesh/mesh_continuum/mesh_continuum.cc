@@ -471,7 +471,7 @@ MeshContinuum::GetIJKInfo() const
   return {ortho_attributes_.Nx, ortho_attributes_.Ny, ortho_attributes_.Nz};
 }
 
-NDArray<uint64_t>
+NDArray<uint64_t, 3>
 MeshContinuum::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
@@ -483,7 +483,7 @@ MeshContinuum::MakeIJKToGlobalIDMapping() const
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  NDArray<uint64_t> m_ijk_to_i({Nx, Ny, Nz});
+  NDArray<uint64_t, 3> m_ijk_to_i({Nx, Ny, Nz});
   for (int i = 0; i < Nx; ++i)
     for (int j = 0; j < Ny; ++j)
       for (int k = 0; k < Nz; ++k)

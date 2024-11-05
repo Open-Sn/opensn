@@ -7,6 +7,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/math/math.h"
 #include <numeric>
 
 namespace opensn
@@ -91,32 +92,32 @@ PRKSolver::Initialize()
 
   // Initializing linalg items
   const auto& J = num_precursors_;
-  A_ = DynamicMatrix<double>(J + 1, J + 1, 0.0);
+  A_ = DenseMatrix<double>(J + 1, J + 1, 0.);
   I_ = A_;
   I_.SetDiagonal(1.0);
 
-  x_t_ = DynamicVector<double>(J + 1, 0.0);
+  x_t_ = Vector<double>(J + 1, 0.);
 
   // Assembling system
-  A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
+  A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
   for (size_t j = 1; j <= J; ++j)
   {
-    A_[0][j] = lambdas_[j - 1];
-    A_[j][j] = -lambdas_[j - 1];
-    A_[j][0] = betas_[j - 1] / gen_time_;
+    A_(0, j) = lambdas_[j - 1];
+    A_(j, j) = -lambdas_[j - 1];
+    A_(j, 0) = betas_[j - 1] / gen_time_;
   }
 
-  q_.resize(J + 1, 0.0);
-  q_[0] = source_strength_;
+  q_ = Vector<double>(J + 1, 0.);
+  q_(0) = source_strength_;
 
   // Initializing x
   // If there is a source and the reactivity is < 0 then
   // there exists a unique solution.
   if (source_strength_ > 0.0 and rho_ < 0.0)
   {
-    const auto b_theta = -1.0 * q_;
+    const auto b_theta = Scaled(q_, -1.0);
 
-    x_t_ = A_.Inverse() * b_theta;
+    x_t_ = Mult(Inverse(A_), b_theta);
   }
   // Otherwise we initialize the system as a critical system with
   // no source.
@@ -125,12 +126,11 @@ PRKSolver::Initialize()
     auto A_temp = A_;
     auto b_temp = x_t_;
     b_temp.Set(0.0);
-    b_temp[0] = 1.0;
-    for (auto& val : A_temp[0])
-      val = 0.0;
-    A_temp[0][0] = 1.0;
-
-    x_t_ = A_temp.Inverse() * b_temp;
+    b_temp(0) = 1.0;
+    for (unsigned int i = 0; i < A_temp.Columns(); ++i)
+      A_temp(0, i) = 0.0;
+    A_temp(0, 0) = 1.0;
+    x_t_ = Mult(Inverse(A_temp), b_temp);
   }
 
   log.Log() << "Final: " << x_t_.PrintStr();
@@ -155,7 +155,7 @@ PRKSolver::Step()
 
   const double dt = timestepper_->TimeStepSize();
 
-  A_[0][0] = beta_ * (rho_ - 1.0) / gen_time_;
+  A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
 
   if (time_integration_ == "implicit_euler" or time_integration_ == "crank_nicolson")
   {
@@ -168,22 +168,22 @@ PRKSolver::Step()
 
     const double inv_tau = theta * dt;
 
-    auto A_theta = I_ - inv_tau * A_;
-    auto b_theta = x_t_ + inv_tau * q_;
+    auto A_theta = Subtract(I_, Scaled(A_, inv_tau));
+    auto b_theta = Add(x_t_, Scaled(q_, inv_tau));
 
-    auto x_theta = A_theta.Inverse() * b_theta;
+    auto x_theta = Mult(Inverse(A_theta), b_theta);
 
-    x_tp1_ = x_t_ + (1.0 / theta) * (x_theta - x_t_);
+    x_tp1_ = Add(x_t_, Scaled(Subtract(x_theta, x_t_), 1.0 / theta));
   }
   else if (time_integration_ == "explicit_euler")
   {
-    x_tp1_ = x_t_ + dt * A_ * x_t_ + dt * q_;
+    x_tp1_ = Add(x_t_, Add(Scaled(Mult(A_, x_t_), dt), Scaled(q_, dt)));
   }
   else
     OpenSnLogicalError("Unsupported time integration scheme.");
 
-  if ((std::abs(x_t_[0]) > 1e-12) && std::abs((x_tp1_[0] / x_t_[0]) - 1.) > 1e-12)
-    period_tph_ = dt / std::log(x_tp1_[0] / x_t_[0]);
+  if ((std::abs(x_t_(0)) > 1e-12) && std::abs((x_tp1_(0) / x_t_(0)) - 1.) > 1e-12)
+    period_tph_ = dt / std::log(x_tp1_(0) / x_t_(0));
   else
     period_tph_ = 0.0;
 
@@ -206,7 +206,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   const auto param_name = params.GetParamValue<std::string>("name");
 
   if (param_name == "neutron_population")
-    return ParameterBlock("", x_t_[0]);
+    return ParameterBlock("", x_t_(0));
   else if (param_name == "population_next")
     return ParameterBlock("", PopulationNew());
   else if (param_name == "period")
@@ -214,7 +214,10 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   else if (param_name == "rho")
     return ParameterBlock("", rho_);
   else if (param_name == "solution")
-    return ParameterBlock("", x_t_.elements_);
+  {
+    std::vector<double> sln = x_t_.ToStdVector();
+    return ParameterBlock("", sln);
+  }
   else if (param_name == "time_integration")
     return ParameterBlock("", time_integration_);
   else if (param_name == "time_next")
@@ -237,13 +240,13 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
 double
 PRKSolver::PopulationPrev() const
 {
-  return x_t_[0];
+  return x_t_(0);
 }
 
 double
 PRKSolver::PopulationNew() const
 {
-  return x_tp1_[0];
+  return x_tp1_(0);
 }
 
 double
@@ -264,16 +267,16 @@ PRKSolver::TimeNew() const
   return timestepper_->Time() + timestepper_->TimeStepSize();
 }
 
-std::vector<double>
+Vector<double>
 PRKSolver::SolutionPrev() const
 {
-  return x_t_.elements_;
+  return x_t_;
 }
 
-std::vector<double>
+Vector<double>
 PRKSolver::SolutionNew() const
 {
-  return x_tp1_.elements_;
+  return x_tp1_;
 }
 
 void

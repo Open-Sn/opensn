@@ -220,10 +220,9 @@ PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
 }
 
 void
-PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
-                                           std::vector<double>& shape_values) const
+PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
-  shape_values.resize(num_nodes_, 0.0);
+  shape_values.Resize(num_nodes_, 0.0);
   for (int s = 0; s < num_of_subtris_; ++s)
   {
     const auto& p0 = ref_grid_.vertices[sides_[s].v_index[0]];
@@ -251,7 +250,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz,
 
         value += beta_ * eta;
 
-        shape_values[i] = value;
+        shape_values(i) = value;
       }
       return;
     } // if in triangle

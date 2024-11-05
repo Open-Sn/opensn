@@ -341,7 +341,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
-          const auto& V_i = fe_values.intV_shapeI[i];
+          const auto& V_i = fe_values.intV_shapeI(i);
           for (size_t g = 0; g < num_groups; ++g)
             local_response += src[g] * phi_dagger[dof_map + g] * V_i;
         }
@@ -376,7 +376,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
               const auto& node = grid.vertices[cell.vertex_ids[i]];
-              const auto& intF_shapeI = fe_values.intS_shapeI[f][i];
+              const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);
 
@@ -418,7 +418,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& shape_val = subscriber.shape_values[i];
+        const auto& shape_val = subscriber.shape_values(i);
         for (size_t g = 0; g < num_groups; ++g)
           local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
       } // for node i
@@ -436,7 +436,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto num_cell_nodes = transport_view.NumNodes();
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
-        const auto& V_i = fe_values.intV_shapeI[i];
+        const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& vals = volumetric_source(cell, nodes[i], num_groups);
         for (size_t g = 0; g < num_groups; ++g)

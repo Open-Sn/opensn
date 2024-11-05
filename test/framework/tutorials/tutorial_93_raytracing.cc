@@ -132,8 +132,8 @@ SimTest93_RayTracing(const InputParameters&)
     std::vector<double> segment_lengths;
     PopulateRaySegmentLengths(grid, cell, positionA, positionB, omega, segment_lengths);
 
-    std::vector<double> shape_values_k;   // At s_k
-    std::vector<double> shape_values_kp1; // At s_{k+1}
+    Vector<double> shape_values_k;   // At s_k
+    Vector<double> shape_values_kp1; // At s_{k+1}
 
     cell_mapping.ShapeValues(positionA, shape_values_k);
 
@@ -151,8 +151,8 @@ SimTest93_RayTracing(const InputParameters&)
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const double C0 = b_ik[i] * ell_k;
-        const double C1 = b_ikp1[i] - b_ik[i];
+        const double C0 = b_ik(i) * ell_k;
+        const double C1 = b_ikp1(i) - b_ik(i);
 
         for (size_t m = 0; m < num_moments; ++m)
         {
@@ -278,32 +278,32 @@ SimTest93_RayTracing(const InputParameters&)
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    MatDbl M(num_nodes, std::vector<double>(num_nodes, 0.0));
+    DenseMatrix<double> M(num_nodes, num_nodes, 0.0);
     for (auto qp : fe_vol_data.QuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
-          M[i][j] +=
+          M(i, j) +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
 
     auto M_inv = Inverse(M);
 
     // Apply projection
-    std::vector<double> T(num_nodes, 0.0);
+    Vector<double> T(num_nodes, 0.0);
     for (size_t m = 0; m < num_moments; ++m)
       for (size_t g = 0; g < num_groups; ++g)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          T[i] = phi_tally[imap] / num_particles;
+          T(i) = phi_tally[imap] / num_particles;
         }
 
-        auto phi_uc = MatMul(M_inv, T);
+        auto phi_uc = Mult(M_inv, T);
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          phi_tally[imap] = phi_uc[i];
+          phi_tally[imap] = phi_uc(i);
         }
       } // for group g
 

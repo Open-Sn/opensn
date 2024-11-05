@@ -7,6 +7,8 @@
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/vector.h"
+#include "framework/math/dense_matrix.h"
 #include <memory>
 
 namespace opensn
@@ -19,7 +21,6 @@ class SpatialDiscretization_FV;
 class SpatialDiscretization_PWLD;
 class SpatialDiscretization_PWLC;
 
-using MatDbl = std::vector<std::vector<double>>;
 using MatVec3 = std::vector<std::vector<Vector3>>;
 
 /// Coordinate system type.
@@ -103,7 +104,7 @@ void Scale(std::vector<double>& x, const double& val);
 void Set(std::vector<double>& x, const double& val);
 
 /// Multiplies the vector with a constant and returns result.
-std::vector<double> VecMul(const std::vector<double>& x, const double& val);
+std::vector<double> Mult(const std::vector<double>& x, const double& val);
 
 /**
  * Returns the 1-norm. Also known as the Taxicab or Manhattan norm.
@@ -155,63 +156,6 @@ std::vector<double> operator+(const std::vector<double>& a, const std::vector<do
 
 /// Subtracts two vectors component-wise.
 std::vector<double> operator-(const std::vector<double>& a, const std::vector<double>& b);
-
-/// Prints the contents of a matrix.
-void PrintMatrix(const MatDbl& A);
-
-/// Scales the matrix by a constant value.
-void Scale(MatDbl& A, const double& val);
-
-/// Sets all the entries of the matrix to a constant value.
-void Set(MatDbl& A, const double& val);
-
-/// Returns the transpose of a matrix.
-MatDbl Transpose(const MatDbl& A);
-
-/// Swaps two rows of a matrix.
-void SwapRow(size_t r1, size_t r2, MatDbl& A);
-
-/// Swaps two columns of a matrix.
-void SwapColumn(size_t c1, size_t c2, MatDbl& A);
-
-/// Multiply matrix with a constant and return result.
-MatDbl MatMul(const MatDbl& A, const double c);
-
-/// Multiply matrix with a vector and return resulting vector
-std::vector<double> MatMul(const MatDbl& A, const std::vector<double>& x);
-
-/// Mutliply two matrices and return result.
-MatDbl MatMul(const MatDbl& A, const MatDbl& B);
-
-/// Adds two matrices and returns the result.
-MatDbl MatAdd(const MatDbl& A, const MatDbl& B);
-
-/// Subtracts matrix A from B and returns the result.
-MatDbl MatSubtract(const MatDbl& A, const MatDbl& B);
-
-/// Computes the determinant of a matrix.
-double Determinant(const MatDbl& A);
-
-/// Returns a sub-matrix.
-MatDbl SubMatrix(const size_t r, const size_t c, const MatDbl& A);
-
-/// Gauss Elimination without pivoting.
-void GaussElimination(MatDbl& A, std::vector<double>& b, int n);
-
-/// Computes the inverse of a matrix using Gauss-Elimination with pivoting.
-MatDbl InverseGEPivoting(const MatDbl& A);
-
-/// Computes the inverse of a matrix.
-MatDbl Inverse(const MatDbl& A);
-
-/**
- * Performs power iteration to obtain the fundamental eigen mode. The eigen-value of the fundamental
- * mode is return whilst the eigen-vector is return via reference.
- */
-double PowerIteration(const MatDbl& A,
-                      std::vector<double>& e_vec,
-                      int max_it = 2000,
-                      double tol = 1.0e-13);
 
 double ComputePointwiseChange(std::vector<double>& x, std::vector<double>& y);
 

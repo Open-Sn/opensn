@@ -300,8 +300,8 @@ CFEMDiffusionSolver::Execute()
 
     const auto imat = cell.material_id;
     const size_t num_nodes = cell_mapping.NumNodes();
-    MatDbl Acell(num_nodes, std::vector<double>(num_nodes, 0.0));
-    std::vector<double> cell_rhs(num_nodes, 0.0);
+    DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
+    Vector<double> cell_rhs(num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -316,10 +316,10 @@ CFEMDiffusionSolver::Execute()
                           fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp)) *
                        fe_vol_data.JxW(qp);
         } // for qp
-        Acell[i][j] = entry_aij;
+        Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
-        cell_rhs[i] += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+        cell_rhs(i) += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 
@@ -362,7 +362,7 @@ CFEMDiffusionSolver::Execute()
           double entry_rhsi = 0.0;
           for (size_t qp : fe_srf_data.QuadraturePointIndices())
             entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
-          cell_rhs[i] += fval / bval * entry_rhsi;
+          cell_rhs(i) += fval / bval * entry_rhsi;
 
           // only do this part if true Robin (i.e., a!=0)
           if (std::fabs(aval) > 1.0e-8)
@@ -375,7 +375,7 @@ CFEMDiffusionSolver::Execute()
               for (size_t qp : fe_srf_data.QuadraturePointIndices())
                 entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                              fe_srf_data.JxW(qp);
-              Acell[i][j] += aval / bval * entry_aij;
+              Acell(i, j) += aval / bval * entry_aij;
             } // for fj
           }   // end true Robin
         }     // for fi
@@ -419,14 +419,14 @@ CFEMDiffusionSolver::Execute()
         for (size_t j = 0; j < num_nodes; ++j)
         {
           if (dirichlet_count[j] == 0) // not related to a dirichlet node
-            MatSetValue(A_, imap[i], imap[j], Acell[i][j], ADD_VALUES);
+            MatSetValue(A_, imap[i], imap[j], Acell(i, j), ADD_VALUES);
           else
           {
             const double aux = dirichlet_value[j] / dirichlet_count[j];
-            cell_rhs[i] -= Acell[i][j] * aux;
+            cell_rhs(i) -= Acell(i, j) * aux;
           }
         } // for j
-        VecSetValue(b_, imap[i], cell_rhs[i], ADD_VALUES);
+        VecSetValue(b_, imap[i], cell_rhs(i), ADD_VALUES);
       }
     } // for i
   }   // for cell

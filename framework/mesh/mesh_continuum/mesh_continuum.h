@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/data_types/ndarray.h"
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
@@ -12,8 +13,6 @@
 
 namespace opensn
 {
-template <typename T>
-class NDArray;
 class MPICommunicatorSet;
 class GridFaceHistogram;
 class MeshGenerator;
@@ -158,7 +157,7 @@ public:
   /**
    * Provides a mapping from cell ijk indices to global ids.
    */
-  NDArray<uint64_t> MakeIJKToGlobalIDMapping() const;
+  NDArray<uint64_t, 3> MakeIJKToGlobalIDMapping() const;
 
   /**
    * Determines the bounding box size of each cell and returns it as

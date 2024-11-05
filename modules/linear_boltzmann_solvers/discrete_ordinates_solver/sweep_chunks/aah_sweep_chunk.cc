@@ -54,12 +54,9 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
-  std::vector<std::vector<double>> Amat(max_num_cell_dofs_,
-                                        std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> Atemp(max_num_cell_dofs_,
-                                         std::vector<double>(max_num_cell_dofs_));
-  std::vector<std::vector<double>> b(groupset_.groups.size(),
-                                     std::vector<double>(max_num_cell_dofs_));
+  DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
+  DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
+  std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_, 0.));
   std::vector<double> source(max_num_cell_dofs_);
 
   // Loop over each cell
@@ -101,11 +98,12 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 
       // Reset right-hand side
       for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-        b[gsg].assign(cell_num_nodes, 0.0);
+        for (int i = 0; i < cell_num_nodes; ++i)
+          b[gsg](i) = 0.0;
 
       for (int i = 0; i < cell_num_nodes; ++i)
         for (int j = 0; j < cell_num_nodes; ++j)
-          Amat[i][j] = omega.Dot(G[i][j]);
+          Amat(i, j) = omega.Dot(G(i, j));
 
       // Update face orientations
       for (int f = 0; f < cell_num_faces; ++f)
@@ -137,8 +135,8 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           {
             const int j = cell_mapping.MapFaceNode(f, fj);
 
-            const double mu_Nij = -face_mu_values[f] * M_surf[f][i][j];
-            Amat[i][j] += mu_Nij;
+            const double mu_Nij = -face_mu_values[f] * M_surf[f](i, j);
+            Amat(i, j) += mu_Nij;
 
             const double* psi;
             if (is_local_face)
@@ -159,7 +157,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
               continue;
 
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              b[gsg][i] += psi[gsg] * mu_Nij;
+              b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
         }   // for face node i
       }     // for f
@@ -189,11 +187,11 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           double temp = 0.0;
           for (int j = 0; j < cell_num_nodes; ++j)
           {
-            const double Mij = M[i][j];
-            Atemp[i][j] = Amat[i][j] + Mij * sigma_tg;
+            auto Mij = M(i, j);
+            Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
             temp += Mij * source[j];
           }
-          b[gsg][i] += temp;
+          b[gsg](i) += temp;
         }
 
         // Solve system
@@ -209,7 +207,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
         {
           const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-            output_phi[ir + gsg] += wn_d2m * b[gsg][i];
+            output_phi[ir + gsg] += wn_d2m * b[gsg](i);
         }
       }
 
@@ -225,7 +223,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           const size_t imap =
             i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin;
           for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-            cell_psi_data[imap + gsg] = b[gsg][i];
+            cell_psi_data[imap + gsg] = b[gsg](i);
         }
       }
 
@@ -257,7 +255,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
               cell_transport_view.AddOutflow(
-                f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg][i] * IntF_shapeI[i]);
+                f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
           }
 
           double* psi = nullptr;
@@ -274,7 +272,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
             for (int gsg = 0; gsg < gs_ss_size; ++gsg)
-              psi[gsg] = b[gsg][i];
+              psi[gsg] = b[gsg](i);
           }
         } // for fi
       }   // for face

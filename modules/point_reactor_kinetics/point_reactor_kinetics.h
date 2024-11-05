@@ -5,8 +5,8 @@
 
 #include "framework/physics/solver.h"
 #include "framework/math/math.h"
-#include "framework/math/dynamic_matrix.h"
-#include "framework/math/dynamic_vector.h"
+#include "framework/math/dense_matrix.h"
+#include "framework/math/vector.h"
 
 namespace opensn
 {
@@ -23,8 +23,8 @@ private:
   std::string time_integration_;
 
   size_t num_precursors_;
-  DynamicMatrix<double> A_, I_;
-  DynamicVector<double> x_t_, x_tp1_, q_;
+  DenseMatrix<double> A_, I_;
+  Vector<double> x_t_, x_tp1_, q_;
   double beta_ = 1.0;
   double period_tph_ = 0.0;
 
@@ -54,9 +54,9 @@ public:
   /// Returns the time computed for the next time step.
   double TimeNew() const;
   /// Returns the solution at the previous time step.
-  std::vector<double> SolutionPrev() const;
+  Vector<double> SolutionPrev() const;
   /// Returns the solution at the next time step.
-  std::vector<double> SolutionNew() const;
+  Vector<double> SolutionNew() const;
 
   /**
    * \addtogroup prk

@@ -1,5 +1,5 @@
-#include "framework/math/dynamic_vector.h"
-#include "framework/math/dynamic_matrix.h"
+#include "framework/math/vector.h"
+#include "framework/math/dense_matrix.h"
 #include "framework/math/sparse_matrix/sparse_matrix.h"
 
 #include "framework/runtime.h"
@@ -22,16 +22,18 @@ math_Test00(const InputParameters& params)
   opensn::log.Log() << "GOLD_BEGIN";
   // Dynamic Vector
   {
-    opensn::log.Log() << "Testing DynamicVector\n";
+    opensn::log.Log() << "Testing Vector\n";
 
-    DynamicVector<double> vec(5, 1.0);
+    Vector<double> vec(5);
+    vec.Set(1.0);
 
     opensn::log.Log() << vec.PrintStr();
   }
   // Dynamic Matrix
   {
-    opensn::log.Log() << "Testing DynamicMatrix\n";
-    DynamicMatrix<double> mat(5, 7, 1.0);
+    opensn::log.Log() << "Testing DenseMatrix\n";
+    DenseMatrix<double> mat(5, 7);
+    mat.Set(1.0);
 
     opensn::log.Log() << mat.PrintStr();
   }

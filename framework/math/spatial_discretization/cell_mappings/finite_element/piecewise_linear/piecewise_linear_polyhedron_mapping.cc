@@ -455,9 +455,9 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const Vector3& xyz) co
 
 void
 PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
-                                              std::vector<double>& shape_values) const
+                                              Vector<double>& shape_values) const
 {
-  shape_values.resize(num_nodes_, 0.0);
+  shape_values.Resize(num_nodes_, 0.0);
   for (size_t f = 0; f < face_data_.size(); ++f)
   {
     for (size_t s = 0; s < face_data_[f].sides.size(); ++s)
@@ -493,7 +493,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
             Nf = face_betaf_[f] * xi;
           }
 
-          shape_values[i] = Ni + Nf + Nc;
+          shape_values(i) = Ni + Nf + Nc;
         } // for dof
         return;
       } // if in tet

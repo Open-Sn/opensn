@@ -211,7 +211,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
           for (size_t g = gs_i; g <= gs_f; ++g)
-            q[uk_map + g] += strength[g] * node_weights[i] * volume_weight;
+            q[uk_map + g] += strength[g] * node_weights(i) * volume_weight;
         } // for node i
       }   // for subscriber
     }     // for point source

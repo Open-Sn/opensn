@@ -152,9 +152,9 @@ SimTest06_WDD(const InputParameters&)
   }     // for cell
 
   // Define sweep chunk
-  NDArray<double> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
-  NDArray<double> psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
-  NDArray<double> psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double, 4> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double, 4> psi_ds_y(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
+  NDArray<double, 4> psi_ds_z(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
 
   auto SweepChunk = [&ijk_info,
                      &ijk_mapping,

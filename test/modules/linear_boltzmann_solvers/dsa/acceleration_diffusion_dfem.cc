@@ -1,3 +1,4 @@
+#include "framework/math/dense_matrix.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/acceleration.h"
@@ -74,7 +75,6 @@ acceleration_Diffusion_DFEM(const InputParameters&)
   unit_cell_matrices.resize(grid.local_cells.size());
 
   // Build unit integrals
-  using MatVec3 = std::vector<std::vector<Vector3>>;
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -82,13 +82,13 @@ acceleration_Diffusion_DFEM(const InputParameters&)
     const size_t cell_num_nodes = cell_mapping.NumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    MatDbl IntV_gradshapeI_gradshapeJ(cell_num_nodes, std::vector<double>(cell_num_nodes));
-    MatDbl IntV_shapeI_shapeJ(cell_num_nodes, std::vector<double>(cell_num_nodes));
-    std::vector<double> IntV_shapeI(cell_num_nodes);
+    DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
+    DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);
+    Vector<double> IntV_shapeI(cell_num_nodes, 0.0);
 
-    std::vector<MatDbl> IntS_shapeI_shapeJ(cell_num_faces);
-    std::vector<MatVec3> IntS_shapeI_gradshapeJ(cell_num_faces);
-    std::vector<std::vector<double>> IntS_shapeI(cell_num_faces);
+    std::vector<DenseMatrix<double>> IntS_shapeI_shapeJ(cell_num_faces);
+    std::vector<DenseMatrix<Vector3>> IntS_shapeI_gradshapeJ(cell_num_faces);
+    std::vector<Vector<double>> IntS_shapeI(cell_num_faces);
 
     // Volume integrals
     for (unsigned int i = 0; i < cell_num_nodes; ++i)
@@ -97,11 +97,11 @@ acceleration_Diffusion_DFEM(const InputParameters&)
       {
         for (const auto& qp : fe_vol_data.QuadraturePointIndices())
         {
-          IntV_gradshapeI_gradshapeJ[i][j] +=
+          IntV_gradshapeI_gradshapeJ(i, j) +=
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
             fe_vol_data.JxW(qp); // K-matrix
 
-          IntV_shapeI_shapeJ[i][j] += fe_vol_data.ShapeValue(i, qp) *
+          IntV_shapeI_shapeJ(i, j) += fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) *
                                       fe_vol_data.JxW(qp); // M-matrix
         }                                                  // for qp
@@ -109,7 +109,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
       for (const auto& qp : fe_vol_data.QuadraturePointIndices())
       {
-        IntV_shapeI[i] += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+        IntV_shapeI(i) += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
     }   // for i
 
@@ -117,9 +117,9 @@ acceleration_Diffusion_DFEM(const InputParameters&)
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
-      IntS_shapeI_shapeJ[f].resize(cell_num_nodes, std::vector<double>(cell_num_nodes));
-      IntS_shapeI[f].resize(cell_num_nodes);
-      IntS_shapeI_gradshapeJ[f].resize(cell_num_nodes, std::vector<Vector3>(cell_num_nodes));
+      IntS_shapeI_shapeJ[f] = DenseMatrix<double>(cell_num_nodes, cell_num_nodes, 0.0);
+      IntS_shapeI[f] = Vector<double>(cell_num_nodes, 0.0);
+      IntS_shapeI_gradshapeJ[f] = DenseMatrix<Vector3>(cell_num_nodes, cell_num_nodes);
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {
@@ -127,16 +127,16 @@ acceleration_Diffusion_DFEM(const InputParameters&)
         {
           for (const auto& qp : fe_srf_data.QuadraturePointIndices())
           {
-            IntS_shapeI_shapeJ[f][i][j] +=
+            IntS_shapeI_shapeJ[f](i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
-            IntS_shapeI_gradshapeJ[f][i][j] +=
+            IntS_shapeI_gradshapeJ[f](i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
         }   // for j
 
         for (const auto& qp : fe_srf_data.QuadraturePointIndices())
         {
-          IntS_shapeI[f][i] += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
+          IntS_shapeI[f](i) += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
       }   // for i
     }     // for f

@@ -321,14 +321,14 @@ public:
 
 struct UnitCellMatrices
 {
-  std::vector<std::vector<double>> intV_gradshapeI_gradshapeJ;
-  std::vector<std::vector<Vector3>> intV_shapeI_gradshapeJ;
-  std::vector<std::vector<double>> intV_shapeI_shapeJ;
-  std::vector<double> intV_shapeI;
+  DenseMatrix<double> intV_gradshapeI_gradshapeJ;
+  DenseMatrix<Vector3> intV_shapeI_gradshapeJ;
+  DenseMatrix<double> intV_shapeI_shapeJ;
+  Vector<double> intV_shapeI;
 
-  std::vector<std::vector<std::vector<double>>> intS_shapeI_shapeJ;
-  std::vector<std::vector<std::vector<Vector3>>> intS_shapeI_gradshapeJ;
-  std::vector<std::vector<double>> intS_shapeI;
+  std::vector<DenseMatrix<double>> intS_shapeI_shapeJ;
+  std::vector<DenseMatrix<Vector3>> intS_shapeI_gradshapeJ;
+  std::vector<Vector<double>> intS_shapeI;
 };
 
 } // namespace opensn
