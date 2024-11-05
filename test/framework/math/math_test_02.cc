@@ -155,17 +155,17 @@ math_Test02_ParallelVector(const InputParameters&)
   }
 
   if (opensn::mpi_comm.rank() == 0)
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GetGlobalValue(3)
+    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GlobalValue(3)
                          << std::endl;
   else
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GetGlobalValue(6)
+    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GlobalValue(6)
                          << std::endl;
 
   if (opensn::mpi_comm.rank() == 0)
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GetGlobalValue(6)
+    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GlobalValue(6)
                          << std::endl;
   else
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GetGlobalValue(1)
+    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GlobalValue(1)
                          << std::endl;
 
   return ParameterBlock();

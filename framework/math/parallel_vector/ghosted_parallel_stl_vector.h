@@ -75,7 +75,7 @@ public:
    *
    * An error is thrown if the global index does not belong to a locally owned, or ghost entry.
    */
-  double GetGlobalValue(int64_t global_id) const;
+  double GlobalValue(int64_t global_id) const;
 
   /**
    * Communicate the current ghost entries to all other processes to update the locally stored ghost
