@@ -239,7 +239,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
   {
     for (const auto& volumetric_source : lbs_solver_.VolumetricSources())
     {
-      for (const auto local_id : volumetric_source.GetSubscribers())
+      for (const auto local_id : volumetric_source.Subscribers())
       {
         const auto& cell = grid.local_cells[local_id];
         const auto& transport_view = cell_transport_views[local_id];

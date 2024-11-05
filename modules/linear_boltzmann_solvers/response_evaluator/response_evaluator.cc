@@ -426,7 +426,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   // Volumetric sources
   for (const auto& volumetric_source : volumetric_sources_)
-    for (const uint64_t local_id : volumetric_source.GetSubscribers())
+    for (const uint64_t local_id : volumetric_source.Subscribers())
     {
       const auto& cell = grid.local_cells[local_id];
       const auto& transport_view = transport_views[cell.local_id];

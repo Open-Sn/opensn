@@ -175,7 +175,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
   // Volumetric sources
   for (const auto& volumetric_source : volumetric_sources_)
   {
-    for (const auto& local_id : volumetric_source.GetSubscribers())
+    for (const auto& local_id : volumetric_source.Subscribers())
     {
       const auto& cell = grid_ptr_->local_cells[local_id];
       const auto& transport_view = cell_transport_views_[local_id];
