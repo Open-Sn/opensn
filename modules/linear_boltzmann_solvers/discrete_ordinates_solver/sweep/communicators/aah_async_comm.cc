@@ -94,7 +94,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
 
   for (auto i = 0; i < num_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    size_t num_unknowns = fluds.PrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
     const auto source = comm_set_.MapIonJ(spds.LocationDependencies()[i], opensn::mpi_comm.rank());
 
@@ -122,7 +122,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
 
   for (auto i = 0; i < num_delayed_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    size_t num_unknowns = fluds.DelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
     const auto source =
       comm_set_.MapIonJ(spds.DelayedLocationDependencies()[i], opensn::mpi_comm.rank());
@@ -154,7 +154,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
 
   for (auto i = 0; i < num_successors; ++i)
   {
-    size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    size_t num_unknowns = fluds.DeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
     const auto deploc = location_successors[i];
     const auto dest = comm_set_.MapIonJ(deploc, deploc);

@@ -147,19 +147,19 @@ AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n)
 }
 
 size_t
-AAH_FLUDS::GetPrelocIFaceDOFCount(int prelocI) const
+AAH_FLUDS::PrelocIFaceDOFCount(int prelocI) const
 {
   return common_data_.prelocI_face_dof_count_[prelocI];
 }
 
 size_t
-AAH_FLUDS::GetDelayedPrelocIFaceDOFCount(int prelocI) const
+AAH_FLUDS::DelayedPrelocIFaceDOFCount(int prelocI) const
 {
   return common_data_.delayed_prelocI_face_dof_count_[prelocI];
 }
 
 size_t
-AAH_FLUDS::GetDeplocIFaceDOFCount(int deplocI) const
+AAH_FLUDS::DeplocIFaceDOFCount(int deplocI) const
 {
   return common_data_.deplocI_face_dof_count_[deplocI];
 }

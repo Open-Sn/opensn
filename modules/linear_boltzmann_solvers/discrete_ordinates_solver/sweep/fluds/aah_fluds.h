@@ -63,9 +63,9 @@ public:
    */
   double* NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n);
 
-  size_t GetPrelocIFaceDOFCount(int prelocI) const;
-  size_t GetDelayedPrelocIFaceDOFCount(int prelocI) const;
-  size_t GetDeplocIFaceDOFCount(int deplocI) const;
+  size_t PrelocIFaceDOFCount(int prelocI) const;
+  size_t DelayedPrelocIFaceDOFCount(int prelocI) const;
+  size_t DeplocIFaceDOFCount(int deplocI) const;
 
   void ClearLocalAndReceivePsi() override;
   void ClearSendPsi() override;
