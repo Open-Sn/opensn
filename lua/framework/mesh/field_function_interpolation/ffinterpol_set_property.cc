@@ -170,7 +170,7 @@ FFInterpolationSetProperty(lua_State* L)
       }
 
       auto& cur_ffi_volume = dynamic_cast<FieldFunctionInterpolationVolume&>(*p_ffi);
-      cur_ffi_volume.GetOperationType() = static_cast<FieldFunctionInterpolationOperation>(op_type);
+      cur_ffi_volume.OperationType() = static_cast<FieldFunctionInterpolationOperation>(op_type);
     }
     else if (p_ffi->Type() == FieldFunctionInterpolationType::LINE)
     {

@@ -39,9 +39,9 @@ public:
 
   std::shared_ptr<LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
 
-  FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
+  FieldFunctionInterpolationOperation& OperationType() { return op_type_; }
 
-  double& GetOpValue() { return op_value_; }
+  double& OpValue() { return op_value_; }
 
   void SetOperationFunction(std::shared_ptr<ScalarMaterialFunction> function);
 

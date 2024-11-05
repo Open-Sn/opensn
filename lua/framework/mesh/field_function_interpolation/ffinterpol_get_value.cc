@@ -43,7 +43,7 @@ FFInterpolationGetValue(lua_State* L)
   else if (p_ffi->Type() == FieldFunctionInterpolationType::VOLUME)
   {
     auto& cur_ffi_volume = dynamic_cast<opensn::FieldFunctionInterpolationVolume&>(*p_ffi);
-    double value = cur_ffi_volume.GetOpValue();
+    double value = cur_ffi_volume.OpValue();
     return LuaReturn(L, value);
   }
   else
