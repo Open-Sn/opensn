@@ -219,12 +219,12 @@ struct GhostVecLocalRaw
 };
 
 /// Gets a local raw view of a ghost vector.
-GhostVecLocalRaw GetGhostVectorLocalViewRead(Vec x);
+GhostVecLocalRaw GhostVectorLocalViewRead(Vec x);
 
 /// Gets a local raw view of a ghost vector.
 void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
 /// Gets the string value of a converged reason.
-std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
+std::string PETScConvergedReasonstring(KSPConvergedReason reason);
 
 } // namespace opensn

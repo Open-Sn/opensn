@@ -190,7 +190,7 @@ CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool re
                          "data.size() != N, " + std::to_string(data.size()) + " < " +
                            std::to_string(N));
 
-  auto info = GetGhostVectorLocalViewRead(x);
+  auto info = GhostVectorLocalViewRead(x);
   const double* x_ref = info.x_localized_raw;
 
   std::copy(x_ref, x_ref + N, data.begin());
@@ -274,7 +274,7 @@ CommunicateGhostEntries(Vec x)
 }
 
 GhostVecLocalRaw
-GetGhostVectorLocalViewRead(Vec x)
+GhostVectorLocalViewRead(Vec x)
 {
   Vec x_localized;
   VecGhostGetLocalForm(x, &x_localized);
@@ -297,7 +297,7 @@ RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data)
 }
 
 std::string
-GetPETScConvergedReasonstring(KSPConvergedReason reason)
+PETScConvergedReasonstring(KSPConvergedReason reason)
 {
   std::stringstream ostr;
   switch (reason)

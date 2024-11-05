@@ -240,7 +240,7 @@ WGSLinearSolver::PostSolveCallback()
     KSPGetConvergedReason(ksp_, &reason);
     if (reason != KSP_CONVERGED_RTOL and reason != KSP_DIVERGED_ITS)
       log.Log0Warning() << "Krylov solver failed. "
-                        << "Reason: " << GetPETScConvergedReasonstring(reason);
+                        << "Reason: " << PETScConvergedReasonstring(reason);
   }
 
   // Copy x to local solution

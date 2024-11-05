@@ -233,7 +233,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
-    log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
+    log.Log() << "Convergence Reason: " << PETScConvergedReasonstring(reason);
   }
 
   // Transfer petsc solution to vector
@@ -300,7 +300,7 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
     KSPConvergedReason reason;
     KSPGetConvergedReason(ksp_, &reason);
 
-    log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
+    log.Log() << "Convergence Reason: " << PETScConvergedReasonstring(reason);
   }
 
   // Transfer petsc solution to vector
