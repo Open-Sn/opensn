@@ -201,7 +201,7 @@ PRKSolver::Advance()
 }
 
 ParameterBlock
-PRKSolver::GetInfo(const ParameterBlock& params) const
+PRKSolver::Info(const ParameterBlock& params) const
 {
   const auto param_name = params.ParamValue<std::string>("name");
 

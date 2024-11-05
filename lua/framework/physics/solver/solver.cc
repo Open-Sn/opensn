@@ -177,14 +177,14 @@ SolverGetFieldFunctionList(lua_State* L)
   const auto& solver = opensn::GetStackItem<Solver>(opensn::object_stack, solver_handle, fname);
 
   std::vector<size_t> ff_handles;
-  for (size_t ff = 0; ff < solver.GetFieldFunctions().size(); ++ff)
+  for (size_t ff = 0; ff < solver.FieldFunctions().size(); ++ff)
   {
     int pff_count = -1;
     bool found = false;
     for (auto& pff : opensn::field_function_stack) // pff pointer to field func
     {
       ++pff_count;
-      if (pff == solver.GetFieldFunctions()[ff])
+      if (pff == solver.FieldFunctions()[ff])
       {
         ff_handles.push_back(pff_count);
         found = true;
@@ -219,7 +219,7 @@ SolverGetInfo(lua_State* L)
   else
     OpenSnInvalidArgument("Argument 2 can only take a string or a table");
 
-  const auto output_params = solver.GetInfo(params);
+  const auto output_params = solver.Info(params);
 
   LuaPush(L, output_params);
 

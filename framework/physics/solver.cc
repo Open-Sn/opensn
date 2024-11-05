@@ -120,7 +120,7 @@ Solver::GetBasicOptions() const
 }
 
 std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Solver::GetFieldFunctions()
+Solver::FieldFunctions()
 {
   return field_functions_;
 }
@@ -140,7 +140,7 @@ Solver::GetTimeStepper() const
 }
 
 const std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Solver::GetFieldFunctions() const
+Solver::FieldFunctions() const
 {
   return field_functions_;
 }
@@ -170,13 +170,13 @@ Solver::Advance()
 }
 
 ParameterBlock
-Solver::GetInfo(const ParameterBlock& params) const
+Solver::Info(const ParameterBlock& params) const
 {
   return ParameterBlock{};
 }
 
 ParameterBlock
-Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
+Solver::InfoWithPreCheck(const ParameterBlock& params) const
 {
   if (not params.Has("name"))
   {
@@ -184,7 +184,7 @@ Solver::GetInfoWithPreCheck(const ParameterBlock& params) const
                            "\"name\" in the parameter list";
     return ParameterBlock{};
   }
-  return GetInfo(params);
+  return Info(params);
 }
 
 void

@@ -51,7 +51,7 @@ SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
 void
 SolverInfoPostProcessor::Execute(const Event& event_context)
 {
-  value_ = solver_.GetInfoWithPreCheck(info_);
+  value_ = solver_.InfoWithPreCheck(info_);
   SetType(FigureTypeFromValue(value_));
 
   const int event_code = event_context.Code();

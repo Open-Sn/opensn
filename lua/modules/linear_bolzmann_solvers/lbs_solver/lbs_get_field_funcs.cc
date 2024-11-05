@@ -52,7 +52,7 @@ LBSGetScalarFieldFunctionList(lua_State* L)
     for (int m = 0; m < lbs_solver.NumMoments(); ++m)
     {
       const size_t ff = lbs_solver.MapPhiFieldFunction(g, m);
-      auto local_ff = lbs_solver.GetFieldFunctions()[ff];
+      auto local_ff = lbs_solver.FieldFunctions()[ff];
 
       if (m != 0)
         continue;

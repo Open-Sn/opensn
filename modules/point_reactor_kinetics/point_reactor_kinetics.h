@@ -39,7 +39,7 @@ public:
   void Step() override;
   void Advance() override;
 
-  ParameterBlock GetInfo(const ParameterBlock& params) const override;
+  ParameterBlock Info(const ParameterBlock& params) const override;
 
   // Getters and Setters
 

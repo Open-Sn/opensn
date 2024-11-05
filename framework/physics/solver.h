@@ -33,9 +33,9 @@ public:
   BasicOptions& GetBasicOptions();
   const BasicOptions& GetBasicOptions() const;
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions();
+  std::vector<std::shared_ptr<FieldFunctionGridBased>>& FieldFunctions();
 
-  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
+  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& FieldFunctions() const;
 
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
@@ -53,7 +53,7 @@ public:
   virtual void Advance();
 
   /// Generalized query for information supporting varying returns.
-  virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
+  virtual ParameterBlock Info(const ParameterBlock& params) const;
 
   /**
    * \addtogroup SolverBase
@@ -70,7 +70,7 @@ public:
   virtual void SetProperties(const ParameterBlock& params);
 
   /// PreCheck call to GetInfo.
-  ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
+  ParameterBlock InfoWithPreCheck(const ParameterBlock& params) const;
 
 protected:
   BasicOptions basic_options_;
