@@ -38,22 +38,22 @@ ParameterBlock_Test00(lua_State* L)
       opensn::log.Log() << outstr;
     }
 
-    opensn::log.Log() << param_block.GetParamValue<std::string>("it_method");
+    opensn::log.Log() << param_block.ParamValue<std::string>("it_method");
 
-    opensn::log.Log() << param_block.GetParam("sub1").GetParamValue<int>("ax_method");
+    opensn::log.Log() << param_block.Param("sub1").ParamValue<int>("ax_method");
 
-    opensn::log.Log() << param_block.GetParamValue<double>("nl_abs_tol");
+    opensn::log.Log() << param_block.ParamValue<double>("nl_abs_tol");
 
-    opensn::log.Log() << (param_block.GetParamValue<bool>("enabled") ? "true" : "false");
+    opensn::log.Log() << (param_block.ParamValue<bool>("enabled") ? "true" : "false");
 
-    opensn::log.Log() << param_block.GetParamValue<size_t>("nl_max_its");
+    opensn::log.Log() << param_block.ParamValue<size_t>("nl_max_its");
 
-    opensn::log.Log() << "Has \"blocks\"?: " << param_block.GetParam("sub2").Has("blocks");
+    opensn::log.Log() << "Has \"blocks\"?: " << param_block.Param("sub2").Has("blocks");
 
     opensn::log.Log() << "Num Parameters: "
-                      << param_block.GetParam("sub2").GetParam("blocks").NumParameters();
+                      << param_block.Param("sub2").Param("blocks").NumParameters();
 
-    const auto vec = param_block.GetParam("sub2").GetParamVectorValue<int>("blocks");
+    const auto vec = param_block.Param("sub2").ParamVectorValue<int>("blocks");
 
     {
       std::stringstream outstr;

@@ -31,7 +31,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
   // Parse the node_sets param
   if (params.ParametersAtAssignment().Has("node_sets"))
   {
-    auto& node_sets_param = params.GetParam("node_sets");
+    auto& node_sets_param = params.Param("node_sets");
     node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
     for (const auto& node_list_block : node_sets_param)
@@ -39,7 +39,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
       OpenSnInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
                               "The entries of \"node_sets\" are required to be of type \"Array\".");
 
-      node_sets_.push_back(node_list_block.GetVectorValue<double>());
+      node_sets_.push_back(node_list_block.VectorValue<double>());
     }
   }
 

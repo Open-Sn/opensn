@@ -31,7 +31,7 @@ LuaDimAToDimB::GetInputParameters()
 
 LuaDimAToDimB::LuaDimAToDimB(const InputParameters& params)
   : FunctionDimAToDimB(params),
-    lua_function_name_(params.GetParamValue<std::string>("lua_function_name"))
+    lua_function_name_(params.ParamValue<std::string>("lua_function_name"))
 {
 }
 

@@ -82,14 +82,14 @@ CFEMDiffusionSolver::SetOptions(const InputParameters& params)
 
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = user_params.Param(p);
     if (spec.Name() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.NumParameters(); ++b)
       {
         auto bndry_params = BoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
+        bndry_params.AssignParameters(spec.Param(b));
         SetBoundaryOptions(bndry_params);
       }
     }
@@ -102,8 +102,8 @@ CFEMDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   const std::string fname = "CFEMSolver::SetBoundaryOptions";
 
   const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary = user_params.GetParamValue<std::string>("boundary");
-  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary = user_params.ParamValue<std::string>("boundary");
+  const auto bc_type = user_params.ParamValue<std::string>("type");
   const auto bc_type_lc = LowerCase(bc_type);
 
   if (bc_type_lc == "reflecting")
@@ -115,7 +115,7 @@ CFEMDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "dirichlet")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = user_params.ParamVectorValue<double>("coeffs");
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto boundary_value = coeffs[0];
@@ -128,7 +128,7 @@ CFEMDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "neumann")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = user_params.ParamVectorValue<double>("coeffs");
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto f_value = coeffs[0];
@@ -149,7 +149,7 @@ CFEMDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "robin")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = user_params.ParamVectorValue<double>("coeffs");
     if (coeffs.size() < 3)
       throw std::invalid_argument("Expecting three values in the 'coeffs' parameter.");
     auto a_value = coeffs[0];

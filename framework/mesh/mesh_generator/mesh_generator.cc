@@ -44,11 +44,11 @@ MeshGenerator::GetInputParameters()
 
 MeshGenerator::MeshGenerator(const InputParameters& params)
   : Object(params),
-    scale_(params.GetParamValue<double>("scale")),
-    replicated_(params.GetParamValue<bool>("replicated_mesh"))
+    scale_(params.ParamValue<double>("scale")),
+    replicated_(params.ParamValue<bool>("replicated_mesh"))
 {
   // Convert input handles
-  auto input_handles = params.GetParamVectorValue<size_t>("inputs");
+  auto input_handles = params.ParamVectorValue<size_t>("inputs");
 
   for (const size_t input_handle : input_handles)
   {
@@ -59,7 +59,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
   // Set partitioner
   size_t partitioner_handle;
   if (params.ParametersAtAssignment().Has("partitioner"))
-    partitioner_handle = params.GetParamValue<size_t>("partitioner");
+    partitioner_handle = params.ParamValue<size_t>("partitioner");
   else
   {
     auto& factory = ObjectFactory::GetInstance();

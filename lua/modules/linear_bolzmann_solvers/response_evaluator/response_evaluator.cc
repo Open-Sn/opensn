@@ -47,15 +47,15 @@ AddResponseBuffers(const InputParameters& params)
   params.RequireParameter("arg0");
   params.RequireParameter("arg1");
 
-  const auto handle = params.GetParamValue<size_t>("arg0");
+  const auto handle = params.ParamValue<size_t>("arg0");
   auto& response_evaluator =
     GetStackItem<opensn::ResponseEvaluator>(object_stack, handle, __FUNCTION__);
 
-  const auto buffer_params = params.GetParam("arg1");
+  const auto buffer_params = params.Param("arg1");
   for (size_t p = 0; p < buffer_params.NumParameters(); ++p)
   {
     auto spec = opensn::ResponseEvaluator::BufferOptionsBlock();
-    spec.AssignParameters(buffer_params.GetParam(p));
+    spec.AssignParameters(buffer_params.Param(p));
     response_evaluator.SetBufferOptions(spec);
   }
 
@@ -88,12 +88,12 @@ AddResponseSources(const InputParameters& params)
   params.RequireParameter("arg0");
   params.RequireParameter("arg1");
 
-  const auto handle = params.GetParamValue<size_t>("arg0");
+  const auto handle = params.ParamValue<size_t>("arg0");
   auto& response_evaluator =
     GetStackItem<opensn::ResponseEvaluator>(object_stack, handle, __FUNCTION__);
 
   auto spec = opensn::ResponseEvaluator::SourceOptionsBlock();
-  spec.AssignParameters(params.GetParam("arg1"));
+  spec.AssignParameters(params.Param("arg1"));
   response_evaluator.SetSourceOptions(spec);
 
   return ParameterBlock();

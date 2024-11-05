@@ -37,7 +37,7 @@ Get1DQuadratureData(const InputParameters& params)
 {
   ParameterBlock output;
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
 
   auto& quad = opensn::GetStackItem<GaussQuadrature>(opensn::object_stack, handle, __FUNCTION__);
 

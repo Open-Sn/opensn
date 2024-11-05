@@ -48,7 +48,7 @@ CFEMSetOptions(const opensn::InputParameters& params)
   auto sigma_a_function = CreateFunction("Sigma_a");
   opensn::function_stack.push_back(sigma_a_function);
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& solver =
     opensn::GetStackItem<opensn::CFEMDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
@@ -56,7 +56,7 @@ CFEMSetOptions(const opensn::InputParameters& params)
   solver.SetSigmaAFunction(sigma_a_function);
 
   auto options_params = opensn::CFEMDiffusionSolver::OptionsBlock();
-  options_params.AssignParameters(params.GetParam("arg1"));
+  options_params.AssignParameters(params.Param("arg1"));
 
   solver.SetOptions(options_params);
 
@@ -82,7 +82,7 @@ DFEMSetOptions(const opensn::InputParameters& params)
   auto sigma_a_function = CreateFunction("Sigma_a");
   opensn::function_stack.push_back(sigma_a_function);
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& solver =
     opensn::GetStackItem<opensn::DFEMDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
@@ -90,7 +90,7 @@ DFEMSetOptions(const opensn::InputParameters& params)
   solver.SetSigmaAFunction(sigma_a_function);
 
   auto options_params = opensn::DFEMDiffusionSolver::OptionsBlock();
-  options_params.AssignParameters(params.GetParam("arg1"));
+  options_params.AssignParameters(params.Param("arg1"));
 
   solver.SetOptions(options_params);
 
@@ -116,7 +116,7 @@ FVSetOptions(const opensn::InputParameters& params)
   auto sigma_a_function = CreateFunction("Sigma_a");
   opensn::function_stack.push_back(sigma_a_function);
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& solver =
     opensn::GetStackItem<opensn::FVDiffusionSolver>(opensn::object_stack, handle, fname);
   solver.SetDCoefFunction(d_coef_function);
@@ -124,7 +124,7 @@ FVSetOptions(const opensn::InputParameters& params)
   solver.SetSigmaAFunction(sigma_a_function);
 
   auto options_params = opensn::FVDiffusionSolver::OptionsBlock();
-  options_params.AssignParameters(params.GetParam("arg1"));
+  options_params.AssignParameters(params.Param("arg1"));
 
   solver.SetOptions(options_params);
 
@@ -141,12 +141,12 @@ CFEMMGSetOptions(const opensn::InputParameters& params)
   params.RequireParameter("arg0");
   params.RequireParameter("arg1");
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& solver =
     opensn::GetStackItem<opensn::MGDiffusionSolver>(opensn::object_stack, handle, fname);
 
   auto options_params = opensn::MGDiffusionSolver::OptionsBlock();
-  options_params.AssignParameters(params.GetParam("arg1"));
+  options_params.AssignParameters(params.Param("arg1"));
 
   solver.SetOptions(options_params);
 
@@ -177,7 +177,7 @@ SetOptions(const opensn::InputParameters& params)
   params.RequireParameter("arg0");
   params.RequireParameter("arg1");
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& solver = opensn::GetStackItem<opensn::Solver>(opensn::object_stack, handle, fname);
 
   // FIXME: dispatch to the right solver until there is a common diffusion solver class,

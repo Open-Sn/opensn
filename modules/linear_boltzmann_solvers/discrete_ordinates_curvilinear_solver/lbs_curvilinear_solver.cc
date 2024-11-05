@@ -39,7 +39,7 @@ DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
 DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
   const InputParameters& params)
   : DiscreteOrdinatesSolver(params),
-    coord_system_type_(static_cast<CoordinateSystemType>(params.GetParamValue<int>("coord_system")))
+    coord_system_type_(static_cast<CoordinateSystemType>(params.ParamValue<int>("coord_system")))
 {
 }
 

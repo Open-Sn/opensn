@@ -24,7 +24,7 @@ LuaVectorSpatialFunction::GetInputParameters()
 
 LuaVectorSpatialFunction::LuaVectorSpatialFunction(const opensn::InputParameters& params)
   : opensn::VectorSpatialFunction(params),
-    lua_function_name_(params.GetParamValue<std::string>("lua_function_name"))
+    lua_function_name_(params.ParamValue<std::string>("lua_function_name"))
 {
 }
 

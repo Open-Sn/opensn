@@ -136,16 +136,14 @@ MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
     thermal_dphi_(nullptr),
     b_(nullptr)
 {
-  basic_options_.AddOption<int64_t>("max_inner_iters",
-                                    params.GetParamValue<int>("max_inner_iters"));
-  basic_options_.AddOption("residual_tolerance",
-                           params.GetParamValue<double>("residual_tolerance"));
-  basic_options_.AddOption<int64_t>("verbose_level", params.GetParamValue<int>("verbose_level"));
+  basic_options_.AddOption<int64_t>("max_inner_iters", params.ParamValue<int>("max_inner_iters"));
+  basic_options_.AddOption("residual_tolerance", params.ParamValue<double>("residual_tolerance"));
+  basic_options_.AddOption<int64_t>("verbose_level", params.ParamValue<int>("verbose_level"));
   basic_options_.AddOption("thermal_flux_tolerance",
-                           params.GetParamValue<double>("thermal_flux_tolerance"));
+                           params.ParamValue<double>("thermal_flux_tolerance"));
   basic_options_.AddOption<int64_t>("max_thermal_iters",
-                                    params.GetParamValue<int>("max_thermal_iters"));
-  basic_options_.AddOption<bool>("do_two_grid", params.GetParamValue<bool>("do_two_grid"));
+                                    params.ParamValue<int>("max_thermal_iters"));
+  basic_options_.AddOption<bool>("do_two_grid", params.ParamValue<bool>("do_two_grid"));
 }
 
 MGDiffusionSolver::~MGDiffusionSolver()
@@ -179,14 +177,14 @@ MGDiffusionSolver::SetOptions(const InputParameters& params)
 
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = user_params.Param(p);
     if (spec.Name() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.NumParameters(); ++b)
       {
         auto bndry_params = BoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
+        bndry_params.AssignParameters(spec.Param(b));
         SetBoundaryOptions(bndry_params);
       }
     }
@@ -199,8 +197,8 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   const std::string fname = "MGSolver::SetBoundaryOptions";
 
   const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary = user_params.GetParamValue<std::string>("boundary");
-  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary = user_params.ParamValue<std::string>("boundary");
+  const auto bc_type = user_params.ParamValue<std::string>("type");
   const auto bc_type_lc = LowerCase(bc_type);
 
   if (bc_type_lc == "reflecting")
@@ -218,7 +216,7 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   {
     std::vector<double> a_values(num_groups_, 0.0);
     std::vector<double> b_values(num_groups_, 1.0);
-    const auto f_values = user_params.GetParamVectorValue<double>("f");
+    const auto f_values = user_params.ParamVectorValue<double>("f");
     if (f_values.size() != num_groups_)
       throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
                                   " values in the 'f' parameter.");
@@ -245,13 +243,13 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "robin")
   {
-    auto a_values = user_params.GetParamVectorValue<double>("a");
+    auto a_values = user_params.ParamVectorValue<double>("a");
     if (a_values.size() != num_groups_)
       throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
                                   " values in the 'a' parameter.");
 
-    auto b_values = user_params.GetParamVectorValue<double>("b");
-    auto f_values = user_params.GetParamVectorValue<double>("f");
+    auto b_values = user_params.ParamVectorValue<double>("b");
+    auto f_values = user_params.ParamVectorValue<double>("f");
     BoundaryInfo bndry_info;
     bndry_info.first = BoundaryType::Robin;
     bndry_info.second = {a_values, b_values, f_values};

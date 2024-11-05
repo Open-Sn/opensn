@@ -35,10 +35,10 @@ GetSyntax_PostProcessorGetValue()
 ParameterBlock
 PostProcessorGetValue(const InputParameters& params)
 {
-  const auto& param = params.GetParam("arg0");
+  const auto& param = params.Param("arg0");
   if (param.Type() == ParameterBlockType::STRING)
   {
-    const auto pp_name = param.GetValue<std::string>();
+    const auto pp_name = param.Value<std::string>();
 
     for (const auto& pp_ptr : opensn::postprocessor_stack)
       if (pp_ptr->Name() == pp_name)
@@ -49,7 +49,7 @@ PostProcessorGetValue(const InputParameters& params)
   }
   else if (param.Type() == ParameterBlockType::INTEGER)
   {
-    const auto pp_handle = param.GetValue<size_t>();
+    const auto pp_handle = param.Value<size_t>();
     const auto& pp =
       opensn::GetStackItem<PostProcessor>(opensn::postprocessor_stack, pp_handle, __FUNCTION__);
 

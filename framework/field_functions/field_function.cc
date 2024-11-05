@@ -30,16 +30,16 @@ FieldFunction::GetInputParameters()
 
 FieldFunction::FieldFunction(const InputParameters& params)
   : Object(params),
-    name_(params.GetParamValue<std::string>("name")),
-    unknown_(
-      (params.GetParamValue<std::string>("unknown_type") == "Scalar") ? Unknown(UnknownType::SCALAR)
-      : (params.GetParamValue<std::string>("unknown_type") == "Vector2")
-        ? Unknown(UnknownType::VECTOR_2)
-      : (params.GetParamValue<std::string>("unknown_type") == "Vector3")
-        ? Unknown(UnknownType::VECTOR_2)
-      : (params.GetParamValue<std::string>("unknown_type") == "VectorN")
-        ? Unknown(UnknownType::VECTOR_N, params.GetParamValue<unsigned int>("num_components"))
-        : Unknown(UnknownType::SCALAR)),
+    name_(params.ParamValue<std::string>("name")),
+    unknown_((params.ParamValue<std::string>("unknown_type") == "Scalar")
+               ? Unknown(UnknownType::SCALAR)
+             : (params.ParamValue<std::string>("unknown_type") == "Vector2")
+               ? Unknown(UnknownType::VECTOR_2)
+             : (params.ParamValue<std::string>("unknown_type") == "Vector3")
+               ? Unknown(UnknownType::VECTOR_2)
+             : (params.ParamValue<std::string>("unknown_type") == "VectorN")
+               ? Unknown(UnknownType::VECTOR_N, params.ParamValue<unsigned int>("num_components"))
+               : Unknown(UnknownType::SCALAR)),
     unknown_manager_({unknown_})
 {
 }

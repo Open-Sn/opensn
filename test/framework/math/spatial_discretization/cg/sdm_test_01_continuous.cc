@@ -32,9 +32,9 @@ math_SDM_Test01Syntax()
 ParameterBlock
 math_SDM_Test01_Continuous(const InputParameters& input_parameters)
 {
-  const ParameterBlock& params = input_parameters.GetParam("arg0");
+  const ParameterBlock& params = input_parameters.Param("arg0");
 
-  const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
+  const bool export_vtk = params.Has("export_vtk") and params.ParamValue<bool>("export_vtk");
 
   // Get grid
   auto grid_ptr = GetCurrentMesh();
@@ -43,7 +43,7 @@ math_SDM_Test01_Continuous(const InputParameters& input_parameters)
   opensn::log.Log() << "Global num cells: " << grid.GlobalNumberOfCells();
 
   // Make SDM method
-  const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
+  const auto sdm_type = params.ParamValue<std::string>("sdm_type");
 
   std::shared_ptr<SpatialDiscretization> sdm_ptr;
   bool is_DG = false;

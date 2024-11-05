@@ -34,7 +34,7 @@ LinearGraphPartitioner::GetInputParameters()
 }
 
 LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
-  : GraphPartitioner(params), all_to_rank_(params.GetParamValue<int>("all_to_rank"))
+  : GraphPartitioner(params), all_to_rank_(params.ParamValue<int>("all_to_rank"))
 {
 }
 

@@ -23,8 +23,8 @@ FunctionDimAToDimB::GetInputParameters()
 
 FunctionDimAToDimB::FunctionDimAToDimB(const InputParameters& params)
   : Object(params),
-    input_dimension_(params.GetParamValue<size_t>("input_dimension")),
-    output_dimension_(params.GetParamValue<size_t>("output_dimension"))
+    input_dimension_(params.ParamValue<size_t>("input_dimension")),
+    output_dimension_(params.ParamValue<size_t>("output_dimension"))
 {
 }
 

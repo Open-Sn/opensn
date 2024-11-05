@@ -33,22 +33,22 @@ BooleanLogicalVolume::GetInputParameters()
 
 BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : LogicalVolume(params)
 {
-  const auto& input_parts = params.GetParam("parts");
+  const auto& input_parts = params.Param("parts");
   input_parts.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
   for (size_t p = 0; p < input_parts.NumParameters(); ++p)
   {
-    const auto& part = input_parts.GetParam(p);
+    const auto& part = input_parts.Param(p);
     part.RequireBlockTypeIs(ParameterBlockType::BLOCK);
 
     auto part_params = BooleanLogicalVolumeArgumentPair();
 
     part_params.AssignParameters(part);
 
-    const size_t lv_handle = part_params.GetParamValue<size_t>("lv");
+    const size_t lv_handle = part_params.ParamValue<size_t>("lv");
     auto lv_ptr = GetStackItemPtrAsType<LogicalVolume>(object_stack, lv_handle, __FUNCTION__);
 
-    parts.emplace_back(part_params.GetParamValue<bool>("op"), lv_ptr);
+    parts.emplace_back(part_params.ParamValue<bool>("op"), lv_ptr);
   }
 }
 

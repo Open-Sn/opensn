@@ -61,19 +61,19 @@ PostProcessor::GetInputParameters()
 
 PostProcessor::PostProcessor(const InputParameters& params, PPType type)
   : Object(params),
-    name_(params.GetParamValue<std::string>("name")),
-    subscribed_events_for_execution_(params.GetParamVectorValue<std::string>("execute_on")),
-    subscribed_events_for_printing_(params.GetParamVectorValue<std::string>("print_on")),
+    name_(params.ParamValue<std::string>("name")),
+    subscribed_events_for_execution_(params.ParamVectorValue<std::string>("execute_on")),
+    subscribed_events_for_printing_(params.ParamVectorValue<std::string>("print_on")),
     type_(type),
     print_numeric_format_(
-      ConstructNumericFormat(params.GetParamValue<std::string>("print_numeric_format"))),
-    print_precision_(params.GetParamValue<size_t>("print_precision")),
-    solvername_filter_(params.GetParamValue<std::string>("solvername_filter"))
+      ConstructNumericFormat(params.ParamValue<std::string>("print_numeric_format"))),
+    print_precision_(params.ParamValue<size_t>("print_precision")),
+    solvername_filter_(params.ParamValue<std::string>("solvername_filter"))
 {
   const auto& user_params = params.ParametersAtAssignment();
   if (user_params.Has("initial_value"))
   {
-    value_ = params.GetParam("initial_value");
+    value_ = params.Param("initial_value");
     SetType(FigureTypeFromValue(value_));
   }
 }
@@ -144,7 +144,7 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
   {
     if (event.IsSolverEvent() and not solvername_filter_.empty())
     {
-      if (event.Parameters().GetParamValue<std::string>("solver_name") != solvername_filter_)
+      if (event.Parameters().ParamValue<std::string>("solver_name") != solvername_filter_)
         return;
     }
 
@@ -181,11 +181,11 @@ PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
   std::string value_string;
   if (value.Type() == ParameterBlockType::BOOLEAN)
   {
-    value_string = value.GetValue<bool>() ? "true" : "false";
+    value_string = value.Value<bool>() ? "true" : "false";
   }
   else if (value.Type() == ParameterBlockType::FLOAT)
   {
-    const auto dblval = value.GetValue<double>();
+    const auto dblval = value.Value<double>();
     char buffer[30];
     const auto numeric_format = NumericFormat();
     const size_t precision = NumericPrecision();
@@ -222,11 +222,11 @@ PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
   }
   else if (value.Type() == ParameterBlockType::STRING)
   {
-    value_string = value.GetValue<std::string>();
+    value_string = value.Value<std::string>();
   }
   else if (value.Type() == ParameterBlockType::INTEGER)
   {
-    const auto intval = value.GetValue<int64_t>();
+    const auto intval = value.Value<int64_t>();
     char buffer[30];
     snprintf(buffer, 30, "%" PRId64, intval);
     value_string = buffer;
@@ -245,7 +245,7 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
   {
     if (value.NumParameters() == 0)
       return "";
-    const auto& first_entry = value.GetParam(0);
+    const auto& first_entry = value.Param(0);
     const auto first_entry_type = first_entry.Type();
 
     OpenSnLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
@@ -294,7 +294,7 @@ PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
       return PPType::NO_VALUE;
     else
     {
-      if (IsScalar(value.GetParam(0).Type()))
+      if (IsScalar(value.Param(0).Type()))
         return PPType::VECTOR;
       else
         return PPType::ARBITRARY;

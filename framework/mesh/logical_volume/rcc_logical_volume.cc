@@ -29,13 +29,13 @@ RCCLogicalVolume::GetInputParameters()
 
 RCCLogicalVolume::RCCLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    r_(params.GetParamValue<double>("r")),
-    x0_(params.GetParamValue<double>("x0")),
-    y0_(params.GetParamValue<double>("y0")),
-    z0_(params.GetParamValue<double>("z0")),
-    vx_(params.GetParamValue<double>("vx")),
-    vy_(params.GetParamValue<double>("vy")),
-    vz_(params.GetParamValue<double>("vz"))
+    r_(params.ParamValue<double>("r")),
+    x0_(params.ParamValue<double>("x0")),
+    y0_(params.ParamValue<double>("y0")),
+    z0_(params.ParamValue<double>("z0")),
+    vx_(params.ParamValue<double>("vx")),
+    vy_(params.ParamValue<double>("vy")),
+    vz_(params.ParamValue<double>("vz"))
 {
 }
 

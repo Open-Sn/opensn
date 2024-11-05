@@ -44,9 +44,9 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
   OpenSnInvalidArgumentIf(param_count == 2,
                           "Either \"order\" or \"N\" must be specified, not both");
 
-  const auto max_iters = params.GetParamValue<unsigned int>("max_root_finding_iters");
+  const auto max_iters = params.ParamValue<unsigned int>("max_root_finding_iters");
 
-  const double tol = params.GetParamValue<double>("root_finding_tol");
+  const double tol = params.ParamValue<double>("root_finding_tol");
 
   if (assigned_params.Has("order"))
   {
@@ -55,7 +55,7 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
   }
   else
   {
-    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    const auto n = assigned_params.ParamValue<unsigned int>("N");
     order_ = static_cast<QuadratureOrder>(std::min(2 * n + 1, 43u));
     Initialize(n, verbose_, max_iters, tol);
   }

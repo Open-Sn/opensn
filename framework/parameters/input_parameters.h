@@ -138,7 +138,7 @@ public:
                                      T value,
                                      const std::string& doc_string = "")
   {
-    auto& param = GetParam(name);
+    auto& param = Param(name);
     param = ParameterBlock(name, value);
     parameter_class_tags_[name] = InputParameterTag::OPTIONAL;
     if (not doc_string.empty())
@@ -148,7 +148,7 @@ public:
   template <typename T>
   void ChangeExistingParamToRequired(const std::string& name, const std::string& doc_string = "")
   {
-    auto& param = GetParam(name);
+    auto& param = Param(name);
     param = ParameterBlock(name, Varying::DefaultValue<T>());
     parameter_class_tags_[name] = InputParameterTag::REQUIRED;
     if (not doc_string.empty())

@@ -45,7 +45,7 @@ GaussChebyshevQuadrature::GaussChebyshevQuadrature(const InputParameters& params
   }
   else
   {
-    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    const auto n = assigned_params.ParamValue<unsigned int>("N");
     order_ = static_cast<QuadratureOrder>(std::min(n, 43u));
     Initialize(n);
   }

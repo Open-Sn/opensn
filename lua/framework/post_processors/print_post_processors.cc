@@ -32,12 +32,12 @@ GetSyntax_PrintPostProcessors()
 ParameterBlock
 PrintPostProcessors(const InputParameters& params)
 {
-  const auto& arg_array = params.GetParam("arg0");
+  const auto& arg_array = params.Param("arg0");
 
   arg_array.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
   OpenSnInvalidArgumentIf(arg_array.NumParameters() == 0, "Empty array passed.");
-  const auto& first_param = arg_array.GetParam(0);
+  const auto& first_param = arg_array.Param(0);
   const auto first_param_type = first_param.Type();
 
   std::vector<const PostProcessor*> pp_list;
@@ -45,7 +45,7 @@ PrintPostProcessors(const InputParameters& params)
   // List of names supplied
   if (first_param_type == ParameterBlockType::STRING)
   {
-    const auto name_list = arg_array.GetVectorValue<std::string>();
+    const auto name_list = arg_array.VectorValue<std::string>();
 
     for (const auto& name : name_list)
     {
@@ -67,7 +67,7 @@ PrintPostProcessors(const InputParameters& params)
   // List of handles supplied
   else if (first_param_type == ParameterBlockType::INTEGER)
   {
-    const auto handle_list = arg_array.GetVectorValue<size_t>();
+    const auto handle_list = arg_array.VectorValue<size_t>();
 
     for (const size_t handle : handle_list)
     {

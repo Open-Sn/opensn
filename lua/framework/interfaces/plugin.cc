@@ -50,7 +50,7 @@ Plugin::GetInputParameters()
 }
 
 Plugin::Plugin(const InputParameters& params)
-  : Object(params), plugin_path_(params.GetParamValue<std::string>("plugin_path"))
+  : Object(params), plugin_path_(params.ParamValue<std::string>("plugin_path"))
 {
   opensn::log.Log0Verbose1() << "Loading plugin \"" << plugin_path_ << "\"";
   RegistryStatuses registry_statuses = GetStatusOfRegistries();
@@ -63,7 +63,7 @@ Plugin::Plugin(const InputParameters& params)
   const auto& user_params = params.ParametersAtAssignment();
   if (user_params.Has("entry_function"))
   {
-    const auto& entry_function = user_params.GetParamValue<std::string>("entry_function");
+    const auto& entry_function = user_params.ParamValue<std::string>("entry_function");
 
     using func_ptr = void (*)();
     auto func = (func_ptr)dlsym(library_handle_, entry_function.c_str());

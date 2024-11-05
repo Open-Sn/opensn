@@ -24,7 +24,7 @@ LuaScalarMaterialFunction::GetInputParameters()
 
 LuaScalarMaterialFunction::LuaScalarMaterialFunction(const InputParameters& params)
   : ScalarMaterialFunction(params),
-    lua_function_name_(params.GetParamValue<std::string>("lua_function_name"))
+    lua_function_name_(params.ParamValue<std::string>("lua_function_name"))
 {
 }
 

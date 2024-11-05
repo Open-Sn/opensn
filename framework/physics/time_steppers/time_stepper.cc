@@ -31,16 +31,16 @@ TimeStepper::GetInputParameters()
 
 TimeStepper::TimeStepper(const InputParameters& params)
   : Object(params),
-    dt_(params.GetParamValue<double>("dt")),
-    time_(params.GetParamValue<double>("time")),
-    t_index_(params.GetParamValue<size_t>("time_index")),
+    dt_(params.ParamValue<double>("dt")),
+    time_(params.ParamValue<double>("time")),
+    t_index_(params.ParamValue<size_t>("time_index")),
 
-    start_time_(params.GetParamValue<double>("start_time")),
-    end_time_(params.GetParamValue<double>("end_time")),
-    max_time_steps_(params.GetParamValue<int>("max_time_steps")),
-    dt_min_(params.GetParamValue<double>("dt_min")),
+    start_time_(params.ParamValue<double>("start_time")),
+    end_time_(params.ParamValue<double>("end_time")),
+    max_time_steps_(params.ParamValue<int>("max_time_steps")),
+    dt_min_(params.ParamValue<double>("dt_min")),
 
-    general_tolerance_(params.GetParamValue<double>("eps")),
+    general_tolerance_(params.ParamValue<double>("eps")),
     last_dt_(dt_)
 {
 }

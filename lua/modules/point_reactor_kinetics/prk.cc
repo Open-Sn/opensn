@@ -37,18 +37,18 @@ ParameterBlock
 SetParam(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
 
   auto& solver = opensn::GetStackItem<opensn::PRKSolver>(opensn::object_stack, handle, fname);
 
-  const auto param_name = params.GetParamValue<std::string>("arg1");
-  const auto& value_param = params.GetParam("arg2");
+  const auto param_name = params.ParamValue<std::string>("arg1");
+  const auto& value_param = params.Param("arg2");
 
   if (param_name == "rho")
   {
     OpenSnInvalidArgumentIf(value_param.Type() != ParameterBlockType::FLOAT,
                             "If arg1 is \"rho\" then arg2 must be of type FLOAT");
-    solver.SetRho(value_param.GetValue<double>());
+    solver.SetRho(value_param.Value<double>());
   }
   else
     OpenSnInvalidArgument("Invalid property name \"" + param_name);
@@ -77,14 +77,14 @@ GetParamSyntax()
 }
 
 ParameterBlock
-GetParam(const InputParameters& params)
+Param(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
 
   auto& solver = opensn::GetStackItem<opensn::PRKSolver>(opensn::object_stack, handle, fname);
 
-  const auto param_name = params.GetParamValue<std::string>("arg1");
+  const auto param_name = params.ParamValue<std::string>("arg1");
   ParameterBlock outputs;
 
   if (param_name == "population_prev")
@@ -105,7 +105,7 @@ GetParam(const InputParameters& params)
 
 } // namespace
 
-RegisterWrapperFunctionInNamespace(prk, GetParam, GetParamSyntax, GetParam);
+RegisterWrapperFunctionInNamespace(prk, GetParam, GetParamSyntax, Param);
 RegisterWrapperFunctionInNamespace(prk, SetParam, GetSyntax_SetParam, SetParam);
 
 } // namespace opensnlua

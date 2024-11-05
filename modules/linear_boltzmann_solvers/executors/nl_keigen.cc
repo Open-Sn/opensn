@@ -46,25 +46,25 @@ NonLinearKEigen::GetInputParameters()
 NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
   : opensn::Solver(params),
     lbs_solver_(
-      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle"))),
+      GetStackItem<LBSSolver>(object_stack, params.ParamValue<size_t>("lbs_solver_handle"))),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_solver_)),
     nl_solver_(nl_context_),
-    reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
-    num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
+    reset_phi0_(params.ParamValue<bool>("reset_phi0")),
+    num_initial_power_its_(params.ParamValue<int>("num_initial_power_iterations"))
 {
   auto& tolerances = nl_solver_.ToleranceOptions();
 
-  tolerances.nl_abs_tol = params.GetParamValue<double>("nl_abs_tol");
-  tolerances.nl_rel_tol = params.GetParamValue<double>("nl_rel_tol");
-  tolerances.nl_sol_tol = params.GetParamValue<double>("nl_sol_tol");
-  tolerances.nl_max_its = params.GetParamValue<int>("nl_max_its");
+  tolerances.nl_abs_tol = params.ParamValue<double>("nl_abs_tol");
+  tolerances.nl_rel_tol = params.ParamValue<double>("nl_rel_tol");
+  tolerances.nl_sol_tol = params.ParamValue<double>("nl_sol_tol");
+  tolerances.nl_max_its = params.ParamValue<int>("nl_max_its");
 
-  tolerances.l_rel_tol = params.GetParamValue<double>("l_rel_tol");
-  tolerances.l_abs_tol = params.GetParamValue<double>("l_abs_tol");
-  tolerances.l_div_tol = params.GetParamValue<double>("l_div_tol");
-  tolerances.l_max_its = params.GetParamValue<int>("l_max_its");
-  tolerances.l_gmres_restart_intvl = params.GetParamValue<int>("l_gmres_restart_intvl");
-  tolerances.l_gmres_breakdown_tol = params.GetParamValue<double>("l_gmres_breakdown_tol");
+  tolerances.l_rel_tol = params.ParamValue<double>("l_rel_tol");
+  tolerances.l_abs_tol = params.ParamValue<double>("l_abs_tol");
+  tolerances.l_div_tol = params.ParamValue<double>("l_div_tol");
+  tolerances.l_max_its = params.ParamValue<int>("l_max_its");
+  tolerances.l_gmres_restart_intvl = params.ParamValue<int>("l_gmres_restart_intvl");
+  tolerances.l_gmres_breakdown_tol = params.ParamValue<double>("l_gmres_breakdown_tol");
 }
 
 void

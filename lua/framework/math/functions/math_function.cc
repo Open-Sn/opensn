@@ -40,7 +40,7 @@ FunctionDimAToDimBEvaluate(lua_State* L)
     OpenSnInvalidArgumentIf(table_block.Type() != ParameterBlockType::ARRAY,
                             fname + ": Only an array type is allowed. Table can "
                                     "not have string keys.");
-    params = table_block.GetVectorValue<double>();
+    params = table_block.VectorValue<double>();
   }
   else
   {

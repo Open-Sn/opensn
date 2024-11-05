@@ -19,7 +19,7 @@ TimeIntegration::GetInputParameters()
 
 TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
 {
-  const int method_option = params.GetParamValue<int>("method");
+  const int method_option = params.ParamValue<int>("method");
   if (method_option == static_cast<int>(SteppingMethod::EXPLICIT_EULER))
     method_ = SteppingMethod::EXPLICIT_EULER;
   else if (method_option == static_cast<int>(SteppingMethod::IMPLICIT_EULER))

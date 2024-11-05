@@ -132,7 +132,7 @@ public:
   /// Returns a string version of the type.
   std::string TypeName() const;
   std::string Name() const;
-  const Varying& Value() const;
+  const Varying& VaryingValue() const;
 
   /// Returns the number of parameters in a block. This is normally only useful for the ARRAY type.
   size_t NumParameters() const;
@@ -157,7 +157,7 @@ public:
   void SetErrorOriginScope(const std::string& scope);
 
   /// Gets a string that allows error messages to print the scope of an error.
-  std::string GetErrorOriginScope() const { return error_origin_scope_; }
+  std::string ErrorOriginScope() const { return error_origin_scope_; }
 
   // Requirements
 
@@ -168,7 +168,7 @@ public:
   void RequireBlockTypeIs(ParameterBlockType type) const;
   void RequireParameterBlockTypeIs(const std::string& param_name, ParameterBlockType type) const
   {
-    GetParam(param_name).RequireBlockTypeIs(type);
+    Param(param_name).RequireBlockTypeIs(type);
   }
 
   /// Check that the parameter with the given name exists otherwise throws a `std::logic_error`.
@@ -194,21 +194,21 @@ public:
   bool Has(const std::string& param_name) const;
 
   /// Gets a parameter by name.
-  ParameterBlock& GetParam(const std::string& param_name);
+  ParameterBlock& Param(const std::string& param_name);
 
   /// Gets a parameter by index.
-  ParameterBlock& GetParam(size_t index);
+  ParameterBlock& Param(size_t index);
 
   /// Gets a parameter by name.
-  const ParameterBlock& GetParam(const std::string& param_name) const;
+  const ParameterBlock& Param(const std::string& param_name) const;
 
   /// Gets a parameter by index.
-  const ParameterBlock& GetParam(size_t index) const;
+  const ParameterBlock& Param(size_t index) const;
 
 public:
   /// Returns the value of the parameter.
   template <typename T>
-  T GetValue() const
+  T Value() const
   {
     if (value_ptr_ == nullptr)
       throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
@@ -216,7 +216,7 @@ public:
                              ParameterBlockTypeName(Type()));
     try
     {
-      return Value().Value<T>();
+      return VaryingValue().Value<T>();
     }
     catch (const std::exception& exc)
     {
@@ -226,12 +226,12 @@ public:
 
   /// Fetches the parameter with the given name and returns it value.
   template <typename T>
-  T GetParamValue(const std::string& param_name) const
+  T ParamValue(const std::string& param_name) const
   {
     try
     {
-      const auto& param = GetParam(param_name);
-      return param.GetValue<T>();
+      const auto& param = Param(param_name);
+      return param.Value<T>();
     }
     catch (const std::out_of_range& oor)
     {
@@ -245,7 +245,7 @@ public:
    * returns it.
    */
   template <typename T>
-  std::vector<T> GetVectorValue() const
+  std::vector<T> VectorValue() const
   {
     if (Type() != ParameterBlockType::ARRAY)
       throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
@@ -272,8 +272,8 @@ public:
     const size_t num_params = parameters_.size();
     for (size_t k = 0; k < num_params; ++k)
     {
-      const auto& param = GetParam(k);
-      vec.push_back(param.GetValue<T>());
+      const auto& param = Param(k);
+      vec.push_back(param.Value<T>());
     }
 
     return vec;
@@ -282,10 +282,10 @@ public:
   /// Gets a vector of primitive types from an array-type parameter block specified as a parameter
   /// of the current block.
   template <typename T>
-  std::vector<T> GetParamVectorValue(const std::string& param_name) const
+  std::vector<T> ParamVectorValue(const std::string& param_name) const
   {
-    const auto& param = GetParam(param_name);
-    return param.GetVectorValue<T>();
+    const auto& param = Param(param_name);
+    return param.VectorValue<T>();
   }
 
   // Iterator

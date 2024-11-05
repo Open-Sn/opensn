@@ -35,7 +35,7 @@ LBSSetPhiFromFieldFunction(lua_State* L)
   {
     if (spec.Name() == "which_phi")
     {
-      const auto phi_str = spec.GetValue<std::string>();
+      const auto phi_str = spec.Value<std::string>();
       if (phi_str == "old")
         phi_option = opensn::PhiSTLOption::PHI_OLD;
       else if (phi_str == "new")
@@ -47,11 +47,11 @@ LBSSetPhiFromFieldFunction(lua_State* L)
     }
     else if (spec.Name() == "m_ids")
     {
-      moment_indices = spec.GetVectorValue<size_t>();
+      moment_indices = spec.VectorValue<size_t>();
     }
     else if (spec.Name() == "g_ids")
     {
-      group_indices = spec.GetVectorValue<size_t>();
+      group_indices = spec.VectorValue<size_t>();
     }
     else
       OpenSnInvalidArgument(std::string("Unsupported option ") + spec.Name());

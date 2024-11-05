@@ -55,11 +55,11 @@ SplitFileMeshGenerator::GetInputParameters()
 
 SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
-    num_parts_(params.GetParamValue<int>("num_partitions")),
-    split_mesh_dir_path_(params.GetParamValue<std::string>("split_mesh_dir_path")),
-    file_prefix_(params.GetParamValue<std::string>("file_prefix")),
-    read_only_(params.GetParamValue<bool>("read_only")),
-    verbosity_level_(params.GetParamValue<int>("verbosity_level"))
+    num_parts_(params.ParamValue<int>("num_partitions")),
+    split_mesh_dir_path_(params.ParamValue<std::string>("split_mesh_dir_path")),
+    file_prefix_(params.ParamValue<std::string>("file_prefix")),
+    read_only_(params.ParamValue<bool>("read_only")),
+    verbosity_level_(params.ParamValue<int>("verbosity_level"))
 {
 }
 

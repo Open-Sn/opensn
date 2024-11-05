@@ -36,11 +36,11 @@ SetOptions(const opensn::InputParameters& params)
   params.RequireParameter("arg0");
   params.RequireParameter("arg1");
 
-  const size_t handle = params.GetParamValue<size_t>("arg0");
+  const size_t handle = params.ParamValue<size_t>("arg0");
   auto& lbs_solver = opensn::GetStackItem<opensn::LBSSolver>(opensn::object_stack, handle, fname);
 
   auto options_params = opensn::LBSSolver::OptionsBlock();
-  options_params.AssignParameters(params.GetParam("arg1"));
+  options_params.AssignParameters(params.Param("arg1"));
 
   lbs_solver.SetOptions(options_params);
 

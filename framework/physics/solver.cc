@@ -52,7 +52,7 @@ Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
 Solver::Solver(const InputParameters& params)
   : Object(params),
     timestepper_(InitTimeStepper(params)),
-    name_(params.GetParamValue<std::string>("name"))
+    name_(params.ParamValue<std::string>("name"))
 {
 }
 
@@ -64,13 +64,13 @@ Solver::InitTimeStepper(const InputParameters& params)
   if (user_params.Has("timestepper"))
   {
     auto stepper = GetStackItemPtrAsType<TimeStepper>(
-      object_stack, params.GetParamValue<size_t>("timestepper"), __FUNCTION__);
+      object_stack, params.ParamValue<size_t>("timestepper"), __FUNCTION__);
 
-    stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
-    stepper->SetTime(params.GetParamValue<double>("time"));
-    stepper->SetStartTime(params.GetParamValue<double>("start_time"));
-    stepper->SetEndTime(params.GetParamValue<double>("end_time"));
-    stepper->SetMaxTimeSteps(params.GetParamValue<int>("max_time_steps"));
+    stepper->SetTimeStepSize(params.ParamValue<double>("dt"));
+    stepper->SetTime(params.ParamValue<double>("time"));
+    stepper->SetStartTime(params.ParamValue<double>("start_time"));
+    stepper->SetEndTime(params.ParamValue<double>("end_time"));
+    stepper->SetMaxTimeSteps(params.ParamValue<int>("max_time_steps"));
 
     return stepper;
   }
@@ -84,11 +84,11 @@ Solver::InitTimeStepper(const InputParameters& params)
 
     if (params.NumParameters() != 0)
     {
-      custom_params.AddParameter(params.GetParam("dt"));
-      custom_params.AddParameter(params.GetParam("time"));
-      custom_params.AddParameter(params.GetParam("start_time"));
-      custom_params.AddParameter(params.GetParam("end_time"));
-      custom_params.AddParameter(params.GetParam("max_time_steps"));
+      custom_params.AddParameter(params.Param("dt"));
+      custom_params.AddParameter(params.Param("time"));
+      custom_params.AddParameter(params.Param("start_time"));
+      custom_params.AddParameter(params.Param("end_time"));
+      custom_params.AddParameter(params.Param("max_time_steps"));
     }
 
     valid_params.AssignParameters(custom_params);
@@ -195,17 +195,17 @@ Solver::SetProperties(const ParameterBlock& params)
     const std::string param_name = param.Name();
 
     if (param_name == "dt")
-      timestepper_->SetTimeStepSize(param.GetValue<double>());
+      timestepper_->SetTimeStepSize(param.Value<double>());
     if (param_name == "time")
-      timestepper_->SetTime(param.GetValue<double>());
+      timestepper_->SetTime(param.Value<double>());
     if (param_name == "start_time")
-      timestepper_->SetStartTime(param.GetValue<double>());
+      timestepper_->SetStartTime(param.Value<double>());
     if (param_name == "end_time")
-      timestepper_->SetEndTime(param.GetValue<double>());
+      timestepper_->SetEndTime(param.Value<double>());
     if (param_name == "max_time_steps")
-      timestepper_->SetMaxTimeSteps(param.GetValue<int>());
+      timestepper_->SetMaxTimeSteps(param.Value<int>());
     if (param_name == "dt_min")
-      timestepper_->SetMinimumTimeStepSize(param.GetValue<int>());
+      timestepper_->SetMinimumTimeStepSize(param.Value<int>());
   }
 }
 

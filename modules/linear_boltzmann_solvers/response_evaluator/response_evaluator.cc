@@ -36,12 +36,12 @@ ResponseEvaluator::GetInputParameters()
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
   : lbs_solver_(
-      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle")))
+      GetStackItem<LBSSolver>(object_stack, params.ParamValue<size_t>("lbs_solver_handle")))
 {
   if (params.ParametersAtAssignment().Has("options"))
   {
     auto options = OptionsBlock();
-    options.AssignParameters(params.GetParam("options"));
+    options.AssignParameters(params.Param("options"));
     SetOptions(options);
   }
 }
@@ -75,18 +75,18 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
 
   if (user_params.Has("buffers"))
   {
-    const auto& user_buffer_params = user_params.GetParam("buffers");
+    const auto& user_buffer_params = user_params.Param("buffers");
     user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (int p = 0; p < user_buffer_params.NumParameters(); ++p)
     {
       auto buffer_params = BufferOptionsBlock();
-      buffer_params.AssignParameters(user_buffer_params.GetParam(p));
+      buffer_params.AssignParameters(user_buffer_params.Param(p));
       SetBufferOptions(buffer_params);
     }
   }
 
   if (user_params.Has("clear_sources"))
-    if (user_params.GetParamValue<bool>("clear_sources"))
+    if (user_params.ParamValue<bool>("clear_sources"))
     {
       material_sources_.clear();
       point_sources_.clear();
@@ -97,7 +97,7 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
   if (user_params.Has("sources"))
   {
     auto source_params = SourceOptionsBlock();
-    source_params.AssignParameters(user_params.GetParam("sources"));
+    source_params.AssignParameters(user_params.Param("sources"));
     SetSourceOptions(source_params);
   }
 }
@@ -127,21 +127,21 @@ ResponseEvaluator::BufferOptionsBlock()
 void
 ResponseEvaluator::SetBufferOptions(const InputParameters& params)
 {
-  const auto name = params.GetParamValue<std::string>("name");
+  const auto name = params.ParamValue<std::string>("name");
   OpenSnInvalidArgumentIf(adjoint_buffers_.count(name) > 0,
                           "An adjoint buffer with name " + name + " already exists.");
 
-  const auto prefixes = params.GetParam("file_prefixes");
+  const auto prefixes = params.Param("file_prefixes");
 
   std::vector<double> phi;
   if (prefixes.Has("flux_moments"))
     LBSSolverIO::ReadFluxMoments(
-      lbs_solver_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
+      lbs_solver_, prefixes.ParamValue<std::string>("flux_moments"), false, phi);
 
   std::vector<std::vector<double>> psi;
   if (prefixes.Has("angular_fluxes"))
     LBSSolverIO::ReadAngularFluxes(
-      lbs_solver_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
+      lbs_solver_, prefixes.ParamValue<std::string>("angular_fluxes"), psi);
 
   adjoint_buffers_[name] = {phi, psi};
   log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";
@@ -183,11 +183,11 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
   // Add material sources
   if (params.Has("material"))
   {
-    const auto& user_msrc_params = params.GetParam("material");
+    const auto& user_msrc_params = params.Param("material");
     for (int p = 0; p < user_msrc_params.NumParameters(); ++p)
     {
       auto msrc_params = MaterialSourceOptionsBlock();
-      msrc_params.AssignParameters(user_msrc_params.GetParam(p));
+      msrc_params.AssignParameters(user_msrc_params.Param(p));
       SetMaterialSourceOptions(msrc_params);
     }
   }
@@ -195,11 +195,11 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
   // Add point sources
   if (params.Has("point"))
   {
-    const auto& user_psrc_params = params.GetParam("point");
+    const auto& user_psrc_params = params.Param("point");
     for (int p = 0; p < user_psrc_params.NumParameters(); ++p)
     {
       point_sources_.push_back(GetStackItem<PointSource>(
-        object_stack, user_psrc_params.GetParam(p).GetValue<size_t>(), __FUNCTION__));
+        object_stack, user_psrc_params.Param(p).Value<size_t>(), __FUNCTION__));
       point_sources_.back().Initialize(lbs_solver_);
     }
   }
@@ -207,11 +207,11 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
   // Add volumetric sources
   if (params.Has("volumetric"))
   {
-    const auto& user_dsrc_params = params.GetParam("volumetric");
+    const auto& user_dsrc_params = params.Param("volumetric");
     for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
     {
       volumetric_sources_.push_back(GetStackItem<VolumetricSource>(
-        object_stack, user_dsrc_params.GetParam(p).GetValue<size_t>(), __FUNCTION__));
+        object_stack, user_dsrc_params.Param(p).Value<size_t>(), __FUNCTION__));
       volumetric_sources_.back().Initialize(lbs_solver_);
     }
   }
@@ -219,11 +219,11 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
   // Add boundary sources
   if (params.Has("boundary"))
   {
-    const auto& user_bsrc_params = params.GetParam("boundary");
+    const auto& user_bsrc_params = params.Param("boundary");
     for (int p = 0; p < user_bsrc_params.NumParameters(); ++p)
     {
       auto bsrc_params = LBSSolver::BoundaryOptionsBlock();
-      bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));
+      bsrc_params.AssignParameters(user_bsrc_params.Param(p));
       SetBoundarySourceOptions(bsrc_params);
     }
   }
@@ -250,12 +250,12 @@ ResponseEvaluator::MaterialSourceOptionsBlock()
 void
 ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 {
-  const auto matid = params.GetParamValue<int>("material_id");
+  const auto matid = params.ParamValue<int>("material_id");
   OpenSnInvalidArgumentIf(material_sources_.count(matid) > 0,
                           "A material source for material id " + std::to_string(matid) +
                             " already exists.");
 
-  const auto values = params.GetParamVectorValue<double>("strength");
+  const auto values = params.ParamVectorValue<double>("strength");
   OpenSnInvalidArgumentIf(values.size() != lbs_solver_.NumGroups(),
                           "The number of material source values and groups "
                           "in the underlying solver do not match. "
@@ -270,8 +270,8 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 void
 ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
 {
-  const auto bndry_name = params.GetParamValue<std::string>("name");
-  const auto bndry_type = params.GetParamValue<std::string>("type");
+  const auto bndry_name = params.ParamValue<std::string>("name");
+  const auto bndry_type = params.ParamValue<std::string>("type");
 
   const auto bid = lbs_solver_.supported_boundary_names.at(bndry_name);
   if (bndry_type == "isotropic")
@@ -282,7 +282,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
     params.RequireParameterBlockTypeIs("values", ParameterBlockType::ARRAY);
 
     boundary_sources_[bid] = {BoundaryType::ISOTROPIC,
-                              params.GetParamVectorValue<double>("group_strength")};
+                              params.ParamVectorValue<double>("group_strength")};
   }
   else
     log.Log0Warning() << "Unsupported boundary type. Skipping the entry.";

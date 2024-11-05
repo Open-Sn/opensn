@@ -28,10 +28,10 @@ SphereLogicalVolume::GetInputParameters()
 
 SphereLogicalVolume::SphereLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    r_(params.GetParamValue<double>("r")),
-    x0_(params.GetParamValue<double>("x")),
-    y0_(params.GetParamValue<double>("y")),
-    z0_(params.GetParamValue<double>("z"))
+    r_(params.ParamValue<double>("r")),
+    x0_(params.ParamValue<double>("x")),
+    y0_(params.ParamValue<double>("y")),
+    z0_(params.ParamValue<double>("z"))
 {
 }
 

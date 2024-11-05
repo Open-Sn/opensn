@@ -53,9 +53,9 @@ TestObject::GetInputParameters()
 }
 
 TestObject::TestObject(const InputParameters& params)
-  : solver_type_(params.GetParamValue<std::string>("solver_type")),
-    sub_obj1_(InputParameters::MakeForObject<TestSubObject>(params.GetParam("sub_obj1"))),
-    sub_obj2_(InputParameters::MakeForObject<TestSubObject>(params.GetParam("sub_obj2")))
+  : solver_type_(params.ParamValue<std::string>("solver_type")),
+    sub_obj1_(InputParameters::MakeForObject<TestSubObject>(params.Param("sub_obj1"))),
+    sub_obj2_(InputParameters::MakeForObject<TestSubObject>(params.Param("sub_obj2")))
 {
   opensn::log.Log() << "TestObject created "
                     << "solver_type=" << solver_type_;
@@ -78,7 +78,7 @@ TestSubObject::GetInputParameters()
 }
 
 TestSubObject::TestSubObject(const InputParameters& params)
-  : num_groups_(params.GetParamValue<size_t>("num_groups"))
+  : num_groups_(params.ParamValue<size_t>("num_groups"))
 {
   opensn::log.Log() << "TestSubObject created "
                     << "num_groups=" << num_groups_;
@@ -105,7 +105,7 @@ ChildTestObject::GetInputParameters()
 }
 
 ChildTestObject::ChildTestObject(const InputParameters& params)
-  : TestObject(params), num_sub_groups_(params.GetParamValue<int>("num_sub_groups"))
+  : TestObject(params), num_sub_groups_(params.ParamValue<int>("num_sub_groups"))
 {
   opensn::log.Log() << "ChildTestObject created "
                     << "num_sub_groups=" << num_sub_groups_;

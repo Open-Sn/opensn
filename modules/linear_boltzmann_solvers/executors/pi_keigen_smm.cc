@@ -68,14 +68,14 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
   : PowerIterationKEigen(params),
     dimension_(0),
     psi_new_local_(lbs_solver_.PsiNewLocal()),
-    accel_pi_max_its_(params.GetParamValue<unsigned int>("accel_pi_max_its")),
-    accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
-    accel_pi_verbose_(params.GetParamValue<bool>("accel_pi_verbose")),
-    diffusion_sdm_name_(params.GetParamValue<std::string>("diff_sdm")),
-    diffusion_l_max_its_(params.GetParamValue<int>("diff_l_max_its")),
-    diffusion_l_abs_tol_(params.GetParamValue<double>("diff_l_abs_tol")),
-    diffusion_petsc_options_(params.GetParamValue<std::string>("diff_petsc_options")),
-    diffusion_verbose_(params.GetParamValue<bool>("diff_verbose"))
+    accel_pi_max_its_(params.ParamValue<unsigned int>("accel_pi_max_its")),
+    accel_pi_k_tol_(params.ParamValue<double>("accel_pi_k_tol")),
+    accel_pi_verbose_(params.ParamValue<bool>("accel_pi_verbose")),
+    diffusion_sdm_name_(params.ParamValue<std::string>("diff_sdm")),
+    diffusion_l_max_its_(params.ParamValue<int>("diff_l_max_its")),
+    diffusion_l_abs_tol_(params.ParamValue<double>("diff_l_abs_tol")),
+    diffusion_petsc_options_(params.ParamValue<std::string>("diff_petsc_options")),
+    diffusion_verbose_(params.ParamValue<bool>("diff_verbose"))
 {
   ghosts_required_ = diffusion_sdm_name_ == "pwlc";
   lbs_solver_.Options().save_angular_flux = true;

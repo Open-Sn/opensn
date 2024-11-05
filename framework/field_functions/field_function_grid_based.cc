@@ -52,7 +52,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
     local_grid_bounding_box_(GetCurrentMesh()->LocalBoundingBox())
 {
-  ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
+  ghosted_field_vector_->Set(params.ParamValue<double>("initial_value"));
 }
 
 FieldFunctionGridBased::FieldFunctionGridBased(
@@ -327,7 +327,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
   const auto& user_params = params.ParametersAtAssignment();
   const auto& grid_ptr = GetCurrentMesh();
-  const auto sdm_type = params.GetParamValue<std::string>("discretization");
+  const auto sdm_type = params.ParamValue<std::string>("discretization");
 
   if (sdm_type == "FV")
     return FiniteVolume::New(*grid_ptr);
@@ -336,7 +336,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   std::string cs = "cartesian";
   if (user_params.Has("coordinate_system"))
   {
-    cs = params.GetParamValue<std::string>("coordinate_system");
+    cs = params.ParamValue<std::string>("coordinate_system");
 
     if (cs == "cartesian")
       cs_type = CoordinateSystemType::CARTESIAN;
@@ -351,7 +351,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   if (user_params.Has("quadrature_order"))
   {
     const auto max_order = static_cast<uint32_t>(QuadratureOrder::FORTYTHIRD);
-    const auto q_order_int = params.GetParamValue<uint32_t>("quadrature_order");
+    const auto q_order_int = params.ParamValue<uint32_t>("quadrature_order");
     OpenSnInvalidArgumentIf(q_order_int > max_order,
                             "Invalid quadrature point order " + std::to_string(q_order_int));
     q_order = static_cast<QuadratureOrder>(q_order_int);

@@ -37,7 +37,7 @@ CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputPara
   : PostProcessor(params, PPType::SCALAR),
     GridBasedFieldFunctionInterface(params),
     LogicalVolumeInterface(params),
-    compute_volume_average_(params.GetParamValue<bool>("compute_volume_average"))
+    compute_volume_average_(params.ParamValue<bool>("compute_volume_average"))
 {
   value_ = ParameterBlock("", 0.0);
 }
@@ -141,8 +141,8 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
     if (event_params.Has("timestep_index") and event_params.Has("time"))
     {
-      const size_t index = event_params.GetParamValue<size_t>("timestep_index");
-      const double time = event_params.GetParamValue<double>("time");
+      const size_t index = event_params.ParamValue<size_t>("timestep_index");
+      const double time = event_params.ParamValue<double>("time");
       TimeHistoryEntry entry{index, time, value_};
       time_history_.push_back(std::move(entry));
     }

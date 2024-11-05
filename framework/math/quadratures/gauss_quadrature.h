@@ -21,8 +21,8 @@ protected:
   explicit GaussQuadrature(const InputParameters& params)
     : Object(params),
       range_({0, 0}),
-      verbose_(params.GetParamValue<bool>("verbose")),
-      order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
+      verbose_(params.ParamValue<bool>("verbose")),
+      order_(static_cast<QuadratureOrder>(params.ParamValue<int>("order")))
   {
   }
 

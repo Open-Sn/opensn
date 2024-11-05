@@ -26,7 +26,7 @@ PETScGraphPartitioner::GetInputParameters()
 }
 
 PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
-  : GraphPartitioner(params), type_(params.GetParamValue<std::string>("type"))
+  : GraphPartitioner(params), type_(params.ParamValue<std::string>("type"))
 {
 }
 

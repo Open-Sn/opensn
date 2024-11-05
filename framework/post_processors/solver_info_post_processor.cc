@@ -38,13 +38,12 @@ SolverInfoPostProcessor::GetInputParameters()
 
 SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    solver_(
-      GetStackItem<Solver>(object_stack, params.GetParamValue<size_t>("solver"), __FUNCTION__)),
-    info_(params.GetParam("info"))
+    solver_(GetStackItem<Solver>(object_stack, params.ParamValue<size_t>("solver"), __FUNCTION__)),
+    info_(params.Param("info"))
 {
   const auto& param_assigned = params.ParametersAtAssignment();
   if (param_assigned.Has("solvername_filter"))
-    solvername_filter_ = params.GetParamValue<std::string>("solvername_filter");
+    solvername_filter_ = params.ParamValue<std::string>("solvername_filter");
   else
     solvername_filter_ = solver_.Name();
 }

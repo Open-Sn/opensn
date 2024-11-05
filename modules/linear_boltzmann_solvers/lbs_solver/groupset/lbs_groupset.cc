@@ -140,7 +140,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   const std::string fname = __FUNCTION__;
 
   // Add groups
-  const auto groups_from_to = params.GetParamVectorValue<size_t>("groups_from_to");
+  const auto groups_from_to = params.ParamVectorValue<size_t>("groups_from_to");
   OpenSnInvalidArgumentIf(groups_from_to.size() != 2,
                           "Parameter \"groups_from_to\" can only have 2 entries");
 
@@ -164,14 +164,14 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
       "for all groups.");
   }
 
-  master_num_grp_subsets = params.GetParamValue<int>("groupset_num_subsets");
+  master_num_grp_subsets = params.ParamValue<int>("groupset_num_subsets");
 
   // Add quadrature
-  const size_t quad_handle = params.GetParamValue<size_t>("angular_quadrature_handle");
+  const size_t quad_handle = params.ParamValue<size_t>("angular_quadrature_handle");
   quadrature = GetStackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
 
   // Angle aggregation
-  const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
+  const auto angle_agg_typestr = params.ParamValue<std::string>("angle_aggregation_type");
   if (angle_agg_typestr == "polar")
     angleagg_method = AngleAggregationType::POLAR;
   else if (angle_agg_typestr == "single")
@@ -179,10 +179,10 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   else if (angle_agg_typestr == "azimuthal")
     angleagg_method = AngleAggregationType::AZIMUTHAL;
 
-  master_num_ang_subsets = params.GetParamValue<int>("angle_aggregation_num_subsets");
+  master_num_ang_subsets = params.ParamValue<int>("angle_aggregation_num_subsets");
 
   // Inner solver
-  const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
+  const auto inner_linear_method = params.ParamValue<std::string>("inner_linear_method");
   if (inner_linear_method == "classic_richardson")
     iterative_method = LinearSolver::IterativeMethod::CLASSIC_RICHARDSON;
   else if (inner_linear_method == "petsc_richardson")
@@ -192,26 +192,26 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   else if (inner_linear_method == "petsc_bicgstab")
     iterative_method = LinearSolver::IterativeMethod::PETSC_BICGSTAB;
 
-  gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
-  allow_cycles = params.GetParamValue<bool>("allow_cycles");
-  residual_tolerance = params.GetParamValue<double>("l_abs_tol");
-  max_iterations = params.GetParamValue<int>("l_max_its");
+  gmres_restart_intvl = params.ParamValue<int>("gmres_restart_interval");
+  allow_cycles = params.ParamValue<bool>("allow_cycles");
+  residual_tolerance = params.ParamValue<double>("l_abs_tol");
+  max_iterations = params.ParamValue<int>("l_max_its");
 
   // DSA
-  apply_wgdsa = params.GetParamValue<bool>("apply_wgdsa");
-  apply_tgdsa = params.GetParamValue<bool>("apply_tgdsa");
+  apply_wgdsa = params.ParamValue<bool>("apply_wgdsa");
+  apply_tgdsa = params.ParamValue<bool>("apply_tgdsa");
 
-  wgdsa_tol = params.GetParamValue<double>("wgdsa_l_abs_tol");
-  tgdsa_tol = params.GetParamValue<double>("tgdsa_l_abs_tol");
+  wgdsa_tol = params.ParamValue<double>("wgdsa_l_abs_tol");
+  tgdsa_tol = params.ParamValue<double>("tgdsa_l_abs_tol");
 
-  wgdsa_max_iters = params.GetParamValue<int>("wgdsa_l_max_its");
-  tgdsa_max_iters = params.GetParamValue<int>("tgdsa_l_max_its");
+  wgdsa_max_iters = params.ParamValue<int>("wgdsa_l_max_its");
+  tgdsa_max_iters = params.ParamValue<int>("tgdsa_l_max_its");
 
-  wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
-  tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");
+  wgdsa_verbose = params.ParamValue<bool>("wgdsa_verbose");
+  tgdsa_verbose = params.ParamValue<bool>("tgdsa_verbose");
 
-  wgdsa_string = params.GetParamValue<std::string>("wgdsa_petsc_options");
-  tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
+  wgdsa_string = params.ParamValue<std::string>("wgdsa_petsc_options");
+  tgdsa_string = params.ParamValue<std::string>("tgdsa_petsc_options");
 }
 
 void

@@ -39,12 +39,12 @@ KBAGraphPartitioner::GetInputParameters()
 
 KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
   : GraphPartitioner(params),
-    nx_(params.GetParamValue<size_t>("nx")),
-    ny_(params.GetParamValue<size_t>("ny")),
-    nz_(params.GetParamValue<size_t>("nz")),
-    xcuts_(params.GetParamVectorValue<double>("xcuts")),
-    ycuts_(params.GetParamVectorValue<double>("ycuts")),
-    zcuts_(params.GetParamVectorValue<double>("zcuts")),
+    nx_(params.ParamValue<size_t>("nx")),
+    ny_(params.ParamValue<size_t>("ny")),
+    nz_(params.ParamValue<size_t>("nz")),
+    xcuts_(params.ParamVectorValue<double>("xcuts")),
+    ycuts_(params.ParamVectorValue<double>("ycuts")),
+    zcuts_(params.ParamVectorValue<double>("zcuts")),
     coordinate_infos_{CoordinateInfo{&xcuts_, nx_, "x"},
                       CoordinateInfo{&ycuts_, ny_, "y"},
                       CoordinateInfo{&zcuts_, nz_, "z"}}

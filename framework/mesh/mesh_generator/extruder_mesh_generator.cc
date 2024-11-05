@@ -59,10 +59,10 @@ ExtruderMeshGenerator::GetInputParameters()
 
 ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
-    top_boundary_name_(params.GetParamValue<std::string>("top_boundary_name")),
-    bottom_boundary_name_(params.GetParamValue<std::string>("bottom_boundary_name"))
+    top_boundary_name_(params.ParamValue<std::string>("top_boundary_name")),
+    bottom_boundary_name_(params.ParamValue<std::string>("bottom_boundary_name"))
 {
-  const auto& layers_param = params.GetParam("layers");
+  const auto& layers_param = params.Param("layers");
 
   double current_z_level = 0.0;
   for (const auto& layer_block : layers_param)
@@ -77,13 +77,13 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
       OpenSnInvalidArgument("For an ExtrusionLayer either \"h\" or \"z\" must"
                             "be specified and also not both.");
 
-    auto n = valid_params.GetParamValue<uint32_t>("n");
+    auto n = valid_params.ParamValue<uint32_t>("n");
     double h;
     if (layer_block.Has("h"))
-      h = valid_params.GetParamValue<double>("h");
+      h = valid_params.ParamValue<double>("h");
     else
     {
-      double z = valid_params.GetParamValue<double>("z");
+      double z = valid_params.ParamValue<double>("z");
       OpenSnInvalidArgumentIf(z <= current_z_level,
                               "For extrusion layers, the \"z\" coordinates must "
                               "be monotonically increasing.");

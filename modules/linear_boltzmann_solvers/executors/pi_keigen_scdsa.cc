@@ -58,15 +58,15 @@ PowerIterationKEigenSCDSA::GetInputParameters()
 
 PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& params)
   : PowerIterationKEigen(params),
-    accel_pi_max_its_(params.GetParamValue<int>("accel_pi_max_its")),
-    accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
-    accel_pi_verbose_(params.GetParamValue<bool>("accel_pi_verbose")),
-    diffusion_solver_sdm_(params.GetParamValue<std::string>("diff_accel_sdm")),
-    diff_accel_diffusion_l_abs_tol_(params.GetParamValue<double>("diff_accel_diffusion_l_abs_tol")),
-    diff_accel_diffusion_max_iters_(params.GetParamValue<int>("diff_accel_diffusion_max_iters")),
-    diff_accel_diffusion_verbose_(params.GetParamValue<bool>("diff_accel_diffusion_verbose")),
+    accel_pi_max_its_(params.ParamValue<int>("accel_pi_max_its")),
+    accel_pi_k_tol_(params.ParamValue<double>("accel_pi_k_tol")),
+    accel_pi_verbose_(params.ParamValue<bool>("accel_pi_verbose")),
+    diffusion_solver_sdm_(params.ParamValue<std::string>("diff_accel_sdm")),
+    diff_accel_diffusion_l_abs_tol_(params.ParamValue<double>("diff_accel_diffusion_l_abs_tol")),
+    diff_accel_diffusion_max_iters_(params.ParamValue<int>("diff_accel_diffusion_max_iters")),
+    diff_accel_diffusion_verbose_(params.ParamValue<bool>("diff_accel_diffusion_verbose")),
     diff_accel_diffusion_petsc_options_(
-      params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
+      params.ParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {
   if (lbs_solver_.Groupsets().size() != 1)
     throw std::logic_error("The SCDSA k-eigenvalue executor is only implemented for "

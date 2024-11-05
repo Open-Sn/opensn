@@ -10,7 +10,7 @@ namespace opensn
 
 NonLinearSolver::NonLinearSolver(std::shared_ptr<NonLinearSolverContext> context_ptr,
                                  const InputParameters& params)
-  : solver_name_(params.GetParamValue<std::string>("name")),
+  : solver_name_(params.ParamValue<std::string>("name")),
     context_ptr_(context_ptr),
     options_(params)
 {

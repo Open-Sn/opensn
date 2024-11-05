@@ -106,7 +106,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
 {
   auto& printer = PostProcessorPrinter::GetInstance();
 
-  const auto& set_params = params.ParametersAtAssignment().GetParam("arg0");
+  const auto& set_params = params.ParametersAtAssignment().Param("arg0");
 
   for (const auto& param : set_params)
   {
@@ -117,7 +117,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
     {
       case "scalar_pp_table_format"_hash:
       {
-        const auto option = param.GetValue<std::string>();
+        const auto option = param.Value<std::string>();
         if (option == "vertical")
           printer.SetScalarPPTableFormat(ScalarPPTableFormat::VERTICAL);
         else if (option == "horizontal")
@@ -131,7 +131,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
       }
       case "events_on_which_to_print_postprocs"_hash:
       {
-        const auto list = param.GetVectorValue<std::string>();
+        const auto list = param.VectorValue<std::string>();
 
         printer.SetEventsOnWhichPrintPPs(list);
 
@@ -139,25 +139,25 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
         break;
       }
       case "print_scalar_time_history"_hash:
-        printer.SetPrintScalarTimeHistory(param.GetValue<bool>());
+        printer.SetPrintScalarTimeHistory(param.Value<bool>());
         break;
       case "print_vector_time_history"_hash:
-        printer.SetPrintVectorTimeHistory(param.GetValue<bool>());
+        printer.SetPrintVectorTimeHistory(param.Value<bool>());
         break;
       case "per_column_size_scalars"_hash:
-        printer.SetScalarPerColumnSize(param.GetValue<bool>());
+        printer.SetScalarPerColumnSize(param.Value<bool>());
         break;
       case "per_column_size_vectors"_hash:
-        printer.SetVectorPerColumnSize(param.GetValue<bool>());
+        printer.SetVectorPerColumnSize(param.Value<bool>());
         break;
       case "table_column_limit"_hash:
-        printer.SetTableColumnLimit(param.GetValue<size_t>());
+        printer.SetTableColumnLimit(param.Value<size_t>());
         break;
       case "time_history_limit"_hash:
-        printer.SetTimeHistoryLimit(param.GetValue<size_t>());
+        printer.SetTimeHistoryLimit(param.Value<size_t>());
         break;
       case "csv_filename"_hash:
-        printer.SetCSVFilename(param.GetValue<std::string>());
+        printer.SetCSVFilename(param.Value<std::string>());
         break;
       default:
         OpenSnInvalidArgument("Invalid option \"" + param.Name() + "\"");

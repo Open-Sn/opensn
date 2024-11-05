@@ -23,7 +23,7 @@ ThetaSchemeTimeIntegration::GetInputParameters()
 }
 
 ThetaSchemeTimeIntegration::ThetaSchemeTimeIntegration(const InputParameters& params)
-  : TimeIntegration(params), theta_(params.GetParamValue<double>("theta"))
+  : TimeIntegration(params), theta_(params.ParamValue<double>("theta"))
 {
 }
 

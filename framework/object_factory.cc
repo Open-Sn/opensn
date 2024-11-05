@@ -40,7 +40,7 @@ ObjectFactory::MakeRegisteredObject(const ParameterBlock& params) const
                                         "\"obj_type\". The given parameter block does not seem to "
                                         "have this parameter.");
 
-  const auto type = params.GetParamValue<std::string>("obj_type");
+  const auto type = params.ParamValue<std::string>("obj_type");
 
   return MakeRegisteredObjectOfType(type, params);
 }

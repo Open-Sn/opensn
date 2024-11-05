@@ -30,8 +30,8 @@ PointSource::GetInputParameters()
 
 PointSource::PointSource(const InputParameters& params)
   : Object(params),
-    location_(params.GetParamVectorValue<double>("location")),
-    strength_(params.GetParamVectorValue<double>("strength"))
+    location_(params.ParamVectorValue<double>("location")),
+    strength_(params.ParamVectorValue<double>("strength"))
 {
   if (std::all_of(strength_.begin(), strength_.end(), [](double x) { return x == 0.0; }))
     log.Log0Warning() << "Point source at " << location_.PrintStr() << " "

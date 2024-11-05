@@ -231,7 +231,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (tag != InputParameterTag::REQUIRED)
       continue;
 
-    const auto& req_param = GetParam(param_index);
+    const auto& req_param = Param(param_index);
     const auto& req_param_name = req_param.Name();
 
     if (deprecation_warning_tags_.count(req_param_name) > 0 or
@@ -246,8 +246,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   }
 
   if (not err_stream.str().empty())
-    throw std::invalid_argument(
-      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+    throw std::invalid_argument(InputErrorStr(ErrorOriginScope(), ObjectType(), err_stream.str()));
 
   // Check unused parameters
   // Loops over all candidate-parameters and
@@ -271,7 +270,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
     if (not err_stream.str().empty())
       throw std::invalid_argument(
-        InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+        InputErrorStr(ErrorOriginScope(), ObjectType(), err_stream.str()));
   }
 
   // Check deprecation warnings
@@ -322,7 +321,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (IsParameterIgnored(param_name))
       continue;
 
-    auto& input_param = GetParam(param_name);
+    auto& input_param = Param(param_name);
 
     // Check types match
     if (param.Type() != input_param.Type())
@@ -341,9 +340,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (constraint_tags_.count(input_param.Name()) != 0)
     {
       const auto& constraint = constraint_tags_.at(input_param.Name());
-      if (not constraint->IsAllowable(param.Value()))
+      if (not constraint->IsAllowable(param.VaryingValue()))
       {
-        err_stream << constraint->OutOfRangeString(input_param.Name(), param.Value());
+        err_stream << constraint->OutOfRangeString(input_param.Name(), param.VaryingValue());
         err_stream << "\n";
         continue;
       }
@@ -355,8 +354,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   } // for input params
 
   if (not err_stream.str().empty())
-    throw std::invalid_argument(
-      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+    throw std::invalid_argument(InputErrorStr(ErrorOriginScope(), ObjectType(), err_stream.str()));
 }
 
 void
@@ -395,7 +393,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
 {
   if (Has(param_name))
   {
-    const auto& param_type = GetParam(param_name).Type();
+    const auto& param_type = Param(param_name).Type();
     OpenSnInvalidArgumentIf(
       param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
       std::string("Parameter \"") + param_name + "\" is of type " +
@@ -440,15 +438,15 @@ InputParameters::DumpParameters() const
     {
       log.Log() << sp4 << "TAG OPTIONAL";
       if (type != ParameterBlockType::BLOCK and type != ParameterBlockType::ARRAY)
-        log.Log() << sp4 << "DEFAULT_VALUE " << param.Value().PrintStr();
+        log.Log() << sp4 << "DEFAULT_VALUE " << param.VaryingValue().PrintStr();
       else if (type == ParameterBlockType::ARRAY)
       {
         std::stringstream outstr;
         outstr << sp4 << "DEFAULT_VALUE ";
         for (size_t k = 0; k < param.NumParameters(); ++k)
         {
-          const auto& sub_param = param.GetParam(k);
-          outstr << sub_param.Value().PrintStr() << ", ";
+          const auto& sub_param = param.Param(k);
+          outstr << sub_param.VaryingValue().PrintStr() << ", ";
         }
         log.Log() << outstr.str();
       }

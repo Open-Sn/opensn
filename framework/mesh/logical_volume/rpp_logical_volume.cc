@@ -32,15 +32,15 @@ RPPLogicalVolume::GetInputParameters()
 
 RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    xmin_(params.GetParamValue<double>("xmin")),
-    xmax_(params.GetParamValue<double>("xmax")),
-    ymin_(params.GetParamValue<double>("ymin")),
-    ymax_(params.GetParamValue<double>("ymax")),
-    zmin_(params.GetParamValue<double>("zmin")),
-    zmax_(params.GetParamValue<double>("zmax")),
-    infx_(params.GetParamValue<bool>("infx")),
-    infy_(params.GetParamValue<bool>("infy")),
-    infz_(params.GetParamValue<bool>("infz"))
+    xmin_(params.ParamValue<double>("xmin")),
+    xmax_(params.ParamValue<double>("xmax")),
+    ymin_(params.ParamValue<double>("ymin")),
+    ymax_(params.ParamValue<double>("ymax")),
+    zmin_(params.ParamValue<double>("zmin")),
+    zmax_(params.ParamValue<double>("zmax")),
+    infx_(params.ParamValue<bool>("infx")),
+    infy_(params.ParamValue<bool>("infy")),
+    infz_(params.ParamValue<bool>("infz"))
 {
 }
 

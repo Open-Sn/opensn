@@ -68,9 +68,8 @@ DiffusionSolverBase::DiffusionSolverBase(const InputParameters& params)
     b_(nullptr),
     A_(nullptr)
 {
-  basic_options_.AddOption("residual_tolerance",
-                           params.GetParamValue<double>("residual_tolerance"));
-  basic_options_.AddOption<int64_t>("max_iters", params.GetParamValue<int>("max_iters"));
+  basic_options_.AddOption("residual_tolerance", params.ParamValue<double>("residual_tolerance"));
+  basic_options_.AddOption<int64_t>("max_iters", params.ParamValue<int>("max_iters"));
 }
 
 DiffusionSolverBase::~DiffusionSolverBase()

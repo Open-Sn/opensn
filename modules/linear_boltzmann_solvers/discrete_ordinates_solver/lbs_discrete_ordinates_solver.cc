@@ -61,8 +61,8 @@ DiscreteOrdinatesSolver::GetInputParameters()
 
 DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
   : LBSSolver(params),
-    verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
-    sweep_type_(params.GetParamValue<std::string>("sweep_type"))
+    verbose_sweep_angles_(params.ParamVectorValue<size_t>("directions_sweep_order_to_print")),
+    sweep_type_(params.ParamValue<std::string>("sweep_type"))
 {
 }
 

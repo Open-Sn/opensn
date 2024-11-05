@@ -36,9 +36,9 @@ FromFileMeshGenerator::GetInputParameters()
 
 FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
-    filename_(params.GetParamValue<std::string>("filename")),
-    material_id_fieldname_(params.GetParamValue<std::string>("material_id_fieldname")),
-    boundary_id_fieldname_(params.GetParamValue<std::string>("boundary_id_fieldname"))
+    filename_(params.ParamValue<std::string>("filename")),
+    material_id_fieldname_(params.ParamValue<std::string>("material_id_fieldname")),
+    boundary_id_fieldname_(params.ParamValue<std::string>("boundary_id_fieldname"))
 {
 }
 

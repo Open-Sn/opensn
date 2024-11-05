@@ -26,8 +26,8 @@ PiecewiseLinear1D::GetInputParameters()
 
 PiecewiseLinear1D::PiecewiseLinear1D(const InputParameters& params)
   : FunctionDimAToDimB(params),
-    x_values_(params.GetParamVectorValue<double>("x_values")),
-    y_values_(params.GetParamVectorValue<double>("y_values")),
+    x_values_(params.ParamVectorValue<double>("x_values")),
+    y_values_(params.ParamVectorValue<double>("y_values")),
     num_vals_(x_values_.size())
 {
   OpenSnInvalidArgumentIf(y_values_.size() != num_vals_,

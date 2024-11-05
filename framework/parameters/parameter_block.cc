@@ -119,7 +119,7 @@ ParameterBlock::Name() const
 }
 
 const Varying&
-ParameterBlock::Value() const
+ParameterBlock::VaryingValue() const
 {
   switch (this->Type())
   {
@@ -264,7 +264,7 @@ ParameterBlock::Has(const std::string& param_name) const
 }
 
 ParameterBlock&
-ParameterBlock::GetParam(const std::string& param_name)
+ParameterBlock::Param(const std::string& param_name)
 {
   for (auto& param : parameters_)
     if (param.Name() == param_name)
@@ -275,7 +275,7 @@ ParameterBlock::GetParam(const std::string& param_name)
 }
 
 ParameterBlock&
-ParameterBlock::GetParam(size_t index)
+ParameterBlock::Param(size_t index)
 {
   try
   {
@@ -290,7 +290,7 @@ ParameterBlock::GetParam(size_t index)
 }
 
 const ParameterBlock&
-ParameterBlock::GetParam(const std::string& param_name) const
+ParameterBlock::Param(const std::string& param_name) const
 {
   for (const auto& param : parameters_)
     if (param.Name() == param_name)
@@ -301,7 +301,7 @@ ParameterBlock::GetParam(const std::string& param_name) const
 }
 
 const ParameterBlock&
-ParameterBlock::GetParam(size_t index) const
+ParameterBlock::Param(size_t index) const
 {
   try
   {
@@ -333,28 +333,28 @@ ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& of
       case ParameterBlockType::BOOLEAN:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const bool value = param.Value().BoolValue();
+        const bool value = param.VaryingValue().BoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const double value = param.Value().FloatValue();
+        const double value = param.VaryingValue().FloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const auto& value = param.Value().StringValue();
+        const auto& value = param.VaryingValue().StringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const int64_t value = param.Value().IntegerValue();
+        const int64_t value = param.VaryingValue().IntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
@@ -392,28 +392,28 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
       case ParameterBlockType::BOOLEAN:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const bool value = param.Value().BoolValue();
+        const bool value = param.VaryingValue().BoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const double value = param.Value().FloatValue();
+        const double value = param.VaryingValue().FloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const auto& value = param.Value().StringValue();
+        const auto& value = param.VaryingValue().StringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const int64_t value = param.Value().IntegerValue();
+        const int64_t value = param.VaryingValue().IntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }

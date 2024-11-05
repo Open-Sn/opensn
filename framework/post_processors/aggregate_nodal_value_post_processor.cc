@@ -36,7 +36,7 @@ AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputPa
   : PostProcessor(params, PPType::SCALAR),
     GridBasedFieldFunctionInterface(params),
     LogicalVolumeInterface(params),
-    operation_(params.GetParamValue<std::string>("operation"))
+    operation_(params.ParamValue<std::string>("operation"))
 {
 }
 
@@ -155,8 +155,8 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
     if (event_params.Has("timestep_index") and event_params.Has("time"))
     {
-      const size_t index = event_params.GetParamValue<size_t>("timestep_index");
-      const double time = event_params.GetParamValue<double>("time");
+      const size_t index = event_params.ParamValue<size_t>("timestep_index");
+      const double time = event_params.ParamValue<double>("time");
       TimeHistoryEntry entry{index, time, value_};
       time_history_.push_back(std::move(entry));
     }

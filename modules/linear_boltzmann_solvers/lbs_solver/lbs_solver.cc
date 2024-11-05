@@ -70,17 +70,17 @@ LBSSolver::GetInputParameters()
 LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 {
   // Make groups
-  const size_t num_groups = params.GetParamValue<size_t>("num_groups");
+  const size_t num_groups = params.ParamValue<size_t>("num_groups");
   for (size_t g = 0; g < num_groups; ++g)
     groups_.push_back(LBSGroup(static_cast<int>(g)));
 
   // Make groupsets
-  const auto& groupsets_array = params.GetParam("groupsets");
+  const auto& groupsets_array = params.Param("groupsets");
 
   const size_t num_gs = groupsets_array.NumParameters();
   for (size_t gs = 0; gs < num_gs; ++gs)
   {
-    const auto& groupset_params = groupsets_array.GetParam(gs);
+    const auto& groupset_params = groupsets_array.Param(gs);
 
     InputParameters gs_input_params = LBSGroupset::GetInputParameters();
     gs_input_params.SetObjectType("LBSSolver:LBSGroupset");
@@ -93,7 +93,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   if (params.ParametersAtAssignment().Has("options"))
   {
     auto options_params = LBSSolver::OptionsBlock();
-    options_params.AssignParameters(params.GetParam("options"));
+    options_params.AssignParameters(params.Param("options"));
 
     this->SetOptions(options_params);
   }
@@ -554,25 +554,25 @@ LBSSolver::SetOptions(const InputParameters& params)
   // Handle order sensitive options
   if (user_params.Has("clear_boundary_conditions"))
   {
-    if (user_params.GetParamValue<bool>("clear_boundary_conditions"))
+    if (user_params.ParamValue<bool>("clear_boundary_conditions"))
       boundary_preferences_.clear();
   }
 
   if (user_params.Has("clear_point_sources"))
   {
-    if (user_params.GetParamValue<bool>("clear_point_sources"))
+    if (user_params.ParamValue<bool>("clear_point_sources"))
       point_sources_.clear();
   }
 
   if (user_params.Has("clear_volumetric_sources"))
   {
-    if (user_params.GetParamValue<bool>("clear_volumetric_sources"))
+    if (user_params.ParamValue<bool>("clear_volumetric_sources"))
       volumetric_sources_.clear();
   }
 
   if (user_params.Has("adjoint"))
   {
-    const bool adjoint = user_params.GetParamValue<bool>("adjoint");
+    const bool adjoint = user_params.ParamValue<bool>("adjoint");
     if (adjoint != options_.adjoint)
     {
       options_.adjoint = adjoint;
@@ -606,77 +606,77 @@ LBSSolver::SetOptions(const InputParameters& params)
   // Handle order insensitive options
   for (size_t p = 0; p < user_params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = user_params.Param(p);
 
     if (spec.Name() == "spatial_discretization")
     {
-      auto sdm_name = spec.GetValue<std::string>();
+      auto sdm_name = spec.Value<std::string>();
       if (sdm_name == "pwld")
         options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
     else if (spec.Name() == "scattering_order")
-      options_.scattering_order = spec.GetValue<int>();
+      options_.scattering_order = spec.Value<int>();
 
     else if (spec.Name() == "max_mpi_message_size")
-      options_.max_mpi_message_size = spec.GetValue<int>();
+      options_.max_mpi_message_size = spec.Value<int>();
 
     else if (spec.Name() == "read_restart_path")
-      options_.read_restart_path = spec.GetValue<std::string>();
+      options_.read_restart_path = spec.Value<std::string>();
 
     else if (spec.Name() == "write_restart_time_interval")
-      options_.write_restart_time_interval = spec.GetValue<int>();
+      options_.write_restart_time_interval = spec.Value<int>();
 
     else if (spec.Name() == "write_restart_path")
-      options_.write_restart_path = spec.GetValue<std::string>();
+      options_.write_restart_path = spec.Value<std::string>();
 
     else if (spec.Name() == "use_precursors")
-      options_.use_precursors = spec.GetValue<bool>();
+      options_.use_precursors = spec.Value<bool>();
 
     else if (spec.Name() == "use_source_moments")
-      options_.use_src_moments = spec.GetValue<bool>();
+      options_.use_src_moments = spec.Value<bool>();
 
     else if (spec.Name() == "save_angular_flux")
-      options_.save_angular_flux = spec.GetValue<bool>();
+      options_.save_angular_flux = spec.Value<bool>();
 
     else if (spec.Name() == "verbose_inner_iterations")
-      options_.verbose_inner_iterations = spec.GetValue<bool>();
+      options_.verbose_inner_iterations = spec.Value<bool>();
 
     else if (spec.Name() == "max_ags_iterations")
-      options_.max_ags_iterations = spec.GetValue<int>();
+      options_.max_ags_iterations = spec.Value<int>();
 
     else if (spec.Name() == "ags_tolerance")
-      options_.ags_tolerance = spec.GetValue<double>();
+      options_.ags_tolerance = spec.Value<double>();
 
     else if (spec.Name() == "ags_convergence_check")
     {
-      auto check = spec.GetValue<std::string>();
+      auto check = spec.Value<std::string>();
       if (check == "pointwise")
         options_.ags_pointwise_convergence = true;
     }
 
     else if (spec.Name() == "verbose_ags_iterations")
-      options_.verbose_ags_iterations = spec.GetValue<bool>();
+      options_.verbose_ags_iterations = spec.Value<bool>();
 
     else if (spec.Name() == "verbose_outer_iterations")
-      options_.verbose_outer_iterations = spec.GetValue<bool>();
+      options_.verbose_outer_iterations = spec.Value<bool>();
 
     else if (spec.Name() == "power_field_function_on")
-      options_.power_field_function_on = spec.GetValue<bool>();
+      options_.power_field_function_on = spec.Value<bool>();
 
     else if (spec.Name() == "power_default_kappa")
-      options_.power_default_kappa = spec.GetValue<double>();
+      options_.power_default_kappa = spec.Value<double>();
 
     else if (spec.Name() == "power_normalization")
-      options_.power_normalization = spec.GetValue<double>();
+      options_.power_normalization = spec.Value<double>();
 
     else if (spec.Name() == "field_function_prefix_option")
     {
-      options_.field_function_prefix_option = spec.GetValue<std::string>();
+      options_.field_function_prefix_option = spec.Value<std::string>();
     }
 
     else if (spec.Name() == "field_function_prefix")
-      options_.field_function_prefix = spec.GetValue<std::string>();
+      options_.field_function_prefix = spec.Value<std::string>();
 
     else if (spec.Name() == "boundary_conditions")
     {
@@ -684,7 +684,7 @@ LBSSolver::SetOptions(const InputParameters& params)
       for (size_t b = 0; b < spec.NumParameters(); ++b)
       {
         auto bndry_params = BoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
+        bndry_params.AssignParameters(spec.Param(b));
         SetBoundaryOptions(bndry_params);
       }
 
@@ -699,7 +699,7 @@ LBSSolver::SetOptions(const InputParameters& params)
       for (const auto& sub_param : spec)
       {
         point_sources_.push_back(
-          GetStackItem<PointSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+          GetStackItem<PointSource>(object_stack, sub_param.Value<size_t>(), __FUNCTION__));
 
         // If a discretization exists, the point source can be initialized.
         if (discretization_)
@@ -713,7 +713,7 @@ LBSSolver::SetOptions(const InputParameters& params)
       for (const auto& sub_param : spec)
       {
         volumetric_sources_.push_back(
-          GetStackItem<VolumetricSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+          GetStackItem<VolumetricSource>(object_stack, sub_param.Value<size_t>(), __FUNCTION__));
 
         // If the discretization exists, the volumetric source can be initialized.
         if (discretization_)
@@ -738,8 +738,8 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
   const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary_name = user_params.GetParamValue<std::string>("name");
-  const auto bndry_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary_name = user_params.ParamValue<std::string>("name");
+  const auto bndry_type = user_params.ParamValue<std::string>("type");
 
   const auto bid = supported_boundary_names.at(boundary_name);
   const std::map<std::string, BoundaryType> type_list = {{"vacuum", BoundaryType::VACUUM},
@@ -763,7 +763,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
                               "\"group_strength\"");
 
       user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-      const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
+      const auto group_strength = user_params.ParamVectorValue<double>("group_strength");
       boundary_preferences_[bid] = {type, group_strength};
       break;
     }
@@ -773,7 +773,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
                               "Boundary conditions with type=\"arbitrary\" require parameter "
                               "\"function_name\".");
 
-      const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
+      const auto bndry_function_name = user_params.ParamValue<std::string>("function_name");
       boundary_preferences_[bid] = {type, {}, bndry_function_name};
       break;
     }

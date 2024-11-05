@@ -53,13 +53,13 @@ PRKSolver::GetInputParameters()
 }
 
 PRKSolver::PRKSolver(const InputParameters& params)
-  : opensn::Solver(params.GetParamValue<std::string>("name")),
-    lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
-    betas_(params.GetParamVectorValue<double>("precursor_betas")),
-    gen_time_(params.GetParamValue<double>("gen_time")),
-    rho_(params.GetParamValue<double>("initial_rho")),
-    source_strength_(params.GetParamValue<double>("initial_source")),
-    time_integration_(params.GetParamValue<std::string>("time_integration")),
+  : opensn::Solver(params.ParamValue<std::string>("name")),
+    lambdas_(params.ParamVectorValue<double>("precursor_lambdas")),
+    betas_(params.ParamVectorValue<double>("precursor_betas")),
+    gen_time_(params.ParamValue<double>("gen_time")),
+    rho_(params.ParamValue<double>("initial_rho")),
+    source_strength_(params.ParamValue<double>("initial_source")),
+    time_integration_(params.ParamValue<std::string>("time_integration")),
     num_precursors_(lambdas_.size())
 {
   log.Log() << "Created solver " << Name();
@@ -203,7 +203,7 @@ PRKSolver::Advance()
 ParameterBlock
 PRKSolver::GetInfo(const ParameterBlock& params) const
 {
-  const auto param_name = params.GetParamValue<std::string>("name");
+  const auto param_name = params.ParamValue<std::string>("name");
 
   if (param_name == "neutron_population")
     return ParameterBlock("", x_t_(0));
@@ -294,7 +294,7 @@ PRKSolver::SetProperties(const ParameterBlock& params)
   {
     const std::string& param_name = param.Name();
     if (param_name == "rho")
-      SetRho(param.GetValue<double>());
+      SetRho(param.Value<double>());
   }
 }
 
