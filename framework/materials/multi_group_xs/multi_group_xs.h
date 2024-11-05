@@ -78,7 +78,7 @@ public:
       TransposeTransferAndProduction();
   }
 
-  bool GetAdjointMode() const { return adjoint_; }
+  bool AdjointMode() const { return adjoint_; }
 
   double ScalingFactor() const { return scaling_factor_; }
 
