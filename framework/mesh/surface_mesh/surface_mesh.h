@@ -95,13 +95,6 @@ public:
   /// Extract open edges to wavefront obj format.
   void ExtractOpenEdgesToObj(const char* fileName);
 
-  /**
-   * Checks for cyclic dependencies in this mesh.
-   * Transport type sweeps have a step where the inter-cell dependency is acyclically sorted.
-   * This step is repeated here.
-   */
-  void CheckCyclicDependencies(int num_angles);
-
   /// Gets simple mesh statistics.
   void GetMeshStats();
 

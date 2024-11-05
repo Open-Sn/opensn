@@ -96,7 +96,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
   using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
   std::map<CellFaceKey, std::vector<double>> received_messages;
   std::vector<uint64_t> cells_who_received_data;
-  auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
+  auto& location_dependencies = fluds_.GetSPDS().LocationDependencies();
   for (int locJ : location_dependencies)
   {
     auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());

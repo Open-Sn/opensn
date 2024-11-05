@@ -7,10 +7,277 @@
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <boost/graph/adjacency_list.hpp>
 #include <algorithm>
+#include <vector>
+#include <queue>
 
 namespace opensn
 {
+
+std::vector<std::pair<int, int>>
+SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
+{
+  std::vector<std::pair<int, int>> edges_to_remove;
+
+  // Compute delta for a vertex
+  auto GetVertexDelta = [&](auto v, const Graph& g)
+  {
+    double delta = 0.0;
+
+    // Get the edge weight property map
+    auto weightmap = boost::get(boost::edge_weight, g);
+
+    // Add outgoing edge weights
+    for (auto out = boost::out_edges(v, g); out.first != out.second; ++out.first)
+      delta += weightmap[*out.first];
+
+    // Subtract incoming edge weights
+    for (auto in = boost::in_edges(v, g); in.first != in.second; ++in.first)
+      delta -= weightmap[*in.first];
+
+    return delta;
+  };
+
+  std::vector<size_t> s1, s2, s;
+  bool done = false;
+  while (!done)
+  {
+    done = true;
+
+    // Remove sinks (vertices with out-degree 0)
+    bool found_all_sinks = false;
+    while (not found_all_sinks)
+    {
+      found_all_sinks = true;
+      for (auto v : scc_vertices)
+      {
+        if (not g[v].active)
+          continue;
+
+        if (boost::out_degree(v, g) == 0)
+        {
+          g[v].active = false;
+          s2.push_back(v);
+          found_all_sinks = false;
+        }
+      }
+    }
+
+    // Remove sources (vertices with in-degree 0)
+    bool found_all_sources = false;
+    while (not found_all_sources)
+    {
+      found_all_sources = true;
+      for (auto v : scc_vertices)
+      {
+        if (not g[v].active)
+          continue;
+
+        if (boost::in_degree(v, g) == 0)
+        {
+          g[v].active = false;
+          s1.push_back(v);
+        }
+      }
+    }
+
+    double max_delta = -100.0;
+    Graph::vertex_descriptor max_delta_vertex = boost::graph_traits<Graph>::null_vertex();
+
+    for (auto v : scc_vertices)
+    {
+      if (not g[v].active)
+        continue;
+
+      double delta = GetVertexDelta(v, g);
+      if (delta > max_delta)
+      {
+        max_delta = delta;
+        max_delta_vertex = v;
+      }
+    }
+
+    if (max_delta_vertex != boost::graph_traits<Graph>::null_vertex())
+    {
+      g[max_delta_vertex].active = false;
+      s1.push_back(max_delta_vertex);
+    }
+
+    for (auto v : scc_vertices)
+    {
+      if (g[v].active)
+      {
+        done = false;
+        break;
+      }
+    }
+  }
+
+  s.reserve(s1.size() + s2.size());
+  for (size_t u : s1)
+    s.push_back(u);
+  for (size_t u : s2)
+    s.push_back(u);
+
+  for (size_t u : scc_vertices)
+  {
+    // Loop through outgoing edges
+    for (auto ei = boost::out_edges(u, g).first; ei != boost::out_edges(u, g).second; ++ei)
+    {
+      size_t v = boost::target(*ei, g);
+
+      // Check if v appears earlier in the sequence (i.e., is before u in s)
+      auto pos_u = std::find(s.begin(), s.end(), u);
+      auto pos_v = std::find(s.begin(), s.end(), v);
+      if (pos_v < pos_u)
+        edges_to_remove.emplace_back(u, v);
+    }
+  }
+
+  return edges_to_remove;
+}
+
+void
+SPDS::SCCAlgorithm(Vertex u,
+                   Graph& g,
+                   int& time,
+                   std::vector<int>& disc,
+                   std::vector<int>& low,
+                   std::vector<bool>& on_stack,
+                   std::stack<Vertex>& stack,
+                   std::vector<std::vector<Vertex>>& SCCs)
+{
+  // Initialize discovery time and low value
+  disc[u] = low[u] = ++time;
+  stack.push(u);
+  on_stack[u] = true;
+
+  // Iterate over all adjacent vertices (successors) of 'u'
+  for (auto edge : boost::make_iterator_range(boost::out_edges(u, g)))
+  {
+    Vertex v = boost::target(edge, g);
+
+    if (disc[v] == -1)
+    {
+      SCCAlgorithm(v, g, time, disc, low, on_stack, stack, SCCs);
+      low[u] = std::min(low[u], low[v]);
+    }
+    else if (on_stack[v])
+      low[u] = std::min(low[u], disc[v]);
+  }
+
+  // If 'u' is a root node, pop the stack and generate an SCC
+  Vertex w;
+  if (low[u] == disc[u])
+  {
+    std::vector<Vertex> sub_scc;
+    while (stack.top() != u)
+    {
+      w = stack.top();
+      sub_scc.emplace_back(w);
+      on_stack[w] = false;
+      stack.pop();
+    }
+
+    w = stack.top();
+    sub_scc.push_back(w);
+    if (sub_scc.size() > 1)
+      SCCs.push_back(sub_scc);
+    on_stack[w] = false;
+    stack.pop();
+  }
+}
+
+std::vector<std::vector<Vertex>>
+SPDS::FindSCCs(Graph& g)
+{
+  std::stack<Vertex> stack;
+  int time = 0; // Global timer for discovery times
+  int num_vertices = boost::num_vertices(g);
+  std::vector<int> disc(num_vertices, -1);         // Discovery time of each vertex
+  std::vector<int> low(num_vertices, -1);          // Lowest discovery time from each vertex
+  std::vector<bool> on_stack(num_vertices, false); // Whether a vertex is currently in the stack
+  std::vector<std::vector<Vertex>> SCCs;           // Stores strongly-connected components
+
+  for (Vertex u = 0; u < num_vertices; ++u)
+  {
+    if (disc[u] == -1)
+      SCCAlgorithm(u, g, time, disc, low, on_stack, stack, SCCs);
+  }
+
+  return SCCs;
+}
+
+std::vector<std::pair<size_t, size_t>>
+SPDS::RemoveCyclicDependencies(Graph& g)
+{
+  using OutEdgeIterator = boost::graph_traits<Graph>::out_edge_iterator;
+
+  std::vector<std::pair<size_t, size_t>> edges_to_remove;
+
+  auto sccs = FindSCCs(g);
+
+  while (not sccs.empty())
+  {
+    std::vector<std::pair<size_t, size_t>> tmp_edges_to_remove;
+
+    for (auto scc : sccs)
+    {
+      if (scc.size() == 2) // Bi-connected
+      {
+        Vertex u = scc[0];
+        Vertex v = scc[1];
+
+        std::pair<OutEdgeIterator, OutEdgeIterator> edge_range = boost::out_edges(u, g);
+        for (OutEdgeIterator it = edge_range.first; it != edge_range.second; ++it)
+          if (boost::target(*it, g) == v)
+            tmp_edges_to_remove.push_back(std::make_pair(u, v));
+      }
+      else if (scc.size() == 3) // Tri-connected
+      {
+        bool found = false;
+        for (auto u : scc)
+        {
+          std::pair<OutEdgeIterator, OutEdgeIterator> edge_range = boost::out_edges(u, g);
+          for (OutEdgeIterator it = edge_range.first; it != edge_range.second; ++it)
+          {
+            Vertex v = boost::target(*it, g);
+            for (auto w : scc)
+            {
+              if (v == w)
+              {
+                tmp_edges_to_remove.push_back(std::make_pair(u, v));
+                found = true;
+                break;
+              }
+            }
+            if (found)
+              break;
+          }
+          if (found)
+            break;
+        }
+      }
+      else // N-connected
+      {
+        auto ncscc_tmp_edges_to_remove = FindApproxMinimumFAS(g, scc);
+        for (const auto& edge : ncscc_tmp_edges_to_remove)
+          tmp_edges_to_remove.emplace_back(edge);
+      }
+    }
+
+    for (const auto& edge : tmp_edges_to_remove)
+    {
+      edges_to_remove.emplace_back(edge);
+      boost::remove_edge(edge.first, edge.second, g);
+    }
+
+    sccs = FindSCCs(g);
+  }
+
+  return edges_to_remove;
+}
 
 int
 SPDS::MapLocJToPrelocI(int locJ) const
@@ -185,7 +452,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
 }
 
 void
-SPDS::PrintedGhostedGraph() const
+SPDS::PrintGhostedGraph() const
 {
   constexpr double tolerance = 1.0e-16;
 

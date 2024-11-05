@@ -81,6 +81,10 @@ parser.add_argument(
 VERSION = 0
 URL = 1
 package_info = {
+    "boost": [
+        "1_86_0",
+        "https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz"
+    ],
     "lua": [
         "5.4.6",
         "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
@@ -195,6 +199,58 @@ def ExtractPackage(pkg, ver):
         raise RuntimeError(err)
 
 
+def InstallBoostPackage(pkg: str,
+                        ver: str,
+                        gold_file: str):
+    package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
+    pkg_install_dir = f"{install_dir}"
+
+    # Copy the downloaded tarball to the source directory
+    shutil.copy(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz",
+                f"{install_dir}/src/{pkg}-{ver}.tar.gz")
+
+    os.chdir(f"{install_dir}/src")
+
+    # Check if Boost headers are already installed
+    if not os.path.exists(f"{pkg_install_dir}/{gold_file}"):
+        ExtractPackage(pkg, ver)
+
+        package_log_file = open(package_log_filename, "w")
+
+        print(f"Installing {pkg.upper()} {ver} headers in \"{pkg_install_dir}/include/boost\"",
+              flush=True)
+        log_file.write(f"Installing {pkg.upper()} {ver} headers to\
+                       \"{pkg_install_dir}/include/boost\"")
+        log_file.write(f" See {package_log_filename}\n")
+        log_file.flush()
+
+        os.chdir(f"{pkg}_{ver}")
+
+        # Set up the Boost include directory
+        boost_include_dir = os.path.join(pkg_install_dir, "include")
+        os.makedirs(boost_include_dir, exist_ok=True)
+
+        # Copy header files to the Boost include directory
+        command = f"cp -r boost {boost_include_dir}"
+        success, err, outstr = ExecSub(command, out_log=package_log_file)
+        if not success:
+            print(command, err)
+            log_file.write(f"{command}\n{err}\n")
+            package_log_file.write(f"{command}\n{err}\n")
+            raise RuntimeError(f"Failed to install {pkg} headers")
+
+        package_log_file.close()
+    else:
+        print(f"{pkg} already installed")
+
+    os.chdir(install_dir)
+
+    if os.path.exists(f"{pkg_install_dir}/{gold_file}"):
+        return True
+    else:
+        return False
+
+
 # Install Lua
 def InstallLuaPackage(pkg: str,
                       ver: str,
@@ -280,7 +336,7 @@ def InstallPETSc(pkg: str, ver: str, gold_file: str):
 
         package_log_file = open(package_log_filename, "w")
 
-        print(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"", flush=True)
+        print(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"", flush=True)
         log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
         log_file.write(f" See {package_log_filename}\n")
         log_file.flush()
@@ -375,7 +431,7 @@ def InstallVTK(pkg: str, ver: str, gold_file: str):
 
         package_log_file = open(package_log_filename, "w")
 
-        print(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"", flush=True)
+        print(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"", flush=True)
         log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
         log_file.write(f" See {package_log_filename}\n")
         log_file.flush()
@@ -696,7 +752,9 @@ try:
         log_file.flush()
         ver = package_info[pkg][VERSION]
         success = False
-        if pkg == 'lua':
+        if pkg == 'boost':
+            success = InstallBoostPackage(pkg, ver, gold_file="include/boost")
+        elif pkg == 'lua':
             success = InstallLuaPackage(pkg, ver, gold_file="lib/liblua.a")
         elif pkg == 'petsc':
             success = InstallPETSc(pkg, ver, gold_file="include/petsc")
