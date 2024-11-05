@@ -394,7 +394,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
   std::set<int64_t> global_dof_ids_set;
 
   const auto& grid = lbs_solver_.Grid();
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid.cells.GhostGlobalIDs();
   for (const auto global_id : ghost_cell_ids)
   {
     const auto& cell = grid.cells[global_id];
@@ -495,7 +495,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   } // for local cell
 
   // Ghost cells
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid.cells.GhostGlobalIDs();
   const auto& vid_set = partition_bndry_vertex_id_set;
   for (const auto global_id : ghost_cell_ids)
   {

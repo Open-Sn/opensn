@@ -78,10 +78,10 @@ GlobalCellHandler::operator[](uint64_t cell_global_index) const
 }
 
 std::vector<uint64_t>
-GlobalCellHandler::GetGhostGlobalIDs() const
+GlobalCellHandler::GhostGlobalIDs() const
 {
   std::vector<uint64_t> ids;
-  ids.reserve(GetNumGhosts());
+  ids.reserve(NumGhosts());
 
   for (auto& cell : ghost_cells_ref_)
     ids.push_back(cell->global_id);
@@ -90,7 +90,7 @@ GlobalCellHandler::GetGhostGlobalIDs() const
 }
 
 uint64_t
-GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
+GlobalCellHandler::GhostLocalID(uint64_t cell_global_index) const
 {
   auto foreign_location = global_cell_id_to_foreign_id_map_.find(cell_global_index);
 

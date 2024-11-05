@@ -917,7 +917,7 @@ LBSSolver::InitializeMaterials()
     if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
-  const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
+  const auto& ghost_cell_ids = grid_ptr_->cells.GhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
@@ -1174,7 +1174,7 @@ LBSSolver::ComputeUnitIntegrals()
   for (const auto& cell : grid_ptr_->local_cells)
     unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell, *swf_ptr);
 
-  const auto ghost_ids = grid_ptr_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_ptr_->cells.GhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
       ComputeCellUnitIntegrals(grid_ptr_->cells[ghost_id], *swf_ptr);

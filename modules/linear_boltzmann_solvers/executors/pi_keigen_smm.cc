@@ -1106,7 +1106,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   } // for local cell
 
   // Add ghost cell data
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid.cells.GhostGlobalIDs();
   const auto& pvids = partition_vertex_ids;
   for (const uint64_t global_id : ghost_cell_ids)
   {
@@ -1159,7 +1159,7 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
 {
   std::set<int64_t> ghost_ids;
   const auto& grid = pwld.Grid();
-  for (const uint64_t ghost_id : grid.cells.GetGhostGlobalIDs())
+  for (const uint64_t ghost_id : grid.cells.GhostGlobalIDs())
   {
     const auto& cell = grid.cells[ghost_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);

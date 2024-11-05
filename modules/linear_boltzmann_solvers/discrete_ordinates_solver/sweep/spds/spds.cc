@@ -496,7 +496,7 @@ SPDS::PrintGhostedGraph() const
         }
       }
       std::cout << "\n";
-      const auto ghost_ids = grid_.cells.GetGhostGlobalIDs();
+      const auto ghost_ids = grid_.cells.GhostGlobalIDs();
       for (const uint64_t global_id : ghost_ids)
       {
         const auto& cell = grid_.cells[global_id];

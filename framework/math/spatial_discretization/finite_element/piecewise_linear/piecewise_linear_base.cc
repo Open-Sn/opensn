@@ -69,7 +69,7 @@ PieceWiseLinearBase::CreateCellMappings()
   for (const auto& cell : ref_grid_.local_cells)
     cell_mappings_.push_back(MakeCellMapping(cell));
 
-  const auto ghost_ids = ref_grid_.cells.GetGhostGlobalIDs();
+  const auto ghost_ids = ref_grid_.cells.GhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto ghost_mapping = MakeCellMapping(ref_grid_.cells[ghost_id]);

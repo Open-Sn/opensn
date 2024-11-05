@@ -86,7 +86,7 @@ MeshSetMaterialIDFromLuaFunction(lua_State* L)
     }
   } // for local cell
 
-  const auto& ghost_ids = grid.cells.GetGhostGlobalIDs();
+  const auto& ghost_ids = grid.cells.GhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = grid.cells[ghost_id];
@@ -147,7 +147,7 @@ MeshSetBoundaryIDFromLuaFunction(lua_State* L)
         }
       }
 
-  const auto& ghost_ids = grid.cells.GetGhostGlobalIDs();
+  const auto& ghost_ids = grid.cells.GhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = grid.cells[ghost_id];

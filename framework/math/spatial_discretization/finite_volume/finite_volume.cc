@@ -78,7 +78,7 @@ FiniteVolume::CreateCellMappings()
   for (const auto& cell : ref_grid_.local_cells)
     cell_mappings_.push_back(MakeCellMapping(cell));
 
-  const auto ghost_ids = ref_grid_.cells.GetGhostGlobalIDs();
+  const auto ghost_ids = ref_grid_.cells.GhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto ghost_mapping = MakeCellMapping(ref_grid_.cells[ghost_id]);
@@ -110,7 +110,7 @@ FiniteVolume::OrderNodes()
   globl_base_block_size_ = global_num_nodes;
 
   // Sort neigbor ids
-  const auto neighbor_gids = ref_grid_.cells.GetGhostGlobalIDs();
+  const auto neighbor_gids = ref_grid_.cells.GhostGlobalIDs();
   std::map<uint64_t, std::vector<uint64_t>> sorted_nb_gids;
   for (uint64_t gid : neighbor_gids)
   {
@@ -280,7 +280,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   {
     const size_t num_local_dofs = NumLocalDOFs(unknown_manager);
     const size_t num_ghost_nodes = NumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
-    const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id);
+    const uint64_t ghost_local_id = ref_grid_.cells.GhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(num_local_dofs) +
@@ -298,7 +298,7 @@ FiniteVolume::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.TotalUnknownStructureSize();
 
-  return ref_grid_.cells.GetNumGhosts() * N;
+  return ref_grid_.cells.NumGhosts() * N;
 }
 
 std::vector<int64_t>
@@ -307,7 +307,7 @@ FiniteVolume::GhostDOFIndices(const UnknownManager& unknown_manager) const
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(NumGhostDOFs(unknown_manager));
 
-  std::vector<uint64_t> ghost_cell_ids = ref_grid_.cells.GetGhostGlobalIDs();
+  std::vector<uint64_t> ghost_cell_ids = ref_grid_.cells.GhostGlobalIDs();
 
   const size_t num_uks = unknown_manager.unknowns.size();
 

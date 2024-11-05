@@ -286,7 +286,7 @@ MGDiffusionSolver::Initialize()
     if (cell.material_id < 0)
       ++invalid_mat_cell_count;
   }
-  const auto& ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto& ghost_cell_ids = grid.cells.GhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid.cells[cell_id];
