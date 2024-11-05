@@ -32,7 +32,7 @@ public:
 
   static InputParameters GetInputParameters();
 
-  QuadratureOrder GetOrder() { return order_; }
+  QuadratureOrder Order() { return order_; }
 };
 
 } // namespace opensn
