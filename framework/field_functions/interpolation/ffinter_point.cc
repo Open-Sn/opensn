@@ -69,7 +69,7 @@ FieldFunctionInterpolationPoint::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  const auto field_data = ref_ff.GetGhostedFieldVector();
+  const auto field_data = ref_ff.GhostedFieldVector();
 
   const auto& cell = grid.cells[owning_cell_gid_];
   const auto& cell_mapping = sdm.GetCellMapping(cell);

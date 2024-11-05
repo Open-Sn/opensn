@@ -100,19 +100,19 @@ FieldFunctionGridBased::GetSpatialDiscretization() const
 }
 
 std::vector<double>&
-FieldFunctionGridBased::GetLocalFieldVector()
+FieldFunctionGridBased::LocalFieldVector()
 {
   return ghosted_field_vector_->LocalSTLData();
 }
 
 const std::vector<double>&
-FieldFunctionGridBased::GetLocalFieldVector() const
+FieldFunctionGridBased::LocalFieldVector() const
 {
   return ghosted_field_vector_->LocalSTLData();
 }
 
 std::vector<double>
-FieldFunctionGridBased::GetGhostedFieldVector() const
+FieldFunctionGridBased::GhostedFieldVector() const
 {
   return ghosted_field_vector_->LocalSTLData();
 }
@@ -136,7 +136,7 @@ FieldFunctionGridBased::UpdateFieldVector(const Vec& field_vector)
 }
 
 std::vector<double>
-FieldFunctionGridBased::GetPointValue(const Vector3& point) const
+FieldFunctionGridBased::PointValue(const Vector3& point) const
 {
   const auto& uk_man = GetUnknownManager();
   const size_t num_components = uk_man.GetTotalUnknownStructureSize();
@@ -252,7 +252,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
   auto point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
   {
-    const auto field_vector = ff_ptr->GetGhostedFieldVector();
+    const auto field_vector = ff_ptr->GhostedFieldVector();
 
     const auto& uk_man = ff_ptr->GetUnknownManager();
     const auto& unknown = ff_ptr->GetUnknown();

@@ -90,7 +90,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   const auto uid = 0;
   const auto cid = 0;
 
-  const auto field_data = ref_ff.GetGhostedFieldVector();
+  const auto field_data = ref_ff.GhostedFieldVector();
 
   auto coord = sdm.GetSpatialWeightingFunction();
 

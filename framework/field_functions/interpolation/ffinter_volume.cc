@@ -51,7 +51,7 @@ FieldFunctionInterpolationVolume::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  const auto field_data = ref_ff.GetGhostedFieldVector();
+  const auto field_data = ref_ff.GhostedFieldVector();
 
   double local_volume = 0.0;
   double local_sum = 0.0;

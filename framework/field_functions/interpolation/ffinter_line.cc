@@ -66,7 +66,7 @@ FieldFunctionInterpolationLine::Execute()
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;
-  const auto field_data = ref_ff_->GetGhostedFieldVector();
+  const auto field_data = ref_ff_->GhostedFieldVector();
 
   double local_max = 0.0, local_sum = 0.0, local_avg = 0.0;
   size_t local_size = local_interpolation_points_.size();

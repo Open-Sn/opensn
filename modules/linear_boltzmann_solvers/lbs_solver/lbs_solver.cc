@@ -2184,7 +2184,7 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
     {
       const size_t ff_index = phi_field_functions_local_map_.at({g, m});
       const auto& ff_ptr = field_functions_.at(ff_index);
-      const auto& ff_data = ff_ptr->GetLocalFieldVector();
+      const auto& ff_data = ff_ptr->LocalFieldVector();
 
       for (const auto& cell : grid_ptr_->local_cells)
       {

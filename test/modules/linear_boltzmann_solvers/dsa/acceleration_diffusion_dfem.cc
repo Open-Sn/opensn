@@ -192,7 +192,7 @@ acceleration_Diffusion_DFEM(const InputParameters&)
 
   // Compute error
   // First get ghosted values
-  const auto field_wg = ff->GetGhostedFieldVector();
+  const auto field_wg = ff->GhostedFieldVector();
 
   double local_error = 0.0;
   lua_State* L = Console::GetInstance().GetConsoleState();

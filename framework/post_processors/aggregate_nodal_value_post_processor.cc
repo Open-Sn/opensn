@@ -88,7 +88,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   const auto uid = 0;
   const auto cid = 0;
 
-  const auto field_data = ref_ff.GetGhostedFieldVector();
+  const auto field_data = ref_ff.GhostedFieldVector();
   const size_t num_local_dofs =
     ref_ff.GetSpatialDiscretization().GetNumLocalDOFs(ref_ff.GetUnknownManager());
 
