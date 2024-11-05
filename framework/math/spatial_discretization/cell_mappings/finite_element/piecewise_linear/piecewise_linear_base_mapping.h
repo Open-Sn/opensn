@@ -26,7 +26,7 @@ public:
                              std::vector<std::vector<int>> face_node_mappings);
 
 protected:
-  static std::vector<Vector3> GetVertexLocations(const MeshContinuum& grid, const Cell& cell);
+  static std::vector<Vector3> VertexLocations(const MeshContinuum& grid, const Cell& cell);
 
   /**
    * This section just determines a mapping of face dofs to cell dofs. This is pretty simple since

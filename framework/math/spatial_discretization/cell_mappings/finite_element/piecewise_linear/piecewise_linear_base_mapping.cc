@@ -17,7 +17,7 @@ PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
   : CellMapping(grid,
                 cell,
                 num_nodes,
-                GetVertexLocations(grid, cell),
+                VertexLocations(grid, cell),
                 std::move(face_node_mappings),
                 &CellMapping::ComputeCellVolumeAndAreas)
 {
@@ -59,7 +59,7 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 }
 
 std::vector<Vector3>
-PieceWiseLinearBaseMapping::GetVertexLocations(const MeshContinuum& grid, const Cell& cell)
+PieceWiseLinearBaseMapping::VertexLocations(const MeshContinuum& grid, const Cell& cell)
 {
   std::vector<Vector3> verts;
   verts.reserve(cell.vertex_ids.size());
