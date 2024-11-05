@@ -78,7 +78,7 @@ protected:
   void ZeroDestinationPhi() { (*destination_phi_).assign((*destination_phi_).size(), 0.0); }
 
   /// Returns a reference to the output flux moments vector.
-  std::vector<double>& GetDestinationPhi() { return *destination_phi_; }
+  std::vector<double>& DestinationPhi() { return *destination_phi_; }
 
   /// Sets the location where angular fluxes are to be written.
   void SetDestinationPsi(std::vector<double>& psi) { destination_psi_ = (&psi); }
@@ -87,7 +87,7 @@ protected:
   void ZeroDestinationPsi() { (*destination_psi_).assign((*destination_psi_).size(), 0.0); }
 
   /// Returns a reference to the output angular flux vector.
-  std::vector<double>& GetDestinationPsi() { return *destination_psi_; }
+  std::vector<double>& DestinationPsi() { return *destination_psi_; }
 
   /// Activates or deactives the surface src flag.
   void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active_ = flag_value; }

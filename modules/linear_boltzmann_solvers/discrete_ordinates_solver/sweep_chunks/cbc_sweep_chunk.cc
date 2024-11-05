@@ -233,7 +233,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
     } // for gsg
 
     // Update phi
-    auto& output_phi = GetDestinationPhi();
+    auto& output_phi = DestinationPhi();
     for (int m = 0; m < num_moments_; ++m)
     {
       const double wn_d2m = d2m_op[m][direction_num];
@@ -248,7 +248,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
     // Save angular flux during sweep
     if (save_angular_flux_)
     {
-      auto& output_psi = GetDestinationPsi();
+      auto& output_psi = DestinationPsi();
       double* cell_psi_data =
         &output_psi[discretization_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
 
