@@ -226,7 +226,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   auto backup_nnz_in_diag = nodal_nnz_in_diag;
   auto backup_nnz_off_diag = nodal_nnz_off_diag;
 
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
+  unsigned int N = unknown_manager.TotalUnknownStructureSize();
 
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
@@ -273,7 +273,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 {
   auto storage = unknown_manager.dof_storage_type;
 
-  size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
   if (cell.partition_id == opensn::mpi_comm.rank())
@@ -342,7 +342,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 {
   auto storage = unknown_manager.dof_storage_type;
 
-  size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
   if (cell.partition_id == opensn::mpi_comm.rank())

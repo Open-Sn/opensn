@@ -1253,7 +1253,7 @@ LBSSolver::InitializeParrays()
   }
 
   // Compute local # of dof
-  auto per_node = UnknownManager::GetUnitaryUnknownManager();
+  auto per_node = UnknownManager::UnitaryUnknownManager();
   local_node_count_ = discretization_->NumLocalDOFs(per_node);
   glob_node_count_ = discretization_->NumGlobalDOFs(per_node);
 

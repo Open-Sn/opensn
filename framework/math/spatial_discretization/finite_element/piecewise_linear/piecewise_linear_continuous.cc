@@ -427,7 +427,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   auto backup_nnz_in_diag = nodal_nnz_in_diag;
   auto backup_nnz_off_diag = nodal_nnz_off_diag;
 
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
+  unsigned int N = unknown_manager.TotalUnknownStructureSize();
 
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
@@ -476,7 +476,7 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
                        std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
   const int64_t global_id = node_mapping_.at(vertex_id);
 
-  size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   auto storage = unknown_manager.dof_storage_type;
 
@@ -513,7 +513,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");
   const int64_t node_global_id = node_mapping_.at(vertex_id);
 
-  size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   auto storage = unknown_manager.dof_storage_type;
 
@@ -561,7 +561,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
 size_t
 PieceWiseLinearContinuous::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
+  unsigned int N = unknown_manager.TotalUnknownStructureSize();
 
   return ghost_node_mapping_.size() * N;
 }
@@ -572,7 +572,7 @@ PieceWiseLinearContinuous::GhostDOFIndices(const UnknownManager& unknown_manager
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(NumGhostDOFs(unknown_manager));
 
-  const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();
+  const size_t num_unknown_comps = unknown_manager.TotalUnknownStructureSize();
   const auto storage = unknown_manager.dof_storage_type;
   const size_t num_unknowns = unknown_manager.unknowns.size();
 

@@ -58,7 +58,7 @@ LBSSolverIO::WriteFluxMoments(
 
   // Write macro data
   const auto& uk_man = lbs_solver.UnknownManager();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_cells = grid.local_cells.size();
@@ -146,7 +146,7 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
 
   // Check compatibility with system macro info
   const auto uk_man = lbs_solver.UnknownManager();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_moments = lbs_solver.NumMoments();

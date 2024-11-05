@@ -139,7 +139,7 @@ std::vector<double>
 FieldFunctionGridBased::PointValue(const Vector3& point) const
 {
   const auto& uk_man = GetUnknownManager();
-  const size_t num_components = uk_man.GetTotalUnknownStructureSize();
+  const size_t num_components = uk_man.TotalUnknownStructureSize();
 
   size_t local_num_point_hits = 0;
   std::vector<double> local_point_value(num_components, 0.0);

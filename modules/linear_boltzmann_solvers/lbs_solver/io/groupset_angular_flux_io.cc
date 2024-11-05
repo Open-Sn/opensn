@@ -55,7 +55,7 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
 
   // Write macro info
   const auto& uk_man = groupset.psi_uk_man_;
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
@@ -128,7 +128,7 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
 
   // Check compatibility with system macro info
   const auto& uk_man = groupset.psi_uk_man_;
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
 
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();

@@ -174,8 +174,8 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                    std::vector<int64_t>& nodal_nnz_off_diag,
                                    const UnknownManager& unknown_manager) const
 {
-  unsigned int num_uk = unknown_manager.unknowns.size();           // Number of unknowns
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize(); // Total number of unknowns
+  unsigned int num_uk = unknown_manager.unknowns.size();        // Number of unknowns
+  unsigned int N = unknown_manager.TotalUnknownStructureSize(); // Total number of unknowns
 
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
@@ -220,7 +220,7 @@ FiniteVolume::MapDOF(const Cell& cell,
 {
   auto storage = unknown_manager.dof_storage_type;
 
-  const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  const size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   const size_t num_local_cells = ref_grid_.local_cells.size();
 
@@ -261,7 +261,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
 {
   auto storage = unknown_manager.dof_storage_type;
 
-  const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
+  const size_t num_unknowns = unknown_manager.TotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
   const size_t num_local_cells = ref_grid_.local_cells.size();
 
@@ -296,7 +296,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
 size_t
 FiniteVolume::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
+  unsigned int N = unknown_manager.TotalUnknownStructureSize();
 
   return ref_grid_.cells.GetNumGhosts() * N;
 }

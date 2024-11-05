@@ -58,7 +58,7 @@ public:
     num_off_block_connections.resize(num_components, 0);
   }
 
-  unsigned int GetMap(unsigned int component_number = 0) const
+  unsigned int Map(unsigned int component_number = 0) const
   {
     unsigned int map_value = 0;
     switch (type)
@@ -107,7 +107,7 @@ public:
 
     return map_value;
   }
-  unsigned int GetMapEnd() const { return map_begin + num_components - 1; }
+  unsigned int MapEnd() const { return map_begin + num_components - 1; }
 
   unsigned int NumComponents() const { return num_components; }
 };
@@ -166,7 +166,7 @@ public:
   UnknownManager& operator=(const UnknownManager& other) = default;
 
   // Utilities
-  static UnknownManager GetUnitaryUnknownManager()
+  static UnknownManager UnitaryUnknownManager()
   {
     return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
   }
@@ -176,7 +176,7 @@ public:
 
   void SetDOFStorageType(const UnknownStorageType storage_type) { dof_storage_type = storage_type; }
 
-  UnknownStorageType GetDOFStorageType() const { return dof_storage_type; }
+  UnknownStorageType DOFStorageType() const { return dof_storage_type; }
 
   void Clear() { unknowns.clear(); }
 
@@ -190,7 +190,7 @@ public:
   unsigned int MapUnknown(int unknown_id, unsigned int component = 0) const;
 
   /// Determines the total number of components over all unknowns.
-  unsigned int GetTotalUnknownStructureSize() const;
+  unsigned int TotalUnknownStructureSize() const;
 
   /**
    * Sets the number of off block connections for the given unknown. All the components will be set

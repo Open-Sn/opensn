@@ -50,7 +50,7 @@ LBSSolverIO::WriteAngularFluxes(
   file << header_bytes;
 
   // Write macro info
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& groupsets = lbs_solver.Groupsets();
   auto& grid = lbs_solver.Grid();
@@ -127,7 +127,7 @@ LBSSolverIO::ReadAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& groupsets = lbs_solver.Groupsets();
   auto& grid = lbs_solver.Grid();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto NODES_ONLY = UnknownManager::UnitaryUnknownManager();
   const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_groupsets = groupsets.size();
 

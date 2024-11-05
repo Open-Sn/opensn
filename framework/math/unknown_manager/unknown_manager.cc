@@ -13,7 +13,7 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
   int last_unknown_end = -1;
   if (not unknowns.empty())
-    last_unknown_end = unknowns.back().GetMapEnd();
+    last_unknown_end = unknowns.back().MapEnd();
 
   unsigned int new_unknown_index = unknowns.size();
 
@@ -73,16 +73,16 @@ UnknownManager::MapUnknown(int unknown_id, unsigned int component) const
     log.LogAllError() << "UnknownManager failed call to MapUnknown " << unknown_id;
     Exit(EXIT_FAILURE);
   }
-  return unknowns[unknown_id].GetMap(component);
+  return unknowns[unknown_id].Map(component);
 }
 
 unsigned int
-UnknownManager::GetTotalUnknownStructureSize() const
+UnknownManager::TotalUnknownStructureSize() const
 {
   if (unknowns.empty())
     return 0;
 
-  return unknowns.back().GetMapEnd() + 1;
+  return unknowns.back().MapEnd() + 1;
 }
 
 void
