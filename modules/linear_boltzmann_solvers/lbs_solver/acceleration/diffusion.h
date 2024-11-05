@@ -83,7 +83,7 @@ public:
   /// Returns the associated spatial discretization.
   const class SpatialDiscretization& SpatialDiscretization() const;
 
-  std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
+  std::pair<size_t, size_t> NumPhiIterativeUnknowns();
 
   virtual ~DiffusionSolver();
 

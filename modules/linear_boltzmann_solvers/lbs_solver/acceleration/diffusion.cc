@@ -70,7 +70,7 @@ DiffusionSolver::SpatialDiscretization() const
 }
 
 std::pair<size_t, size_t>
-DiffusionSolver::GetNumPhiIterativeUnknowns()
+DiffusionSolver::NumPhiIterativeUnknowns()
 {
   return {sdm_.NumLocalDOFs(uk_man_), sdm_.NumGlobalDOFs(uk_man_)};
 }
