@@ -52,8 +52,8 @@ SimTest91_PWLD(const InputParameters&)
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
-  const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_local_nodes = sdm.NumLocalDOFs(OneDofPerNode);
+  const size_t num_globl_nodes = sdm.NumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local nodes: " << num_local_nodes;
   opensn::log.Log() << "Num globl nodes: " << num_globl_nodes;
@@ -101,8 +101,8 @@ SimTest91_PWLD(const InputParameters&)
   const UnknownManager phi_uk_man(phi_uks);
   const UnknownManager psi_uk_man(psi_uks);
 
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
-  const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
+  const size_t num_local_phi_dofs = sdm.NumLocalDOFs(phi_uk_man);
+  const size_t num_local_psi_dofs = sdm.NumLocalDOFs(psi_uk_man);
 
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
@@ -486,7 +486,7 @@ SimTest91_PWLD(const InputParameters&)
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
   const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
-  const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
+  const size_t num_m0_dofs = sdm.NumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
   std::vector<double> mx_phi(num_m0_dofs, 0.0); // Y(1,1)  - X-component

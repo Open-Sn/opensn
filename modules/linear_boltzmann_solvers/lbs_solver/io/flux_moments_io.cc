@@ -62,10 +62,10 @@ LBSSolverIO::WriteFluxMoments(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
   const uint64_t num_local_cells = grid.local_cells.size();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_moments = lbs_solver.NumMoments();
   const uint64_t num_groups = lbs_solver.NumGroups();
-  const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);
+  const auto num_local_dofs = discretization.NumLocalDOFs(uk_man);
   OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided..");
 
   file.write((char*)&num_local_cells, sizeof(uint64_t));
@@ -77,12 +77,12 @@ LBSSolverIO::WriteFluxMoments(
   for (const auto& cell : grid.local_cells)
   {
     const uint64_t cell_global_id = cell.global_id;
-    const uint64_t num_cell_nodes = discretization.GetCellNumNodes(cell);
+    const uint64_t num_cell_nodes = discretization.CellNumNodes(cell);
 
     file.write((char*)&cell_global_id, sizeof(uint64_t));
     file.write((char*)&num_cell_nodes, sizeof(uint64_t));
 
-    const auto nodes = discretization.GetCellNodeLocations(cell);
+    const auto nodes = discretization.CellNodeLocations(cell);
     for (const auto& node : nodes)
     {
       file.write((char*)&node.x, sizeof(double));
@@ -93,7 +93,7 @@ LBSSolverIO::WriteFluxMoments(
 
   // Write flux moments data
   for (const auto& cell : grid.local_cells)
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+    for (uint64_t i = 0; i < discretization.CellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
         for (uint64_t g = 0; g < num_groups; ++g)
         {
@@ -152,8 +152,8 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   const uint64_t num_moments = lbs_solver.NumMoments();
   const uint64_t num_groups = lbs_solver.NumGroups();
   const uint64_t num_local_cells = grid.local_cells.size();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
+  const auto num_local_dofs = discretization.NumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(file_num_local_cells != num_local_cells,
                        "Incompatible number of cells found in " + file_name + ".");
@@ -194,7 +194,7 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
     const auto& cell = grid.cells[file_cell_global_id];
 
     // Check for cell compatibility
-    const auto nodes = discretization.GetCellNodeLocations(cell);
+    const auto nodes = discretization.CellNodeLocations(cell);
 
     OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes,
                          "Incompatible number of cell nodes encountered on cell " +

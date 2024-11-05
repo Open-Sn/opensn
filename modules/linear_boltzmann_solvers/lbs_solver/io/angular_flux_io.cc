@@ -54,7 +54,7 @@ LBSSolverIO::WriteAngularFluxes(
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& groupsets = lbs_solver.Groupsets();
   auto& grid = lbs_solver.Grid();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_groupsets = groupsets.size();
 
   file.write((char*)&num_local_nodes, sizeof(uint64_t));
@@ -77,7 +77,7 @@ LBSSolverIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     for (const auto& cell : grid.local_cells)
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      for (uint64_t i = 0; i < discretization.CellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_angles; ++n)
           for (uint64_t g = 0; g < num_gs_groups; ++g)
           {
@@ -128,7 +128,7 @@ LBSSolverIO::ReadAngularFluxes(
   auto& groupsets = lbs_solver.Groupsets();
   auto& grid = lbs_solver.Grid();
   const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_groupsets = groupsets.size();
 
   OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
@@ -168,7 +168,7 @@ LBSSolverIO::ReadAngularFluxes(
                            " for groupset " + std::to_string(file_groupset_id) + ".");
 
     // Size the groupset angular flux vector
-    const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
+    const auto num_local_gs_dofs = discretization.NumLocalDOFs(uk_man);
     dest.emplace_back(num_local_gs_dofs, 0.0);
     auto& psi = dest.back();
 

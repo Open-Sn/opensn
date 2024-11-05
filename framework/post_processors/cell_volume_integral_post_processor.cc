@@ -92,7 +92,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
   const auto field_data = ref_ff.GhostedFieldVector();
 
-  auto coord = sdm.GetSpatialWeightingFunction();
+  auto coord = sdm.SpatialWeightingFunction();
 
   double local_integral = 0.0;
   double local_volume = 0.0;

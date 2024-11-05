@@ -54,7 +54,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
     unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
 
   //  allocate storage for sweeping dependency
-  const unsigned int n_dof = discretization_primary.GetNumLocalDOFs(unknown_manager_);
+  const unsigned int n_dof = discretization_primary.NumLocalDOFs(unknown_manager_);
   psi_sweep_.resize(n_dof);
 
   //  initialise mappings from direction linear index

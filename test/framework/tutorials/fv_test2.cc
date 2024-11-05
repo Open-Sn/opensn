@@ -35,8 +35,8 @@ SimTest02_FV(const InputParameters&)
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
-  const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_local_dofs = sdm.NumLocalDOFs(OneDofPerNode);
+  const size_t num_globl_dofs = sdm.NumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
   opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
@@ -143,7 +143,7 @@ SimTest02_FV(const InputParameters&)
   FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV", {ff});
 
   // Make ghosted vectors
-  std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
+  std::vector<int64_t> ghost_ids = sdm.GhostDOFIndices(OneDofPerNode);
 
   VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::mpi_comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
@@ -154,7 +154,7 @@ SimTest02_FV(const InputParameters&)
   // structure
   UnknownManager grad_uk_man({Unknown(UnknownType::VECTOR_3)});
 
-  const size_t num_grad_dofs = sdm.GetNumLocalDOFs(grad_uk_man);
+  const size_t num_grad_dofs = sdm.NumLocalDOFs(grad_uk_man);
 
   std::vector<double> grad_phi(num_grad_dofs, 0.0);
 

@@ -36,8 +36,8 @@ SimTest04_PWLC(const InputParameters& params)
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
-  const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_local_dofs = sdm.NumLocalDOFs(OneDofPerNode);
+  const size_t num_globl_dofs = sdm.NumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
   opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;

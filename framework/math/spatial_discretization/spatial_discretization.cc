@@ -50,13 +50,13 @@ SpatialDiscretization::Grid() const
 }
 
 CoordinateSystemType
-SpatialDiscretization::GetCoordinateSystemType() const
+SpatialDiscretization::CoordinateSystem() const
 {
   return coord_sys_type_;
 }
 
 size_t
-SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) const
+SpatialDiscretization::NumLocalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -64,7 +64,7 @@ SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) co
 }
 
 size_t
-SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) const
+SpatialDiscretization::NumGlobalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -72,19 +72,19 @@ SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) c
 }
 
 size_t
-SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const
+SpatialDiscretization::NumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const
 {
-  return GetNumLocalDOFs(unknown_manager) + GetNumGhostDOFs(unknown_manager);
+  return NumLocalDOFs(unknown_manager) + NumGhostDOFs(unknown_manager);
 }
 
 size_t
-SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
+SpatialDiscretization::CellNumNodes(const Cell& cell) const
 {
   return GetCellMapping(cell).NumNodes();
 }
 
 const std::vector<Vector3>&
-SpatialDiscretization::GetCellNodeLocations(const Cell& cell) const
+SpatialDiscretization::CellNodeLocations(const Cell& cell) const
 {
   return GetCellMapping(cell).NodeLocations();
 }
@@ -226,7 +226,7 @@ SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
                                            std::vector<double>& local_vector,
                                            const UnknownManager& unknown_manager) const
 {
-  size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
+  size_t num_local_dofs = NumLocalDOFs(unknown_manager);
 
   CopyVecToSTLvector(petsc_vector, local_vector, num_local_dofs);
 }
@@ -236,7 +236,7 @@ SpatialDiscretization::LocalizePETScVectorWithGhosts(Vec petsc_vector,
                                                      std::vector<double>& local_vector,
                                                      const UnknownManager& unknown_manager) const
 {
-  size_t num_local_dofs = GetNumLocalAndGhostDOFs(unknown_manager);
+  size_t num_local_dofs = NumLocalAndGhostDOFs(unknown_manager);
 
   CopyVecToSTLvectorWithGhosts(petsc_vector, local_vector, num_local_dofs);
 }
@@ -261,7 +261,7 @@ SpatialDiscretization::Spherical1DSpatialWeightFunction(const Vector3& point)
 }
 
 SpatialDiscretization::SpatialWeightFunction
-SpatialDiscretization::GetSpatialWeightingFunction() const
+SpatialDiscretization::SpatialWeightingFunction() const
 {
   switch (coord_sys_type_)
   {

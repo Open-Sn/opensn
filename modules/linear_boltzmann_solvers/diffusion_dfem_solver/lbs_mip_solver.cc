@@ -137,7 +137,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 
     solver->Initialize();
 
-    std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
+    std::vector<double> dummy_rhs(sdm.NumLocalDOFs(uk_man), 0.0);
 
     solver->AssembleAand_b(dummy_rhs);
 

@@ -180,7 +180,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
       const auto& cell = grid_ptr_->local_cells[local_id];
       const auto& transport_view = cell_transport_views_[local_id];
       const auto& fe_values = unit_cell_matrices_[local_id];
-      const auto nodes = discretization_->GetCellNodeLocations(cell);
+      const auto nodes = discretization_->CellNodeLocations(cell);
 
       for (int i = 0; i < transport_view.NumNodes(); ++i)
       {

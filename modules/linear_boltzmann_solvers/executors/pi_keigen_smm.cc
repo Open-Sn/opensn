@@ -112,8 +112,8 @@ PowerIterationKEigenSMM::Initialize()
   for (int g = 0; g < num_groups; ++g)
     tensor_uk_man_.AddUnknown(UnknownType::VECTOR_N, dimension_ * dimension_);
 
-  const auto local_size = pwld.GetNumLocalDOFs(tensor_uk_man_);
-  const auto global_size = pwld.GetNumGlobalDOFs(tensor_uk_man_);
+  const auto local_size = pwld.NumLocalDOFs(tensor_uk_man_);
+  const auto global_size = pwld.NumGlobalDOFs(tensor_uk_man_);
   const auto ghost_ids = MakePWLDGhostIndices(pwld, tensor_uk_man_);
   tensors_ = std::make_unique<GhostedParallelSTLVector>(
     local_size, global_size, ghost_ids, opensn::mpi_comm);
@@ -175,9 +175,9 @@ PowerIterationKEigenSMM::Initialize()
   log.Log() << "Assembling diffusion system.";
   std::vector<double> tmp;
   if (diffusion_sdm_name_ == "pwld")
-    tmp.assign(pwld.GetNumLocalDOFs(diff_uk_man), 0.0);
+    tmp.assign(pwld.NumLocalDOFs(diff_uk_man), 0.0);
   else
-    tmp.assign(pwlc_ptr_->GetNumLocalAndGhostDOFs(diff_uk_man), 0.0);
+    tmp.assign(pwlc_ptr_->NumLocalAndGhostDOFs(diff_uk_man), 0.0);
   AssembleDiffusionBCs();
   diff_solver->AssembleAand_b(tmp);
   log.Log() << "Done assembling diffusion system.";
@@ -440,7 +440,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
 
   // Create the output vector
   ParallelSTLVector output(
-    diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
+    diff_sd.NumLocalDOFs(diff_uk_man), diff_sd.NumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Build the source
   for (const auto& cell : grid.local_cells)
@@ -741,14 +741,14 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Clear the diffusion RHS
-  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                                    : diff_sd.GetNumLocalDOFs(diff_uk_man);
+  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.NumLocalAndGhostDOFs(diff_uk_man)
+                                                    : diff_sd.NumLocalDOFs(diff_uk_man);
   std::vector<double> dummy(num_local_diff_dofs, 0.0);
   diffusion_solver_->Assemble_b(dummy);
 
   // Create the output vector
   ParallelSTLVector rhs(
-    diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
+    diff_sd.NumLocalDOFs(diff_uk_man), diff_sd.NumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Test the nodal source against diffusion test functions
   for (const auto& cell : grid.local_cells)
@@ -783,8 +783,8 @@ PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double
 {
   const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
-  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                                    : diff_sd.GetNumLocalDOFs(diff_uk_man);
+  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.NumLocalAndGhostDOFs(diff_uk_man)
+                                                    : diff_sd.NumLocalDOFs(diff_uk_man);
 
   if (phi0.size() != num_local_diff_dofs)
     throw std::invalid_argument("Vector size mismatch. The flux used to construct the "
@@ -805,8 +805,8 @@ PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double
 {
   const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
-  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                                    : diff_sd.GetNumLocalDOFs(diff_uk_man);
+  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.NumLocalAndGhostDOFs(diff_uk_man)
+                                                    : diff_sd.NumLocalDOFs(diff_uk_man);
 
   if (phi0.size() != num_local_diff_dofs)
     throw std::invalid_argument("Vector size mismatch. The flux used to construct the "
@@ -944,13 +944,13 @@ PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>&
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
 
-  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                                    : diff_sd.GetNumLocalDOFs(diff_uk_man);
+  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.NumLocalAndGhostDOFs(diff_uk_man)
+                                                    : diff_sd.NumLocalDOFs(diff_uk_man);
 
   // Check the input vector
-  if (input.size() != pwld.GetNumLocalDOFs(phi_uk_man))
+  if (input.size() != pwld.NumLocalDOFs(phi_uk_man))
     throw std::logic_error("Vector size mismatch. Expected an input vector of size " +
-                           std::to_string(pwld.GetNumLocalDOFs(phi_uk_man)) + ", but got a " +
+                           std::to_string(pwld.NumLocalDOFs(phi_uk_man)) + ", but got a " +
                            "vector of size " + std::to_string(input.size()) + ".");
 
   // If diffusion is PWLC, then nodal averages should be transferred to the PWLC vector,
@@ -991,17 +991,17 @@ PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>&
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
 
-  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                                    : diff_sd.GetNumLocalDOFs(diff_uk_man);
+  const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.NumLocalAndGhostDOFs(diff_uk_man)
+                                                    : diff_sd.NumLocalDOFs(diff_uk_man);
 
   // Check the input vector
   if (input.size() != num_local_diff_dofs)
     throw std::logic_error("Vector size mismatch. Expected an input vector of size " +
-                           std::to_string(diff_sd.GetNumLocalDOFs(diff_uk_man)) +
+                           std::to_string(diff_sd.NumLocalDOFs(diff_uk_man)) +
                            ", but got a vector of size " + std::to_string(input.size()) + ".");
 
   // Go through the cells and transfer data
-  output.assign(pwld.GetNumLocalDOFs(uk_man), 0.0);
+  output.assign(pwld.NumLocalDOFs(uk_man), 0.0);
   for (const auto& cell : grid.local_cells)
   {
     // This is the same for PWLC and PWLD, so only this is needed
@@ -1064,7 +1064,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   ghost_comm->CommunicateGhostEntries(ghosted_pwld_vector);
 
   const auto& grid = pwld.Grid();
-  const auto num_local_pwlc_dofs = pwlc.GetNumLocalAndGhostDOFs(uk_man);
+  const auto num_local_pwlc_dofs = pwlc.NumLocalAndGhostDOFs(uk_man);
 
   // Map a PWLD vector to a PWLC vector by summing all PWLD DoFs into
   // their associated PWLC DoF. Each time a PWLC DoF is encountered, an
@@ -1176,8 +1176,8 @@ PowerIterationKEigenSMM::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
                                            const UnknownManager& uk_man)
 
 {
-  const auto num_local_dofs = pwld.GetNumLocalDOFs(uk_man);
-  const auto num_global_dofs = pwld.GetNumGlobalDOFs(uk_man);
+  const auto num_local_dofs = pwld.NumLocalDOFs(uk_man);
+  const auto num_global_dofs = pwld.NumGlobalDOFs(uk_man);
 
   // Build list of global IDs
   auto ghost_ids = MakePWLDGhostIndices(pwld, uk_man);

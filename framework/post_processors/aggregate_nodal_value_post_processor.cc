@@ -90,7 +90,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
   const auto field_data = ref_ff.GhostedFieldVector();
   const size_t num_local_dofs =
-    ref_ff.GetSpatialDiscretization().GetNumLocalDOFs(ref_ff.GetUnknownManager());
+    ref_ff.GetSpatialDiscretization().NumLocalDOFs(ref_ff.GetUnknownManager());
 
   double local_max_value = 0.0;
   double local_min_value = 0.0;
@@ -142,7 +142,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
     mpi_comm.all_reduce(local_accumulation, globl_accumulation, mpi::op::sum<double>());
 
     const size_t num_globl_dofs =
-      ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());
+      ref_ff.GetSpatialDiscretization().NumGlobalDOFs(ref_ff.GetUnknownManager());
     value_ = ParameterBlock("", globl_accumulation / double(num_globl_dofs));
   }
   else

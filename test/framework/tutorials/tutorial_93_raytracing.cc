@@ -63,8 +63,8 @@ SimTest93_RayTracing(const InputParameters&)
   for (size_t m = 0; m < num_moments; ++m)
     phi_uk_man.AddUnknown(UnknownType::VECTOR_N, num_groups);
 
-  const size_t num_fem_local_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
-  const size_t num_fem_globl_dofs = sdm.GetNumGlobalDOFs(phi_uk_man);
+  const size_t num_fem_local_dofs = sdm.NumLocalDOFs(phi_uk_man);
+  const size_t num_fem_globl_dofs = sdm.NumGlobalDOFs(phi_uk_man);
 
   opensn::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
   opensn::log.Log() << "Num globl FEM DOFs: " << num_fem_globl_dofs;
@@ -319,7 +319,7 @@ SimTest93_RayTracing(const InputParameters&)
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
   const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
-  const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
+  const size_t num_m0_dofs = sdm.NumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
 

@@ -63,8 +63,8 @@ public:
     return MapDOFLocal(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
 
-  size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const override;
-  std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const override;
+  size_t NumGhostDOFs(const UnknownManager& unknown_manager) const override;
+  std::vector<int64_t> GhostDOFIndices(const UnknownManager& unknown_manager) const override;
 };
 
 } // namespace opensn

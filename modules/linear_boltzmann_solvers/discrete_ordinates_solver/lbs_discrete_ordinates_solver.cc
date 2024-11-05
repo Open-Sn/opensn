@@ -86,8 +86,8 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const size_t num_local_phi_dofs = sdm.NumLocalDOFs(flux_moments_uk_man_);
+  const size_t num_globl_phi_dofs = sdm.NumGlobalDOFs(flux_moments_uk_man_);
 
   size_t num_local_psi_dofs = 0;
   size_t num_globl_psi_dofs = 0;

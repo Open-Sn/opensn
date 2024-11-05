@@ -121,7 +121,7 @@ PowerIterationKEigenSCDSA::Initialize()
       MakePWLDVecGhostCommInfo(lbs_solver_.SpatialDiscretization(), lbs_solver_.UnknownManager());
 
     const auto& cfem_sdm = *continuous_sdm_ptr_;
-    const auto ghost_dof_ids = cfem_sdm.GetGhostDOFIndices(lbs_solver_.UnknownManager());
+    const auto ghost_dof_ids = cfem_sdm.GhostDOFIndices(lbs_solver_.UnknownManager());
   }
 
   auto& ds = diffusion_solver_;
@@ -138,9 +138,9 @@ PowerIterationKEigenSCDSA::Initialize()
   log.Log() << "Assembling A and b";
   std::vector<double> dummy_rhs;
   if (diffusion_solver_sdm_ == "pwld")
-    dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
+    dummy_rhs.assign(sdm.NumLocalDOFs(uk_man), 0.0);
   else
-    dummy_rhs.assign(continuous_sdm_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
+    dummy_rhs.assign(continuous_sdm_ptr_->NumLocalAndGhostDOFs(uk_man), 0.0);
   diffusion_solver_->AssembleAand_b(dummy_rhs);
   log.Log() << "Done Assembling A and b";
 }
@@ -307,9 +307,8 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
-  const size_t diff_num_local_dofs = requires_ghosts_
-                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const size_t diff_num_local_dofs = requires_ghosts_ ? diff_sdm.NumLocalAndGhostDOFs(diff_uk_man)
+                                                      : diff_sdm.NumLocalDOFs(diff_uk_man);
 
   std::vector<double> phi_data;
   if (continuous_sdm_ptr_)
@@ -354,9 +353,8 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   const auto& phi_uk_man = lbs_solver_.UnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
-  const size_t diff_num_local_dofs = requires_ghosts_
-                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const size_t diff_num_local_dofs = requires_ghosts_ ? diff_sdm.NumLocalAndGhostDOFs(diff_uk_man)
+                                                      : diff_sdm.NumLocalDOFs(diff_uk_man);
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
@@ -385,8 +383,8 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
 {
   log.Log() << "Making PWLD ghost communicator";
 
-  const size_t num_local_dofs = sdm.GetNumLocalDOFs(uk_man);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(uk_man);
+  const size_t num_local_dofs = sdm.NumLocalDOFs(uk_man);
+  const size_t num_globl_dofs = sdm.NumGlobalDOFs(uk_man);
 
   log.Log() << "Number of global dofs" << num_globl_dofs;
 
@@ -454,7 +452,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   const size_t num_unknowns = uk_man.unknowns.size();
 
-  const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
+  const size_t num_cfem_local_dofs = pwlc_sdm.NumLocalAndGhostDOFs(uk_man);
 
   std::vector<double> cont_input(num_cfem_local_dofs, 0.0);
   std::vector<double> cont_input_ctr(num_cfem_local_dofs, 0.0);

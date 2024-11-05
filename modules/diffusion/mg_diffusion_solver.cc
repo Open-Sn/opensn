@@ -312,8 +312,8 @@ MGDiffusionSolver::Initialize()
   const auto& sdm = *sdm_ptr_;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
-  num_local_dofs_ = sdm.GetNumLocalDOFs(OneDofPerNode);
-  num_global_dofs_ = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  num_local_dofs_ = sdm.NumLocalDOFs(OneDofPerNode);
+  num_global_dofs_ = sdm.NumGlobalDOFs(OneDofPerNode);
 
   log.Log() << "Num local DOFs: " << num_local_dofs_;
   log.Log() << "Num globl DOFs: " << num_global_dofs_;
@@ -333,7 +333,7 @@ MGDiffusionSolver::Initialize()
   x_.resize(num_groups_ + i_two_grid, nullptr);
   bext_.resize(num_groups_, nullptr);
 
-  auto ghost_dof_indices = sdm.GetGhostDOFIndices(OneDofPerNode);
+  auto ghost_dof_indices = sdm.GhostDOFIndices(OneDofPerNode);
 
   for (uint g = 0; g < num_groups_; ++g)
   {

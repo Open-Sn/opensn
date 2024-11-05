@@ -274,7 +274,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
       // Populate the array here
       for (const auto& cell : grid.local_cells)
       {
-        const size_t num_nodes = sdm->GetCellNumNodes(cell);
+        const size_t num_nodes = sdm->CellNumNodes(cell);
 
         if (num_nodes == cell.vertex_ids.size())
         {
@@ -379,9 +379,9 @@ std::unique_ptr<GhostedParallelSTLVector>
 FieldFunctionGridBased::MakeFieldVector(const SpatialDiscretization& discretization,
                                         const UnknownManager& uk_man)
 {
-  auto field = std::make_unique<GhostedParallelSTLVector>(discretization.GetNumLocalDOFs(uk_man),
-                                                          discretization.GetNumGlobalDOFs(uk_man),
-                                                          discretization.GetGhostDOFIndices(uk_man),
+  auto field = std::make_unique<GhostedParallelSTLVector>(discretization.NumLocalDOFs(uk_man),
+                                                          discretization.NumGlobalDOFs(uk_man),
+                                                          discretization.GhostDOFIndices(uk_man),
                                                           mpi_comm);
 
   return field;

@@ -58,10 +58,10 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
   const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_gs_angles = groupset.quadrature->abscissae.size();
   const uint64_t num_gs_groups = groupset.groups.size();
-  const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
+  const auto num_local_gs_dofs = discretization.NumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(src.size() != num_local_gs_dofs,
                        "Incompatible angular flux vector provided for groupset " +
@@ -73,7 +73,7 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
 
   // Write the groupset angular flux data
   for (const auto& cell : grid.local_cells)
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+    for (uint64_t i = 0; i < discretization.CellNumNodes(cell); ++i)
       for (uint64_t n = 0; n < num_gs_angles; ++n)
         for (uint64_t g = 0; g < num_gs_groups; ++g)
         {
@@ -132,10 +132,10 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
 
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& grid = lbs_solver.Grid();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const uint64_t num_local_nodes = discretization.NumLocalDOFs(NODES_ONLY);
   const uint64_t num_gs_angles = groupset.quadrature->abscissae.size();
   const uint64_t num_gs_groups = groupset.groups.size();
-  const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
+  const auto num_local_gs_dofs = discretization.NumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
                        "Incompatible number of local nodes found in file " + file_name + ".");

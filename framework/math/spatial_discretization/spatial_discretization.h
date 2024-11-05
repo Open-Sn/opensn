@@ -34,7 +34,7 @@ public:
   /// Returns the reference grid on which this discretization is based.
   const MeshContinuum& Grid() const;
 
-  CoordinateSystemType GetCoordinateSystemType() const;
+  CoordinateSystemType CoordinateSystem() const;
 
   /**
    * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.
@@ -77,43 +77,43 @@ public:
    * For the unknown structure in the unknown manager, returns the number of local
    * degrees-of-freedom.
    */
-  size_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
+  size_t NumLocalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of global
    * degrees-of-freedom.
    */
-  size_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
+  size_t NumGlobalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of ghost
    * degrees-of-freedom.
    */
-  virtual size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
+  virtual size_t NumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
 
   /**
    *For the unknown structure in the unknown manager, returns the global IDs of all the ghost
    * degrees-of-freedom.
    */
-  virtual std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
+  virtual std::vector<int64_t> GhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of local- and ghost
    * degrees-of-freedom.
    */
-  size_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
+  size_t NumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the given cell, returns the number of relevant nodes. The same can be achieved by
    * retrieving the cell-to-element mapping first.
    */
-  size_t GetCellNumNodes(const Cell& cell) const;
+  size_t CellNumNodes(const Cell& cell) const;
 
   /**
    * For the given cell, returns a reference to the relevant node locations. The same can be
    * achieved by retrieving the cell-to-element mapping first.
    */
-  const std::vector<Vector3>& GetCellNodeLocations(const Cell& cell) const;
+  const std::vector<Vector3>& CellNodeLocations(const Cell& cell) const;
 
   /**
    * For each cell, for each face of that cell, for each node on that face, maps to which local
@@ -201,7 +201,7 @@ public:
   using SpatialWeightFunction = std::function<double(const Vector3&)>;
 
   /// Returns the spatial weighting function appropriate to the discretization's coordinate system.
-  SpatialWeightFunction GetSpatialWeightingFunction() const;
+  SpatialWeightFunction SpatialWeightingFunction() const;
 
   virtual ~SpatialDiscretization() = default;
 

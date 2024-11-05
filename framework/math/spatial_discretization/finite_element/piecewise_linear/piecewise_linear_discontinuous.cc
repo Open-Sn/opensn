@@ -34,7 +34,7 @@ PieceWiseLinearDiscontinuous::New(const MeshContinuum& grid,
   // one requested.
   for (auto& sdm : sdm_stack)
     if (sdm->Type() == PWLD and std::addressof(sdm->Grid()) == std::addressof(grid) and
-        sdm->GetCoordinateSystemType() == cs_type)
+        sdm->CoordinateSystem() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
 
@@ -402,13 +402,13 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 }
 
 size_t
-PieceWiseLinearDiscontinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
+PieceWiseLinearDiscontinuous::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   return 0;
 }
 
 std::vector<int64_t>
-PieceWiseLinearDiscontinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
+PieceWiseLinearDiscontinuous::GhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   return {};
 }

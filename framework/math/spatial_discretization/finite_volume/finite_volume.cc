@@ -28,8 +28,7 @@ FiniteVolume::New(const MeshContinuum& grid, CoordinateSystemType cs_type)
   // one requested.
   for (auto& sdm : sdm_stack)
     if (sdm->Type() == SpatialDiscretizationType::FINITE_VOLUME and
-        std::addressof(sdm->Grid()) == std::addressof(grid) and
-        sdm->GetCoordinateSystemType() == cs_type)
+        std::addressof(sdm->Grid()) == std::addressof(grid) and sdm->CoordinateSystem() == cs_type)
     {
       auto sdm_ptr = std::dynamic_pointer_cast<FiniteVolume>(sdm);
 
@@ -279,8 +278,8 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   }
   else
   {
-    const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
-    const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
+    const size_t num_local_dofs = NumLocalDOFs(unknown_manager);
+    const size_t num_ghost_nodes = NumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
     const uint64_t ghost_local_id = ref_grid_.cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
@@ -295,7 +294,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
 }
 
 size_t
-FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
+FiniteVolume::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -303,10 +302,10 @@ FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 }
 
 std::vector<int64_t>
-FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
+FiniteVolume::GhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
-  dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
+  dof_ids.reserve(NumGhostDOFs(unknown_manager));
 
   std::vector<uint64_t> ghost_cell_ids = ref_grid_.cells.GetGhostGlobalIDs();
 

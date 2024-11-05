@@ -34,7 +34,7 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
   // one requested.
   for (auto& sdm : sdm_stack)
     if (sdm->Type() == PWLC and std::addressof(sdm->Grid()) == std::addressof(grid) and
-        sdm->GetCoordinateSystemType() == cs_type)
+        sdm->CoordinateSystem() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
 
@@ -532,7 +532,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   } // if is_local
   else
   {
-    const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
+    const size_t num_local_dofs = NumLocalDOFs(unknown_manager);
     int64_t ghost_local_node_id = -1;
     int64_t counter = 0;
     for (const auto& vid_gnid : ghost_node_mapping_)
@@ -559,7 +559,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
 }
 
 size_t
-PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
+PieceWiseLinearContinuous::NumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
@@ -567,10 +567,10 @@ PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager
 }
 
 std::vector<int64_t>
-PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
+PieceWiseLinearContinuous::GhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   std::vector<int64_t> dof_ids;
-  dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
+  dof_ids.reserve(NumGhostDOFs(unknown_manager));
 
   const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();
   const auto storage = unknown_manager.dof_storage_type;

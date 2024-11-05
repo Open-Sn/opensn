@@ -27,8 +27,8 @@ DiffusionSolver::DiffusionSolver(std::string name,
     bcs_(std::move(bcs)),
     mat_id_2_xs_map_(std::move(map_mat_id_2_xs)),
     unit_cell_matrices_(unit_cell_matrices),
-    num_local_dofs_(static_cast<int64_t>(sdm_.GetNumLocalDOFs(uk_man_))),
-    num_global_dofs_(static_cast<int64_t>(sdm_.GetNumGlobalDOFs(uk_man_))),
+    num_local_dofs_(static_cast<int64_t>(sdm_.NumLocalDOFs(uk_man_))),
+    num_global_dofs_(static_cast<int64_t>(sdm_.NumGlobalDOFs(uk_man_))),
     A_(nullptr),
     rhs_(nullptr),
     ksp_(nullptr),
@@ -72,13 +72,13 @@ DiffusionSolver::SpatialDiscretization() const
 std::pair<size_t, size_t>
 DiffusionSolver::GetNumPhiIterativeUnknowns()
 {
-  return {sdm_.GetNumLocalDOFs(uk_man_), sdm_.GetNumGlobalDOFs(uk_man_)};
+  return {sdm_.NumLocalDOFs(uk_man_), sdm_.NumGlobalDOFs(uk_man_)};
 }
 
 void
 DiffusionSolver::AddToRHS(const std::vector<double>& values)
 {
-  const auto num_local_dofs = sdm_.GetNumLocalDOFs(uk_man_);
+  const auto num_local_dofs = sdm_.NumLocalDOFs(uk_man_);
   if (num_local_dofs != values.size())
     throw std::invalid_argument("Vector size mismatch.");
 
@@ -134,8 +134,8 @@ DiffusionSolver::Initialize()
   else
     rhs_ = CreateVectorWithGhosts(num_local_dofs_,
                                   num_global_dofs_,
-                                  static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
-                                  sdm_.GetGhostDOFIndices(uk_man_));
+                                  static_cast<int64_t>(sdm_.NumGhostDOFs(uk_man_)),
+                                  sdm_.GhostDOFIndices(uk_man_));
 
   opensn::mpi_comm.barrier();
   log.Log() << "Done vector creation";

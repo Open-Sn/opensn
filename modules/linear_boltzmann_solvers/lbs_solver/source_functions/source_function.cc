@@ -243,8 +243,8 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
       {
         const auto& cell = grid.local_cells[local_id];
         const auto& transport_view = cell_transport_views[local_id];
-        const auto nodes = discretization.GetCellNodeLocations(cell);
-        const auto num_cell_nodes = discretization.GetCellNumNodes(cell);
+        const auto nodes = discretization.CellNodeLocations(cell);
+        const auto num_cell_nodes = discretization.CellNumNodes(cell);
 
         // Go through each of the cell nodes
         for (size_t i = 0; i < num_cell_nodes; ++i)

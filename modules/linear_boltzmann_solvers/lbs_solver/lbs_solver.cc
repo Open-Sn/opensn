@@ -398,8 +398,8 @@ std::pair<size_t, size_t>
 LBSSolver::GetNumPhiIterativeUnknowns()
 {
   const auto& sdm = *discretization_;
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const size_t num_local_phi_dofs = sdm.NumLocalDOFs(flux_moments_uk_man_);
+  const size_t num_globl_phi_dofs = sdm.NumGlobalDOFs(flux_moments_uk_man_);
 
   return {num_local_phi_dofs, num_globl_phi_dofs};
 }
@@ -1254,8 +1254,8 @@ LBSSolver::InitializeParrays()
 
   // Compute local # of dof
   auto per_node = UnknownManager::GetUnitaryUnknownManager();
-  local_node_count_ = discretization_->GetNumLocalDOFs(per_node);
-  glob_node_count_ = discretization_->GetNumGlobalDOFs(per_node);
+  local_node_count_ = discretization_->NumLocalDOFs(per_node);
+  glob_node_count_ = discretization_->NumGlobalDOFs(per_node);
 
   // Compute num of unknowns
   size_t num_grps = groups_.size();
@@ -1275,7 +1275,7 @@ LBSSolver::InitializeParrays()
     psi_new_local_.emplace_back();
     if (options_.save_angular_flux)
     {
-      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+      size_t num_ang_unknowns = discretization_->NumLocalDOFs(groupset.psi_uk_man_);
       psi_new_local_.back().assign(num_ang_unknowns, 0.0);
     }
   }
@@ -1314,7 +1314,7 @@ LBSSolver::InitializeParrays()
   cell_transport_views_.reserve(grid_ptr_->local_cells.size());
   for (auto& cell : grid_ptr_->local_cells)
   {
-    size_t num_nodes = discretization_->GetCellNumNodes(cell);
+    size_t num_nodes = discretization_->CellNumNodes(cell);
     int mat_id = cell.material_id;
 
     // compute cell volumes
@@ -1663,7 +1663,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     solver->Initialize();
 
-    std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
+    std::vector<double> dummy_rhs(sdm.NumLocalDOFs(uk_man), 0.0);
 
     solver->AssembleAand_b(dummy_rhs);
 
@@ -1692,7 +1692,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
-  std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
+  std::vector<double> output_phi_local(sdm.NumLocalDOFs(dphi_uk_man), 0.0);
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1765,7 +1765,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
-  delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
+  delta_phi_local.assign(sdm.NumLocalDOFs(dphi_uk_man), 0.0);
 
   for (const auto& cell : grid_ptr_->local_cells)
   {
@@ -1878,7 +1878,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 
     solver->Initialize();
 
-    std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
+    std::vector<double> dummy_rhs(sdm.NumLocalDOFs(uk_man), 0.0);
 
     solver->AssembleAand_b(dummy_rhs);
 
@@ -2056,7 +2056,7 @@ LBSSolver::MakeSourceMomentsFromPhi()
 {
   CALI_CXX_MARK_SCOPE("LBSSolver::MakeSourceMomentsFromPhi");
 
-  size_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
+  size_t num_local_dofs = discretization_->NumLocalDOFs(flux_moments_uk_man_);
 
   std::vector<double> source_moments(num_local_dofs, 0.0);
   for (auto& groupset : groupsets_)
