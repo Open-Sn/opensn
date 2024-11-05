@@ -76,7 +76,7 @@ ArbitraryBoundary::Setup(const MeshContinuum& grid, const AngularQuadrature& qua
   for (int g = 0; g < static_cast<int>(num_groups_); ++g)
     group_indices.emplace_back(g);
 
-  const double eval_time = GetEvaluationTime();
+  const double eval_time = EvaluationTime();
 
   for (const auto& cell : grid.local_cells)
   {

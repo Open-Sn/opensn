@@ -39,7 +39,7 @@ public:
 
   bool IsReflecting() const { return type_ == BoundaryType::REFLECTING; }
 
-  double GetEvaluationTime() const { return evaluation_time_; }
+  double EvaluationTime() const { return evaluation_time_; }
 
   void SetEvaluationTime(double time) { evaluation_time_ = time; }
 
