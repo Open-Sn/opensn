@@ -31,26 +31,9 @@ void
 MIPWGSContext2::PreSetupCallback()
 {
   if (log_info)
-  {
-    std::string method_name;
-    switch (groupset.iterative_method)
-    {
-      case IterativeMethod::KRYLOV_RICHARDSON:
-        method_name = "KRYLOV_RICHARDSON";
-        break;
-      case IterativeMethod::KRYLOV_GMRES:
-        method_name = "KRYLOV_GMRES";
-        break;
-      case IterativeMethod::KRYLOV_BICGSTAB:
-        method_name = "KRYLOV_BICGSTAB";
-        break;
-      default:
-        method_name = "KRYLOV_GMRES";
-    }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset.id << " with " << method_name
-              << ".\n\n";
-  }
+              << "********** Solving groupset " << groupset.id << " with "
+              << LinearSolver::IterativeMethodName(groupset.iterative_method) << ".\n\n";
 }
 
 void

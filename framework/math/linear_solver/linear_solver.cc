@@ -7,9 +7,9 @@
 namespace opensn
 {
 
-LinearSolver::LinearSolver(const std::string& petsc_iterative_method,
+LinearSolver::LinearSolver(LinearSolver::IterativeMethod iterative_method,
                            std::shared_ptr<LinearSolverContext> context_ptr)
-  : context_ptr_(context_ptr), petsc_iterative_method_(petsc_iterative_method)
+  : context_ptr_(context_ptr), iterative_method_(iterative_method)
 {
 }
 
@@ -72,15 +72,17 @@ LinearSolver::Setup()
 {
   if (IsSystemSet())
     return;
+
   PreSetupCallback();
 
   KSPCreate(opensn::mpi_comm, &ksp_);
 
-  KSPSetType(ksp_, petsc_iterative_method_.c_str());
+  const auto petsc_iterative_method = PETScIterativeMethodName(iterative_method_);
+  KSPSetType(ksp_, petsc_iterative_method.c_str());
 
   ApplyToleranceOptions();
 
-  if (petsc_iterative_method_ == "gmres")
+  if (iterative_method_ == IterativeMethod::PETSC_GMRES)
   {
     KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval);
     KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance);
@@ -122,6 +124,44 @@ LinearSolver::Solve()
   if (not suppress_kspsolve_)
     KSPSolve(ksp_, b_, x_);
   PostSolveCallback();
+}
+
+std::string
+LinearSolver::IterativeMethodName(LinearSolver::IterativeMethod iterative_method)
+{
+  switch (iterative_method)
+  {
+    case IterativeMethod::NONE:
+      return "NONE";
+    case IterativeMethod::CLASSIC_RICHARDSON:
+      return "CLASSIC_RICHARDSON";
+    case IterativeMethod::PETSC_RICHARDSON:
+      return "PETSC_RICHARDSON";
+    case IterativeMethod::PETSC_GMRES:
+      return "PETSC_GMRES";
+    case IterativeMethod::PETSC_BICGSTAB:
+      return "PETSC_BICGSTAB";
+    default:
+      throw std::runtime_error("Unrecognized iterative method.");
+  }
+}
+
+std::string
+LinearSolver::PETScIterativeMethodName(opensn::LinearSolver::IterativeMethod iterative_method)
+{
+  switch (iterative_method)
+  {
+    case IterativeMethod::NONE:
+      return "preonly";
+    case IterativeMethod::PETSC_RICHARDSON:
+      return "richardson";
+    case IterativeMethod::PETSC_GMRES:
+      return "gmres";
+    case IterativeMethod::PETSC_BICGSTAB:
+      return "bcgs";
+    default:
+      throw std::runtime_error("Cannot get a PETSc option name for a non-PETSc iterative method.");
+  }
 }
 
 } // namespace opensn

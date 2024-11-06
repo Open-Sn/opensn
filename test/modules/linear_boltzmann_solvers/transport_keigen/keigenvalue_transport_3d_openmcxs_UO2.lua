@@ -57,7 +57,7 @@ lbs_block = {
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 2),
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_max_its = 500,
       l_abs_tol = 1.0e-12,
     },

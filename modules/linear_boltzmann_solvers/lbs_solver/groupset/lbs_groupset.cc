@@ -44,7 +44,7 @@ LBSGroupset::GetInputParameters()
 
   // Iterative method
   params.AddOptionalParameter("inner_linear_method",
-                              "krylov_richardson",
+                              "petsc_richardson",
                               "The iterative method to use for inner linear solves");
   params.AddOptionalParameter(
     "l_abs_tol", 1.0e-6, "Inner linear solver residual absolute tolerance");
@@ -84,7 +84,8 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
     "inner_linear_method",
-    AllowableRangeList::New({"classic_richardson", "krylov_richardson", "gmres", "bicgstab"}));
+    AllowableRangeList::New(
+      {"classic_richardson", "petsc_richardson", "petsc_gmres", "petsc_bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
@@ -103,7 +104,7 @@ LBSGroupset::Init(int aid)
   angle_agg = nullptr;
   master_num_grp_subsets = 1;
   master_num_ang_subsets = 1;
-  iterative_method = IterativeMethod::KRYLOV_RICHARDSON;
+  iterative_method = LinearSolver::IterativeMethod::PETSC_RICHARDSON;
   angleagg_method = AngleAggregationType::POLAR;
   residual_tolerance = 1.0e-6;
   max_iterations = 200;
@@ -182,14 +183,14 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
-  if (inner_linear_method == "krylov_richardson")
-    iterative_method = IterativeMethod::KRYLOV_RICHARDSON;
-  else if (inner_linear_method == "classic_richardson")
-    iterative_method = IterativeMethod::CLASSIC_RICHARDSON;
-  else if (inner_linear_method == "gmres")
-    iterative_method = IterativeMethod::KRYLOV_GMRES;
-  else if (inner_linear_method == "bicgstab")
-    iterative_method = IterativeMethod::KRYLOV_BICGSTAB;
+  if (inner_linear_method == "classic_richardson")
+    iterative_method = LinearSolver::IterativeMethod::CLASSIC_RICHARDSON;
+  else if (inner_linear_method == "petsc_richardson")
+    iterative_method = LinearSolver::IterativeMethod::PETSC_RICHARDSON;
+  else if (inner_linear_method == "petsc_gmres")
+    iterative_method = LinearSolver::IterativeMethod::PETSC_GMRES;
+  else if (inner_linear_method == "petsc_bicgstab")
+    iterative_method = LinearSolver::IterativeMethod::PETSC_BICGSTAB;
 
   gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
   allow_cycles = params.GetParamValue<bool>("allow_cycles");

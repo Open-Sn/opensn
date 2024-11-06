@@ -38,31 +38,12 @@ SweepWGSContext::PreSetupCallback()
   CALI_CXX_MARK_SCOPE("SweepWGSContext::PreSetupCallback");
 
   if (log_info)
-  {
-    std::string method_name;
-    switch (groupset.iterative_method)
-    {
-      case IterativeMethod::KRYLOV_RICHARDSON:
-        method_name = "KRYLOV_RICHARDSON";
-        break;
-      case IterativeMethod::KRYLOV_GMRES:
-        method_name = "KRYLOV_GMRES";
-        break;
-      case IterativeMethod::KRYLOV_BICGSTAB:
-        method_name = "KRYLOV_BICGSTAB";
-        break;
-      case IterativeMethod::CLASSIC_RICHARDSON:
-        method_name = "CLASSIC_RICHARDSON";
-        break;
-      default:
-        method_name = "KRYLOV_GMRES";
-    }
     log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset.id << " with " << method_name << ".\n\n"
+              << "********** Solving groupset " << groupset.id << " with "
+              << LinearSolver::IterativeMethodName(groupset.iterative_method) << ".\n\n"
               << "Quadrature number of angles: " << groupset.quadrature->abscissae.size() << "\n"
               << "Groups " << groupset.groups.front().id << " " << groupset.groups.back().id
               << "\n\n";
-  }
 }
 
 void

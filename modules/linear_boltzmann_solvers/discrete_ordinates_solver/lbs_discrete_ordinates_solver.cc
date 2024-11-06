@@ -147,7 +147,7 @@ DiscreteOrdinatesSolver::InitializeWGSSolvers()
       options_.verbose_inner_iterations,
       sweep_chunk);
 
-    if (groupset.iterative_method == IterativeMethod::CLASSIC_RICHARDSON)
+    if (groupset.iterative_method == LinearSolver::IterativeMethod::CLASSIC_RICHARDSON)
       wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(sweep_wgs_context_ptr));
     else
       wgs_solvers_.push_back(std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr));

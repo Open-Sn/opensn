@@ -20,7 +20,7 @@ public:
    * Constructor.
    * \param gs_context_ptr Context Pointer to abstract context.
    */
-  explicit WGSLinearSolver(std::shared_ptr<WGSContext> gs_context_ptr);
+  explicit WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_ptr);
   ~WGSLinearSolver() override;
 
 protected:

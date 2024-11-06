@@ -64,7 +64,7 @@ lbs_block = {
       groups_from_to = { 0, ngrp - 1 },
       angular_quadrature_handle = pquad0,
       angle_aggregation_type = "azimuthal",
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_max_its = 100,
       l_abs_tol = 1.0e-12,
     },

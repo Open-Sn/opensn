@@ -58,7 +58,7 @@ lbs_block = {
     {
       groups_from_to = { 0, 0 },
       angular_quadrature_handle = pquad0,
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
       gmres_restart_interval = 30,
@@ -66,7 +66,7 @@ lbs_block = {
     {
       groups_from_to = { 1, 1 },
       angular_quadrature_handle = pquad0,
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
       gmres_restart_interval = 30,
@@ -74,7 +74,7 @@ lbs_block = {
     {
       groups_from_to = { 2, 2 },
       angular_quadrature_handle = pquad0,
-      inner_linear_method = "gmres",
+      inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
       gmres_restart_interval = 30,

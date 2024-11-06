@@ -22,6 +22,15 @@ struct LinearSolverContext;
 class LinearSolver
 {
 public:
+  enum class IterativeMethod : int
+  {
+    NONE = 0,
+    CLASSIC_RICHARDSON = 1, ///< Classic Richardson (source iteration)
+    PETSC_RICHARDSON = 3,   ///< PETSc Richardson iteration
+    PETSC_GMRES = 2,        ///< PETSc GMRES iterative algorithm
+    PETSC_BICGSTAB = 4,     ///< PETSc BiCGStab iterative algorithm
+  };
+
   struct ToleranceOptions
   {
     double residual_relative = 1.0e-50;
@@ -32,8 +41,7 @@ public:
     double gmres_breakdown_tolerance = 1.0e6;
   } tolerance_options;
 
-  LinearSolver(const std::string& petsc_iterative_method,
-               std::shared_ptr<LinearSolverContext> context_ptr);
+  LinearSolver(IterativeMethod iterative_method, std::shared_ptr<LinearSolverContext> context_ptr);
 
   virtual ~LinearSolver();
 
@@ -68,6 +76,7 @@ protected:
   virtual void SetRHS() = 0;
   virtual void PostSolveCallback();
 
+protected:
   std::shared_ptr<LinearSolverContext> context_ptr_ = nullptr;
   Mat A_ = nullptr;
   Vec b_ = nullptr;
@@ -77,9 +86,16 @@ protected:
   int64_t num_global_dofs_ = 0;
 
 private:
-  const std::string petsc_iterative_method_;
+  const IterativeMethod iterative_method_;
+  bool use_petsc_ = false;
   bool system_set_ = false;
   bool suppress_kspsolve_ = false;
+
+public:
+  static std::string IterativeMethodName(IterativeMethod iterative_method);
+
+private:
+  static std::string PETScIterativeMethodName(IterativeMethod iterative_method);
 };
 
 } // namespace opensn
