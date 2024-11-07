@@ -2063,7 +2063,7 @@ LBSSolver::MakeSourceMomentsFromPhi()
   {
     active_set_source_function_(groupset,
                                 source_moments,
-                                phi_old_local_,
+                                phi_new_local_,
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                   APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   }
@@ -2097,7 +2097,7 @@ LBSSolver::UpdateFieldFunctions()
         const int64_t imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
         const int64_t imapB = sdm.MapDOFLocal(cell, i);
 
-        data_vector_local[imapB] = phi_old_local_[imapA];
+        data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
     }   // for cell
 
@@ -2135,7 +2135,7 @@ LBSSolver::UpdateFieldFunctions()
           // const double kappa_g = xs->Kappa()[g];
           const double kappa_g = options_.power_default_kappa;
 
-          nodal_power += kappa_g * sigma_fg * phi_old_local_[imapB + g];
+          nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
         } // for g
 
         data_vector_local[imapA] = nodal_power;

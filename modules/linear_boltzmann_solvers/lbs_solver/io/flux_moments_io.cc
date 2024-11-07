@@ -19,7 +19,7 @@ LBSSolverIO::WriteFluxMoments(
   std::ofstream file(file_name, std::ofstream::binary | std::ofstream::out | std::ofstream::trunc);
   OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
 
-  std::vector<double>& src = opt_src.has_value() ? opt_src.value().get() : lbs_solver.PhiOldLocal();
+  std::vector<double>& src = opt_src.has_value() ? opt_src.value().get() : lbs_solver.PhiNewLocal();
 
   log.Log() << "Writing flux moments to " << file_base;
 
