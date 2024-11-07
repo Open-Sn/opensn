@@ -22,11 +22,11 @@ DenseMatrixTest(const InputParameters&)
   a(0, 0) = 1;
   a(0, 1) = 2;
   a(0, 2) = 3;
-  a(0, 4) = 4;
+  a(0, 3) = 4;
   a(1, 0) = -1;
   a(1, 1) = -2;
   a(1, 2) = -3;
-  a(1, 4) = -4;
+  a(1, 3) = -4;
   opensn::log.LogAll() << "a:values = " << std::endl;
   opensn::log.LogAll() << a.PrintStr() << std::endl;
 
