@@ -74,8 +74,11 @@ protected:
   /// Sets the location where flux moments are to be written.
   void SetDestinationPhi(std::vector<double>& phi) { destination_phi_ = (&phi); }
 
-  /// Sets all elements of the output vector to zero.
-  void ZeroDestinationPhi() { (*destination_phi_).assign((*destination_phi_).size(), 0.0); }
+  /**
+   * Sets the portion of the output flux moments vector corresponding to the groupset this
+   * sweep chunk operates on to zero.
+   */
+  void ZeroDestinationPhi();
 
   /// Returns a reference to the output flux moments vector.
   std::vector<double>& GetDestinationPhi() { return *destination_phi_; }
