@@ -755,8 +755,7 @@
   },
   {
     "file": "transport_1d_4_dsa_ortho_inf.lua",
-    "comment":
-      "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
+    "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
     "num_procs": 1,
     "checks": [
       {
@@ -822,7 +821,7 @@
       {
         "type": "KeyValuePair",
         "key": "[0]   Out-flow rate               =",
-        "goldvalue": 1.343510e+01,
+        "goldvalue": 1.343586e+01,
         "abs_tol": 1.0e-6
       }
     ]

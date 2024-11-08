@@ -623,14 +623,14 @@ DiscreteOrdinatesSolver::ComputeBalance()
 
   // Get material source
   // This is done using the SetSource routine because it allows a lot of flexibility.
-  auto mat_src = phi_old_local_;
+  auto mat_src = phi_new_local_;
   mat_src.assign(mat_src.size(), 0.0);
   for (auto& groupset : groupsets_)
   {
     q_moments_local_.assign(q_moments_local_.size(), 0.0);
     active_set_source_function_(groupset,
                                 q_moments_local_,
-                                phi_old_local_,
+                                phi_new_local_,
                                 APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
                                   APPLY_WGS_FISSION_SOURCES);
     LBSSolver::GSScopedCopyPrimarySTLvectors(groupset, q_moments_local_, mat_src);
@@ -700,11 +700,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
     for (int f = 0; f < cell.faces.size(); ++f)
-    {
-      const auto& face = cell.faces[f];
       for (int g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
-    }
 
     // Absorption and sources
     const auto& xs = transport_view.XS();
@@ -714,7 +711,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
       for (int g = 0; g < num_groups_; ++g)
       {
         size_t imap = transport_view.MapDOF(i, 0, g);
-        double phi_0g = phi_old_local_[imap];
+        double phi_0g = phi_new_local_[imap];
         double q_0g = mat_src[imap];
 
         local_absorption += sigma_a[g] * phi_0g * IntV_shapeI(i);

@@ -101,7 +101,7 @@ DiscreteOrdinatesAdjointSolver::Execute()
         const auto dof_map = cell_view.MapDOF(i, m, 0);
 
         for (int g : set_group_numbers)
-          phi_old_local_[dof_map + g] *= pow(-1.0, ell);
+          phi_new_local_[dof_map + g] *= pow(-1.0, ell);
       } // for moment
     }   // node i
   }     // for cell
@@ -134,7 +134,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
         for (int i = 0; i < transport_view.NumNodes(); ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, g);
-          const auto& phi = phi_old_local_[dof_map];
+          const auto& phi = phi_new_local_[dof_map];
 
           local_integral += q * phi * fe_values.intV_shapeI(i);
         } // for node
@@ -163,7 +163,7 @@ DiscreteOrdinatesAdjointSolver::ComputeInnerProduct()
           for (int i = 0; i < num_nodes; ++i)
           {
             const auto dof_map = transport_view.MapDOF(i, 0, g);
-            const auto& phi = phi_old_local_[dof_map];
+            const auto& phi = phi_new_local_[dof_map];
 
             local_integral += S * phi * shape_values(i);
           } // for node
@@ -240,13 +240,13 @@ DiscreteOrdinatesAdjointSolver::ExportImportanceMap(const std::string& file_name
           for (int g : set_group_numbers)
           {
             if (ell == 0 and em == 0)
-              p1_moments[g](0) = std::fabs(phi_old_local_[dof_map + g]);
+              p1_moments[g](0) = std::fabs(phi_new_local_[dof_map + g]);
             if (ell == 1 and em == 1)
-              p1_moments[g](1) = phi_old_local_[dof_map + g];
+              p1_moments[g](1) = phi_new_local_[dof_map + g];
             if (ell == 1 and em == -1)
-              p1_moments[g](2) = phi_old_local_[dof_map + g];
+              p1_moments[g](2) = phi_new_local_[dof_map + g];
             if (ell == 1 and em == 0)
-              p1_moments[g](3) = phi_old_local_[dof_map + g];
+              p1_moments[g](3) = phi_new_local_[dof_map + g];
           } // for g
         }   // for m
 

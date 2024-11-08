@@ -33,10 +33,6 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   WGSContext* gs_context_ptr;
   MatShellGetContext(matrix, &gs_context_ptr);
 
-  // Shorten some names
-  LBSSolver& lbs_solver = gs_context_ptr->lbs_solver;
-  LBSGroupset& groupset = gs_context_ptr->groupset;
-
   // Copy krylov action_vector into local
   lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, action_vector, PhiSTLOption::PHI_OLD);
 

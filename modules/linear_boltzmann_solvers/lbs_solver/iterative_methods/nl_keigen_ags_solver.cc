@@ -117,10 +117,10 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   // Unpack solution
   const auto& groups = lbs_solver.Groups();
   lbs_solver.SetPrimarySTLvectorFromGroupScopedPETScVec(
-    groups.front().id, groups.back().id, x_, lbs_solver.PhiOldLocal());
+    groups.front().id, groups.back().id, x_, lbs_solver.PhiNewLocal());
 
   // Compute final k_eff
-  double k_eff = lbs_solver.ComputeFissionProduction(lbs_solver.PhiOldLocal());
+  double k_eff = lbs_solver.ComputeFissionProduction(lbs_solver.PhiNewLocal());
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
