@@ -4,16 +4,16 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_context.h"
-#include "framework/math/nonlinear_solver/nonlinear_solver.h"
+#include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
 
 namespace opensn
 {
 
-class NLKEigenvalueAGSSolver : public NonLinearSolver
+class NLKEigenvalueAGSSolver : public PETScNonLinearSolver
 {
 public:
   explicit NLKEigenvalueAGSSolver(std::shared_ptr<NLKEigenAGSContext> nlk_ags_context_ptr)
-    : NonLinearSolver(nlk_ags_context_ptr)
+    : PETScNonLinearSolver(nlk_ags_context_ptr)
   {
   }
 
@@ -22,13 +22,10 @@ public:
 protected:
   void PreSetupCallback() override;
   void SetMonitor() override;
-
   void SetSystemSize() override;
   void SetSystem() override;
   void SetFunction() override;
   void SetJacobian() override;
-
-protected:
   void SetInitialGuess() override;
   void PostSolveCallback() override;
 };

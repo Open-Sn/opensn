@@ -1,22 +1,29 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/nonlinear_solver/nonlinear_solver.h"
+#include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"
 
 namespace opensn
 {
 
-NonLinearSolver::NonLinearSolver(std::shared_ptr<NonLinearSolverContext> context_ptr,
-                                 const InputParameters& params)
-  : solver_name_(params.GetParamValue<std::string>("name")),
-    context_ptr_(context_ptr),
-    options_(params)
+PETScNonLinearSolver::PETScNonLinearSolver(std::shared_ptr<NonLinearSolverContext> context_ptr,
+                                           const InputParameters& params)
+  : NonLinearSolver(params.GetParamValue<std::string>("name"), context_ptr),
+    J_(nullptr),
+    r_(nullptr),
+    x_(nullptr),
+    nl_solver_(nullptr),
+    num_local_dofs_(0),
+    num_global_dofs_(0),
+    options_(params),
+    system_set_(false),
+    converged_(false)
 {
 }
 
-NonLinearSolver::~NonLinearSolver()
+PETScNonLinearSolver::~PETScNonLinearSolver()
 {
   SNESDestroy(&nl_solver_);
   VecDestroy(&x_);
@@ -25,7 +32,7 @@ NonLinearSolver::~NonLinearSolver()
 }
 
 void
-NonLinearSolver::ApplyToleranceOptions()
+PETScNonLinearSolver::ApplyToleranceOptions()
 {
   SNESSetTolerances(nl_solver_,
                     options_.nl_abs_tol,
@@ -47,43 +54,43 @@ NonLinearSolver::ApplyToleranceOptions()
 }
 
 void
-NonLinearSolver::PreSetupCallback()
+PETScNonLinearSolver::PreSetupCallback()
 {
 }
 
 void
-NonLinearSolver::SetOptions()
+PETScNonLinearSolver::SetOptions()
 {
 }
 
 void
-NonLinearSolver::SetSolverContext()
+PETScNonLinearSolver::SetSolverContext()
 {
   SNESSetApplicationContext(nl_solver_, &(*context_ptr_));
 }
 
 void
-NonLinearSolver::SetConvergenceTest()
+PETScNonLinearSolver::SetConvergenceTest()
 {
 }
 
 void
-NonLinearSolver::SetMonitor()
+PETScNonLinearSolver::SetMonitor()
 {
 }
 
 void
-NonLinearSolver::SetPreconditioner()
+PETScNonLinearSolver::SetPreconditioner()
 {
 }
 
 void
-NonLinearSolver::PostSetupCallback()
+PETScNonLinearSolver::PostSetupCallback()
 {
 }
 
 void
-NonLinearSolver::Setup()
+PETScNonLinearSolver::Setup()
 {
   if (IsSystemSet())
     return;
@@ -106,49 +113,49 @@ NonLinearSolver::Setup()
 
   KSPSetOptionsPrefix(ksp, solver_name_.c_str());
 
-  this->ApplyToleranceOptions();
+  ApplyToleranceOptions();
 
-  this->SetOptions();
+  SetOptions();
 
-  this->SetSolverContext();
-  this->SetOptions();
+  SetSolverContext();
+  SetOptions();
 
-  this->SetSolverContext();
-  this->SetConvergenceTest();
-  this->SetMonitor();
+  SetSolverContext();
+  SetConvergenceTest();
+  SetMonitor();
 
-  this->SetSystemSize();
-  this->SetSystem();
+  SetSystemSize();
+  SetSystem();
 
-  this->SetFunction();
-  this->SetJacobian();
+  SetFunction();
+  SetJacobian();
 
-  this->SetPreconditioner();
+  SetPreconditioner();
 
-  this->PostSetupCallback();
+  PostSetupCallback();
   system_set_ = true;
 }
 
 void
-NonLinearSolver::PreSolveCallback()
+PETScNonLinearSolver::PreSolveCallback()
 {
 }
 
 void
-NonLinearSolver::PostSolveCallback()
+PETScNonLinearSolver::PostSolveCallback()
 {
 }
 
 void
-NonLinearSolver::Solve()
+PETScNonLinearSolver::Solve()
 {
   converged_ = false;
   converged_reason_string_ = "Reason not obtained";
-  this->PreSolveCallback();
-  this->SetInitialGuess();
+  PreSolveCallback();
+  SetInitialGuess();
 
   SNESSolve(nl_solver_, nullptr, x_);
-  this->PostSolveCallback();
+  PostSolveCallback();
 
   SNESConvergedReason conv_reason;
   SNESGetConvergedReason(nl_solver_, &conv_reason);
@@ -163,7 +170,7 @@ NonLinearSolver::Solve()
 }
 
 std::string
-NonLinearSolver::GetConvergedReasonString() const
+PETScNonLinearSolver::GetConvergedReasonString() const
 {
   std::stringstream outstr;
   if (converged_)

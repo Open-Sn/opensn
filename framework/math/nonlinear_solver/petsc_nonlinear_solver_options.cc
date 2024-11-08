@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/nonlinear_solver/nonlinear_solver_options.h"
+#include "framework/math/nonlinear_solver/petsc_nonlinear_solver_options.h"
 #include "framework/object_factory.h"
 
 namespace opensn
 {
 
 InputParameters
-NonLinearSolverOptions::GetInputParameters()
+PETScNonLinearSolverOptions::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
@@ -58,7 +58,7 @@ NonLinearSolverOptions::GetInputParameters()
   return params;
 }
 
-NonLinearSolverOptions::NonLinearSolverOptions(const InputParameters& params)
+PETScNonLinearSolverOptions::PETScNonLinearSolverOptions(const InputParameters& params)
   : Object(params),
     nl_method(params.GetParamValue<std::string>("nl_method")),
     l_method(params.GetParamValue<std::string>("l_method")),
