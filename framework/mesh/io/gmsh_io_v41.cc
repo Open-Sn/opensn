@@ -253,7 +253,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
                              std::to_string(n) + ".");
     }
 
-    int num_cell_nodes;
+    int num_cell_nodes = 0;
     if (element_type == 1) // 2-node edge
       num_cell_nodes = 2;
     else if (element_type == 2) // 3-node triangle
