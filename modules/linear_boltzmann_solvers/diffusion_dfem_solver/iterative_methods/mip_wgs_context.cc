@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
+#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "framework/runtime.h"
-#include "framework/logging/log.h"
 #include <petscksp.h>
 #include <iomanip>
 
@@ -16,19 +15,18 @@ namespace opensn
 
 using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 
-MIPWGSContext2::MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
-                               LBSGroupset& groupset,
-                               const SetSourceFunction& set_source_function,
-                               SourceFlags lhs_scope,
-                               SourceFlags rhs_scope,
-                               bool log_info)
-  : WGSContext(lbs_mip_ss_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
-    lbs_mip_ss_solver(lbs_mip_ss_solver)
+MIPWGSContext::MIPWGSContext(DiffusionDFEMSolver& solver,
+                             LBSGroupset& groupset,
+                             const SetSourceFunction& set_source_function,
+                             SourceFlags lhs_scope,
+                             SourceFlags rhs_scope,
+                             bool log_info)
+  : WGSContext(solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info)
 {
 }
 
 void
-MIPWGSContext2::PreSetupCallback()
+MIPWGSContext::PreSetupCallback()
 {
   if (log_info)
     log.Log() << "\n\n"
@@ -37,7 +35,7 @@ MIPWGSContext2::PreSetupCallback()
 }
 
 void
-MIPWGSContext2::SetPreconditioner(KSP& solver)
+MIPWGSContext::SetPreconditioner(KSP& solver)
 {
   auto& ksp = solver;
 
@@ -56,7 +54,7 @@ MIPWGSContext2::SetPreconditioner(KSP& solver)
 }
 
 std::pair<int64_t, int64_t>
-MIPWGSContext2::SystemSize()
+MIPWGSContext::SystemSize()
 {
   const size_t local_node_count = lbs_solver.LocalNodeCount();
   const size_t globl_node_count = lbs_solver.GlobalNodeCount();
@@ -69,10 +67,10 @@ MIPWGSContext2::SystemSize()
 }
 
 void
-MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
+MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op;
-  auto& mip_solver = *lbs_mip_ss_solver.gs_mip_solvers[groupset.id];
+  auto& mip_solver = *dynamic_cast<DiffusionDFEMSolver&>(lbs_solver).gs_mip_solvers[groupset.id];
 
   lbs_solver.PhiNewLocal() = lbs_solver.QMomentsLocal();
 
@@ -90,7 +88,7 @@ MIPWGSContext2::ApplyInverseTransportOperator(SourceFlags scope)
 }
 
 void
-MIPWGSContext2::PostSolveCallback()
+MIPWGSContext::PostSolveCallback()
 {
   lbs_solver.GSScopedCopyPrimarySTLvectors(groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }

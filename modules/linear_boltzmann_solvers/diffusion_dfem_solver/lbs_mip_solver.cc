@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context2.h"
+#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context.h"
 #include "framework/object_factory.h"
 
 namespace opensn
@@ -148,7 +148,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
   for (auto& groupset : groupsets_)
   {
 
-    auto mip_wgs_context_ptr = std::make_shared<MIPWGSContext2>(
+    auto mip_wgs_context_ptr = std::make_shared<MIPWGSContext>(
       *this,
       groupset,
       active_set_source_function_,

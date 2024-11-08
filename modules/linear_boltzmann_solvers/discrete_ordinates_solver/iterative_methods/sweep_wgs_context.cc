@@ -27,8 +27,7 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
     sweep_scheduler(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
                                                     : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
                     *groupset.angle_agg,
-                    *sweep_chunk),
-    lbs_ss_solver(lbs_solver)
+                    *sweep_chunk)
 {
 }
 
@@ -136,7 +135,7 @@ SweepWGSContext::PostSolveCallback()
   // currently used in OpenSn). This step also zeros out balance variables and computes the correct
   // in-flow and out-flow. Classic Richardson calls this solely to compute balance quantities (note
   // that it does cost us an extra sweep that is technically not necessary).
-  lbs_ss_solver.ZeroOutflowBalanceVars(groupset);
+  dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver).ZeroOutflowBalanceVars(groupset);
   const auto scope = lhs_src_scope | rhs_src_scope;
   set_source_function(groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
   sweep_scheduler.SetDestinationPhi(lbs_solver.PhiNewLocal());

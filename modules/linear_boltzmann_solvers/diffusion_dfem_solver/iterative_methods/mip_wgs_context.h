@@ -10,16 +10,14 @@ namespace opensn
 
 class DiffusionDFEMSolver;
 
-struct MIPWGSContext2 : public WGSContext
+struct MIPWGSContext : public WGSContext
 {
-  DiffusionDFEMSolver& lbs_mip_ss_solver;
-
-  MIPWGSContext2(DiffusionDFEMSolver& lbs_mip_ss_solver,
-                 LBSGroupset& groupset,
-                 const SetSourceFunction& set_source_function,
-                 SourceFlags lhs_scope,
-                 SourceFlags rhs_scope,
-                 bool log_info);
+  MIPWGSContext(DiffusionDFEMSolver& solver,
+                LBSGroupset& groupset,
+                const SetSourceFunction& set_source_function,
+                SourceFlags lhs_scope,
+                SourceFlags rhs_scope,
+                bool log_info);
 
   void PreSetupCallback() override;
 

@@ -13,12 +13,6 @@ namespace opensn
 
 struct SweepWGSContext : public WGSContext
 {
-  std::shared_ptr<SweepChunk> sweep_chunk;
-  SweepScheduler sweep_scheduler;
-  std::vector<double> sweep_times;
-
-  DiscreteOrdinatesSolver& lbs_ss_solver;
-
   SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                   LBSGroupset& groupset,
                   const SetSourceFunction& set_source_function,
@@ -36,6 +30,10 @@ struct SweepWGSContext : public WGSContext
   void ApplyInverseTransportOperator(SourceFlags scope) override;
 
   void PostSolveCallback() override;
+
+  std::shared_ptr<SweepChunk> sweep_chunk;
+  SweepScheduler sweep_scheduler;
+  std::vector<double> sweep_times;
 };
 
 } // namespace opensn
