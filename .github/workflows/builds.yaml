@@ -51,24 +51,20 @@ jobs:
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/14.0.6
-          mkdir build && cd build
-          cmake -DCMAKE_CXX_FLAGS="-O2 -fsanitize=address,undefined,nullability \
-                -fsanitize-address-use-after-scope -fno-sanitize-recover" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined,nullability \
-                -fsanitize-address-use-after-scope -fno-sanitize-recover" ..
-          make -j && cd .. 
+          module load opensn/clang/17.0.6
+          cmake --preset clang+debug+sanitizer
+          cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/14.0.6
+          module load opensn/clang/17.0.6
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d test/ -j 32 -v 1 -w 3
+          test/run_tests -d test/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
       - name: test tutorials
         shell: bash
         run: |
           export MODULEPATH=/scratch-local/software/modulefiles
-          module load opensn/clang/14.0.6
+          module load opensn/clang/17.0.6
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d tutorials -j 32 -v 1 -w 3
+          test/run_tests -d tutorials/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
