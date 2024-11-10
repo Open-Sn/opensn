@@ -13,8 +13,6 @@
 namespace opensn
 {
 
-int PETScLinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
-
 class PETScLinearSolver : public LinearSolver
 {
 public:
@@ -64,7 +62,6 @@ protected:
   virtual void SetRHS() = 0;
   virtual void PostSolveCallback();
 
-protected:
   Mat A_;
   Vec b_;
   Vec x_;
@@ -75,6 +72,9 @@ protected:
 private:
   bool system_set_;
   bool suppress_kspsolve_;
+
+protected:
+  static int LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
 
 private:
   static std::string PETScIterativeMethodName(IterativeMethod iterative_method);

@@ -22,7 +22,7 @@ public:
 
   virtual ~NonLinearSolver() {}
 
-  std::shared_ptr<NonLinearSolverContext>& GetContext() { return context_ptr_; }
+  std::shared_ptr<NonLinearSolverContext> GetContext() { return context_ptr_; }
 
   virtual void Setup() {}
 

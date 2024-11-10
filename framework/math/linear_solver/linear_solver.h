@@ -30,7 +30,7 @@ public:
 
   virtual ~LinearSolver() {}
 
-  std::shared_ptr<LinearSolverContext>& GetContext() { return context_ptr_; }
+  std::shared_ptr<LinearSolverContext> GetContext() { return context_ptr_; }
 
   /// Set up the linaer solver
   virtual void Setup() {}

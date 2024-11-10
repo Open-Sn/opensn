@@ -7,17 +7,6 @@
 namespace opensn
 {
 
-int
-PETScLinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
-{
-  LinearSolverContext* context;
-  MatShellGetContext(matrix, &context);
-
-  context->MatrixAction(matrix, vector, action);
-
-  return 0;
-}
-
 PETScLinearSolver::PETScLinearSolver(IterativeMethod iterative_method,
                                      std::shared_ptr<LinearSolverContext> context_ptr)
   : LinearSolver(iterative_method, context_ptr),
@@ -161,6 +150,17 @@ PETScLinearSolver::PETScIterativeMethodName(opensn::LinearSolver::IterativeMetho
     default:
       throw std::runtime_error("Cannot get a PETSc option name for a non-PETSc iterative method.");
   }
+}
+
+int
+PETScLinearSolver::LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
+{
+  LinearSolverContext* context;
+  MatShellGetContext(matrix, &context);
+
+  context->MatrixAction(matrix, vector, action);
+
+  return 0;
 }
 
 } // namespace opensn
