@@ -5,7 +5,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/isotropic_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
@@ -540,8 +539,8 @@ LBSSolver::BoundaryOptionsBlock()
                               "condition.");
   params.ConstrainParameterRange(
     "name", AllowableRangeList::New({"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
-  params.ConstrainParameterRange(
-    "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
+  params.ConstrainParameterRange("type",
+                                 AllowableRangeList::New({"vacuum", "isotropic", "reflecting"}));
 
   return params;
 }
@@ -769,12 +768,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     }
     case BoundaryType::ARBITRARY:
     {
-      OpenSnInvalidArgumentIf(not user_params.Has("function_name"),
-                              "Boundary conditions with type=\"arbitrary\" require parameter "
-                              "\"function_name\".");
-
-      const auto bndry_function_name = user_params.GetParamValue<std::string>("function_name");
-      boundary_preferences_[bid] = {type, {}, bndry_function_name};
+      throw std::runtime_error("Arbitrary boundary conditions are not currently supported.");
       break;
     }
   }
@@ -1538,14 +1532,6 @@ LBSSolver::InitializeBoundaries()
         sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
       else if (bndry_pref.type == BoundaryType::ISOTROPIC)
         sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
-      else if (bndry_pref.type == BoundaryType::ARBITRARY)
-      {
-        // FIXME:
-#if 0
-        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
-          G, std::make_unique<BoundaryFunctionToLua>(bndry_pref.source_function), bid);
-#endif
-      }
       else if (bndry_pref.type == BoundaryType::REFLECTING)
       {
         // Locally check all faces, that subscribe to this boundary,
