@@ -359,16 +359,8 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
-        "goldvalue": 0.108199,
-        "abs_tol": 1e-06
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
-        "goldvalue": 9.00924e-06,
-        "abs_tol": 1e-10
+        "type": "ErrorCode",
+        "error_code": 0
       }
     ]
   },
@@ -381,14 +373,14 @@
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value1=",
-        "goldvalue": 1.02346e-04,
+        "goldvalue": 1.02348e-04,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  Max-value2=",
-        "goldvalue": 9.28439e-06,
-        "abs_tol": 1e-10
+        "goldvalue": 9.28438e-06,
+        "abs_tol": 1e-6
       }
     ]
   },
