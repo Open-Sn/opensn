@@ -259,20 +259,6 @@
     ]
   },
   {
-    "file": "transport_2d_5_poly_a_ani_hetero_bndry.lua",
-    "comment": "2D LinearBSolver Test Anisotropic Hetero BC - PWLD",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
-        "goldvalue": 3.18785,
-        "abs_tol": 1e-05
-      }
-    ],
-    "skip": "Working on a solution - Jan"
-  },
-  {
     "file": "transport_3d_1a_extruder.lua",
     "comment": "3D LinearBSolver Test - PWLD",
     "num_procs": 4,
