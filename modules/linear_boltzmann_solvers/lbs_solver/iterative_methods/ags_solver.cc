@@ -4,13 +4,10 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "framework/math/linear_solver/linear_matrix_action_Ax.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
-#include <petscksp.h>
 #include <iomanip>
 
 namespace opensn

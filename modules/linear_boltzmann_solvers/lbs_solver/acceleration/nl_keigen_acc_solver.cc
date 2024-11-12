@@ -52,14 +52,14 @@ NLKEigenDiffSolver::SetSystemSize()
   auto sizes = diff_solver.GetNumPhiIterativeUnknowns();
 
   num_local_dofs_ = static_cast<int64_t>(sizes.first);
-  num_globl_dofs_ = static_cast<int64_t>(sizes.second);
+  num_global_dofs_ = static_cast<int64_t>(sizes.second);
 }
 
 void
 NLKEigenDiffSolver::SetSystem()
 {
   // Create the vectors
-  x_ = CreateVector(num_local_dofs_, num_globl_dofs_);
+  x_ = CreateVector(num_local_dofs_, num_global_dofs_);
   VecDuplicate(x_, &r_);
 }
 
