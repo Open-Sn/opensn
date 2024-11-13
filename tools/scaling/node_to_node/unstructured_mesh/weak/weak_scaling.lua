@@ -10,7 +10,7 @@ Nazimuthal = 8
 meshgen1 = mesh.DistributedMeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "256n_64rpn_256cr.msh",
+      filename = "meshfile",
     }),
   },
 })
@@ -19,7 +19,7 @@ mesh.MeshGenerator.Execute(meshgen1)
 -- Material
 materials = {}
 materials[0] = mat.AddMaterial("Test Material")
-mat.SetProperty(materials[0], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "../diag_XS_64g_1mom_c0.99.xs")
+mat.SetProperty(materials[0], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "diag_XS_64g_1mom_c0.99.xs")
 src = {}
 for g = 1, Ng do
   src[g] = 0.0
@@ -54,7 +54,6 @@ lbs_block = {
       inner_linear_method = "krylov_richardson",
       l_abs_tol = 1.0e-6,
       l_max_its = 9,
-      gmres_restart_interval = 10,
     },
   },
 }

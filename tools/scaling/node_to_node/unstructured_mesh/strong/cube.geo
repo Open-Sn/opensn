@@ -2,7 +2,7 @@
 cube_size = 10.0;          // Side length of the cube
 
 // Calculate characteristic length based on the desired number of tetrahedra
-approx_element_size = cube_size / 98;
+approx_element_size = cube_size / divisor; 
 
 // Define cube corner points
 Point(1) = {0, 0, 0, approx_element_size};
