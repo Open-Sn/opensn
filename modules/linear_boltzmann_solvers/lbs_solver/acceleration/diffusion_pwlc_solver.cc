@@ -88,8 +88,16 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       }
     }
 
+    DenseMatrix<double> cell_A(num_nodes, num_nodes);
+    Vector<double> cell_rhs(num_nodes);
+    Vector<int64_t> cell_idxs(num_nodes);
     for (size_t g = 0; g < num_groups; ++g)
     {
+      cell_A.Set(0.);
+      cell_rhs.Set(0.);
+      for (size_t i = 0; i < num_nodes; ++i)
+        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
@@ -103,27 +111,25 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       {
         if (node_is_dirichlet[i].first)
           continue;
-        const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; ++j)
         {
-          const int64_t jmap = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
           const double entry_aij =
             Dg * intV_gradshapeI_gradshapeJ(i, j) + sigr_g * intV_shapeI_shapeJ(i, j);
 
           if (not node_is_dirichlet[j].first)
-            MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
+            cell_A(i, j) += entry_aij;
           else
           {
             const double bcvalue = node_is_dirichlet[j].second;
-            VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
+            cell_rhs(i) -= entry_aij * bcvalue;
           }
 
           entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
         } // for j
 
-        VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
+        cell_rhs(i) = entry_rhs_i;
       } // for i
 
       // Assemble face terms
@@ -148,12 +154,11 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               // MatSetValue(A_, imap, imap, intV_shapeI[i], ADD_VALUES);
               // VecSetValue(rhs_, imap, bc_value * intV_shapeI[i], ADD_VALUES);
-              MatSetValue(A_, imap, imap, 1.0, ADD_VALUES);
-              VecSetValue(rhs_, imap, bc_value, ADD_VALUES);
+              cell_A(i, i) += 1.0;
+              cell_rhs(i) += bc_value;
             } // for fi
 
           } // Dirichlet BC
@@ -169,18 +174,16 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(aval) >= 1.0e-12)
               {
                 for (size_t fj = 0; fj < num_face_nodes; ++fj)
                 {
                   const int j = cell_mapping.MapFaceNode(f, fj);
-                  const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
                   const double aij = (aval / bval) * intS_shapeI_shapeJ(i, j);
 
-                  MatSetValue(A_, ir, jr, aij, ADD_VALUES);
+                  cell_A(i, j) += aij;
                 } // for fj
               }   // if a nonzero
 
@@ -188,14 +191,18 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
               {
                 const double rhs_val = (fval / bval) * intS_shapeI(i);
 
-                VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
+                cell_rhs(i) += rhs_val;
               } // if f nonzero
             }   // for fi
           }     // Robin BC
         }       // boundary face
       }         // for face
-    }           // for g
-  }             // for cell
+
+      MatSetValues(
+        A_, num_nodes, cell_idxs.data(), num_nodes, cell_idxs.data(), cell_A.data(), ADD_VALUES);
+      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+    } // for g
+  }   // for cell
 
   MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
@@ -286,8 +293,15 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       }
     }
 
+    Vector<double> cell_rhs(num_nodes);
+    Vector<int64_t> cell_idxs(num_nodes);
+
     for (size_t g = 0; g < num_groups; ++g)
     {
+      cell_rhs.Set(0.);
+      for (size_t i = 0; i < num_nodes; ++i)
+        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
@@ -301,7 +315,6 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       {
         if (node_is_dirichlet[i].first)
           continue;
-        const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; ++j)
         {
@@ -311,13 +324,13 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
               Dg * intV_gradshapeI_gradshapeJ(i, j) + sigr_g * intV_shapeI_shapeJ(i, j);
 
             const double bcvalue = node_is_dirichlet[j].second;
-            VecSetValue(rhs_, imap, -entry_aij * bcvalue, ADD_VALUES);
+            cell_rhs(i) -= entry_aij * bcvalue;
           }
 
           entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
         } // for j
 
-        VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
+        cell_rhs(i) += entry_rhs_i;
       } // for i
 
       // Assemble face terms
@@ -342,10 +355,9 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               // VecSetValue(rhs_, imap, bc_value * intV_shapeI[i], ADD_VALUES);
-              VecSetValue(rhs_, imap, bc_value, ADD_VALUES);
+              cell_rhs(i) += bc_value;
             } // for fi
 
           } // Dirichlet BC
@@ -360,20 +372,20 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(fval) >= 1.0e-12)
               {
                 const double rhs_val = (fval / bval) * intS_shapeI(i);
 
-                VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
+                cell_rhs(i) += rhs_val;
               } // if f nonzero
             }   // for fi
           }     // Robin BC
         }       // boundary face
       }         // for face
-    }           // for g
-  }             // for cell
+      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+    } // for g
+  }   // for cell
 
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
@@ -430,8 +442,15 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       }
     }
 
+    Vector<double> cell_rhs(num_nodes);
+    Vector<int64_t> cell_idxs(num_nodes);
+
     for (size_t g = 0; g < num_groups; ++g)
     {
+      cell_rhs.Set(0.);
+      for (size_t i = 0; i < num_nodes; ++i)
+        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
@@ -442,12 +461,11 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       {
         if (node_is_dirichlet[i])
           continue;
-        const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
         double entry_rhs_i = 0.0;
         for (size_t j = 0; j < num_nodes; ++j)
           entry_rhs_i += intV_shapeI_shapeJ(i, j) * qg[j];
 
-        VecSetValue(rhs_, imap, entry_rhs_i, ADD_VALUES);
+        cell_rhs(i) += entry_rhs_i;
       } // for i
 
       // Assemble face terms
@@ -472,9 +490,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t imap = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
-              VecSetValue(rhs_, imap, bc_value * intV_shapeI(i), ADD_VALUES);
+              cell_rhs(i) += bc_value * intV_shapeI(i);
             } // for fi
 
           } // Dirichlet BC
@@ -489,20 +506,20 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const int i = cell_mapping.MapFaceNode(f, fi);
-              const int64_t ir = sdm_.MapDOF(cell, i, uk_man_, 0, g);
 
               if (std::fabs(fval) >= 1.0e-12)
               {
                 const double rhs_val = (fval / bval) * intS_shapeI(i);
 
-                VecSetValue(rhs_, ir, rhs_val, ADD_VALUES);
+                cell_rhs(i) += rhs_val;
               } // if f nonzero
             }   // for fi
           }     // Robin BC
         }       // boundary face
       }         // for face
-    }           // for g
-  }             // for cell
+      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+    } // for g
+  }   // for cell
 
   VecRestoreArrayRead(petsc_q_vector, &q_vector);
 
