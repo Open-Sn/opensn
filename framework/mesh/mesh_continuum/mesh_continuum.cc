@@ -18,15 +18,15 @@ namespace opensn
 {
 
 MeshContinuum::MeshContinuum()
-  : local_cells(local_cells_),
+  : dim_(0),
+    mesh_type_(UNSTRUCTURED),
+    extruded_(false),
+    global_vertex_count_(0),
+    local_cells(local_cells_),
     cells(local_cells_,
           ghost_cells_,
           global_cell_id_to_local_id_map_,
-          global_cell_id_to_nonlocal_id_map_),
-    dim_(0),
-    mesh_type_(UNSTRUCTURED),
-    extruded_(false),
-    global_vertex_count_(0)
+          global_cell_id_to_nonlocal_id_map_)
 {
 }
 
