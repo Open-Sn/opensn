@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20.2)
 
 project(opensn
     VERSION 0.0.1
@@ -32,13 +32,25 @@ if (CMAKE_CXX_FLAGS_NATIVE STREQUAL "")
     endif()
 endif()
 
+option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
+if (OPENSN_WITH_CUDA)
+    enable_language(CUDA)
+endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_LUA "Build with lua support" ON)
 
 # dependencies
 find_package(MPI REQUIRED)
+
+# Set up CUDA if enabled
+if (OPENSN_WITH_CUDA)
+    find_package(CUDAToolkit 12.0 REQUIRED)
+    add_definitions(-DUSE_CUDA)
+    message(STATUS "CUDA support enabled")
+    message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
+endif()
+
 find_package(HDF5 REQUIRED COMPONENTS C HL)
-find_package(Boost REQUIRED)
 
 if(OPENSN_WITH_LUA)
     find_package(Lua 5.3 REQUIRED)
@@ -98,7 +110,7 @@ endif()
 find_package(caliper REQUIRED)
 if(caliper_FOUND)
     message(STATUS "Found Caliper: ${caliper_DIR}")
-endif() 
+endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
@@ -113,7 +125,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    if (NOT OPENSN_WITH_CUDA)
+      list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    endif()
     list(APPEND OPENSN_CXX_FLAGS "-Wall")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-sign-compare")
@@ -129,7 +143,17 @@ file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
     framework/*.cc
     modules/*.cc
 )
+
+if (OPENSN_WITH_CUDA)
+    file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
+    list(APPEND LIBOPENSN_SRCS ${LIBOPENSN_CUDA_SRCS})
+endif()
+
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
+
+if (OPENSN_WITH_CUDA)
+    target_compile_options(libopensn PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>)
+endif()
 
 target_include_directories(libopensn
     PRIVATE
@@ -146,6 +170,9 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
+if (OPENSN_WITH_CUDA)
+    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>)
+endif()
 
 target_link_libraries(libopensn
     PRIVATE
@@ -155,6 +182,10 @@ target_link_libraries(libopensn
     ${HDF5_LIBRARIES}
     MPI::MPI_CXX
 )
+if (OPENSN_WITH_CUDA)
+    target_link_libraries(libopensn PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
+endif()
+
 if(OPENSN_WITH_LUA)
     target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
     target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
