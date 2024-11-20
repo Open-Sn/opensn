@@ -171,31 +171,24 @@ PowerIterationKEigenSCDSA::Execute()
     // Set the fission source
     SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
-
-    auto Sf_ell = q_moments_local_;
     auto Sf0_ell = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
-    // This solves the inners for transport
+    // Store the last power iteration scalar flux
+    auto phi0_ell = CopyOnlyPhi0(front_gs_, phi_old_local_);
+
+    // Solve transport inners
     ags_solver_->Solve();
 
-    // lph_i = l + 1/2,i
-    auto phi0_lph_i = CopyOnlyPhi0(front_gs_, phi_new_local_);
-
-    // Now we produce lph_ip1 = l + 1/2, i+1
-    q_moments_local_ = Sf_ell; // Restore 1/k F phi_l
-    SetLBSScatterSource(phi_new_local_, true);
-
-    front_wgs_context_->ApplyInverseTransportOperator(SourceFlags()); // Sweep
-
-    auto phi0_lph_ip1 = CopyOnlyPhi0(front_gs_, phi_new_local_);
+    // Store the latest scalar flux (lph = ell + 1/2)
+    auto phi0_lph_star = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
     // Power Iteration Acceleration
-    SetLBSScatterSourcePhi0(phi0_lph_ip1 - phi0_lph_i, false);
+    SetLBSScatterSourcePhi0(phi0_lph_star - phi0_ell, false);
     auto Ss_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
     double production_k = lbs_solver_.ComputeFissionProduction(phi_new_local_);
 
-    std::vector<double> epsilon_k(phi0_lph_ip1.size(), 0.0);
+    std::vector<double> epsilon_k(phi0_lph_star.size(), 0.0);
     auto epsilon_kp1 = epsilon_k;
 
     double lambda_k = k_eff_;
@@ -203,7 +196,7 @@ PowerIterationKEigenSCDSA::Execute()
 
     for (size_t k = 0; k < accel_pi_max_its_; ++k)
     {
-      ProjectBackPhi0(front_gs_, epsilon_k + phi0_lph_ip1, phi_temp);
+      ProjectBackPhi0(front_gs_, epsilon_k + phi0_lph_star, phi_temp);
       SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local_, 1.0 / lambda_k);
 
@@ -224,13 +217,13 @@ PowerIterationKEigenSCDSA::Execute()
         epsilon_k = epsilon_kp1;
       }
 
-      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_old_local_);
+      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_star, phi_old_local_);
 
       double production_kp1 = lbs_solver_.ComputeFissionProduction(phi_old_local_);
 
       lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
-      const double lambda_change = std::fabs(1.0 - lambda_kp1 / lambda_k);
+      const double lambda_change = std::fabs(lambda_kp1 / lambda_k - 1.0);
       if (accel_pi_verbose_ >= 1)
         log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
                   << lambda_change;
@@ -243,7 +236,7 @@ PowerIterationKEigenSCDSA::Execute()
       production_k = production_kp1;
     } // acceleration
 
-    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_ip1, phi_new_local_);
+    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_star, phi_new_local_);
     lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_old_local_);
 
     const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
@@ -251,10 +244,9 @@ PowerIterationKEigenSCDSA::Execute()
 
     // Recompute k-eigenvalue
     k_eff_ = lambda_kp1;
-    double reactivity = (k_eff_ - 1.0) / k_eff_;
 
     // Check convergence, bookkeeping
-    k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
+    k_eff_change = std::fabs(k_eff_ / k_eff_prev - 1.0);
     k_eff_prev = k_eff_;
     nit += 1;
 
@@ -268,7 +260,8 @@ PowerIterationKEigenSCDSA::Execute()
       k_iter_info << program_timer.GetTimeString() << " "
                   << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
                   << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
-                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
+                  << k_eff_change << "  reactivity " << std::setw(10)
+                  << (k_eff_ - 1.0) / k_eff_ * 1e5;
       if (converged)
         k_iter_info << " CONVERGED\n";
 

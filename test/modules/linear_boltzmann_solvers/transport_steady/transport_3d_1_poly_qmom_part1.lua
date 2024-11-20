@@ -77,7 +77,7 @@ lbs_block = {
       groupset_num_subsets = 1,
       inner_linear_method = "petsc_richardson",
       l_abs_tol = 1.0e-6,
-      l_max_its = 1,
+      l_max_its = 2,
       gmres_restart_interval = 100,
     },
   },
@@ -100,45 +100,6 @@ lbs.CreateAndWriteSourceMoments(phys1, "Qmoms")
 
 --############################################### Get field functions
 fflist, count = lbs.GetScalarFieldFunctionList(phys1)
-
---############################################### Slice plot
---slices = {}
---for k=1,count do
---    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
---    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
---    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
---    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
---    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
---    fieldfunc.Initialize(slices[k])
---    fieldfunc.Execute(slices[k])
---    fieldfunc.ExportToPython(slices[k])
---end
-
---############################################### Volume integrations
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
-curffi = ffi1
-fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
-fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
-
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
-
-log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
-
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
-curffi = ffi1
-fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
-fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[20])
-
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
-
-log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
 --############################################### Exports
 if master_export == nil then
