@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/utils/hdf_utils.h"
 
 namespace opensn
 {
@@ -15,99 +16,79 @@ LBSSolverIO::WriteFluxMoments(
   std::optional<const std::reference_wrapper<std::vector<double>>> opt_src)
 {
   // Open file
-  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
-  std::ofstream file(file_name, std::ofstream::binary | std::ofstream::out | std::ofstream::trunc);
-  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
+  hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
   std::vector<double>& src = opt_src.has_value() ? opt_src.value().get() : lbs_solver.PhiNewLocal();
 
   log.Log() << "Writing flux moments to " << file_base;
 
-  // Write the header
-  const int num_bytes = 500;
-  std::string header_info = "OpenSn LinearBoltzmannSolver: Flux moments file\n"
-                            "Header size: " +
-                            std::to_string(num_bytes) +
-                            " bytes\n"
-                            "Structure(type-info):\n"
-                            "uint64_t    num_local_cells\n"
-                            "uint64_t    num_local_nodes\n"
-                            "uint64_t    num_moments\n"
-                            "uint64_t    num_groups\n"
-                            "Each cell:\n"
-                            "  uint64_t    cell_global_id\n"
-                            "  uint64_t    num_cell_nodes\n"
-                            "  Each node:\n"
-                            "    double   x_position\n"
-                            "    double   y_position\n"
-                            "    double   z_position\n"
-                            "Each record:\n"
-                            "  uint64_t    cell_global_id\n"
-                            "  uint64_t    node\n"
-                            "  uint64_t    moment\n"
-                            "  uint64_t    group\n"
-                            "  double      value\n";
+  const auto& grid = lbs_solver.Grid();
+  const auto& discretization = lbs_solver.SpatialDiscretization();
 
-  int header_size = (int)header_info.length();
-  char header_bytes[num_bytes];
-  memset(header_bytes, '-', num_bytes);
-  strncpy(header_bytes, header_info.c_str(), std::min(header_size, num_bytes - 1));
-  header_bytes[num_bytes - 1] = '\0';
-
-  file << header_bytes;
-
-  // Write macro data
   const auto& uk_man = lbs_solver.UnknownManager();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  auto& discretization = lbs_solver.SpatialDiscretization();
-  auto& grid = lbs_solver.Grid();
-  const uint64_t num_local_cells = grid.local_cells.size();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_moments = lbs_solver.NumMoments();
-  const uint64_t num_groups = lbs_solver.NumGroups();
-  const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);
-  OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided..");
+  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
 
-  file.write((char*)&num_local_cells, sizeof(uint64_t));
-  file.write((char*)&num_local_nodes, sizeof(uint64_t));
-  file.write((char*)&num_moments, sizeof(uint64_t));
-  file.write((char*)&num_groups, sizeof(uint64_t));
+  uint64_t num_local_cells = grid.local_cells.size();
+  uint64_t num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
+  uint64_t num_moments = lbs_solver.NumMoments();
+  uint64_t num_groups = lbs_solver.NumGroups();
+  uint64_t num_local_dofs = num_local_nodes * num_moments * num_groups;
+  OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
 
-  // Write nodal positions
+  // Write number of moments and groups to the root of the h5 file
+  H5CreateAttribute(file_id, "num_moments", num_moments);
+  H5CreateAttribute(file_id, "num_groups", num_groups);
+
+  std::vector<uint64_t> cell_ids, num_cell_nodes;
+  cell_ids.reserve(num_local_cells);
+  num_cell_nodes.reserve(num_local_cells);
+
+  std::vector<double> nodes_x, nodes_y, nodes_z;
+  nodes_x.reserve(num_local_nodes);
+  nodes_y.reserve(num_local_nodes);
+  nodes_z.reserve(num_local_nodes);
+  // Loop through mesh nodes and store data
   for (const auto& cell : grid.local_cells)
   {
-    const uint64_t cell_global_id = cell.global_id;
-    const uint64_t num_cell_nodes = discretization.GetCellNumNodes(cell);
-
-    file.write((char*)&cell_global_id, sizeof(uint64_t));
-    file.write((char*)&num_cell_nodes, sizeof(uint64_t));
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
 
     const auto nodes = discretization.GetCellNodeLocations(cell);
     for (const auto& node : nodes)
     {
-      file.write((char*)&node.x, sizeof(double));
-      file.write((char*)&node.y, sizeof(double));
-      file.write((char*)&node.z, sizeof(double));
-    } // for node
-  }   // for cell
+      nodes_x.push_back(node.x);
+      nodes_y.push_back(node.y);
+      nodes_z.push_back(node.z);
+    }
+  }
 
-  // Write flux moments data
+  // Write mesh data to h5 inside the mesh group
+  H5CreateGroup(file_id, "mesh");
+  H5CreateAttribute(file_id, "mesh/num_local_cells", num_local_cells);
+  H5CreateAttribute(file_id, "mesh/num_local_nodes", num_local_nodes);
+  H5WriteDataset1D(file_id, "mesh/cell_ids", cell_ids);
+  H5WriteDataset1D(file_id, "mesh/num_cell_nodes", num_cell_nodes);
+  H5WriteDataset1D(file_id, "mesh/nodes_x", nodes_x);
+  H5WriteDataset1D(file_id, "mesh/nodes_y", nodes_y);
+  H5WriteDataset1D(file_id, "mesh/nodes_z", nodes_z);
+
+  // Loop through dof and store flux values
+  std::vector<double> values;
+  values.reserve(num_local_dofs);
   for (const auto& cell : grid.local_cells)
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
         for (uint64_t g = 0; g < num_groups; ++g)
         {
-          const uint64_t cell_global_id = cell.global_id;
-          const uint64_t dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
-          const double value = src[dof_map];
-
-          file.write((char*)&cell_global_id, sizeof(uint64_t));
-          file.write((char*)&i, sizeof(uint64_t));
-          file.write((char*)&m, sizeof(uint64_t));
-          file.write((char*)&g, sizeof(uint64_t));
-          file.write((char*)&value, sizeof(double));
+          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
+          values.push_back(src[dof_map]);
         }
-  file.close();
+
+  // Write flux values to h5 and close file
+  H5WriteDataset1D(file_id, "values", values);
+  H5Fclose(file_id);
 }
 
 void
@@ -118,41 +99,38 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
 {
   // Open file
   const auto file_name =
-    file_base + (single_file ? "" : std::to_string(opensn::mpi_comm.rank())) + ".data";
-  std::ifstream file(file_name, std::ofstream::binary | std::ofstream::in);
-  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+    file_base + (single_file ? "" : std::to_string(opensn::mpi_comm.rank())) + ".h5";
+  hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
   std::vector<double>& dest =
     opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PhiOldLocal();
 
   log.Log() << "Reading flux moments from " << file_base;
 
-  // Read the header
-  const int num_bytes = 500;
-  char header_bytes[num_bytes];
-  header_bytes[num_bytes - 1] = '\0';
-  file.read(header_bytes, num_bytes - 1);
-
-  // Read the macro info
+  // Read the macro data
   uint64_t file_num_local_cells;
-  uint64_t file_num_local_nodes;
-  uint64_t file_num_moments;
-  uint64_t file_num_groups;
+  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
 
-  file.read((char*)&file_num_local_cells, sizeof(uint64_t));
-  file.read((char*)&file_num_local_nodes, sizeof(uint64_t));
-  file.read((char*)&file_num_moments, sizeof(uint64_t));
-  file.read((char*)&file_num_groups, sizeof(uint64_t));
+  uint64_t file_num_local_nodes;
+  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
+
+  uint64_t file_num_moments;
+  H5ReadAttribute(file_id, "num_moments", file_num_moments);
+
+  uint64_t file_num_groups;
+  H5ReadAttribute(file_id, "num_groups", file_num_groups);
 
   // Check compatibility with system macro info
+  const auto& grid = lbs_solver.Grid();
+  const auto& discretization = lbs_solver.SpatialDiscretization();
   const auto uk_man = lbs_solver.UnknownManager();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  auto& discretization = lbs_solver.SpatialDiscretization();
-  auto& grid = lbs_solver.Grid();
-  const uint64_t num_moments = lbs_solver.NumMoments();
-  const uint64_t num_groups = lbs_solver.NumGroups();
-  const uint64_t num_local_cells = grid.local_cells.size();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
+
+  const auto num_local_cells = grid.local_cells.size();
+  const auto num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
+  const auto num_moments = lbs_solver.NumMoments();
+  const auto num_groups = lbs_solver.NumGroups();
   const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(file_num_local_cells != num_local_cells,
@@ -164,46 +142,43 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   OpenSnLogicalErrorIf(file_num_groups != num_groups,
                        "Incompatible number of groups found in file " + file_name + ".");
 
-  // Read cell nodal locations
+  // Read in mesh information
+  const auto file_cell_ids = H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids");
+  const auto file_num_cell_nodes = H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes");
+
+  const auto nodes_x = H5ReadDataset1D<double>(file_id, "mesh/nodes_x");
+  const auto nodes_y = H5ReadDataset1D<double>(file_id, "mesh/nodes_y");
+  const auto nodes_z = H5ReadDataset1D<double>(file_id, "mesh/nodes_z");
+
+  // Validate mesh compatibility
+  uint64_t curr_node = 0;
   std::map<uint64_t, std::map<uint64_t, uint64_t>> file_cell_nodal_mapping;
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
-    // Read cell-id and num_nodes
-    uint64_t file_cell_global_id;
-    uint64_t file_num_cell_nodes;
+    const uint64_t cell_global_id = file_cell_ids[c];
+    const auto& cell = grid.cells[cell_global_id];
 
-    file.read((char*)&file_cell_global_id, sizeof(uint64_t));
-    file.read((char*)&file_num_cell_nodes, sizeof(uint64_t));
-
-    // Read node locations
-    std::vector<Vector3> file_nodes;
-    file_nodes.reserve(file_num_cell_nodes);
-    for (uint64_t i = 0; i < file_num_cell_nodes; ++i)
-    {
-      double x, y, z;
-      file.read((char*)&x, sizeof(double));
-      file.read((char*)&y, sizeof(double));
-      file.read((char*)&z, sizeof(double));
-
-      file_nodes.emplace_back(x, y, z);
-    } // for file node i
-
-    if (not grid.IsCellLocal(file_cell_global_id))
+    if (not grid.IsCellLocal(cell_global_id))
       continue;
-
-    const auto& cell = grid.cells[file_cell_global_id];
 
     // Check for cell compatibility
     const auto nodes = discretization.GetCellNodeLocations(cell);
 
-    OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes,
+    OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
                          "Incompatible number of cell nodes encountered on cell " +
-                           std::to_string(file_cell_global_id) + ".");
+                           std::to_string(cell_global_id) + ".");
+
+    std::vector<Vector3> file_nodes;
+    file_nodes.reserve(file_num_cell_nodes[c]);
+    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
+    {
+      file_nodes.emplace_back(nodes_x[curr_node], nodes_y[curr_node], nodes_z[curr_node]);
+      ++curr_node;
+    }
 
     // Map the system nodes to file nodes
-    bool mapping_successful = true; // true until disproven
-    auto& mapping = file_cell_nodal_mapping[file_cell_global_id];
-    for (uint64_t n = 0; n < file_num_cell_nodes; ++n)
+    auto& mapping = file_cell_nodal_mapping[cell_global_id];
+    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
     {
       bool mapping_found = false;
       for (uint64_t m = 0; m < nodes.size(); ++m)
@@ -215,35 +190,31 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
 
       OpenSnLogicalErrorIf(not mapping_found,
                            "Incompatible node locations for cell " +
-                             std::to_string(file_cell_global_id) + ".");
-    } // for n
-  }   // for c (cell in file)
+                             std::to_string(cell_global_id) + ".");
+    }
+  }
 
   // Read the flux moments data
+  const auto values = H5ReadDataset1D<double>(file_id, "values");
+
+  uint64_t v = 0;
+  // Assign flux moments data to destination vector
   dest.assign(num_local_dofs, 0.0);
-  for (size_t dof = 0; dof < num_local_dofs; ++dof)
+  for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
-    uint64_t cell_global_id;
-    uint64_t node;
-    uint64_t moment;
-    uint64_t group;
-    double flux_value;
-
-    file.read((char*)&cell_global_id, sizeof(uint64_t));
-    file.read((char*)&node, sizeof(uint64_t));
-    file.read((char*)&moment, sizeof(uint64_t));
-    file.read((char*)&group, sizeof(uint64_t));
-    file.read((char*)&flux_value, sizeof(double));
-
-    if (grid.IsCellLocal(cell_global_id))
-    {
-      const auto& cell = grid.cells[cell_global_id];
-      const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(node);
-      const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, moment, group);
-      dest[dof_map] = flux_value;
-    } // if cell is local
-  }   // for dof
-  file.close();
+    const uint64_t cell_global_id = file_cell_ids[c];
+    const auto& cell = grid.cells[cell_global_id];
+    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      for (uint64_t m = 0; m < num_moments; ++m)
+        for (uint64_t g = 0; g < num_groups; ++g)
+        {
+          const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
+          const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, m, g);
+          dest[dof_map] = values[v];
+          ++v;
+        }
+  }
+  H5Fclose(file_id);
 }
 
 } // namespace opensn

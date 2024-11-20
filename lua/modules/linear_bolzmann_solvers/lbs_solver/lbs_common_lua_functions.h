@@ -56,13 +56,13 @@ int LBSWriteGroupsetAngularFlux(lua_State* L);
 int LBSReadGroupsetAngularFlux(lua_State* L);
 
 /**
- * Writes the flux-moments of a LBS solution to file (phi_old_local).
+ * Writes the flux-moments of a LBS solution to file.
  *
  * \param SolverIndex int Handle to the solver for which the group
  * is to be created.
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
- *                         will append its id to the back plus an extension ".data"
+ *                         will append its id to the back plus an extension ".h5"
  */
 int LBSWriteFluxMoments(lua_State* L);
 
@@ -119,7 +119,7 @@ int LBSReadSourceMoments(lua_State* L);
  * is to be created.
  *
  * \param file_base string Path+Filename_base to use for the output. Each location
- *                         will append its id to the back plus an extension ".data"
+ *                         will append its id to the back plus an extension ".h5"
  *
  * \param single_file_flag bool (Optional) Flag indicating that the file is a
  *                              single stand-alone file. The file_base will then
