@@ -51,10 +51,10 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega, const MeshContinuum& grid, bool allow_c
   }
 
   // Generate topological sorting
-  spls_.item_id.clear();
-  boost::topological_sort(local_DG, std::back_inserter(spls_.item_id));
-  std::reverse(spls_.item_id.begin(), spls_.item_id.end());
-  if (spls_.item_id.empty())
+  spls_.clear();
+  boost::topological_sort(local_DG, std::back_inserter(spls_));
+  std::reverse(spls_.begin(), spls_.end());
+  if (spls_.empty())
   {
     throw std::logic_error("CBC_SPDS: Cyclic dependencies found in the local cell graph.\n"
                            "Cycles need to be allowed by the calling application.");
