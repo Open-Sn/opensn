@@ -147,8 +147,7 @@ public:
 
   /// Copy constructor
   NDArray(const NDArray<T, D>& other)
-    : rank_(other.rank_),
-      size_(other.size_),
+    : size_(other.size_),
       storage_(std::make_unique<T[]>(other.size_)),
       dimensions_(other.dimensions_),
       strides_(other.strides_)
@@ -158,8 +157,7 @@ public:
 
   /// Move constructor
   NDArray(NDArray<T, D>&& other) noexcept
-    : rank_(other.rank_),
-      size_(other.size_),
+    : size_(other.size_),
       storage_(std::move(other.storage_)),
       dimensions_(std::move(other.dimensions_)),
       strides_(std::move(other.strides_))
@@ -182,12 +180,10 @@ public:
   {
     if (this != &other)
     {
-      rank_ = other.rank_;
       size_ = other.size_;
       dimensions_ = std::move(other.dimensions_);
       strides_ = std::move(other.strides_);
       storage_ = std::move(other.storage_);
-      other.rank_ = 0;
       other.size_ = 0;
     }
     return *this;
@@ -281,7 +277,7 @@ public:
   constexpr T& at(Args... args)
   {
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < rank_; ++i)
+    for (size_t i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
         throw std::out_of_range("Index out of bounds.");
@@ -324,7 +320,7 @@ public:
   constexpr const T& at(Args... args) const
   {
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < rank_; ++i)
+    for (size_t i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
         throw std::out_of_range("Index out of bounds.");
@@ -354,12 +350,12 @@ public:
   inline constexpr T* data() const noexcept { return storage_.get(); }
 
   /// Returns the rank of the array.
-  inline constexpr size_t rank() const noexcept { return rank_; }
+  inline constexpr size_t rank() const noexcept { return D; }
 
   /// Returns the dimension of the array.
   inline std::vector<size_t> dimension() const noexcept
   {
-    return std::vector<size_t>(dimensions_.begin(), dimensions_.begin() + rank_);
+    return std::vector<size_t>(dimensions_.begin(), dimensions_.begin() + D);
   }
 
   /// Sets each element of the array to the specified value.
@@ -376,15 +372,14 @@ public:
   template <typename... Args>
   size_t MapNDtoLin(Args... args) const
   {
-    if (sizeof...(args) != rank_)
+    if (sizeof...(args) != D)
     {
       throw std::invalid_argument("Number of arguments " + std::to_string(sizeof...(args)) +
-                                  " not equal to rank " + std::to_string(rank_));
+                                  " not equal to rank " + std::to_string(D));
     }
 
-    const size_t N = rank_;
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < N; ++i)
+    for (size_t i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
       {
@@ -404,7 +399,6 @@ public:
    */
   inline void swap(NDArray<T, D>& other) noexcept
   {
-    std::swap(rank_, other.rank_);
     std::swap(size_, other.size_);
     std::swap(storage_, other.storage_);
     std::swap(dimensions_, other.dimensions_);
@@ -415,34 +409,30 @@ private:
   template <typename U>
   void SetDimensions(const std::vector<U>& dims)
   {
-    rank_ = dims.size();
-    if (rank_ > D)
-      throw std::invalid_argument("Rank exceeds the maximum allowed value of 10.");
+    if (dims.size() > D)
+      throw std::invalid_argument("Number of dimension parameters exceeds the rank.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
 
-  template <typename U, size_t N>
-  void SetDimensions(const std::array<U, N>& dims)
+  template <typename U>
+  void SetDimensions(const std::array<U, D>& dims)
   {
-    rank_ = N;
-    static_assert(N <= D, "Rank exceeds the maximum allowed value of 10.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
 
   template <typename U>
   void SetDimensions(const std::initializer_list<U>& dims)
   {
-    rank_ = dims.size();
-    if (rank_ > D)
-      throw std::invalid_argument("Rank exceeds the maximum allowed value of 10.");
+    if (dims.size() > D)
+      throw std::invalid_argument("Number of dimension parameters exceeds the rank.");
     std::copy(dims.begin(), dims.end(), dimensions_.begin());
   }
 
   void Initialize()
   {
     size_ = 1;
-    strides_[rank_ - 1] = 1;
-    for (size_t i = rank_; i-- > 0;)
+    strides_[D - 1] = 1;
+    for (size_t i = D; i-- > 0;)
     {
       size_ *= dimensions_[i];
       if (i > 0)
@@ -481,13 +471,12 @@ private:
     }
 
     size_t index = 0;
-    for (size_t i = 0; i < rank_; ++i)
+    for (size_t i = 0; i < D; ++i)
       index += indices[i] * strides_[i];
     return index;
   }
 
 private:
-  size_t rank_;
   size_t size_;
   std::unique_ptr<T[]> storage_;
   std::array<size_t, D> dimensions_;
