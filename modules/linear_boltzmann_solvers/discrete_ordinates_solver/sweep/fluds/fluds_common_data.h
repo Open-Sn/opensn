@@ -20,10 +20,10 @@ struct FaceNodalMapping
   /// Cell-node index on the neighbor cell.
   const std::vector<short> cell_node_mapping_;
 
-  FaceNodalMapping(int ass_face,
+  FaceNodalMapping(int adj_face_idx,
                    const std::vector<short>& node_mapping,
                    const std::vector<short>& cell_node_mapping)
-    : associated_face_(ass_face),
+    : associated_face_(adj_face_idx),
       face_node_mapping_(node_mapping),
       cell_node_mapping_(cell_node_mapping)
   {

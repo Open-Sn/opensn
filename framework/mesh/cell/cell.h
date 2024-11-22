@@ -61,7 +61,7 @@ public:
   uint64_t GetNeighborLocalID(const MeshContinuum& grid) const;
 
   /// Determines the neighbor's associated face.
-  int GetNeighborAssociatedFace(const MeshContinuum& grid) const;
+  int GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const;
 
 public:
   /// Computes the face area.

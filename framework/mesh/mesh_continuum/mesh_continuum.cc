@@ -241,7 +241,7 @@ void
 MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                                       std::vector<short>& dof_mapping) const
 {
-  const int associated_face = cur_face.GetNeighborAssociatedFace(*this);
+  const int adj_face_idx = cur_face.GetNeighborAdjacentFaceIndex(*this);
   // Check face validity
   OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
@@ -252,7 +252,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
-  const auto& adj_face = adj_cell.faces[associated_face];
+  const auto& adj_face = adj_cell.faces[adj_face_idx];
 
   for (auto cfvid : cur_face.vertex_ids)
   {
