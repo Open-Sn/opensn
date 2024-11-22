@@ -54,7 +54,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
       const double b = x(1);
       const double FOUR_PI = 4.0 * M_PI;
 
-      double size_J = Vec2Norm({J_x, J_y, J_z});
+      double size_J = L2Norm({J_x, J_y, J_z});
 
       return Vector<double>((FOUR_PI / b) * exp(a) * sinh(b) - 1.0,
                             (FOUR_PI / b / b) * exp(a) * (b * cosh(b) - sinh(b)) - size_J);
@@ -83,7 +83,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
   double J_z = P1_moments[3];
 
   // Compute initial ratio size_J/phi
-  double size_J_i = Vec2Norm({J_x, J_y, J_z});
+  double size_J_i = L2Norm({J_x, J_y, J_z});
   double ratio_i = size_J_i / phi;
 
   if (phi < 1.0e-10 or ratio_i > 0.9)
@@ -99,7 +99,7 @@ MakeExpRepFromP1(const std::array<double, 4>& P1_moments, bool verbose)
     J_z /= phi;
   }
 
-  double size_J_f = Vec2Norm({J_x, J_y, J_z});
+  double size_J_f = L2Norm({J_x, J_y, J_z});
   double ratio_f = size_J_f;
 
   if (verbose)

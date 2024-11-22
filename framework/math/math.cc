@@ -100,7 +100,7 @@ Mult(const std::vector<double>& x, const double& val)
 }
 
 double
-Vec1Norm(const std::vector<double>& x)
+L1Norm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -113,7 +113,7 @@ Vec1Norm(const std::vector<double>& x)
 }
 
 double
-Vec2Norm(const std::vector<double>& x)
+L2Norm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -126,7 +126,7 @@ Vec2Norm(const std::vector<double>& x)
 }
 
 double
-VecInfinityNorm(const std::vector<double>& x)
+LInfNorm(const std::vector<double>& x)
 {
   // Local Variables
   size_t n = x.size();
@@ -139,7 +139,7 @@ VecInfinityNorm(const std::vector<double>& x)
 }
 
 double
-VecPNorm(const std::vector<double>& x, const double& p)
+LpNorm(const std::vector<double>& x, const double& p)
 {
   // Local Variables
   size_t n = x.size();
