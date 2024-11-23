@@ -186,11 +186,6 @@ public:
 
   void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
 
-public:
-  VertexHandler vertices;
-  LocalCellHandler local_cells;
-  GlobalCellHandler cells;
-
 private:
   /// Spatial dimension
   unsigned int dim_;
@@ -206,6 +201,11 @@ private:
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
+
+public:
+  VertexHandler vertices;
+  LocalCellHandler local_cells;
+  GlobalCellHandler cells;
 };
 
 } // namespace opensn
