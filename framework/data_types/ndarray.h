@@ -41,7 +41,7 @@ public:
    * This constructor creates an empty array and initializes the reference
    * count to one.
    */
-  NDArray() noexcept : rank_(D), size_(0), storage_(nullptr), dimensions_{}, strides_{} {}
+  NDArray() noexcept : size_(0), storage_(nullptr), dimensions_{}, strides_{} {}
 
   /**
    * Creates an array with the specified number of elements in each dimension,
