@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
 
 #include <petscsnes.h>
@@ -30,7 +31,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     groupset_ids.push_back(groupset.id);
 
   // Disassemble phi vector
-  lbs_solver.SetPrimarySTLvectorFromMultiGSPETScVecFrom(groupset_ids, phi, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
+    lbs_solver, groupset_ids, phi, PhiSTLOption::PHI_OLD);
 
   // Compute 1/k F phi
   Set(q_moments_local, 0.0);
@@ -65,7 +67,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   // Reassemble PETSc vector
   // We use r as a proxy for delta-phi here since
   // we are anycase going to subtract phi from it.
-  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, r, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(
+    lbs_solver, groupset_ids, r, PhiSTLOption::PHI_NEW);
 
   VecAXPY(r, -1.0, phi);
 

@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -80,7 +81,7 @@ PowerIterationKEigen::Initialize()
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
   if (reset_phi0_ and lbs_solver_.Options().read_restart_path.empty())
-    lbs_solver_.SetPhiVectorScalarValues(phi_old_local_, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
 }
 
 void

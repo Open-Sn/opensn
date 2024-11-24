@@ -10,6 +10,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/physics/solver.h"
 #include <petscksp.h>
@@ -286,52 +287,6 @@ public:
   /// Compute the steady state delayed neutron precursor concentrations.
   void ComputePrecursors();
 
-  /// Sets a value to the zeroth (scalar) moment of the vector.
-  virtual void SetPhiVectorScalarValues(std::vector<double>& phi_vector, double value);
-
-  /// Scales a flux moment vector. For sweep methods the delayed angular fluxes will also be scaled.
-  virtual void ScalePhiVector(PhiSTLOption which_phi, double value);
-
-  /// Assembles a vector for a given groupset from a source vector.
-  virtual void
-  SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
-
-  /// Assembles a vector for a given groupset from a source vector.
-  virtual void
-  SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset, Vec x, PhiSTLOption which_phi);
-
-  /// Assembles a vector for a given groupset from a source vector.
-  virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
-                                             const std::vector<double>& x,
-                                             std::vector<double>& y);
-
-  /// Assembles a vector for a given groupset from a source vector.
-  virtual void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
-                                             PhiSTLOption from_which_phi,
-                                             PhiSTLOption to_which_phi);
-
-  /// Assembles a vector for a given group span from a source vector.
-  virtual void SetGroupScopedPETScVecFromPrimarySTLvector(int first_group_id,
-                                                          int last_group_id,
-                                                          Vec x,
-                                                          const std::vector<double>& y);
-
-  /// Assembles a vector for a given groupset from a source vector.
-  virtual void SetPrimarySTLvectorFromGroupScopedPETScVec(int first_group_id,
-                                                          int last_group_id,
-                                                          Vec x,
-                                                          std::vector<double>& y);
-
-  /// Assembles a PETSc vector from multiple groupsets.
-  virtual void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
-                                                      Vec x,
-                                                      PhiSTLOption which_phi);
-
-  /// Disassembles a multiple Groupset PETSc vector STL vectors.
-  virtual void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
-                                                          Vec x,
-                                                          PhiSTLOption which_phi);
-
   /**
    * A method for post-processing an adjoint solution.
    *
@@ -429,9 +384,6 @@ protected:
 
   /// Cleans up memory consuming items.
   static void CleanUpTGDSA(LBSGroupset& groupset);
-
-private:
-  void PrepareForRestarts();
 
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;

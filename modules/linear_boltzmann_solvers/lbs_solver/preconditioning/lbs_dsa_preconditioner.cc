@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
@@ -23,7 +24,8 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 
   // Copy PETSc vector to STL
   auto& phi_new_local = gs_context_ptr->lbs_solver.PhiNewLocal();
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+    lbs_solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply WGDSA
   if (groupset.apply_wgdsa)
@@ -49,7 +51,8 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   }
 
   // Copy STL vector to PETSc Vec
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, pc_output, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+    lbs_solver, groupset, pc_output, PhiSTLOption::PHI_NEW);
 
   return 0;
 }
@@ -63,7 +66,8 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
 
   // Copy PETSc vector to STL
   auto& phi_new_local = gs_context_ptr.lbs_solver.PhiNewLocal();
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, phi_input, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+    lbs_solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply WGDSA
   if (groupset.apply_wgdsa)
@@ -89,7 +93,8 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   }
 
   // Copy STL vector to PETSc Vec
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, pc_output, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+    lbs_solver, groupset, pc_output, PhiSTLOption::PHI_NEW);
 
   return 0;
 }

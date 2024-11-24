@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "caliper/cali.h"
 
@@ -34,7 +35,8 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   MatShellGetContext(matrix, &gs_context_ptr);
 
   // Copy krylov action_vector into local
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, action_vector, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+    lbs_solver, groupset, action_vector, PhiSTLOption::PHI_OLD);
 
   // Setting the source using updated phi_old
   auto& q_moments_local = lbs_solver.QMomentsLocal();
@@ -48,7 +50,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   // We copy the STL data to the operating vector
   // petsc_phi_delta first because it's already sized.
   // pc_output is not necessarily initialized yet.
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, action, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_solver, groupset, action, PhiSTLOption::PHI_NEW);
 
   // Computing action
   // A  = [I - DLinvMS]

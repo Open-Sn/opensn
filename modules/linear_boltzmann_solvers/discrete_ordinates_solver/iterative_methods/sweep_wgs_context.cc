@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -143,8 +144,8 @@ SweepWGSContext::PostSolveCallback()
     set_source_function(groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
     sweep_scheduler.SetDestinationPhi(lbs_solver.PhiNewLocal());
     ApplyInverseTransportOperator(scope);
-    lbs_solver.GSScopedCopyPrimarySTLvectors(
-      groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(
+      lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
   if (log_info)

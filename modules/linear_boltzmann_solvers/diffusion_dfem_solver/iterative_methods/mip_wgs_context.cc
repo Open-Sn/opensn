@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "framework/runtime.h"
@@ -77,12 +78,14 @@ MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   Vec work_vector;
   VecDuplicate(mip_solver.RHS(), &work_vector);
 
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, work_vector, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+    lbs_solver, groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   mip_solver.Assemble_b(work_vector);
   mip_solver.Solve(work_vector);
 
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, work_vector, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+    lbs_solver, groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   VecDestroy(&work_vector);
 }
@@ -90,7 +93,8 @@ MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 void
 MIPWGSContext::PostSolveCallback()
 {
-  lbs_solver.GSScopedCopyPrimarySTLvectors(groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
 
 } // namespace opensn
