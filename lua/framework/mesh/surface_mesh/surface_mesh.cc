@@ -60,32 +60,6 @@ MeshComputeLoadBalancing(lua_State* L)
   return LuaReturn(L);
 }
 
-/** Exports all open edges of a surface mesh to file. This is used mostly
- * for graphical error checking.
- *
- * \param SurfaceHandle int Handle to the surface on which the operation is to be
- * performed. \param FileName char Filename to which the edges are to be exported.
- *
- * \ingroup LuaSurfaceMesh
- * \author Jan
- */
-int
-SurfaceMeshExtractOpenEdgesToObj(lua_State* L)
-{
-  const std::string fname = "SurfaceMeshExtractOpenEdgesToObj";
-  LuaCheckArgs<size_t, std::string>(L, fname);
-
-  auto surf_handle = LuaArg<size_t>(L, 1);
-  auto file_name = LuaArg<std::string>(L, 2);
-
-  auto& surface_mesh =
-    opensn::GetStackItem<SurfaceMesh>(opensn::surface_mesh_stack, surf_handle, __FUNCTION__);
-
-  surface_mesh.ExtractOpenEdgesToObj(file_name.c_str());
-
-  return LuaReturn(L);
-}
-
 int
 MeshSurfaceMeshImportFromOBJFile(lua_State* L)
 {

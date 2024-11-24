@@ -62,9 +62,6 @@ public:
   const BoundBox& BoundingBox() const { return bound_box_; }
   void ComputeBoundingBox();
 
-  void SetMeshOptions(const Options& opts) { mesh_options_ = opts; }
-  const Options& MeshOptions() const { return mesh_options_; }
-
   void SetType(MeshType type) { mesh_type_ = type; }
   const MeshType& Type() const { return mesh_type_; }
 
@@ -76,7 +73,7 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(std::shared_ptr<LightWeightCell> cell) { raw_cells_.push_back(cell); }
+  void AddCell(const std::shared_ptr<LightWeightCell>& cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
 
   std::vector<std::shared_ptr<LightWeightCell>>& RawCells() { return raw_cells_; }
@@ -110,15 +107,6 @@ public:
 
   void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
   const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
-
-  /// Makes a cell from proxy information and pushes the cell to the mesh.
-  void PushProxyCell(const std::string& type_str,
-                     const std::string& sub_type_str,
-                     int cell_num_faces,
-                     int cell_material_id,
-                     const std::vector<std::vector<uint64_t>>& proxy_faces);
-
-  void CleanUp();
 
 protected:
   /// Spatial mesh dimension

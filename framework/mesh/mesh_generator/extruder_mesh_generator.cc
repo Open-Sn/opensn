@@ -83,7 +83,7 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
       h = valid_params.GetParamValue<double>("h");
     else
     {
-      double z = valid_params.GetParamValue<double>("z");
+      auto z = valid_params.GetParamValue<double>("z");
       OpenSnInvalidArgumentIf(z <= current_z_level,
                               "For extrusion layers, the \"z\" coordinates must "
                               "be monotonically increasing.");

@@ -187,8 +187,6 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       log.Log() << "Writing part " << pid << " num_local_cells=" << local_cells_needed.size();
 
     // Write mesh attributes and general info
-    const auto& mesh_options = umesh.MeshOptions();
-
     WriteBinaryValue(ofile, num_parts); // int
     WriteBinaryValue<unsigned int>(ofile, umesh.Dimension());
 
@@ -326,11 +324,11 @@ SplitFileMeshGenerator::ReadSplitMesh()
   info_block.num_global_vertices = ReadBinaryValue<size_t>(ifile);
 
   // Read boundary map
-  const size_t num_bndries = ReadBinaryValue<size_t>(ifile);
+  const auto num_bndries = ReadBinaryValue<size_t>(ifile);
   for (size_t b = 0; b < num_bndries; ++b)
   {
-    const uint64_t bid = ReadBinaryValue<uint64_t>(ifile);
-    const size_t num_chars = ReadBinaryValue<size_t>(ifile);
+    const auto bid = ReadBinaryValue<uint64_t>(ifile);
+    const auto num_chars = ReadBinaryValue<size_t>(ifile);
     std::string bname(num_chars, ' ');
     ifile.read(bname.data(), static_cast<int>(num_chars));
 
@@ -338,31 +336,31 @@ SplitFileMeshGenerator::ReadSplitMesh()
   }
 
   // Write how many cells and vertices in file
-  const size_t num_cells = ReadBinaryValue<size_t>(ifile);
-  const size_t num_vertices = ReadBinaryValue<size_t>(ifile);
+  const auto num_cells = ReadBinaryValue<size_t>(ifile);
+  const auto num_vertices = ReadBinaryValue<size_t>(ifile);
 
   // Read the cells
   for (size_t c = 0; c < num_cells; ++c)
   {
     const int cell_pid = ReadBinaryValue<int>(ifile);
-    const uint64_t cell_gid = ReadBinaryValue<uint64_t>(ifile);
-    const CellType cell_type = ReadBinaryValue<CellType>(ifile);
-    const CellType cell_sub_type = ReadBinaryValue<CellType>(ifile);
+    const auto cell_gid = ReadBinaryValue<uint64_t>(ifile);
+    const auto cell_type = ReadBinaryValue<CellType>(ifile);
+    const auto cell_sub_type = ReadBinaryValue<CellType>(ifile);
 
     UnpartitionedMesh::LightWeightCell new_cell(cell_type, cell_sub_type);
 
     new_cell.centroid = ReadBinaryValue<Vector3>(ifile);
     new_cell.material_id = ReadBinaryValue<int>(ifile);
 
-    const size_t num_vids = ReadBinaryValue<size_t>(ifile);
+    const auto num_vids = ReadBinaryValue<size_t>(ifile);
     for (size_t v = 0; v < num_vids; ++v)
       new_cell.vertex_ids.push_back(ReadBinaryValue<uint64_t>(ifile));
 
-    const size_t num_faces = ReadBinaryValue<size_t>(ifile);
+    const auto num_faces = ReadBinaryValue<size_t>(ifile);
     for (size_t f = 0; f < num_faces; ++f)
     {
       UnpartitionedMesh::LightWeightFace new_face;
-      const size_t num_face_vids = ReadBinaryValue<size_t>(ifile);
+      const auto num_face_vids = ReadBinaryValue<size_t>(ifile);
       for (size_t v = 0; v < num_face_vids; ++v)
         new_face.vertex_ids.push_back(ReadBinaryValue<uint64_t>(ifile));
 
@@ -378,8 +376,8 @@ SplitFileMeshGenerator::ReadSplitMesh()
   // Read the vertices
   for (size_t v = 0; v < num_vertices; ++v)
   {
-    const uint64_t vid = ReadBinaryValue<uint64_t>(ifile);
-    const Vector3 vertex = ReadBinaryValue<Vector3>(ifile);
+    const auto vid = ReadBinaryValue<uint64_t>(ifile);
+    const auto vertex = ReadBinaryValue<Vector3>(ifile);
     vertices.insert(std::make_pair(vid, vertex));
   } // for vertex v
 
@@ -406,7 +404,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
     const auto& [cell_pid, cell_global_id] = pidgid;
     auto cell = SetupCell(raw_cell, cell_global_id, cell_pid, STLVertexListHelper(vertices));
 
-    grid_ptr->cells.push_back(std::move(cell));
+    grid_ptr->cells.PushBack(std::move(cell));
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);

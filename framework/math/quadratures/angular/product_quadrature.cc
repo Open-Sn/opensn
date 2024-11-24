@@ -93,7 +93,7 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
     omegas.emplace_back(new_omega);
 
     if (verbose)
-      log.Log() << "Quadrature angle=" << new_omega.PrintS();
+      log.Log() << "Quadrature angle=" << new_omega.PrintStr();
   }
 
   if (verbose)

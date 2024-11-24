@@ -6,15 +6,11 @@
 namespace opensn
 {
 
+// Scalar multiplication for Vector3
 Vector3
-operator*(const double value, const Vector3& that)
+operator*(const double value, const Vector3& vec)
 {
-  Vector3 newVector;
-  newVector.x = that.x * value;
-  newVector.y = that.y * value;
-  newVector.z = that.z * value;
-
-  return newVector;
+  return Vector3(vec.x * value, vec.y * value, vec.z * value);
 }
 
 } // namespace opensn
