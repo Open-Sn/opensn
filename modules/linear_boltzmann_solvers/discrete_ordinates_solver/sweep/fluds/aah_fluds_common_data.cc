@@ -175,14 +175,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           continue;
 
         // Find associated face for dof mapping and lock box
-        auto adj_face = (short)face.GetNeighborAssociatedFace(grid);
+        auto adj_face_idx = (short)face.GetNeighborAdjacentFaceIndex(grid);
 
         // Now find the cell (index,face) pair in the lock box and empty slot
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
           if ((static_cast<uint64_t>(lock_box_slot.first) == face.neighbor_id) and
-              (lock_box_slot.second == adj_face))
+              (lock_box_slot.second == adj_face_idx))
           {
             lock_box_slot.first = -1;
             lock_box_slot.second = -1;
@@ -195,7 +195,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           log.LogAllError() << "Lock-box location not found in call to "
                             << "InitializeAlphaElements. Local Cell " << cell.local_id << " face "
                             << f << " looking for cell " << face.GetNeighborLocalID(grid)
-                            << " face " << adj_face << " cat: " << face_categ
+                            << " face " << adj_face_idx << " cat: " << face_categ
                             << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
           Exit(EXIT_FAILURE);
         }
@@ -358,7 +358,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
       if (face.IsNeighborLocal(grid))
       {
         // Find associated face for dof mapping
-        auto ass_face = cell_nodal_mapping[f].associated_face_;
+        auto adj_face_idx = cell_nodal_mapping[f].associated_face_;
 
         std::pair<int, std::vector<short>> dof_mapping;
         dof_mapping.second = cell_nodal_mapping[f].face_node_mapping_;
@@ -377,7 +377,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
             ++out_f;
           }
 
-          if (af == ass_face)
+          if (af == adj_face_idx)
           {
             ass_f_counter = out_f;
             break;
@@ -682,7 +682,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           // Find associated face
           std::set<int> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
           CompactCellView* adj_cell_view = &prelocI_cell_views_[prelocI][ass_cell];
-          int ass_face = -1, af = -1;
+          int adj_face_idx = -1, af = -1;
           for (auto& adj_face : adj_cell_view->second)
           {
             ++af;
@@ -695,11 +695,11 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
             if (face_matches)
             {
-              ass_face = af;
+              adj_face_idx = af;
               break;
             }
           }
-          if (ass_face < 0)
+          if (adj_face_idx < 0)
           {
             log.LogAll() << "Associated face not found in call to InitializeBetaElements";
             Exit(EXIT_FAILURE);
@@ -707,8 +707,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
-          dof_mapping.first = adj_cell_view->second[ass_face].first;
-          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
+          dof_mapping.first = adj_cell_view->second[adj_face_idx].first;
+          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[adj_face_idx].second;
           for (auto fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;
@@ -765,7 +765,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
           // Find associated face
           CompactCellView* adj_cell_view = &delayed_prelocI_cell_views_[delayed_preLocI][ass_cell];
-          int ass_face = -1;
+          int adj_face_idx = -1;
           for (auto af = 0; af < adj_cell_view->second.size(); ++af)
           {
             bool face_matches = true;
@@ -790,11 +790,11 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
             if (face_matches)
             {
-              ass_face = af;
+              adj_face_idx = af;
               break;
             }
           }
-          if (ass_face < 0)
+          if (adj_face_idx < 0)
           {
             log.LogAll() << "Associated face not found in call to InitializeBetaElements";
             Exit(EXIT_FAILURE);
@@ -802,8 +802,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
-          dof_mapping.first = adj_cell_view->second[ass_face].first;
-          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[ass_face].second;
+          dof_mapping.first = adj_cell_view->second[adj_face_idx].first;
+          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[adj_face_idx].second;
           for (auto fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;

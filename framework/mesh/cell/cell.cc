@@ -130,7 +130,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 }
 
 int
-CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
+CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
@@ -145,7 +145,7 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
 
   const auto& adj_cell = grid.cells[cur_face.neighbor_id];
 
-  int associated_face = -1;
+  int adj_face_idx = -1;
   std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),
                             cur_face.vertex_ids.end()); // cur_face vertex ids
 
@@ -159,13 +159,13 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
 
     if (afvids == cfvids)
     {
-      associated_face = af;
+      adj_face_idx = af;
       break;
     }
   }
 
   // Check associated face validity
-  if (associated_face < 0)
+  if (adj_face_idx < 0)
   {
     std::stringstream outstr;
     outstr << "Could not find associated face in call to "
@@ -180,7 +180,7 @@ CellFace::GetNeighborAssociatedFace(const MeshContinuum& grid) const
     throw std::runtime_error(outstr.str());
   }
 
-  return associated_face;
+  return adj_face_idx;
 }
 
 double

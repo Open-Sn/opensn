@@ -1393,16 +1393,16 @@ LBSSolver::InitializeParrays()
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
-      int ass_face = -1;
+      int adj_face_idx = -1;
 
       if (face.has_neighbor)
       {
         grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
         grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
-        ass_face = face.GetNeighborAssociatedFace(*grid_ptr_);
+        adj_face_idx = face.GetNeighborAdjacentFaceIndex(*grid_ptr_);
       }
 
-      cell_nodal_mapping.emplace_back(ass_face, face_node_mapping, cell_node_mapping);
+      cell_nodal_mapping.emplace_back(adj_face_idx, face_node_mapping, cell_node_mapping);
     } // for f
 
     grid_nodal_mappings_.push_back(cell_nodal_mapping);

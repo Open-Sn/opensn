@@ -366,8 +366,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
         if (face.has_neighbor and grid_.IsCellLocal(face.neighbor_id))
         {
           const auto& adj_cell = grid_.cells[face.neighbor_id];
-          const auto ass_face = face.GetNeighborAssociatedFace(grid_);
-          auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][ass_face];
+          const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_);
+          auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][adj_face_idx];
 
           switch (orientation)
           {
@@ -386,8 +386,8 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       else if (face.has_neighbor and not grid_.IsCellLocal(face.neighbor_id))
       {
         const auto& adj_cell = grid_.cells[face.neighbor_id];
-        const auto ass_face = face.GetNeighborAssociatedFace(grid_);
-        const auto& adj_face = adj_cell.faces[ass_face];
+        const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_);
+        const auto& adj_face = adj_cell.faces[adj_face_idx];
 
         auto& cur_face_ori = cell_face_orientations_[cell.local_id][f];
 
