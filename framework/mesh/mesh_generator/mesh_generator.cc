@@ -198,7 +198,52 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_parti
   std::vector<int64_t> cell_pids =
     partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
 
+  RebalancePartitions(cell_pids, num_partitions);
+
   return cell_pids;
+}
+
+void
+MeshGenerator::RebalancePartitions(std::vector<int64_t>& cell_pids, int num_partitions)
+{
+  // Count the number of cells in each partition
+  std::vector<int> cells_per_partition(num_partitions, 0);
+  for (int partition : cell_pids)
+    cells_per_partition[partition]++;
+
+  // Check if any partition has zero cells
+  if (std::none_of(cells_per_partition.begin(),
+                   cells_per_partition.end(),
+                   [](int count) { return count == 0; }))
+  {
+    return;
+  }
+
+  // Redistributed cells from heavy partitions
+  int total_cells = cell_pids.size();
+  int target = total_cells / num_partitions;
+
+  for (int partition = 0; partition < num_partitions; ++partition)
+  {
+    while (cells_per_partition[partition] > target)
+    {
+      auto it = std::min_element(cells_per_partition.begin(), cells_per_partition.end());
+      int min_partition = std::distance(cells_per_partition.begin(), it);
+      if (min_partition == partition or cells_per_partition[min_partition] >= target)
+        break;
+
+      for (auto& cell_pid : cell_pids)
+      {
+        if (cell_pid == partition)
+        {
+          cell_pid = min_partition;
+          cells_per_partition[partition]--;
+          cells_per_partition[min_partition]++;
+          break;
+        }
+      }
+    }
+  }
 }
 
 std::shared_ptr<MeshContinuum>
