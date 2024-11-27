@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_convergence_test.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
@@ -136,7 +137,7 @@ WGSLinearSolver::SetInitialGuess()
   auto& groupset = gs_context_ptr->groupset;
   auto& lbs_solver = gs_context_ptr->lbs_solver;
 
-  lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_solver, groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
   VecNorm(x_, NORM_2, &init_guess_norm);
@@ -179,7 +180,7 @@ WGSLinearSolver::SetRHS()
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Assemble PETSc vector
-    lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, b_, PhiSTLOption::PHI_NEW);
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_solver, groupset, b_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
     VecNorm(b_, NORM_2, &context_ptr_->rhs_norm);
@@ -207,7 +208,7 @@ WGSLinearSolver::SetRHS()
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Assemble PETSc vector
-    lbs_solver.SetGSPETScVecFromPrimarySTLvector(groupset, x_, PhiSTLOption::PHI_NEW);
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_solver, groupset, x_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
     VecNorm(x_, NORM_2, &context_ptr_->rhs_norm);
@@ -248,8 +249,8 @@ WGSLinearSolver::PostSolveCallback()
   auto& groupset = gs_context_ptr->groupset;
   auto& lbs_solver = gs_context_ptr->lbs_solver;
 
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_NEW);
-  lbs_solver.SetPrimarySTLvectorFromGSPETScVec(groupset, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(lbs_solver, groupset, x_, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(lbs_solver, groupset, x_, PhiSTLOption::PHI_OLD);
 
   // Restore saved q_moms
   lbs_solver.QMomentsLocal() = saved_q_moments_local_;

@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
@@ -285,11 +286,12 @@ PowerIterationKEigenSMM::Execute()
     TransferDiffusionToTransport(phi0, phi_new_local_);
 
     const double production = lbs_solver_.ComputeFissionProduction(phi_new_local_);
-    lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_NEW, lambda / production);
+    LBSVecOps::ScalePhiVector(lbs_solver_, PhiSTLOption::PHI_NEW, lambda / production);
 
     const auto phi_change = CheckScalarFluxConvergence(phi_new_local_, phi_ell);
-    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_old_local_);
-    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_ell);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(
+      lbs_solver_, front_gs_, phi_new_local_, phi_old_local_);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_solver_, front_gs_, phi_new_local_, phi_ell);
     ++nit;
 
     if (lbs_solver_.Options().verbose_outer_iterations)

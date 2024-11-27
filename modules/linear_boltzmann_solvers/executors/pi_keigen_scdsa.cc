@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
@@ -272,11 +273,11 @@ PowerIterationKEigenSCDSA::Execute()
     } // acceleration
 
     ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_new_local_);
-    lbs_solver.GSScopedCopyPrimarySTLvectors(
-      front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(
+      lbs_solver, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
     const double production = lbs_solver.ComputeFissionProduction(phi_old_local_);
-    lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
+    LBSVecOps::ScalePhiVector(lbs_solver, PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
     // Recompute k-eigenvalue
     k_eff_ = lambda_kp1;

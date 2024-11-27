@@ -2,18 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_solver.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/snes_k_monitor.h"
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_residual_func.h"
-
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
 #include <petscsnes.h>
-
 #include <iomanip>
 
 namespace opensn
@@ -104,7 +99,8 @@ NLKEigenvalueAGSSolver::SetInitialGuess()
   auto& lbs_solver = nl_context_ptr->lbs_solver;
   const auto& groupset_ids = nl_context_ptr->groupset_ids;
 
-  lbs_solver.SetMultiGSPETScVecFromPrimarySTLvector(groupset_ids, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(
+    lbs_solver, groupset_ids, x_, PhiSTLOption::PHI_OLD);
 }
 
 void
@@ -116,8 +112,8 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
 
   // Unpack solution
   const auto& groups = lbs_solver.Groups();
-  lbs_solver.SetPrimarySTLvectorFromGroupScopedPETScVec(
-    groups.front().id, groups.back().id, x_, lbs_solver.PhiNewLocal());
+  LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
+    lbs_solver, groups.front().id, groups.back().id, x_, PhiSTLOption::PHI_NEW);
 
   // Compute final k_eff
   double k_eff = lbs_solver.ComputeFissionProduction(lbs_solver.PhiNewLocal());

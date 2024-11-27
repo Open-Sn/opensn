@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/logging/log.h"
@@ -81,8 +82,8 @@ ClassicRichardson::Solve()
     }
     else
     {
-      lbs_solver.GSScopedCopyPrimarySTLvectors(
-        groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+      LBSVecOps::GSScopedCopyPrimarySTLvectors(
+        lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
       groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi_new_);
       psi_old_ = psi_new_;
     }

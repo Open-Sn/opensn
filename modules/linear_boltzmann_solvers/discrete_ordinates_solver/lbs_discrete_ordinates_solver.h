@@ -9,8 +9,6 @@
 namespace opensn
 {
 
-class CBC_ASynchronousCommunicator;
-
 /**
  * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to
  * sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver.
@@ -29,22 +27,7 @@ public:
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
   void Initialize() override;
-  void ScalePhiVector(PhiSTLOption which_phi, double value) override;
-  void SetGSPETScVecFromPrimarySTLvector(const LBSGroupset& groupset,
-                                         Vec x,
-                                         PhiSTLOption which_phi) override;
-  void SetPrimarySTLvectorFromGSPETScVec(const LBSGroupset& groupset,
-                                         Vec x,
-                                         PhiSTLOption which_phi) override;
-  void GSScopedCopyPrimarySTLvectors(const LBSGroupset& groupset,
-                                     PhiSTLOption from_which_phi,
-                                     PhiSTLOption to_which_phi) override;
-  void SetMultiGSPETScVecFromPrimarySTLvector(const std::vector<int>& groupset_ids,
-                                              Vec x,
-                                              PhiSTLOption which_phi) override;
-  void SetPrimarySTLvectorFromMultiGSPETScVecFrom(const std::vector<int>& groupset_ids,
-                                                  Vec x,
-                                                  PhiSTLOption which_phi) override;
+
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 

@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/nl_keigen_acc_residual_func.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/snes_k_monitor.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -102,13 +103,13 @@ NLKEigenDiffSolver::PostSolveCallback()
 
   auto phi_lp1_temp = phi_lph_ip1 + delta_phi;
   lbs_solver.GSProjectBackPhi0(front_gs, phi_lp1_temp, phi_new_local);
-  lbs_solver.GSScopedCopyPrimarySTLvectors(front_gs, phi_new_local, phi_old_local);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_solver, front_gs, phi_new_local, phi_old_local);
 
   // Compute final k_eff
   double k_eff = nl_context_ptr->kresid_func_context.k_eff;
 
   const double production = lbs_solver.ComputeFissionProduction(phi_old_local);
-  lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, k_eff / production);
+  LBSVecOps::ScalePhiVector(lbs_solver, PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
