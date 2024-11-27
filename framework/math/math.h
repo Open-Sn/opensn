@@ -113,7 +113,7 @@ std::vector<double> Mult(const std::vector<double>& x, const double& val);
  * \|\boldsymbol{x}\|_{1}=\sum_{i=1}^{n}\left|x_{i}\right|
  * \f]
  */
-double Vec1Norm(const std::vector<double>& x);
+double L1Norm(const std::vector<double>& x);
 
 /**
  * Returns the 2-norm. Also known as the Euclidian or Frobenius norm.
@@ -122,7 +122,7 @@ double Vec1Norm(const std::vector<double>& x);
  * \|\boldsymbol{x}\|_{2}=\sqrt{x_{1}^{2}+\cdots+x_{n}^{2}}
  * \f]
  */
-double Vec2Norm(const std::vector<double>& x);
+double L2Norm(const std::vector<double>& x);
 
 /**
  * Returns the infinity-norm.
@@ -131,7 +131,7 @@ double Vec2Norm(const std::vector<double>& x);
  * \|\mathbf{x}\|_{\infty}=\max \left(\left|x_{1}\right|,
  * \ldots,\left|x_{n}\right|\right) \f]
  */
-double VecInfinityNorm(const std::vector<double>& x);
+double LInfNorm(const std::vector<double>& x);
 
 /**
  * Returns the p-norm.
@@ -140,7 +140,7 @@ double VecInfinityNorm(const std::vector<double>& x);
  * \|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1 / p}
  * \f]
  */
-double VecPNorm(const std::vector<double>& x, const double& p);
+double LpNorm(const std::vector<double>& x, const double& p);
 
 /**
  * Computes the dot product of two vectors.
