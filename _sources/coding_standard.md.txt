@@ -5,7 +5,7 @@ This page describes the coding standard of OpenSn.
 
 ## File names
 
-Directory and file names should use [snake](snake) style.
+Directory and file names should use [snake](#naming-conventions) style.
 
 ```
 some_directory/file_name1.ext
@@ -18,7 +18,8 @@ some_other_directory/another_file
 
 ### Macros
 
-Macro names should use [Pascal](Pascal) case, macro parameters should use [snake](snake) style
+Macro names should use [Pascal](#naming-conventions) case, macro parameters should
+use [snake](#naming-conventions) style
 
 ```c++
 #define MacroDefinition(macro_parameter)
@@ -26,7 +27,7 @@ Macro names should use [Pascal](Pascal) case, macro parameters should use [snake
 
 ### Namespaces
 
-Namespace names should use [snake](snake) style.
+Namespace names should use [snake](#naming-conventions) style.
 
 ```C++
 namespace ns_one {
@@ -38,7 +39,7 @@ namespace ns_one {
 
 ### Enums
 
-Enum names should use [Pascal](Pascal) style, enum values upper case.
+Enum names should use [Pascal](#naming-conventions) style, enum values upper case.
 
 ```c++
 enum OurEnumType {
@@ -58,11 +59,11 @@ const int MY_CONSTANT = 10;
 
 ### Classes and Structs
 
-Class names should use [Pascal](Pascal) style.
-Member variables should use [snake](snake) style.
+Class names should use [Pascal](#naming-conventions) style.
+Member variables should use [snake](#naming-conventions) style.
 Private and protected member variables should have trailing `_` (underscore).
-Member functions should use [Pascal](Pascal) style.
-Member function parameters should use [snake](snake) style.
+Member functions should use [Pascal](#naming-conventions) style.
+Member function parameters should use [snake](#naming-conventions) style.
 
 
 ```c++
@@ -91,13 +92,13 @@ protected:
 
 ### Getters and Setters
 
-Getters should not include the prefix `Get`, however setters should use the `Set` prefix.
+Getters should use the `Get` prefix and setters should use the `Set` prefix.
 
 ```c++
 class MyClass
 {
 public:
-  Type Member() { return member_; }
+  Type GetMember() { return member_; }
   void SetMember(Type type) { member_ = type; }
 
 private:
@@ -119,6 +120,29 @@ Boolean operators `or`, `and` and `not` should be used instead of `||`, `&&` and
 Shared pointers (`std::shared`) are preferred over raw pointers.
 Exception to this rule is when the code interacts with a 3rd party library like PETSc where
 shared pointers simply don't exist.
+
+### Conditionals
+
+A space should be used after the keyword in a conditional statement. There
+is no space inside parentheses. The statement block should not be enclosed
+in braces if the condition fits on a single line.
+
+```c++
+if (a == b)
+  a = 0;
+```
+
+If the condition spans multiple lines, the statement block may be enclosed in
+braces for clarity.
+
+```c++
+if (std::none_of(my_container.begin(),
+                 my_container.end(),
+                 [](int val) { return val == 0; }))
+{
+  return;
+}
+```
 
 ### Comments
 
@@ -168,13 +192,12 @@ Example:
 
 ## Command-line parameters
 
-Command line parameters used by the OpenSn binary or any
+Command line parameters used by the OpenSn binary or any OpenSn script should use
+[kebab](#naming-conventions) style.
 
 ## References
 
-(snake)=
-(kebab)=
-(Pascal)=
+### Naming Conventions
 - Snake style: `this_is_snake_style`
 - Kebab style: `this-is-kebab-style`
 - Pascal style: `ThisIsPascalStyle`
