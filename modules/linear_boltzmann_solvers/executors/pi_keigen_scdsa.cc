@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
@@ -71,6 +72,16 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
   if (lbs_solver_.Groupsets().size() != 1)
     throw std::logic_error("The SCDSA k-eigenvalue executor is only implemented for "
                            "problems with a single groupset.");
+
+  // If using the AAH solver with one sweep, a few iterations need to be done
+  // to get rid of the junk in the unconverged lagged angular fluxes.  Five
+  // sweeps is a guess at how many initial sweeps are necessary.
+  auto& lbs_solver = dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver_);
+  if (lbs_solver.SweepType() == "AAH" and front_gs_.max_iterations == 1)
+    throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
+                           "the presence of lagged angular fluxes.  Multiple sweeps are "
+                           "allowed, however, the number of sweeps required to get sensible "
+                           "results is not well studied and problem dependent.");
 }
 
 void
@@ -159,6 +170,16 @@ PowerIterationKEigenSCDSA::Execute()
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
+  auto& lbs_solver = dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver_);
+
+  // If using multiple sweeps, the algorithm requires a delta-phi between two
+  // successive iterations. This is not possible to obtain with the standard solve
+  // routine.  Instead, a follow-up sweep must be performed.  If using two or more
+  // sweeps, reduce the sweep count by one to ensure the user gets the requested
+  // number of sweeps per outer.
+  const bool extra_sweep = front_gs_.max_iterations > 1;
+  front_gs_.max_iterations -= extra_sweep ? 1 : 0;
+
   k_eff_ = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
@@ -171,24 +192,38 @@ PowerIterationKEigenSCDSA::Execute()
     // Set the fission source
     SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
-    auto Sf0_ell = CopyOnlyPhi0(front_gs_, q_moments_local_);
+    auto Sf_ell = q_moments_local_;
+    auto Sf0_ell = CopyOnlyPhi0(front_gs_, Sf_ell);
 
-    // Store the last power iteration scalar flux
-    auto phi0_ell = CopyOnlyPhi0(front_gs_, phi_old_local_);
+    // Init old scalar flux storage. If using a single sweep, set
+    // it to the existing scalar flux
+    std::vector<double> phi0_ell;
+    if (not extra_sweep)
+      phi0_ell = CopyOnlyPhi0(front_gs_, phi_old_local_);
 
     // Solve transport inners
     ags_solver_->Solve();
+    if (extra_sweep)
+    {
+      // Set the old scalar flux to the scalar flux before the last sweep
+      phi0_ell = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
-    // Store the latest scalar flux (lph = ell + 1/2)
-    auto phi0_lph_star = CopyOnlyPhi0(front_gs_, phi_new_local_);
+      // Do an extra sweep
+      q_moments_local_ = Sf_ell;
+      SetLBSScatterSource(phi_old_local_, true);
+      front_wgs_context_->ApplyInverseTransportOperator(SourceFlags());
+    }
+
+    // Store the intermediate scalar flux
+    auto phi0_star = CopyOnlyPhi0(front_gs_, phi_new_local_);
 
     // Power Iteration Acceleration
-    SetLBSScatterSourcePhi0(phi0_lph_star - phi0_ell, false);
-    auto Ss_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
+    SetLBSScatterSourcePhi0(phi0_star - phi0_ell, false);
+    auto Ss0_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
-    double production_k = lbs_solver_.ComputeFissionProduction(phi_new_local_);
+    double production_k = lbs_solver.ComputeFissionProduction(phi_new_local_);
 
-    std::vector<double> epsilon_k(phi0_lph_star.size(), 0.0);
+    std::vector<double> epsilon_k(phi0_star.size(), 0.0);
     auto epsilon_kp1 = epsilon_k;
 
     double lambda_k = k_eff_;
@@ -196,11 +231,11 @@ PowerIterationKEigenSCDSA::Execute()
 
     for (size_t k = 0; k < accel_pi_max_its_; ++k)
     {
-      ProjectBackPhi0(front_gs_, epsilon_k + phi0_lph_star, phi_temp);
+      ProjectBackPhi0(front_gs_, epsilon_k + phi0_star, phi_temp);
       SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local_, 1.0 / lambda_k);
 
-      auto Sfaux = CopyOnlyPhi0(front_gs_, q_moments_local_);
+      auto Sf0_aux = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
       // Inner iterations seem extremely wasteful. Set this to 1 iteration here for further
       // investigation.
@@ -208,18 +243,18 @@ PowerIterationKEigenSCDSA::Execute()
       {
         SetLBSScatterSourcePhi0(epsilon_k, false, true);
 
-        auto Ss = CopyOnlyPhi0(front_gs_, q_moments_local_);
+        auto Ss0 = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
         // Solve the diffusion system
-        diffusion_solver_->Assemble_b(Ss + Sfaux + Ss_res - Sf0_ell);
+        diffusion_solver_->Assemble_b(Ss0 + Sf0_aux + Ss0_res - Sf0_ell);
         diffusion_solver_->Solve(epsilon_kp1, true);
 
         epsilon_k = epsilon_kp1;
       }
 
-      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_star, phi_old_local_);
+      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_old_local_);
 
-      double production_kp1 = lbs_solver_.ComputeFissionProduction(phi_old_local_);
+      double production_kp1 = lbs_solver.ComputeFissionProduction(phi_old_local_);
 
       lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
@@ -236,11 +271,12 @@ PowerIterationKEigenSCDSA::Execute()
       production_k = production_kp1;
     } // acceleration
 
-    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_lph_star, phi_new_local_);
-    lbs_solver_.GSScopedCopyPrimarySTLvectors(front_gs_, phi_new_local_, phi_old_local_);
+    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_new_local_);
+    lbs_solver.GSScopedCopyPrimarySTLvectors(
+      front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
-    const double production = lbs_solver_.ComputeFissionProduction(phi_old_local_);
-    lbs_solver_.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
+    const double production = lbs_solver.ComputeFissionProduction(phi_old_local_);
+    lbs_solver.ScalePhiVector(PhiSTLOption::PHI_OLD, lambda_kp1 / production);
 
     // Recompute k-eigenvalue
     k_eff_ = lambda_kp1;
@@ -254,7 +290,7 @@ PowerIterationKEigenSCDSA::Execute()
       converged = true;
 
     // Print iteration summary
-    if (lbs_solver_.Options().verbose_outer_iterations)
+    if (lbs_solver.Options().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
       k_iter_info << program_timer.GetTimeString() << " "
@@ -279,13 +315,13 @@ PowerIterationKEigenSCDSA::Execute()
             << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op << ")"
             << "\n";
 
-  if (lbs_solver_.Options().use_precursors)
+  if (lbs_solver.Options().use_precursors)
   {
-    lbs_solver_.ComputePrecursors();
-    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / k_eff_);
+    lbs_solver.ComputePrecursors();
+    Scale(lbs_solver.PrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
-  lbs_solver_.UpdateFieldFunctions();
+  lbs_solver.UpdateFieldFunctions();
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }

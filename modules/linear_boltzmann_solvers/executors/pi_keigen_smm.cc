@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
@@ -82,6 +83,16 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
   if (lbs_solver_.Groupsets().size() != 1)
     throw std::logic_error("The SMM k-eigenvalue executor is only implemented for "
                            "problems with a single groupset.");
+
+  // If using the AAH solver with one sweep, a few iterations need to be done
+  // to get rid of the junk in the unconverged lagged angular fluxes.  Five
+  // sweeps is a guess at how many initial sweeps are necessary.
+  auto& lbs_solver = dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver_);
+  if (lbs_solver.SweepType() == "AAH" and front_gs_.max_iterations == 1)
+    throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
+                           "the presence of lagged angular fluxes.  Multiple sweeps are "
+                           "allowed, however, the number of sweeps required to get sensible "
+                           "results is not well studied and problem dependent.");
 }
 
 void
