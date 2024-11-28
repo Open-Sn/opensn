@@ -59,8 +59,7 @@ k-eigenvalue. [Default=false]\n\n
 "NORMALIZATION_METHOD"\n
 Sets the initial data normalization data. Can be "TOTAL_POWER",
 "POWER_DENSITY", or "NONE". [Default="TOTAL_POWER"]\n\n
-
-\author Zachary Hardy*/
+*/
 int
 LBTSSetProperty(lua_State* L)
 {

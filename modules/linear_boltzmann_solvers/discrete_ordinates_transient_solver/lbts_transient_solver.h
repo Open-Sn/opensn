@@ -10,11 +10,8 @@
 namespace lbs
 {
 
-/**
- * A transient neutral particle transport solver.
- *
- * \author Zachary Hardy.
- */
+/// A transient neutral particle transport solver.
+
 class DiscOrdTransientSolver : public DiscOrdKEigenvalueSolver
 {
 public:

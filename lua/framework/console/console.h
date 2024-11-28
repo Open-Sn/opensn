@@ -136,10 +136,7 @@ public:
   /// Executes the loop for the console.
   void RunConsoleLoop(char* fileName = nullptr) const;
 
-  /**
-   * Executes the given file in the Lua engine.
-   * \author Jan
-   */
+  /// Executes the given file in the Lua engine.
   int ExecuteFile(const std::string& fileName, int argc, char** argv) const;
 
   /// Pushes location id and number of processes to lua state.

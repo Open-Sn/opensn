@@ -14,7 +14,7 @@ namespace opensnlua
  * \param SolverIndex int Handle to the solver for which the list is to be obtained.
  *
  * \return Pair Table and count. Returns an array of handles and the amount of
- * elements in it (indexed from 1). \ingroup LBSLuaFunctions \author Jan
+ * elements in it (indexed from 1). \ingroup LBSLuaFunctions
  */
 int LBSGetScalarFieldFunctionList(lua_State* L);
 
@@ -139,7 +139,6 @@ int LBSReadFluxMoments(lua_State* L);
  * \return double The fission rate.
  *
  * \ingroup LBSLuaFunctions
- * \author Jan
  */
 int LBSComputeFissionRate(lua_State* L);
 
@@ -152,7 +151,6 @@ int LBSComputeFissionRate(lua_State* L);
  * \param SolverIndex int Handle to the solver maintaining the information.
  *
  * \ingroup LBSLuaFunctions
- * \author Jan
  */
 int LBSInitializeMaterials(lua_State* L);
 

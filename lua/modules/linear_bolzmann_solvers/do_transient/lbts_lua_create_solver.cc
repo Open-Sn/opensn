@@ -14,7 +14,7 @@ namespace lbts_lua_utils
 \param SolverName string Optional. The text name of the solver.
                          [Default="LBSTransientSolver"].
 
-\author Zachary Hardy*/
+*/
 int
 LBSCreateTransientSolver(lua_State* L)
 {

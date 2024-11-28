@@ -115,8 +115,6 @@ private:
  * \param weights The weights associated with this intersection
  *
  * \return Returns true if the line intersects the plane and false otherwise.
- *
- * \author Jan
  */
 bool CheckPlaneLineIntersect(const Vector3& plane_normal,
                              const Vector3& plane_point,

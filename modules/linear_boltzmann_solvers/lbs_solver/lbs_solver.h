@@ -274,13 +274,11 @@ public:
 
   /**
    * Compute the total fission production in the problem.
-   * \author Zachary Hardy.
    */
   double ComputeFissionProduction(const std::vector<double>& phi);
 
   /**
    * Computes the total fission rate in the problem.
-   * \author Zachary Hardy.
    */
   double ComputeFissionRate(const std::vector<double>& phi);
 

@@ -15,7 +15,6 @@ namespace opensnlua
  * obtained.
  *
  * \ingroup LBSLuaFunctions
- * \author Jan
  */
 int LBSComputeBalance(lua_State* L);
 
@@ -30,7 +29,6 @@ int LBSComputeBalance(lua_State* L);
  * \return A table mapping boundary names to group-wise leakage arrays.
  *
  * \ingroup LBSLuaFunctions
- * \author Zachary K. Hardy
  */
 int ComputeLeakage(lua_State* L);
 

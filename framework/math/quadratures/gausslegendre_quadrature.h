@@ -32,8 +32,6 @@ private:
    *        Default: 1000.
    * \param tol Tolerance at which the newton iteration will be terminated.
    *        Default: 1.0e-12.
-   *
-   * \author Jan
    */
   static std::vector<double>
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
