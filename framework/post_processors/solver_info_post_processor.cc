@@ -25,7 +25,7 @@ SolverInfoPostProcessor::GetInputParameters()
     "time-histories.");
   params.SetDocGroup("doc_PostProcessors");
 
-  params.AddRequiredParameter<size_t>("solver", "A handle to the solver.");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("solver", "A handle to the solver.");
   params.AddRequiredParameterBlock(
     "info",
     "A parameter block, requiring at minimum the parameter \"name\" to pass to "
@@ -36,30 +36,35 @@ SolverInfoPostProcessor::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<SolverInfoPostProcessor>
+SolverInfoPostProcessor::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<SolverInfoPostProcessor>("post::SolverInfoPostProcessor", params);
+}
+
 SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    solver_(
-      GetStackItem<Solver>(object_stack, params.GetParamValue<size_t>("solver"), __FUNCTION__)),
+    solver_(params.GetParamValue<std::shared_ptr<Solver>>("solver")),
     info_(params.GetParam("info"))
 {
-  const auto& param_assigned = params.ParametersAtAssignment();
-  if (param_assigned.Has("solvername_filter"))
+  if (params.IsParameterValid("solvername_filter"))
     solvername_filter_ = params.GetParamValue<std::string>("solvername_filter");
   else
-    solvername_filter_ = solver_.Name();
+    solvername_filter_ = solver_->Name();
 }
 
 void
 SolverInfoPostProcessor::Execute(const Event& event_context)
 {
-  value_ = solver_.GetInfoWithPreCheck(info_);
+  value_ = solver_->GetInfoWithPreCheck(info_);
   SetType(FigureTypeFromValue(value_));
 
   const int event_code = event_context.Code();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     TimeHistoryEntry entry{
-      solver_.GetTimeStepper().TimeStepIndex(), solver_.GetTimeStepper().Time(), value_};
+      solver_->GetTimeStepper().TimeStepIndex(), solver_->GetTimeStepper().Time(), value_};
     time_history_.push_back(std::move(entry));
   }
 }

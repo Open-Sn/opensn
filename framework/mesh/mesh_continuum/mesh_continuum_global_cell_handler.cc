@@ -9,7 +9,7 @@ namespace opensn
 {
 
 void
-GlobalCellHandler::push_back(std::unique_ptr<Cell> new_cell)
+GlobalCellHandler::push_back(std::shared_ptr<Cell> new_cell)
 {
   if (new_cell->partition_id == static_cast<uint64_t>(opensn::mpi_comm.rank()))
   {

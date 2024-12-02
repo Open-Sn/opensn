@@ -70,8 +70,7 @@ PostProcessor::PostProcessor(const InputParameters& params, PPType type)
     print_precision_(params.GetParamValue<size_t>("print_precision")),
     solvername_filter_(params.GetParamValue<std::string>("solvername_filter"))
 {
-  const auto& user_params = params.ParametersAtAssignment();
-  if (user_params.Has("initial_value"))
+  if (params.IsParameterValid("initial_value"))
   {
     value_ = params.GetParam("initial_value");
     SetType(FigureTypeFromValue(value_));
@@ -117,7 +116,7 @@ PostProcessor::NumericPrecision() const
 }
 
 void
-PostProcessor::PushOntoStack(std::shared_ptr<Object>& new_object)
+PostProcessor::PushOntoStack(std::shared_ptr<Object> new_object)
 {
 
   auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);

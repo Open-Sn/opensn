@@ -30,6 +30,13 @@ RPPLogicalVolume::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<RPPLogicalVolume>
+RPPLogicalVolume::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<RPPLogicalVolume>("logvol::RPPLogicalVolume", params);
+}
+
 RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     xmin_(params.GetParamValue<double>("xmin")),

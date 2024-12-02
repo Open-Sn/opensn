@@ -15,15 +15,15 @@ class GlobalCellHandler
   friend class MeshContinuum;
 
 private:
-  std::vector<std::unique_ptr<Cell>>& local_cells_ref_;
-  std::vector<std::unique_ptr<Cell>>& ghost_cells_ref_;
+  std::vector<std::shared_ptr<Cell>>& local_cells_ref_;
+  std::vector<std::shared_ptr<Cell>>& ghost_cells_ref_;
 
   std::map<uint64_t, uint64_t>& global_cell_id_to_native_id_map_;
   std::map<uint64_t, uint64_t>& global_cell_id_to_foreign_id_map_;
 
 private:
-  explicit GlobalCellHandler(std::vector<std::unique_ptr<Cell>>& native_cells,
-                             std::vector<std::unique_ptr<Cell>>& foreign_cells,
+  explicit GlobalCellHandler(std::vector<std::shared_ptr<Cell>>& native_cells,
+                             std::vector<std::shared_ptr<Cell>>& foreign_cells,
                              std::map<uint64_t, uint64_t>& global_cell_id_to_native_id_map,
                              std::map<uint64_t, uint64_t>& global_cell_id_to_foreign_id_map)
     : local_cells_ref_(native_cells),
@@ -35,7 +35,7 @@ private:
 
 public:
   /// Adds a new cell to grid registry.
-  void push_back(std::unique_ptr<Cell> new_cell);
+  void push_back(std::shared_ptr<Cell> new_cell);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& operator[](uint64_t cell_global_index);

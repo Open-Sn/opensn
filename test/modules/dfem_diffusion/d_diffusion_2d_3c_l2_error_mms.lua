@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 40
 L = 1
@@ -10,9 +10,9 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
 -- governing law: -(u_xx + u_yy) = q, on domain [0,1]x[0,1]
@@ -53,15 +53,15 @@ mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
 mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
 mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
 
---############################################### Call Lua Sim Test
+-- Call Lua Sim Test
 SimTest_IP_MMS_L2error() --simtest_IP_MMS_L2_handle becomes available here
 
---############################################### Export VTU
+-- Export VTU
 if master_export == nil then
   fieldfunc.ExportToVTK(simtest_IP_MMS_L2_handle, "DFEMDiff2D_MMS", "flux")
 end
 
-----############################################### Volume integrations
+---- Volume integrations
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 --
 ffvol = fieldfunc.FFInterpolationCreate(VOLUME)

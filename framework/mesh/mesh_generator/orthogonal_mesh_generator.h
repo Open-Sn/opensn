@@ -11,7 +11,6 @@ namespace opensn
 class OrthogonalMeshGenerator : public MeshGenerator
 {
 public:
-  static InputParameters GetInputParameters();
   explicit OrthogonalMeshGenerator(const InputParameters& params);
 
 protected:
@@ -31,6 +30,10 @@ protected:
                                  const std::vector<double>& vertices_1d_z);
 
   std::vector<std::vector<double>> node_sets_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<OrthogonalMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

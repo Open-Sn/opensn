@@ -14,11 +14,11 @@ class LocalCellHandler
   friend class MeshContinuum;
 
 public:
-  std::vector<std::unique_ptr<Cell>>& native_cells;
+  std::vector<std::shared_ptr<Cell>>& native_cells;
 
 private:
   /// Constructor.
-  explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& native_cells)
+  explicit LocalCellHandler(std::vector<std::shared_ptr<Cell>>& native_cells)
     : native_cells(native_cells)
   {
   }

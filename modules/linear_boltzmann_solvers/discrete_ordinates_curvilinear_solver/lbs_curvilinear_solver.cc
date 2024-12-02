@@ -36,6 +36,14 @@ DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>
+DiscreteOrdinatesCurvilinearSolver::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<DiscreteOrdinatesCurvilinearSolver>(
+    "lbs::DiscreteOrdinatesCurvilinearSolver", params);
+}
+
 DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
   const InputParameters& params)
   : DiscreteOrdinatesSolver(params),

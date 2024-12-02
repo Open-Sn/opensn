@@ -57,6 +57,13 @@ ExtruderMeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<ExtruderMeshGenerator>
+ExtruderMeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<ExtruderMeshGenerator>("mesh::ExtruderMeshGenerator", params);
+}
+
 ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     top_boundary_name_(params.GetParamValue<std::string>("top_boundary_name")),

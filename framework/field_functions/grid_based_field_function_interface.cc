@@ -20,14 +20,14 @@ GridBasedFieldFunctionInterface::GridBasedFieldFunctionInterface(const InputPara
 {
 }
 
-FieldFunctionGridBased*
+std::shared_ptr<FieldFunctionGridBased>
 GridBasedFieldFunctionInterface::GetGridBasedFieldFunction() const
 {
-  auto* ff_ptr = GetFieldFunction();
+  auto ff_ptr = GetFieldFunction();
 
-  auto* grid_based_ff_ptr = dynamic_cast<FieldFunctionGridBased*>(ff_ptr);
+  auto grid_based_ff_ptr = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff_ptr);
 
-  return grid_based_ff_ptr ? grid_based_ff_ptr : nullptr;
+  return grid_based_ff_ptr;
 }
 
 } // namespace opensn

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/graphs/graph_partitioner.h"
+#include "framework/object_factory.h"
 
 namespace opensn
 {
@@ -11,7 +12,6 @@ namespace opensn
 class PETScGraphPartitioner : public GraphPartitioner
 {
 public:
-  static InputParameters GetInputParameters();
   explicit PETScGraphPartitioner(const InputParameters& params);
 
   std::vector<int64_t> Partition(const std::vector<std::vector<uint64_t>>& graph,
@@ -20,6 +20,10 @@ public:
 
 protected:
   const std::string type_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PETScGraphPartitioner> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

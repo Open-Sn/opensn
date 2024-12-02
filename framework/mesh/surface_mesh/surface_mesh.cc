@@ -5,6 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "framework/object_factory.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -12,11 +13,20 @@
 namespace opensn
 {
 
+OpenSnRegisterObjectInNamespace(mesh, SurfaceMesh);
+
 InputParameters
 SurfaceMesh::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
   return params;
+}
+
+std::shared_ptr<SurfaceMesh>
+SurfaceMesh::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<SurfaceMesh>("mesh::SurfaceMesh", params);
 }
 
 SurfaceMesh::SurfaceMesh(const InputParameters& params) : Object(params)

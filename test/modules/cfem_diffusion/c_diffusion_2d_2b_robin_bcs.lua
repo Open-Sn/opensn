@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 40
 L = 2
@@ -10,15 +10,15 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 D = { 1.0, 5.0 }
 Q = { 0.0, 1.0 }
@@ -26,9 +26,11 @@ XSa = { 1.0, 1.0 }
 function D_coef(i, pt)
   return D[i + 1] -- + x
 end
+
 function Q_ext(i, pt)
   return Q[i + 1] -- x*x
 end
+
 function Sigma_a(i, pt)
   return XSa[i + 1]
 end
@@ -47,10 +49,10 @@ w_bndry = "1"
 n_bndry = "2"
 s_bndry = "3"
 
-mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, true)
 
 diff_options = {
   boundary_conditions = {
@@ -75,30 +77,37 @@ diff_options = {
   },
 }
 
+d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
+Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
+Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
+
 -- CFEM solver
 phys1 = diffusion.CFEMDiffusionSolver.Create({
   name = "CFEMDiffusionSolver",
   residual_tolerance = 1e-8,
 })
-diffusion.SetOptions(phys1, diff_options)
+phys1:SetOptions(diff_options)
+phys1:SetDCoefFunction(d_coef_fn)
+phys1:SetQExtFunction(Q_ext_fn)
+phys1:SetSigmaAFunction(Sigma_a_fn)
 
-solver.Initialize(phys1)
-solver.Execute(phys1)
+phys1:Initialize()
+phys1:Execute()
 
---############################################### Get field functions
-fflist, count = solver.GetFieldFunctionList(phys1)
+-- Get field functions
+fflist = phys1:GetFieldFunctions()
 
---############################################### Export VTU
+-- Export VTU
 if master_export == nil then
   fieldfunc.ExportToVTK(fflist[1], "CFEMDiff2D_RobinRefl", "flux")
 end
 
---############################################### Volume integrations
+-- Volume integrations
 
---############################################### PostProcessors
-post.CellVolumeIntegralPostProcessor.Create({
+-- PostProcessors
+avgval = post.CellVolumeIntegralPostProcessor.Create({
   name = "avgval",
-  field_function = math.floor(fflist[1]),
+  field_function = fflist[1],
   compute_volume_average = true,
 })
-post.Execute({ "avgval" })
+post.Execute({ avgval })

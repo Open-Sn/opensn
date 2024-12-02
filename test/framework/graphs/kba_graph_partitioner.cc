@@ -1,9 +1,7 @@
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/graphs/kba_graph_partitioner.h"
 #include "framework/object_factory.h"
-
 #include "framework/mesh/mesh.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -12,15 +10,8 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock TestKBAGraphPartitioner00(const InputParameters&);
-
-RegisterWrapperFunctionInNamespace(unit_tests,
-                                   TestKBAGraphPartitioner00,
-                                   nullptr,
-                                   TestKBAGraphPartitioner00);
-
-ParameterBlock
-TestKBAGraphPartitioner00(const InputParameters&)
+void
+TestKBAGraphPartitioner00()
 {
   opensn::log.Log() << "GOLD_BEGIN";
 
@@ -56,8 +47,8 @@ TestKBAGraphPartitioner00(const InputParameters&)
     opensn::log.Log() << pid;
 
   opensn::log.Log() << "GOLD_END";
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, TestKBAGraphPartitioner00);
 
 } //  namespace unit_tests

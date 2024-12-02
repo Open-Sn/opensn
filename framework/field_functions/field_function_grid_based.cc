@@ -325,7 +325,6 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto& user_params = params.ParametersAtAssignment();
   const auto& grid_ptr = GetCurrentMesh();
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
@@ -334,7 +333,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 
   CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
-  if (user_params.Has("coordinate_system"))
+  if (params.IsParameterValid("coordinate_system"))
   {
     cs = params.GetParamValue<std::string>("coordinate_system");
 
@@ -348,7 +347,7 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 
   QuadratureOrder q_order = QuadratureOrder::SECOND;
 
-  if (user_params.Has("quadrature_order"))
+  if (params.IsParameterValid("quadrature_order"))
   {
     const auto max_order = static_cast<uint32_t>(QuadratureOrder::FORTYTHIRD);
     const auto q_order_int = params.GetParamValue<uint32_t>("quadrature_order");

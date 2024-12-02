@@ -222,7 +222,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
   for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
   {
-    if (bndry->Type() == BoundaryType::REFLECTING)
+    if (bndry->Type() == LBSBoundaryType::REFLECTING)
     {
       auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();
@@ -276,7 +276,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 
   for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
   {
-    if (bndry->Type() == BoundaryType::REFLECTING)
+    if (bndry->Type() == LBSBoundaryType::REFLECTING)
     {
       auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
       rbndry->ResetAnglesReadyStatus();

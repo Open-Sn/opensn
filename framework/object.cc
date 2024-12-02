@@ -33,7 +33,7 @@ Object::StackID() const
 }
 
 void
-Object::PushOntoStack(std::shared_ptr<Object>& new_object)
+Object::PushOntoStack(std::shared_ptr<Object> new_object)
 {
   object_stack.push_back(new_object);
   new_object->SetStackID(object_stack.size() - 1);

@@ -3,7 +3,7 @@
 -- Test:
 num_procs = 2
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -15,7 +15,7 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
   os.exit(false)
 end
 
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 20
 L = 100.0
@@ -27,12 +27,12 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
@@ -58,7 +58,7 @@ end
 mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
 
---############################################### Setup Physics
+-- Setup Physics
 phys1 = LBSCreateTransientSolver()
 
 --========== Groups
@@ -85,7 +85,7 @@ LBSGroupsetSetGMRESRestartIntvl(phys1, cur_gs, 100)
 --LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,false," ")
 
 --
-----############################################### Set boundary conditions
+---- Set boundary conditions
 --bsrc={}
 --for g=1,num_groups do
 --    bsrc[g] = 0.0
@@ -105,7 +105,7 @@ LBSSetProperty(phys1, USE_PRECURSORS, true)
 LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, false)
 LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, true)
 
---############################################### Initialize and Execute Solver
+-- Initialize and Execute Solver
 solver.Initialize(phys1)
 
 LBTSSetProperty(phys1, "TIMESTEP", 1e-1)

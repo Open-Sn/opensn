@@ -1,22 +1,18 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/parameters/input_parameters.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 
 using namespace opensn;
 
 namespace unit_tests
 {
 
-ParameterBlock TestCFunction(const InputParameters&);
-
-RegisterWrapperFunctionInNamespace(unit_tests, TestCFunction, nullptr, TestCFunction);
-
-ParameterBlock
-TestCFunction(const InputParameters&)
+void
+TestCFunction()
 {
   opensn::log.Log() << "Hello from a C function";
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, TestCFunction);
 
 } //  namespace unit_tests

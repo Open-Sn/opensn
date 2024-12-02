@@ -53,4 +53,5 @@ materials[1] = mat.AddMaterial("Material_A")
 
 We assign the cross sections to the material by loading the file containing the cross sections.
 --]]
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
+xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")
+materials[1]:SetTransportXSections(xs_matA)

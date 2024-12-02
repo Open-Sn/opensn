@@ -16,6 +16,6 @@ meshgen = mesh.MeshGenerator.Create({
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 mesh.ExportToPVTU("Read_3D_mesh_only")

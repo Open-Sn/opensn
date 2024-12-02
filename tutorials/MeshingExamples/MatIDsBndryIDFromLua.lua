@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 10
 L = 5
@@ -10,7 +10,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 mesh.ExportToPVTU("ZMeshPhase1")
 
