@@ -18,8 +18,7 @@ namespace lbts_lua_utils
 
 \param SolverIndex int Handle to the solver..
 
-
-\author Zachary Hardy*/
+*/
 int
 LBTSAdvanceTimeData(lua_State* L)
 {

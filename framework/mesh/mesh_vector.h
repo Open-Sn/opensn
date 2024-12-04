@@ -13,10 +13,7 @@ namespace opensn
 
 struct TensorRank2Dim3;
 
-/**
- * General 3 element vector structure.
- * \author Jan
- */
+/// General 3-element vector structure.
 struct Vector3
 {
   /// Element-0

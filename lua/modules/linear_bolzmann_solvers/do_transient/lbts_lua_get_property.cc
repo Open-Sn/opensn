@@ -36,8 +36,7 @@ Returns the flag.\n\n
 "TIME"\n
 Returns the simulation time before the latest timestep.\n\n
 
-
-\author Zachary Hardy*/
+*/
 int
 LBTSGetProperty(lua_State* L)
 {
