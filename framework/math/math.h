@@ -3,12 +3,17 @@
 
 #pragma once
 
-#include "framework/math/math_incdef.h"
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/vector.h"
 #include "framework/math/dense_matrix.h"
+#include <cmath>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <fstream>
 #include <memory>
 
 namespace opensn
