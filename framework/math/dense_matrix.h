@@ -30,7 +30,7 @@ public:
    *
    * \param rows Number of rows
    * \param cols Number of columns
-   * \param intitial_value Value to initialize the matrix elements with
+   * \param inittial_value Value to initialize the matrix elements with
    */
   DenseMatrix(unsigned int rows, unsigned int cols, TYPE intitial_value)
     : NDArray<TYPE, 2>({rows, cols}, intitial_value)
@@ -282,7 +282,7 @@ Subtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
   auto AR = A.Rows();
   auto BR = B.Rows();
 
-  assert(AR != 0 and B.size() != 0);
+  assert(AR != 0 and !B.empty());
   assert(AR == BR);
 
   auto AC = A.Columns();
@@ -415,7 +415,7 @@ GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
   }
 
   // Back substitution
-  for (int i = n - 1; i >= 0; --i)
+  for (auto i = n - 1; i >= 0; --i)
   {
     auto bi = b(i);
     for (auto j = i + 1; j < n; ++j)

@@ -18,12 +18,12 @@ public:
   Vector() : NDArray<TYPE, 1>() {}
 
   /// Create a dense (column) vector with specified number of rows
-  Vector(unsigned int rows) : NDArray<TYPE, 1>({rows}) {}
+  explicit Vector(unsigned int rows) : NDArray<TYPE, 1>({rows}) {}
 
   /// Create a dense (column) vector with specified number of rows and initialize the elements
   Vector(unsigned int rows, TYPE intitial_value) : NDArray<TYPE, 1>({rows}, intitial_value) {}
 
-  Vector(const std::vector<TYPE>& in) : NDArray<TYPE, 1>({in.size()})
+  explicit Vector(const std::vector<TYPE>& in) : NDArray<TYPE, 1>({in.size()})
   {
     for (auto i = 0; i < in.size(); ++i)
       (*this)(i) = in[i];

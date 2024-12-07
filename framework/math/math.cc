@@ -74,8 +74,8 @@ double
 Dot(const std::vector<double>& x, const std::vector<double>& y)
 {
   // Error Checks
-  assert(x.size() > 0);
-  assert(y.size() > 0);
+  assert(!x.empty());
+  assert(!y.empty());
   assert(x.size() == y.size());
   // Local Variables
   size_t n = x.size();
