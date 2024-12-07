@@ -17,9 +17,7 @@ class MPICommunicatorSet;
 class GridFaceHistogram;
 class MeshGenerator;
 
-/**
- * Stores the relevant information for completely defining a computationaldomain.
- */
+/// Encapsulates all the necessary information required to fully define a computational domain.
 class MeshContinuum
 {
 public:
@@ -44,8 +42,7 @@ public:
 
   static std::shared_ptr<MeshContinuum> New() { return std::make_shared<MeshContinuum>(); }
 
-  /**Method to be called if cells and nodes have been transferred
-   * to another grid.*/
+  /// Method to be called if cells and nodes have been transferred to another grid.
   void ClearCellReferences()
   {
     local_cells_.clear();
@@ -85,14 +82,10 @@ public:
    */
   static int GetCellDimension(const Cell& cell);
 
-  /**
-   * Creates a mapping of the current face local-ids to the adjacent face's local ids.
-   */
+  /// Creates a mapping of the current face local-ids to the adjacent face's local ids.
   void FindAssociatedVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
 
-  /**
-   * Creates a mapping of the current face local-ids to the adjacent cell's local ids.
-   */
+  /// Creates a mapping of the current face local-ids to the adjacent cell's local ids.
   void FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
 
   /**
@@ -109,9 +102,7 @@ public:
    */
   size_t MapCellGlobalID2LocalID(uint64_t global_id) const;
 
-  /**
-   * Computes the centroid from nodes specified by the given list.
-   */
+  /// Computes the centroid from nodes specified by the given list.
   Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;
 
   /**
@@ -120,15 +111,10 @@ public:
    */
   std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
 
-  /**
-   * Returns the total number of global cells.
-   */
+  /// Returns the total number of global cells.
   size_t GetGlobalNumberOfCells() const;
 
-  /**
-   * Builds and returns a vector of unique boundary id's present in
-   * the mesh.
-   */
+  /// Builds and returns a vector of unique boundary id's present in the mesh.
   std::vector<uint64_t> GetDomainUniqueBoundaryIDs() const;
 
   /**
@@ -136,9 +122,7 @@ public:
    */
   size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
 
-  /**
-   * Checks whether a point is within a cell.
-   */
+  /// Checks whether a point is within a cell.
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
   MeshType Type() const { return mesh_type_; }
@@ -149,14 +133,10 @@ public:
 
   void SetExtruded(bool extruded) { extruded_ = extruded; }
 
-  /**
-   * Gets and orthogonal mesh interface object.
-   */
+  /// Gets and orthogonal mesh interface object.
   std::array<size_t, 3> GetIJKInfo() const;
 
-  /**
-   * Provides a mapping from cell ijk indices to global ids.
-   */
+  /// Provides a mapping from cell ijk indices to global ids.
   NDArray<uint64_t, 3> MakeIJKToGlobalIDMapping() const;
 
   /**
@@ -167,24 +147,21 @@ public:
 
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
-  /**
-   * Sets material id's for all cells to the specified material id.
-   */
+  /// Sets material id's for all cells to the specified material id.
   void SetUniformMaterialID(int mat_id);
 
-  /**
-   * Sets material id's using a logical volume.
-   */
+  /// Sets material id's using a logical volume.
   void SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id);
 
-  /**
-   * Sets boundary id's using a logical volume.
-   */
+  /// Sets boundary id's using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
                                 bool sense,
                                 const std::string& boundary_name);
 
   void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
+
+  /// Compute volume per material id's
+  void ComputeVolumePerMaterialID() const;
 
 private:
   /// Spatial dimension
