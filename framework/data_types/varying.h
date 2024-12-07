@@ -151,7 +151,7 @@ private:
       }
     }
 
-    bool operator!=(const VaryingType& that) const override { return not(*this == that); }
+    bool operator!=(const VaryingType& that) const override { return *this != that; }
     bool operator>(const VaryingType& that) const override
     {
       if (type_ != that.Type())

@@ -7,7 +7,6 @@
 #include "framework/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include <cmath>
 
 namespace opensn
 {
@@ -108,12 +107,12 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
       p_vals[i] = home_found ? p_val : (coordinate_infos_[i].n_ - 1);
     }
 
-    const int64_t nx = static_cast<int64_t>(coordinate_infos_[0].n_);
-    const int64_t ny = static_cast<int64_t>(coordinate_infos_[1].n_);
+    const auto nx = static_cast<int64_t>(coordinate_infos_[0].n_);
+    const auto ny = static_cast<int64_t>(coordinate_infos_[1].n_);
 
-    const int64_t i = static_cast<int64_t>(p_vals[0]);
-    const int64_t j = static_cast<int64_t>(p_vals[1]);
-    const int64_t k = static_cast<int64_t>(p_vals[2]);
+    const auto i = static_cast<int64_t>(p_vals[0]);
+    const auto j = static_cast<int64_t>(p_vals[1]);
+    const auto k = static_cast<int64_t>(p_vals[2]);
 
     pids[c] = nx * ny * k + nx * j + i;
   } // for cell c

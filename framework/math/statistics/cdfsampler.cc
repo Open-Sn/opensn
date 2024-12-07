@@ -5,7 +5,6 @@
 #include "framework/math/statistics/cdfsampler.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include <unistd.h>
 
 namespace opensn
 {
