@@ -66,21 +66,21 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
 
     outstr << "Intersection not found at function level " << function_depth << "."
            << ((backward_tolerance_hit) ? " Backward tolerance hit. " : "")
-           << "For particle xyz=" << pos_i.PrintS() << " uvw=" << omega_i.PrintS() << " "
-           << (pos_i + extension_distance_ * omega_i).PrintS() << " " << extension_distance_
+           << "For particle xyz=" << pos_i.PrintStr() << " uvw=" << omega_i.PrintStr() << " "
+           << (pos_i + extension_distance_ * omega_i).PrintStr() << " " << extension_distance_
            << " in cell " << cell.global_id << " with vertices: \n";
 
     const auto& grid = Grid();
 
     for (auto vi : cell.vertex_ids)
-      outstr << grid.vertices[vi].PrintS() << "\n";
+      outstr << grid.vertices[vi].PrintStr() << "\n";
 
     for (auto& face : cell.faces)
     {
-      outstr << "Face with centroid: " << face.centroid.PrintS() << " ";
-      outstr << "n=" << face.normal.PrintS() << "\n";
+      outstr << "Face with centroid: " << face.centroid.PrintStr() << " ";
+      outstr << "n=" << face.normal.PrintStr() << "\n";
       for (auto vi : face.vertex_ids)
-        outstr << grid.vertices[vi].PrintS() << "\n";
+        outstr << grid.vertices[vi].PrintStr() << "\n";
     }
 
     outstr << "o Cell\n";

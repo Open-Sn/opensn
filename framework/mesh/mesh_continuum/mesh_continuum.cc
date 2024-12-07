@@ -22,7 +22,7 @@ MeshContinuum::MeshContinuum()
     mesh_type_(UNSTRUCTURED),
     extruded_(false),
     global_vertex_count_(0),
-    local_cells(local_cells_),
+    local_cells(LocalCellHandler::Create(local_cells_)),
     cells(local_cells_,
           ghost_cells_,
           global_cell_id_to_local_id_map_,
@@ -169,7 +169,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
     size_t running_face_count = 0;
     size_t running_face_size = face_size_histogram[0];
 
-    double running_average = (double)face_size_histogram[0];
+    auto running_average = static_cast<double>(face_size_histogram[0]);
 
     for (size_t f = 0; f < total_num_faces; ++f)
     {
@@ -234,7 +234,6 @@ MeshContinuum::GetCellDimension(const Cell& cell)
       throw std::logic_error("MeshContinuum::GetCellDimension: "
                              "Dimension mapping unavailable for cell type.");
   }
-  return false;
 }
 
 void
@@ -270,13 +269,10 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
     }
 
     if (not found)
-    {
-      log.LogAllError() << "Face DOF mapping failed in call to "
-                        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-                           "node."
-                        << cur_face.neighbor_id << " " << cur_face.centroid.PrintS();
-      Exit(EXIT_FAILURE);
-    }
+      throw std::runtime_error(
+        "Face DOF mapping failed in call to MeshContinuum::FindAssociatedVertices. "
+        "Could not find a matching node. Neighbor ID: " +
+        std::to_string(cur_face.neighbor_id) + " Centroid: " + cur_face.centroid.PrintStr());
   }
 }
 
@@ -310,13 +306,10 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
     }
 
     if (not found)
-    {
-      log.LogAllError() << "Face DOF mapping failed in call to "
-                        << "MeshContinuum::FindAssociatedVertices. Could not find a matching"
-                           "node."
-                        << cur_face.neighbor_id << " " << cur_face.centroid.PrintS();
-      Exit(EXIT_FAILURE);
-    }
+      throw std::runtime_error(
+        "Face DOF mapping failed in call to MeshContinuum::FindAssociatedVertices. "
+        "Could not find a matching node. Neighbor ID: " +
+        std::to_string(cur_face.neighbor_id) + ", Centroid: " + cur_face.centroid.PrintStr());
   }
 }
 
@@ -362,10 +355,8 @@ Vector3
 MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const
 {
   if (list.empty())
-  {
-    log.LogAllError() << "ComputeCentroidFromListOfNodes, empty list";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::logic_error("ComputeCentroidFromListOfNodes: the provided list of nodes is empty.");
+
   Vector3 centroid;
   for (auto node_id : list)
     centroid = centroid + vertices[node_id];
@@ -448,10 +439,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
           {v0, v1, v2}, {v0, v2, v3}, {v1, v3, v2}, {v0, v3, v1}};
 
         for (const auto& face : tet_faces)
-        {
           if (not InsideTet(point, std::get<0>(face), std::get<1>(face), std::get<2>(face)))
             return false;
-        }
       }
     }
   }

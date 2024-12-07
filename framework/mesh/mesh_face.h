@@ -3,69 +3,28 @@
 
 #pragma once
 
+#include <array>
+
 namespace opensn
 {
 
 /// Data structure for a triangular face.
 struct Face
 {
-  int v_index[3];
-  int n_index[3];
-  int vt_index[3];
-  int e_index[3][4];
+  /// vertex indices
+  std::array<int, 3> v_index{-1, -1, -1};
+  /// normal indices
+  std::array<int, 3> n_index{-1, -1, -1};
+  /// vertex texture indices
+  std::array<int, 3> vt_index{-1, -1, -1};
+  /// edge indices
+  std::array<std::array<int, 4>, 3> e_index{{{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}}};
 
   Vector3 geometric_normal;
   Vector3 assigned_normal;
   Vector3 face_centroid;
 
-  bool invalidated;
-
-  Face()
-  {
-    for (int k = 0; k < 3; ++k)
-    {
-      v_index[k] = -1;
-      n_index[k] = -1;
-      vt_index[k] = -1;
-      e_index[k][0] = -1;
-      e_index[k][1] = -1;
-      e_index[k][2] = -1;
-      e_index[k][3] = -1;
-      invalidated = false;
-    }
-  }
-
-  void SetIndices(int a, int b, int c)
-  {
-    v_index[0] = a;
-    v_index[1] = b;
-    v_index[2] = c;
-
-    e_index[0][0] = a;
-    e_index[0][1] = b;
-    e_index[1][0] = b;
-    e_index[1][1] = c;
-    e_index[2][0] = c;
-    e_index[2][1] = a;
-  }
-
-  Face& operator=(const Face& that)
-  {
-    for (int k = 0; k < 3; ++k)
-    {
-      v_index[k] = that.v_index[k];
-      n_index[k] = that.n_index[k];
-      vt_index[k] = that.vt_index[k];
-      e_index[k][0] = that.e_index[k][0];
-      e_index[k][1] = that.e_index[k][1];
-      e_index[k][2] = that.e_index[k][2];
-      e_index[k][3] = that.e_index[k][3];
-    }
-    geometric_normal = that.geometric_normal;
-    assigned_normal = that.assigned_normal;
-    invalidated = that.invalidated;
-    return *this;
-  }
+  bool invalidated{false};
 };
 
 /**
@@ -86,20 +45,18 @@ struct Face
  *        -1*boundary_index if connected to a boundary.
  *  [1] = Face number of adjoining cell. -1 if not connected
  *       to anything. 0 if a boundary.
- *  [2] = Partition ID of adjecent cell.
+ *  [2] = Partition ID of adjacent cell.
  */
 struct PolyFace
 {
   std::vector<int> v_indices;
   std::vector<std::vector<int>> edges;
-  int face_indices[3];
+  std::array<int, 3> face_indices{{-1, -1, -1}};
 
   Vector3 geometric_normal;
   Vector3 face_centroid;
 
-  bool invalidated;
-
-  PolyFace() { invalidated = false; }
+  bool invalidated{false};
 };
 
 } // namespace opensn

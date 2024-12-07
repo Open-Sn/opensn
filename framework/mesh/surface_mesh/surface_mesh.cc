@@ -23,9 +23,7 @@ SurfaceMesh::SurfaceMesh(const InputParameters& params) : Object(params)
 {
 }
 
-SurfaceMesh::SurfaceMesh()
-{
-}
+SurfaceMesh::SurfaceMesh() = default;
 
 SurfaceMesh::~SurfaceMesh()
 {
@@ -56,84 +54,6 @@ operator<<(std::ostream& os, SurfaceMesh& that)
   }
 
   return os;
-}
-
-bool
-SurfaceMesh::CheckNegativeSense(double x, double y, double z)
-{
-  Vector3 xyz = Vector3(x, y, z);
-
-  // Loop through each face
-  std::vector<Face>::iterator cur_face;
-  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
-  {
-    // Get a vertex (first one)
-    Vector3 p;
-    try
-    {
-      p = this->vertices_.at(cur_face->v_index[0]);
-    }
-    catch (const std::out_of_range& o)
-    {
-      std::cout << "Invalid vertex handle" << std::endl;
-    }
-
-    // Calculate dot product
-    Vector3 p_xyz = xyz - p;
-    double dprod = cur_face->assigned_normal.Dot(p_xyz);
-
-    if (dprod < 0.0)
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-void
-SurfaceMesh::ExtractOpenEdgesToObj(const char* fileName)
-{
-  std::vector<std::pair<int, int>> edges;
-  for (auto face : poly_faces_)
-  {
-    for (auto edge : face->edges)
-    {
-      if (edge[2] < 0)
-      {
-        edges.push_back(std::pair<int, int>(edge[0], edge[1]));
-      }
-    } // for edge
-  }   // for face
-
-  std::ofstream outfile;
-  outfile.open(fileName);
-
-  if (not outfile.is_open())
-  {
-    log.LogAllError() << "In call to SurfaceMesh::ExtractOpenEdgesToObj. Failed"
-                      << " to open file: " << std::string(fileName);
-    Exit(EXIT_FAILURE);
-  }
-
-  outfile << "# OpenSn open edges file\n";
-  outfile << "# Single surface mesh\n";
-
-  for (auto vert_pair : edges)
-  {
-    Vector3& v0 = vertices_[vert_pair.first];
-    Vector3& v1 = vertices_[vert_pair.second];
-    outfile << "v " << v0.x << " " << v0.y << " " << v0.z << "\n"
-            << "v " << v1.x << " " << v1.y << " " << v1.z << "\n";
-  }
-
-  for (size_t e = 0; e < edges.size(); ++e)
-  {
-    const auto v_count = 2 * e + 1;
-    outfile << "l " << v_count << " " << v_count + 1 << "\n";
-  }
-
-  outfile.close();
 }
 
 void
@@ -172,7 +92,7 @@ SurfaceMesh::UpdateInternalConnectivity()
   {
     for (int e = 0; e < 3; ++e)
     {
-      int* curface_edge = curFace.e_index[e];
+      auto& curface_edge = curFace.e_index[e];
       int vi = curface_edge[0];
       int vf = curface_edge[1];
 
@@ -212,7 +132,7 @@ SurfaceMesh::UpdateInternalConnectivity()
 
   // Loop over cells and determine connectivity
   // Polygons
-  for (auto curFace : poly_faces_)
+  for (const auto& curFace : poly_faces_)
   {
     for (auto& curface_edge : curFace->edges)
     {
@@ -366,7 +286,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "vn" for normal
-    if (first_word.compare("vn") == 0)
+    if (first_word == "vn")
     {
       Vector3 newNormal;
       for (int k = 1; k <= 3; ++k)
@@ -426,8 +346,8 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
 
           // Extract locations of hiphens
-          size_t first_dash = sub_word.find("/");
-          size_t last_dash = sub_word.find_last_of("/");
+          size_t first_dash = sub_word.find('/');
+          size_t last_dash = sub_word.find_last_of('/');
 
           // Extract the words ass. w vertex and normal
           std::string vert_word = sub_word.substr(0, first_dash - 0);
@@ -501,8 +421,8 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
 
           // Extract locations of hiphens
-          size_t first_dash = sub_word.find("/");
-          size_t last_dash = sub_word.find_last_of("/");
+          size_t first_dash = sub_word.find('/');
+          size_t last_dash = sub_word.find_last_of('/');
 
           // Extract the words ass. w vertex and normal
           std::string vert_word = sub_word.substr(0, first_dash - 0);
@@ -570,7 +490,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "l" for line
-    if (first_word.compare("l") == 0)
+    if (first_word == "l")
     {
       Edge newEdge;
 
@@ -811,109 +731,6 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   return 0;
 }
 
-std::shared_ptr<SurfaceMesh>
-SurfaceMesh::CreateFromDivisions(std::vector<double>& vertices_1d_x,
-                                 std::vector<double>& vertices_1d_y)
-{
-  // Checks if vertices are empty
-  if (vertices_1d_x.empty())
-  {
-    log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_x list.";
-    Exit(EXIT_FAILURE);
-  }
-  if (vertices_1d_y.empty())
-  {
-    log.LogAllError() << "SurfaceMesh::CreateFromDivisions. Empty vertex_y list.";
-    Exit(EXIT_FAILURE);
-  }
-
-  // Populate 2D vertices
-  int Nvx = vertices_1d_x.size();
-  int Nvy = vertices_1d_y.size();
-
-  int Ncx = Nvx - 1;
-  int Ncy = Nvy - 1;
-
-  std::vector<Vector3> vertices_x;
-  std::vector<Vector3> vertices_y;
-
-  vertices_x.reserve(Nvx);
-  vertices_y.reserve(Nvy);
-
-  for (double v : vertices_1d_x)
-    vertices_x.emplace_back(v, 0.0, 0.0);
-
-  for (double v : vertices_1d_y)
-    vertices_y.emplace_back(0.0, v, 0.0);
-
-  // Create surface mesh
-  auto surf_mesh = std::make_shared<SurfaceMesh>();
-
-  // Populate vertices
-  std::vector<std::vector<int>> vert_ij_map(Nvx, std::vector<int>(Nvx, -1));
-  for (int i = 0; i < Nvy; ++i)
-  {
-    for (int j = 0; j < Nvx; ++j)
-    {
-      surf_mesh->vertices_.push_back(vertices_x[j] + vertices_y[i]);
-      vert_ij_map[i][j] = surf_mesh->vertices_.size() - 1;
-    } // for j
-  }   // for i
-
-  // Populate polyfaces
-  for (int i = 0; i < Ncy; ++i)
-  {
-    for (int j = 0; j < Ncx; ++j)
-    {
-      auto new_face = std::make_shared<PolyFace>();
-      new_face->v_indices.push_back(vert_ij_map[i][j]);
-      new_face->v_indices.push_back(vert_ij_map[i][j + 1]);
-      new_face->v_indices.push_back(vert_ij_map[i + 1][j + 1]);
-      new_face->v_indices.push_back(vert_ij_map[i + 1][j]);
-
-      for (int v = 0; v < (new_face->v_indices.size()); ++v)
-      {
-        std::vector<int> side_indices(4);
-        side_indices[0] = new_face->v_indices[v];
-        side_indices[1] = new_face->v_indices[v + 1];
-        side_indices[2] = -1;
-        side_indices[3] = -1;
-
-        if ((v + 1) >= new_face->v_indices.size())
-          side_indices[1] = new_face->v_indices[0];
-
-        new_face->edges.push_back(side_indices);
-      } // for v
-
-      surf_mesh->poly_faces_.push_back(new_face);
-    } // for j
-  }   // for i
-
-  // Compute normals
-  for (auto poly_face : surf_mesh->poly_faces_)
-  {
-    Vector3 centroid;
-    int num_verts = poly_face->v_indices.size();
-    for (int v = 0; v < num_verts; ++v)
-      centroid = centroid + surf_mesh->vertices_[poly_face->v_indices[v]];
-
-    centroid = centroid / num_verts;
-
-    poly_face->face_centroid = centroid;
-
-    Vector3 n = (surf_mesh->vertices_[poly_face->v_indices[1]] -
-                 surf_mesh->vertices_[poly_face->v_indices[0]])
-                  .Cross(centroid - surf_mesh->vertices_[poly_face->v_indices[1]]);
-    n = n / n.Norm();
-
-    poly_face->geometric_normal = n;
-  }
-
-  surf_mesh->UpdateInternalConnectivity();
-
-  return surf_mesh;
-}
-
 int
 SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 {
@@ -938,7 +755,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   // Find section with node information and then read information
   while (std::getline(file, line))
   {
-    if (node_section_name.compare(line) == 0)
+    if (node_section_name == line)
       break;
   }
 
@@ -1107,181 +924,6 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 }
 
 void
-SurfaceMesh::ExportToOBJFile(const char* fileName)
-{
-  FILE* outputFile = fopen(fileName, "w");
-  if (outputFile == nullptr)
-  {
-    printf("Error creating file %s!\n", fileName);
-    return;
-  }
-
-  fprintf(outputFile, "# Exported mesh file from triangulation script\n");
-  fprintf(outputFile, "o %s\n", "OpenSnTriMesh");
-
-  std::vector<Vector3>::iterator cur_v;
-  for (cur_v = this->vertices_.begin(); cur_v != this->vertices_.end(); ++cur_v)
-  {
-    fprintf(outputFile, "v %9.6f %9.6f %9.6f\n", cur_v->x, cur_v->y, cur_v->z);
-  }
-
-  for (unsigned ell = 0; ell < this->lines_.size(); ++ell)
-  {
-    fprintf(outputFile, "l %d %d \n", lines_[ell].v_index[0] + 1, lines_[ell].v_index[1] + 1);
-  }
-
-  if (not faces_.empty())
-  {
-    Face first_face = this->faces_.front();
-    fprintf(outputFile,
-            "vn %.4f %.4f %.4f\n",
-            first_face.geometric_normal.x,
-            first_face.geometric_normal.y,
-            first_face.geometric_normal.z);
-    fprintf(outputFile, "s off\n");
-
-    std::vector<Face>::iterator cur_face;
-    for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
-    {
-      fprintf(outputFile,
-              "f %d//1 %d//1 %d//1\n",
-              cur_face->v_index[0] + 1,
-              cur_face->v_index[1] + 1,
-              cur_face->v_index[2] + 1);
-    }
-  }
-  if (not poly_faces_.empty())
-  {
-    auto first_face = this->poly_faces_.front();
-    fprintf(outputFile,
-            "vn %.4f %.4f %.4f\n",
-            first_face->geometric_normal.x,
-            first_face->geometric_normal.y,
-            first_face->geometric_normal.z);
-    fprintf(outputFile, "s off\n");
-
-    for (auto& poly_face : poly_faces_)
-    {
-      fprintf(outputFile, "f ");
-      for (int v_indice : poly_face->v_indices)
-      {
-        fprintf(outputFile, "%d//1 ", v_indice + 1);
-      }
-      fprintf(outputFile, "\n");
-    }
-  }
-
-  fclose(outputFile);
-  printf("Exported mesh to %s\n", fileName);
-}
-
-void
-SurfaceMesh::ExportToPolyFile(const char* fileName)
-{
-  FILE* outputFile = fopen(fileName, "w");
-  if (outputFile == nullptr)
-  {
-    printf("Error creating file %s!\n", fileName);
-    return;
-  }
-
-  fprintf(outputFile, "%lu 2 0 0\n", vertices_.size());
-  for (int v = 0; v < vertices_.size(); ++v)
-  {
-    fprintf(outputFile, "%d %.15f %.15f 0\n", v + 1, vertices_[v].x, vertices_[v].y);
-  }
-
-  fprintf(outputFile, "%lu 0\n", lines_.size());
-  for (int e = 0; e < lines_.size(); ++e)
-  {
-    fprintf(outputFile, "%d %d %d\n", e + 1, lines_[e].v_index[0] + 1, lines_[e].v_index[1] + 1);
-  }
-
-  fprintf(outputFile, "0");
-
-  fclose(outputFile);
-  printf("Exported mesh to %s\n", fileName);
-}
-
-void
-SurfaceMesh::GetMeshStats()
-{
-  std::vector<double> areas;
-  std::vector<double> histo_bins;
-  std::vector<int> histo;
-
-  int num_negative_areas = 0;
-
-  // Compute areas for each polyface
-  size_t num_loc_cells = poly_faces_.size();
-  areas.resize(num_loc_cells);
-  double max_area = 0.0;
-  for (size_t c = 0; c < num_loc_cells; ++c)
-  {
-    auto face = poly_faces_[c];
-
-    size_t num_edges = face->edges.size();
-    double area = 0.0;
-    for (size_t e = 0; e < num_edges; ++e)
-    {
-      int v0i = face->edges[e][0];
-      int v1i = face->edges[e][1];
-
-      Vector3 v01 = vertices_[v1i] - vertices_[v0i];
-      Vector3 v02 = face->face_centroid - vertices_[v0i];
-
-      // This is essentially the combine of the triangle for each side
-
-      area += 0.5 * (v01.x * v02.y - v01.y * v02.x);
-    } // for edge
-
-    areas[c] = area;
-    if (area > max_area)
-      max_area = area;
-
-    if (area <= 0.0)
-      num_negative_areas += 1;
-  } // for cell
-
-  // Sort the areas
-  std::sort(areas.begin(), areas.end(), std::greater<double>());
-
-  // Compute histogram bins
-  histo_bins.resize(10);
-  histo.resize(10, 0);
-  histo_bins[0] = max_area * 1.05;
-  for (int i = 1; i < 10; ++i)
-    histo_bins[i] = histo_bins[i - 1] / 2.0;
-
-  // Polulate histogram
-  for (auto area : areas)
-  {
-    int home_bin = 9;
-    for (int i = 0; i < 10; ++i)
-    {
-
-      if (area <= histo_bins[i])
-        home_bin = i;
-
-    } // check bins
-
-    histo[home_bin] += 1;
-  } // for areas
-
-  std::stringstream output;
-  for (int i = 0; i < 10; ++i)
-  {
-    char buff[100];
-    snprintf(buff, 100, "%11.3e", histo_bins[i]);
-
-    output << "Areas < " << buff << " = " << histo[i] << "\n";
-  }
-  output << "Number of negative or zero faces = " << num_negative_areas;
-
-  log.Log() << output.str();
-}
-
-void
 SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts)
 {
   log.Log() << "X-cuts to be logged: " << x_cuts.size();
@@ -1356,244 +998,6 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
     log.Log() << "Y greater than " << y_cuts[j_max - 1] << " and less than " << y_cuts[j_max];
 
   log.Log() << "Max-to-average ratio: " << max_bin_size / average;
-}
-
-void
-SurfaceMesh::SplitByPatch(std::vector<std::shared_ptr<SurfaceMesh>>& patches)
-{
-  using FaceListCollection = std::vector<std::shared_ptr<std::vector<Face>>>;
-
-  // Copy all faces from surface
-  std::vector<Face> unsorted_faces;
-  std::vector<Face>::iterator cur_face;
-  for (cur_face = this->faces_.begin(); cur_face != this->faces_.end(); ++cur_face)
-  {
-    unsorted_faces.push_back((*cur_face));
-  }
-
-  // Initialize co-planar
-  // collection
-  FaceListCollection co_planar_lists;
-
-  // Seed the first collection
-  auto first_list = std::make_shared<std::vector<Face>>();
-  co_planar_lists.push_back(first_list);
-  first_list->push_back(unsorted_faces.back());
-  unsorted_faces.pop_back();
-
-  // Reverse iterate over unsorted
-  std::vector<Face>::reverse_iterator us_face;
-  for (us_face = unsorted_faces.rbegin(); us_face != unsorted_faces.rend(); ++us_face)
-  {
-    bool matchFound = false;
-
-    // Check if it can be matched
-    FaceListCollection::iterator existing_list;
-    for (existing_list = co_planar_lists.begin(); existing_list != co_planar_lists.end();
-         ++existing_list)
-    {
-      for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); ++cur_face)
-      {
-        Vector3 n1 = cur_face->geometric_normal;
-        Vector3 n2 = us_face->geometric_normal;
-
-        if (fabs(n1.Dot(n2)) > (1.0 - 1.0e-4))
-        {
-          (*existing_list)->push_back(unsorted_faces.back());
-          unsorted_faces.pop_back();
-          matchFound = true;
-          break;
-        }
-      }
-      if (matchFound)
-      {
-        break;
-      }
-    }
-
-    // If no match found, create new list
-    if (not matchFound)
-    {
-      printf("New list created\n");
-      auto new_list = std::make_shared<std::vector<Face>>();
-      new_list->push_back(unsorted_faces.back());
-      unsorted_faces.pop_back();
-      co_planar_lists.push_back(new_list);
-    }
-  }
-
-  printf("Number of co-planar collections=%lu\n", co_planar_lists.size());
-
-  FaceListCollection patch_list_collection;
-
-  // Loop over co_planar lists
-  FaceListCollection::iterator existing_list;
-  for (existing_list = co_planar_lists.begin(); existing_list != co_planar_lists.end();
-       ++existing_list)
-  {
-    // Inner patch collection
-    FaceListCollection inner_patch_list_collection;
-
-    // Add all the faces of this collection to an unused list
-    std::vector<Face> unused_faces;
-    for (cur_face = (*existing_list)->begin(); cur_face != (*existing_list)->end(); ++cur_face)
-    {
-      unused_faces.push_back((*cur_face));
-    }
-
-    // Seed the first patch list
-    auto first_patch_list = std::make_shared<std::vector<Face>>();
-    inner_patch_list_collection.push_back(first_patch_list);
-    first_patch_list->push_back(unused_faces.back());
-    unused_faces.pop_back();
-
-    // Loop over unused faces
-    while (unused_faces.size() > 0)
-    {
-      bool updateMade = false;
-      std::vector<Face>::iterator us_face_f; // Forward iterator
-      for (us_face_f = unused_faces.begin(); us_face_f != unused_faces.end(); ++us_face_f)
-      {
-        // Try to to find a home
-        FaceListCollection::iterator inner_list;
-        for (inner_list = inner_patch_list_collection.begin();
-             inner_list != inner_patch_list_collection.end();
-             ++inner_list)
-        {
-          for (cur_face = (*inner_list)->begin(); cur_face != (*inner_list)->end(); ++cur_face)
-          {
-            // Check if any vertices match
-            for (int e = 0; e < 3; ++e)
-            {
-              int vi = (*us_face_f).v_index[e];
-              for (int e2 = 0; e2 < 3; ++e2)
-              {
-                int vf = (*cur_face).v_index[e2];
-
-                if (vf == vi)
-                {
-                  (*inner_list)->push_back(*us_face_f);
-                  unused_faces.erase(us_face_f);
-                  updateMade = true;
-                  break;
-                }
-              }
-              if (updateMade)
-              {
-                break;
-              }
-            }
-            if (updateMade)
-            {
-              break;
-            }
-          }
-          if (updateMade)
-          {
-            break;
-          }
-        }
-
-        if (updateMade)
-        {
-          break;
-        }
-      }
-
-      if (not updateMade)
-      {
-        auto new_patch_list = std::make_shared<std::vector<Face>>();
-        inner_patch_list_collection.push_back(new_patch_list);
-        new_patch_list->push_back(unused_faces.back());
-        unused_faces.pop_back();
-      }
-    }
-
-    // Add inner patch lists to outer
-    FaceListCollection::iterator inner_list;
-    for (inner_list = inner_patch_list_collection.begin();
-         inner_list != inner_patch_list_collection.end();
-         ++inner_list)
-    {
-      patch_list_collection.push_back(*inner_list);
-    }
-  }
-
-  printf("Number of patches = %lu\n", patch_list_collection.size());
-
-  // Create surfaces for each patch
-  FaceListCollection::iterator outer_patch;
-  for (outer_patch = patch_list_collection.begin(); outer_patch != patch_list_collection.end();
-       ++outer_patch)
-  {
-
-    auto new_surface = std::make_shared<SurfaceMesh>();
-
-    std::vector<std::vector<int>> vertex_mapping;
-
-    for (cur_face = (*outer_patch)->begin(); cur_face != (*outer_patch)->end(); ++cur_face)
-    {
-      // Copy the face
-      Face newFace = (*cur_face);
-
-      // Copy and map vertices
-      for (int e = 0; e < 3; ++e)
-      {
-        int vi = newFace.v_index[e];
-
-        // Check if vertex already there
-        bool already_there = false;
-        std::vector<int> already_there_mapping;
-        for (auto cur_map = vertex_mapping.begin(); cur_map != vertex_mapping.end(); ++cur_map)
-        {
-          if ((*cur_map)[0] == vi)
-          {
-            already_there = true;
-            already_there_mapping = (*cur_map);
-            break;
-          }
-        }
-
-        if (already_there)
-        {
-          // Update vertex index
-          newFace.v_index[e] = already_there_mapping[1];
-        }
-        else
-        {
-          // Copy vertex
-          Vector3 v = this->vertices_.at(vi);
-          std::vector<int> newMapping(2);
-          newMapping[0] = vi;
-          newMapping[1] = new_surface->vertices_.size();
-
-          new_surface->vertices_.push_back(v);
-          vertex_mapping.push_back(newMapping);
-
-          newFace.v_index[e] = newMapping[1];
-        }
-
-      } // for e
-      newFace.e_index[0][0] = newFace.v_index[0];
-      newFace.e_index[0][1] = newFace.v_index[1];
-
-      newFace.e_index[1][0] = newFace.v_index[1];
-      newFace.e_index[1][1] = newFace.v_index[2];
-
-      newFace.e_index[2][0] = newFace.v_index[2];
-      newFace.e_index[2][1] = newFace.v_index[0];
-
-      for (int e = 0; e < 3; ++e)
-      {
-        newFace.e_index[e][2] = -1;
-        newFace.e_index[e][3] = -1;
-      }
-
-      new_surface->faces_.push_back(newFace);
-    }
-    new_surface->UpdateInternalConnectivity();
-    patches.push_back(new_surface);
-  }
 }
 
 } // namespace opensn

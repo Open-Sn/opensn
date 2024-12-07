@@ -191,14 +191,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           }
         }
         if (not found)
-        {
-          log.LogAllError() << "Lock-box location not found in call to "
-                            << "InitializeAlphaElements. Local Cell " << cell.local_id << " face "
-                            << f << " looking for cell " << face.GetNeighborLocalID(grid)
-                            << " face " << adj_face_idx << " cat: " << face_categ
-                            << " omg=" << spds.Omega().PrintS() << " lbsize=" << lock_box.size();
-          Exit(EXIT_FAILURE);
-        }
+          throw std::runtime_error(
+            "Lock-box location not found in call to InitializeAlphaElements. "
+            "Local Cell: " +
+            std::to_string(cell.local_id) + ", Face: " + std::to_string(f) +
+            ", Looking for Cell: " + std::to_string(face.GetNeighborLocalID(grid)) +
+            ", Adjacent Face: " + std::to_string(adj_face_idx) +
+            ", Category: " + std::to_string(face_categ) + ", Omega: " + spds.Omega().PrintStr() +
+            ", Lock-box Size: " + std::to_string(lock_box.size()));
 
       } // if local
     }   // if incident

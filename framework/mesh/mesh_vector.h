@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -16,298 +17,157 @@ struct TensorRank2Dim3;
 /// General 3-element vector structure.
 struct Vector3
 {
-  /// Element-0
-  double x;
-  /// Element-1
-  double y;
-  /// Element-2
-  double z;
+  /// X-component of the vector
+  double x{0.0};
+  /// Y-component of the vector
+  double y{0.0};
+  /// Z-component of the vector
+  double z{0.0};
 
-  /// Default constructor. Initialized as all zeros.
-  Vector3()
-  {
-    x = 0.0;
-    y = 0.0;
-    z = 0.0;
-  }
-
-  /// Constructor where single element is initialized \f$ x[z]=a \f$.
-  explicit Vector3(double a)
-  {
-    x = a;
-    y = 0.0;
-    z = 0.0;
-  }
-
-  /// Constructor where \f$ x=a\f$ and \f$ y=b \f$.
-  explicit Vector3(double a, double b)
-  {
-    x = a;
-    y = b;
-    z = 0.0;
-  }
+  /// Default constructor: initializes to (0, 0, 0).
+  Vector3() = default;
 
   /// Constructor where \f$ \vec{x}=[a,b,c] \f$.
-  explicit Vector3(double a, double b, double c)
-  {
-    x = a;
-    y = b;
-    z = c;
-  }
+  explicit Vector3(double a, double b = 0.0, double c = 0.0) : x(a), y(b), z(c) {}
 
   /// Constructor where \f$ \vec{x}=\{a,b,c\} \f$.
   Vector3(std::initializer_list<double> list)
   {
-    if (not empty(list))
-    {
-      std::vector<double> vec = list;
-      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
-      {
-        if (i == 0)
-          x = vec[i];
-        if (i == 1)
-          y = vec[i];
-        if (i == 2)
-          z = vec[i];
-      }
-    }
+    auto it = list.begin();
+    if (list.size() > 0)
+      x = *it++;
+    if (list.size() > 1)
+      y = *it++;
+    if (list.size() > 2)
+      z = *it;
   }
 
   /// Constructor where \f$ \vec{x}=\{a,b,c\} \f$.
   explicit Vector3(const std::vector<double>& list)
   {
-    if (not empty(list))
-    {
-      std::vector<double> vec = list;
-      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
-      {
-        if (i == 0)
-          x = vec[i];
-        if (i == 1)
-          y = vec[i];
-        if (i == 2)
-          z = vec[i];
-      }
-    }
-  }
-
-  /// Copy constructor.
-  Vector3(const Vector3& that)
-  {
-    this->x = that.x;
-    this->y = that.y;
-    this->z = that.z;
-  }
-
-  /// Assignment operator.
-  Vector3& operator=(const Vector3& that)
-  {
-    this->x = that.x;
-    this->y = that.y;
-    this->z = that.z;
-
-    return *this;
-  }
-
-  Vector3& operator=(std::initializer_list<double> list)
-  {
-    if (not empty(list))
-    {
-      std::vector<double> vec = list;
-      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
-      {
-        this->operator()(i) = vec[i];
-      }
-    }
-
-    return *this;
-  }
-
-  Vector3& operator=(const std::vector<double>& list)
-  {
-    if (not empty(list))
-    {
-      std::vector<double> vec = list;
-      for (size_t i = 0; ((i < 3) and (i < vec.size())); ++i)
-      {
-        this->operator()(i) = vec[i];
-      }
-    }
-
-    return *this;
+    if (!list.empty())
+      x = list[0];
+    if (list.size() > 1)
+      y = list[1];
+    if (list.size() > 2)
+      z = list[2];
   }
 
   /// Component-wise addition of two vectors. \f$ \vec{w} = \vec{x} + \vec{y} \f$
-  Vector3 operator+(const Vector3& that) const
-  {
-    Vector3 newVector;
-    newVector.x = this->x + that.x;
-    newVector.y = this->y + that.y;
-    newVector.z = this->z + that.z;
-
-    return newVector;
-  }
+  Vector3 operator+(const Vector3& other) const { return {x + other.x, y + other.y, z + other.z}; }
 
   /// In-place component-wise addition of two vectors. \f$ \vec{x} = \vec{x} + \vec{y} \f$
   Vector3& operator+=(const Vector3& that)
   {
-    this->x += that.x;
-    this->y += that.y;
-    this->z += that.z;
-
+    x += that.x;
+    y += that.y;
+    z += that.z;
     return *this;
   }
 
   /// Component-wise shift by scalar-value. \f$ \vec{w} = \vec{x} + \alpha \f$
-  Vector3 Shifted(const double value) const
-  {
-    Vector3 newVector;
-    newVector.x = this->x + value;
-    newVector.y = this->y + value;
-    newVector.z = this->z + value;
-
-    return newVector;
-  }
+  Vector3 Shifted(double value) const { return Vector3{x + value, y + value, z + value}; }
 
   /// In-place component-wise shift by scalar value. \f$ \vec{x} = \vec{x} + \alpha \f$
-  Vector3& Shift(const double value)
+  Vector3& Shift(double value)
   {
-    this->x += value;
-    this->y += value;
-    this->z += value;
-
+    x += value;
+    y += value;
+    z += value;
     return *this;
   }
 
-  /// Component-wise subtraction. \f$ \vec{w} = \vec{x} - \vec{y} \f$
-  Vector3 operator-(const Vector3& that) const
-  {
-    Vector3 newVector;
-    newVector.x = this->x - that.x;
-    newVector.y = this->y - that.y;
-    newVector.z = this->z - that.z;
-
-    return newVector;
-  }
+  /// Component-wise subtraction of two vectors. \f$ \vec{w} = \vec{x} - \vec{y} \f$
+  Vector3 operator-(const Vector3& other) const { return {x - other.x, y - other.y, z - other.z}; }
 
   /// In-place component-wise subtraction. \f$ \vec{x} = \vec{x} - \vec{y} \f$
   Vector3& operator-=(const Vector3& that)
   {
-    this->x -= that.x;
-    this->y -= that.y;
-    this->z -= that.z;
-
+    x -= that.x;
+    y -= that.y;
+    z -= that.z;
     return *this;
   }
 
   /// Vector component-wise multiplication by scalar. \f$ \vec{w} = \vec{x} \alpha \f$
-  Vector3 operator*(const double value) const
-  {
-    Vector3 newVector;
-    newVector.x = this->x * value;
-    newVector.y = this->y * value;
-    newVector.z = this->z * value;
-
-    return newVector;
-  }
+  Vector3 operator*(double value) const { return Vector3{x * value, y * value, z * value}; }
 
   /// Vector in-place component-wise multiplication by scalar. \f$ \vec{x} = \vec{x} \alpha \f$
-  Vector3& operator*=(const double value)
+  Vector3& operator*=(double value)
   {
-    this->x *= value;
-    this->y *= value;
-    this->z *= value;
-
+    x *= value;
+    y *= value;
+    z *= value;
     return *this;
   }
 
   /// Vector component-wise multiplication. \f$ w_i = x_i y_i \f$
   Vector3 operator*(const Vector3& that) const
   {
-    Vector3 newVector;
-    newVector.x = this->x * that.x;
-    newVector.y = this->y * that.y;
-    newVector.z = this->z * that.z;
-
-    return newVector;
+    return Vector3{x * that.x, y * that.y, z * that.z};
   }
 
   /// Vector in-place component-wise multiplication. \f$ x_i = x_i y_i \f$
   Vector3& operator*=(const Vector3& that)
   {
-    this->x *= that.x;
-    this->y *= that.y;
-    this->z *= that.z;
-
+    x *= that.x;
+    y *= that.y;
+    z *= that.z;
     return *this;
   }
 
   /// Vector component-wise division by scalar. \f$ w_i = \frac{x_i}{\alpha} \f$
-  Vector3 operator/(const double value) const
+  Vector3 operator/(double value) const
   {
-    Vector3 newVector;
-    newVector.x = this->x / value;
-    newVector.y = this->y / value;
-    newVector.z = this->z / value;
-
-    return newVector;
+    if (value == 0.0)
+      throw std::runtime_error("Division by zero in Vector3 operator/");
+    return Vector3{x / value, y / value, z / value};
   }
 
   /// Vector in-place component-wise division by scalar. \f$ x_i = \frac{x_i}{\alpha} \f$
-  Vector3& operator/=(const double value)
+  Vector3& operator/=(double value)
   {
-    this->x /= value;
-    this->y /= value;
-    this->z /= value;
-
+    if (value == 0.0)
+      throw std::runtime_error("Division by zero in Vector3 operator/=");
+    x /= value;
+    y /= value;
+    z /= value;
     return *this;
   }
 
   /// Vector component-wise division. \f$ w_i = \frac{x_i}{y_i} \f$
   Vector3 operator/(const Vector3& that) const
   {
-    Vector3 newVector;
-    newVector.x = this->x / that.x;
-    newVector.y = this->y / that.y;
-    newVector.z = this->z / that.z;
-
-    return newVector;
+    if (that.x == 0.0 || that.y == 0.0 || that.z == 0.0)
+      throw std::runtime_error("Division by zero in Vector3 operator/ (component-wise)");
+    return Vector3{x / that.x, y / that.y, z / that.z};
   }
 
   /// Vector in-place component-wise division. \f$ x_i = \frac{x_i}{y_i} \f$
   Vector3& operator/=(const Vector3& that)
   {
-    this->x /= that.x;
-    this->y /= that.y;
-    this->z /= that.z;
-
+    if (that.x == 0.0 || that.y == 0.0 || that.z == 0.0)
+      throw std::runtime_error("Division by zero in Vector3 operator/= (component-wise)");
+    x /= that.x;
+    y /= that.y;
+    z /= that.z;
     return *this;
   }
 
   /// Returns a copy of the value at the given index.
-  double operator[](const size_t i) const
+  double operator[](size_t i) const
   {
-    if (i == 0)
-      return this->x;
-    else if (i == 1)
-      return this->y;
-    else if (i == 2)
-      return this->z;
-
-    return 0.0;
+    if (i > 2)
+      throw std::out_of_range("Index out of range in Vector3 operator[]");
+    return i == 0 ? x : (i == 1 ? y : z);
   }
 
   /// Returns a reference of the value at the given index.
-  double& operator()(const size_t i)
+  double& operator()(size_t i)
   {
-    if (i == 0)
-      return this->x;
-    else if (i == 1)
-      return this->y;
-    else if (i == 2)
-      return this->z;
-
-    return this->x;
+    if (i > 2)
+      throw std::out_of_range("Index out of range in Vector3 operator()");
+    return i == 0 ? x : (i == 1 ? y : z);
   }
 
   /**
@@ -337,48 +197,20 @@ struct Vector3
   }
 
   /// Vector dot-product. \f$ \vec{w} = \vec{x} \bullet \vec{y} \f$
-  double Dot(const Vector3& that) const
-  {
-    double value = 0.0;
-    value += this->x * that.x;
-    value += this->y * that.y;
-    value += this->z * that.z;
-
-    return value;
-  }
+  double Dot(const Vector3& that) const { return x * that.x + y * that.y + z * that.z; }
 
   /// Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector.
-  double Norm() const
-  {
-    double value = 0.0;
-    value += this->x * this->x;
-    value += this->y * this->y;
-    value += this->z * this->z;
+  double Norm() const { return std::sqrt(NormSquare()); }
 
-    value = sqrt(value);
-
-    return value;
-  }
-
-  /**
-   * Computes the square of the L2-norm of the vector. This eliminates the usage of the square root
-   * and is therefore less expensive that a proper L2-norm. Useful if only comparing distances.
-   */
-  double NormSquare() const
-  {
-    double value = 0.0;
-    value += this->x * this->x;
-    value += this->y * this->y;
-    value += this->z * this->z;
-
-    return value;
-  }
+  /// Computes the square of the L2-norm of the vector. Less expensive than a proper L2-norm.
+  double NormSquare() const { return x * x + y * y + z * z; }
 
   /// Normalizes the vector in-place. \f$ \vec{x} = \frac{\vec{x}}{||x||_2} \f$
   void Normalize()
   {
-    double norm = this->Norm();
-
+    double norm = Norm();
+    if (norm == 0.0)
+      throw std::runtime_error("Cannot normalize a zero-length vector.");
     x /= norm;
     y /= norm;
     z /= norm;
@@ -387,98 +219,55 @@ struct Vector3
   /// Returns a normalized version of the vector. \f$ \vec{w} = \frac{\vec{x}}{||x||_2} \f$
   Vector3 Normalized() const
   {
-    double norm = this->Norm();
-
-    Vector3 newVector;
-    newVector.x = this->x / norm;
-    newVector.y = this->y / norm;
-    newVector.z = this->z / norm;
-
-    return newVector;
+    double norm = Norm();
+    if (norm == 0.0)
+      throw std::runtime_error("Cannot normalize a zero-length vector.");
+    return Vector3{x / norm, y / norm, z / norm};
   }
 
   /**
    * Returns a vector v^* where each element is inverted provided that it is greater than the given
    * tolerance, otherwise the offending entry is set to 0.0. \f$ w_i = \frac{1.0}{x_i} \f$
    */
-  Vector3 InverseZeroIfSmaller(const double tol) const
+  /// Inverse components, setting zero if below tolerance.
+  Vector3 InverseZeroIfSmaller(double tol) const
   {
-    Vector3 newVector;
-    newVector.x = (std::fabs(this->x) > tol) ? 1.0 / this->x : 0.0;
-    newVector.y = (std::fabs(this->y) > tol) ? 1.0 / this->y : 0.0;
-    newVector.z = (std::fabs(this->z) > tol) ? 1.0 / this->z : 0.0;
-
-    return newVector;
+    return Vector3{std::fabs(x) > tol ? 1.0 / x : 0.0,
+                   std::fabs(y) > tol ? 1.0 / y : 0.0,
+                   std::fabs(z) > tol ? 1.0 / z : 0.0};
   }
 
-  /**
-   * Returns a vector v^* where each element is inverted provided that it is greater than the given
-   * tolerance, otherwise the offending entry is set to 1.0. \f$ w_i = \frac{1.0}{x_i} \f$
-   */
-  Vector3 InverseOneIfSmaller(const double tol) const
+  /// Inverse components, setting one if below tolerance.
+  Vector3 InverseOneIfSmaller(double tol) const
   {
-    Vector3 newVector;
-    newVector.x = (std::fabs(this->x) > tol) ? 1.0 / this->x : 1.0;
-    newVector.y = (std::fabs(this->y) > tol) ? 1.0 / this->y : 1.0;
-    newVector.z = (std::fabs(this->z) > tol) ? 1.0 / this->z : 1.0;
-
-    return newVector;
+    return Vector3{std::fabs(x) > tol ? 1.0 / x : 1.0,
+                   std::fabs(y) > tol ? 1.0 / y : 1.0,
+                   std::fabs(z) > tol ? 1.0 / z : 1.0};
   }
 
-  /**
-   * Returns a vector v^* where each element is inverted without any check for division by zero.
-   * \f$ w_i = \frac{1.0}{x_i} \f$
-   */
+  /// Inverts each component without checking for division by zero.
   Vector3 Inverse() const
   {
-    Vector3 newVector;
-    double dx_inv = 1.0 / this->x;
-    double dy_inv = 1.0 / this->y;
-    double dz_inv = 1.0 / this->z;
-
-    return newVector;
+    if (x == 0.0 || y == 0.0 || z == 0.0)
+      throw std::runtime_error("Division by zero in Vector3::Inverse.");
+    return Vector3{1.0 / x, 1.0 / y, 1.0 / z};
   }
 
   /// Prints the vector to std::cout.
-  void Print() const
-  {
-    std::cout << this->x << " ";
-    std::cout << this->y << " ";
-    std::cout << this->z;
-  }
+  void Print() const { std::cout << "[" << x << " " << y << " " << z << "]"; }
 
-  friend std::ostream& operator<<(std::ostream& out, Vector3& v)
-  {
-    out << "[" << v.x << " " << v.y << " " << v.z << "]";
-
-    return out;
-  }
-
-  /// Deprecated. Prints the vector to a string and then returns the string.
-  std::string PrintS() const // TODO: Deprecated
-  {
-    std::stringstream out;
-    out << "[" << x << " " << y << " " << z << "]";
-
-    return out.str();
-  }
-
-  /// Prints the vector to a string and then returns the string.
+  /// Returns the vector as a string.
   std::string PrintStr() const
   {
-    std::stringstream out;
+    std::ostringstream out;
     out << "[" << x << " " << y << " " << z << "]";
-
     return out.str();
   }
 
-  static size_t Size() { return 3; }
+  static constexpr size_t Size() { return 3; }
 };
 
-/**
- * Returns a 3D vector multiplied by the given scalar from the left.
- * \f$ \vec{w} = \alpha \vec{x}\f$
- */
+/// Scalar multiplication from the left. \f$ \vec{w} = \alpha \vec{x}\f$
 Vector3 operator*(double value, const Vector3& that);
 
 } // namespace opensn

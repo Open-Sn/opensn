@@ -5,6 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/logging/log.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {

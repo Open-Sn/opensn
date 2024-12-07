@@ -299,7 +299,7 @@ FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
-  return ref_grid_.cells.GetNumGhosts() * N;
+  return ref_grid_.cells.GhostCellCount() * N;
 }
 
 std::vector<int64_t>
