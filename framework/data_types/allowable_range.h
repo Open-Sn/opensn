@@ -64,7 +64,7 @@ public:
   }
 
   template <typename T>
-  AllowableRangeList(const std::vector<T>& raw_list)
+  explicit AllowableRangeList(const std::vector<T>& raw_list)
   {
     for (const auto& val : raw_list)
       list_.emplace_back(val);
