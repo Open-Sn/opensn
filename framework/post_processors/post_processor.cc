@@ -6,8 +6,7 @@
 #include "framework/event_system/event_subscriber.h"
 #include "framework/event_system/event.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
-#include <inttypes.h>
+#include <cinttypes>
 
 namespace opensn
 {

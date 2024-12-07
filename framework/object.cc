@@ -12,9 +12,7 @@ Object::GetInputParameters()
   return {}; // Returns an empty block
 }
 
-Object::Object()
-{
-}
+Object::Object() = default;
 
 Object::Object(const InputParameters&)
 {

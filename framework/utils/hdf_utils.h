@@ -177,7 +177,7 @@ H5ReadDataset1D(hid_t id, const std::string& name)
     if (dataspace != H5I_INVALID_HID)
     {
       hsize_t dims[1];
-      if (H5Sget_simple_extent_dims(dataspace, dims, NULL) == 1)
+      if (H5Sget_simple_extent_dims(dataspace, dims, nullptr) == 1)
       {
         data.resize(dims[0]);
         if (H5Dread(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) < 0)
@@ -197,7 +197,7 @@ H5ReadDataset1D(hid_t id, const std::string& name)
       auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
       if (attribute != H5I_INVALID_HID)
       {
-        size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+        auto size = static_cast<size_t>(H5Aget_storage_size(attribute));
         if (size > 0)
         {
           size_t num_elements = size / sizeof(T);
@@ -247,7 +247,7 @@ H5ReadAttribute<std::string>(hid_t id, const std::string& name, std::string& val
     auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
     if (attribute != H5I_INVALID_HID)
     {
-      size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+      auto size = static_cast<size_t>(H5Aget_storage_size(attribute));
       if (size > 0)
       {
         hid_t string_type = H5Tcopy(H5T_C_S1);

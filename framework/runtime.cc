@@ -6,13 +6,11 @@
 #include "framework/post_processors/post_processor.h"
 #include "framework/event_system/event.h"
 #include "framework/math/math.h"
-#include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "config.h"
 #include "caliper/cali.h"
 #include "hdf5.h"
-#include <iostream>
 
 namespace opensn
 {
@@ -24,7 +22,6 @@ bool use_caliper = false;
 std::string cali_config("runtime-report(calc.inclusive=true),max_column_width=80");
 cali::ConfigManager cali_mgr;
 Timer program_timer;
-int current_mesh_handler = -1;
 bool suppress_color = false;
 std::filesystem::path input_path;
 
@@ -57,7 +54,7 @@ Initialize()
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
 
   // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
+  H5Eset_auto2(H5E_DEFAULT, nullptr, nullptr);
 
   return 0;
 }
