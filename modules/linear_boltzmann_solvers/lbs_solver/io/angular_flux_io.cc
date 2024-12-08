@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/utils/hdf_utils.h"
 
 namespace opensn
 {
@@ -14,10 +15,10 @@ LBSSolverIO::WriteAngularFluxes(
   const std::string& file_base,
   std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src)
 {
-  // Open the file
-  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
-  std::ofstream file(file_name, std::ofstream::binary | std::ofstream::out | std::ofstream::trunc);
-  OpenSnLogicalErrorIf(not file.is_open(), "WriteAnglarFluxes: Failed to open " + file_name + ".");
+  // Open the HDF5 file
+  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
+  hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  OpenSnLogicalErrorIf(file_id < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
 
   // Select source vector
   std::vector<std::vector<double>>& src =
@@ -25,73 +26,86 @@ LBSSolverIO::WriteAngularFluxes(
 
   log.Log() << "Writing angular flux to " << file_base;
 
-  // Write the header
-  const int num_bytes = 500;
-  std::string header_info = "OpenSn LinearBoltzmann::Angular flux file\n"
-                            "Header size: " +
-                            std::to_string(num_bytes) +
-                            " bytes\n"
-                            "Structure(type-info):\n"
-                            "uint64_t    num_local_nodes\n"
-                            "uint64_t    num_angles\n"
-                            "uint64_t    num_groups\n"
-                            "Each record:\n"
-                            "  uint64_t    cell_global_id\n"
-                            "  uint64_t    node\n"
-                            "  uint64_t    angle\n"
-                            "  uint64_t    group\n"
-                            "  double      value\n";
-  int header_size = (int)header_info.length();
-  char header_bytes[num_bytes];
-  memset(header_bytes, '-', num_bytes);
-  strncpy(header_bytes, header_info.c_str(), std::min(header_size, num_bytes - 1));
-  header_bytes[num_bytes - 1] = '\0';
-
-  file << header_bytes;
-
   // Write macro info
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
+  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
   auto& discretization = lbs_solver.SpatialDiscretization();
   auto& groupsets = lbs_solver.Groupsets();
   auto& grid = lbs_solver.Grid();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
-  const uint64_t num_groupsets = groupsets.size();
+  uint64_t num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
+  uint64_t num_local_cells = grid.local_cells.size();
+  uint64_t num_groupsets = groupsets.size();
 
-  file.write((char*)&num_local_nodes, sizeof(uint64_t));
-  file.write((char*)&num_groupsets, sizeof(uint64_t));
+  H5CreateAttribute(file_id, "num_groupsets", num_groupsets);
+
+  // Store Mesh Information
+  std::vector<uint64_t> cell_ids, num_cell_nodes;
+  cell_ids.reserve(num_local_cells);
+  num_cell_nodes.reserve(num_local_cells);
+
+  std::vector<double> nodes_x, nodes_y, nodes_z;
+  nodes_x.reserve(num_local_nodes);
+  nodes_y.reserve(num_local_nodes);
+  nodes_z.reserve(num_local_nodes);
+
+  for (const auto& cell : grid.local_cells)
+  {
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
+
+    const auto nodes = discretization.GetCellNodeLocations(cell);
+    for (const auto& node : nodes)
+    {
+      nodes_x.push_back(node.x);
+      nodes_y.push_back(node.y);
+      nodes_z.push_back(node.z);
+    }
+  }
+
+  // Write mesh data to h5 inside the mesh group
+  H5CreateGroup(file_id, "mesh");
+  H5CreateAttribute(file_id, "mesh/num_local_cells", num_local_cells);
+  H5CreateAttribute(file_id, "mesh/num_local_nodes", num_local_nodes);
+  H5WriteDataset1D(file_id, "mesh/cell_ids", cell_ids);
+  H5WriteDataset1D(file_id, "mesh/num_cell_nodes", num_cell_nodes);
+  H5WriteDataset1D(file_id, "mesh/nodes_x", nodes_x);
+  H5WriteDataset1D(file_id, "mesh/nodes_y", nodes_y);
+  H5WriteDataset1D(file_id, "mesh/nodes_z", nodes_z);
 
   // Go through each groupset
   for (const auto& groupset : groupsets)
   {
-    // Write macro groupset info
+    // Write groupset info
     const auto& uk_man = groupset.psi_uk_man_;
     const auto& quadrature = groupset.quadrature;
 
     const uint64_t groupset_id = groupset.id;
-    const uint64_t num_gs_angles = quadrature->omegas.size();
-    const uint64_t num_gs_groups = groupset.groups.size();
+    uint64_t num_gs_angles = quadrature->omegas.size();
+    uint64_t num_gs_groups = groupset.groups.size();
 
-    file.write((char*)&groupset_id, sizeof(uint64_t));
-    file.write((char*)&num_gs_angles, sizeof(uint64_t));
-    file.write((char*)&num_gs_groups, sizeof(uint64_t));
+    H5CreateGroup(file_id, "groupset_" + std::to_string(groupset_id));
+
+    H5CreateAttribute(
+      file_id, "groupset_" + std::to_string(groupset_id) + "/num_gs_angles", num_gs_angles);
+    H5CreateAttribute(
+      file_id, "groupset_" + std::to_string(groupset_id) + "/num_gs_groups", num_gs_groups);
 
     // Write the groupset angular flux data
+    std::vector<double> values;
+    std::vector<uint64_t> cell_ids, nodes, angles, groups;
+
     for (const auto& cell : grid.local_cells)
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_angles; ++n)
           for (uint64_t g = 0; g < num_gs_groups; ++g)
           {
             const uint64_t dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
-            const double value = src[groupset_id][dof_map];
-
-            file.write((char*)&cell.global_id, sizeof(uint64_t));
-            file.write((char*)&i, sizeof(uint64_t));
-            file.write((char*)&n, sizeof(uint64_t));
-            file.write((char*)&g, sizeof(uint64_t));
-            file.write((char*)&value, sizeof(double));
+            values.push_back(src[groupset_id][dof_map]);
           }
+
+    H5WriteDataset1D(file_id, "groupset_" + std::to_string(groupset_id) + "/values", values);
   }
-  file.close();
+
+  H5Fclose(file_id);
 }
 
 void
@@ -100,35 +114,33 @@ LBSSolverIO::ReadAngularFluxes(
   const std::string& file_base,
   std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest)
 {
-  // Open file
-  const auto file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".data";
-  std::ifstream file(file_name, std::ofstream::binary | std::ofstream::in);
-  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open " + file_name + ".");
+  // Open HDF5 file
+  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
+  hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
-  // Select destination vector and optionally check size
+  // Select destination vector
   std::vector<std::vector<double>>& dest =
     opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PsiNewLocal();
 
-  log.Log() << "Reading angular flux file from" << file_base;
-
-  // Read the header
-  const int num_bytes = 500;
-  char header_bytes[num_bytes];
-  header_bytes[num_bytes - 1] = '\0';
-  file.read(header_bytes, num_bytes - 1);
+  log.Log() << "Reading angular flux file from " << file_base;
 
   // Read macro data and check for compatibility
-  uint64_t file_num_local_nodes;
   uint64_t file_num_groupsets;
+  H5ReadAttribute(file_id, "num_groupsets", file_num_groupsets);
 
-  file.read((char*)&file_num_local_nodes, sizeof(uint64_t));
-  file.read((char*)&file_num_groupsets, sizeof(uint64_t));
+  uint64_t file_num_local_cells;
+  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
 
-  auto& discretization = lbs_solver.SpatialDiscretization();
-  auto& groupsets = lbs_solver.Groupsets();
-  auto& grid = lbs_solver.Grid();
-  const auto NODES_ONLY = UnknownManager::GetUnitaryUnknownManager();
-  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(NODES_ONLY);
+  uint64_t file_num_local_nodes;
+  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
+
+  const auto& discretization = lbs_solver.SpatialDiscretization();
+  const auto& groupsets = lbs_solver.Groupsets();
+  const auto& grid = lbs_solver.Grid();
+  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
+  const uint64_t num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
+
   const uint64_t num_groupsets = groupsets.size();
 
   OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
@@ -136,63 +148,105 @@ LBSSolverIO::ReadAngularFluxes(
   OpenSnLogicalErrorIf(file_num_groupsets != num_groupsets,
                        "Incompatible number of groupsets found in file " + file_name + ".");
 
-  // Go through groupsets for reading
-  dest.clear();
-  for (uint64_t gs = 0; gs < file_num_groupsets; ++gs)
+  // Read in mesh information
+  const auto file_cell_ids = H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids");
+  const auto file_num_cell_nodes = H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes");
+
+  const auto nodes_x = H5ReadDataset1D<double>(file_id, "mesh/nodes_x");
+  const auto nodes_y = H5ReadDataset1D<double>(file_id, "mesh/nodes_y");
+  const auto nodes_z = H5ReadDataset1D<double>(file_id, "mesh/nodes_z");
+
+  // Validate mesh compatibility
+  uint64_t curr_node = 0;
+  std::map<uint64_t, std::map<uint64_t, uint64_t>> file_cell_nodal_mapping;
+  for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
-    // Read the groupset macro info
-    uint64_t file_groupset_id;
+    const uint64_t cell_global_id = file_cell_ids[c];
+    const auto& cell = grid.cells[cell_global_id];
+
+    if (not grid.IsCellLocal(cell_global_id))
+      continue;
+
+    // Check for cell compatibility
+    const auto nodes = discretization.GetCellNodeLocations(cell);
+
+    OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
+                         "Incompatible number of cell nodes encountered on cell " +
+                           std::to_string(cell_global_id) + ".");
+
+    std::vector<Vector3> file_nodes;
+    file_nodes.reserve(file_num_cell_nodes[c]);
+    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
+    {
+      file_nodes.emplace_back(nodes_x[curr_node], nodes_y[curr_node], nodes_z[curr_node]);
+      ++curr_node;
+    }
+
+    // Map the system nodes to file nodes
+    auto& mapping = file_cell_nodal_mapping[cell_global_id];
+    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
+    {
+      bool mapping_found = false;
+      for (uint64_t m = 0; m < nodes.size(); ++m)
+        if ((nodes[m] - file_nodes[n]).NormSquare() < 1.0e-12)
+        {
+          mapping[n] = m;
+          mapping_found = true;
+        }
+
+      OpenSnLogicalErrorIf(not mapping_found,
+                           "Incompatible node locations for cell " +
+                             std::to_string(cell_global_id) + ".");
+    }
+  }
+
+  // Read groupset data
+  dest.clear();
+  for (uint64_t gs = 0; gs < num_groupsets; ++gs)
+  {
+    std::string group_name = "groupset_" + std::to_string(gs);
     uint64_t file_num_gs_angles;
+    H5ReadAttribute(file_id, group_name + "/num_gs_angles", file_num_gs_angles);
     uint64_t file_num_gs_groups;
+    H5ReadAttribute(file_id, group_name + "/num_gs_groups", file_num_gs_groups);
+    const auto values = H5ReadDataset1D<double>(file_id, group_name + "/values");
 
-    file.read((char*)&file_groupset_id, sizeof(uint64_t));
-    file.read((char*)&file_num_gs_angles, sizeof(uint64_t));
-    file.read((char*)&file_num_gs_groups, sizeof(uint64_t));
-
-    // Check compatibility with system groupset macro info
-    const auto& groupset = groupsets.at(file_groupset_id);
+    const auto& groupset = groupsets.at(gs);
     const auto& uk_man = groupset.psi_uk_man_;
     const auto& quadrature = groupset.quadrature;
 
     const uint64_t num_gs_angles = quadrature->omegas.size();
     const uint64_t num_gs_groups = groupset.groups.size();
 
-    OpenSnLogicalErrorIf(file_groupset_id != dest.size(),
-                         "Incompatible groupset id found in file " + file_name +
-                           ". Groupsets must be specified in sequential order.");
     OpenSnLogicalErrorIf(file_num_gs_angles != num_gs_angles,
                          "Incompatible number of groupset angles found in file " + file_name +
-                           " for groupset " + std::to_string(file_groupset_id) + ".");
+                           " for groupset " + std::to_string(gs) + ".");
     OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
                          "Incompatible number of groupset groups found in file " + file_name +
-                           " for groupset " + std::to_string(file_groupset_id) + ".");
+                           " for groupset " + std::to_string(gs) + ".");
 
     // Size the groupset angular flux vector
     const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
     dest.emplace_back(num_local_gs_dofs, 0.0);
     auto& psi = dest.back();
 
-    // Read the groupset angular flux data
-    for (uint64_t dof = 0; dof < num_local_gs_dofs; ++dof)
+    uint64_t v = 0;
+    for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
-      uint64_t cell_global_id;
-      uint64_t node;
-      uint64_t angle;
-      uint64_t group;
-      double value;
-
-      file.read((char*)&cell_global_id, sizeof(uint64_t));
-      file.read((char*)&node, sizeof(uint64_t));
-      file.read((char*)&angle, sizeof(uint64_t));
-      file.read((char*)&group, sizeof(uint64_t));
-      file.read((char*)&value, sizeof(double));
-
+      const uint64_t cell_global_id = file_cell_ids[c];
       const auto& cell = grid.cells[cell_global_id];
-      const auto imap = discretization.MapDOFLocal(cell, node, uk_man, angle, group);
-      psi[imap] = value;
-    } // for dof
-  }   // for groupset gs
-  file.close();
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+        for (uint64_t n = 0; n < num_gs_angles; ++n)
+          for (uint64_t g = 0; g < num_gs_groups; ++g)
+          {
+            const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
+            const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);
+            psi[dof_map] = values[v];
+            ++v;
+          }
+    }
+  }
+  H5Fclose(file_id);
 }
 
 } // namespace opensn
