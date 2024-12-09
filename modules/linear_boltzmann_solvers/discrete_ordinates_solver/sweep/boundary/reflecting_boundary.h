@@ -35,7 +35,7 @@ public:
   {
   }
 
-  const Vector3& Normal() const { return normal_; }
+  const Vector3& GetNormal() const { return normal_; }
 
   bool IsOpposingReflected() const { return opposing_reflected_; }
 

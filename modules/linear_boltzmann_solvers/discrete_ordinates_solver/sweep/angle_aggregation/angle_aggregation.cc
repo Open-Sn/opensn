@@ -102,7 +102,7 @@ AngleAggregation::InitializeReflectingBCs()
       size_t num_local_cells = grid_->local_cells.size();
       auto& rbndry = (ReflectingBoundary&)(*bndry);
 
-      const auto& normal = rbndry.Normal();
+      const auto& normal = rbndry.GetNormal();
 
       rbndry.GetReflectedAngleIndexMap().resize(tot_num_angles, -1);
       rbndry.GetAngleReadyFlags().resize(tot_num_angles,
@@ -169,7 +169,7 @@ AngleAggregation::InitializeReflectingBCs()
       for (int n = 0; n < tot_num_angles; ++n)
       {
         // Only continue if omega is outgoing
-        if (quadrature_->omegas[n].Dot(rbndry.Normal()) < 0.0)
+        if (quadrature_->omegas[n].Dot(rbndry.GetNormal()) < 0.0)
           continue;
 
         // For cells
@@ -183,7 +183,7 @@ AngleAggregation::InitializeReflectingBCs()
           bool on_ref_bndry = false;
           for (const auto& face : cell.faces)
           {
-            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.GetNormal()) > 0.999999))
             {
               on_ref_bndry = true;
               break;
@@ -197,7 +197,7 @@ AngleAggregation::InitializeReflectingBCs()
           int f = 0;
           for (const auto& face : cell.faces)
           {
-            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.Normal()) > 0.999999))
+            if ((not face.has_neighbor) and (face.normal.Dot(rbndry.GetNormal()) > 0.999999))
             {
               cell_vec[c][f].clear();
               cell_vec[c][f].resize(face.vertex_ids.size(), std::vector<double>(num_groups_, 0.0));
@@ -221,7 +221,7 @@ AngleAggregation::InitializeReflectingBCs()
 
         const auto& otherRbndry = dynamic_cast<const ReflectingBoundary&>(*otherbndry);
 
-        if (rbndry.Normal().Dot(otherRbndry.Normal()) < (0.0 - epsilon))
+        if (rbndry.GetNormal().Dot(otherRbndry.GetNormal()) < (0.0 - epsilon))
           if (bid < otherbid)
             rbndry.SetOpposingReflected(true);
       }
