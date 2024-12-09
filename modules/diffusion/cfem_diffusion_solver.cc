@@ -40,7 +40,7 @@ CFEMDiffusionSolver::Create(const ParameterBlock& params)
 }
 
 InputParameters
-CFEMDiffusionSolver::OptionsBlock()
+CFEMDiffusionSolver::GetOptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -50,7 +50,7 @@ CFEMDiffusionSolver::OptionsBlock()
 }
 
 InputParameters
-CFEMDiffusionSolver::BoundaryOptionsBlock()
+CFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
   return params;
@@ -97,7 +97,7 @@ CFEMDiffusionSolver::SetOptions(const InputParameters& params)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
