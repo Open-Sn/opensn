@@ -122,8 +122,8 @@ protected:
 
 public:
   static InputParameters GetInputParameters();
-  static InputParameters OptionsBlock();
-  static InputParameters BoundaryOptionsBlock();
+  static InputParameters GetOptionsBlock();
+  static InputParameters GetBoundaryOptionsBlock();
 };
 
 } // namespace opensn
