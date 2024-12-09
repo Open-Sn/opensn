@@ -22,7 +22,7 @@ public:
   virtual ~FieldFunction() = default;
 
   /// Returns the text name of the field function.
-  const std::string& Name() const { return name_; }
+  const std::string& GetName() const { return name_; }
 
   /// Returns a reference to the unknown structure.
   const Unknown& GetUnknown() const { return unknown_; }

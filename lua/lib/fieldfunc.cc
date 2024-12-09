@@ -48,7 +48,7 @@ GetFieldFunctionHandleByName(const std::string& ff_name)
   std::vector<std::shared_ptr<FieldFunction>> matched_ff;
   for (const auto& pff : opensn::field_function_stack)
   {
-    if (pff->Name() == ff_name)
+    if (pff->GetName() == ff_name)
       matched_ff.push_back(pff);
   }
 

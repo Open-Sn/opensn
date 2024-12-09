@@ -181,9 +181,9 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
 
     // Write sorted data to CSV file
     std::ofstream ofile;
-    std::string filename = base_name + "_" + ref_ff_->Name() + std::string(".csv");
+    std::string filename = base_name + "_" + ref_ff_->GetName() + std::string(".csv");
     ofile.open(filename);
-    ofile << "x,y,z," << ref_ff_->Name() << "\n";
+    ofile << "x,y,z," << ref_ff_->GetName() << "\n";
     for (auto point_data : values)
     {
       auto [x, y, z, fv] = point_data;
@@ -191,8 +191,8 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
     }
     ofile.close();
 
-    log.Log() << "Exported CSV file for field func \"" << ref_ff_->Name() << "\" to \"" << filename
-              << "\"";
+    log.Log() << "Exported CSV file for field func \"" << ref_ff_->GetName() << "\" to \""
+              << filename << "\"";
   }
 }
 
