@@ -98,7 +98,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
-  const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
+  const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[cell_local_id_];
   std::vector<double> face_mu_values(cell_num_faces_);
 
   const auto& rho = densities_[cell_local_id_];

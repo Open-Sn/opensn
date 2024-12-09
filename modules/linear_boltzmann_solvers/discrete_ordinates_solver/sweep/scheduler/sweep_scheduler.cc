@@ -93,7 +93,7 @@ SweepScheduler::InitializeAlgoDOG()
         new_rule_vals.depth_of_graph = loc_depth;
         new_rule_vals.set_index = as + q * num_anglesets;
 
-        const auto& omega = spds.Omega();
+        const auto& omega = spds.GetOmega();
         new_rule_vals.sign_of_omegax = (omega.x >= 0) ? 2 : 1;
         new_rule_vals.sign_of_omegay = (omega.y >= 0) ? 2 : 1;
         new_rule_vals.sign_of_omegaz = (omega.z >= 0) ? 2 : 1;

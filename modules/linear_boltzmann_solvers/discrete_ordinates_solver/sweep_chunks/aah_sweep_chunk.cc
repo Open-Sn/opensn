@@ -61,7 +61,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();
-  const auto& spls = spds.LocalSubgrid();
+  const auto& spls = spds.GetLocalSubgrid();
   const size_t num_spls = spls.size();
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
@@ -72,7 +72,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
     auto cell_num_faces = cell.faces.size();
     auto cell_num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
+    const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
     const auto& rho = densities_[cell.local_id];

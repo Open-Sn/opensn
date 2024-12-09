@@ -35,10 +35,10 @@ public:
   SPDS(const Vector3& omega, const MeshContinuum& grid) : omega_(omega), grid_(grid) {}
 
   /// Return a reference to the MeshContinuum object.
-  const MeshContinuum& Grid() const { return grid_; }
+  const MeshContinuum& GetGrid() const { return grid_; }
 
   /// Return a reference to the direction vector.
-  const Vector3& Omega() const { return omega_; }
+  const Vector3& GetOmega() const { return omega_; }
 
   /**
    * Return a reference to the Sweep-Plane Local Subgrid (SPLS) associated with this SPDS. A SPLS
@@ -47,31 +47,34 @@ public:
    * can readily read to and write from a common data structure. A SPLS contains one or more entire
    * cellsets — it cannot split a cellset.
    */
-  const std::vector<int>& LocalSubgrid() const { return spls_; }
+  const std::vector<int>& GetLocalSubgrid() const { return spls_; }
 
   /// Return a reference to the levelized SPLS.
-  const std::vector<std::vector<int>>& LevelizedLocalSubgrid() const { return levelized_spls_; }
+  const std::vector<std::vector<int>>& GetLevelizedLocalSubgrid() const { return levelized_spls_; }
 
   /// Returns the location dependencies for this SPDS.
-  const std::vector<int>& LocationDependencies() const { return location_dependencies_; }
+  const std::vector<int>& GetLocationDependencies() const { return location_dependencies_; }
 
   /// Returns the location successors for this SPDS.
-  const std::vector<int>& LocationSuccessors() const { return location_successors_; }
+  const std::vector<int>& GetLocationSuccessors() const { return location_successors_; }
 
   /// Returns the delayed location dependencies for this SPDS.
-  const std::vector<int>& DelayedLocationDependencies() const
+  const std::vector<int>& GetDelayedLocationDependencies() const
   {
     return delayed_location_dependencies_;
   }
 
   /// Returns the delayed location successors for this SPDS.
-  const std::vector<int>& DelayedLocationSuccessors() const { return delayed_location_successors_; }
+  const std::vector<int>& GetDelayedLocationSuccessors() const
+  {
+    return delayed_location_successors_;
+  }
 
   /// Returns the feedback arc set (FAS) for the local cell sweep graph.
-  const std::vector<std::pair<int, int>>& LocalSweepFAS() const { return local_sweep_fas_; }
+  const std::vector<std::pair<int, int>>& GetLocalSweepFAS() const { return local_sweep_fas_; }
 
   /// Return the cell face orientations for this SPDS.
-  const std::vector<std::vector<FaceOrientation>>& CellFaceOrientations() const
+  const std::vector<std::vector<FaceOrientation>>& GetCellFaceOrientations() const
   {
     return cell_face_orientations_;
   }
