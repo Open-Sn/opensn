@@ -260,7 +260,7 @@ MultiGroupXS::ComputeAbsorption()
     {
       // Estimate the scattering cross section
       double sigma_s = 0.0;
-      for (size_t row = 0; row < S0.NumRows(); ++row)
+      for (size_t row = 0; row < S0.GetNumRows(); ++row)
       {
         const auto& cols = S0.rowI_indices[row];
         const auto& vals = S0.rowI_values[row];
