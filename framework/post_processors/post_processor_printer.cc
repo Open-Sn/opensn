@@ -172,7 +172,7 @@ PostProcessorPrinter::GetPrintedPostProcessors(
     const auto& value = pp->GetValue();
     const auto value_str = pp->ConvertValueToString(value);
 
-    scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
+    scalar_ppnames_and_vals.emplace_back(pp->GetName(), value_str);
   } // for pp
 
   if (not scalar_ppnames_and_vals.empty())
@@ -201,7 +201,7 @@ PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
     const auto& value = pp->GetValue();
     const auto value_str = pp->ConvertValueToString(value);
 
-    scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
+    scalar_ppnames_and_vals.emplace_back(pp->GetName(), value_str);
   } // for pp
 
   if (not scalar_ppnames_and_vals.empty())
@@ -554,7 +554,7 @@ PostProcessorPrinter::PrintVectorPPsToCSV(std::ofstream& csvfile,
 
   for (const auto& pp : pp_list)
   {
-    csvfile << pp->Name() << "\n";
+    csvfile << pp->GetName() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
@@ -580,7 +580,7 @@ PostProcessorPrinter::PrintArbitraryPPsToCSV(std::ofstream& csvfile,
 
   for (const auto& pp : pp_list)
   {
-    csvfile << pp->Name() << "\n";
+    csvfile << pp->GetName() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
@@ -610,7 +610,7 @@ PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
     if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::SCALAR)
+    if (pp->GetType() == PPType::SCALAR)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -629,7 +629,7 @@ PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
     if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::VECTOR)
+    if (pp->GetType() == PPType::VECTOR)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -648,7 +648,7 @@ PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
     if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::ARBITRARY)
+    if (pp->GetType() == PPType::ARBITRARY)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -676,7 +676,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
   // Do the header first
   value_matrix[0][0] = "Time";
   for (size_t j = 1; j <= pp_sub_list.size(); ++j)
-    value_matrix[0][j] = pp_sub_list.at(j - 1)->Name();
+    value_matrix[0][j] = pp_sub_list.at(j - 1)->GetName();
 
   // Now the time values
   for (size_t t = 0; t < (num_rows - 2); ++t)

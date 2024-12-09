@@ -93,24 +93,24 @@ PostProcessor::ConstructNumericFormat(const std::string& format_string)
 }
 
 const std::string&
-PostProcessor::Name() const
+PostProcessor::GetName() const
 {
   return name_;
 }
 PPType
-PostProcessor::Type() const
+PostProcessor::GetType() const
 {
   return type_;
 }
 
 PPNumericFormat
-PostProcessor::NumericFormat() const
+PostProcessor::GetNumericFormat() const
 {
   return print_numeric_format_;
 }
 
 size_t
-PostProcessor::NumericPrecision() const
+PostProcessor::GetNumericPrecision() const
 {
   return print_precision_;
 }
@@ -150,7 +150,7 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
 
     Execute(event);
     if (log.GetVerbosity() >= 1)
-      log.Log0Verbose1() << "Post processor \"" << Name()
+      log.Log0Verbose1() << "Post processor \"" << GetName()
                          << "\" executed on "
                             "event \""
                          << event.GetName() << "\".";
@@ -187,8 +187,8 @@ PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
   {
     const auto dblval = value.GetValue<double>();
     char buffer[30];
-    const auto numeric_format = NumericFormat();
-    const size_t precision = NumericPrecision();
+    const auto numeric_format = GetNumericFormat();
+    const size_t precision = GetNumericPrecision();
     if (numeric_format == PPNumericFormat::SCIENTIFIC)
     {
       const std::string format_spec = "%." + std::to_string(precision) + "e";
@@ -249,7 +249,7 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
     const auto first_entry_type = first_entry.GetType();
 
     OpenSnLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
-                         "The entries of the vector value of post-processor \"" + Name() +
+                         "The entries of the vector value of post-processor \"" + GetName() +
                            "\" must all be SCALAR.");
 
     std::string output;
@@ -257,7 +257,7 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
     {
       OpenSnLogicalErrorIf(entry.GetType() != first_entry_type,
                            "Mixed typed encountered in the vector values of post-processor \"" +
-                             Name() + "\"");
+                             GetName() + "\"");
       output.append(ConvertScalarValueToString(entry) + " ");
     }
 
