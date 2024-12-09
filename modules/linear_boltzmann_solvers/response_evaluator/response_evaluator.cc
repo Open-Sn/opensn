@@ -404,12 +404,12 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   // Point sources
   for (const auto& point_source : point_sources_)
-    for (const auto& subscriber : point_source->Subscribers())
+    for (const auto& subscriber : point_source->GetSubscribers())
     {
       const auto& cell = grid.local_cells[subscriber.cell_local_id];
       const auto& transport_view = transport_views[cell.local_id];
 
-      const auto& src = point_source->Strength();
+      const auto& src = point_source->GetStrength();
       const auto& vol_wt = subscriber.volume_weight;
 
       const auto num_cell_nodes = transport_view.NumNodes();

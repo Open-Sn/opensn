@@ -199,11 +199,11 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
   {
     for (const auto& point_source : lbs_solver_.PointSources())
     {
-      for (const auto& subscriber : point_source->Subscribers())
+      for (const auto& subscriber : point_source->GetSubscribers())
       {
         auto& transport_view = transport_views[subscriber.cell_local_id];
 
-        const auto& strength = point_source->Strength();
+        const auto& strength = point_source->GetStrength();
         const auto& node_weights = subscriber.node_weights;
         const auto volume_weight = subscriber.volume_weight;
 
