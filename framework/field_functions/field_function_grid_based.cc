@@ -102,19 +102,19 @@ FieldFunctionGridBased::GetSpatialDiscretization() const
 std::vector<double>&
 FieldFunctionGridBased::GetLocalFieldVector()
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 const std::vector<double>&
 FieldFunctionGridBased::GetLocalFieldVector() const
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 std::vector<double>
 FieldFunctionGridBased::GetGhostedFieldVector() const
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 void

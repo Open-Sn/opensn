@@ -53,7 +53,7 @@ ParallelSTLVector::MakeClone() const
 }
 
 double*
-ParallelSTLVector::Data()
+ParallelSTLVector::GetData()
 {
   return values_.data();
 }
@@ -64,13 +64,13 @@ ParallelSTLVector::Data() const
 }
 
 const std::vector<double>&
-ParallelSTLVector::LocalSTLData() const
+ParallelSTLVector::GetLocalSTLData() const
 {
   return values_;
 }
 
 std::vector<double>&
-ParallelSTLVector::LocalSTLData()
+ParallelSTLVector::GetLocalSTLData()
 {
   return values_;
 }

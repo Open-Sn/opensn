@@ -51,7 +51,7 @@ public:
    * Returns a direct pointer to the memory array used internally by the vector to store its owned
    * elements
    */
-  virtual double* Data() = 0;
+  virtual double* GetData() = 0;
 
   /**
    * Returns a direct const pointer to the memory array used internally by the vector to store its

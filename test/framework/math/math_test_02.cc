@@ -46,7 +46,7 @@ math_Test02_ParallelVector()
   {
     std::stringstream outstr;
     // const auto& raw_vals = ghost_vec.MakeLocalVector();
-    const double* data = ghost_vec.Data();
+    const double* data = ghost_vec.GetData();
     for (size_t i = 0; i < ghost_vec.GetLocalSizeWithGhosts(); ++i)
       outstr << data[i] << " ";
     opensn::log.LogAll() << "Ghost vec raw values: " << outstr.str();
