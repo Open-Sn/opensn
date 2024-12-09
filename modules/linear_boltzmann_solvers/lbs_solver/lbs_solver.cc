@@ -1668,7 +1668,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1707,7 +1707,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1740,7 +1740,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1779,7 +1779,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;

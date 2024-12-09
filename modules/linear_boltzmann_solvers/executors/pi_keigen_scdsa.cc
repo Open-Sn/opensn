@@ -340,8 +340,8 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
                                         const std::vector<double>& phi_in)
 {
   const auto& lbs_sdm = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto& phi_uk_man = lbs_solver_->UnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
@@ -387,8 +387,8 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
                                            std::vector<double>& output)
 {
   const auto& lbs_sdm = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sdm = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto& phi_uk_man = lbs_solver_->UnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();

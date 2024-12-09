@@ -451,8 +451,8 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
   const auto& matid_to_xs_map = lbs_solver_->GetMatID2XSMap();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -633,8 +633,8 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id) == 1)
-          bc = diffusion_solver_->BCS().at(face.neighbor_id);
+        if (diffusion_solver_->GetBCS().count(face.neighbor_id) == 1)
+          bc = diffusion_solver_->GetBCS().at(face.neighbor_id);
 
         // Contribute the boundary closure term to the diffusion source term.
         // This term is the sum of the integrated incident and outgoing
@@ -682,8 +682,8 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
   const auto& pwld = lbs_solver_->SpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto num_gs_groups = front_gs_.groups.size();
 
@@ -703,8 +703,8 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
       if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id))
-          bc = diffusion_solver_->BCS().at(face.neighbor_id);
+        if (diffusion_solver_->GetBCS().count(face.neighbor_id))
+          bc = diffusion_solver_->GetBCS().at(face.neighbor_id);
 
         if (bc.type == BCType::ROBIN)
         {
@@ -755,8 +755,8 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
   const auto& uk_man = lbs_solver_->UnknownManager();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -802,8 +802,8 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
 std::vector<double>
 PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double>& phi0) const
 {
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                     : diff_sd.GetNumLocalDOFs(diff_uk_man);
 
@@ -824,8 +824,8 @@ PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double
 std::vector<double>
 PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double>& phi0) const
 {
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                     : diff_sd.GetNumLocalDOFs(diff_uk_man);
 
@@ -957,10 +957,10 @@ PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>&
 {
   const auto& grid = lbs_solver_->Grid();
   const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
 
   const auto& phi_uk_man = lbs_solver_->UnknownManager();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -1004,10 +1004,10 @@ PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>&
 {
   const auto& grid = lbs_solver_->Grid();
   const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
 
   const auto& uk_man = lbs_solver_->UnknownManager();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();

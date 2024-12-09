@@ -70,18 +70,18 @@ public:
                   bool verbose);
 
   /// Returns the assigned name.
-  std::string Name() const;
+  std::string GetName() const;
 
   /// Returns the right-hand side petsc vector.
-  const Vec& RHS() const;
+  const Vec& GetRHS() const;
 
   /// Returns the assigned unknown structure.
-  const std::map<uint64_t, BoundaryCondition>& BCS() const { return bcs_; }
+  const std::map<uint64_t, BoundaryCondition>& GetBCS() const { return bcs_; }
 
-  const UnknownManager& UnknownStructure() const;
+  const UnknownManager& GetUnknownStructure() const;
 
   /// Returns the associated spatial discretization.
-  const class SpatialDiscretization& SpatialDiscretization() const;
+  const class SpatialDiscretization& GetSpatialDiscretization() const;
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 

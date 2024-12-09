@@ -76,7 +76,7 @@ MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   lbs_solver.PhiNewLocal() = lbs_solver.QMomentsLocal();
 
   Vec work_vector;
-  VecDuplicate(mip_solver.RHS(), &work_vector);
+  VecDuplicate(mip_solver.GetRHS(), &work_vector);
 
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
     lbs_solver, groupset, work_vector, PhiSTLOption::PHI_NEW);

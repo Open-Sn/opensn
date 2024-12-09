@@ -46,25 +46,25 @@ DiffusionSolver::~DiffusionSolver()
 }
 
 std::string
-DiffusionSolver::Name() const
+DiffusionSolver::GetName() const
 {
   return name_;
 }
 
 const Vec&
-DiffusionSolver::RHS() const
+DiffusionSolver::GetRHS() const
 {
   return rhs_;
 }
 
 const UnknownManager&
-DiffusionSolver::UnknownStructure() const
+DiffusionSolver::GetUnknownStructure() const
 {
   return uk_man_;
 }
 
 const SpatialDiscretization&
-DiffusionSolver::SpatialDiscretization() const
+DiffusionSolver::GetSpatialDiscretization() const
 {
   return sdm_;
 }
