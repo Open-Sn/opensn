@@ -53,13 +53,13 @@ public:
   std::unique_ptr<ParallelVector> MakeClone() const override;
 
   /// Return the number of ghosts associated with the local vector.
-  uint64_t NumGhosts() const { return ghost_comm_.NumGhosts(); }
+  uint64_t GetNumGhosts() const { return ghost_comm_.NumGhosts(); }
 
   /// Return the total size of the local vector, including ghosts.
-  uint64_t LocalSizeWithGhosts() const { return values_.size(); }
+  uint64_t GetLocalSizeWithGhosts() const { return values_.size(); }
 
   /// Return the ghost indices associated with the local vector.
-  const std::vector<int64_t>& GhostIndices() const { return ghost_comm_.GhostIndices(); }
+  const std::vector<int64_t>& GetGhostIndices() const { return ghost_comm_.GhostIndices(); }
 
   /// Map a global ghost id to its respective local id.
   int64_t MapGhostToLocal(const int64_t ghost_id) const

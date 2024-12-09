@@ -32,7 +32,7 @@ math_Test02_ParallelVector()
   const int64_t ghost_id = opensn::mpi_comm.rank() == 0 ? 5 : 4;
   GhostedParallelSTLVector ghost_vec(5, 10, {ghost_id}, opensn::mpi_comm);
 
-  opensn::log.LogAll() << "Number of Ghosts: " << ghost_vec.NumGhosts() << std::endl;
+  opensn::log.LogAll() << "Number of Ghosts: " << ghost_vec.GetNumGhosts() << std::endl;
 
   if (opensn::mpi_comm.rank() == 0)
     ghost_vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
@@ -47,7 +47,7 @@ math_Test02_ParallelVector()
     std::stringstream outstr;
     // const auto& raw_vals = ghost_vec.MakeLocalVector();
     const double* data = ghost_vec.Data();
-    for (size_t i = 0; i < ghost_vec.LocalSizeWithGhosts(); ++i)
+    for (size_t i = 0; i < ghost_vec.GetLocalSizeWithGhosts(); ++i)
       outstr << data[i] << " ";
     opensn::log.LogAll() << "Ghost vec raw values: " << outstr.str();
   }
@@ -112,8 +112,8 @@ math_Test02_ParallelVector()
 
   GhostedParallelSTLVector ghost_vec2(vgc);
 
-  opensn::log.LogAll() << "ghost_vec2 local size with ghosts " << ghost_vec2.LocalSizeWithGhosts()
-                       << std::endl;
+  opensn::log.LogAll() << "ghost_vec2 local size with ghosts "
+                       << ghost_vec2.GetLocalSizeWithGhosts() << std::endl;
 
   if (opensn::mpi_comm.rank() == 0)
     ghost_vec2.SetValues({5, 6}, {6.0, 7.0}, VecOpType::ADD_VALUE);
@@ -127,7 +127,7 @@ math_Test02_ParallelVector()
 
   {
     std::stringstream outstr;
-    for (int64_t gid : ghost_vec2.GhostIndices())
+    for (int64_t gid : ghost_vec2.GetGhostIndices())
       outstr << gid << " ";
     opensn::log.LogAll() << "ghost_vec2 ghost ids: " << outstr.str() << std::endl;
   }
