@@ -116,7 +116,7 @@ PowerIterationKEigenSCDSA::Initialize()
 
   if (diffusion_solver_sdm_ == "pwld")
   {
-    diffusion_solver_ = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGDSA"),
+    diffusion_solver_ = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGDSA"),
                                                              sdm,
                                                              uk_man,
                                                              bcs,
@@ -128,7 +128,7 @@ PowerIterationKEigenSCDSA::Initialize()
   else
   {
     continuous_sdm_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
-    diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(Name() + "_WGDSA"),
+    diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_WGDSA"),
                                                               *continuous_sdm_ptr_,
                                                               uk_man,
                                                               bcs,

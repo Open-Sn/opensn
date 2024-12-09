@@ -28,7 +28,7 @@ public:
   explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
 
-  std::string Name() const;
+  std::string GetName() const;
 
   BasicOptions& GetBasicOptions();
   const BasicOptions& GetBasicOptions() const;

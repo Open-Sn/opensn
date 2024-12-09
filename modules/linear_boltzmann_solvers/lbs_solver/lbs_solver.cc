@@ -861,7 +861,7 @@ LBSSolver::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << Name() << "\n\n"
+    outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
            << "Scattering order    : " << options_.scattering_order << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
@@ -1441,7 +1441,7 @@ LBSSolver::InitializeFieldFunctions()
           prefix += "_";
       }
       if (options_.field_function_prefix_option == "solver_name")
-        prefix = Name() + "_";
+        prefix = GetName() + "_";
 
       char buff[100];
       snprintf(
@@ -1469,7 +1469,7 @@ LBSSolver::InitializeFieldFunctions()
         prefix += "_";
     }
     if (options_.field_function_prefix_option == "solver_name")
-      prefix = Name() + "_";
+      prefix = GetName() + "_";
 
     auto power_ff = std::make_shared<FieldFunctionGridBased>(
       prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
@@ -1628,7 +1628,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,
@@ -1844,7 +1844,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_TGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_TGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,

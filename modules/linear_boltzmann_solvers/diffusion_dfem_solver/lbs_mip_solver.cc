@@ -128,7 +128,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGSolver"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGSolver"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,

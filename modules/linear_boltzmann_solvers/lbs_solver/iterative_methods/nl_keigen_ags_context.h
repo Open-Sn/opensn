@@ -22,7 +22,7 @@ struct NLKEigenAGSContext : public NonLinearSolverContext
   std::vector<int> groupset_ids;
 
   explicit NLKEigenAGSContext(std::shared_ptr<LBSSolver> lbs_solver)
-    : lbs_solver(lbs_solver), kresid_func_context({lbs_solver->Name(), 1.0})
+    : lbs_solver(lbs_solver), kresid_func_context({lbs_solver->GetName(), 1.0})
   {
   }
 

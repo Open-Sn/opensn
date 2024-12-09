@@ -100,7 +100,7 @@ Solver::InitTimeStepper(const InputParameters& params)
 }
 
 std::string
-Solver::Name() const
+Solver::GetName() const
 {
   return name_;
 }
@@ -146,25 +146,25 @@ Solver::GetFieldFunctions() const
 void
 Solver::Initialize()
 {
-  log.Log() << "\"Initialize()\" method not defined for " << Name();
+  log.Log() << "\"Initialize()\" method not defined for " << GetName();
 }
 
 void
 Solver::Execute()
 {
-  log.Log() << "\"Execute()\" method not defined for " << Name();
+  log.Log() << "\"Execute()\" method not defined for " << GetName();
 }
 
 void
 Solver::Step()
 {
-  log.Log() << "\"Step()\" method not defined for " << Name();
+  log.Log() << "\"Step()\" method not defined for " << GetName();
 }
 
 void
 Solver::Advance()
 {
-  log.Log() << "\"Advance()\" method not defined for " << Name();
+  log.Log() << "\"Advance()\" method not defined for " << GetName();
 }
 
 ParameterBlock

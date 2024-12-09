@@ -51,7 +51,7 @@ SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   if (params.IsParameterValid("solvername_filter"))
     solvername_filter_ = params.GetParamValue<std::string>("solvername_filter");
   else
-    solvername_filter_ = solver_->Name();
+    solvername_filter_ = solver_->GetName();
 }
 
 void

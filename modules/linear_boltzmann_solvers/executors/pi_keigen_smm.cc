@@ -158,7 +158,7 @@ PowerIterationKEigenSMM::Initialize()
   auto& diff_solver = diffusion_solver_;
   if (diffusion_sdm_name_ == "pwld")
   {
-    diff_solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_SMM"),
+    diff_solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_SMM"),
                                                        pwld,
                                                        diff_uk_man,
                                                        bcs,
@@ -169,7 +169,7 @@ PowerIterationKEigenSMM::Initialize()
   }
   else
   {
-    diff_solver = std::make_shared<DiffusionPWLCSolver>(std::string(Name() + "_SMM"),
+    diff_solver = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_SMM"),
                                                         *pwlc_ptr_,
                                                         diff_uk_man,
                                                         bcs,
