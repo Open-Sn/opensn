@@ -101,7 +101,7 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
 
     layers_.push_back(ExtrusionLayer{h, n});
 
-    log.Log0Verbose1() << "Layer " << layer_block.Name() << " height=" << h
+    log.Log0Verbose1() << "Layer " << layer_block.GetName() << " height=" << h
                        << " num_sub_layers=" << n << " top-z=" << current_z_level;
   } // layer_block in layers_param
 }

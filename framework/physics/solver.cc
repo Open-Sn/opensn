@@ -80,7 +80,7 @@ Solver::InitTimeStepper(const InputParameters& params)
     auto valid_params = factory.GetRegisteredObjectParameters(obj_type);
     ParameterBlock custom_params;
 
-    if (params.NumParameters() != 0)
+    if (params.GetNumParameters() != 0)
     {
       custom_params.AddParameter(params.GetParam("dt"));
       custom_params.AddParameter(params.GetParam("time"));
@@ -190,7 +190,7 @@ Solver::SetProperties(const ParameterBlock& params)
 {
   for (const auto& param : params)
   {
-    const std::string param_name = param.Name();
+    const std::string param_name = param.GetName();
 
     if (param_name == "dt")
       timestepper_->SetTimeStepSize(param.GetValue<double>());

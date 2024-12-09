@@ -300,7 +300,7 @@ PRKSolver::SetProperties(const ParameterBlock& params)
 
   for (const auto& param : params)
   {
-    const std::string& param_name = param.Name();
+    const std::string& param_name = param.GetName();
     if (param_name == "rho")
       SetRho(param.GetValue<double>());
   }

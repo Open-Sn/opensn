@@ -86,7 +86,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
 
   for (const auto& param : params)
   {
-    const std::string param_name = param.Name();
+    const std::string param_name = param.GetName();
 
     uint32_t param_name_hash = opensn::hash_djb2a(param_name);
     switch (param_name_hash)
@@ -136,7 +136,7 @@ PostProcessorPrinterSetOptions(const InputParameters& params)
         printer.SetCSVFilename(param.GetValue<std::string>());
         break;
       default:
-        OpenSnInvalidArgument("Invalid option \"" + param.Name() + "\"");
+        OpenSnInvalidArgument("Invalid option \"" + param.GetName() + "\"");
     } // switch
   }
 }

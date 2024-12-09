@@ -78,13 +78,13 @@ DFEMDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunc
 void
 DFEMDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
-    if (spec.Name() == "boundary_conditions")
+    if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
         auto bndry_params = BoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));

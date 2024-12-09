@@ -42,7 +42,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
     node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& node_list_block : node_sets_param)
     {
-      OpenSnInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
+      OpenSnInvalidArgumentIf(node_list_block.GetType() != ParameterBlockType::ARRAY,
                               "The entries of \"node_sets\" are required to be of type \"Array\".");
 
       node_sets_.push_back(node_list_block.GetVectorValue<double>());

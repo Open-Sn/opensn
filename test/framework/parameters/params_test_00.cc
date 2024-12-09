@@ -38,7 +38,7 @@ ParameterBlock_Test00(const ParameterBlock& param_block)
   opensn::log.Log() << "Has \"blocks\"?: " << param_block.GetParam("sub2").Has("blocks");
 
   opensn::log.Log() << "Num Parameters: "
-                    << param_block.GetParam("sub2").GetParam("blocks").NumParameters();
+                    << param_block.GetParam("sub2").GetParam("blocks").GetNumParameters();
 
   const auto vec = param_block.GetParam("sub2").GetParamVectorValue<int>("blocks");
 

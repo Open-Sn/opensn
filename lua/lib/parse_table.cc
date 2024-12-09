@@ -237,7 +237,7 @@ ParseTableKeys(lua_State* L, int idx, opensn::ParameterBlock& block)
         throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
                                ": Encountered mixed key types (string and number)");
 
-      if (block.Type() != opensn::ParameterBlockType::ARRAY)
+      if (block.GetType() != opensn::ParameterBlockType::ARRAY)
       {
         block.ChangeToArray();
       }
@@ -255,7 +255,7 @@ ParseTableKeys(lua_State* L, int idx, opensn::ParameterBlock& block)
 luabridge::Result
 PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
 {
-  switch (block.Type())
+  switch (block.GetType())
   {
     case opensn::ParameterBlockType::BOOLEAN:
       return luabridge::push(L, block.GetValue<bool>());
@@ -270,7 +270,7 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       luabridge::Result result;
       if (level > 0)
         lua_newtable(L);
-      const size_t num_params = block.NumParameters();
+      const size_t num_params = block.GetNumParameters();
       for (size_t k = 0; k < num_params; ++k)
       {
         if (level > 0)
@@ -292,13 +292,13 @@ PushParameterBlock(lua_State* L, const opensn::ParameterBlock& block, int level)
       luabridge::Result result;
       if (level > 0)
         lua_newtable(L);
-      const size_t num_params = block.NumParameters();
+      const size_t num_params = block.GetNumParameters();
       for (size_t k = 0; k < num_params; ++k)
       {
         const auto& param = block.GetParam(k);
         if (level > 0)
         {
-          result = luabridge::push(L, param.Name());
+          result = luabridge::push(L, param.GetName());
           if (not result)
             return result;
         }

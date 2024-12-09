@@ -81,7 +81,7 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
   {
     const auto& user_buffer_params = params.GetParam("buffers");
     user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    for (int p = 0; p < user_buffer_params.NumParameters(); ++p)
+    for (int p = 0; p < user_buffer_params.GetNumParameters(); ++p)
     {
       auto buffer_params = BufferOptionsBlock();
       buffer_params.AssignParameters(user_buffer_params.GetParam(p));
@@ -186,7 +186,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("material"))
   {
     const auto& user_msrc_params = params.GetParam("material");
-    for (int p = 0; p < user_msrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_msrc_params.GetNumParameters(); ++p)
     {
       auto msrc_params = MaterialSourceOptionsBlock();
       msrc_params.AssignParameters(user_msrc_params.GetParam(p));
@@ -198,7 +198,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("point"))
   {
     const auto& user_psrc_params = params.GetParam("point");
-    for (int p = 0; p < user_psrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_psrc_params.GetNumParameters(); ++p)
     {
       point_sources_.push_back(
         user_psrc_params.GetParam(p).GetValue<std::shared_ptr<PointSource>>());
@@ -210,7 +210,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("volumetric"))
   {
     const auto& user_dsrc_params = params.GetParam("volumetric");
-    for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_dsrc_params.GetNumParameters(); ++p)
     {
       volumetric_sources_.push_back(
         user_dsrc_params.GetParam(p).GetValue<std::shared_ptr<VolumetricSource>>());
@@ -222,7 +222,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("boundary"))
   {
     const auto& user_bsrc_params = params.GetParam("boundary");
-    for (int p = 0; p < user_bsrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_bsrc_params.GetNumParameters(); ++p)
     {
       auto bsrc_params = LBSSolver::BoundaryOptionsBlock();
       bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));

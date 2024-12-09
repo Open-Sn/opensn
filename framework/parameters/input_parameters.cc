@@ -220,7 +220,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   std::stringstream err_stream;
 
   if (log.GetVerbosity() >= 2)
-    log.Log0Verbose2() << "Number of parameters " << params.NumParameters();
+    log.Log0Verbose2() << "Number of parameters " << params.GetNumParameters();
 
   // Check required parameters
   // Loops over all input-parameters that have been
@@ -232,7 +232,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       continue;
 
     const auto& req_param = GetParam(param_index);
-    const auto& req_param_name = req_param.Name();
+    const auto& req_param_name = req_param.GetName();
 
     if (deprecation_warning_tags_.count(req_param_name) > 0 or
         deprecation_error_tags_.count(req_param_name) > 0 or
@@ -254,9 +254,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   // checks whether they have an assignable
   // input-parameter or if they have been renamed.
   {
-    for (const auto& param : params.Parameters())
+    for (const auto& param : params.GetParameters())
     {
-      const auto& param_name = param.Name();
+      const auto& param_name = param.GetName();
       if (IsParameterIgnored(param_name))
         continue;
       if (not this->Has(param_name))
@@ -279,9 +279,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   // checks whether they have deprecation warnings.
   {
     const auto& dep_warns = deprecation_warning_tags_;
-    for (const auto& param : params.Parameters())
+    for (const auto& param : params.GetParameters())
     {
-      const auto& param_name = param.Name();
+      const auto& param_name = param.GetName();
 
       if (IsParameterIgnored(param_name))
         continue;
@@ -298,9 +298,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   // checks whether they have deprecation errors.
   {
     const auto& dep_errs = deprecation_error_tags_;
-    for (const auto& param : params.Parameters())
+    for (const auto& param : params.GetParameters())
     {
-      const auto& param_name = param.Name();
+      const auto& param_name = param.GetName();
 
       if (IsParameterIgnored(param_name))
         continue;
@@ -315,9 +315,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   }
 
   // Now attempt to assign values
-  for (auto& param : params.Parameters())
+  for (auto& param : params.GetParameters())
   {
-    const auto& param_name = param.Name();
+    const auto& param_name = param.GetName();
 
     if (IsParameterIgnored(param_name))
       continue;
@@ -325,25 +325,25 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     auto& input_param = GetParam(param_name);
 
     // Check types match
-    if (param.Type() != input_param.Type())
+    if (param.GetType() != input_param.GetType())
     {
       if (type_mismatch_allowed_tags_.count(param_name) == 0)
       {
-        err_stream << "Invalid parameter type \"" << ParameterBlockTypeName(param.Type())
+        err_stream << "Invalid parameter type \"" << ParameterBlockTypeName(param.GetType())
                    << "\" for parameter \"" << param_name << "\". Expecting type \""
-                   << ParameterBlockTypeName(input_param.Type()) << "\".\n"
+                   << ParameterBlockTypeName(input_param.GetType()) << "\".\n"
                    << "doc-string: " << GetParameterDocString(param_name);
         continue;
       } // if not mismatch allowed
     }   // if type mismatch
 
     // Check constraint
-    if (constraint_tags_.count(input_param.Name()) != 0)
+    if (constraint_tags_.count(input_param.GetName()) != 0)
     {
-      const auto& constraint = constraint_tags_.at(input_param.Name());
-      if (not constraint->IsAllowable(param.Value()))
+      const auto& constraint = constraint_tags_.at(input_param.GetName());
+      if (not constraint->IsAllowable(param.GetValue()))
       {
-        err_stream << constraint->OutOfRangeString(input_param.Name(), param.Value());
+        err_stream << constraint->OutOfRangeString(input_param.GetName(), param.GetValue());
         err_stream << "\n";
         continue;
       }
@@ -396,7 +396,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
 {
   if (Has(param_name))
   {
-    const auto& param_type = GetParam(param_name).Type();
+    const auto& param_type = GetParam(param_name).GetType();
     OpenSnInvalidArgumentIf(
       param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
       std::string("Parameter \"") + param_name + "\" is of type " +
@@ -426,13 +426,13 @@ InputParameters::DumpParameters() const
   log.Log() << "DOC_GROUP " << doc_group_;
   const std::string sp2 = "  ";
   const std::string sp4 = "    ";
-  const auto params = Parameters();
+  const auto params = GetParameters();
   for (const auto& param : params)
   {
-    const auto& param_name = param.Name();
+    const auto& param_name = param.GetName();
     log.Log() << sp2 << "PARAM_BEGIN " << param_name;
 
-    const auto type = param.Type();
+    const auto type = param.GetType();
 
     log.Log() << sp4 << "TYPE " << ParameterBlockTypeName(type);
 
@@ -440,15 +440,15 @@ InputParameters::DumpParameters() const
     {
       log.Log() << sp4 << "TAG OPTIONAL";
       if (type != ParameterBlockType::BLOCK and type != ParameterBlockType::ARRAY)
-        log.Log() << sp4 << "DEFAULT_VALUE " << param.Value().PrintStr();
+        log.Log() << sp4 << "DEFAULT_VALUE " << param.GetValue().PrintStr();
       else if (type == ParameterBlockType::ARRAY)
       {
         std::stringstream outstr;
         outstr << sp4 << "DEFAULT_VALUE ";
-        for (size_t k = 0; k < param.NumParameters(); ++k)
+        for (size_t k = 0; k < param.GetNumParameters(); ++k)
         {
           const auto& sub_param = param.GetParam(k);
-          outstr << sub_param.Value().PrintStr() << ", ";
+          outstr << sub_param.GetValue().PrintStr() << ", ";
         }
         log.Log() << outstr.str();
       }
