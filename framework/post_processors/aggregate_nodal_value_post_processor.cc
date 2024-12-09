@@ -155,8 +155,8 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
     if (event_params.Has("timestep_index") and event_params.Has("time"))
     {
-      const size_t index = event_params.GetParamValue<size_t>("timestep_index");
-      const double time = event_params.GetParamValue<double>("time");
+      const auto index = event_params.GetParamValue<size_t>("timestep_index");
+      const auto time = event_params.GetParamValue<double>("time");
       TimeHistoryEntry entry{index, time, value_};
       time_history_.push_back(std::move(entry));
     }
