@@ -220,7 +220,7 @@ MeshContinuum::IsCellLocal(uint64_t cell_global_index) const
 int
 MeshContinuum::GetCellDimension(const Cell& cell)
 {
-  switch (cell.Type())
+  switch (cell.GetType())
   {
     case CellType::POINT:
     case CellType::GHOST:
@@ -381,7 +381,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 {
   const auto& grid_ref = *this;
 
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
   {
     const auto& v0 = grid_ref.vertices[cell.vertex_ids[0]];
     const auto& v1 = grid_ref.vertices[cell.vertex_ids[1]];
@@ -391,7 +391,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     if (((v0.z - point.z) * (v1.z - point.z)) > 0.0)
       return false;
   }
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     // Check each face of the polygon. A point inside the face will give a negative value, a point
     // on the face will give a zero value, and a point outside the face will give a positive value.
@@ -403,7 +403,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
         return false;
     }
   }
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     // Divide each polyhedron into tetrahedral sides. For each side, check if the point is inside
     // the tetrahedron. If the point is inside all tetrahedral sides, it is inside the polyhedron.

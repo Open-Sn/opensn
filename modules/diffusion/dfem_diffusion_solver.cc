@@ -354,11 +354,11 @@ DFEMDiffusionSolver::Execute()
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           Ckappa = 4.0;
 
         // Assembly penalty terms
@@ -507,11 +507,11 @@ DFEMDiffusionSolver::Execute()
           const double bc_value = bndry.values[0];
           // Compute kappa
           double Ckappa = 2.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             Ckappa = 4.0;
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             Ckappa = 8.0;
 
           // Assembly penalty terms
@@ -635,10 +635,10 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -660,7 +660,7 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 

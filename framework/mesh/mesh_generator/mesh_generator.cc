@@ -356,7 +356,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       vfc = vfc + vertices.at(fvid);
     newFace.centroid = vfc / static_cast<double>(newFace.vertex_ids.size());
 
-    if (cell->Type() == CellType::SLAB)
+    if (cell->GetType() == CellType::SLAB)
     {
       // A slab face is very easy. If it is the first face
       // the normal is -khat. If it is the second face then
@@ -366,7 +366,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       else
         newFace.normal = Vector3(0.0, 0.0, 1.0);
     }
-    else if (cell->Type() == CellType::POLYGON)
+    else if (cell->GetType() == CellType::POLYGON)
     {
       // A polygon face is just a line so we can just grab
       // the first vertex and form a vector with the face
@@ -378,7 +378,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       newFace.normal = Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
       newFace.normal.Normalize();
     }
-    else if (cell->Type() == CellType::POLYHEDRON)
+    else if (cell->GetType() == CellType::POLYHEDRON)
     {
       // A face of a polyhedron can itself be a polygon
       // which can be multifaceted. Here we need the

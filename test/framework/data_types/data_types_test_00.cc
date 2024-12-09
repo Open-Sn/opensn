@@ -175,13 +175,13 @@ data_types_Test00()
         auto& rcell = read_cell;
         auto& pcell = poster_child_cell;
 
-        if (rcell.Type() != pcell.Type())
+        if (rcell.GetType() != pcell.GetType())
         {
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
-        if (rcell.SubType() != pcell.SubType())
+        if (rcell.GetSubType() != pcell.GetSubType())
         {
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";

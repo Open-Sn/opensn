@@ -59,7 +59,7 @@ FiniteVolume::CreateCellMappings()
     using namespace opensn;
     std::unique_ptr<CellMapping> mapping;
 
-    switch (cell.Type())
+    switch (cell.GetType())
     {
       case CellType::SLAB:
       case CellType::POLYGON:

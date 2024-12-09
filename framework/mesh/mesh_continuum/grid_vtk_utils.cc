@@ -39,14 +39,14 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
     cell_vids[v] = node_counter++;
   }
 
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
   {
     ugrid->InsertNextCell(VTK_LINE, static_cast<vtkIdType>(num_verts), cell_vids.data());
   }
-  if (cell.Type() == CellType::POLYGON)
+  if (cell.GetType() == CellType::POLYGON)
   {
     int vtk_subtype;
-    switch (cell.SubType())
+    switch (cell.GetSubType())
     {
       case CellType::POLYGON:
         vtk_subtype = VTK_POLYGON;
@@ -64,7 +64,7 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
 
     ugrid->InsertNextCell(vtk_subtype, static_cast<vtkIdType>(num_verts), cell_vids.data());
   }
-  if (cell.Type() == CellType::POLYHEDRON)
+  if (cell.GetType() == CellType::POLYHEDRON)
   {
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
@@ -93,7 +93,7 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
     } // for f
 
     int vtk_subtype;
-    switch (cell.SubType())
+    switch (cell.GetSubType())
     {
       case CellType::POLYHEDRON:
         vtk_subtype = VTK_POLYHEDRON;
@@ -134,14 +134,14 @@ UploadCellGeometryContinuous(const Cell& cell,
   for (size_t v = 0; v < num_verts; ++v)
     cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell.vertex_ids[v]]);
 
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
   {
     ugrid->InsertNextCell(VTK_LINE, static_cast<vtkIdType>(num_verts), cell_vids.data());
   }
-  if (cell.Type() == CellType::POLYGON)
+  if (cell.GetType() == CellType::POLYGON)
   {
     int vtk_subtype;
-    switch (cell.SubType())
+    switch (cell.GetSubType())
     {
       case CellType::POLYGON:
         vtk_subtype = VTK_POLYGON;
@@ -159,13 +159,13 @@ UploadCellGeometryContinuous(const Cell& cell,
 
     ugrid->InsertNextCell(vtk_subtype, static_cast<vtkIdType>(num_verts), cell_vids.data());
   }
-  if (cell.Type() == CellType::POLYHEDRON)
+  if (cell.GetType() == CellType::POLYHEDRON)
   {
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
 
     int vtk_subtype;
-    switch (cell.SubType())
+    switch (cell.GetSubType())
     {
       case CellType::POLYHEDRON:
         vtk_subtype = VTK_POLYHEDRON;
@@ -187,7 +187,7 @@ UploadCellGeometryContinuous(const Cell& cell,
         break;
     }
 
-    switch (cell.SubType())
+    switch (cell.GetSubType())
     {
       case CellType::POLYHEDRON:
       {

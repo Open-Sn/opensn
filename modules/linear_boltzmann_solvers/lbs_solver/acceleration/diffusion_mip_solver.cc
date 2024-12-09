@@ -149,11 +149,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
@@ -254,11 +254,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -486,11 +486,11 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -688,11 +688,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
@@ -782,11 +782,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -978,11 +978,11 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1131,11 +1131,11 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1229,10 +1229,10 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -1254,7 +1254,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 

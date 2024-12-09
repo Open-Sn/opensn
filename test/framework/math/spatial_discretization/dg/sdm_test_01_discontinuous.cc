@@ -138,11 +138,11 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           kappa = 4.0 * penalty_factor * (D / hp + D / hm) * 0.5;
 
         // Assembly penalty terms
@@ -241,11 +241,11 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           kappa = 8.0 * penalty_factor * D / hm;
 
         // Assembly penalty terms
@@ -439,10 +439,10 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -464,7 +464,7 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 

@@ -86,7 +86,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
                                        double& volume,
                                        std::vector<double>& areas)
 {
-  switch (cell.Type())
+  switch (cell.GetType())
   {
     case CellType::SLAB:
     {
