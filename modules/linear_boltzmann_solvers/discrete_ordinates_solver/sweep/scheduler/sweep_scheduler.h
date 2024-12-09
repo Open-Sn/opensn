@@ -50,7 +50,7 @@ public:
                  AngleAggregation& angle_agg,
                  SweepChunk& sweep_chunk);
 
-  AngleAggregation& AngleAgg() { return angle_agg_; }
+  AngleAggregation& GetAngleAgg() { return angle_agg_; }
 
   /// This is the entry point for sweeping.
   void Sweep();
