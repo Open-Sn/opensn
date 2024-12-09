@@ -103,7 +103,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
     auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto cell_num_faces = cell.faces.size();
-    auto cell_num_nodes = cell_mapping.NumNodes();
+    auto cell_num_nodes = cell_mapping.GetNumNodes();
 
     const auto& face_orientations = spds.CellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
@@ -176,7 +176,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           ++preloc_face_counter;
 
         // IntSf_mu_psi_Mij_dA
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -324,7 +324,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         if (not is_boundary_face and not is_local_face)
           ++deploc_face_counter;
 
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);

@@ -92,7 +92,7 @@ SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_man
 size_t
 SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
 {
-  return GetCellMapping(cell).NumNodes();
+  return GetCellMapping(cell).GetNumNodes();
 }
 
 const std::vector<Vector3>&
@@ -106,7 +106,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
 {
   const auto& cell_mapping = GetCellMapping(cell);
   const size_t num_faces = cell.faces.size();
-  const size_t num_nodes = cell_mapping.NumNodes();
+  const size_t num_nodes = cell_mapping.GetNumNodes();
 
   // Determine which nodes are on the boundary
   std::set<uint32_t> boundary_nodes;
@@ -114,7 +114,7 @@ SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
   {
     if (not cell.faces[f].has_neighbor)
     {
-      const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
         boundary_nodes.insert(cell_mapping.MapFaceNode(f, fi));
     }
@@ -146,14 +146,14 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
     for (size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces[f];
-      const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid.cells[face.neighbor_id];
         const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
-        const size_t adj_num_nodes = adj_cell_mapping.NumNodes();
+        const size_t adj_num_nodes = adj_cell_mapping.GetNumNodes();
 
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
@@ -211,7 +211,7 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
     for (const auto& cell : ref_grid_.local_cells)
     {
       const auto& cell_mapping = this->GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {

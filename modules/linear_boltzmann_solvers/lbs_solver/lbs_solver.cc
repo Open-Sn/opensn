@@ -1078,7 +1078,7 @@ LBSSolver::ComputeUnitIntegrals()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.NumNodes();
+    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
@@ -1679,7 +1679,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1716,7 +1716,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1752,7 +1752,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& sigma_s = matid_to_xs_map_[cell.material_id]->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -1788,7 +1788,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1896,7 +1896,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& S = matid_to_xs_map_[cell.material_id]->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -1938,7 +1938,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id).spectrum;
 
@@ -2072,7 +2072,7 @@ LBSSolver::UpdateFieldFunctions()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -2096,7 +2096,7 @@ LBSSolver::UpdateFieldFunctions()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
@@ -2171,7 +2171,7 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
       for (const auto& cell : grid_ptr_->local_cells)
       {
         const auto& cell_mapping = sdm.GetCellMapping(cell);
-        const size_t num_nodes = cell_mapping.NumNodes();
+        const size_t num_nodes = cell_mapping.GetNumNodes();
 
         for (size_t i = 0; i < num_nodes; ++i)
         {

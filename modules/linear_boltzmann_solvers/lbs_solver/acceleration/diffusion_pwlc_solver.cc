@@ -59,7 +59,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -82,7 +82,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         if (bc.type != BCType::DIRICHLET)
           continue;
 
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
           node_is_dirichlet[cell_mapping.MapFaceNode(f, fi)] = {true, bc.values[0]};
       }
@@ -136,7 +136,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces[f];
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
@@ -263,7 +263,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -287,7 +287,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
         if (bc.type != BCType::DIRICHLET)
           continue;
 
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
           node_is_dirichlet[cell_mapping.MapFaceNode(f, fi)] = {true, bc.values[0]};
       }
@@ -337,7 +337,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces[f];
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
@@ -415,7 +415,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -436,7 +436,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         if (bc.type != BCType::DIRICHLET)
           continue;
 
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
           node_is_dirichlet[cell_mapping.MapFaceNode(f, fi)] = true;
       }
@@ -472,7 +472,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       for (size_t f = 0; f < num_faces; ++f)
       {
         const auto& face = cell.faces[f];
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 

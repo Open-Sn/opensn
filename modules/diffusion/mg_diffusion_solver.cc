@@ -622,7 +622,7 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     VF_[counter].resize(num_nodes, 0.0);
 
@@ -631,7 +631,7 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
       double vol_frac_shape_i = 0.0;
       for (size_t qp : fe_vol_data.QuadraturePointIndices())
         vol_frac_shape_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
-      vol_frac_shape_i /= cell_mapping.CellVolume();
+      vol_frac_shape_i /= cell_mapping.GetCellVolume();
       VF_[counter][i] = vol_frac_shape_i;
     } // for i
 
@@ -730,7 +730,7 @@ MGDiffusionSolver::AssembleAbext()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
     const auto& D = xs->GetDiffusionCoefficient();
@@ -1004,7 +1004,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
     const auto& S = xs->GetTransferMatrix(0);
@@ -1073,7 +1073,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& S = matid_to_xs_map_.at(cell.material_id)->GetTransferMatrix(0);
 
@@ -1134,7 +1134,7 @@ MGDiffusionSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xstg = map_mat_id_2_tginfo_.at(cell.material_id);
 
     for (unsigned int g = last_fast_group_; g < num_groups_; ++g)

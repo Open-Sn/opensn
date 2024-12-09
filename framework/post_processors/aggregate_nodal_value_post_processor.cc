@@ -108,7 +108,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   {
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

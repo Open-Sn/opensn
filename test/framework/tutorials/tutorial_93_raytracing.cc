@@ -119,7 +119,7 @@ SimTest93_RayTracing()
       double weight)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto phi_theta = OmegaToPhiThetaSafe(omega);
     const double phi = phi_theta.first;
@@ -272,7 +272,7 @@ SimTest93_RayTracing()
     // Compute mass matrix and its inverse
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     DenseMatrix<double> M(num_nodes, num_nodes, 0.0);
     for (auto qp : fe_vol_data.QuadraturePointIndices())

@@ -81,7 +81,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto& cell = grid.cells[owning_cell_gid_];
   const auto& cell_mapping = sdm.GetCellMapping(cell);
-  const size_t num_nodes = cell_mapping.NumNodes();
+  const size_t num_nodes = cell_mapping.GetNumNodes();
 
   std::vector<double> node_dof_values(num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)

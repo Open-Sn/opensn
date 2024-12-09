@@ -331,7 +331,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& transport_view = transport_views[cell.local_id];
       const auto& fe_values = unit_cell_matrices[cell.local_id];
-      const auto num_cell_nodes = cell_mapping.NumNodes();
+      const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
       if (material_sources_.count(cell.material_id) > 0)
       {
@@ -369,7 +369,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
           if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
             const auto bndry_id = face.neighbor_id;
-            const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+            const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);

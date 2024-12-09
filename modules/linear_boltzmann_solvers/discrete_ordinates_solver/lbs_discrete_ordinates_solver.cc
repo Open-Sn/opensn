@@ -453,7 +453,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
       if (not face.has_neighbor and face.neighbor_id == boundary_id)
       {
         const auto& int_f_shape_i = fe_values.intS_shapeI[f];
-        const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -538,7 +538,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
         {
           auto& bndry_leakage = local_leakage[face.neighbor_id];
           const auto& int_f_shape_i = fe_values.intS_shapeI[f];
-          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
           for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);

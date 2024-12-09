@@ -64,12 +64,12 @@ SimTest02_FV()
     const int64_t imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid;
-    const double V = cell_mapping.CellVolume();
+    const double V = cell_mapping.GetCellVolume();
 
     size_t f = 0;
     for (const auto& face : cell.faces)
     {
-      const auto Af = face.normal * cell_mapping.FaceArea(f);
+      const auto Af = face.normal * cell_mapping.GetFaceArea(f);
 
       if (face.has_neighbor)
       {
@@ -172,7 +172,7 @@ SimTest02_FV()
     for (const auto& face : cell.faces)
     {
       const auto& xf = face.centroid;
-      const auto Af = cell_mapping.FaceArea(f) * face.normal;
+      const auto Af = cell_mapping.GetFaceArea(f) * face.normal;
 
       double phi_N = 0.0;
       auto xn = xp + 2 * (xf - xp);
@@ -189,7 +189,7 @@ SimTest02_FV()
       grad_phi_P += Af * ((xn - xf).Norm() * phi_P + (xf - xp).Norm() * phi_N) / (xn - xp).Norm();
       ++f;
     } // for face
-    grad_phi_P /= cell_mapping.CellVolume();
+    grad_phi_P /= cell_mapping.GetCellVolume();
 
     const int64_t xmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 0);
     const int64_t ymap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 1);

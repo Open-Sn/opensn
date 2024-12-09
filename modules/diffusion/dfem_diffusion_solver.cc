@@ -298,7 +298,7 @@ DFEMDiffusionSolver::Execute()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -336,7 +336,7 @@ DFEMDiffusionSolver::Execute()
     {
       const auto& face = cell.faces[f];
       const auto& n_f = face.normal;
-      const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell, f);
@@ -621,15 +621,15 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const size_t num_faces = cell.faces.size();
   const size_t num_vertices = cell.vertex_ids.size();
 
-  const double volume = cell_mapping.CellVolume();
-  const double face_area = cell_mapping.FaceArea(f);
+  const double volume = cell_mapping.GetCellVolume();
+  const double face_area = cell_mapping.GetFaceArea(f);
 
   /**Lambda to compute surface area.*/
   auto ComputeSurfaceArea = [&cell_mapping, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell_mapping.FaceArea(fr);
+      surface_area += cell_mapping.GetFaceArea(fr);
 
     return surface_area;
   };
@@ -696,7 +696,7 @@ DFEMDiffusionSolver::MapFaceNodeDisc(const Cell& cur_cell,
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];
 
-  const size_t adj_face_num_nodes = adj_cell_mapping.NumFaceNodes(acf);
+  const size_t adj_face_num_nodes = adj_cell_mapping.GetNumFaceNodes(acf);
 
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {

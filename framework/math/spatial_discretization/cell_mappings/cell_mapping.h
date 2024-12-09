@@ -32,18 +32,18 @@ public:
   const MeshContinuum& ReferenceGrid() const;
 
   /// Returns the number of nodes on this element.
-  size_t NumNodes() const;
+  size_t GetNumNodes() const;
 
   /// Returns the number of nodes on the given face.
-  size_t NumFaceNodes(size_t face_index) const;
+  size_t GetNumFaceNodes(size_t face_index) const;
 
   const std::vector<std::vector<int>>& GetFaceNodeMappings() const;
 
   /// Returns the cell volume.
-  double CellVolume() const;
+  double GetCellVolume() const;
 
   /// Returns the given face area.
-  double FaceArea(size_t face_index) const;
+  double GetFaceArea(size_t face_index) const;
 
   /**
    * Given the face index and the face node index, returns the index of the cell node the face node

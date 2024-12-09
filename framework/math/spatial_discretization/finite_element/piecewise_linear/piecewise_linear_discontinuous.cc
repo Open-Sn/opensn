@@ -76,7 +76,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   {
     const auto& cell_mapping = GetCellMapping(cell);
     cell_local_block_address_[cell.local_id] = static_cast<int64_t>(local_node_count);
-    local_node_count += cell_mapping.NumNodes();
+    local_node_count += cell_mapping.GetNumNodes();
   }
 
   // Allgather node_counts
@@ -171,7 +171,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   for (const auto& cell : ref_grid_.local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
-    size_t num_nodes = cell_mapping.NumNodes();
+    size_t num_nodes = cell_mapping.GetNumNodes();
 
     // Self connection
     for (int i = 0; i < num_nodes; ++i)
@@ -191,7 +191,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
         for (int i = 0; i < num_nodes; ++i)
         {
           int64_t ir = cell_local_block_address_[lc] + i;
-          nodal_nnz_in_diag[ir] += static_cast<int64_t>(adj_cell_mapping.NumNodes());
+          nodal_nnz_in_diag[ir] += static_cast<int64_t>(adj_cell_mapping.GetNumNodes());
         }
       }
     } // for face
@@ -212,10 +212,10 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
         const auto& adj_cell = ref_grid_.cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
-        for (int i = 0; i < cell_mapping.NumNodes(); ++i)
+        for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
           int64_t ir = cell_local_block_address_[lc] + i;
-          nodal_nnz_off_diag[ir] += static_cast<int64_t>(adj_cell_mapping.NumNodes());
+          nodal_nnz_off_diag[ir] += static_cast<int64_t>(adj_cell_mapping.GetNumNodes());
         }
       }
     }

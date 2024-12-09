@@ -70,7 +70,7 @@ SimTest04_PWLC()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
 
@@ -190,7 +190,7 @@ SimTest04_PWLC()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // Grab nodal phi values

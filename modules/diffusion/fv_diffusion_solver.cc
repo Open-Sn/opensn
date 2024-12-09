@@ -286,7 +286,7 @@ FVDiffusionSolver::Execute()
   for (const auto& cell_P : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell_P);
-    const double volume_P = cell_mapping.CellVolume(); // Volume of present cell
+    const double volume_P = cell_mapping.GetCellVolume(); // Volume of present cell
     const auto& x_cc_P = cell_P.centroid;
 
     const auto imat = cell_P.material_id;
@@ -304,7 +304,7 @@ FVDiffusionSolver::Execute()
       const auto& face = cell_P.faces[f];
       const auto& x_fc = face.centroid;
       const auto x_PF = x_fc - x_cc_P;
-      const auto A_f = cell_mapping.FaceArea(f);
+      const auto A_f = cell_mapping.GetFaceArea(f);
       const auto A_f_n = A_f * face.normal;
 
       if (face.has_neighbor)

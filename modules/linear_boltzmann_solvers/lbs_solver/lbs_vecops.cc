@@ -55,7 +55,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSSolver& lbs_solver, PhiSTLOption phi_opt,
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

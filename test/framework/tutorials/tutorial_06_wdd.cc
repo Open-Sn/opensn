@@ -135,7 +135,7 @@ SimTest06_WDD()
   {
     const auto& cc = cell.centroid;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
     {
@@ -341,7 +341,7 @@ ComputeRelativePWChange(const MeshContinuum& grid,
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -396,7 +396,7 @@ SetSource(const MeshContinuum& grid,
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& S = xs.GetTransferMatrices();
 
     for (size_t i = 0; i < num_nodes; ++i)

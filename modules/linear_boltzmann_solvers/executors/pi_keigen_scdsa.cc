@@ -361,7 +361,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
   for (const auto& cell : lbs_solver_->Grid().local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -401,7 +401,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   for (const auto& cell : lbs_solver_->Grid().local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -439,7 +439,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
   {
     const auto& cell = grid.cells[global_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -504,7 +504,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -541,7 +541,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   {
     const auto& cell = grid.cells[global_id];
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -582,7 +582,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

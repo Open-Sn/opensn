@@ -68,7 +68,7 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 

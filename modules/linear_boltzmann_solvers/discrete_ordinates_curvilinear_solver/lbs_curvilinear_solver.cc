@@ -345,7 +345,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     //    const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.NumNodes();
+    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);

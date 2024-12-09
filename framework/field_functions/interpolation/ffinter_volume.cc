@@ -69,7 +69,7 @@ FieldFunctionInterpolationVolume::Execute()
   {
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     std::vector<double> node_dof_values(num_nodes, 0.0);

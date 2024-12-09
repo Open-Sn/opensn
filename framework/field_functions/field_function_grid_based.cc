@@ -171,7 +171,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
         local_num_point_hits += 1;
 
-        const auto num_nodes = cell_mapping.NumNodes();
+        const auto num_nodes = cell_mapping.GetNumNodes();
         for (size_t c = 0; c < num_components; ++c)
         {
           for (size_t j = 0; j < num_nodes; ++j)
@@ -210,7 +210,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   cell_mapping.ShapeValues(position, shape_values);
 
   double value = 0.0;
-  const size_t num_nodes = cell_mapping.NumNodes();
+  const size_t num_nodes = cell_mapping.GetNumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
     const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);

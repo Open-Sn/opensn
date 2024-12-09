@@ -77,11 +77,11 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
       const auto node_wgts = Mult(M_inv, shape_vals);
 
       // Increment the total volume
-      total_volume += cell_mapping.CellVolume();
+      total_volume += cell_mapping.GetCellVolume();
 
       // Add to subscribers
       subscribers.push_back(
-        Subscriber{cell_mapping.CellVolume(), cell.local_id, shape_vals, node_wgts});
+        Subscriber{cell_mapping.GetCellVolume(), cell.local_id, shape_vals, node_wgts});
     }
   }
 

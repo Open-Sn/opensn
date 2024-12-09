@@ -655,7 +655,7 @@ MeshContinuum::ComputeVolumePerMaterialID() const
   for (auto& cell : local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const double volume = cell_mapping.CellVolume();
+    const double volume = cell_mapping.GetCellVolume();
     material_volumes[cell.material_id] += volume;
   }
 

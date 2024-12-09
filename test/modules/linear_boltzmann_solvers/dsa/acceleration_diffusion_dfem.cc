@@ -72,7 +72,7 @@ acceleration_Diffusion_DFEM()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.NumNodes();
+    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
@@ -192,7 +192,7 @@ acceleration_Diffusion_DFEM()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // Grab nodal phi values

@@ -307,7 +307,7 @@ CFEMDiffusionSolver::Execute()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const auto imat = cell.material_id;
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
 
