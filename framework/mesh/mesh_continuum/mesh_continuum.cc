@@ -455,7 +455,7 @@ std::array<size_t, 3>
 MeshContinuum::GetIJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
-  if (Type() != MeshType::ORTHOGONAL)
+  if (GetType() != MeshType::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   return {ortho_attributes_.Nx, ortho_attributes_.Ny, ortho_attributes_.Nz};
@@ -465,7 +465,7 @@ NDArray<uint64_t, 3>
 MeshContinuum::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
-  if (Type() != MeshType::ORTHOGONAL)
+  if (GetType() != MeshType::ORTHOGONAL)
     throw std::logic_error(fname + " can only be run on orthogonal meshes.");
 
   const auto ijk_info = this->GetIJKInfo();

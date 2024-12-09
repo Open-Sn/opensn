@@ -41,7 +41,7 @@ SimTest91_PWLD()
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  auto dimension = grid.Dimension();
+  auto dimension = grid.GetDimension();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);

@@ -197,7 +197,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
         for (int jdir = 0; jdir < num_gs_angles; ++jdir)
         {
           // Angles are opposite if their sum is zero
-          const auto sum = grid_ptr_->Dimension() == 1
+          const auto sum = grid_ptr_->GetDimension() == 1
                              ? Vector3(0.0, 0.0, omegas[idir].z + omegas[jdir].z)
                              : omegas[idir] + omegas[jdir];
           const bool opposite = sum.NormSquare() < 1.0e-8;
@@ -828,7 +828,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     case AngleAggregationType::POLAR:
     {
       // Check geometry types
-      if (not(grid.Type() == ORTHOGONAL or grid.Dimension() == 2 or grid.Extruded()))
+      if (not(grid.GetType() == ORTHOGONAL or grid.GetDimension() == 2 or grid.Extruded()))
         throw std::logic_error(
           fname + ": The simulation is using polar angle aggregation for which only certain "
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");

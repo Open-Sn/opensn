@@ -23,7 +23,7 @@ class MeshContinuum : public std::enable_shared_from_this<MeshContinuum>
 public:
   MeshContinuum();
 
-  unsigned int Dimension() const { return dim_; }
+  unsigned int GetDimension() const { return dim_; }
   void SetDimension(unsigned int dim) { dim_ = dim; }
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
@@ -125,7 +125,7 @@ public:
   /// Checks whether a point is within a cell.
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
-  MeshType Type() const { return mesh_type_; }
+  MeshType GetType() const { return mesh_type_; }
 
   void SetType(MeshType type) { mesh_type_ = type; }
 

@@ -841,7 +841,7 @@ LBSSolver::PerformInputChecks()
   }
 
   // Determine geometry type
-  const auto dim = grid_ptr_->Dimension();
+  const auto dim = grid_ptr_->GetDimension();
   if (dim == 1)
     options_.geometry_type = GeometryType::ONED_SLAB;
   else if (dim == 2)

@@ -117,7 +117,7 @@ PowerIterationKEigenSMM::Initialize()
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Specialized SMM data
-  dimension_ = lbs_solver_->Grid().Dimension();
+  dimension_ = lbs_solver_->Grid().GetDimension();
   ComputeAuxiliaryUnitCellMatrices();
   ComputeBoundaryFactors();
 

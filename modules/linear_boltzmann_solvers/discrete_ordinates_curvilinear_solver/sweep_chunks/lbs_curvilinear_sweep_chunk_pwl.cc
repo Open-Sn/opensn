@@ -63,7 +63,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
       map_polar_level_.emplace(dir_idx, dir_set.first);
 
   //  set normal vector for symmetric boundary condition
-  const auto d = (grid_.Dimension() == 1) ? 2 : 0;
+  const auto d = (grid_.GetDimension() == 1) ? 2 : 0;
   normal_vector_boundary_ = Vector3(0.0, 0.0, 0.0);
   normal_vector_boundary_(d) = 1;
 }
