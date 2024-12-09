@@ -27,7 +27,7 @@ Object::SetStackID(size_t stack_id)
 }
 
 size_t
-Object::StackID() const
+Object::GetStackID() const
 {
   return stack_id_;
 }

@@ -36,7 +36,7 @@ PhysicsEventPublisher::SolverInitialize(Solver& solver)
     const std::string event_name = "SolverPreInitialize";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -47,7 +47,7 @@ PhysicsEventPublisher::SolverInitialize(Solver& solver)
     const std::string event_name = "SolverInitialized";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
     params.AddParameter("time", solver.GetTimeStepper().GetTime());
 
     PublishEvent(Event(event_name, params));
@@ -61,7 +61,7 @@ PhysicsEventPublisher::SolverExecute(Solver& solver)
     const std::string event_name = "SolverPreExecution";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -72,7 +72,7 @@ PhysicsEventPublisher::SolverExecute(Solver& solver)
     const std::string event_name = "SolverExecuted";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -85,7 +85,7 @@ PhysicsEventPublisher::SolverStep(Solver& solver)
     const std::string event_name = "SolverPreStep";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -96,7 +96,7 @@ PhysicsEventPublisher::SolverStep(Solver& solver)
     const std::string event_name = "SolverStep";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -109,7 +109,7 @@ PhysicsEventPublisher::SolverAdvance(Solver& solver)
     const std::string event_name = "SolverPreAdvance";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
 
     PublishEvent(Event(event_name, params));
   }
@@ -120,7 +120,7 @@ PhysicsEventPublisher::SolverAdvance(Solver& solver)
     const std::string event_name = "SolverAdvanced";
     ParameterBlock params;
     params.AddParameter("solver_name", solver.GetName());
-    params.AddParameter("solver_handle", solver.StackID());
+    params.AddParameter("solver_handle", solver.GetStackID());
     params.AddParameter("time", solver.GetTimeStepper().GetTime());
     params.AddParameter("timestep_index", solver.GetTimeStepper().GetTimeStepIndex());
 
