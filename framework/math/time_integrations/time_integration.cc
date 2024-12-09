@@ -33,7 +33,7 @@ TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
 }
 
 SteppingMethod
-TimeIntegration::Method() const
+TimeIntegration::GetMethod() const
 {
   return method_;
 }
