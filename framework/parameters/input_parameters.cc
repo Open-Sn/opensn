@@ -124,7 +124,7 @@ InputParameters::SetObjectType(const std::string& obj_type)
 }
 
 std::string
-InputParameters::ObjectType() const
+InputParameters::GetObjectType() const
 {
   return class_name_;
 }
@@ -247,7 +247,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
   if (not err_stream.str().empty())
     throw std::invalid_argument(
-      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+      InputErrorStr(GetErrorOriginScope(), GetObjectType(), err_stream.str()));
 
   // Check unused parameters
   // Loops over all candidate-parameters and
@@ -271,7 +271,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
     if (not err_stream.str().empty())
       throw std::invalid_argument(
-        InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+        InputErrorStr(GetErrorOriginScope(), GetObjectType(), err_stream.str()));
   }
 
   // Check deprecation warnings
@@ -357,7 +357,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
   if (not err_stream.str().empty())
     throw std::invalid_argument(
-      InputErrorStr(GetErrorOriginScope(), ObjectType(), err_stream.str()));
+      InputErrorStr(GetErrorOriginScope(), GetObjectType(), err_stream.str()));
 }
 
 void
