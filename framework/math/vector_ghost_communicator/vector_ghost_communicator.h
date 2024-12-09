@@ -29,13 +29,13 @@ public:
   /// Move constructor.
   VectorGhostCommunicator(VectorGhostCommunicator&& other) noexcept;
 
-  uint64_t LocalSize() const { return local_size_; }
-  uint64_t GlobalSize() const { return global_size_; }
+  uint64_t GetLocalSize() const { return local_size_; }
+  uint64_t GetGlobalSize() const { return global_size_; }
 
-  uint64_t NumGhosts() const { return ghost_ids_.size(); }
-  const std::vector<int64_t>& GhostIndices() const { return ghost_ids_; }
+  uint64_t GetNumGhosts() const { return ghost_ids_.size(); }
+  const std::vector<int64_t>& GetGhostIndices() const { return ghost_ids_; }
 
-  const mpi::Communicator& Communicator() const { return comm_; }
+  const mpi::Communicator& GetCommunicator() const { return comm_; }
 
   int64_t MapGhostToLocal(int64_t ghost_id) const;
 
