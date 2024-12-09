@@ -27,5 +27,24 @@
         "key" : "Exporting mesh to VTK files with base new_bnd_ids"
       }
     ]
+  },
+  {
+    "file": "volume_per_material.lua",
+    "comment": "2D test to compute and display volume per material ID.",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Material ID: 0 Volume:",
+        "goldvalue": 11.25,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Material ID: 1 Volume:",
+        "goldvalue": 13.75,
+        "abs_tol": 1.0e-6
+      }
+    ]
   }
 ]
