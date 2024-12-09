@@ -16,6 +16,6 @@ meshgen = mesh.MeshGenerator.Create({
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 
-mesh.ExportToPVTU("Read_3D_mesh_only")
+mesh.ExportToPVTU(grid, "Read_3D_mesh_only")

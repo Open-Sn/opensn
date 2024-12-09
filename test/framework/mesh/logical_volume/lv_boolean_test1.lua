@@ -18,11 +18,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes, nodes },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- assign matID 10 to all cells
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 10, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 10, true)
 
 -- create logical volume lv1 as an analytical sphere
 lv1 = logvol.SphereLogicalVolume.Create({ r = 1.3, x = 1.0, y = -1.0, z = 2.0 })
@@ -44,10 +44,10 @@ lv3 = logvol.BooleanLogicalVolume.Create({
 })
 
 -- assign matID 1 to all cells in lv3 which is the part of lv2 that is not in lv1
-mesh.SetMaterialIDFromLogicalVolume(lv3, 1, true)
+grid:SetMaterialIDFromLogicalVolume(lv3, 1, true)
 
 -- assign matID 5 to all cells in lv1
-mesh.SetMaterialIDFromLogicalVolume(lv1, 5, true)
+grid:SetMaterialIDFromLogicalVolume(lv1, 5, true)
 
 -- export to vtk
-mesh.ExportToPVTU("lv_boolean_test1")
+mesh.ExportToPVTU(grid, "lv_boolean_test1")

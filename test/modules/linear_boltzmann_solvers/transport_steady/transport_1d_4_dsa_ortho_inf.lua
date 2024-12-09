@@ -31,10 +31,10 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 -- Add materials
 materials = {}
@@ -62,6 +62,7 @@ materials[2]:SetIsotropicMGSource(mg_src1)
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

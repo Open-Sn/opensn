@@ -50,7 +50,8 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     discretization_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(GetCurrentMesh()->GetLocalBoundingBox())
+    local_grid_bounding_box_(
+      params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
@@ -325,7 +326,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto& grid_ptr = GetCurrentMesh();
+  const auto& grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
   if (sdm_type == "FV")

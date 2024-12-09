@@ -12,7 +12,7 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Material
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
@@ -44,6 +44,7 @@ pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, Npolar, Nazimut
 -- Set up solver
 gs1 = { 0, Ng - 1 }
 lbs_block = {
+  mesh = grid,
   num_groups = Ng,
   groupsets = {
     {

@@ -10,15 +10,15 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 D = { 1.0, 5.0 }
 Q = { 0.0, 1.0 }
@@ -49,10 +49,10 @@ w_bndry = "1"
 n_bndry = "2"
 s_bndry = "3"
 
-mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, true)
-mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, true)
-mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, true)
-mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, true)
+grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, true)
+grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, true)
+grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, true)
+grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, true)
 
 diff_options = {
   boundary_conditions = {
@@ -84,6 +84,7 @@ Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a"
 -- CFEM solver
 phys1 = diffusion.CFEMDiffusionSolver.Create({
   name = "CFEMDiffusionSolver",
+  mesh = grid,
   residual_tolerance = 1e-8,
 })
 phys1:SetOptions(diff_options)

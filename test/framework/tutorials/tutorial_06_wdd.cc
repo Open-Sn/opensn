@@ -31,7 +31,7 @@ std::vector<double> SetSource(const MeshContinuum& grid,
 /**WDD Sweep. */
 
 void
-SimTest06_WDD()
+SimTest06_WDD(const ParameterBlock& params)
 {
   const std::string fname = "SimTest06_WDD";
 
@@ -41,7 +41,7 @@ SimTest06_WDD()
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

@@ -3,6 +3,7 @@
 
 #include "modules/diffusion/diffusion_solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 
 namespace opensn
 {
@@ -22,6 +23,7 @@ InputParameters
 DiffusionSolverBase::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
+  params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
   params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
   params.AddOptionalParameter<int>("max_iters", 500, "Solver relative tolerance");
   return params;
@@ -49,9 +51,11 @@ DiffusionSolverBase::GetBoundaryOptionsBlock()
   return params;
 }
 
-DiffusionSolverBase::DiffusionSolverBase(const std::string& name)
+DiffusionSolverBase::DiffusionSolverBase(const std::string& name,
+                                         std::shared_ptr<MeshContinuum> grid_ptr)
   : opensn::Solver(name,
                    {{"max_iters", static_cast<int64_t>(500)}, {"residual_tolerance", 1.0e-2}}),
+    grid_ptr_(grid_ptr),
     num_local_dofs_(0),
     num_global_dofs_(0),
     x_(nullptr),
@@ -62,6 +66,7 @@ DiffusionSolverBase::DiffusionSolverBase(const std::string& name)
 
 DiffusionSolverBase::DiffusionSolverBase(const InputParameters& params)
   : opensn::Solver(params),
+    grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
     num_local_dofs_(0),
     num_global_dofs_(0),
     x_(nullptr),

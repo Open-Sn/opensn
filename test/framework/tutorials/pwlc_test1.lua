@@ -10,12 +10,12 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
-unit_sim_tests.SimTest03_PWLC()
+unit_sim_tests.SimTest03_PWLC({ mesh = grid })
 MPIBarrier()
 if location_id == 0 then
   os.execute("rm CodeTut3_PWLC*")

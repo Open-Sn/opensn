@@ -33,7 +33,9 @@ namespace opensn
 
 OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesSolver);
 
-DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& name) : LBSSolver(name)
+DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& name,
+                                                 std::shared_ptr<MeshContinuum> grid_ptr)
+  : LBSSolver(name, grid_ptr)
 {
 }
 

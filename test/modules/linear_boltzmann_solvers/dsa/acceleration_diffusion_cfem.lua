@@ -15,21 +15,22 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
-mesh.SetupOrthogonalBoundaries()
+grid:SetupOrthogonalBoundaries()
 
 function MMS_phi(pt)
   return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
 end
+
 function MMS_q(pt)
   return math.pi * math.pi * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
 end
 
-unit_sim_tests.acceleration_Diffusion_CFEM()
+unit_sim_tests.acceleration_Diffusion_CFEM({ mesh = grid })
 MPIBarrier()
 if location_id == 0 then
   --os.execute("rm SimTest_92*")

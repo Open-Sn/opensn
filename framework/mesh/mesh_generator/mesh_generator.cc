@@ -79,7 +79,7 @@ MeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> inpu
   return input_umesh;
 }
 
-void
+std::shared_ptr<MeshContinuum>
 MeshGenerator::Execute()
 {
   // Execute all input generators
@@ -122,9 +122,10 @@ MeshGenerator::Execute()
     throw std::runtime_error("Partitioning failed. At least one partition contains no cells.");
 
   auto grid_ptr = SetupMesh(std::move(current_umesh), cell_pids);
-  mesh_stack.push_back(grid_ptr);
 
   opensn::mpi_comm.barrier();
+
+  return grid_ptr;
 }
 
 void

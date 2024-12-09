@@ -51,7 +51,7 @@ public:
     std::array<std::vector<double>, 3> mg_values;
   };
 
-  explicit MGDiffusionSolver(const std::string& name);
+  explicit MGDiffusionSolver(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
   explicit MGDiffusionSolver(const InputParameters& params);
   ~MGDiffusionSolver() override;
 

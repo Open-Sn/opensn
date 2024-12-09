@@ -19,12 +19,12 @@ namespace unit_tests
  */
 
 void
-SimTest04_PWLC()
+SimTest04_PWLC(const ParameterBlock& params)
 {
   opensn::log.Log() << "Coding Tutorial 4";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

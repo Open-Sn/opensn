@@ -23,7 +23,9 @@ DFEMDiffusionSolver::Create(const ParameterBlock& params)
   return factory.Create<DFEMDiffusionSolver>("diffusion::DFEMDiffusionSolver", params);
 }
 
-DFEMDiffusionSolver::DFEMDiffusionSolver(const std::string& name) : DiffusionSolverBase(name)
+DFEMDiffusionSolver::DFEMDiffusionSolver(const std::string& name,
+                                         std::shared_ptr<MeshContinuum> grid_ptr)
+  : DiffusionSolverBase(name, grid_ptr)
 {
 }
 
@@ -172,10 +174,9 @@ DFEMDiffusionSolver::Initialize()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentMesh();
-  const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
+  const auto& grid = *grid_ptr_;
 
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 

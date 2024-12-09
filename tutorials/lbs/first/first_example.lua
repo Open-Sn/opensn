@@ -81,7 +81,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   }),
 })
 
-meshgen:Execute()
+grid = meshgen:Execute()
 
 --[[ @doc
 ### Material IDs
@@ -90,7 +90,7 @@ assign material IDs to all cells. Here, we have a homogeneous domain, so we assi
 with value 0 for each cell in the spatial domain.
 --]]
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 --[[ @doc
 ## Materials
@@ -146,6 +146,7 @@ tolerances, and other solver options.
 --]]
 -- Setup LBS parameters
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

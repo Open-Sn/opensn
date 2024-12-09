@@ -18,12 +18,12 @@ namespace unit_sim_tests
  */
 
 void
-SimTest02_FV()
+SimTest02_FV(const ParameterBlock& params)
 {
   opensn::log.Log() << "Coding Tutorial 2";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

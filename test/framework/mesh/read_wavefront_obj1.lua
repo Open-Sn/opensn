@@ -24,7 +24,7 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 -- Exports
 if master_export == nil then
   mesh.ExportToPVTU("ZObjMesh")

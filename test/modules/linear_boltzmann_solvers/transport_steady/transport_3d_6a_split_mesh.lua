@@ -58,9 +58,9 @@ meshgen1 = mesh.SplitFileMeshGenerator.Create({
   },
 })
 
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 -- Add materials
 materials = {}
@@ -81,6 +81,7 @@ materials[1]:SetIsotropicMGSource(mg_src)
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 4)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

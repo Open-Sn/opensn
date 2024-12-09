@@ -36,7 +36,7 @@ class MeshGenerator : public Object
 {
 public:
   /// Final execution step.
-  virtual void Execute();
+  virtual std::shared_ptr<MeshContinuum> Execute();
 
   explicit MeshGenerator(const InputParameters& params);
 

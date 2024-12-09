@@ -15,8 +15,9 @@ namespace opensn
 
 OpenSnRegisterObjectInNamespace(diffusion, CFEMDiffusionSolver);
 
-CFEMDiffusionSolver::CFEMDiffusionSolver(const std::string& name)
-  : DiffusionSolverBase(name),
+CFEMDiffusionSolver::CFEMDiffusionSolver(const std::string& name,
+                                         std::shared_ptr<MeshContinuum> grid_ptr)
+  : DiffusionSolverBase(name, grid_ptr),
     d_coef_function_(nullptr),
     sigma_a_function_(nullptr),
     q_ext_function_(nullptr)
@@ -26,9 +27,7 @@ CFEMDiffusionSolver::CFEMDiffusionSolver(const std::string& name)
 InputParameters
 CFEMDiffusionSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
-  params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
-  params.AddOptionalParameter<int>("max_iters", 500, "Solver relative tolerance");
+  InputParameters params = DiffusionSolverBase::GetInputParameters();
   return params;
 }
 
@@ -183,10 +182,9 @@ CFEMDiffusionSolver::Initialize()
             << ": Initializing CFEM Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentMesh();
-  const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
+  const auto& grid = *grid_ptr_;
 
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 

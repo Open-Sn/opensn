@@ -9,9 +9,9 @@ for i = 1, (N + 1) do
   nodes[i] = xmin + k * dx
 end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({
   xmin = -1000.0,
@@ -20,4 +20,4 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)

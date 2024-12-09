@@ -24,11 +24,9 @@ bool use_caliper = false;
 std::string cali_config("runtime-report(calc.inclusive=true),max_column_width=80");
 cali::ConfigManager cali_mgr;
 Timer program_timer;
-int current_mesh_handler = -1;
 bool suppress_color = false;
 std::filesystem::path input_path;
 
-std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;
 std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
 std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
@@ -66,7 +64,6 @@ void
 Finalize()
 {
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
-  mesh_stack.clear();
   surface_mesh_stack.clear();
   field_func_interpolation_stack.clear();
   unpartitionedmesh_stack.clear();

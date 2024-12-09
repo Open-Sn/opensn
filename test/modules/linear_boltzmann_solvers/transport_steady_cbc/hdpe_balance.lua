@@ -11,10 +11,10 @@ for i = 1, (N + 1) do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 materials = {}
 materials[1] = mat.AddMaterial("HDPE")
@@ -38,6 +38,7 @@ pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 -- LBS block option
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

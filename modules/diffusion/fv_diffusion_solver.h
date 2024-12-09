@@ -20,7 +20,7 @@ class ScalarSpatialMaterialFunction;
 class FVDiffusionSolver : public DiffusionSolverBase
 {
 public:
-  explicit FVDiffusionSolver(const std::string& name);
+  explicit FVDiffusionSolver(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
   explicit FVDiffusionSolver(const InputParameters& params);
   ~FVDiffusionSolver() override;
 

@@ -31,10 +31,10 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     zcuts = { 0. },
   }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 --[[ @doc
 ## Export the mesh
@@ -42,7 +42,7 @@ The resulting mesh partition is shown below
 ![below](images/ortho_3D_KBA.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_3D_KBA")
+mesh.ExportToPVTU(grid, "ortho_3D_KBA")
 
 --[[ @doc
 ## Mesh (again) and Parmetis partition
@@ -52,11 +52,11 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes, nodes },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 --[[ @doc
 ## Export the mesh
@@ -64,4 +64,4 @@ Note that now, both partitioners are not giving the same result. The Parmetis pa
 ![below](images/ortho_3D_Parmetis.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_3D_Parmetis")
+mesh.ExportToPVTU(grid, "ortho_3D_Parmetis")

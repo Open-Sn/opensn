@@ -14,14 +14,14 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
-mesh.SetupOrthogonalBoundaries()
+grid:SetupOrthogonalBoundaries()
 
-unit_sim_tests.SimTest93_RayTracing()
+unit_sim_tests.SimTest93_RayTracing({ mesh = grid })
 
 -- Add materials
 materials = {}
@@ -92,6 +92,7 @@ pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12 * 2 * 4, 12 *
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 lbs_block = {
   name = solver_name,
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

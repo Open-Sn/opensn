@@ -151,7 +151,7 @@ public:
   void SetUniformMaterialID(int mat_id);
 
   /// Sets material id's using a logical volume.
-  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id);
+  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
 
   /// Sets boundary id's using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
@@ -162,6 +162,8 @@ public:
 
   /// Compute volume per material id's
   void ComputeVolumePerMaterialID() const;
+
+  void SetupOrthogonalBoundaries();
 
 private:
   /// Spatial dimension

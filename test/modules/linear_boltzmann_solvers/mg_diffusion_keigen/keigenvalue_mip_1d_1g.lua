@@ -72,10 +72,10 @@ for i = 0, n_cells do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 -- Add materials
 materials = {}
@@ -87,6 +87,7 @@ materials[1]:SetTransportXSections(xs_simple_fissile)
 -- Setup Physics
 num_groups = 1
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

@@ -9,7 +9,7 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Create cross sections
 xss = {}
@@ -43,6 +43,7 @@ aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 -- Solver
 phys1 = lbs.DiscreteOrdinatesSolver.Create({
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {
