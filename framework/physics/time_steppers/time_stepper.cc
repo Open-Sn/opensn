@@ -46,37 +46,37 @@ TimeStepper::TimeStepper(const InputParameters& params)
 }
 
 double
-TimeStepper::TimeStepSize() const
+TimeStepper::GetTimeStepSize() const
 {
   return dt_;
 }
 
 double
-TimeStepper::Time() const
+TimeStepper::GetTime() const
 {
   return time_;
 }
 
 size_t
-TimeStepper::TimeStepIndex() const
+TimeStepper::GetTimeStepIndex() const
 {
   return t_index_;
 }
 
 double
-TimeStepper::StartTime() const
+TimeStepper::GetStartTime() const
 {
   return start_time_;
 }
 
 double
-TimeStepper::EndTime() const
+TimeStepper::GetEndTime() const
 {
   return end_time_;
 }
 
 double
-TimeStepper::MaxTimeSteps() const
+TimeStepper::GetMaxTimeSteps() const
 {
   return max_time_steps_;
 }

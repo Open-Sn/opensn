@@ -161,7 +161,7 @@ PRKSolver::Step()
 {
   log.Log() << "Solver \"" + Name() + "\" " + timestepper_->StringTimeInfo();
 
-  const double dt = timestepper_->TimeStepSize();
+  const double dt = timestepper_->GetTimeStepSize();
 
   A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
 
@@ -237,7 +237,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
     block.AddParameter("name", Name());
     block.AddParameter("time_integration", time_integration_);
     block.AddParameter("rho", rho_);
-    block.AddParameter("max_timesteps", timestepper_->MaxTimeSteps());
+    block.AddParameter("max_timesteps", timestepper_->GetMaxTimeSteps());
 
     return block;
   }
@@ -266,13 +266,13 @@ PRKSolver::Period() const
 double
 PRKSolver::TimePrev() const
 {
-  return timestepper_->Time();
+  return timestepper_->GetTime();
 }
 
 double
 PRKSolver::TimeNew() const
 {
-  return timestepper_->Time() + timestepper_->TimeStepSize();
+  return timestepper_->GetTime() + timestepper_->GetTimeStepSize();
 }
 
 Vector<double>

@@ -64,7 +64,7 @@ SolverInfoPostProcessor::Execute(const Event& event_context)
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     TimeHistoryEntry entry{
-      solver_->GetTimeStepper().TimeStepIndex(), solver_->GetTimeStepper().Time(), value_};
+      solver_->GetTimeStepper().GetTimeStepIndex(), solver_->GetTimeStepper().GetTime(), value_};
     time_history_.push_back(std::move(entry));
   }
 }

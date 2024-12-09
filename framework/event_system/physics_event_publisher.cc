@@ -48,7 +48,7 @@ PhysicsEventPublisher::SolverInitialize(Solver& solver)
     ParameterBlock params;
     params.AddParameter("solver_name", solver.Name());
     params.AddParameter("solver_handle", solver.StackID());
-    params.AddParameter("time", solver.GetTimeStepper().Time());
+    params.AddParameter("time", solver.GetTimeStepper().GetTime());
 
     PublishEvent(Event(event_name, params));
   }
@@ -121,8 +121,8 @@ PhysicsEventPublisher::SolverAdvance(Solver& solver)
     ParameterBlock params;
     params.AddParameter("solver_name", solver.Name());
     params.AddParameter("solver_handle", solver.StackID());
-    params.AddParameter("time", solver.GetTimeStepper().Time());
-    params.AddParameter("timestep_index", solver.GetTimeStepper().TimeStepIndex());
+    params.AddParameter("time", solver.GetTimeStepper().GetTime());
+    params.AddParameter("timestep_index", solver.GetTimeStepper().GetTimeStepIndex());
 
     PublishEvent(Event(event_name, params));
   }
