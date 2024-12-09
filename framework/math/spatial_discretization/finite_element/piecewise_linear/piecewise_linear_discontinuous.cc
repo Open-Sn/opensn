@@ -33,7 +33,7 @@ PieceWiseLinearDiscontinuous::New(const MeshContinuum& grid,
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : sdm_stack)
-    if (sdm->Type() == PWLD and std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->GetType() == PWLD and std::addressof(sdm->GetGrid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);

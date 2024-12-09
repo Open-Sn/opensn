@@ -59,7 +59,7 @@ CellVolumeIntegralPostProcessor::Initialize()
                        "Attempted to access invalid field"
                        "function");
 
-  const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
+  const auto& grid = grid_field_function->GetSpatialDiscretization().GetGrid();
 
   const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
@@ -92,7 +92,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
   const auto& ref_ff = *grid_field_function;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;

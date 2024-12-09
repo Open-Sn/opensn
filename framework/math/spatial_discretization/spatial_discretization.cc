@@ -26,7 +26,7 @@ SpatialDiscretization::GetCellMapping(const Cell& cell) const
                                      "GetCellMapping";
   try
   {
-    if (Grid().IsCellLocal(cell.global_id))
+    if (GetGrid().IsCellLocal(cell.global_id))
       return *cell_mappings_.at(cell.local_id);
     else
       return *nb_cell_mappings_.at(cell.global_id);
@@ -38,13 +38,13 @@ SpatialDiscretization::GetCellMapping(const Cell& cell) const
 }
 
 SpatialDiscretizationType
-SpatialDiscretization::Type() const
+SpatialDiscretization::GetType() const
 {
   return type_;
 }
 
 const MeshContinuum&
-SpatialDiscretization::Grid() const
+SpatialDiscretization::GetGrid() const
 {
   return ref_grid_;
 }

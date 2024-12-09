@@ -127,7 +127,7 @@ PowerIterationKEigenSCDSA::Initialize()
   }
   else
   {
-    continuous_sdm_ptr_ = PieceWiseLinearContinuous::New(sdm.Grid());
+    continuous_sdm_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
     diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(Name() + "_WGDSA"),
                                                               *continuous_sdm_ptr_,
                                                               uk_man,
@@ -488,7 +488,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
   auto input_with_ghosts = vgc->MakeGhostedVector(input);
   vgc->CommunicateGhostEntries(input_with_ghosts);
 
-  const auto& grid = pwld_sdm.Grid();
+  const auto& grid = pwld_sdm.GetGrid();
 
   const size_t num_unknowns = uk_man.unknowns.size();
 

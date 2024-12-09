@@ -46,7 +46,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string name,
                     suppress_bcs,
                     verbose)
 {
-  if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
+  if (sdm_.GetType() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
     throw std::logic_error("acceleration::DiffusionMIPSolver can only be used with PWLD.");
 }
 

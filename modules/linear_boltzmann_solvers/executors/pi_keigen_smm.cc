@@ -1084,7 +1084,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   auto ghosted_pwld_vector = ghost_comm->MakeGhostedVector(pwld_vector);
   ghost_comm->CommunicateGhostEntries(ghosted_pwld_vector);
 
-  const auto& grid = pwld.Grid();
+  const auto& grid = pwld.GetGrid();
   const auto num_local_pwlc_dofs = pwlc.GetNumLocalAndGhostDOFs(uk_man);
 
   // Map a PWLD vector to a PWLC vector by summing all PWLD DoFs into
@@ -1179,7 +1179,7 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
                                               const UnknownManager& uk_man)
 {
   std::set<int64_t> ghost_ids;
-  const auto& grid = pwld.Grid();
+  const auto& grid = pwld.GetGrid();
   for (const uint64_t ghost_id : grid.cells.GetGhostGlobalIDs())
   {
     const auto& cell = grid.cells[ghost_id];

@@ -60,7 +60,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
 }
 
@@ -72,7 +72,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
   OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->GetLocalSize(),
                           "Constructor called with incompatible size field vector.");
@@ -88,7 +88,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(field_value);
 }
@@ -160,7 +160,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   if (point.x >= xmin and point.x <= xmax and point.y >= ymin and point.y <= ymax and
       point.z >= zmin and point.z <= zmax)
   {
-    const auto& grid = discretization_->Grid();
+    const auto& grid = discretization_->GetGrid();
     for (const auto& cell : grid.local_cells)
     {
       if (grid.CheckPointInsideCell(cell, point))
@@ -238,12 +238,12 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   for (const auto& ff_ptr : ff_list)
     if (ff_ptr != master_ff_ptr)
-      if (&ff_ptr->discretization_->Grid() != &master_ff_ptr->discretization_->Grid())
+      if (&ff_ptr->discretization_->GetGrid() != &master_ff_ptr->discretization_->GetGrid())
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
   // Get grid
-  const auto& grid = master_ff.discretization_->Grid();
+  const auto& grid = master_ff.discretization_->GetGrid();
 
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 

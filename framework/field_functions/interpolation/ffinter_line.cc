@@ -42,7 +42,7 @@ FieldFunctionInterpolationLine::Initialize()
 
   ref_ff_ = field_functions_.front();
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   // Find local points and associated cells
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
@@ -70,7 +70,7 @@ FieldFunctionInterpolationLine::Execute()
   log.Log0Verbose1() << "Executing line interpolator.";
 
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;

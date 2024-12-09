@@ -31,7 +31,7 @@ DiffusionPWLCSolver::DiffusionPWLCSolver(std::string name,
                     true,
                     verbose)
 {
-  if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
+  if (sdm_.GetType() != SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
     throw std::logic_error("acceleration::DiffusionPWLCSolver can only be used with PWLC.");
 }
 

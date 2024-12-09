@@ -29,10 +29,10 @@ public:
   MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
   const CellMapping& GetCellMapping(const Cell& cell) const;
-  SpatialDiscretizationType Type() const;
+  SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
-  const MeshContinuum& Grid() const;
+  const MeshContinuum& GetGrid() const;
 
   CoordinateSystemType GetCoordinateSystemType() const;
 
