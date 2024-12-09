@@ -936,7 +936,7 @@ LBSSolver::InitializeMaterials()
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties)
     {
-      if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
+      if (property->GetType() == PropertyType::TRANSPORT_XSECTIONS)
       {
         auto xs = std::static_pointer_cast<MultiGroupXS>(property);
         xs->SetAdjointMode(options_.adjoint);
@@ -944,7 +944,7 @@ LBSSolver::InitializeMaterials()
         found_transport_xs = true;
       }
 
-      if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
+      if (property->GetType() == PropertyType::ISOTROPIC_MG_SOURCE)
       {
         const auto& src = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 

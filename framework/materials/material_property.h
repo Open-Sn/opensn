@@ -30,7 +30,7 @@ public:
 
   virtual ~MaterialProperty() = default;
 
-  PropertyType Type() { return type_; }
+  PropertyType GetType() { return type_; }
 
   virtual double GetScalarValue() { return 0.0; }
 };

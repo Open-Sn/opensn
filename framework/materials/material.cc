@@ -30,7 +30,7 @@ Material::GetPropertyIndex(PropertyType property_type)
   for (int p = 0; p < properties.size(); ++p)
   {
     const auto& property = properties.at(p);
-    if (property->Type() == property_type)
+    if (property->GetType() == property_type)
     {
       property_index = p;
       break;

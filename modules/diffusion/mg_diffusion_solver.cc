@@ -428,7 +428,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties)
     {
-      if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
+      if (property->GetType() == MatProperty::TRANSPORT_XSECTIONS)
       {
         auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map_[mat_id] = transp_xs;
@@ -437,7 +437,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
           num_groups_ = transp_xs->GetNumGroups();
 
       } // transport xs
-      if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
+      if (property->GetType() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
         auto mg_source = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 
