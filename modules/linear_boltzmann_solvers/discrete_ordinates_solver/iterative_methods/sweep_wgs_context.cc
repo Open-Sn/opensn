@@ -68,7 +68,7 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 }
 
 std::pair<int64_t, int64_t>
-SweepWGSContext::SystemSize()
+SweepWGSContext::GetSystemSize()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 

@@ -55,7 +55,7 @@ MIPWGSContext::SetPreconditioner(KSP& solver)
 }
 
 std::pair<int64_t, int64_t>
-MIPWGSContext::SystemSize()
+MIPWGSContext::GetSystemSize()
 {
   const size_t local_node_count = lbs_solver.LocalNodeCount();
   const size_t globl_node_count = lbs_solver.GlobalNodeCount();

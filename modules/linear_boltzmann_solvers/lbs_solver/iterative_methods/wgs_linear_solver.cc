@@ -56,7 +56,7 @@ WGSLinearSolver::SetSystemSize()
   CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetSystemSize");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-  const auto sizes = gs_context_ptr->SystemSize();
+  const auto sizes = gs_context_ptr->GetSystemSize();
 
   num_local_dofs_ = sizes.first;
   num_global_dofs_ = sizes.second;
