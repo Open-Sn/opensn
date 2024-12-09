@@ -60,7 +60,7 @@ NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
 {
-  auto& tolerances = nl_solver_.ToleranceOptions();
+  auto& tolerances = nl_solver_.GetToleranceOptions();
 
   tolerances.nl_abs_tol = params.GetParamValue<double>("nl_abs_tol");
   tolerances.nl_rel_tol = params.GetParamValue<double>("nl_rel_tol");
@@ -91,7 +91,7 @@ NonLinearKEigen::Execute()
   {
     double k_eff = 1.0;
     PowerIterationKEigen(
-      *lbs_solver_, nl_solver_.ToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
+      *lbs_solver_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 
   nl_solver_.Setup();

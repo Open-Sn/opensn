@@ -21,7 +21,7 @@ WGSLinearSolver::WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_p
   : PETScLinearSolver(gs_context_ptr->groupset.iterative_method, gs_context_ptr)
 {
   auto& groupset = gs_context_ptr->groupset;
-  auto& solver_tol_options = this->ToleranceOptions();
+  auto& solver_tol_options = this->GetToleranceOptions();
   solver_tol_options.residual_absolute = groupset.residual_tolerance;
   solver_tol_options.maximum_iterations = groupset.max_iterations;
   solver_tol_options.gmres_restart_interval = groupset.gmres_restart_intvl;

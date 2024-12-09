@@ -31,7 +31,7 @@ public:
 
   virtual ~PETScLinearSolver();
 
-  ToleranceOptions& ToleranceOptions() { return tolerance_options; }
+  ToleranceOptions& GetToleranceOptions() { return tolerance_options; }
 
   void ApplyToleranceOptions();
 
