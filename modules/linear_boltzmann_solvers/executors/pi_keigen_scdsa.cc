@@ -86,7 +86,7 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
   // to get rid of the junk in the unconverged lagged angular fluxes.  Five
   // sweeps is a guess at how many initial sweeps are necessary.
   auto lbs_solver = std::dynamic_pointer_cast<DiscreteOrdinatesSolver>(lbs_solver_);
-  if (lbs_solver->SweepType() == "AAH" and front_gs_.max_iterations == 1)
+  if (lbs_solver->GetSweepType() == "AAH" and front_gs_.max_iterations == 1)
     throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
                            "the presence of lagged angular fluxes.  Multiple sweeps are "
                            "allowed, however, the number of sweeps required to get sensible "

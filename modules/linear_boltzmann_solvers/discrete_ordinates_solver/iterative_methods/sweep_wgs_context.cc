@@ -25,8 +25,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                                  std::shared_ptr<SweepChunk> swp_chnk)
   : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk(std::move(swp_chnk)),
-    sweep_scheduler(lbs_solver.SweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
-                                                    : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+    sweep_scheduler(lbs_solver.GetSweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
+                                                       : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
                     *groupset.angle_agg,
                     *sweep_chunk)
 {
