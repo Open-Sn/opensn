@@ -9,47 +9,39 @@ namespace opensn
 Cell&
 LocalCellHandler::operator[](uint64_t cell_local_index)
 {
-  if (native_cells.empty())
+  if (local_cells.empty())
   {
-    std::stringstream ostr;
-    ostr << "LocalCells attempted to access local cell " << cell_local_index
-         << " but there are no local cells. This normally indicates"
-         << " a partitioning problem.";
-    throw std::invalid_argument(ostr.str());
+    throw std::out_of_range("LocalCells attempted to access local cell " +
+                            std::to_string(cell_local_index) +
+                            ". Local cells are empty. Check the partitioning.");
   }
 
-  if (cell_local_index >= native_cells.size())
+  if (cell_local_index >= local_cells.size())
   {
-    std::stringstream ostr;
-    ostr << "LocalCells attempted to access local cell " << cell_local_index
-         << " but index out of range [0, " << native_cells.size() - 1 << "].";
-    throw std::invalid_argument(ostr.str());
+    throw std::out_of_range("Local cell index out of range: " + std::to_string(cell_local_index) +
+                            " (max: " + std::to_string(local_cells.size() - 1) + ").");
   }
 
-  return *native_cells[cell_local_index];
+  return *local_cells[cell_local_index];
 }
 
 const Cell&
 LocalCellHandler::operator[](uint64_t cell_local_index) const
 {
-  if (native_cells.empty())
+  if (local_cells.empty())
   {
-    std::stringstream ostr;
-    ostr << "LocalCells attempted to access local cell " << cell_local_index
-         << " but there are no local cells. This normally indicates"
-         << " a partitioning problem.";
-    throw std::invalid_argument(ostr.str());
+    throw std::out_of_range("LocalCells attempted to access local cell " +
+                            std::to_string(cell_local_index) +
+                            ". Local cells are empty. Check the partitioning.");
   }
 
-  if (cell_local_index >= native_cells.size())
+  if (cell_local_index >= local_cells.size())
   {
-    std::stringstream ostr;
-    ostr << "LocalCells attempted to access local cell " << cell_local_index
-         << " but index out of range [0, " << native_cells.size() - 1 << "].";
-    throw std::invalid_argument(ostr.str());
+    throw std::out_of_range("Local cell index out of range: " + std::to_string(cell_local_index) +
+                            " (max: " + std::to_string(local_cells.size() - 1) + ").");
   }
 
-  return *native_cells[cell_local_index];
+  return *local_cells[cell_local_index];
 }
 
 } // namespace opensn

@@ -29,7 +29,7 @@ enum class CellType
   POINT = 99
 };
 
-/// Provides the text name associated with a cell type
+/// Provides the text name associated with a cell type.
 std::string CellTypeName(CellType type);
 
 /**
@@ -128,12 +128,6 @@ public:
 
   /// Provides string information of the cell.
   std::string ToString() const;
-
-  /**
-   * Recomputes the cell centroid and all face centroids assuming the mesh vertices have been
-   * transformed.
-   */
-  void RecomputeCentroidsAndNormals(const MeshContinuum& grid);
 };
 
 } // namespace opensn

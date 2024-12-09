@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/mesh/mesh.h"
+#include "framework/mesh/cell/cell.h"
 
 namespace opensn
 {

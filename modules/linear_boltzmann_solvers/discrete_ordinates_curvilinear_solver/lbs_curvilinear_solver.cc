@@ -225,12 +225,11 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
               const auto& vertex = grid_ptr_->vertices[v_id];
               if (std::abs(vertex[d]) > 1.0e-12)
               {
-                log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
-                                     "PerformInputChecks : "
-                                  << "mesh contains boundary faces with outward-oriented unit "
-                                  << "normal vector " << (-1 * unit_normal_vectors[d]).PrintS()
-                                  << " with vertices characterised by v(" << d << ") != 0.";
-                Exit(EXIT_FAILURE);
+                throw std::logic_error(
+                  "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks: "
+                  "Mesh contains boundary faces with outward-oriented unit normal vector " +
+                  (-1 * unit_normal_vectors[d]).PrintStr() + ", with vertices characterized by v(" +
+                  std::to_string(d) + ") != 0.");
               }
             }
             face_orthogonal = true;

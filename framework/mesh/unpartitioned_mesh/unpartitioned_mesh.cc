@@ -3,7 +3,6 @@
 
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/mesh/cell/cell.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -45,7 +44,7 @@ void
 UnpartitionedMesh::ComputeCentroids()
 {
   log.Log0Verbose1() << "Computing cell-centroids.";
-  for (auto cell : raw_cells_)
+  for (auto& cell : raw_cells_)
   {
     cell->centroid = Vector3(0.0, 0.0, 0.0);
     for (auto vid : cell->vertex_ids)
@@ -62,7 +61,7 @@ UnpartitionedMesh::CheckQuality()
   log.Log0Verbose1() << "Checking cell-center-to-face orientations";
   const Vector3 khat(0.0, 0.0, 1.0);
   size_t num_negative_volume_elements = 0;
-  for (auto cell : raw_cells_)
+  for (const auto& cell : raw_cells_)
   {
     if (cell->type == CellType::POLYGON)
     {
@@ -120,7 +119,7 @@ UnpartitionedMesh::CheckQuality()
 
   log.Log0Verbose1() << "Checking face sizes";
   size_t cell_id = 0;
-  for (auto cell : raw_cells_)
+  for (const auto& cell : raw_cells_)
   {
     if (cell->type == CellType::POLYGON)
     {
@@ -352,7 +351,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
     }   // for face
 
   num_bndry_faces = 0;
-  for (auto cell : raw_cells_)
+  for (const auto& cell : raw_cells_)
     for (auto& face : cell->faces)
       if (not face.has_neighbor)
         ++num_bndry_faces;
@@ -363,87 +362,6 @@ UnpartitionedMesh::BuildMeshConnectivity()
                      << num_bndry_faces;
 
   log.Log() << program_timer.GetTimeString() << " Done establishing cell connectivity.";
-}
-
-void
-UnpartitionedMesh::PushProxyCell(const std::string& type_str,
-                                 const std::string& sub_type_str,
-                                 int cell_num_faces,
-                                 int cell_material_id,
-                                 const std::vector<std::vector<uint64_t>>& proxy_faces)
-{
-  const std::string fname = __FUNCTION__;
-  CellType type;
-  if (type_str == "SLAB")
-    type = CellType::SLAB;
-  else if (type_str == "POLYGON")
-    type = CellType::POLYGON;
-  else if (type_str == "POLYHEDRON")
-    type = CellType::POLYHEDRON;
-  else
-    throw std::logic_error(fname + ": Unsupported cell primary type.");
-
-  CellType sub_type;
-  if (sub_type_str == "SLAB")
-    sub_type = CellType::SLAB;
-  else if (sub_type_str == "POLYGON")
-    sub_type = CellType::POLYGON;
-  else if (sub_type_str == "TRIANGLE")
-    sub_type = CellType::TRIANGLE;
-  else if (sub_type_str == "QUADRILATERAL")
-    sub_type = CellType::QUADRILATERAL;
-  else if (sub_type_str == "POLYHEDRON")
-    sub_type = CellType::POLYHEDRON;
-  else if (sub_type_str == "TETRAHEDRON")
-    sub_type = CellType::TETRAHEDRON;
-  else if (sub_type_str == "HEXAHEDRON")
-    sub_type = CellType::HEXAHEDRON;
-  else
-    throw std::logic_error(fname + ": Unsupported cell secondary type.");
-
-  auto cell = std::make_shared<LightWeightCell>(type, sub_type);
-
-  cell->material_id = cell_material_id;
-
-  // Filter cell-vertex-ids from faces
-  std::set<uint64_t> cell_vertex_id_set;
-  for (auto& proxy_face : proxy_faces)
-    for (uint64_t fvid : proxy_face)
-      cell_vertex_id_set.insert(fvid);
-
-  // Assign cell-vertex-ids
-  cell->vertex_ids.reserve(cell_vertex_id_set.size());
-  for (uint64_t cvid : cell_vertex_id_set)
-    cell->vertex_ids.push_back(cvid);
-
-  // Assign faces from proxy faces
-  cell->faces.reserve(cell_num_faces);
-  for (auto& proxy_face : proxy_faces)
-    cell->faces.emplace_back(proxy_face);
-
-  raw_cells_.push_back(cell);
-
-  if (type == CellType::SLAB)
-    SetDimension(1);
-  if (type == CellType::POLYGON)
-    SetDimension(2);
-  if (type == CellType::POLYHEDRON)
-    SetDimension(3);
-
-  mesh_type_ = UNSTRUCTURED;
-}
-
-void
-UnpartitionedMesh::CleanUp()
-{
-  vertices_.clear();
-  vertices_.shrink_to_fit();
-  raw_cells_.clear();
-  raw_cells_.shrink_to_fit();
-  raw_boundary_cells_.clear();
-  raw_boundary_cells_.shrink_to_fit();
-  vertex_cell_subscriptions_.clear();
-  vertex_cell_subscriptions_.shrink_to_fit();
 }
 
 } // namespace opensn

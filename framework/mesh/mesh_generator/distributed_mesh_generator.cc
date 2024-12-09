@@ -215,14 +215,14 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
   }
 
   // Number of cells and vertices
-  size_t num_cells = serial_data.Read<size_t>();
-  size_t num_vertices = serial_data.Read<size_t>();
+  auto num_cells = serial_data.Read<size_t>();
+  auto num_vertices = serial_data.Read<size_t>();
 
   // Cell data
   for (size_t i = 0; i < num_cells; ++i)
   {
     int cell_pid = serial_data.Read<int>();
-    uint64_t cell_gid = serial_data.Read<uint64_t>();
+    auto cell_gid = serial_data.Read<uint64_t>();
     auto type = serial_data.Read<CellType>();
     auto sub_type = serial_data.Read<CellType>();
 
@@ -233,15 +233,15 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     cell.centroid.z = serial_data.Read<double>();
     cell.material_id = serial_data.Read<int>();
 
-    size_t num_vids = serial_data.Read<size_t>();
+    auto num_vids = serial_data.Read<size_t>();
     for (size_t v = 0; v < num_vids; ++v)
       cell.vertex_ids.push_back(serial_data.Read<uint64_t>());
 
-    size_t num_faces = serial_data.Read<size_t>();
+    auto num_faces = serial_data.Read<size_t>();
     for (size_t f = 0; f < num_faces; ++f)
     {
       UnpartitionedMesh::LightWeightFace face;
-      size_t num_face_vids = serial_data.Read<size_t>();
+      auto num_face_vids = serial_data.Read<size_t>();
       for (size_t v = 0; v < num_face_vids; ++v)
         face.vertex_ids.push_back(serial_data.Read<uint64_t>());
 
@@ -256,7 +256,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
   // Vertex data
   for (size_t i = 0; i < num_vertices; ++i)
   {
-    uint64_t vid = serial_data.Read<uint64_t>();
+    auto vid = serial_data.Read<uint64_t>();
     Vector3 vertex;
     vertex.x = serial_data.Read<double>();
     vertex.y = serial_data.Read<double>();
@@ -283,7 +283,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
     const auto& [cell_pid, cell_global_id] = pidgid;
     auto cell = SetupCell(raw_cell, cell_global_id, cell_pid, STLVertexListHelper(vertices));
 
-    grid_ptr->cells.push_back(std::move(cell));
+    grid_ptr->cells.PushBack(std::move(cell));
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
