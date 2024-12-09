@@ -35,7 +35,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   const std::vector<int>& spls = spds.LocalSubgrid();
 
   // Initialize face categorization
-  num_face_categories_ = grid_face_histogram.NumberOfFaceHistogramBins();
+  num_face_categories_ = grid_face_histogram.GetNumberOfFaceHistogramBins();
   // TODO: Check if we can move this down
   local_psi_stride_.resize(num_face_categories_, 0);
   local_psi_max_elements_.resize(num_face_categories_, 0);
