@@ -27,14 +27,14 @@ FVDiffusionSolver::GetInputParameters()
 }
 
 InputParameters
-FVDiffusionSolver::OptionsBlock()
+FVDiffusionSolver::GetOptionsBlock()
 {
   InputParameters params = DiffusionSolverBase::GetOptionsBlock();
   return params;
 }
 
 InputParameters
-FVDiffusionSolver::BoundaryOptionsBlock()
+FVDiffusionSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
@@ -77,7 +77,7 @@ FVDiffusionSolver::SetOptions(const InputParameters& params)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
