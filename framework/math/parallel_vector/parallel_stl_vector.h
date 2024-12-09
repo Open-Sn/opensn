@@ -46,7 +46,7 @@ public:
    * Returns a direct const pointer to the memory array used internally by the vector to store its
    * owned elements
    */
-  const double* Data() const override;
+  const double* GetData() const override;
 
   /// Returns a constant reference to the local data of the vector.
   const std::vector<double>& GetLocalSTLData() const;

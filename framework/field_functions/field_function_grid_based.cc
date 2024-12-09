@@ -74,7 +74,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
     local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
 {
-  OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->LocalSize(),
+  OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->GetLocalSize(),
                           "Constructor called with incompatible size field vector.");
 
   ghosted_field_vector_->Set(field_vector);
@@ -120,7 +120,7 @@ FieldFunctionGridBased::GetGhostedFieldVector() const
 void
 FieldFunctionGridBased::UpdateFieldVector(const std::vector<double>& field_vector)
 {
-  OpenSnInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->LocalSize(),
+  OpenSnInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->GetLocalSize(),
                           "Attempted update with a vector of insufficient size.");
 
   ghosted_field_vector_->Set(field_vector);
