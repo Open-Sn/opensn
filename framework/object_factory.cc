@@ -16,7 +16,7 @@ ObjectFactory::GetInstance() noexcept
 }
 
 const std::map<std::string, ObjectFactory::ObjectRegistryEntry>&
-ObjectFactory::Registry() const
+ObjectFactory::GetRegistry() const
 {
   return object_registry_;
 }
