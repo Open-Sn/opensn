@@ -257,7 +257,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     const auto& uk_man = ff_ptr->GetUnknownManager();
     const auto& unknown = ff_ptr->GetUnknown();
     const auto& sdm = ff_ptr->discretization_;
-    const size_t num_comps = unknown.NumComponents();
+    const size_t num_comps = unknown.GetNumComponents();
 
     for (uint c = 0; c < num_comps; ++c)
     {

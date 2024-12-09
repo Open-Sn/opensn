@@ -49,7 +49,7 @@ public:
       num_moments_(num_moments),
       max_num_cell_dofs_(max_num_cell_dofs),
       save_angular_flux_(not destination_psi.empty()),
-      groupset_angle_group_stride_(groupset_.psi_uk_man_.NumberOfUnknowns() *
+      groupset_angle_group_stride_(groupset_.psi_uk_man_.GetNumberOfUnknowns() *
                                    groupset_.groups.size()),
       groupset_group_stride_(groupset_.groups.size()),
       destination_phi_(&destination_phi),

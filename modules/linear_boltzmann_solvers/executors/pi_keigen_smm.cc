@@ -1185,8 +1185,8 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
     const auto& cell = grid.cells[ghost_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
-      for (int u = 0; u < uk_man.NumberOfUnknowns(); ++u)
-        for (int c = 0; c < uk_man.unknowns[u].NumComponents(); ++c)
+      for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)
+        for (int c = 0; c < uk_man.unknowns[u].GetNumComponents(); ++c)
           ghost_ids.insert(pwld.MapDOF(cell, i, uk_man, u, c));
   }
   return {ghost_ids.begin(), ghost_ids.end()};
