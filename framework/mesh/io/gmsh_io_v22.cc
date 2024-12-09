@@ -50,7 +50,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_nodes))
     throw std::logic_error(fname + ": Failed to read the number of nodes.");
 
-  auto& vertices = mesh->Vertices();
+  auto& vertices = mesh->GetVertices();
   vertices.clear();
   vertices.resize(num_nodes);
 
@@ -197,8 +197,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     else if (element_type == 5) // 8-node hexahedron
       num_cell_nodes = 8;
 
-    auto& raw_boundary_cells = mesh->RawBoundaryCells();
-    auto& raw_cells = mesh->RawCells();
+    auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
+    auto& raw_cells = mesh->GetRawCells();
 
     // Make the cell on either the volume or the boundary
     std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
@@ -306,13 +306,13 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   std::set<int> material_ids_set_as_read;
   std::map<int, int> material_mapping;
 
-  for (auto& cell : mesh->RawCells())
+  for (auto& cell : mesh->GetRawCells())
     material_ids_set_as_read.insert(cell->material_id);
 
   std::set<int> boundary_ids_set_as_read;
   std::map<int, int> boundary_mapping;
 
-  for (auto& cell : mesh->RawBoundaryCells())
+  for (auto& cell : mesh->GetRawBoundaryCells())
     boundary_ids_set_as_read.insert(cell->material_id);
 
   {
@@ -325,10 +325,10 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       boundary_mapping.insert(std::make_pair(bndry_id, b++));
   }
 
-  for (auto& cell : mesh->RawCells())
+  for (auto& cell : mesh->GetRawCells())
     cell->material_id = material_mapping[cell->material_id];
 
-  for (auto& cell : mesh->RawBoundaryCells())
+  for (auto& cell : mesh->GetRawBoundaryCells())
     cell->material_id = boundary_mapping[cell->material_id];
 
   unsigned int dimension = (mesh_is_2D) ? 2 : 3;
@@ -339,8 +339,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   mesh->BuildMeshConnectivity();
 
   log.Log() << "Done processing " << options.file_name << ".\n"
-            << "Number of nodes read: " << mesh->Vertices().size() << "\n"
-            << "Number of cells read: " << mesh->RawCells().size();
+            << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
+            << "Number of cells read: " << mesh->GetRawCells().size();
 
   return mesh;
 }

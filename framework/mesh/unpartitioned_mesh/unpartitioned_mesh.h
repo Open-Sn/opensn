@@ -56,17 +56,17 @@ public:
   UnpartitionedMesh();
   ~UnpartitionedMesh();
 
-  unsigned int Dimension() const { return dim_; }
+  unsigned int GetDimension() const { return dim_; }
   void SetDimension(unsigned int dim) { dim_ = dim; }
 
-  const BoundBox& BoundingBox() const { return bound_box_; }
+  const BoundBox& GetBoundingBox() const { return bound_box_; }
   void ComputeBoundingBox();
 
   void SetType(MeshType type) { mesh_type_ = type; }
-  const MeshType& Type() const { return mesh_type_; }
+  const MeshType& GetType() const { return mesh_type_; }
 
   void SetExtruded(bool extruded) { extruded_ = extruded; }
-  bool Extruded() const { return extruded_; }
+  bool IsExtruded() const { return extruded_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
   {
@@ -76,17 +76,20 @@ public:
   void AddCell(const std::shared_ptr<LightWeightCell>& cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& RawCells() { return raw_cells_; }
-  const std::vector<std::shared_ptr<LightWeightCell>>& RawCells() const { return raw_cells_; }
+  std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() { return raw_cells_; }
+  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() const { return raw_cells_; }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& RawBoundaryCells() { return raw_boundary_cells_; }
-  const std::vector<std::shared_ptr<LightWeightCell>>& RawBoundaryCells() const
+  std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells()
+  {
+    return raw_boundary_cells_;
+  }
+  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells() const
   {
     return raw_boundary_cells_;
   }
 
-  const std::vector<Vector3>& Vertices() const { return vertices_; }
-  std::vector<Vector3>& Vertices() { return vertices_; }
+  const std::vector<Vector3>& GetVertices() const { return vertices_; }
+  std::vector<Vector3>& GetVertices() { return vertices_; }
 
   /// Establishes neighbor connectivity for the light-weight mesh.
   void BuildMeshConnectivity();
@@ -102,11 +105,11 @@ public:
 
   void AddBoundary(uint64_t id, const std::string& name);
 
-  const std::map<uint64_t, std::string>& BoundaryIDMap() const { return boundary_id_map_; }
-  std::map<uint64_t, std::string>& BoundaryIDMap() { return boundary_id_map_; }
+  const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
+  std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
 
   void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
-  const OrthoMeshAttributes& OrthoAttributes() const { return ortho_attrs_; }
+  const OrthoMeshAttributes& GetOrthoAttributes() const { return ortho_attrs_; }
 
 protected:
   /// Spatial mesh dimension

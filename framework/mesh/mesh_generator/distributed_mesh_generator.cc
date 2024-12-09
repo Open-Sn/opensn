@@ -85,8 +85,8 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t
                                                        int num_parts)
 {
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.RawCells();
-  const auto& raw_vertices = umesh.Vertices();
+  const auto& raw_cells = umesh.GetRawCells();
+  const auto& raw_vertices = umesh.GetVertices();
   ByteArray loc0_data;
 
   for (int pid = 0; pid < num_parts; ++pid)
@@ -127,17 +127,17 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t
     }
 
     // Basic mesh data
-    serial_data.Write<unsigned int>(umesh.Dimension());
-    serial_data.Write(static_cast<int>(umesh.Type()));
-    serial_data.Write(umesh.Extruded());
-    auto& ortho_attrs = umesh.OrthoAttributes();
+    serial_data.Write<unsigned int>(umesh.GetDimension());
+    serial_data.Write(static_cast<int>(umesh.GetType()));
+    serial_data.Write(umesh.IsExtruded());
+    auto& ortho_attrs = umesh.GetOrthoAttributes();
     serial_data.Write(ortho_attrs.Nx);
     serial_data.Write(ortho_attrs.Ny);
     serial_data.Write(ortho_attrs.Nz);
     serial_data.Write(raw_vertices.size());
 
     // Boundaries
-    const auto& bndry_map = umesh.BoundaryIDMap();
+    const auto& bndry_map = umesh.GetBoundaryIDMap();
     serial_data.Write(bndry_map.size());
     for (const auto& [bid, bname] : bndry_map)
     {

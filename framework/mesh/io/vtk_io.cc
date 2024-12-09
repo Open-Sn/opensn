@@ -396,14 +396,14 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vertices[p] == nullptr)
         throw std::logic_error(fname + ": Vertex pointer not assigned");
 
-    mesh->RawCells() = cells;
-    mesh->Vertices().reserve(total_point_count);
+    mesh->GetRawCells() = cells;
+    mesh->GetVertices().reserve(total_point_count);
     for (auto& vertex_ptr : vertices)
-      mesh->Vertices().push_back(*vertex_ptr);
+      mesh->GetVertices().push_back(*vertex_ptr);
   } // If global-ids available
   else
   {
-    auto& raw_cells = mesh->RawCells();
+    auto& raw_cells = mesh->GetRawCells();
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
@@ -436,7 +436,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
       vertex *= scale;
 
-      mesh->Vertices().emplace_back(point[0], point[1], point[2]);
+      mesh->GetVertices().emplace_back(point[0], point[1], point[2]);
     }
   } // if no global-ids
 
@@ -449,7 +449,7 @@ void
 SetMaterialIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh,
                        const std::vector<int>& material_ids)
 {
-  auto& raw_cells = mesh->RawCells();
+  auto& raw_cells = mesh->GetRawCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
     raw_cells[c]->material_id = material_ids[c];
@@ -460,7 +460,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
                          std::vector<vtkUGridPtrAndName>& bndry_grid_blocks)
 {
   const double EPSILON = 1.0e-12;
-  auto& raw_cells = mesh->RawCells();
+  auto& raw_cells = mesh->GetRawCells();
   // Build boundary faces
   std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells)
@@ -494,7 +494,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 
       bool map_found = false;
       for (const auto vid : bndry_vids_set)
-        if ((point - mesh->Vertices()[vid]).NormSquare() < EPSILON)
+        if ((point - mesh->GetVertices()[vid]).NormSquare() < EPSILON)
         {
           vertex_map[p] = vid;
           map_found = true;

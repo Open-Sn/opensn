@@ -170,7 +170,7 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
 std::vector<int64_t>
 MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions)
 {
-  const auto& raw_cells = input_umesh.RawCells();
+  const auto& raw_cells = input_umesh.GetRawCells();
   const size_t num_raw_cells = raw_cells.size();
 
   OpenSnLogicalErrorIf(num_raw_cells == 0, "No cells in final input mesh");
@@ -256,11 +256,11 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
   // Convert mesh
   auto grid_ptr = MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() = input_umesh->BoundaryIDMap();
+  grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
 
   auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
   size_t cell_globl_id = 0;
-  for (auto& raw_cell : input_umesh->RawCells())
+  for (auto& raw_cell : input_umesh->GetRawCells())
   {
     if (CellHasLocalScope(
           opensn::mpi_comm.rank(), *raw_cell, cell_globl_id, vertex_subs, cell_pids))
@@ -268,10 +268,10 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
       auto cell = SetupCell(*raw_cell,
                             cell_globl_id,
                             cell_pids[cell_globl_id],
-                            STLVertexListHelper(input_umesh->Vertices()));
+                            STLVertexListHelper(input_umesh->GetVertices()));
 
       for (uint64_t vid : cell->vertex_ids)
-        grid_ptr->vertices.Insert(vid, input_umesh->Vertices()[vid]);
+        grid_ptr->vertices.Insert(vid, input_umesh->GetVertices()[vid]);
 
       grid_ptr->cells.PushBack(std::move(cell));
     }
@@ -279,12 +279,12 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
     ++cell_globl_id;
   } // for raw_cell
 
-  grid_ptr->SetDimension(input_umesh->Dimension());
-  grid_ptr->SetType(input_umesh->Type());
-  grid_ptr->SetExtruded(input_umesh->Extruded());
-  grid_ptr->SetOrthoAttributes(input_umesh->OrthoAttributes());
+  grid_ptr->SetDimension(input_umesh->GetDimension());
+  grid_ptr->SetType(input_umesh->GetType());
+  grid_ptr->SetExtruded(input_umesh->IsExtruded());
+  grid_ptr->SetOrthoAttributes(input_umesh->GetOrthoAttributes());
 
-  grid_ptr->SetGlobalVertexCount(input_umesh->Vertices().size());
+  grid_ptr->SetGlobalVertexCount(input_umesh->GetVertices().size());
 
   ComputeAndPrintStats(*grid_ptr);
 
