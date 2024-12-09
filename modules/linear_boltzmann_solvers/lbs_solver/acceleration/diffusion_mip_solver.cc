@@ -101,7 +101,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         for (size_t j = 0; j < num_nodes; ++j)
         {
           double entry_aij = 0.0;
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
           {
             entry_aij += Dg * fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
                          fe_vol_data.JxW(qp);
@@ -118,7 +118,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         if (source_function_)
         {
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
@@ -176,7 +176,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
               double aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                        fe_srf_data.JxW(qp);
 
@@ -197,7 +197,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) *
                            fe_srf_data.JxW(qp);
               const double aij = -0.5 * Dg * n_f.Dot(vec_aij);
@@ -215,7 +215,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             for (int j = 0; j < num_nodes; ++j)
             {
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) *
                            fe_srf_data.JxW(qp);
               const double aij = -0.5 * Dg * n_f.Dot(vec_aij);
@@ -271,7 +271,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 const int jm = cell_mapping.MapFaceNode(f, fj);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                          fe_srf_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
@@ -279,7 +279,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   aij_bc_value = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij_bc_value += kappa *
                                     ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
@@ -301,7 +301,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               for (size_t j = 0; j < num_nodes; ++j)
               {
                 Vector3 vec_aij;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   vec_aij += fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                fe_srf_data.JxW(qp) +
                              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
@@ -313,7 +313,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   Vector3 vec_aij_mms;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
@@ -348,7 +348,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
                   double aij = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                            fe_srf_data.JxW(qp);
                   aij *= (aval / bval);
@@ -360,7 +360,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               if (std::fabs(fval) >= 1.0e-12)
               {
                 double rhs_val = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
                 rhs_val *= (fval / bval);
 
@@ -448,7 +448,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
         if (not source_function_)
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            for (size_t qp : fe_vol_data.QuadraturePointIndices())
+            for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             {
               entry_rhs_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) *
                              fe_vol_data.JxW(qp) * qg[j];
@@ -456,7 +456,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
           }   // for j
         else
         {
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
@@ -503,7 +503,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 const int jm = cell_mapping.MapFaceNode(f, fj);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                          fe_srf_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
@@ -511,7 +511,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   aij_bc_value = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij_bc_value += kappa * source_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                                     fe_srf_data.JxW(qp);
@@ -531,7 +531,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               for (size_t j = 0; j < num_nodes; ++j)
               {
                 Vector3 vec_aij;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   vec_aij += fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                fe_srf_data.JxW(qp) +
                              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
@@ -543,7 +543,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   Vector3 vec_aij_mms;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
@@ -571,7 +571,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               if (std::fabs(fval) >= 1.0e-12)
               {
                 double rhs_val = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
                 rhs_val *= (fval / bval);
 

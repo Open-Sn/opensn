@@ -152,7 +152,7 @@ SimTest91_PWLD()
 
     for (unsigned int i = 0; i < num_nodes; ++i)
       for (unsigned int j = 0; j < num_nodes; ++j)
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_shapeI_gradshapeJ[i][j] +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeGrad(j, qp) * fe_vol_data.JxW(qp);
@@ -172,7 +172,7 @@ SimTest91_PWLD()
       DenseMatrix<double> IntS_shapeI_shapeJ(num_nodes, num_nodes, 0.0);
       for (unsigned int i = 0; i < num_nodes; ++i)
         for (unsigned int j = 0; j < num_nodes; ++j)
-          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
             IntS_shapeI_shapeJ(i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
 

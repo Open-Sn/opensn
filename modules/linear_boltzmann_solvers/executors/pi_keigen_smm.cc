@@ -891,7 +891,7 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
       {
         for (int k = 0; k < dimension_; ++k)
           for (int l = 0; l < dimension_; ++l)
-            for (const auto& qp : qp_data.QuadraturePointIndices())
+            for (const auto& qp : qp_data.GetQuadraturePointIndices())
               K(i, j, k, l) += (*swf)(qp_data.QPointXYZ(qp)) *
                                qp_data.ShapeGrad(i, qp)[dimension_ > 1 ? k : 2] *
                                qp_data.ShapeGrad(j, qp)[dimension_ > 1 ? l : 2] * qp_data.JxW(qp);

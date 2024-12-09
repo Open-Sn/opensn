@@ -313,7 +313,7 @@ DFEMDiffusionSolver::Execute()
       {
         const int64_t jmap = sdm.MapDOF(cell, j);
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
@@ -324,7 +324,7 @@ DFEMDiffusionSolver::Execute()
         MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
       } // for j
       double entry_rhs_i = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         entry_rhs_i += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       VecSetValue(b_, imap, entry_rhs_i, ADD_VALUES);
@@ -377,7 +377,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             double aij = 0.0;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               aij +=
                 Ckappa *
                 (d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm +
@@ -412,7 +412,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             Vector3 vec_aij;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) *
                          fe_srf_data.JxW(qp);
@@ -438,7 +438,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jmap = sdm.MapDOF(cell, j);
 
             Vector3 vec_aij;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) *
                          fe_srf_data.JxW(qp);
@@ -482,7 +482,7 @@ DFEMDiffusionSolver::Execute()
                 const int64_t jr = sdm.MapDOF(cell, j);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                          fe_srf_data.JxW(qp);
                 aij *= (aval / bval);
@@ -494,7 +494,7 @@ DFEMDiffusionSolver::Execute()
             if (std::fabs(fval) >= 1.0e-12)
             {
               double rhs_val = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               rhs_val *= (fval / bval);
 
@@ -526,7 +526,7 @@ DFEMDiffusionSolver::Execute()
               const int64_t jmmap = sdm.MapDOF(cell, jm);
 
               double aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 aij += Ckappa * d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm *
                        fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                        fe_srf_data.JxW(qp);
@@ -551,7 +551,7 @@ DFEMDiffusionSolver::Execute()
               const int64_t jmap = sdm.MapDOF(cell, j);
 
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) +
                             fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp)) *
                            fe_srf_data.JxW(qp) *

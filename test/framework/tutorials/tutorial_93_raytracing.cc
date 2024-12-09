@@ -275,7 +275,7 @@ SimTest93_RayTracing()
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     DenseMatrix<double> M(num_nodes, num_nodes, 0.0);
-    for (auto qp : fe_vol_data.QuadraturePointIndices())
+    for (auto qp : fe_vol_data.GetQuadraturePointIndices())
       for (size_t i = 0; i < num_nodes; ++i)
         for (size_t j = 0; j < num_nodes; ++j)
           M(i, j) +=

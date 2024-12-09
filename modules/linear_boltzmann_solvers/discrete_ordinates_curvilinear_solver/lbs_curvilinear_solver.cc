@@ -355,7 +355,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_shapeI_shapeJ(i, j) += swf(fe_vol_data.QPointXYZ(qp)) *
                                       fe_vol_data.ShapeValue(i, qp) *

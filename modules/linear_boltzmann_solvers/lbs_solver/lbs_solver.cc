@@ -1094,7 +1094,7 @@ LBSSolver::ComputeUnitIntegrals()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_gradshapeI_gradshapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) *
@@ -1111,7 +1111,7 @@ LBSSolver::ComputeUnitIntegrals()
         }                                                        // for qp
       }                                                          // for j
 
-      for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+      for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) +=
           swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -1130,7 +1130,7 @@ LBSSolver::ComputeUnitIntegrals()
       {
         for (unsigned int j = 0; j < cell_num_nodes; ++j)
         {
-          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
           {
             IntS_shapeI_shapeJ[f](i, j) += swf(fe_srf_data.QPointXYZ(qp)) *
                                            fe_srf_data.ShapeValue(i, qp) *
@@ -1141,7 +1141,7 @@ LBSSolver::ComputeUnitIntegrals()
           } // for qp
         }   // for j
 
-        for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+        for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) +=
             swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);

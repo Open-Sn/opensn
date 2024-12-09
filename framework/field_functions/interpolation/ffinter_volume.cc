@@ -91,7 +91,7 @@ FieldFunctionInterpolationVolume::Execute()
       local_min = std::fmin(node_dof_values[i], local_min);
     }
 
-    for (const size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (const size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       double ff_value = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)

@@ -118,7 +118,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
       node_dof_values[i] = field_data[imap];
     } // for i
 
-    for (const size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (const size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       // phi_h = sum_j b_j phi_j
       double ff_value = 0.0;

@@ -96,9 +96,9 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
     // Assemble continuous kernels
     {
-      const auto& shape = qp_data.ShapeValues();
-      const auto& shape_grad = qp_data.ShapeGradValues();
-      const auto& JxW = qp_data.JxW_Values();
+      const auto& shape = qp_data.GetShapeValues();
+      const auto& shape_grad = qp_data.GetShapeGradValues();
+      const auto& JxW = qp_data.GetJxWValues();
       for (size_t i = 0; i < num_nodes; ++i)
       {
         if (bndry_nodes.find(i) != bndry_nodes.end())
@@ -108,12 +108,12 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
           if (bndry_nodes.find(j) != bndry_nodes.end())
             continue;
           double entry_aij = 0.0;
-          for (size_t qp : qp_data.QuadraturePointIndices())
+          for (size_t qp : qp_data.GetQuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
 
           Acell(i, j) = entry_aij;
         } // for j
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : qp_data.GetQuadraturePointIndices())
           cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
     }   // continuous kernels
@@ -165,7 +165,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               aij +=
                 kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
 
@@ -197,7 +197,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
@@ -225,7 +225,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
@@ -260,7 +260,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               aij +=
                 kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
             double aij_bc_value = aij * bc_value;
@@ -284,7 +284,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                          fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -D * n_f.Dot(vec_aij);

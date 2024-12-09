@@ -79,14 +79,14 @@ SimTest04_PWLC()
       for (size_t j = 0; j < num_nodes; ++j)
       {
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij +=
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
       {
         double res = MMS_q(fe_vol_data.QPointXYZ(qp))[0];
         cell_rhs(i) += res * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -202,7 +202,7 @@ SimTest04_PWLC()
     } // for j
 
     // Quadrature loop
-    for (size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       double phi_fem = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)

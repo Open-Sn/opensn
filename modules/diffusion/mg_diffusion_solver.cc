@@ -629,7 +629,7 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
     for (size_t i = 0; i < num_nodes; ++i)
     {
       double vol_frac_shape_i = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         vol_frac_shape_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       vol_frac_shape_i /= cell_mapping.GetCellVolume();
       VF_[counter][i] = vol_frac_shape_i;
@@ -761,7 +761,7 @@ MGDiffusionSolver::AssembleAbext()
       {
         double entry_mij = 0.0;
         double entry_kij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_mij +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
@@ -776,7 +776,7 @@ MGDiffusionSolver::AssembleAbext()
           Acell[num_groups_](i, j) = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
       } // for j
       double entry_rhsi = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       for (uint g = 0; g < num_groups_; ++g)
         rhs_cell[g](i) = entry_rhsi * (qext->source_value_g[g]);
@@ -829,7 +829,7 @@ MGDiffusionSolver::AssembleAbext()
               const uint i = cell_mapping.MapFaceNode(f, fi);
 
               double entry_rhsi = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               if (g < num_groups_) // check due to two-grid
                 rhs_cell[g](i) += fval[g] / bval[g] * entry_rhsi;
@@ -838,7 +838,7 @@ MGDiffusionSolver::AssembleAbext()
               {
                 const uint j = cell_mapping.MapFaceNode(f, fj);
                 double entry_aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                                fe_srf_data.JxW(qp);
                 Acell[g](i, j) += aval[g] / bval[g] * entry_aij;
@@ -1027,7 +1027,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
 
             // get flux at node j
             const double flxj_gp = xlocal[jmap];
-            for (size_t qp : fe_vol_data.QuadraturePointIndices())
+            for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
               inscatter_g += sigma_sm * flxj_gp * fe_vol_data.ShapeValue(i, qp) *
                              fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
           } // for j
@@ -1099,7 +1099,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
 
               // get flux at node j
               const double delta_flxj_gp = xlocal[jmap] - xlocal_old[jmap];
-              for (size_t qp : fe_vol_data.QuadraturePointIndices())
+              for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
                 inscatter_g += sigma_sm * delta_flxj_gp * fe_vol_data.ShapeValue(i, qp) *
                                fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
             } // for j

@@ -316,7 +316,7 @@ CFEMDiffusionSolver::Execute()
       for (size_t j = 0; j < num_nodes; ++j)
       {
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
@@ -326,7 +326,7 @@ CFEMDiffusionSolver::Execute()
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         cell_rhs(i) += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
@@ -368,7 +368,7 @@ CFEMDiffusionSolver::Execute()
           const uint i = cell_mapping.MapFaceNode(f, fi);
 
           double entry_rhsi = 0.0;
-          for (size_t qp : fe_srf_data.QuadraturePointIndices())
+          for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
             entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
           cell_rhs(i) += fval / bval * entry_rhsi;
 
@@ -380,7 +380,7 @@ CFEMDiffusionSolver::Execute()
               const uint j = cell_mapping.MapFaceNode(f, fj);
 
               double entry_aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                              fe_srf_data.JxW(qp);
               Acell(i, j) += aval / bval * entry_aij;

@@ -70,7 +70,7 @@ acceleration_Diffusion_CFEM()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_gradshapeI_gradshapeJ(i, j) +=
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
@@ -82,7 +82,7 @@ acceleration_Diffusion_CFEM()
         }                                                  // for qp
       }                                                    // for j
 
-      for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+      for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
@@ -100,7 +100,7 @@ acceleration_Diffusion_CFEM()
       {
         for (unsigned int j = 0; j < cell_num_nodes; ++j)
         {
-          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
           {
             IntS_shapeI_shapeJ[f](i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
@@ -109,7 +109,7 @@ acceleration_Diffusion_CFEM()
           } // for qp
         }   // for j
 
-        for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+        for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp

@@ -28,7 +28,7 @@ public:
   {
   }
 
-  const std::vector<unsigned int>& QuadraturePointIndices() const;
+  const std::vector<unsigned int>& GetQuadraturePointIndices() const;
 
   Vector3 QPointXYZ(unsigned int qp) const;
 
@@ -36,19 +36,19 @@ public:
 
   Vector3 ShapeGrad(unsigned int i, unsigned int qp) const;
 
-  const std::vector<Vector3>& QPointsXYZ() const;
+  const std::vector<Vector3>& GetQPointsXYZ() const;
 
-  const std::vector<std::vector<double>>& ShapeValues() const;
+  const std::vector<std::vector<double>>& GetShapeValues() const;
 
-  const std::vector<std::vector<Vector3>>& ShapeGradValues() const;
+  const std::vector<std::vector<Vector3>>& GetShapeGradValues() const;
 
-  const std::vector<double>& JxW_Values() const;
+  const std::vector<double>& GetJxWValues() const;
 
   double JxW(unsigned int qp) const;
 
   int FaceDofMapping(size_t face, size_t face_node_index) const;
 
-  size_t NumNodes() const;
+  size_t GetNumNodes() const;
 
 private:
   /// qp index only
@@ -91,7 +91,7 @@ public:
 
   Vector3 Normal(unsigned int qp) const;
 
-  const std::vector<Vector3>& Normals() const;
+  const std::vector<Vector3>& GetNormals() const;
 
 private:
   /// node i, then qp
