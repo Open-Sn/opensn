@@ -22,14 +22,14 @@ LBSSolverIO::WriteAngularFluxes(
 
   // Select source vector
   std::vector<std::vector<double>>& src =
-    opt_src.has_value() ? opt_src.value().get() : lbs_solver.PsiNewLocal();
+    opt_src.has_value() ? opt_src.value().get() : lbs_solver.GetPsiNewLocal();
 
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
-  const auto& groupsets = lbs_solver.Groupsets();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
+  const auto& groupsets = lbs_solver.GetGroupsets();
 
   auto num_local_cells = grid.local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
@@ -115,7 +115,7 @@ LBSSolverIO::ReadAngularFluxes(
 
   // Select destination vector
   std::vector<std::vector<double>>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PsiNewLocal();
+    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.GetPsiNewLocal();
 
   log.Log() << "Reading angular flux file from " << file_base;
 
@@ -128,9 +128,9 @@ LBSSolverIO::ReadAngularFluxes(
   H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
-  const auto& groupsets = lbs_solver.Groupsets();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
+  const auto& groupsets = lbs_solver.GetGroupsets();
 
   const auto num_local_nodes = discretization.GetNumLocalNodes();
   const auto num_groupsets = groupsets.size();

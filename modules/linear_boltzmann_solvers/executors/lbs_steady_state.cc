@@ -57,10 +57,10 @@ SteadyStateSolver::Execute()
   auto& ags_solver = *lbs_solver_->GetAGSSolver();
   ags_solver.Solve();
 
-  if (lbs_solver_->Options().use_precursors)
+  if (lbs_solver_->GetOptions().use_precursors)
     lbs_solver_->ComputePrecursors();
 
-  if (lbs_solver_->Options().adjoint)
+  if (lbs_solver_->GetOptions().adjoint)
     lbs_solver_->ReorientAdjointSolution();
 
   lbs_solver_->UpdateFieldFunctions();

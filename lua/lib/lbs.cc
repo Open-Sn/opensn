@@ -17,9 +17,9 @@ LBSGetScalarFieldFunctionList(std::shared_ptr<LBSSolver> lbs_solver)
   // Building table of handles
   std::vector<std::shared_ptr<FieldFunctionGridBased>> fflist;
   // Flux moments first
-  for (int g = 0; g < lbs_solver->NumGroups(); g++)
+  for (int g = 0; g < lbs_solver->GetNumGroups(); g++)
   {
-    for (int m = 0; m < lbs_solver->NumMoments(); m++)
+    for (int m = 0; m < lbs_solver->GetNumMoments(); m++)
     {
       auto ff = lbs_solver->MapPhiFieldFunction(g, m);
       auto local_ff = lbs_solver->GetFieldFunctions()[ff];
@@ -49,7 +49,7 @@ LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesSolver> solver,
       bndry_ids.push_back(supported_boundary_names.at(name));
   }
   else
-    bndry_ids = solver->Grid().GetDomainUniqueBoundaryIDs();
+    bndry_ids = solver->GetGrid().GetDomainUniqueBoundaryIDs();
 
   // Compute the leakage
   const auto leakage = solver->ComputeLeakage(bndry_ids);
@@ -82,13 +82,13 @@ LBSReadFluxMomentsAndMakeSourceMoments(std::shared_ptr<LBSSolver> lbs_solver,
                                        bool single_file_flag)
 {
   LBSSolverIO::ReadFluxMoments(
-    *lbs_solver, file_base, single_file_flag, lbs_solver->ExtSrcMomentsLocal());
+    *lbs_solver, file_base, single_file_flag, lbs_solver->GetExtSrcMomentsLocal());
 
   opensn::log.Log() << "Making source moments from flux file.";
-  auto temp_phi = lbs_solver->PhiOldLocal();
-  lbs_solver->PhiOldLocal() = lbs_solver->ExtSrcMomentsLocal();
-  lbs_solver->ExtSrcMomentsLocal() = lbs_solver->MakeSourceMomentsFromPhi();
-  lbs_solver->PhiOldLocal() = temp_phi;
+  auto temp_phi = lbs_solver->GetPhiOldLocal();
+  lbs_solver->GetPhiOldLocal() = lbs_solver->GetExtSrcMomentsLocal();
+  lbs_solver->GetExtSrcMomentsLocal() = lbs_solver->MakeSourceMomentsFromPhi();
+  lbs_solver->GetPhiOldLocal() = temp_phi;
 }
 
 void
@@ -97,7 +97,7 @@ LBSReadSourceMoments(std::shared_ptr<LBSSolver> lbs_solver,
                      bool single_file_flag)
 {
   LBSSolverIO::ReadFluxMoments(
-    *lbs_solver, file_base, single_file_flag, lbs_solver->ExtSrcMomentsLocal());
+    *lbs_solver, file_base, single_file_flag, lbs_solver->GetExtSrcMomentsLocal());
 }
 
 void

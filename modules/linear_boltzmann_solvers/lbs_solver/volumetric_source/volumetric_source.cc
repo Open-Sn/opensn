@@ -78,7 +78,7 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
 {
   // Set the source strength vector
   if (not function_ and not strength_.empty())
-    if (strength_.size() != lbs_solver.NumGroups())
+    if (strength_.size() != lbs_solver.GetNumGroups())
       throw std::invalid_argument("The number of groups in the source strength vector must "
                                   "match the number of groups in the solver the source is "
                                   "attached to.");
@@ -88,7 +88,7 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
   if (logvol_ and block_ids_.empty())
   {
     std::set<int> blk_ids;
-    for (const auto& cell : lbs_solver.Grid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid().local_cells)
       if (logvol_->Inside(cell.centroid))
       {
         blk_ids.insert(cell.material_id);
@@ -97,13 +97,13 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
   }
   else if (not logvol_ and not block_ids_.empty())
   {
-    for (const auto& cell : lbs_solver.Grid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid().local_cells)
       if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
         subscribers_.push_back(cell.local_id);
   }
   else
   {
-    for (const auto& cell : lbs_solver.Grid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid().local_cells)
       if (logvol_->Inside(cell.centroid) and
           std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
         subscribers_.push_back(cell.local_id);

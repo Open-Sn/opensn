@@ -34,17 +34,17 @@ ComputePointwisePhiChange(
 {
   if (groupset_ids.empty())
   {
-    groupset_ids.resize(lbs_solver.Groupsets().size());
+    groupset_ids.resize(lbs_solver.GetGroupsets().size());
     std::iota(groupset_ids.begin(), groupset_ids.end(), 0);
   }
 
-  auto& phi_new = lbs_solver.PhiNewLocal();
+  auto& phi_new = lbs_solver.GetPhiNewLocal();
   std::vector<double>& phi_old =
-    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.PhiOldLocal();
+    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.GetPhiOldLocal();
 
   auto grid_ptr = GetCurrentMesh();
   auto& cell_transport_views = lbs_solver.GetCellTransportViews();
-  auto num_moments = lbs_solver.NumMoments();
+  auto num_moments = lbs_solver.GetNumMoments();
 
   double pw_change = 0.0;
   for (const auto& cell : grid_ptr->local_cells)
@@ -54,7 +54,7 @@ ComputePointwisePhiChange(
     {
       for (auto id : groupset_ids)
       {
-        auto& groupset = lbs_solver.Groupsets()[id];
+        auto& groupset = lbs_solver.GetGroupsets()[id];
         auto gsi = groupset.groups.front().id;
         for (auto g = 0; g < groupset.groups.size(); ++g)
         {
@@ -85,9 +85,9 @@ ComputeL2PhiChange(LBSSolver& lbs_solver,
                    std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old)
 {
   double norm = 0.0;
-  auto& phi_new = lbs_solver.PhiNewLocal();
+  auto& phi_new = lbs_solver.GetPhiNewLocal();
   std::vector<double>& phi_old =
-    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.PhiOldLocal();
+    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.GetPhiOldLocal();
 
   for (auto i = 0; i < phi_new.size(); ++i)
   {

@@ -224,7 +224,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     const auto& user_bsrc_params = params.GetParam("boundary");
     for (int p = 0; p < user_bsrc_params.GetNumParameters(); ++p)
     {
-      auto bsrc_params = LBSSolver::BoundaryOptionsBlock();
+      auto bsrc_params = LBSSolver::GetBoundaryOptionsBlock();
       bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));
       SetBoundarySourceOptions(bsrc_params);
     }
@@ -254,11 +254,11 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                             " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
-  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->NumGroups(),
+  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->GetNumGroups(),
                           "The number of material source values and groups "
                           "in the underlying solver do not match. "
                           "Expected " +
-                            std::to_string(lbs_solver_->NumGroups()) + " but got " +
+                            std::to_string(lbs_solver_->GetNumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
 
   material_sources_[matid] = values;
@@ -315,11 +315,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = lbs_solver_->Grid();
-  const auto& discretization = lbs_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& discretization = lbs_solver_->GetSpatialDiscretization();
   const auto& transport_views = lbs_solver_->GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
-  const auto num_groups = lbs_solver_->NumGroups();
+  const auto num_groups = lbs_solver_->GetNumGroups();
 
   double local_response = 0.0;
 
@@ -351,7 +351,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   if (not boundary_sources_.empty())
   {
     size_t gs = 0;
-    for (const auto& groupset : lbs_solver_->Groupsets())
+    for (const auto& groupset : lbs_solver_->GetGroupsets())
     {
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;

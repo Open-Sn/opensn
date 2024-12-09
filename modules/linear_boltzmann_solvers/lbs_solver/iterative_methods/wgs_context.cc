@@ -39,9 +39,9 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
     lbs_solver, groupset, action_vector, PhiSTLOption::PHI_OLD);
 
   // Setting the source using updated phi_old
-  auto& q_moments_local = lbs_solver.QMomentsLocal();
+  auto& q_moments_local = lbs_solver.GetQMomentsLocal();
   q_moments_local.assign(q_moments_local.size(), 0.0);
-  set_source_function(groupset, q_moments_local, lbs_solver.PhiOldLocal(), lhs_src_scope);
+  set_source_function(groupset, q_moments_local, lbs_solver.GetPhiOldLocal(), lhs_src_scope);
 
   // Apply transport operator
   gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);

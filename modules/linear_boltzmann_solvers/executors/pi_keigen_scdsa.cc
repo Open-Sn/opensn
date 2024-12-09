@@ -78,7 +78,7 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
     diff_accel_diffusion_petsc_options_(
       params.GetParamValue<std::string>("diff_accel_diffusion_petsc_options"))
 {
-  if (lbs_solver_->Groupsets().size() != 1)
+  if (lbs_solver_->GetGroupsets().size() != 1)
     throw std::logic_error("The SCDSA k-eigenvalue executor is only implemented for "
                            "problems with a single groupset.");
 
@@ -104,14 +104,14 @@ PowerIterationKEigenSCDSA::Initialize()
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
   // Make boundary conditions
-  auto bcs = TranslateBCs(lbs_solver_->SweepBoundaries(), true);
+  auto bcs = TranslateBCs(lbs_solver_->GetSweepBoundaries(), true);
 
   // Make xs map
   auto matid_2_mgxs_map = PackGroupsetXS(
     lbs_solver_->GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
-  const auto& sdm = lbs_solver_->SpatialDiscretization();
+  const auto& sdm = lbs_solver_->GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
   if (diffusion_solver_sdm_ == "pwld")
@@ -137,11 +137,11 @@ PowerIterationKEigenSCDSA::Initialize()
                                                               false,
                                                               true);
     requires_ghosts_ = true;
-    lbs_pwld_ghost_info_ =
-      MakePWLDVecGhostCommInfo(lbs_solver_->SpatialDiscretization(), lbs_solver_->UnknownManager());
+    lbs_pwld_ghost_info_ = MakePWLDVecGhostCommInfo(lbs_solver_->GetSpatialDiscretization(),
+                                                    lbs_solver_->GetUnknownManager());
 
     const auto& cfem_sdm = *continuous_sdm_ptr_;
-    const auto ghost_dof_ids = cfem_sdm.GetGhostDOFIndices(lbs_solver_->UnknownManager());
+    const auto ghost_dof_ids = cfem_sdm.GetGhostDOFIndices(lbs_solver_->GetUnknownManager());
   }
 
   auto& ds = diffusion_solver_;
@@ -299,7 +299,7 @@ PowerIterationKEigenSCDSA::Execute()
       converged = true;
 
     // Print iteration summary
-    if (lbs_solver->Options().verbose_outer_iterations)
+    if (lbs_solver->GetOptions().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
       k_iter_info << program_timer.GetTimeString() << " "
@@ -324,10 +324,10 @@ PowerIterationKEigenSCDSA::Execute()
             << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op << ")"
             << "\n";
 
-  if (lbs_solver->Options().use_precursors)
+  if (lbs_solver->GetOptions().use_precursors)
   {
     lbs_solver->ComputePrecursors();
-    Scale(lbs_solver->PrecursorsNewLocal(), 1.0 / k_eff_);
+    Scale(lbs_solver->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
   lbs_solver->UpdateFieldFunctions();
@@ -339,10 +339,10 @@ std::vector<double>
 PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
                                         const std::vector<double>& phi_in)
 {
-  const auto& lbs_sdm = lbs_solver_->SpatialDiscretization();
+  const auto& lbs_sdm = lbs_solver_->GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_solver_->UnknownManager();
+  const auto& phi_uk_man = lbs_solver_->GetUnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
@@ -358,7 +358,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
 
   std::vector<double> output_phi_local(diff_num_local_dofs, 0.0);
 
-  for (const auto& cell : lbs_solver_->Grid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -386,10 +386,10 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
                                            const std::vector<double>& input,
                                            std::vector<double>& output)
 {
-  const auto& lbs_sdm = lbs_solver_->SpatialDiscretization();
+  const auto& lbs_sdm = lbs_solver_->GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_solver_->UnknownManager();
+  const auto& phi_uk_man = lbs_solver_->GetUnknownManager();
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
   const size_t diff_num_local_dofs = requires_ghosts_
@@ -398,7 +398,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
-  for (const auto& cell : lbs_solver_->Grid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -433,7 +433,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
   // Build a list of global ids
   std::set<int64_t> global_dof_ids_set;
 
-  const auto& grid = lbs_solver_->Grid();
+  const auto& grid = lbs_solver_->GetGrid();
   const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
   for (const auto global_id : ghost_cell_ids)
   {

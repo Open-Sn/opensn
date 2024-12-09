@@ -72,9 +72,9 @@ SweepWGSContext::GetSystemSize()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
-  const size_t local_node_count = lbs_solver.LocalNodeCount();
-  const size_t globl_node_count = lbs_solver.GlobalNodeCount();
-  const size_t num_moments = lbs_solver.NumMoments();
+  const size_t local_node_count = lbs_solver.GetLocalNodeCount();
+  const size_t globl_node_count = lbs_solver.GetGlobalNodeCount();
+  const size_t num_moments = lbs_solver.GetNumMoments();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
@@ -106,7 +106,7 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   ++counter_applications_of_inv_op;
   const bool use_bndry_source_flag =
-    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.Options().use_src_moments);
+    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.GetOptions().use_src_moments);
 
   sweep_scheduler.SetBoundarySourceActiveFlag(use_bndry_source_flag);
 
@@ -141,8 +141,9 @@ SweepWGSContext::PostSolveCallback()
        groupset.max_iterations > 1))
   {
     const auto scope = lhs_src_scope | rhs_src_scope;
-    set_source_function(groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
-    sweep_scheduler.SetDestinationPhi(lbs_solver.PhiNewLocal());
+    set_source_function(
+      groupset, lbs_solver.GetQMomentsLocal(), lbs_solver.GetPhiOldLocal(), scope);
+    sweep_scheduler.SetDestinationPhi(lbs_solver.GetPhiNewLocal());
     ApplyInverseTransportOperator(scope);
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
       lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
@@ -156,7 +157,7 @@ SweepWGSContext::PostSolveCallback()
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t num_unknowns = lbs_solver.GlobalNodeCount() * num_angles * groupset.groups.size();
+    size_t num_unknowns = lbs_solver.GetGlobalNodeCount() * num_angles * groupset.groups.size();
 
     log.Log() << "\n       Average sweep time (s):        "
               << tot_sweep_time / static_cast<double>(sweep_times.size())

@@ -20,16 +20,17 @@ LBSSolverIO::WriteFluxMoments(
   hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
-  std::vector<double>& src = opt_src.has_value() ? opt_src.value().get() : lbs_solver.PhiNewLocal();
+  std::vector<double>& src =
+    opt_src.has_value() ? opt_src.value().get() : lbs_solver.GetPhiNewLocal();
 
   log.Log() << "Writing flux moments to " << file_base;
 
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
-  const auto& uk_man = lbs_solver.UnknownManager();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
+  const auto& uk_man = lbs_solver.GetUnknownManager();
 
-  auto num_moments = lbs_solver.NumMoments();
-  auto num_groups = lbs_solver.NumGroups();
+  auto num_moments = lbs_solver.GetNumMoments();
+  auto num_groups = lbs_solver.GetNumGroups();
   auto num_local_cells = grid.local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_local_dofs = num_local_nodes * num_moments * num_groups;
@@ -102,7 +103,7 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
   std::vector<double>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PhiOldLocal();
+    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.GetPhiOldLocal();
 
   log.Log() << "Reading flux moments from " << file_base;
 
@@ -118,14 +119,14 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
 
   // Check compatibility with system macro info
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
-  const auto uk_man = lbs_solver.UnknownManager();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
+  const auto uk_man = lbs_solver.GetUnknownManager();
 
   const auto num_local_cells = grid.local_cells.size();
   const auto num_local_nodes = discretization.GetNumLocalNodes();
-  const auto num_moments = lbs_solver.NumMoments();
-  const auto num_groups = lbs_solver.NumGroups();
+  const auto num_moments = lbs_solver.GetNumMoments();
+  const auto num_groups = lbs_solver.GetNumGroups();
   const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);
 
   OpenSnLogicalErrorIf(file_num_local_cells != num_local_cells,

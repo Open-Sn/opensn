@@ -89,7 +89,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   // Options
   if (params.IsParameterValid("options"))
   {
-    auto options_params = LBSSolver::OptionsBlock();
+    auto options_params = LBSSolver::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
 
     this->SetOptions(options_params);
@@ -97,37 +97,37 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 }
 
 LBSOptions&
-LBSSolver::Options()
+LBSSolver::GetOptions()
 {
   return options_;
 }
 
 const LBSOptions&
-LBSSolver::Options() const
+LBSSolver::GetOptions() const
 {
   return options_;
 }
 
 size_t
-LBSSolver::NumMoments() const
+LBSSolver::GetNumMoments() const
 {
   return num_moments_;
 }
 
 size_t
-LBSSolver::NumGroups() const
+LBSSolver::GetNumGroups() const
 {
   return num_groups_;
 }
 
 size_t
-LBSSolver::NumPrecursors() const
+LBSSolver::GetNumPrecursors() const
 {
   return num_precursors_;
 }
 
 size_t
-LBSSolver::MaxPrecursorsPerMaterial() const
+LBSSolver::GetMaxPrecursorsPerMaterial() const
 {
   return max_precursors_per_material_;
 }
@@ -142,7 +142,7 @@ LBSSolver::AddGroup(int id)
 }
 
 const std::vector<LBSGroup>&
-LBSSolver::Groups() const
+LBSSolver::GetGroups() const
 {
   return groups_;
 }
@@ -154,13 +154,13 @@ LBSSolver::AddGroupset()
 }
 
 std::vector<LBSGroupset>&
-LBSSolver::Groupsets()
+LBSSolver::GetGroupsets()
 {
   return groupsets_;
 }
 
 const std::vector<LBSGroupset>&
-LBSSolver::Groupsets() const
+LBSSolver::GetGroupsets() const
 {
   return groupsets_;
 }
@@ -178,7 +178,7 @@ LBSSolver::ClearPointSources()
 }
 
 const std::vector<std::shared_ptr<PointSource>>&
-LBSSolver::PointSources() const
+LBSSolver::GetPointSources() const
 {
   return point_sources_;
 }
@@ -196,7 +196,7 @@ LBSSolver::ClearVolumetricSources()
 }
 
 const std::vector<std::shared_ptr<VolumetricSource>>&
-LBSSolver::VolumetricSources() const
+LBSSolver::GetVolumetricSources() const
 {
   return volumetric_sources_;
 }
@@ -214,13 +214,13 @@ LBSSolver::GetMatID2IsoSrcMap() const
 }
 
 const MeshContinuum&
-LBSSolver::Grid() const
+LBSSolver::GetGrid() const
 {
   return *grid_ptr_;
 }
 
 const SpatialDiscretization&
-LBSSolver::SpatialDiscretization() const
+LBSSolver::GetSpatialDiscretization() const
 {
   return *discretization_;
 }
@@ -244,109 +244,109 @@ LBSSolver::GetCellTransportViews() const
 }
 
 const UnknownManager&
-LBSSolver::UnknownManager() const
+LBSSolver::GetUnknownManager() const
 {
   return flux_moments_uk_man_;
 }
 
 size_t
-LBSSolver::LocalNodeCount() const
+LBSSolver::GetLocalNodeCount() const
 {
   return local_node_count_;
 }
 
 size_t
-LBSSolver::GlobalNodeCount() const
+LBSSolver::GetGlobalNodeCount() const
 {
   return global_node_count_;
 }
 
 std::vector<double>&
-LBSSolver::QMomentsLocal()
+LBSSolver::GetQMomentsLocal()
 {
   return q_moments_local_;
 }
 
 const std::vector<double>&
-LBSSolver::QMomentsLocal() const
+LBSSolver::GetQMomentsLocal() const
 {
   return q_moments_local_;
 }
 
 std::vector<double>&
-LBSSolver::ExtSrcMomentsLocal()
+LBSSolver::GetExtSrcMomentsLocal()
 {
   return ext_src_moments_local_;
 }
 
 const std::vector<double>&
-LBSSolver::ExtSrcMomentsLocal() const
+LBSSolver::GetExtSrcMomentsLocal() const
 {
   return ext_src_moments_local_;
 }
 
 std::vector<double>&
-LBSSolver::PhiOldLocal()
+LBSSolver::GetPhiOldLocal()
 {
   return phi_old_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PhiOldLocal() const
+LBSSolver::GetPhiOldLocal() const
 {
   return phi_old_local_;
 }
 
 std::vector<double>&
-LBSSolver::PhiNewLocal()
+LBSSolver::GetPhiNewLocal()
 {
   return phi_new_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PhiNewLocal() const
+LBSSolver::GetPhiNewLocal() const
 {
   return phi_new_local_;
 }
 
 std::vector<double>&
-LBSSolver::PrecursorsNewLocal()
+LBSSolver::GetPrecursorsNewLocal()
 {
   return precursor_new_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PrecursorsNewLocal() const
+LBSSolver::GetPrecursorsNewLocal() const
 {
   return precursor_new_local_;
 }
 
 std::vector<std::vector<double>>&
-LBSSolver::PsiNewLocal()
+LBSSolver::GetPsiNewLocal()
 {
   return psi_new_local_;
 }
 
 const std::vector<std::vector<double>>&
-LBSSolver::PsiNewLocal() const
+LBSSolver::GetPsiNewLocal() const
 {
   return psi_new_local_;
 }
 
 std::vector<double>&
-LBSSolver::DensitiesLocal()
+LBSSolver::GetDensitiesLocal()
 {
   return densities_local_;
 }
 
 const std::vector<double>&
-LBSSolver::DensitiesLocal() const
+LBSSolver::GetDensitiesLocal() const
 {
   return densities_local_;
 }
 
 const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
-LBSSolver::SweepBoundaries() const
+LBSSolver::GetSweepBoundaries() const
 {
   return sweep_boundaries_;
 }
@@ -370,7 +370,7 @@ LBSSolver::GetWGSSolvers()
 }
 
 size_t&
-LBSSolver::LastRestartTime()
+LBSSolver::GetLastRestartTime()
 {
   return last_restart_write_time_;
 }
@@ -386,7 +386,7 @@ LBSSolver::GetWGSContext(int groupset_id)
 }
 
 std::map<uint64_t, BoundaryPreference>&
-LBSSolver::BoundaryPreferences()
+LBSSolver::GetBoundaryPreferences()
 {
   return boundary_preferences_;
 }
@@ -421,7 +421,7 @@ LBSSolver::GetHandleToPowerGenFieldFunc() const
 }
 
 InputParameters
-LBSSolver::OptionsBlock()
+LBSSolver::GetOptionsBlock()
 {
   InputParameters params;
 
@@ -519,7 +519,7 @@ LBSSolver::OptionsBlock()
 }
 
 InputParameters
-LBSSolver::BoundaryOptionsBlock()
+LBSSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params;
 
@@ -547,7 +547,7 @@ LBSSolver::BoundaryOptionsBlock()
 void
 LBSSolver::SetOptions(const InputParameters& input)
 {
-  auto params = LBSSolver::OptionsBlock();
+  auto params = LBSSolver::GetOptionsBlock();
   params.AssignParameters(input);
 
   // Handle order sensitive options
@@ -682,7 +682,7 @@ LBSSolver::SetOptions(const InputParameters& input)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -749,7 +749,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     case LBSBoundaryType::VACUUM:
     case LBSBoundaryType::REFLECTING:
     {
-      BoundaryPreferences()[bid] = {type};
+      GetBoundaryPreferences()[bid] = {type};
       break;
     }
     case LBSBoundaryType::ISOTROPIC:

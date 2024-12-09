@@ -17,7 +17,7 @@ public:
   AGSSolver(LBSSolver& lbs_solver, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
     : lbs_solver_(lbs_solver),
       wgs_solvers_(std::move(wgs_solvers)),
-      phi_old_(lbs_solver.PhiOldLocal().size()),
+      phi_old_(lbs_solver.GetPhiOldLocal().size()),
       max_iterations_(100),
       tolerance_(1.0e-6),
       verbose_(true)

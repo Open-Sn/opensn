@@ -57,8 +57,8 @@ MIPWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 MIPWGSContext::GetSystemSize()
 {
-  const size_t local_node_count = lbs_solver.LocalNodeCount();
-  const size_t globl_node_count = lbs_solver.GlobalNodeCount();
+  const size_t local_node_count = lbs_solver.GetLocalNodeCount();
+  const size_t globl_node_count = lbs_solver.GetGlobalNodeCount();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const size_t local_size = local_node_count * groupset_numgrps;
@@ -73,7 +73,7 @@ MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   ++counter_applications_of_inv_op;
   auto& mip_solver = *dynamic_cast<DiffusionDFEMSolver&>(lbs_solver).gs_mip_solvers[groupset.id];
 
-  lbs_solver.PhiNewLocal() = lbs_solver.QMomentsLocal();
+  lbs_solver.GetPhiNewLocal() = lbs_solver.GetQMomentsLocal();
 
   Vec work_vector;
   VecDuplicate(mip_solver.GetRHS(), &work_vector);

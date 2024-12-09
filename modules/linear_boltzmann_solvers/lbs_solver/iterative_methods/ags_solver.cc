@@ -22,7 +22,7 @@ AGSSolver::Solve()
 
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
   // to function and for keigen-value problems
-  const auto saved_qmoms = lbs_solver_.QMomentsLocal();
+  const auto saved_qmoms = lbs_solver_.GetQMomentsLocal();
 
   double pw_change_prev = 1.0;
   bool converged = false;
@@ -37,7 +37,7 @@ AGSSolver::Solve()
     std::stringstream iter_stats;
     iter_stats << program_timer.GetTimeString() << " AGS Iteration ";
 
-    if (lbs_solver_.Options().ags_pointwise_convergence)
+    if (lbs_solver_.GetOptions().ags_pointwise_convergence)
     {
       double pw_change = ComputePointwisePhiChange(lbs_solver_, phi_old_);
       double rho = (iter == 0) ? 0.0 : sqrt(pw_change / pw_change_prev);
@@ -71,11 +71,11 @@ AGSSolver::Solve()
       log.Log() << iter_stats.str();
 
     // Restore qmoms
-    lbs_solver_.QMomentsLocal() = saved_qmoms;
+    lbs_solver_.GetQMomentsLocal() = saved_qmoms;
 
     // Write restart data
     if (lbs_solver_.RestartsEnabled() and lbs_solver_.TriggerRestartDump() and
-        lbs_solver_.Options().enable_ags_restart_write)
+        lbs_solver_.GetOptions().enable_ags_restart_write)
     {
       lbs_solver_.WriteRestartData();
     }
@@ -83,12 +83,12 @@ AGSSolver::Solve()
     if (converged)
       break;
     else
-      phi_old_ = lbs_solver_.PhiNewLocal();
+      phi_old_ = lbs_solver_.GetPhiNewLocal();
   }
 
   // If restarts are enabled, always write a restart dump upon convergence or when we reach the
   // iteration limit
-  if (lbs_solver_.RestartsEnabled() && lbs_solver_.Options().enable_ags_restart_write)
+  if (lbs_solver_.RestartsEnabled() && lbs_solver_.GetOptions().enable_ags_restart_write)
     lbs_solver_.WriteRestartData();
 }
 
