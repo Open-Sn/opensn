@@ -334,28 +334,28 @@ ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& of
       case ParameterBlockType::BOOLEAN:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const bool value = param.Value().BoolValue();
+        const bool value = param.Value().GetBoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const double value = param.Value().FloatValue();
+        const double value = param.Value().GetFloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const auto& value = param.Value().StringValue();
+        const auto& value = param.Value().GetStringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
         outstr += offset + "  " + param.Name() + " = ";
-        const int64_t value = param.Value().IntegerValue();
+        const int64_t value = param.Value().GetIntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
@@ -393,28 +393,28 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
       case ParameterBlockType::BOOLEAN:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const bool value = param.Value().BoolValue();
+        const bool value = param.Value().GetBoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const double value = param.Value().FloatValue();
+        const double value = param.Value().GetFloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const auto& value = param.Value().StringValue();
+        const auto& value = param.Value().GetStringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
         outstr += "\"" + param.Name() + "\" = ";
-        const int64_t value = param.Value().IntegerValue();
+        const int64_t value = param.Value().GetIntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }

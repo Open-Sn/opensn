@@ -35,7 +35,7 @@ void
 Varying::CheckTypeMatch(const VaryingDataType type_A, const VaryingDataType type_B_required) const
 {
   if (type_A != type_B_required)
-    throw std::logic_error("Varying data type " + TypeName() +
+    throw std::logic_error("Varying data type " + GetTypeName() +
                            " does not "
                            "correspond to the required type, " +
                            VaryingDataTypeStringName(type_B_required));
@@ -97,39 +97,39 @@ Varying::operator=(const std::string& value)
 
 //  Get values
 std::string
-Varying::StringValue() const
+Varying::GetStringValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::STRING);
 
-  return data_->StringValue();
+  return data_->GetStringValue();
 }
 
 bool
-Varying::BoolValue() const
+Varying::GetBoolValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::BOOL);
 
-  return data_->BoolValue();
+  return data_->GetBoolValue();
 }
 
 int64_t
-Varying::IntegerValue() const
+Varying::GetIntegerValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
-  return data_->IntegerValue();
+  return data_->GetIntegerValue();
 }
 
 double
-Varying::FloatValue() const
+Varying::GetFloatValue() const
 {
   CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
-  return data_->FloatValue();
+  return data_->GetFloatValue();
 }
 
 size_t
-Varying::ByteSize() const
+Varying::GetByteSize() const
 {
   return data_->Size();
 }
@@ -139,14 +139,14 @@ Varying::PrintStr(bool with_type) const
 {
   std::stringstream outstr;
 
-  if (this->Type() == VaryingDataType::STRING)
-    outstr << "\"" << this->StringValue() << "\"";
-  else if (this->Type() == VaryingDataType::FLOAT)
-    outstr << this->FloatValue() << (with_type ? "(double)" : "");
-  else if (this->Type() == VaryingDataType::INTEGER)
-    outstr << this->IntegerValue();
-  else if (this->Type() == VaryingDataType::BOOL)
-    outstr << (this->BoolValue() ? "true" : "false");
+  if (this->GetType() == VaryingDataType::STRING)
+    outstr << "\"" << this->GetStringValue() << "\"";
+  else if (this->GetType() == VaryingDataType::FLOAT)
+    outstr << this->GetFloatValue() << (with_type ? "(double)" : "");
+  else if (this->GetType() == VaryingDataType::INTEGER)
+    outstr << this->GetIntegerValue();
+  else if (this->GetType() == VaryingDataType::BOOL)
+    outstr << (this->GetBoolValue() ? "true" : "false");
 
   return outstr.str();
 }

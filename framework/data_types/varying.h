@@ -108,11 +108,11 @@ private:
   class VaryingType
   {
   public:
-    virtual std::string StringValue() const = 0;
-    virtual bool BoolValue() const = 0;
-    virtual int64_t IntegerValue() const = 0;
-    virtual double FloatValue() const = 0;
-    virtual std::vector<std::byte> BytesValue() const = 0;
+    virtual std::string GetStringValue() const = 0;
+    virtual bool GetBoolValue() const = 0;
+    virtual int64_t GetIntegerValue() const = 0;
+    virtual double GetFloatValue() const = 0;
+    virtual std::vector<std::byte> GetBytesValue() const = 0;
 
     virtual std::unique_ptr<VaryingType> Clone() const = 0;
     virtual size_t Size() const = 0;
@@ -124,7 +124,7 @@ private:
     virtual bool operator>=(const VaryingType& that) const = 0;
     virtual bool operator<=(const VaryingType& that) const = 0;
 
-    VaryingDataType Type() const { return type_; }
+    VaryingDataType GetType() const { return type_; }
 
     virtual ~VaryingType() = default;
 
@@ -149,15 +149,15 @@ private:
     {
     }
 
-    std::string StringValue() const override { OpenSnLogicalError("Method not implemented"); }
+    std::string GetStringValue() const override { OpenSnLogicalError("Method not implemented"); }
 
-    bool BoolValue() const override { OpenSnLogicalError("Method not implemented"); }
+    bool GetBoolValue() const override { OpenSnLogicalError("Method not implemented"); }
 
-    int64_t IntegerValue() const override { OpenSnLogicalError("Method not implemented"); }
+    int64_t GetIntegerValue() const override { OpenSnLogicalError("Method not implemented"); }
 
-    double FloatValue() const override { OpenSnLogicalError("Method not implemented"); }
+    double GetFloatValue() const override { OpenSnLogicalError("Method not implemented"); }
 
-    std::vector<std::byte> BytesValue() const override
+    std::vector<std::byte> GetBytesValue() const override
     {
       OpenSnLogicalError("Method not implemented");
     }
@@ -170,21 +170,21 @@ private:
 
     bool operator==(const VaryingType& that) const override
     {
-      if (type_ != that.Type())
+      if (type_ != that.GetType())
         return false;
 
-      switch (this->Type())
+      switch (this->GetType())
       {
         case VaryingDataType::ARBITRARY_BYTES:
-          return BytesValue() == that.BytesValue();
+          return GetBytesValue() == that.GetBytesValue();
         case VaryingDataType::STRING:
-          return StringValue() == that.StringValue();
+          return GetStringValue() == that.GetStringValue();
         case VaryingDataType::BOOL:
-          return BoolValue() == that.BoolValue();
+          return GetBoolValue() == that.GetBoolValue();
         case VaryingDataType::INTEGER:
-          return IntegerValue() == that.IntegerValue();
+          return GetIntegerValue() == that.GetIntegerValue();
         case VaryingDataType::FLOAT:
-          return FloatValue() == that.FloatValue();
+          return GetFloatValue() == that.GetFloatValue();
         case VaryingDataType::VOID:
         default:
           return false;
@@ -194,21 +194,21 @@ private:
     bool operator!=(const VaryingType& that) const override { return not(*this == that); }
     bool operator>(const VaryingType& that) const override
     {
-      if (type_ != that.Type())
+      if (type_ != that.GetType())
         return false;
 
-      switch (this->Type())
+      switch (this->GetType())
       {
         case VaryingDataType::ARBITRARY_BYTES:
-          return BytesValue() > that.BytesValue();
+          return GetBytesValue() > that.GetBytesValue();
         case VaryingDataType::STRING:
-          return StringValue() > that.StringValue();
+          return GetStringValue() > that.GetStringValue();
         case VaryingDataType::BOOL:
-          return BoolValue() > that.BoolValue();
+          return GetBoolValue() > that.GetBoolValue();
         case VaryingDataType::INTEGER:
-          return IntegerValue() > that.IntegerValue();
+          return GetIntegerValue() > that.GetIntegerValue();
         case VaryingDataType::FLOAT:
-          return FloatValue() > that.FloatValue();
+          return GetFloatValue() > that.GetFloatValue();
         case VaryingDataType::VOID:
         default:
           return false;
@@ -216,21 +216,21 @@ private:
     }
     bool operator<(const VaryingType& that) const override
     {
-      if (type_ != that.Type())
+      if (type_ != that.GetType())
         return false;
 
-      switch (this->Type())
+      switch (this->GetType())
       {
         case VaryingDataType::ARBITRARY_BYTES:
-          return BytesValue() < that.BytesValue();
+          return GetBytesValue() < that.GetBytesValue();
         case VaryingDataType::STRING:
-          return StringValue() < that.StringValue();
+          return GetStringValue() < that.GetStringValue();
         case VaryingDataType::BOOL:
-          return BoolValue() < that.BoolValue();
+          return GetBoolValue() < that.GetBoolValue();
         case VaryingDataType::INTEGER:
-          return IntegerValue() < that.IntegerValue();
+          return GetIntegerValue() < that.GetIntegerValue();
         case VaryingDataType::FLOAT:
-          return FloatValue() < that.FloatValue();
+          return GetFloatValue() < that.GetFloatValue();
         case VaryingDataType::VOID:
         default:
           return false;
@@ -432,7 +432,7 @@ public:
   {
     CheckTypeMatch(type_, VaryingDataType::BOOL);
 
-    return data_->BoolValue();
+    return data_->GetBoolValue();
   }
 
   /// Returns floating point values if able.
@@ -441,7 +441,7 @@ public:
   {
     CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
-    const double value = data_->FloatValue();
+    const double value = data_->GetFloatValue();
 
     return static_cast<T>(value);
   }
@@ -452,7 +452,7 @@ public:
   {
     CheckTypeMatch(type_, VaryingDataType::STRING);
 
-    return data_->StringValue();
+    return data_->GetStringValue();
   }
 
   /// Returns a signed integer if able.
@@ -461,7 +461,7 @@ public:
   {
     CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
-    const int64_t value = data_->IntegerValue();
+    const int64_t value = data_->GetIntegerValue();
 
     return static_cast<T>(value);
   }
@@ -472,7 +472,7 @@ public:
   {
     CheckTypeMatch(type_, VaryingDataType::INTEGER);
 
-    const int64_t value = data_->IntegerValue();
+    const int64_t value = data_->GetIntegerValue();
 
     if (value < 0)
       throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
@@ -493,33 +493,33 @@ public:
   }
 
   /// Returns the string value if valid. Otherwise throws std::logic_error.
-  std::string StringValue() const;
+  std::string GetStringValue() const;
 
   /// Returns the bool value if valid. Otherwise throws std::logic_error.
-  bool BoolValue() const;
+  bool GetBoolValue() const;
 
   /// Returns the integer value if valid. Otherwise throws std::logic_error.
-  int64_t IntegerValue() const;
+  int64_t GetIntegerValue() const;
 
   /// Returns the float value if valid. Otherwise throws std::logic_error.
-  double FloatValue() const;
+  double GetFloatValue() const;
 
   template <typename T>
-  T UserDataValue() const
+  T GetUserDataValue() const
   {
     CheckTypeMatch(type_, VaryingDataType::USER_DATA);
     return GetValue<T>();
   }
 
   /// Returns the raw byte size associated with the type.
-  size_t ByteSize() const;
+  size_t GetByteSize() const;
 
 public:
   /// Returns the current-type of the variable.
-  VaryingDataType Type() const { return type_; }
+  VaryingDataType GetType() const { return type_; }
 
   /// Returns the string type name of the type.
-  std::string TypeName() const { return VaryingDataTypeStringName(type_); }
+  std::string GetTypeName() const { return VaryingDataTypeStringName(type_); }
 
   /// Returns a string value for the value.
   std::string PrintStr(bool with_type = true) const;
@@ -530,28 +530,28 @@ public:
 
 template <>
 inline std::string
-Varying::VaryingArbitraryType<std::string>::StringValue() const
+Varying::VaryingArbitraryType<std::string>::GetStringValue() const
 {
   return value_;
 }
 
 template <>
 inline bool
-Varying::VaryingArbitraryType<bool>::BoolValue() const
+Varying::VaryingArbitraryType<bool>::GetBoolValue() const
 {
   return value_;
 }
 
 template <>
 inline int64_t
-Varying::VaryingArbitraryType<int64_t>::IntegerValue() const
+Varying::VaryingArbitraryType<int64_t>::GetIntegerValue() const
 {
   return value_;
 }
 
 template <>
 inline double
-Varying::VaryingArbitraryType<double>::FloatValue() const
+Varying::VaryingArbitraryType<double>::GetFloatValue() const
 {
   return value_;
 }

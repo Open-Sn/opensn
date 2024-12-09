@@ -32,13 +32,13 @@ public:
   {
   }
 
-  VaryingDataType GetType() const { return value_.Type(); }
+  VaryingDataType GetType() const { return value_.GetType(); }
 
   std::string GetName() const { return name_; }
-  std::string GetStringValue() const { return value_.StringValue(); }
-  bool GetBoolValue() const { return value_.BoolValue(); }
-  int64_t GetIntegerValue() const { return value_.IntegerValue(); }
-  double GetFloatValue() const { return value_.FloatValue(); }
+  std::string GetStringValue() const { return value_.GetStringValue(); }
+  bool GetBoolValue() const { return value_.GetBoolValue(); }
+  int64_t GetIntegerValue() const { return value_.GetIntegerValue(); }
+  double GetFloatValue() const { return value_.GetFloatValue(); }
 
   void SetStringValue(const std::string& value) { value_ = value; }
   void SetBoolValue(const bool& value) { value_ = value; }

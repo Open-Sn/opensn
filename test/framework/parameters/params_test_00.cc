@@ -70,31 +70,31 @@ ParameterBlock_Test00(const ParameterBlock& param_block)
   opensn::log.Log() << "Testing varying";
   {
     Varying v(12);
-    opensn::log.Log() << "v(12)" << v.IntegerValue();
+    opensn::log.Log() << "v(12)" << v.GetIntegerValue();
     v = true;
-    opensn::log.Log() << "v(bool)" << v.BoolValue();
+    opensn::log.Log() << "v(bool)" << v.GetBoolValue();
     opensn::log.Log() << "v(bool)" << v.GetValue<bool>();
   }
   {
     Varying v(12);
-    opensn::log.Log() << "v(12)" << v.IntegerValue();
+    opensn::log.Log() << "v(12)" << v.GetIntegerValue();
     v = 12.0;
-    opensn::log.Log() << "v(12.0)" << v.FloatValue();
+    opensn::log.Log() << "v(12.0)" << v.GetFloatValue();
     opensn::log.Log() << "v(12.0)" << v.GetValue<double>();
     opensn::log.Log() << "v(12.0)" << v.GetValue<float>();
   }
   {
     Varying v(12.0);
-    opensn::log.Log() << "v(12.0) bytesize" << v.ByteSize();
-    opensn::log.Log() << "v(12.0)" << v.FloatValue();
+    opensn::log.Log() << "v(12.0) bytesize" << v.GetByteSize();
+    opensn::log.Log() << "v(12.0)" << v.GetFloatValue();
     v = 12;
-    opensn::log.Log() << "v(12)" << v.IntegerValue();
+    opensn::log.Log() << "v(12)" << v.GetIntegerValue();
     opensn::log.Log() << "v(12)" << v.GetValue<int>();
     opensn::log.Log() << "v(12)" << v.GetValue<size_t>();
   }
   {
     Varying v(std::string("Hello"));
-    opensn::log.Log() << "hello" << v.StringValue();
+    opensn::log.Log() << "hello" << v.GetStringValue();
     opensn::log.Log() << "hello" << v.GetValue<std::string>();
   }
   opensn::log.Log() << "GOLD_END";
