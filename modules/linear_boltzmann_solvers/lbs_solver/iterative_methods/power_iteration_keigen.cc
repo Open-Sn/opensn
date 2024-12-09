@@ -46,7 +46,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   double k_eff_change = 1.0;
 
   // Start power iterations
-  ags_solver->Verbosity(lbs_solver.Options().verbose_ags_iterations);
+  ags_solver->SetVerbosity(lbs_solver.Options().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
   while (nit < max_iterations)

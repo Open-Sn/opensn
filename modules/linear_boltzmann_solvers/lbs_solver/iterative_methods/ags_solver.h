@@ -30,15 +30,15 @@ public:
 
   bool IsVerbose() const { return verbose_; }
 
-  void Verbosity(bool verbose) { verbose_ = verbose; }
+  void SetVerbosity(bool verbose) { verbose_ = verbose; }
 
   double GetTolerance() { return tolerance_; }
 
-  void Tolerance(double tolerance) { tolerance_ = tolerance; }
+  void SetTolerance(double tolerance) { tolerance_ = tolerance; }
 
   int GetMaxIterations() { return max_iterations_; }
 
-  void MaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
+  void SetMaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
 
 private:
   LBSSolver& lbs_solver_;
