@@ -27,13 +27,13 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 
   // Initialize delayed upstream data
   for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.AngleSets())
+    for (auto& angset : angsetgrp.GetAngleSets())
       angset->InitializeDelayedUpstreamData();
 
   // Get local max num messages accross anglesets
   int local_max_num_messages = 0;
   for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.AngleSets())
+    for (auto& angset : angsetgrp.GetAngleSets())
       local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
 
   // Reconcile all local maximums
@@ -42,7 +42,7 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 
   // Propogate items back to sweep buffers
   for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.AngleSets())
+    for (auto& angset : angsetgrp.GetAngleSets())
       angset->SetMaxBufferMessages(global_max_num_messages);
 }
 
@@ -64,10 +64,10 @@ SweepScheduler::InitializeAlgoDOG()
     AngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
 
     // Loop over anglesets in group
-    size_t num_anglesets = angleset_group.AngleSets().size();
+    size_t num_anglesets = angleset_group.GetAngleSets().size();
     for (size_t as = 0; as < num_anglesets; ++as)
     {
-      auto angleset = angleset_group.AngleSets()[as];
+      auto angleset = angleset_group.GetAngleSets()[as];
       const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
 
       const std::vector<STDG>& leveled_graph = spds.GlobalSweepPlanes();
@@ -205,7 +205,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
     received_delayed_data = true;
 
     for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.AngleSets())
+      for (auto& angle_set : angle_set_group.GetAngleSets())
       {
         if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
           received_delayed_data = false;
@@ -217,7 +217,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
   // Reset all
   for (auto& angle_set_group : angle_agg_.angle_set_groups)
-    for (auto& angle_set : angle_set_group.AngleSets())
+    for (auto& angle_set : angle_set_group.GetAngleSets())
       angle_set->ResetSweepBuffers();
 
   for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
@@ -242,7 +242,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     completion_status = AngleSetStatus::FINISHED;
 
     for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.AngleSets())
+      for (auto& angle_set : angle_set_group.GetAngleSets())
       {
         const auto angle_set_status =
           angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
@@ -259,7 +259,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     received_delayed_data = true;
 
     for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.AngleSets())
+      for (auto& angle_set : angle_set_group.GetAngleSets())
       {
         if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
           received_delayed_data = false;
@@ -271,7 +271,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 
   // Reset all
   for (auto& angle_set_group : angle_agg_.angle_set_groups)
-    for (auto& angle_set : angle_set_group.AngleSets())
+    for (auto& angle_set : angle_set_group.GetAngleSets())
       angle_set->ResetSweepBuffers();
 
   for (auto& [bid, bndry] : angle_agg_.GetSimBoundaries())

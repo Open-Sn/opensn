@@ -1019,7 +1019,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                                                           options_.max_mpi_message_size,
                                                           *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angle_set);
+          angle_set_group.GetAngleSets().push_back(angle_set);
         }
         else if (sweep_type_ == "CBC")
         {
@@ -1043,7 +1043,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                                                           gs_ss,
                                                           *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angle_set);
+          angle_set_group.GetAngleSets().push_back(angle_set);
         }
         else
           OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");

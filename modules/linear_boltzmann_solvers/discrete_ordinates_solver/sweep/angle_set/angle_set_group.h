@@ -15,7 +15,7 @@ private:
   std::vector<std::shared_ptr<AngleSet>> angle_sets_;
 
 public:
-  std::vector<std::shared_ptr<AngleSet>>& AngleSets() { return angle_sets_; }
+  std::vector<std::shared_ptr<AngleSet>>& GetAngleSets() { return angle_sets_; }
 };
 
 } // namespace opensn
