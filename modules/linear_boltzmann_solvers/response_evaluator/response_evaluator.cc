@@ -48,14 +48,14 @@ ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
 {
   if (params.IsParameterValid("options"))
   {
-    auto options = OptionsBlock();
+    auto options = GetOptionsBlock();
     options.AssignParameters(params.GetParam("options"));
     SetOptions(options);
   }
 }
 
 InputParameters
-ResponseEvaluator::OptionsBlock()
+ResponseEvaluator::GetOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("A block of options for the response evaluator for adding adjoint "
@@ -83,7 +83,7 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
     user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (int p = 0; p < user_buffer_params.GetNumParameters(); ++p)
     {
-      auto buffer_params = BufferOptionsBlock();
+      auto buffer_params = GetBufferOptionsBlock();
       buffer_params.AssignParameters(user_buffer_params.GetParam(p));
       SetBufferOptions(buffer_params);
     }
@@ -100,14 +100,14 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
 
   if (params.IsParameterValid("sources"))
   {
-    auto source_params = SourceOptionsBlock();
+    auto source_params = GetSourceOptionsBlock();
     source_params.AssignParameters(params.GetParam("sources"));
     SetSourceOptions(source_params);
   }
 }
 
 InputParameters
-ResponseEvaluator::BufferOptionsBlock()
+ResponseEvaluator::GetBufferOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Options for adding adjoint buffers to the response evaluator.");
@@ -127,7 +127,7 @@ ResponseEvaluator::BufferOptionsBlock()
 void
 ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 {
-  auto params = opensn::ResponseEvaluator::BufferOptionsBlock();
+  auto params = opensn::ResponseEvaluator::GetBufferOptionsBlock();
   params.AssignParameters(input);
 
   const auto name = params.GetParamValue<std::string>("name");
@@ -151,7 +151,7 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 }
 
 InputParameters
-ResponseEvaluator::SourceOptionsBlock()
+ResponseEvaluator::GetSourceOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("A table of various forward source specifications.");
@@ -177,7 +177,7 @@ ResponseEvaluator::SourceOptionsBlock()
 void
 ResponseEvaluator::SetSourceOptions(const InputParameters& input)
 {
-  auto params = ResponseEvaluator::SourceOptionsBlock();
+  auto params = ResponseEvaluator::GetSourceOptionsBlock();
   params.AssignParameters(input);
 
   params.RequireBlockTypeIs(ParameterBlockType::BLOCK);
@@ -188,7 +188,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     const auto& user_msrc_params = params.GetParam("material");
     for (int p = 0; p < user_msrc_params.GetNumParameters(); ++p)
     {
-      auto msrc_params = MaterialSourceOptionsBlock();
+      auto msrc_params = GetMaterialSourceOptionsBlock();
       msrc_params.AssignParameters(user_msrc_params.GetParam(p));
       SetMaterialSourceOptions(msrc_params);
     }
@@ -232,7 +232,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
 }
 
 InputParameters
-ResponseEvaluator::MaterialSourceOptionsBlock()
+ResponseEvaluator::GetMaterialSourceOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription(
