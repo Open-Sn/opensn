@@ -362,7 +362,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
       // Compute node-wise, groupset wise tensors
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         for (int gsg = 0; gsg < num_gs_groups; ++gsg)
         {

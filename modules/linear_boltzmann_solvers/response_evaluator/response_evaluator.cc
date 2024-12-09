@@ -412,7 +412,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& src = point_source->GetStrength();
       const auto& vol_wt = subscriber.volume_weight;
 
-      const auto num_cell_nodes = transport_view.NumNodes();
+      const auto num_cell_nodes = transport_view.GetNumNodes();
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -431,7 +431,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
-      const auto num_cell_nodes = transport_view.NumNodes();
+      const auto num_cell_nodes = transport_view.GetNumNodes();
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
         const auto& V_i = fe_values.intV_shapeI(i);

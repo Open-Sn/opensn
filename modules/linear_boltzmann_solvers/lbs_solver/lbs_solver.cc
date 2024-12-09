@@ -2204,7 +2204,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
     const auto& F = xs.GetProductionMatrix();
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
@@ -2212,7 +2212,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
       continue;
 
     // Loop over nodes
-    const int num_nodes = transport_view.NumNodes();
+    const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
@@ -2255,7 +2255,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
     const auto& sigma_f = xs.GetSigmaFission();
 
     // skip non-fissionable material
@@ -2263,7 +2263,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
       continue;
 
     // Loop over nodes
-    const int num_nodes = transport_view.NumNodes();
+    const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
@@ -2296,10 +2296,10 @@ LBSSolver::ComputePrecursors()
   {
     const auto& fe_values = unit_cell_matrices_[cell.local_id];
     const auto& transport_view = cell_transport_views_[cell.local_id];
-    const double cell_volume = transport_view.Volume();
+    const double cell_volume = transport_view.GetVolume();
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
     const auto& precursors = xs.GetPrecursors();
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
@@ -2311,7 +2311,7 @@ LBSSolver::ComputePrecursors()
       const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
       // Loop over nodes
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         const size_t uk_map = transport_view.MapDOF(i, 0, 0);
         const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;

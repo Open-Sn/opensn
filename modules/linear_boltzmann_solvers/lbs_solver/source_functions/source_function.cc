@@ -58,10 +58,10 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   {
     const auto& rho = densities[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
-    cell_volume_ = transport_view.Volume();
+    cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
 
     std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
     if (matid_to_src_map.count(cell.material_id) > 0)
@@ -73,7 +73,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over nodes
-    const auto num_nodes = transport_view.NumNodes();
+    const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       // Loop over moments
@@ -207,7 +207,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
         const auto& node_weights = subscriber.node_weights;
         const auto volume_weight = subscriber.volume_weight;
 
-        for (size_t i = 0; i < transport_view.NumNodes(); ++i)
+        for (size_t i = 0; i < transport_view.GetNumNodes(); ++i)
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
           for (size_t g = gs_i; g <= gs_f; ++g)

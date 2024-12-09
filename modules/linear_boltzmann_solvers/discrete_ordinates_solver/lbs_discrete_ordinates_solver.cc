@@ -227,7 +227,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& transport_view = cell_transport_views_[cell.local_id];
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         // Reorient flux moments
         //
@@ -311,7 +311,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
     const auto& cell_mapping = discretization_->GetCellMapping(cell);
     const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
-    const size_t num_nodes = transport_view.NumNodes();
+    const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
 
@@ -369,7 +369,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
         local_out_flow += transport_view.GetOutflow(f, g);
 
     // Absorption and sources
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
     const auto& sigma_a = xs.GetSigmaAbsorption();
     for (int i = 0; i < num_nodes; ++i)
     {
