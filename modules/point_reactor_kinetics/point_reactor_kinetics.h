@@ -42,19 +42,19 @@ public:
   // Getters and Setters
 
   /// Returns the population at the previous time step.
-  double PopulationPrev() const;
+  double GetPopulationPrev() const;
   /// Returns the population at the next time step.
-  double PopulationNew() const;
+  double GetPopulationNew() const;
   /// Returns the period computed for the last time step.
-  double Period() const;
+  double GetPeriod() const;
   /// Returns the time computed for the last time step.
-  double TimePrev() const;
+  double GetTimePrev() const;
   /// Returns the time computed for the next time step.
-  double TimeNew() const;
+  double GetTimeNew() const;
   /// Returns the solution at the previous time step.
-  Vector<double> SolutionPrev() const;
+  Vector<double> GetSolutionPrev() const;
   /// Returns the solution at the next time step.
-  Vector<double> SolutionNew() const;
+  Vector<double> GetSolutionNew() const;
 
   /**
    * \addtogroup prk

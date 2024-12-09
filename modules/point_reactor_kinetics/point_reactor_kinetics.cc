@@ -216,7 +216,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   if (param_name == "neutron_population")
     return ParameterBlock("", x_t_(0));
   else if (param_name == "population_next")
-    return ParameterBlock("", PopulationNew());
+    return ParameterBlock("", GetPopulationNew());
   else if (param_name == "period")
     return ParameterBlock("", period_tph_);
   else if (param_name == "rho")
@@ -229,7 +229,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   else if (param_name == "time_integration")
     return ParameterBlock("", time_integration_);
   else if (param_name == "time_next")
-    return ParameterBlock("", TimeNew());
+    return ParameterBlock("", GetTimeNew());
   else if (param_name == "test_arb_info")
   {
     ParameterBlock block;
@@ -246,43 +246,43 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
 }
 
 double
-PRKSolver::PopulationPrev() const
+PRKSolver::GetPopulationPrev() const
 {
   return x_t_(0);
 }
 
 double
-PRKSolver::PopulationNew() const
+PRKSolver::GetPopulationNew() const
 {
   return x_tp1_(0);
 }
 
 double
-PRKSolver::Period() const
+PRKSolver::GetPeriod() const
 {
   return period_tph_;
 }
 
 double
-PRKSolver::TimePrev() const
+PRKSolver::GetTimePrev() const
 {
   return timestepper_->GetTime();
 }
 
 double
-PRKSolver::TimeNew() const
+PRKSolver::GetTimeNew() const
 {
   return timestepper_->GetTime() + timestepper_->GetTimeStepSize();
 }
 
 Vector<double>
-PRKSolver::SolutionPrev() const
+PRKSolver::GetSolutionPrev() const
 {
   return x_t_;
 }
 
 Vector<double>
-PRKSolver::SolutionNew() const
+PRKSolver::GetSolutionNew() const
 {
   return x_tp1_;
 }
