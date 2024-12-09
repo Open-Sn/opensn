@@ -63,8 +63,8 @@ private:
 
 public:
   static InputParameters GetInputParameters();
-  static InputParameters OptionsBlock();
-  static InputParameters BoundaryOptionsBlock();
+  static InputParameters GetOptionsBlock();
+  static InputParameters GetBoundaryOptionsBlock();
   static std::shared_ptr<DFEMDiffusionSolver> Create(const ParameterBlock& params);
 };
 

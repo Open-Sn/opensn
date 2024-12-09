@@ -35,14 +35,14 @@ DFEMDiffusionSolver::GetInputParameters()
 }
 
 InputParameters
-DFEMDiffusionSolver::OptionsBlock()
+DFEMDiffusionSolver::GetOptionsBlock()
 {
   InputParameters params = DiffusionSolverBase::OptionsBlock();
   return params;
 }
 
 InputParameters
-DFEMDiffusionSolver::BoundaryOptionsBlock()
+DFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
   return params;
@@ -86,7 +86,7 @@ DFEMDiffusionSolver::SetOptions(const InputParameters& params)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
