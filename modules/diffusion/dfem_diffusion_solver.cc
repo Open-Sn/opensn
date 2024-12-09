@@ -37,14 +37,14 @@ DFEMDiffusionSolver::GetInputParameters()
 InputParameters
 DFEMDiffusionSolver::GetOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::OptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetOptionsBlock();
   return params;
 }
 
 InputParameters
 DFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 

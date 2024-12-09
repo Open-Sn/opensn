@@ -52,7 +52,7 @@ CFEMDiffusionSolver::GetOptionsBlock()
 InputParameters
 CFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 

@@ -29,14 +29,14 @@ FVDiffusionSolver::GetInputParameters()
 InputParameters
 FVDiffusionSolver::OptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::OptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetOptionsBlock();
   return params;
 }
 
 InputParameters
 FVDiffusionSolver::BoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 

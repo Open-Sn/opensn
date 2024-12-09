@@ -28,7 +28,7 @@ DiffusionSolverBase::GetInputParameters()
 }
 
 InputParameters
-DiffusionSolverBase::OptionsBlock()
+DiffusionSolverBase::GetOptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -38,7 +38,7 @@ DiffusionSolverBase::OptionsBlock()
 }
 
 InputParameters
-DiffusionSolverBase::BoundaryOptionsBlock()
+DiffusionSolverBase::GetBoundaryOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Set options for boundary conditions");
