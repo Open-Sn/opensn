@@ -17,7 +17,7 @@ public:
   static InputParameters GetInputParameters();
   explicit ThetaSchemeTimeIntegration(const InputParameters& params);
 
-  double ThetaFactor() const;
+  double GetThetaFactor() const;
 };
 
 } // namespace opensn

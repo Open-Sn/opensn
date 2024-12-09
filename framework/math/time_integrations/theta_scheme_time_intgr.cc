@@ -28,7 +28,7 @@ ThetaSchemeTimeIntegration::ThetaSchemeTimeIntegration(const InputParameters& pa
 }
 
 double
-ThetaSchemeTimeIntegration::ThetaFactor() const
+ThetaSchemeTimeIntegration::GetThetaFactor() const
 {
   return theta_;
 }
