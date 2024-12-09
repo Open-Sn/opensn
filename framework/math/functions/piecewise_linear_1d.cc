@@ -55,7 +55,7 @@ PiecewiseLinear1D::Evaluate(const std::vector<double>& values) const
   if (values.size() != 1)
     OpenSnInvalidArgument("Can only be called with 1 argument.");
 
-  return {ScalarFunction1Parameter(values.front())};
+  return {GetScalarFunction1Parameter(values.front())};
 }
 
 std::vector<double>
@@ -64,11 +64,11 @@ PiecewiseLinear1D::EvaluateSlope(const std::vector<double>& values) const
   if (values.size() != 1)
     OpenSnInvalidArgument("Can only be called with 1 argument.");
 
-  return {ScalarFunctionSlope1Parameter(values.front())};
+  return {GetScalarFunctionSlope1Parameter(values.front())};
 }
 
 double
-PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
+PiecewiseLinear1D::GetScalarFunction1Parameter(double x) const
 {
   if (x < x_values_.front())
     return y_values_.front();
@@ -88,7 +88,7 @@ PiecewiseLinear1D::ScalarFunction1Parameter(double x) const
 }
 
 double
-PiecewiseLinear1D::ScalarFunctionSlope1Parameter(double x) const
+PiecewiseLinear1D::GetScalarFunctionSlope1Parameter(double x) const
 {
   if (x < x_values_.front())
     return 0.0;

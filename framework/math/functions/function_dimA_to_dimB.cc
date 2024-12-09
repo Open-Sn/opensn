@@ -29,34 +29,34 @@ FunctionDimAToDimB::FunctionDimAToDimB(const InputParameters& params)
 }
 
 double
-FunctionDimAToDimB::ScalarFunction1Parameter(double) const
+FunctionDimAToDimB::GetScalarFunction1Parameter(double) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::ScalarFunctionSlope1Parameter(double) const
+FunctionDimAToDimB::GetScalarFunctionSlope1Parameter(double) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::ScalarFunctionCurvature1Parameter(double) const
-{
-  OpenSnLogicalError("No available function");
-}
-
-double
-FunctionDimAToDimB::ScalarFunction4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunctionCurvature1Parameter(double) const
 {
   OpenSnLogicalError("No available function");
 }
 
 double
-FunctionDimAToDimB::ScalarFunctionSlope4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunction4Parameters(double, double, double, double) const
+{
+  OpenSnLogicalError("No available function");
+}
+
+double
+FunctionDimAToDimB::GetScalarFunctionSlope4Parameters(double, double, double, double) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::ScalarFunctionCurvature4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunctionCurvature4Parameters(double, double, double, double) const
 {
   OpenSnLogicalError("No available function");
 }
