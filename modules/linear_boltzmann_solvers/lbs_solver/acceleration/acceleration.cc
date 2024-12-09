@@ -17,9 +17,9 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
   std::map<uint64_t, BoundaryCondition> bcs;
   for (auto& [bid, lbs_bndry] : sweep_boundaries)
   {
-    if (lbs_bndry->Type() == LBSBoundaryType::REFLECTING)
+    if (lbs_bndry->GetType() == LBSBoundaryType::REFLECTING)
       bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-    else if (lbs_bndry->Type() == LBSBoundaryType::VACUUM)
+    else if (lbs_bndry->GetType() == LBSBoundaryType::VACUUM)
       if (vacuum_bcs_are_dirichlet)
         bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
       else

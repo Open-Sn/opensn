@@ -33,9 +33,9 @@ public:
 
   virtual ~SweepBoundary() = default;
 
-  LBSBoundaryType Type() const { return type_; }
+  LBSBoundaryType GetType() const { return type_; }
 
-  CoordinateSystemType CoordType() const { return coord_type_; }
+  CoordinateSystemType GetCoordType() const { return coord_type_; }
 
   bool IsReflecting() const { return type_ == LBSBoundaryType::REFLECTING; }
 

@@ -114,7 +114,7 @@ AngleAggregation::InitializeReflectingBCs()
         const Vector3& omega_n = quadrature_->omegas[n];
         Vector3 omega_reflected;
 
-        switch (rbndry.CoordType())
+        switch (rbndry.GetCoordType())
         {
           case CoordinateSystemType::SPHERICAL:
             omega_reflected = -1.0 * omega_n;

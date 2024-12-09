@@ -82,9 +82,9 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     std::map<uint64_t, BoundaryCondition> bcs;
     for (auto& [bid, lbs_bndry] : sweep_boundaries_)
     {
-      if (lbs_bndry->Type() == LBSBoundaryType::REFLECTING)
+      if (lbs_bndry->GetType() == LBSBoundaryType::REFLECTING)
         bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-      else if (lbs_bndry->Type() == LBSBoundaryType::ISOTROPIC)
+      else if (lbs_bndry->GetType() == LBSBoundaryType::ISOTROPIC)
       {
         const bool has_bndry_preference = boundary_preferences_.count(bid) > 0;
         if (not has_bndry_preference)
