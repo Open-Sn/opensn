@@ -25,7 +25,7 @@ public:
             const UnknownManager& psi_uk_man,
             const SpatialDiscretization& sdm);
 
-  const FLUDSCommonData& CommonData() const;
+  const FLUDSCommonData& GetCommonData() const;
 
   const std::vector<double>& GetLocalUpwindDataBlock() const;
 
@@ -72,7 +72,7 @@ public:
   // cell_global_id, face_id
   using CellFaceKey = std::pair<uint64_t, unsigned int>;
 
-  std::map<CellFaceKey, std::vector<double>>& DeplocsOutgoingMessages()
+  std::map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
   {
     return deplocs_outgoing_messages_;
   }

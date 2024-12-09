@@ -128,7 +128,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
     }   // Process each message embedded in buffer
   }
 
-  cbc_fluds_.DeplocsOutgoingMessages().merge(received_messages);
+  cbc_fluds_.GetDeplocsOutgoingMessages().merge(received_messages);
 
   return cells_who_received_data;
 }

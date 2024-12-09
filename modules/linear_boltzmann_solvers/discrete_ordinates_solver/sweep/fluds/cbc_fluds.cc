@@ -24,7 +24,7 @@ CBC_FLUDS::CBC_FLUDS(size_t num_groups,
 }
 
 const FLUDSCommonData&
-CBC_FLUDS::CommonData() const
+CBC_FLUDS::GetCommonData() const
 {
   return common_data_;
 }
