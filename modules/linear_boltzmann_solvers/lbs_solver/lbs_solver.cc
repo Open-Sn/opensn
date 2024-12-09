@@ -970,22 +970,22 @@ LBSSolver::InitializeMaterials()
                            "transport cross sections.");
 
     // Check number of groups legal
-    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
+    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->GetNumGroups() < groups_.size(),
                          "Material \"" + current_material->name + "\" has fewer groups (" +
-                           std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
+                           std::to_string(matid_to_xs_map_[mat_id]->GetNumGroups()) + ") than " +
                            "the simulation (" + std::to_string(groups_.size()) + "). " +
                            "A material must have at least as many groups as the simulation.");
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->ScatteringOrder() < options_.scattering_order)
+    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() < options_.scattering_order)
     {
       log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name
                         << "\" has a lower scattering order ("
-                        << matid_to_xs_map_[mat_id]->ScatteringOrder() << ") "
+                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << ") "
                         << "than the simulation (" << options_.scattering_order << ").";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->ScatteringOrder() + 1
+    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
   } // for material id
 
@@ -995,9 +995,9 @@ LBSSolver::InitializeMaterials()
   for (const auto& mat_id_xs : matid_to_xs_map_)
   {
     const auto& xs = mat_id_xs.second;
-    num_precursors_ += xs->NumPrecursors();
-    if (xs->NumPrecursors() > max_precursors_per_material_)
-      max_precursors_per_material_ = xs->NumPrecursors();
+    num_precursors_ += xs->GetNumPrecursors();
+    if (xs->GetNumPrecursors() > max_precursors_per_material_)
+      max_precursors_per_material_ = xs->GetNumPrecursors();
   }
 
   // if no precursors, turn off precursors
@@ -1753,7 +1753,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->SigmaSGtoG();
+    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1897,7 +1897,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& S = matid_to_xs_map_[cell.material_id]->TransferMatrix(0);
+    const auto& S = matid_to_xs_map_[cell.material_id]->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -2113,7 +2113,7 @@ LBSSolver::UpdateFieldFunctions()
         double nodal_power = 0.0;
         for (size_t g = 0; g < groups_.size(); ++g)
         {
-          const double sigma_fg = xs->SigmaFission()[g];
+          const double sigma_fg = xs->GetSigmaFission()[g];
           // const double kappa_g = xs->Kappa()[g];
           const double kappa_g = options_.power_default_kappa;
 
@@ -2205,8 +2205,8 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
 
     // Obtain xs
     const auto& xs = transport_view.XS();
-    const auto& F = xs.ProductionMatrix();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& F = xs.GetProductionMatrix();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     if (not xs.IsFissionable())
       continue;
@@ -2226,7 +2226,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options_.use_precursors)
-          for (unsigned int j = 0; j < xs.NumPrecursors(); ++j)
+          for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
             local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
@@ -2256,7 +2256,7 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
 
     // Obtain xs
     const auto& xs = transport_view.XS();
-    const auto& sigma_f = xs.SigmaFission();
+    const auto& sigma_f = xs.GetSigmaFission();
 
     // skip non-fissionable material
     if (not xs.IsFissionable())
@@ -2300,11 +2300,11 @@ LBSSolver::ComputePrecursors()
 
     // Obtain xs
     const auto& xs = transport_view.XS();
-    const auto& precursors = xs.Precursors();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& precursors = xs.GetPrecursors();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over precursors
-    for (uint64_t j = 0; j < xs.NumPrecursors(); ++j)
+    for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
     {
       size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];

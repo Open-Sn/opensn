@@ -102,7 +102,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   std::vector<double> face_mu_values(cell_num_faces_);
 
   const auto& rho = densities_[cell_local_id_];
-  const auto& sigma_t = xs_.at(cell_->material_id)->SigmaTotal();
+  const auto& sigma_t = xs_.at(cell_->material_id)->GetSigmaTotal();
 
   // as = angle set
   // ss = subset

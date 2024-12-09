@@ -370,7 +370,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
 
     // Absorption and sources
     const auto& xs = transport_view.XS();
-    const auto& sigma_a = xs.SigmaAbsorption();
+    const auto& sigma_a = xs.GetSigmaAbsorption();
     for (int i = 0; i < num_nodes; ++i)
     {
       for (int g = 0; g < num_groups_; ++g)

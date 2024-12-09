@@ -67,10 +67,10 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     if (matid_to_src_map.count(cell.material_id) > 0)
       P0_src = matid_to_src_map.at(cell.material_id);
 
-    const auto& S = xs.TransferMatrices();
-    const auto& F = xs.ProductionMatrix();
-    const auto& precursors = xs.Precursors();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& S = xs.GetTransferMatrices();
+    const auto& F = xs.GetProductionMatrix();
+    const auto& precursors = xs.GetPrecursors();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over nodes
     const auto num_nodes = transport_view.NumNodes();

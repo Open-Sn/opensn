@@ -14,15 +14,15 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
   const std::string fname = "acceleration::MakeTwoGridCollapsedInfo";
 
-  const size_t num_groups = xs.NumGroups();
-  const auto& sigma_t = xs.SigmaTotal();
-  const auto& diffusion_coeff = xs.DiffusionCoefficient();
+  const size_t num_groups = xs.GetNumGroups();
+  const auto& sigma_t = xs.GetSigmaTotal();
+  const auto& diffusion_coeff = xs.GetDiffusionCoefficient();
 
   // Make a Dense matrix from sparse transfer matrix
-  if (xs.TransferMatrices().empty())
+  if (xs.GetTransferMatrices().empty())
     throw std::logic_error(fname + ": list of scattering matrices empty.");
 
-  const auto& isotropic_transfer_matrix = xs.TransferMatrix(0);
+  const auto& isotropic_transfer_matrix = xs.GetTransferMatrix(0);
 
   DenseMatrix<double> S(num_groups, num_groups, 0.0);
   for (int g = 0; g < num_groups; ++g)

@@ -107,8 +107,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       const auto& mat_id = matid_xs_pair.first;
       const auto& xs = matid_xs_pair.second;
 
-      const auto& diffusion_coeff = xs->DiffusionCoefficient();
-      const auto& sigma_r = xs->SigmaRemoval();
+      const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+      const auto& sigma_r = xs->GetSigmaRemoval();
 
       std::vector<double> Dg(gs_G, 0.0);
       std::vector<double> sigR(gs_G, 0.0);

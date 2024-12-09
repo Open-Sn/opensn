@@ -434,7 +434,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
         matid_to_xs_map_[mat_id] = transp_xs;
         found_transport_xs = true;
         if (first_material_read)
-          num_groups_ = transp_xs->NumGroups();
+          num_groups_ = transp_xs->GetNumGroups();
 
       } // transport xs
       if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
@@ -466,27 +466,27 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
       Exit(EXIT_FAILURE);
     }
     // Check number of groups legal
-    if (matid_to_xs_map_[mat_id]->NumGroups() != num_groups_)
+    if (matid_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found material \""
                         << current_material->name << "\" has "
-                        << matid_to_xs_map_[mat_id]->NumGroups() << " groups and "
+                        << matid_to_xs_map_[mat_id]->GetNumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
       Exit(EXIT_FAILURE);
     }
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->ScatteringOrder() > 1)
+    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
     {
       log.Log0Warning() << "MG-Diff-InitializeMaterials: Found material \""
                         << current_material->name << "\" has a scattering order of "
-                        << matid_to_xs_map_[mat_id]->ScatteringOrder() << " and"
+                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->ScatteringOrder() + 1
+    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
 
     first_material_read = false;
@@ -507,7 +507,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     for (const auto& mat_id_xs : matid_to_xs_map_)
     {
       // get the P0 transfer matrix
-      const auto& S = mat_id_xs.second->TransferMatrix(0);
+      const auto& S = mat_id_xs.second->GetTransferMatrix(0);
       // loop over all row of the transfer matrix
       const int G = static_cast<int>(num_groups_);
       for (int g = G - 1; g >= 0; --g)
@@ -546,9 +546,9 @@ MGDiffusionSolver::ComputeTwoGridParams()
   {
 
     // get the P0 transfer matrix and total XS
-    const auto& isotropic_transfer_matrix = mat_id_xs.second->TransferMatrix(0);
-    const auto& sigma_t = mat_id_xs.second->SigmaTotal();
-    const auto& diffusion_coeff = mat_id_xs.second->DiffusionCoefficient();
+    const auto& isotropic_transfer_matrix = mat_id_xs.second->GetTransferMatrix(0);
+    const auto& sigma_t = mat_id_xs.second->GetSigmaTotal();
+    const auto& diffusion_coeff = mat_id_xs.second->GetDiffusionCoefficient();
 
     // put P0 transfer matrix in nicer form
     DenseMatrix<double> S(num_groups_, num_groups_, 0.0);
@@ -733,8 +733,8 @@ MGDiffusionSolver::AssembleAbext()
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
-    const auto& D = xs->DiffusionCoefficient();
-    const auto& sigma_r = xs->SigmaRemoval();
+    const auto& D = xs->GetDiffusionCoefficient();
+    const auto& sigma_r = xs->GetSigmaRemoval();
 
     const auto& qext = matid_to_src_map_.at(cell.material_id);
     double collapsed_D = 0.0, collapsed_sig_a = 0.0;
@@ -1007,7 +1007,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
     const size_t num_nodes = cell_mapping.NumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
-    const auto& S = xs->TransferMatrix(0);
+    const auto& S = xs->GetTransferMatrix(0);
 
     for (const auto& [row_g, gprime, sigma_sm] : S.Row(g))
     {
@@ -1075,7 +1075,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.NumNodes();
 
-    const auto& S = matid_to_xs_map_.at(cell.material_id)->TransferMatrix(0);
+    const auto& S = matid_to_xs_map_.at(cell.material_id)->GetTransferMatrix(0);
 
     for (unsigned g = last_fast_group_; g < num_groups_; ++g)
     {

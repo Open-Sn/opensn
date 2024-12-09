@@ -476,7 +476,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
     const auto& K = K_tensor_matrices_[cell.local_id];
 
     const auto& xs = matid_to_xs_map.at(cell.material_id);
-    const auto& sigma_tr = xs->SigmaTransport();
+    const auto& sigma_tr = xs->GetSigmaTransport();
 
     // Volumetric term
     for (int gsg = 0; gsg < num_gs_groups; ++gsg)

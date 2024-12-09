@@ -109,7 +109,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
     std::vector<double> face_mu_values(cell_num_faces);
 
     const auto& rho = densities_[cell.local_id];
-    const auto& sigma_t = xs_.at(cell.material_id)->SigmaTotal();
+    const auto& sigma_t = xs_.at(cell.material_id)->GetSigmaTotal();
 
     // Get cell matrices
     const auto& G = unit_cell_matrices_[cell_local_id].intV_shapeI_gradshapeJ;

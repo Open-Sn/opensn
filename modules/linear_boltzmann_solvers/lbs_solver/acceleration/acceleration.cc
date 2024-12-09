@@ -49,8 +49,8 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
     std::vector<double> sigma_r(num_gs_groups, 0.0);
 
     size_t g = 0;
-    const auto& diffusion_coeff = xs->DiffusionCoefficient();
-    const auto& sigma_removal = xs->SigmaRemoval();
+    const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+    const auto& sigma_removal = xs->GetSigmaRemoval();
     for (size_t gprime = first_grp_index; gprime <= last_group_index; ++gprime)
     {
       D[g] = diffusion_coeff[gprime];

@@ -265,7 +265,7 @@ SimTest91_PWLD()
       }     // if internal incident face
     }       // for face
 
-    const auto& sigma_t = cell_xs.SigmaTotal();
+    const auto& sigma_t = cell_xs.GetSigmaTotal();
     for (size_t g = 0; g < num_groups; ++g)
     {
       auto Atemp = A;
@@ -365,7 +365,7 @@ SimTest91_PWLD()
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.NumNodes();
-      const auto& S = xs.TransferMatrices();
+      const auto& S = xs.GetTransferMatrices();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {

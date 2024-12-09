@@ -208,7 +208,7 @@ SimTest06_WDD()
     if (omega.z < 0.0 and k < (Nz - 1))
       psi_us_z = &psi_ds_z(i, j, k + 1, 0);
 
-    const auto& sigma_t = cell_xs.SigmaTotal();
+    const auto& sigma_t = cell_xs.GetSigmaTotal();
     for (size_t g = 0; g < num_groups; ++g)
     {
       double rhs = 0.0;
@@ -397,7 +397,7 @@ SetSource(const MeshContinuum& grid,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& S = xs.TransferMatrices();
+    const auto& S = xs.GetTransferMatrices();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {

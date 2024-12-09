@@ -49,13 +49,13 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
     if (xs->IsFissionable())
     {
       is_fissionable_ = true;
-      Nf_total += xs->ScalingFactor();
+      Nf_total += xs->GetScalingFactor();
     }
 
     // Define and check number of groups
     if (xsecs.size() == 1)
-      n_grps = xs->NumGroups();
-    OpenSnLogicalErrorIf(xs->NumGroups() != n_grps,
+      n_grps = xs->GetNumGroups();
+    OpenSnLogicalErrorIf(xs->GetNumGroups() != n_grps,
                          "All cross sections being combined must have the same group structure.");
 
     // Increment number of precursors
@@ -72,7 +72,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   // prompt/delayed fission data or total fission data
   if (n_precs > 0)
     for (const auto& xs : xsecs)
-      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->NumPrecursors() == 0,
+      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
                            "If precursors are specified, all fissionable cross sections must "
                            "specify precursors.");
 
@@ -81,7 +81,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   scattering_order_ = 0;
   num_precursors_ = n_precs;
   for (const auto& xs : xsecs)
-    scattering_order_ = std::max(scattering_order_, xs->ScatteringOrder());
+    scattering_order_ = std::max(scattering_order_, xs->GetScatteringOrder());
 
   // Init mandatory cross sections
   sigma_t_.assign(n_grps, 0.0);
@@ -91,7 +91,7 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   if (std::any_of(xsecs.begin(),
                   xsecs.end(),
                   [](const std::shared_ptr<MultiGroupXS>& x)
-                  { return not x->TransferMatrices().empty(); }))
+                  { return not x->GetTransferMatrices().empty(); }))
     transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
 
   // Init fission data
@@ -116,17 +116,17 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
     // Fraction of fissile density
-    const auto N_i = xsecs[x]->ScalingFactor();
+    const auto N_i = xsecs[x]->GetScalingFactor();
     const auto ff_i = xsecs[x]->IsFissionable() ? N_i / Nf_total : 0.0;
 
     // Combine cross sections
-    const auto& sig_t = xsecs[x]->SigmaTotal();
-    const auto& sig_a = xsecs[x]->SigmaAbsorption();
-    const auto& chi = xsecs[x]->Chi();
-    const auto& sig_f = xsecs[x]->SigmaFission();
-    const auto& nu_p_sig_f = xsecs[x]->NuPromptSigmaF();
-    const auto& nu_d_sig_f = xsecs[x]->NuDelayedSigmaF();
-    const auto& F = xsecs[x]->ProductionMatrix();
+    const auto& sig_t = xsecs[x]->GetSigmaTotal();
+    const auto& sig_a = xsecs[x]->GetSigmaAbsorption();
+    const auto& chi = xsecs[x]->GetChi();
+    const auto& sig_f = xsecs[x]->GetSigmaFission();
+    const auto& nu_p_sig_f = xsecs[x]->GetNuPromptSigmaF();
+    const auto& nu_d_sig_f = xsecs[x]->GetNuDelayedSigmaF();
+    const auto& F = xsecs[x]->GetProductionMatrix();
 
     // Here, raw cross sections are scaled by densities and spectra by
     // fractional densities. The latter is done to preserve a unit spectra.
@@ -159,10 +159,10 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
     // precursor yields must be scaled based on the fraction of the total density of materials
     // with precursors they make up.
 
-    if (xsecs[x]->NumPrecursors() > 0)
+    if (xsecs[x]->GetNumPrecursors() > 0)
     {
-      const auto& precursors = xsecs[x]->Precursors();
-      for (size_t j = 0; j < xsecs[x]->NumPrecursors(); ++j)
+      const auto& precursors = xsecs[x]->GetPrecursors();
+      for (size_t j = 0; j < xsecs[x]->GetNumPrecursors(); ++j)
       {
         size_t count = precursor_count + j;
         const auto& precursor = precursors[j];
@@ -171,14 +171,14 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
         precursors_[count].emission_spectrum = precursor.emission_spectrum;
       } // for j
 
-      precursor_count += xsecs[x]->NumPrecursors();
+      precursor_count += xsecs[x]->GetNumPrecursors();
     }
 
     // Set inverse velocity data
-    if (x == 0 and xsecs[x]->InverseVelocity().empty())
-      inv_velocity_ = xsecs[x]->InverseVelocity();
+    if (x == 0 and xsecs[x]->GetInverseVelocity().empty())
+      inv_velocity_ = xsecs[x]->GetInverseVelocity();
     OpenSnLogicalErrorIf(
-      xsecs[x]->InverseVelocity() != inv_velocity_,
+      xsecs[x]->GetInverseVelocity() != inv_velocity_,
       "All cross sections being combined must have the same group-wise velocities.");
 
     // Combine transfer matrices
@@ -188,12 +188,12 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
     // together has to take the sparse matrix's protection mechanisms into
     // account.
 
-    if (not xsecs[x]->TransferMatrices().empty())
+    if (not xsecs[x]->GetTransferMatrices().empty())
     {
-      for (size_t m = 0; m < xsecs[x]->ScatteringOrder() + 1; ++m)
+      for (size_t m = 0; m < xsecs[x]->GetScatteringOrder() + 1; ++m)
       {
         auto& Sm = transfer_matrices_[m];
-        const auto& Sm_other = xsecs[x]->TransferMatrix(m);
+        const auto& Sm_other = xsecs[x]->GetTransferMatrix(m);
         for (size_t g = 0; g < num_groups_; ++g)
         {
           const auto& cols = Sm_other.rowI_indices[g];
