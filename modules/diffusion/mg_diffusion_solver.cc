@@ -524,7 +524,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
   last_fast_group_ = lfg;
 
   // Compute two-grid params
-  do_two_grid_ = basic_options_("do_two_grid").BoolValue();
+  do_two_grid_ = basic_options_("do_two_grid").GetBoolValue();
   if ((lfg == num_groups_) and do_two_grid_)
   {
     log.Log0Error() << "Two-grid is not possible with no upscattering.";
@@ -901,19 +901,20 @@ MGDiffusionSolver::Execute()
 
   // Create Krylov Solver
   // setup KSP once for all
-  petsc_solver_ = CreateCommonKrylovSolverSetup(A_.front(),
-                                                Name(),
-                                                KSPCG,
-                                                PCGAMG,
-                                                0.0,
-                                                basic_options_("residual_tolerance").FloatValue(),
-                                                basic_options_("max_inner_iters").IntegerValue());
+  petsc_solver_ =
+    CreateCommonKrylovSolverSetup(A_.front(),
+                                  Name(),
+                                  KSPCG,
+                                  PCGAMG,
+                                  0.0,
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_inner_iters").GetIntegerValue());
 
   KSPSetApplicationContext(petsc_solver_.ksp, (void*)&my_app_context_);
   KSPMonitorCancel(petsc_solver_.ksp);
   KSPMonitorSet(petsc_solver_.ksp, &MGKSPMonitor, nullptr, nullptr);
 
-  int64_t iverbose = basic_options_("verbose_level").IntegerValue();
+  int64_t iverbose = basic_options_("verbose_level").GetIntegerValue();
   my_app_context_.verbose = iverbose > 1 ? PETSC_TRUE : PETSC_FALSE;
   //  if (my_app_context.verbose == PETSC_TRUE)
   //    cout << "--context TRUE" << endl;
@@ -935,9 +936,9 @@ MGDiffusionSolver::Execute()
   // Solve thermal groups:
   unsigned int thermal_iteration = 0;
   // max # of thermal iterations
-  int64_t max_thermal_iters = basic_options_("max_thermal_iters").IntegerValue();
+  int64_t max_thermal_iters = basic_options_("max_thermal_iters").GetIntegerValue();
   // max thermal error between two successive iterates
-  double thermal_tol = basic_options_("thermal_flux_tolerance").FloatValue();
+  double thermal_tol = basic_options_("thermal_flux_tolerance").GetFloatValue();
   // computed error
   double thermal_error_all;
   double thermal_error_g;

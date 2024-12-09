@@ -596,8 +596,8 @@ DFEMDiffusionSolver::Execute()
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
-                                  basic_options_("residual_tolerance").FloatValue(),
-                                  basic_options_("max_iters").IntegerValue());
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_iters").GetIntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
