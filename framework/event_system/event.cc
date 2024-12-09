@@ -17,13 +17,13 @@ Event::Event(const std::string& name, const ParameterBlock& parameter_block)
 }
 
 const std::string&
-Event::Name() const
+Event::GetName() const
 {
   return name_;
 }
 
 Event::EventCode
-Event::Code() const
+Event::GetCode() const
 {
   return code_;
 }

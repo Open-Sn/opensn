@@ -142,7 +142,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
     value_ = ParameterBlock("", globl_integral / globl_volume);
   }
 
-  const int event_code = event_context.Code();
+  const int event_code = event_context.GetCode();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     const auto& event_params = event_context.Parameters();

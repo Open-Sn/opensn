@@ -136,8 +136,9 @@ PostProcessor::PushOntoStack(std::shared_ptr<Object> new_object)
 void
 PostProcessor::ReceiveEventUpdate(const Event& event)
 {
-  auto it = std::find(
-    subscribed_events_for_execution_.begin(), subscribed_events_for_execution_.end(), event.Name());
+  auto it = std::find(subscribed_events_for_execution_.begin(),
+                      subscribed_events_for_execution_.end(),
+                      event.GetName());
 
   if (it != subscribed_events_for_execution_.end())
   {
@@ -152,7 +153,7 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
       log.Log0Verbose1() << "Post processor \"" << Name()
                          << "\" executed on "
                             "event \""
-                         << event.Name() << "\".";
+                         << event.GetName() << "\".";
   }
 }
 

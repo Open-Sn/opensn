@@ -156,7 +156,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   else
     OpenSnLogicalError("Unsupported operation type \"" + operation_ + "\".");
 
-  const int event_code = event_context.Code();
+  const int event_code = event_context.GetCode();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     const auto& event_params = event_context.Parameters();

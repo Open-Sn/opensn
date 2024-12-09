@@ -29,8 +29,8 @@ public:
 
   Event(const std::string& name);
   Event(const std::string& name, const ParameterBlock& parameter_block);
-  const std::string& Name() const;
-  EventCode Code() const;
+  const std::string& GetName() const;
+  EventCode GetCode() const;
   const ParameterBlock& Parameters() const;
 
   virtual ~Event() = default;
