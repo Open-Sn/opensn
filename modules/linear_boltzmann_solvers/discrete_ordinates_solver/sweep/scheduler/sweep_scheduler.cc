@@ -70,7 +70,7 @@ SweepScheduler::InitializeAlgoDOG()
       auto angleset = angleset_group.GetAngleSets()[as];
       const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
 
-      const std::vector<STDG>& leveled_graph = spds.GlobalSweepPlanes();
+      const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
 
       // Find location depth
       int loc_depth = -1;

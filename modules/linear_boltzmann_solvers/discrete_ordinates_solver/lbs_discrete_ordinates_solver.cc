@@ -647,7 +647,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->Id();
+        auto id = aah_spds->GetId();
         if (opensn::mpi_comm.rank() == (id % opensn::mpi_comm.size()))
           aah_spds->BuildGlobalSweepFAS();
       }
@@ -661,10 +661,10 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->Id();
+        auto id = aah_spds->GetId();
         if ((id % opensn::mpi_comm.size()) == opensn::mpi_comm.rank())
         {
-          auto edges_to_remove = aah_spds->GlobalSweepFAS();
+          auto edges_to_remove = aah_spds->GetGlobalSweepFAS();
           local_edges_to_remove.push_back(id);
           local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
           local_edges_to_remove.insert(
@@ -704,7 +704,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         for (const auto& spds : quadrature.second)
         {
           auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-          if (aah_spds->Id() == spds_id)
+          if (aah_spds->GetId() == spds_id)
           {
             aah_spds->SetGlobalSweepFAS(edges);
             break;
@@ -729,7 +729,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
           for (const size_t dir_id : verbose_sweep_angles_)
           {
             auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-            if (aah_spds->Id() == dir_id)
+            if (aah_spds->GetId() == dir_id)
               aah_spds->PrintGhostedGraph();
           }
         }
