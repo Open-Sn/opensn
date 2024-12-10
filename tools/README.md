@@ -35,7 +35,7 @@ A description of the files or sub-directory is given in the table below.
 
 | File or Directory | Description |
 | ----------------- | ----------- |
-| [XS README](./MGXS_README.md) | Description of the contents of the `xs` directory |
+| [XS README](./xs/MGXS_README.md) | Description of the contents of the `xs` directory |
 
 
 
