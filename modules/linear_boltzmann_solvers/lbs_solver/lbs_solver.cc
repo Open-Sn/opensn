@@ -91,8 +91,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   {
     auto options_params = LBSSolver::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
-
-    this->SetOptions(options_params);
+    SetOptions(options_params);
   }
 }
 
@@ -369,12 +368,6 @@ LBSSolver::GetWGSSolvers()
   return wgs_solvers_;
 }
 
-size_t&
-LBSSolver::GetLastRestartTime()
-{
-  return last_restart_write_time_;
-}
-
 WGSContext&
 LBSSolver::GetWGSContext(int groupset_id)
 {
@@ -620,14 +613,20 @@ LBSSolver::SetOptions(const InputParameters& input)
     else if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
-    else if (spec.GetName() == "read_restart_path")
+    else if (spec.Name() == "read_restart_path")
+    {
       options_.read_restart_path = spec.GetValue<std::string>();
+      options_.read_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+    }
 
-    else if (spec.GetName() == "write_restart_time_interval")
-      options_.write_restart_time_interval = spec.GetValue<int>();
+    else if (spec.Name() == "write_restart_time_interval")
+      options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>());
 
-    else if (spec.GetName() == "write_restart_path")
+    else if (spec.Name() == "write_restart_path")
+    {
       options_.write_restart_path = spec.GetValue<std::string>();
+      options_.write_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+    }
 
     else if (spec.GetName() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
@@ -719,14 +718,22 @@ LBSSolver::SetOptions(const InputParameters& input)
     }
   } // for p
 
-  if (options_.write_restart_time_interval > 0)
+  if (user_params.Has("write_restart_time_interval"))
   {
+    // Create restart directory if necessary
     auto dir = options_.write_restart_path.parent_path();
     if (opensn::mpi_comm.rank() == 0)
-      std::filesystem::create_directory(dir);
+    {
+      if (not std::filesystem::exists(dir))
+      {
+        if (not std::filesystem::create_directories(dir))
+          throw std::runtime_error("Failed to create restart directory: " + dir.string());
+      }
+      else if (not std::filesystem::is_directory(dir))
+        throw std::runtime_error("Restart path exists but is not a directory: " + dir.string());
+    }
     opensn::mpi_comm.barrier();
-    if (not std::filesystem::is_directory(dir))
-      throw std::runtime_error("Failed to create restart directory " + dir.string());
+    UpdateRestartWriteTime();
   }
 }
 
@@ -1277,11 +1284,6 @@ LBSSolver::InitializeParrays()
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
   }
 
-  // Read Restart data
-  if (not options_.read_restart_path.empty())
-    ReadRestartData();
-  opensn::mpi_comm.barrier();
-
   // Initialize transport views
   // Transport views act as a data structure to store information
   // related to the transport simulation. The most prominent function
@@ -1425,8 +1427,7 @@ LBSSolver::InitializeFieldFunctions()
   if (not field_functions_.empty())
     return;
 
-  // Initialize Field Functions
-  //                                              for flux moments
+  // Initialize Field Functions for flux moments
   phi_field_functions_local_map_.clear();
 
   for (size_t g = 0; g < groups_.size(); ++g)
@@ -1954,83 +1955,6 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
         phi_new_mapped[g] += delta_phi_mapped * xi_g[gsi + g];
     } // for dof
   }   // for cell
-}
-
-bool
-LBSSolver::TriggerRestartDump()
-{
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  size_t now_secs = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-
-  if ((now_secs - last_restart_write_time_) < options_.write_restart_time_interval)
-    return false;
-
-  return true;
-}
-
-void
-LBSSolver::UpdateLastRestartWriteTime()
-{
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  last_restart_write_time_ = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-}
-
-void
-LBSSolver::WriteRestartData()
-{
-  CALI_CXX_MARK_SCOPE("LBSSolver::WriteRestartData");
-
-  std::string fbase = options_.write_restart_path.string();
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
-
-  // Write data
-  bool location_succeeded = true;
-  auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  if (file)
-  {
-    location_succeeded = H5WriteDataset1D<double>(file, "phi_old", phi_old_local_);
-    H5Fclose(file);
-  }
-  else
-    location_succeeded = false;
-
-  bool global_succeeded = true;
-  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-  if (global_succeeded)
-  {
-    log.Log() << "Successfully wrote restart data to " << fbase << "X.restart.h5";
-    UpdateLastRestartWriteTime();
-  }
-  else
-    log.Log0Error() << "Failed to write restart data to " << fbase << "X.restart.h5";
-}
-
-void
-LBSSolver::ReadRestartData()
-{
-  CALI_CXX_MARK_SCOPE("LBSSolver::ReadRestartData");
-
-  std::string fbase = options_.read_restart_path.string();
-  std::string fname = fbase + std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
-
-  bool location_succeeded = true;
-  auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (file)
-  {
-    phi_old_local_.clear();
-    phi_old_local_ = H5ReadDataset1D<double>(file, "phi_old");
-    location_succeeded = not phi_old_local_.empty();
-    H5Fclose(file);
-  }
-  else
-    location_succeeded = false;
-
-  bool global_succeeded = true;
-  mpi_comm.all_reduce(location_succeeded, global_succeeded, mpi::op::logical_and<bool>());
-  if (global_succeeded)
-    log.Log() << "Successfully read restart data from " << fbase + "X.restart.h5";
-  else
-    throw std::logic_error("Failed to read restart data from " + fbase + "X.restart.h5");
 }
 
 std::vector<double>

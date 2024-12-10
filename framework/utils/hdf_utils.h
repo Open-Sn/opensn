@@ -165,10 +165,10 @@ H5CreateAttribute(hid_t id, const std::string& name, T& data)
 }
 
 template <typename T>
-std::vector<T>
-H5ReadDataset1D(hid_t id, const std::string& name)
+bool
+H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
 {
-  std::vector<T> data;
+  bool retval = true;
 
   auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
   if (dataset != H5I_INVALID_HID)
@@ -184,6 +184,7 @@ H5ReadDataset1D(hid_t id, const std::string& name)
         {
           data.clear();
           data.shrink_to_fit();
+          retval = false;
         }
       }
       H5Sclose(dataspace);
@@ -206,6 +207,7 @@ H5ReadDataset1D(hid_t id, const std::string& name)
           {
             data.clear();
             data.shrink_to_fit();
+            retval = false;
           }
         }
         H5Aclose(attribute);
@@ -213,7 +215,7 @@ H5ReadDataset1D(hid_t id, const std::string& name)
     }
   }
 
-  return data;
+  return retval;
 }
 
 template <typename T>

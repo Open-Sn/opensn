@@ -73,23 +73,11 @@ AGSSolver::Solve()
     // Restore qmoms
     lbs_solver_.GetQMomentsLocal() = saved_qmoms;
 
-    // Write restart data
-    if (lbs_solver_.RestartsEnabled() and lbs_solver_.TriggerRestartDump() and
-        lbs_solver_.GetOptions().enable_ags_restart_write)
-    {
-      lbs_solver_.WriteRestartData();
-    }
-
     if (converged)
       break;
     else
       phi_old_ = lbs_solver_.GetPhiNewLocal();
   }
-
-  // If restarts are enabled, always write a restart dump upon convergence or when we reach the
-  // iteration limit
-  if (lbs_solver_.RestartsEnabled() && lbs_solver_.GetOptions().enable_ags_restart_write)
-    lbs_solver_.WriteRestartData();
 }
 
 } // namespace opensn

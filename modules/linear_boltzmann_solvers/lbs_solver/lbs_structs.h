@@ -7,6 +7,7 @@
 #include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/math/math.h"
 #include <functional>
+#include <chrono>
 #include <map>
 
 namespace opensn
@@ -203,12 +204,9 @@ struct LBSOptions
   int max_mpi_message_size = 32768;
 
   std::filesystem::path read_restart_path;
-  std::filesystem::path write_restart_path =
-    opensn::input_path.replace_extension("restart").string() + "/" +
-    opensn::input_path.stem().string();
-  size_t write_restart_time_interval = 0;
-
-  bool enable_ags_restart_write = true;
+  std::filesystem::path write_restart_path;
+  std::chrono::time_point<std::chrono::system_clock> last_restart_write_time; 
+  std::chrono::seconds write_restart_time_interval = std::chrono::seconds(0);
 
   bool use_precursors = false;
   bool use_src_moments = false;

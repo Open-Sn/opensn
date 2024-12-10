@@ -17,11 +17,18 @@ public:
   explicit SteadyStateSolver(const InputParameters& params);
 
   void Initialize() override;
+
   void Execute() override;
 
 public:
   static InputParameters GetInputParameters();
+
   static std::shared_ptr<SteadyStateSolver> Create(const ParameterBlock& params);
+
+private:
+  bool ReadRestartData();
+
+  bool WriteRestartData();
 };
 
 } // namespace opensn
