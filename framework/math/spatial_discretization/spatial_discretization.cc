@@ -56,6 +56,12 @@ SpatialDiscretization::GetCoordinateSystemType() const
 }
 
 size_t
+SpatialDiscretization::GetNumLocalNodes() const
+{
+  return local_base_block_size_;
+}
+
+size_t
 SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
@@ -64,11 +70,17 @@ SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) co
 }
 
 size_t
+SpatialDiscretization::GetNumGlobalNodes() const
+{
+  return global_base_block_size_;
+}
+
+size_t
 SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
-  return globl_base_block_size_ * N;
+  return global_base_block_size_ * N;
 }
 
 size_t

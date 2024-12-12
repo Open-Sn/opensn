@@ -108,7 +108,7 @@ FiniteVolume::OrderNodes()
   local_block_address_ = locJ_block_address_[opensn::mpi_comm.rank()];
 
   local_base_block_size_ = local_num_nodes;
-  globl_base_block_size_ = global_num_nodes;
+  global_base_block_size_ = global_num_nodes;
 
   // Sort neigbor ids
   const auto neighbor_gids = ref_grid_.cells.GetGhostGlobalIDs();
@@ -167,7 +167,7 @@ FiniteVolume::OrderNodes()
   } // for pid_list_pair
 
   local_base_block_size_ = ref_grid_.local_cells.size();
-  globl_base_block_size_ = ref_grid_.GetGlobalNumberOfCells();
+  global_base_block_size_ = ref_grid_.GetGlobalNumberOfCells();
 }
 
 void
