@@ -254,10 +254,13 @@ PowerIterationKEigen::ReadRestartData()
     {
       if (gs.angle_agg)
       {
-        std::string name = "GS" + std::to_string(gs_id);
-        std::vector<double> psi;
-        success &= H5ReadDataset1D<double>(file, name.c_str(), psi);
-        gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
+        std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
+        if (H5Has(file, name))
+        {
+          std::vector<double> psi;
+          success &= H5ReadDataset1D<double>(file, name.c_str(), psi);
+          gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
+        }
       }
       ++gs_id;
     }
@@ -292,9 +295,12 @@ PowerIterationKEigen::WriteRestartData()
     {
       if (gs.angle_agg)
       {
-        std::string name = "GS" + std::to_string(gs_id);
         auto psi = gs.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
-        success &= H5WriteDataset1D<double>(file, name, psi);
+        if (not psi.empty())
+        {
+          std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
+          success &= H5WriteDataset1D<double>(file, name, psi);
+        }
       }
       ++gs_id;
     }
