@@ -260,7 +260,7 @@ LBSSolver::LocalNodeCount() const
 size_t
 LBSSolver::GlobalNodeCount() const
 {
-  return glob_node_count_;
+  return global_node_count_;
 }
 
 std::vector<double>&
@@ -398,9 +398,9 @@ LBSSolver::GetNumPhiIterativeUnknowns()
 {
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const size_t num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
 
-  return {num_local_phi_dofs, num_globl_phi_dofs};
+  return {num_local_phi_dofs, num_global_phi_dofs};
 }
 
 size_t
@@ -1176,13 +1176,13 @@ LBSSolver::ComputeUnitIntegrals()
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),
                                           unit_ghost_cell_matrices_.size()};
-  std::array<size_t, 2> num_globl_ucms = {0, 0};
+  std::array<size_t, 2> num_global_ucms = {0, 0};
 
-  mpi_comm.all_reduce(num_local_ucms.data(), 2, num_globl_ucms.data(), mpi::op::sum<size_t>());
+  mpi_comm.all_reduce(num_local_ucms.data(), 2, num_global_ucms.data(), mpi::op::sum<size_t>());
 
   opensn::mpi_comm.barrier();
   log.Log() << "Ghost cell unit cell-matrix ratio: "
-            << (double)num_globl_ucms[1] * 100 / (double)num_globl_ucms[0] << "%";
+            << (double)num_global_ucms[1] * 100 / (double)num_global_ucms[0] << "%";
   log.Log() << "Cell matrices computed.";
 }
 
@@ -1248,7 +1248,7 @@ LBSSolver::InitializeParrays()
 
   // Compute local # of dof
   local_node_count_ = discretization_->GetNumLocalNodes();
-  glob_node_count_ = discretization_->GetNumGlobalNodes();
+  global_node_count_ = discretization_->GetNumGlobalNodes();
 
   // Compute num of unknowns
   size_t num_grps = groups_.size();
@@ -1491,7 +1491,7 @@ LBSSolver::InitializeBoundaries()
 
   const std::string fname = "LBSSolver::InitializeBoundaries";
   // Determine boundary-ids involved in the problem
-  std::set<uint64_t> globl_unique_bids_set;
+  std::set<uint64_t> global_unique_bids_set;
   {
     std::set<uint64_t> local_unique_bids_set;
     for (const auto& cell : grid_ptr_->local_cells)
@@ -1504,17 +1504,17 @@ LBSSolver::InitializeBoundaries()
     std::vector<uint64_t> recvbuf;
     mpi_comm.all_gather(local_unique_bids, recvbuf);
 
-    globl_unique_bids_set = local_unique_bids_set; // give it a head start
+    global_unique_bids_set = local_unique_bids_set; // give it a head start
 
     for (uint64_t bid : recvbuf)
-      globl_unique_bids_set.insert(bid);
+      global_unique_bids_set.insert(bid);
   }
 
   // Initialize default incident boundary
   const size_t G = num_groups_;
 
   sweep_boundaries_.clear();
-  for (uint64_t bid : globl_unique_bids_set)
+  for (uint64_t bid : global_unique_bids_set)
   {
     const bool has_no_preference = boundary_preferences_.count(bid) == 0;
     const bool has_not_been_set = sweep_boundaries_.count(bid) == 0;
@@ -2130,10 +2130,10 @@ LBSSolver::UpdateFieldFunctions()
 
     if (options_.power_normalization > 0.0)
     {
-      double globl_total_power;
-      mpi_comm.all_reduce(local_total_power, globl_total_power, mpi::op::sum<double>());
+      double global_total_power;
+      mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
 
-      Scale(data_vector_local, options_.power_normalization / globl_total_power);
+      Scale(data_vector_local, options_.power_normalization / global_total_power);
     }
 
     const size_t ff_index = power_gen_fieldfunc_local_handle_;
