@@ -121,7 +121,7 @@ PieceWiseLinearContinuous::OrderNodes()
   local_block_address_ = locJ_block_address_[opensn::mpi_comm.rank()];
 
   local_base_block_size_ = local_num_nodes;
-  globl_base_block_size_ = global_num_nodes;
+  global_base_block_size_ = global_num_nodes;
 
   // Build node mapping for local
   //                                              nodes

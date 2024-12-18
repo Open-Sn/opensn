@@ -26,15 +26,13 @@ LBSSolverIO::WriteFluxMoments(
 
   const auto& grid = lbs_solver.Grid();
   const auto& discretization = lbs_solver.SpatialDiscretization();
-
   const auto& uk_man = lbs_solver.UnknownManager();
-  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
 
-  uint64_t num_local_cells = grid.local_cells.size();
-  uint64_t num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
-  uint64_t num_moments = lbs_solver.NumMoments();
-  uint64_t num_groups = lbs_solver.NumGroups();
-  uint64_t num_local_dofs = num_local_nodes * num_moments * num_groups;
+  auto num_moments = lbs_solver.NumMoments();
+  auto num_groups = lbs_solver.NumGroups();
+  auto num_local_cells = grid.local_cells.size();
+  auto num_local_nodes = discretization.GetNumLocalNodes();
+  auto num_local_dofs = num_local_nodes * num_moments * num_groups;
   OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
 
   // Write number of moments and groups to the root of the h5 file
@@ -109,26 +107,23 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   log.Log() << "Reading flux moments from " << file_base;
 
   // Read the macro data
-  uint64_t file_num_local_cells;
-  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
-
-  uint64_t file_num_local_nodes;
-  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
-
   uint64_t file_num_moments;
-  H5ReadAttribute(file_id, "num_moments", file_num_moments);
-
   uint64_t file_num_groups;
+  uint64_t file_num_local_cells;
+  uint64_t file_num_local_nodes;
+
+  H5ReadAttribute(file_id, "num_moments", file_num_moments);
   H5ReadAttribute(file_id, "num_groups", file_num_groups);
+  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
+  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
 
   // Check compatibility with system macro info
   const auto& grid = lbs_solver.Grid();
   const auto& discretization = lbs_solver.SpatialDiscretization();
   const auto uk_man = lbs_solver.UnknownManager();
-  const auto nodes_only = UnknownManager::GetUnitaryUnknownManager();
 
   const auto num_local_cells = grid.local_cells.size();
-  const auto num_local_nodes = discretization.GetNumLocalDOFs(nodes_only);
+  const auto num_local_nodes = discretization.GetNumLocalNodes();
   const auto num_moments = lbs_solver.NumMoments();
   const auto num_groups = lbs_solver.NumGroups();
   const auto num_local_dofs = discretization.GetNumLocalDOFs(uk_man);

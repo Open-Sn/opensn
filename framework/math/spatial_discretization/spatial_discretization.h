@@ -73,6 +73,12 @@ public:
    */
   virtual int64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
+  /// Returns the number of local nodes used in this discretization.
+  size_t GetNumLocalNodes() const;
+
+  /// Returns the number of global nodes used in this discretization.
+  size_t GetNumGlobalNodes() const;
+
   /**
    * For the unknown structure in the unknown manager, returns the number of local
    * degrees-of-freedom.
@@ -219,7 +225,7 @@ protected:
   std::vector<uint64_t> locJ_block_size_;
 
   uint64_t local_base_block_size_ = 0;
-  uint64_t globl_base_block_size_ = 0;
+  uint64_t global_base_block_size_ = 0;
 
   const CoordinateSystemType coord_sys_type_;
 

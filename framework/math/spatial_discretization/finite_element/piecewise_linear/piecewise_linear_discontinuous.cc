@@ -95,7 +95,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   const uint64_t global_node_count = running_block_address;
 
   local_base_block_size_ = local_node_count;
-  globl_base_block_size_ = global_node_count;
+  global_base_block_size_ = global_node_count;
 
   // Collect ghost cell ids needing block addresses
   std::map<int, std::vector<uint64_t>> ghost_cell_ids_consolidated;
