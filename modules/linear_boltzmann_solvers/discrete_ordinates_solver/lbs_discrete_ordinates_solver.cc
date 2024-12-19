@@ -60,6 +60,13 @@ DiscreteOrdinatesSolver::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<DiscreteOrdinatesSolver>
+DiscreteOrdinatesSolver::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<DiscreteOrdinatesSolver>("lbs::DiscreteOrdinatesSolver", params);
+}
+
 DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
   : LBSSolver(params),
     verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),

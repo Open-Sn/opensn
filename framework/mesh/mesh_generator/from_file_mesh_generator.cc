@@ -34,6 +34,14 @@ FromFileMeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<FromFileMeshGenerator>
+FromFileMeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  auto ptr = factory.Create<FromFileMeshGenerator>("mesh::FromFileMeshGenerator", params);
+  return ptr;
+}
+
 FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     filename_(params.GetParamValue<std::string>("filename")),

@@ -13,7 +13,7 @@ namespace opensn
 class SweepBoundary
 {
 private:
-  const BoundaryType type_;
+  const LBSBoundaryType type_;
   const CoordinateSystemType coord_type_;
   /// Time value passed to boundary functions
   double evaluation_time_ = 0.0;
@@ -23,7 +23,7 @@ protected:
   size_t num_groups_;
 
 public:
-  explicit SweepBoundary(BoundaryType bndry_type,
+  explicit SweepBoundary(LBSBoundaryType bndry_type,
                          size_t num_groups,
                          CoordinateSystemType coord_type)
     : type_(bndry_type), coord_type_(coord_type), num_groups_(num_groups)
@@ -33,11 +33,11 @@ public:
 
   virtual ~SweepBoundary() = default;
 
-  BoundaryType Type() const { return type_; }
+  LBSBoundaryType Type() const { return type_; }
 
   CoordinateSystemType CoordType() const { return coord_type_; }
 
-  bool IsReflecting() const { return type_ == BoundaryType::REFLECTING; }
+  bool IsReflecting() const { return type_ == LBSBoundaryType::REFLECTING; }
 
   double GetEvaluationTime() const { return evaluation_time_; }
 

@@ -2,26 +2,17 @@
 #include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
+#include "LuaBridge/LuaBridge.h"
 
 using namespace opensn;
 
 namespace unit_tests
 {
 
-ParameterBlock math_Test02_ParallelVector(const InputParameters& params);
-
-RegisterWrapperFunctionInNamespace(unit_tests,
-                                   math_Test02_ParallelVector,
-                                   nullptr,
-                                   math_Test02_ParallelVector);
-
-ParameterBlock
-math_Test02_ParallelVector(const InputParameters&)
+void
+math_Test02_ParallelVector()
 {
-  using namespace opensn;
-
   OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 2, "Requires 2 processors");
 
   opensn::log.Log() << "Testing ParallelSTLVector" << std::endl;
@@ -167,8 +158,8 @@ math_Test02_ParallelVector(const InputParameters&)
   else
     opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GetGlobalValue(1)
                          << std::endl;
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, math_Test02_ParallelVector);
 
 } //  namespace unit_tests

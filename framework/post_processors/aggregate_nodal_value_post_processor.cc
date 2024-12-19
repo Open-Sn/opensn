@@ -32,6 +32,14 @@ AggregateNodalValuePostProcessor::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<AggregateNodalValuePostProcessor>
+AggregateNodalValuePostProcessor::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<AggregateNodalValuePostProcessor>("post::AggregateNodalValuePostProcessor",
+                                                          params);
+}
+
 AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
     GridBasedFieldFunctionInterface(params),
@@ -43,7 +51,7 @@ AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputPa
 void
 AggregateNodalValuePostProcessor::Initialize()
 {
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto grid_field_function = GetGridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"
@@ -51,7 +59,7 @@ AggregateNodalValuePostProcessor::Initialize()
 
   const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
 
-  const auto* logical_volume_ptr_ = GetLogicalVolume();
+  const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
   {
     cell_local_ids_.reserve(grid.local_cells.size());
@@ -74,7 +82,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   if (not initialized_)
     Initialize();
 
-  const auto* grid_field_function = GetGridBasedFieldFunction();
+  const auto grid_field_function = GetGridBasedFieldFunction();
 
   OpenSnLogicalErrorIf(not grid_field_function,
                        "Attempted to access invalid field"

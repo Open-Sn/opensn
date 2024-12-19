@@ -26,7 +26,8 @@ ResponseEvaluator::GetInputParameters()
     "and arbitrary forward sources.");
   params.SetDocGroup("LBSUtilities");
 
-  params.AddRequiredParameter<size_t>("lbs_solver_handle", "A handle to an existing LBS solver.");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver",
+                                                       "A handle to an existing LBS solver.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
   params.LinkParameterToBlock("options", "response::OptionsBlock");
@@ -34,19 +35,24 @@ ResponseEvaluator::GetInputParameters()
   return params;
 }
 
-ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
-  : lbs_solver_(
-      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle")))
+std::shared_ptr<ResponseEvaluator>
+ResponseEvaluator::Create(const ParameterBlock& params)
 {
-  if (params.ParametersAtAssignment().Has("options"))
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<ResponseEvaluator>("lbs::ResponseEvaluator", params);
+}
+
+ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
+  : lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver")))
+{
+  if (params.IsParameterValid("options"))
   {
     auto options = OptionsBlock();
     options.AssignParameters(params.GetParam("options"));
     SetOptions(options);
   }
 }
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs, ResponseOptionsBlock, ResponseEvaluator::OptionsBlock);
 
 InputParameters
 ResponseEvaluator::OptionsBlock()
@@ -71,11 +77,9 @@ ResponseEvaluator::OptionsBlock()
 void
 ResponseEvaluator::SetOptions(const InputParameters& params)
 {
-  const auto& user_params = params.ParametersAtAssignment();
-
-  if (user_params.Has("buffers"))
+  if (params.IsParameterValid("buffers"))
   {
-    const auto& user_buffer_params = user_params.GetParam("buffers");
+    const auto& user_buffer_params = params.GetParam("buffers");
     user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (int p = 0; p < user_buffer_params.NumParameters(); ++p)
     {
@@ -85,8 +89,8 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
     }
   }
 
-  if (user_params.Has("clear_sources"))
-    if (user_params.GetParamValue<bool>("clear_sources"))
+  if (params.IsParameterValid("clear_sources"))
+    if (params.GetParamValue<bool>("clear_sources"))
     {
       material_sources_.clear();
       point_sources_.clear();
@@ -94,17 +98,13 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
       boundary_sources_.clear();
     }
 
-  if (user_params.Has("sources"))
+  if (params.IsParameterValid("sources"))
   {
     auto source_params = SourceOptionsBlock();
-    source_params.AssignParameters(user_params.GetParam("sources"));
+    source_params.AssignParameters(params.GetParam("sources"));
     SetSourceOptions(source_params);
   }
 }
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs,
-                                     ResponseBufferOptionsBlock,
-                                     ResponseEvaluator::BufferOptionsBlock);
 
 InputParameters
 ResponseEvaluator::BufferOptionsBlock()
@@ -125,8 +125,11 @@ ResponseEvaluator::BufferOptionsBlock()
 }
 
 void
-ResponseEvaluator::SetBufferOptions(const InputParameters& params)
+ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 {
+  auto params = opensn::ResponseEvaluator::BufferOptionsBlock();
+  params.AssignParameters(input);
+
   const auto name = params.GetParamValue<std::string>("name");
   OpenSnInvalidArgumentIf(adjoint_buffers_.count(name) > 0,
                           "An adjoint buffer with name " + name + " already exists.");
@@ -136,20 +139,16 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& params)
   std::vector<double> phi;
   if (prefixes.Has("flux_moments"))
     LBSSolverIO::ReadFluxMoments(
-      lbs_solver_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
+      *lbs_solver_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
 
   std::vector<std::vector<double>> psi;
   if (prefixes.Has("angular_fluxes"))
     LBSSolverIO::ReadAngularFluxes(
-      lbs_solver_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
+      *lbs_solver_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
   adjoint_buffers_[name] = {phi, psi};
   log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";
 }
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs,
-                                     ResponseSourceOptionsBlock,
-                                     ResponseEvaluator::SourceOptionsBlock);
 
 InputParameters
 ResponseEvaluator::SourceOptionsBlock()
@@ -162,10 +161,10 @@ ResponseEvaluator::SourceOptionsBlock()
     "material", {}, "An array of tables containing material source specifications.");
   params.LinkParameterToBlock("material", "response::MaterialSourceOptionsBlock");
 
-  params.AddOptionalParameterArray(
+  params.AddOptionalParameterArray<std::shared_ptr<PointSource>>(
     "point", {}, "An array of tables containing point source handles.");
 
-  params.AddOptionalParameterArray(
+  params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric", {}, "An array of tables containing volumetric source handles.");
 
   params.AddOptionalParameterArray(
@@ -176,8 +175,11 @@ ResponseEvaluator::SourceOptionsBlock()
 }
 
 void
-ResponseEvaluator::SetSourceOptions(const InputParameters& params)
+ResponseEvaluator::SetSourceOptions(const InputParameters& input)
 {
+  auto params = ResponseEvaluator::SourceOptionsBlock();
+  params.AssignParameters(input);
+
   params.RequireBlockTypeIs(ParameterBlockType::BLOCK);
 
   // Add material sources
@@ -198,9 +200,9 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
     const auto& user_psrc_params = params.GetParam("point");
     for (int p = 0; p < user_psrc_params.NumParameters(); ++p)
     {
-      point_sources_.push_back(GetStackItem<PointSource>(
-        object_stack, user_psrc_params.GetParam(p).GetValue<size_t>(), __FUNCTION__));
-      point_sources_.back().Initialize(lbs_solver_);
+      point_sources_.push_back(
+        user_psrc_params.GetParam(p).GetValue<std::shared_ptr<PointSource>>());
+      point_sources_.back()->Initialize(*lbs_solver_);
     }
   }
 
@@ -210,9 +212,9 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
     const auto& user_dsrc_params = params.GetParam("volumetric");
     for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
     {
-      volumetric_sources_.push_back(GetStackItem<VolumetricSource>(
-        object_stack, user_dsrc_params.GetParam(p).GetValue<size_t>(), __FUNCTION__));
-      volumetric_sources_.back().Initialize(lbs_solver_);
+      volumetric_sources_.push_back(
+        user_dsrc_params.GetParam(p).GetValue<std::shared_ptr<VolumetricSource>>());
+      volumetric_sources_.back()->Initialize(*lbs_solver_);
     }
   }
 
@@ -228,10 +230,6 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& params)
     }
   }
 }
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs,
-                                     MaterialSourceOptionsBlock,
-                                     ResponseEvaluator::MaterialSourceOptionsBlock);
 
 InputParameters
 ResponseEvaluator::MaterialSourceOptionsBlock()
@@ -256,11 +254,11 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                             " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
-  OpenSnInvalidArgumentIf(values.size() != lbs_solver_.NumGroups(),
+  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->NumGroups(),
                           "The number of material source values and groups "
                           "in the underlying solver do not match. "
                           "Expected " +
-                            std::to_string(lbs_solver_.NumGroups()) + " but got " +
+                            std::to_string(lbs_solver_->NumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
 
   material_sources_[matid] = values;
@@ -273,7 +271,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
   const auto bndry_name = params.GetParamValue<std::string>("name");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  const auto bid = lbs_solver_.supported_boundary_names.at(bndry_name);
+  const auto bid = lbs_solver_->supported_boundary_names.at(bndry_name);
   if (bndry_type == "isotropic")
   {
     OpenSnInvalidArgumentIf(not params.Has("group_strength"),
@@ -281,7 +279,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
                             "boundaries of type \"isotropic\".");
     params.RequireParameterBlockTypeIs("values", ParameterBlockType::ARRAY);
 
-    boundary_sources_[bid] = {BoundaryType::ISOTROPIC,
+    boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC,
                               params.GetParamVectorValue<double>("group_strength")};
   }
   else
@@ -317,11 +315,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = lbs_solver_.Grid();
-  const auto& discretization = lbs_solver_.SpatialDiscretization();
-  const auto& transport_views = lbs_solver_.GetCellTransportViews();
-  const auto& unit_cell_matrices = lbs_solver_.GetUnitCellMatrices();
-  const auto num_groups = lbs_solver_.NumGroups();
+  const auto& grid = lbs_solver_->Grid();
+  const auto& discretization = lbs_solver_->SpatialDiscretization();
+  const auto& transport_views = lbs_solver_->GetCellTransportViews();
+  const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
+  const auto num_groups = lbs_solver_->NumGroups();
 
   double local_response = 0.0;
 
@@ -353,7 +351,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   if (not boundary_sources_.empty())
   {
     size_t gs = 0;
-    for (const auto& groupset : lbs_solver_.Groupsets())
+    for (const auto& groupset : lbs_solver_->Groupsets())
     {
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;
@@ -406,12 +404,12 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   // Point sources
   for (const auto& point_source : point_sources_)
-    for (const auto& subscriber : point_source.Subscribers())
+    for (const auto& subscriber : point_source->Subscribers())
     {
       const auto& cell = grid.local_cells[subscriber.cell_local_id];
       const auto& transport_view = transport_views[cell.local_id];
 
-      const auto& src = point_source.Strength();
+      const auto& src = point_source->Strength();
       const auto& vol_wt = subscriber.volume_weight;
 
       const auto num_cell_nodes = transport_view.NumNodes();
@@ -426,7 +424,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   // Volumetric sources
   for (const auto& volumetric_source : volumetric_sources_)
-    for (const uint64_t local_id : volumetric_source.GetSubscribers())
+    for (const uint64_t local_id : volumetric_source->GetSubscribers())
     {
       const auto& cell = grid.local_cells[local_id];
       const auto& transport_view = transport_views[cell.local_id];
@@ -438,7 +436,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       {
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = volumetric_source(cell, nodes[i], num_groups);
+        const auto& vals = (*volumetric_source)(cell, nodes[i], num_groups);
         for (size_t g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
@@ -461,7 +459,7 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
 
   std::vector<double> psi;
   const auto& bc = boundary_sources_.at(boundary_id);
-  if (bc.type == BoundaryType::ISOTROPIC)
+  if (bc.type == LBSBoundaryType::ISOTROPIC)
   {
     for (size_t n = 0; n < num_gs_angles; ++n)
       for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)

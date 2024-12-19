@@ -4,30 +4,13 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/types.h"
+#include "lua/lib/console.h"
 
 using namespace opensn;
 
 namespace unit_tests
 {
-
-InputParameters math_SDM_Test02Syntax();
-ParameterBlock math_SDM_Test02_DisContinuous(const InputParameters& input_parameters);
-
-RegisterWrapperFunctionInNamespace(unit_tests,
-                                   math_SDM_Test02_DisContinuous,
-                                   math_SDM_Test02Syntax,
-                                   math_SDM_Test02_DisContinuous);
-
-InputParameters
-math_SDM_Test02Syntax()
-{
-  InputParameters params;
-
-  params.AddRequiredParameterBlock("arg0", "General parameters");
-
-  return params;
-}
 
 /**Maps a face, in a discontinuous sense, using the spatial discretization.*/
 int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
@@ -41,11 +24,9 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 
 double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
 
-ParameterBlock
-math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
+void
+math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 {
-  const ParameterBlock& params = input_parameters.GetParam("arg0");
-
   const double penalty_factor =
     params.Has("penalty_factor") ? params.GetParamValue<double>("penalty_factor") : 4.0;
 
@@ -407,8 +388,6 @@ math_SDM_Test02_DisContinuous(const InputParameters& input_parameters)
 
     FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
   }
-
-  return ParameterBlock{};
 }
 
 int
@@ -502,5 +481,7 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
 
   return hp;
 }
+
+BIND_FUNCTION(unit_tests, math_SDM_Test02_DisContinuous);
 
 } //  namespace unit_tests

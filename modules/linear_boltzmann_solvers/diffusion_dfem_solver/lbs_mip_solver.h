@@ -21,6 +21,7 @@ public:
 
 public:
   static InputParameters GetInputParameters();
+  static std::shared_ptr<DiffusionDFEMSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

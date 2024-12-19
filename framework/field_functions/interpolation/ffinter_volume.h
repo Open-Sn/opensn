@@ -37,17 +37,26 @@ public:
 
   virtual ~FieldFunctionInterpolationVolume() {}
 
-  std::shared_ptr<LogicalVolume>& GetLogicalVolume() { return logical_volume_; }
+  std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logical_volume_; }
 
-  FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
+  void SetLogicalVolume(std::shared_ptr<LogicalVolume> lv) { logical_volume_ = lv; }
+
+  FieldFunctionInterpolationOperation GetOperationType() const { return op_type_; }
+
+  void SetOperationType(FieldFunctionInterpolationOperation op_type) { op_type_ = op_type; }
 
   double& GetOpValue() { return op_value_; }
+
+  double GetValue() const { return op_value_; }
 
   void SetOperationFunction(std::shared_ptr<ScalarMaterialFunction> function);
 
   void Initialize() override;
 
   void Execute() override;
+
+public:
+  static std::shared_ptr<FieldFunctionInterpolationVolume> Create();
 };
 
 } // namespace opensn

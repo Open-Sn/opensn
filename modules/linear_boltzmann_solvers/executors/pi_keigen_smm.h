@@ -23,7 +23,6 @@ protected:
   };
 
 public:
-  static InputParameters GetInputParameters();
   explicit PowerIterationKEigenSMM(const InputParameters& params);
 
   void Initialize() override;
@@ -140,6 +139,10 @@ protected:
   static int MapAssociatedFaceNode(const Vector3& node,
                                    const std::vector<Vector3>& nbr_nodes,
                                    double epsilon = 1.0e-12);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PowerIterationKEigenSMM> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -5,11 +5,12 @@
 
 #include "framework/runtime.h"
 #include "framework/parameters/input_parameters.h"
+#include <memory>
 
 namespace opensn
 {
 
-class Object
+class Object : public std::enable_shared_from_this<Object>
 {
 private:
   size_t stack_id_ = SIZE_T_INVALID;
@@ -37,7 +38,7 @@ public:
    * An overridable callback that is called by the ObjectMaker and by default adds the object onto
    * the object stack. This function can be used to place the object on a different stack.
    */
-  virtual void PushOntoStack(std::shared_ptr<Object>& new_object);
+  virtual void PushOntoStack(std::shared_ptr<Object> new_object);
 
   virtual ~Object() = default;
 };

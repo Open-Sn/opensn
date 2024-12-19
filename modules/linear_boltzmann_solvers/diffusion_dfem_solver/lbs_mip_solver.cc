@@ -26,6 +26,13 @@ DiffusionDFEMSolver::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<DiffusionDFEMSolver>
+DiffusionDFEMSolver::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<DiffusionDFEMSolver>("lbs::DiffusionDFEMSolver", params);
+}
+
 DiffusionDFEMSolver::DiffusionDFEMSolver(const InputParameters& params) : LBSSolver(params)
 {
 }
@@ -75,16 +82,16 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     std::map<uint64_t, BoundaryCondition> bcs;
     for (auto& [bid, lbs_bndry] : sweep_boundaries_)
     {
-      if (lbs_bndry->Type() == BoundaryType::REFLECTING)
+      if (lbs_bndry->Type() == LBSBoundaryType::REFLECTING)
         bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-      else if (lbs_bndry->Type() == BoundaryType::ISOTROPIC)
+      else if (lbs_bndry->Type() == LBSBoundaryType::ISOTROPIC)
       {
         const bool has_bndry_preference = boundary_preferences_.count(bid) > 0;
         if (not has_bndry_preference)
           bcs[bid] = {BCType::ROBIN, {0.25, 0.5}};
 
         const auto& bpref = boundary_preferences_.at(bid);
-        const bool is_vaccuum = bpref.type == BoundaryType::VACUUM;
+        const bool is_vaccuum = bpref.type == LBSBoundaryType::VACUUM;
         if (is_vaccuum)
           bcs[bid] = {BCType::ROBIN, {0.25, 0.5}};
         else

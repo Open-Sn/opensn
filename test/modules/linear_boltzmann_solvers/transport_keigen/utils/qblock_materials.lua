@@ -1,20 +1,14 @@
---############################################### Create cross sections
+-- Create cross sections
 xss = {}
+xss["0"] = xs.LoadFromOpenSn("xs_water_g2.xs")
+xss["1"] = xs.LoadFromOpenSn("xs_fuel_g2.xs")
 
-for m = 0, 1 do
-  xss[tostring(m)] = xs.Create()
-end
+num_groups = xss["0"].num_groups
 
-xs.Set(xss["0"], OPENSN_XSFILE, "xs_water_g2.xs")
-xs.Set(xss["1"], OPENSN_XSFILE, "xs_fuel_g2.xs")
-
-water_xs = xs.Get(xss["0"])
-num_groups = water_xs["num_groups"]
-
---############################################### Create materials
+-- Create materials
 materials = {}
 for m = 0, 1 do
   key = tostring(m)
   materials[key] = mat.AddMaterial("Material_" .. key)
-  mat.SetProperty(materials[key], TRANSPORT_XSECTIONS, EXISTING, xss[key])
+  materials[key]:SetTransportXSections(xss[key])
 end

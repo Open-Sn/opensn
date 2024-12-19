@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 if nmesh == nil then
   nmesh = 11
 end
@@ -14,24 +14,24 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
 mesh.SetupOrthogonalBoundaries()
 
-unit_tests.SimTest93_RayTracing()
+unit_sim_tests.SimTest93_RayTracing()
 
---###############################################
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 
 num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
+xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
+materials[1]:SetTransportXSections(xs1g)
 
-----############################################### Setup Physics
+---- Setup Physics
 --solver_name = "LBS"
 --phys1 = LBSCreateSolver(solver_name)
 --
@@ -57,9 +57,9 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
 --LBSGroupsetSetMaxIterations(phys1,cur_gs,0)
 --LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
 --
-----############################################### Set boundary conditions
+---- Set boundary conditions
 --
-----############################################### Add point source
+---- Add point source
 --src={}
 --for g=1,num_groups do
 --    src[g] = 0.0
@@ -67,15 +67,15 @@ mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, 1.0, 0.0)
 --src[1] = 1.0
 --LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
 --
-----############################################### Set solver properties
+---- Set solver properties
 --LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
 --LBSSetProperty(phys1,SCATTERING_ORDER,0)
 --
-----############################################### Initialize and Execute Solver
+---- Initialize and Execute Solver
 --solver.Initialize(phys1)
 --solver.Execute(phys1)
 
---############################################### Add point source
+-- Add point source
 src = {}
 for g = 1, num_groups do
   src[g] = 0.0
@@ -86,7 +86,7 @@ pt_src = lbs.PointSource.Create({
   strength = src,
 })
 
---############################################### Setup Physics
+-- Setup Physics
 solver_name = "LBS"
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12 * 2 * 4, 12 * 4)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
@@ -96,7 +96,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_richardson",
       l_abs_tol = 1.0e-6,
       l_max_its = 0,
@@ -111,11 +111,11 @@ lbs_block = {
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
---############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
+-- Initialize and Execute Solver
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
 

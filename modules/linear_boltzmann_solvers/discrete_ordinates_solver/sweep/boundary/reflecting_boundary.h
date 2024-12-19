@@ -31,7 +31,7 @@ public:
   ReflectingBoundary(size_t num_groups,
                      const Vector3& normal,
                      CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)
+    : SweepBoundary(LBSBoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)
   {
   }
 

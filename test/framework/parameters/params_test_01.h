@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework/object.h"
+#include "framework/object_factory.h"
 #include "framework/parameters/input_parameters.h"
 
 using namespace opensn;
@@ -15,6 +16,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
+  static std::shared_ptr<TestSubObject> Create(const ParameterBlock& params);
   explicit TestSubObject(const InputParameters& params);
 };
 
@@ -27,6 +29,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
+  static std::shared_ptr<TestObject> Create(const ParameterBlock& params);
   explicit TestObject(const InputParameters& params);
 };
 
@@ -37,6 +40,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
+  static std::shared_ptr<ChildTestObject> Create(const ParameterBlock& params);
   explicit ChildTestObject(const InputParameters& params);
 };
 

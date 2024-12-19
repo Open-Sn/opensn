@@ -26,9 +26,9 @@ public:
   explicit CFEMDiffusionSolver(const InputParameters& params);
   ~CFEMDiffusionSolver() override;
 
-  void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+  void SetDCoefFunction(ScalarSpatialMaterialFunction* function);
+  void SetQExtFunction(ScalarSpatialMaterialFunction* function);
+  void SetSigmaAFunction(ScalarSpatialMaterialFunction* function);
 
   void SetOptions(const InputParameters& params);
   void SetBoundaryOptions(const InputParameters& params);
@@ -38,14 +38,15 @@ public:
   void Execute() override;
 
 private:
-  std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
+  ScalarSpatialMaterialFunction* d_coef_function_;
+  ScalarSpatialMaterialFunction* sigma_a_function_;
+  ScalarSpatialMaterialFunction* q_ext_function_;
 
 public:
   static InputParameters GetInputParameters();
   static InputParameters OptionsBlock();
   static InputParameters BoundaryOptionsBlock();
+  static std::shared_ptr<CFEMDiffusionSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

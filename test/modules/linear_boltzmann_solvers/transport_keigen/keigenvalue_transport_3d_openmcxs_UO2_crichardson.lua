@@ -38,13 +38,14 @@ for i = 1, (Nz + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 -- Materials
 
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "uo2.h5", 294.0)
+xs_uo2 = xs.LoadFromOpenMC("uo2.h5", "set1", 294.0)
+materials[1]:SetTransportXSections(xs_uo2)
 mesh.SetUniformMaterialID(0)
 
 -- Solver
@@ -55,7 +56,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 2),
+      angular_quadrature = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 2),
       inner_linear_method = "classic_richardson",
       l_max_its = 500,
       l_abs_tol = 1.0e-12,
@@ -79,12 +80,12 @@ lbs_options = {
 }
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-lbs.SetOptions(phys, lbs_options)
+phys:SetOptions(lbs_options)
 
 k_solver0 = lbs.NonLinearKEigen.Create({
-  lbs_solver_handle = phys,
+  lbs_solver = phys,
   nl_max_its = 500,
   nl_abs_tol = 1.0e-8,
 })
-solver.Initialize(k_solver0)
-solver.Execute(k_solver0)
+k_solver0:Initialize()
+k_solver0:Execute()

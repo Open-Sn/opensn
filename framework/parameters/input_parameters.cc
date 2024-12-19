@@ -352,6 +352,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     if (log.GetVerbosity() >= 2)
       log.Log0Verbose2() << "Setting parameter " << param_name;
     input_param = param;
+    parameter_valid_[param_name] = true;
   } // for input params
 
   if (not err_stream.str().empty())
@@ -391,7 +392,7 @@ InputParameters::MarkParamaterRenamed(const std::string& param_name,
 
 void
 InputParameters::ConstrainParameterRange(const std::string& param_name,
-                                         std::unique_ptr<AllowableRange> allowable_range)
+                                         std::shared_ptr<AllowableRange> allowable_range)
 {
   if (Has(param_name))
   {
@@ -400,7 +401,7 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
       param_type == ParameterBlockType::BLOCK or param_type == ParameterBlockType::ARRAY,
       std::string("Parameter \"") + param_name + "\" is of type " +
         ParameterBlockTypeName(param_type) + " to which constraints cannot be applied");
-    constraint_tags_[param_name] = std::move(allowable_range);
+    constraint_tags_[param_name] = allowable_range;
   }
   else
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
@@ -423,7 +424,6 @@ InputParameters::DumpParameters() const
   log.Log() << "DESCRIPTION_END\n";
 
   log.Log() << "DOC_GROUP " << doc_group_;
-
   const std::string sp2 = "  ";
   const std::string sp4 = "    ";
   const auto params = Parameters();
@@ -474,6 +474,16 @@ InputParameters::DumpParameters() const
 
     log.Log() << sp2 << "PARAM_END";
   }
+}
+
+bool
+InputParameters::IsParameterValid(const std::string& param_name) const
+{
+  auto it = parameter_valid_.find(param_name);
+  if (it != parameter_valid_.end())
+    return it->second;
+  else
+    return false;
 }
 
 } // namespace opensn

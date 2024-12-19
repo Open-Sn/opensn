@@ -26,7 +26,6 @@ private:
   std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
 
 public:
-  static InputParameters GetInputParameters();
   explicit DiscreteOrdinatesCurvilinearSolver(const InputParameters& params);
 
   DiscreteOrdinatesCurvilinearSolver(const DiscreteOrdinatesCurvilinearSolver&) = delete;
@@ -39,6 +38,10 @@ protected:
 
 private:
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<DiscreteOrdinatesCurvilinearSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

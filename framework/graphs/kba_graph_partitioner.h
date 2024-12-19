@@ -4,7 +4,9 @@
 #pragma once
 
 #include "framework/graphs/graph_partitioner.h"
+#include "framework/object_factory.h"
 #include <array>
+#include <memory>
 
 namespace opensn
 {
@@ -12,7 +14,6 @@ namespace opensn
 class KBAGraphPartitioner : public GraphPartitioner
 {
 public:
-  static InputParameters GetInputParameters();
   explicit KBAGraphPartitioner(const InputParameters& params);
 
   std::vector<int64_t> Partition(const std::vector<std::vector<uint64_t>>& graph,
@@ -30,6 +31,10 @@ protected:
     const std::string coordinate_name_;
   };
   std::array<CoordinateInfo, 3> coordinate_infos_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<KBAGraphPartitioner> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

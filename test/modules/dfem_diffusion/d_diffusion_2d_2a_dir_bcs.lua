@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 40
 L = 2
@@ -10,15 +10,15 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 D = { 1.0, 0.01 }
 Q = { 1.0, 10.0 }
@@ -26,9 +26,11 @@ XSa = { 1.0, 10.0 }
 function D_coef(i, pt)
   return D[i + 1]
 end
+
 function Q_ext(i, pt)
   return Q[i + 1]
 end
+
 function Sigma_a(i, pt)
   return XSa[i + 1]
 end
@@ -47,10 +49,10 @@ w_bndry = "1"
 n_bndry = "2"
 s_bndry = "3"
 
-mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, true)
 
 diff_options = {
   boundary_conditions = {
@@ -77,34 +79,41 @@ diff_options = {
   },
 }
 
+d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
+Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
+Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
+
 -- DFEM solver
 phys1 = diffusion.DFEMDiffusionSolver.Create({
   name = "DFEMDiffusionSolver",
   residual_tolerance = 1e-8,
 })
-diffusion.SetOptions(phys1, diff_options)
+phys1:SetOptions(diff_options)
+phys1:SetDCoefFunction(d_coef_fn)
+phys1:SetQExtFunction(Q_ext_fn)
+phys1:SetSigmaAFunction(Sigma_a_fn)
 
-solver.Initialize(phys1)
-solver.Execute(phys1)
+phys1:Initialize()
+phys1:Execute()
 
---############################################### Get field functions
-fflist, count = solver.GetFieldFunctionList(phys1)
+-- Get field functions
+fflist = phys1:GetFieldFunctions()
 
---############################################### Export VTU
+-- Export VTU
 if master_export == nil then
   fieldfunc.ExportToVTK(fflist[1], "DFEMDiff2D_Dirichlet", "flux")
 end
 
---############################################### Volume integrations
+-- Volume integrations
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 
-ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
-fieldfunc.SetProperty(ffvol, OPERATION, OP_AVG)
-fieldfunc.SetProperty(ffvol, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(ffvol, ADD_FIELDFUNCTION, fflist[1])
+ffvol = fieldfunc.FieldFunctionInterpolationVolume.Create()
+ffvol:SetOperationType(OP_AVG)
+ffvol:SetLogicalVolume(vol0)
+ffvol:AddFieldFunction(fflist[1])
 
-fieldfunc.Initialize(ffvol)
-fieldfunc.Execute(ffvol)
-maxval = fieldfunc.GetValue(ffvol)
+ffvol:Initialize(ffvol)
+ffvol:Execute(ffvol)
+avgval = ffvol:GetValue()
 
-log.Log(LOG_0, string.format("Avg-value=%.6f", maxval))
+log.Log(LOG_0, string.format("Avg-value=%.6f", avgval))

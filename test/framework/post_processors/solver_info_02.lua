@@ -5,8 +5,9 @@
 -- Example Point-Reactor Kinetics solver
 phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
+pp = {}
 for k = 1, 20 do
-  post.SolverInfoPostProcessor.Create({
+  pp[k] = post.SolverInfoPostProcessor.Create({
     name = "neutron_population" .. tostring(k),
     solver = phys0,
     info = { name = "neutron_population" },
@@ -28,14 +29,14 @@ solver.Initialize(phys0)
 
 for t = 1, 20 do
   solver.Step(phys0)
-  time = solver.GetInfo(phys0, "time_next")
-  print(t, string.format("%.3f %.5f", time, solver.GetInfo(phys0, "population_next")))
+  time = phys0:TimeNew()
+  print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
 
   solver.Advance(phys0)
   if time > 0.1 then
-    prk.SetParam(phys0, "rho", 0.8)
+    phys0:SetRho(0.8)
   end
 end
 
-print("Manual neutron_population1=", string.format("%.5f", post.GetValue("neutron_population1")))
-print("Manual neutron_population1=", string.format("%.5f", post.GetValue(pp21)))
+print("Manual neutron_population1=", string.format("%.5f", pp[1]:GetValue()))
+print("Manual neutron_population1=", string.format("%.5f", pp21:GetValue()))

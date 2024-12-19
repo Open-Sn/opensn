@@ -1,5 +1,4 @@
-#include "lua/framework/console/console.h"
-#include "framework/parameters/input_parameters.h"
+#include "lua/lib/console.h"
 #include "framework/math/dense_matrix.h"
 #include "framework/math/vector.h"
 #include "framework/logging/log.h"
@@ -10,8 +9,8 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock
-DenseMatrixTest(const InputParameters&)
+void
+DenseMatrixTest()
 {
   OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 1, "Requires 1 processor");
 
@@ -133,10 +132,8 @@ DenseMatrixTest(const InputParameters&)
   opensn::log.LogAll() << a_trans3.PrintStr() << std::endl;
 
   opensn::log.Log() << "GOLD_END";
-
-  return ParameterBlock();
 }
 
-RegisterWrapperFunctionInNamespace(unit_tests, DenseMatrixTest, nullptr, DenseMatrixTest);
+BIND_FUNCTION(unit_tests, DenseMatrixTest);
 
 } // namespace unit_tests

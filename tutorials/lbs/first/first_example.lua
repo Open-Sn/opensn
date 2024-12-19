@@ -81,7 +81,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   }),
 })
 
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 --[[ @doc
 ### Material IDs
@@ -107,7 +107,8 @@ materials[1] = mat.AddMaterial("Material_A")
 We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials'
 section on materials for more details on cross sections.
 --]]
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_1g_MatA.xs")
+xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")
+materials[1]:SetTransportXSections(xs_matA)
 
 --[[ @doc
 ## Volumetric Source
@@ -118,7 +119,8 @@ src = {}
 for g = 1, num_groups do
   src[g] = 1.0
 end
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
+materials[1]:SetIsotropicMGSource(mg_src)
 
 --[[ @doc
 ## Angular Quadrature
@@ -148,7 +150,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 0 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       angle_aggregation_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
@@ -164,10 +166,10 @@ We then create the physics solver, initialize it, and execute it.
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 --[[ @doc
 ## Post-Processing via Field Functions
@@ -180,7 +182,7 @@ The resulting scalar flux is shown below:
 ![Scalar_flux](images/first_example_scalar_flux.png)
 --]]
 -- Retrieve field functions and export them
-fflist, count = lbs.GetScalarFieldFunctionList(phys)
+fflist = lbs.GetScalarFieldFunctionList(phys)
 vtk_basename = "first_example"
 fieldfunc.ExportToVTK(fflist[1], vtk_basename)
 
