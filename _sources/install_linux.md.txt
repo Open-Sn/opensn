@@ -137,7 +137,7 @@ Download and extract **Lua** version 5.3.6+ from https://www.lua.org to
 `dependencies`. Install **Lua** as follows:
 
 ```bash
-$ make linux MYCLFAGS=-fPIC -j
+$ make linux MYCFLAGS=-fPIC -j
 $ make install INSTALL_TOP=/path/to/dependencies/directory
 ```
 
