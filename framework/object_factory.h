@@ -125,7 +125,7 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = object_name;
+    const std::string& name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
@@ -148,7 +148,7 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = object_name;
+    const std::string& name = object_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
@@ -170,7 +170,7 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = block_name;
+    const std::string& name = block_name;
     object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
