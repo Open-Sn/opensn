@@ -226,6 +226,21 @@ TEST_F(Vector3Test, Inverse)
     std::runtime_error);
 }
 
+TEST_F(Vector3Test, AbsoluteEquals)
+{
+  const Vector3 a(1, 2, 3);
+
+  const Vector3 same = a;
+  EXPECT_TRUE(a.AbsoluteEquals(same));
+
+  for (std::size_t i = 0; i < 3; ++i)
+  {
+    Vector3 diff;
+    diff(i) += i + 1;
+    EXPECT_FALSE(a.AbsoluteEquals(diff));
+  }
+}
+
 TEST_F(Vector3Test, Size)
 {
   EXPECT_EQ(Vector3::Size(), std::size_t(3));
