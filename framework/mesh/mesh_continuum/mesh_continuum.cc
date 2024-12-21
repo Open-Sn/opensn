@@ -416,7 +416,7 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
       const auto c = (v0 + v1 + v2) / 3.0;
       const auto pc = point - c;
 
-      if (pc.Dot(n) > 0.0)
+      if (pc.Dot(n) >= -1.e-12)
         return true;
 
       return false;
