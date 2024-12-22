@@ -381,74 +381,31 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 {
   const auto& grid_ref = *this;
 
+  // Check each cell edge. A point inside the cell will return a negative value. A point on either
+  // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.Type() == CellType::SLAB)
   {
     const auto& v0 = grid_ref.vertices[cell.vertex_ids[0]];
     const auto& v1 = grid_ref.vertices[cell.vertex_ids[1]];
-
-    // Check each cell edge. A point inside the cell will return a negative value. A point on either
-    // edge will return a zero value, and a point outside the cell will return a positive value.
-    if (((v0.z - point.z) * (v1.z - point.z)) > 0.0)
-      return false;
+    return ((v0.z - point.z) * (v1.z - point.z)) <= 0.0;
   }
-  else if (cell.Type() == CellType::POLYGON)
+
+  // Check each face. A point inside the face will give a negative value, a point on the face
+  // will give a zero value, and a point outside the face will give a positive value. If the
+  // point is inside all faces, it is inside.
+  if (cell.Type() == CellType::POLYGON || cell.Type() == CellType::POLYHEDRON)
   {
-    // Check each face of the polygon. A point inside the face will give a negative value, a point
-    // on the face will give a zero value, and a point outside the face will give a positive value.
-    // If the point is inside all faces, it is inside the polygon.
     for (const auto& face : cell.faces)
     {
-      const auto& vcp = point - face.centroid;
-      if (vcp.Dot(face.normal) > 0.0)
+      const auto vcp = point - face.centroid;
+      const auto vcp_norm = vcp.Norm();
+      if (vcp_norm != 0. && (vcp / vcp_norm).Dot(face.normal) > 1.e-12)
         return false;
     }
+    return true;
   }
-  else if (cell.Type() == CellType::POLYHEDRON)
-  {
-    // Divide each polyhedron into tetrahedral sides. For each side, check if the point is inside
-    // the tetrahedron. If the point is inside all tetrahedral sides, it is inside the polyhedron.
-    auto InsideTet =
-      [](const Vector3& point, const Vector3& v0, const Vector3& v1, const Vector3& v2)
-    {
-      const auto& v01 = v1 - v0;
-      const auto& v02 = v2 - v0;
-      const auto n = v01.Cross(v02).Normalized();
-      const auto c = (v0 + v1 + v2) / 3.0;
-      const auto pc = point - c;
 
-      if (pc.Dot(n) > 0.0)
-        return true;
-
-      return false;
-    };
-
-    const auto& vcc = cell.centroid;
-    for (const auto& face : cell.faces)
-    {
-      const auto& vfc = face.centroid;
-      const size_t num_sides = face.vertex_ids.size();
-
-      for (size_t side = 0; side < num_sides; ++side)
-      {
-        const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
-        const auto& v0 = grid_ref.vertices[face.vertex_ids[side]];
-        const auto& v1 = vfc;
-        const auto& v2 = grid_ref.vertices[face.vertex_ids[sp1]];
-        const auto& v3 = vcc;
-
-        std::vector<std::tuple<Vector3, Vector3, Vector3>> tet_faces = {
-          {v0, v1, v2}, {v0, v2, v3}, {v1, v3, v2}, {v0, v3, v1}};
-
-        for (const auto& face : tet_faces)
-          if (not InsideTet(point, std::get<0>(face), std::get<1>(face), std::get<2>(face)))
-            return false;
-      }
-    }
-  }
-  else
-    throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
-
-  return true;
+  throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
 }
 
 std::array<size_t, 3>
