@@ -456,6 +456,55 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
   throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
 }
 
+bool
+MeshContinuum::CheckPointInsideCellFace(const Cell& cell,
+                                        const std::size_t face_i,
+                                        const Vector3& point) const
+{
+  // Tolerance for testing; we should really use a relative tolerance
+  // here based on some characteristic size of the face
+  const double tol = 1.e-6;
+
+  const auto& face = cell.faces[face_i];
+
+  // 1D, face is a point; simple equality check (could we just check z here?)
+  if (face.vertex_ids.size() == 1)
+    return vertices[face.vertex_ids[0]].AbsoluteEquals(point, tol);
+
+  // 2D, face is a line; equal if len(ap) + len(bp) == len(ap) where a=v0, b=v1
+  if (face.vertex_ids.size() == 2)
+  {
+    const auto& a = vertices[face.vertex_ids[0]];
+    const auto& b = vertices[face.vertex_ids[1]];
+    const auto ap = (a - point).Norm();
+    const auto bp = (b - point).Norm();
+    const auto ab = (a - b).Norm();
+    return std::abs(ab - ap - bp) < tol;
+  }
+
+  // 3D, point is not within the plane of the face
+  if (std::abs((point - face.centroid).Dot(face.normal)) > tol)
+    return false;
+
+  // Helper for computing if the point is on the inside of an edge defined by
+  // the face vertices v1 and v2 where inside is opposite the outward normal
+  // of the edge (outward normal points from face centroid -> edge)
+  const auto InsideEdge = [this, &point, &face](const auto vi1, const auto vi2)
+  {
+    const auto edge_centroid =
+      (vertices[face.vertex_ids[vi1]] + vertices[face.vertex_ids[vi2]]) / 2.0;
+    const auto normal = (edge_centroid - face.centroid).Normalized();
+    return (point - edge_centroid).Dot(normal) <= 0.0;
+  };
+
+  // Check all of the way around the polygon
+  for (size_t i = 0; i < (face.vertex_ids.size() - 1); ++i)
+    if (!InsideEdge(i, i + 1))
+      return false;
+  // Last vertex is checked with the first vertex
+  return InsideEdge(face.vertex_ids.size() - 1, 0);
+}
+
 std::array<size_t, 3>
 MeshContinuum::GetIJKInfo() const
 {

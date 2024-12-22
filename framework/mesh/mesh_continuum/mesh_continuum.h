@@ -126,6 +126,10 @@ public:
   /// Checks whether a point is within a cell.
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
 
+  /// Checks whether a point is within a cell face.
+  bool
+  CheckPointInsideCellFace(const Cell& cell, const std::size_t face_i, const Vector3& point) const;
+
   MeshType GetType() const { return mesh_type_; }
 
   void SetType(MeshType type) { mesh_type_ = type; }

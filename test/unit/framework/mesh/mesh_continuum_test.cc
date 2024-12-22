@@ -139,3 +139,88 @@ TEST_F(MeshContinuumTest, PointInsideCell3D)
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCell(*grid_ptr);
 }
+
+/// Helper for the PointInsideCellFaceXD tests
+void
+TestPointInsideCellFace(const MeshContinuum& grid)
+{
+  // Vertices contained within faces that have those vertices
+  for (uint64_t vi = 0; vi < grid.GetGlobalVertexCount(); ++vi)
+    for (const auto& cell : grid.local_cells)
+      for (std::size_t face_i = 0; face_i < cell.faces.size(); ++face_i)
+      {
+        const auto& face = cell.faces[face_i];
+        const auto has_vertex =
+          std::find(face.vertex_ids.begin(), face.vertex_ids.end(), vi) != face.vertex_ids.end();
+        const auto within = grid.CheckPointInsideCellFace(cell, face_i, grid.vertices[vi]);
+        EXPECT_EQ(has_vertex, within);
+      }
+
+  // Cell centroids not contained within any faces
+  for (const auto& cell : grid.local_cells)
+    for (const auto& other_cell : grid.local_cells)
+      for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size(); ++other_face_i)
+        EXPECT_FALSE(grid.CheckPointInsideCellFace(other_cell, other_face_i, cell.centroid));
+
+  if (grid.GetDimension() > 1)
+  {
+    // Face centroids contained within faces
+    for (const auto& cell : grid.local_cells)
+      for (const auto& face : cell.faces)
+        for (const auto& other_cell : grid.local_cells)
+          for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size(); ++other_face_i)
+          {
+            const auto& other_face = other_cell.faces[other_face_i];
+            const auto same_face = other_face.centroid.AbsoluteEquals(face.centroid);
+            const auto within =
+              grid.CheckPointInsideCellFace(other_cell, other_face_i, face.centroid);
+            EXPECT_EQ(same_face, within);
+          }
+  }
+
+  if (grid.GetDimension() > 2)
+  {
+    // Face edge centroids contained within faces that have the vertices that contain the edge
+    for (const auto& cell : grid.local_cells)
+      for (const auto& face : cell.faces)
+        for (std::size_t i = 0; i < face.vertex_ids.size(); ++i)
+        {
+          const auto vi1 = face.vertex_ids[i];
+          const auto vi2 =
+            (i == face.vertex_ids.size() - 1) ? face.vertex_ids[0] : face.vertex_ids[i + 1];
+          const auto edge_centroid = (grid.vertices[vi1] + grid.vertices[vi2]) / 2;
+          for (const auto& other_cell : grid.local_cells)
+            for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size();
+                 ++other_face_i)
+            {
+              const auto& other_face = other_cell.faces[other_face_i];
+              const auto has_edges =
+                (std::find(other_face.vertex_ids.begin(), other_face.vertex_ids.end(), vi1) !=
+                 other_face.vertex_ids.end()) &&
+                (std::find(other_face.vertex_ids.begin(), other_face.vertex_ids.end(), vi2) !=
+                 other_face.vertex_ids.end());
+              const auto within =
+                grid.CheckPointInsideCellFace(other_cell, other_face_i, edge_centroid);
+              EXPECT_EQ(has_edges, within);
+            }
+        }
+  }
+}
+
+TEST_F(MeshContinuumTest, PointInsideCellFace1D)
+{
+  const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 0.0, 1.0, 2.0}});
+  TestPointInsideCellFace(*grid_ptr);
+}
+
+TEST_F(MeshContinuumTest, PointInsideCellFace2D)
+{
+  const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0}, {0.0, 0.5, 1.0}});
+  TestPointInsideCellFace(*grid_ptr);
+}
+
+TEST_F(MeshContinuumTest, PointInsideCellFace3D)
+{
+  const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
+  TestPointInsideCellFace(*grid_ptr);
+}
