@@ -381,45 +381,48 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 {
   const auto& grid_ref = *this;
 
+  // Check each cell edge. A point inside the cell will return a negative value. A point on either
+  // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.GetType() == CellType::SLAB)
   {
     const auto& v0 = grid_ref.vertices[cell.vertex_ids[0]];
     const auto& v1 = grid_ref.vertices[cell.vertex_ids[1]];
-
-    // Check each cell edge. A point inside the cell will return a negative value. A point on either
-    // edge will return a zero value, and a point outside the cell will return a positive value.
-    if (((v0.z - point.z) * (v1.z - point.z)) > 0.0)
-      return false;
+    return (((v0.z - point.z) * (v1.z - point.z)) <= 0.0);
   }
-  else if (cell.GetType() == CellType::POLYGON)
+
+  // Check each face of the polygon. A point inside the face will give a negative value, a point
+  // on the face will give a zero value, and a point outside the face will give a positive value.
+  // If the point is inside all faces, it is inside the polygon.
+  if (cell.GetType() == CellType::POLYGON)
   {
-    // Check each face of the polygon. A point inside the face will give a negative value, a point
-    // on the face will give a zero value, and a point outside the face will give a positive value.
-    // If the point is inside all faces, it is inside the polygon.
     for (const auto& face : cell.faces)
     {
       const auto& vcp = point - face.centroid;
       if (vcp.Dot(face.normal) > 0.0)
         return false;
     }
+    return true;
   }
-  else if (cell.GetType() == CellType::POLYHEDRON)
+
+  // Check each tetrahedron within the polyhedron. If the point is contained within one
+  // of the tetrahedra, it is contained within the polyhedron.
+  if (cell.GetType() == CellType::POLYHEDRON)
   {
-    // Divide each polyhedron into tetrahedral sides. For each side, check if the point is inside
-    // the tetrahedron. If the point is inside all tetrahedral sides, it is inside the polyhedron.
-    auto InsideTet =
-      [](const Vector3& point, const Vector3& v0, const Vector3& v1, const Vector3& v2)
+    // Helper for returning whether or not the given point is considered "inside" a plane,
+    // where inside will mean on the interior of a tetrahedron (determined by the ordering
+    // of the vertices)
+    const auto InsidePlane = [&point](const std::array<Vector3, 3>& v)
     {
-      const auto& v01 = v1 - v0;
-      const auto& v02 = v2 - v0;
+      const auto v01 = v[1] - v[0];
+      const auto v02 = v[2] - v[0];
       const auto n = v01.Cross(v02).Normalized();
-      const auto c = (v0 + v1 + v2) / 3.0;
+      const auto c = (v[0] + v[1] + v[2]) / 3.0;
       const auto pc = point - c;
-
-      if (pc.Dot(n) > 0.0)
+      // Point is at c
+      if (pc.Norm() < 1.e-12)
         return true;
-
-      return false;
+      // Positive is inside, zero is within the plane, negative is outside
+      return pc.Dot(n) > -1.e-12;
     };
 
     const auto& vcc = cell.centroid;
@@ -430,25 +433,33 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 
       for (size_t side = 0; side < num_sides; ++side)
       {
+        // Form the four tri faces within the tetrahedron within this side
         const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
         const auto& v0 = grid_ref.vertices[face.vertex_ids[side]];
         const auto& v1 = vfc;
         const auto& v2 = grid_ref.vertices[face.vertex_ids[sp1]];
         const auto& v3 = vcc;
+        const std::array<std::array<Vector3, 3>, 4> tet_face_vertices = {
+          {{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
 
-        std::vector<std::tuple<Vector3, Vector3, Vector3>> tet_faces = {
-          {v0, v1, v2}, {v0, v2, v3}, {v1, v3, v2}, {v0, v3, v1}};
+        // Considered within the tet if within all four tri face planes
+        bool within_tet = true;
+        for (const auto& face_vertices : tet_face_vertices)
+          if (not InsidePlane(face_vertices))
+          {
+            within_tet = false;
+            break;
+          }
 
-        for (const auto& face : tet_faces)
-          if (not InsideTet(point, std::get<0>(face), std::get<1>(face), std::get<2>(face)))
-            return false;
+        if (within_tet)
+          return true;
       }
     }
-  }
-  else
-    throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
 
-  return true;
+    return false;
+  }
+
+  throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
 }
 
 std::array<size_t, 3>
