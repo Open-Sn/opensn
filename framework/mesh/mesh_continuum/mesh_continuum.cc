@@ -433,14 +433,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
 
       for (size_t side = 0; side < num_sides; ++side)
       {
-        // Form the four tri faces within the tetrahedron within this side
-        const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
-        const auto& v0 = grid_ref.vertices[face.vertex_ids[side]];
-        const auto& v1 = vfc;
-        const auto& v2 = grid_ref.vertices[face.vertex_ids[sp1]];
-        const auto& v3 = vcc;
-        const std::array<std::array<Vector3, 3>, 4> tet_face_vertices = {
-          {{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
+        // Vertices to each of the four tetrahedral faces on this side
+        const auto tet_face_vertices = GetTetrahedralFaceVertices(cell, face, side);
 
         // Considered within the tet if within all four tri face planes
         bool within_tet = true;
@@ -725,6 +719,22 @@ MeshContinuum::ComputeVolumePerMaterialID() const
                 << pair.second << std::endl;
     log.Log() << std::endl;
   }
+}
+
+std::array<std::array<Vector3, 3>, 4>
+MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
+                                          const CellFace& face,
+                                          const size_t side) const
+{
+  assert(cell.Type() == CellType::POLYHEDRON);
+  const auto num_sides = face.vertex_ids.size();
+  assert(side < num_sides);
+  const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
+  const auto& v0 = vertices[face.vertex_ids[side]];
+  const auto& v1 = face.centroid;
+  const auto& v2 = vertices[face.vertex_ids[sp1]];
+  const auto& v3 = cell.centroid;
+  return {{{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
 }
 
 } // namespace opensn
