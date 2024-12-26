@@ -1,0 +1,29 @@
+[
+  {
+    "file" : "point_inside_cell_test_1D.lua", "num_procs" : 2, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  },
+  {
+    "file" : "point_inside_cell_test_2D.lua", "num_procs" : 2, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  },
+  {
+    "file" : "point_inside_cell_test_3D.lua", "num_procs" : 2, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  }
+]
