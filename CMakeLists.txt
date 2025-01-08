@@ -15,6 +15,7 @@ include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
 include(CheckCXXCompilerFlag)
+include(FetchContent)
 
 CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 
@@ -111,6 +112,14 @@ find_package(caliper REQUIRED)
 if(caliper_FOUND)
     message(STATUS "Found Caliper: ${caliper_DIR}")
 endif()
+
+# google test
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.15.2
+)
+FetchContent_MakeAvailable(googletest)
 
 # compile options
 set(OPENSN_CXX_FLAGS)
