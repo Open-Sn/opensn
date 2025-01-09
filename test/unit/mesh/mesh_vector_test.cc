@@ -10,17 +10,17 @@ class MeshVectorTest : public OpenSnUnitTest
 void
 ExpectVectorEqual(const Vector3& v, const double x, const double y = 0.0, const double z = 0.0)
 {
-  EXPECT_EQ(v.x, x);
-  EXPECT_EQ(v.y, y);
-  EXPECT_EQ(v.z, z);
+  EXPECT_DOUBLE_EQ(v.x, x);
+  EXPECT_DOUBLE_EQ(v.y, y);
+  EXPECT_DOUBLE_EQ(v.z, z);
 }
 
 void
 ExpectVectorEqual(const Vector3& a, const Vector3& b)
 {
-  EXPECT_EQ(a.x, b.x);
-  EXPECT_EQ(a.y, b.y);
-  EXPECT_EQ(a.z, b.z);
+  EXPECT_DOUBLE_EQ(a.x, b.x);
+  EXPECT_DOUBLE_EQ(a.y, b.y);
+  EXPECT_DOUBLE_EQ(a.z, b.z);
 }
 
 TEST_F(MeshVectorTest, Constructors)
@@ -148,19 +148,19 @@ TEST_F(MeshVectorTest, Dot)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(6, 5, 4);
-  EXPECT_EQ(a.Dot(b), a.x * b.x + a.y * b.y + a.z * b.z);
+  EXPECT_DOUBLE_EQ(a.Dot(b), a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
 TEST_F(MeshVectorTest, Norm)
 {
   const Vector3 a(1, 2, 3);
-  EXPECT_EQ(a.Norm(), std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z));
+  EXPECT_DOUBLE_EQ(a.Norm(), std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z));
 }
 
 TEST_F(MeshVectorTest, NormSquare)
 {
   const Vector3 a(1, 2, 3);
-  EXPECT_EQ(a.NormSquare(), a.x * a.x + a.y * a.y + a.z * a.z);
+  EXPECT_DOUBLE_EQ(a.NormSquare(), a.x * a.x + a.y * a.y + a.z * a.z);
 }
 
 TEST_F(MeshVectorTest, Normalize)
