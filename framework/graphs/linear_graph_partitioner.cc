@@ -5,7 +5,6 @@
 #include "framework/object_factory.h"
 #include "framework/utils/utils.h"
 #include "framework/logging/log.h"
-#include <cmath>
 
 namespace opensn
 {
