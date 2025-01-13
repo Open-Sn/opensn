@@ -70,12 +70,11 @@ num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 materials[1]:SetTransportXSections(xs_graphite)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 4, false)
@@ -109,6 +108,7 @@ lbs_options = {
   },
   scattering_order = 1,
   save_angular_flux = true,
+  volumetric_sources = { mg_src },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

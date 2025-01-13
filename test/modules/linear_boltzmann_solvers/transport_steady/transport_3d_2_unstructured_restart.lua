@@ -50,14 +50,12 @@ xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
 materials[1]:SetTransportXSections(xs_1g)
 materials[2]:SetTransportXSections(xs_1g)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.5
+  strength[g] = 0.5
 end
-
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
-materials[2]:SetIsotropicMGSource(mg_src)
+mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
+mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 --Setup physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -88,6 +86,7 @@ lbs_options = {
     { name = "zmax", type = "isotropic", group_strength = bsrc },
   },
   scattering_order = 1,
+  volumetric_sources = { mg_src1, mg_src2 },
   save_angular_flux = true,
   --restart_writes_enabled = true,
   --write_delayed_psi_to_restart = true,

@@ -58,16 +58,15 @@ materials[1]:SetTransportXSections(xs_graphite)
 xs_air = xs.LoadFromOpenSn("../transport_steady/xs_air50RH.xs")
 materials[2]:SetTransportXSections(xs_air)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
-src[1] = 1.0
-mg_src0 = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src0)
-src[1] = 0.0
-mg_src1 = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[2]:SetIsotropicMGSource(mg_src1)
+strength[1] = 1.0
+mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
+
+strength[1] = 0.0
+mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -106,6 +105,7 @@ lbs_block = {
 
 lbs_options = {
   scattering_order = 1,
+  volumetric_sources = { mg_src0, mg_src1 },
 }
 
 phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)

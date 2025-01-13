@@ -25,13 +25,12 @@ num_groups = 172
 xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
 materials[1]:SetTransportXSections(xs_hdpe)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
-src[1] = 1.0
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
+strength[1] = 1.0
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
 -- Angular Quadrature
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -62,6 +61,7 @@ lbs_block = {
       { name = "zmin", type = "reflecting" },
       { name = "zmax", type = "reflecting" },
     },
+    volumetric_sources = { mg_src },
   },
 }
 
