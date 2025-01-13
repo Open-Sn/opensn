@@ -1,0 +1,29 @@
+[
+  {
+    "file" : "mapping_1d.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  },
+  {
+    "file" : "mapping_2d.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  },
+  {
+    "file" : "mapping_3d.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "ErrorCode",
+        "error_code" : 0
+      }
+    ]
+  }
+]
