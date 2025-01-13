@@ -77,12 +77,7 @@ grid = meshgen1:Execute()
 -- Set Material IDs
 grid:SetUniformMaterialID(0)
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Fissile Material")
-
 xs_simple_fissile = xs.LoadFromOpenSn("../transport_keigen/simple_fissile.xs")
-materials[1]:SetTransportXSections(xs_simple_fissile)
 
 -- Setup Physics
 num_groups = 1
@@ -97,6 +92,9 @@ lbs_block = {
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_simple_fissile },
   },
 }
 

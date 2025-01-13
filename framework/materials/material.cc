@@ -6,14 +6,6 @@
 namespace opensn
 {
 
-void
-Material::SetTransportXSections(std::shared_ptr<MultiGroupXS> xs)
-{
-  auto property_index = GetPropertyIndex(PropertyType::TRANSPORT_XSECTIONS);
-  auto& property = GetProperty<MultiGroupXS>(property_index);
-  property = xs;
-}
-
 int
 Material::GetPropertyIndex(PropertyType property_type)
 {

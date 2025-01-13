@@ -29,8 +29,6 @@ public:
   std::vector<std::shared_ptr<MaterialProperty>> properties{};
   std::string name = "Unnamed Material";
 
-  void SetTransportXSections(std::shared_ptr<MultiGroupXS> xs);
-
 private:
   int GetPropertyIndex(PropertyType property_type);
 

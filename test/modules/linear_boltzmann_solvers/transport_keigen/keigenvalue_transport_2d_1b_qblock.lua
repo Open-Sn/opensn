@@ -22,6 +22,7 @@ lbs_block = {
       groupset_num_subsets = 2,
     },
   },
+  xs_map = xs_map,
 }
 
 lbs_options = {

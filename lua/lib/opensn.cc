@@ -457,7 +457,6 @@ static bool reg = opensnlua::Console::Bind(
       .endClass()
       //
       .beginClass<Material>("Material")
-      .addFunction("SetTransportXSections", &Material::SetTransportXSections)
       .endClass()
       .beginClass<std::shared_ptr<Material>>("MaterialPtr")
       .endClass()

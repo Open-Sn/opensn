@@ -95,7 +95,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   //
   else if (cls_name == "MultiGroupXS")
-    block.AddParameter(key, CreateObjectPtr<opensn::MaterialProperty>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::MultiGroupXS>(L));
   //
   else if (cls_name == "AggregateNodalValuePostProcessor")
     block.AddParameter(key, CreateObjectPtr<opensn::PostProcessor>(L));

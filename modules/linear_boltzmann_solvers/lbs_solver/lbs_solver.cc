@@ -60,6 +60,9 @@ LBSSolver::GetInputParameters()
                                    "<TT>LBSGroupset</TT>.");
   params.LinkParameterToBlock("groupsets", "LBSGroupset");
 
+  params.AddRequiredParameterArray("xs_map",
+                                   "Cross-section map from block IDs to corss-section objects.");
+
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
@@ -88,6 +91,23 @@ LBSSolver::LBSSolver(const InputParameters& params)
     gs_input_params.AssignParameters(groupset_params);
 
     groupsets_.emplace_back(gs_input_params, gs, *this);
+  }
+
+  // Build XS map
+  const auto& xs_array = params.GetParam("xs_map");
+  const size_t num_xs = xs_array.GetNumParameters();
+  for (size_t i = 0; i < num_xs; ++i)
+  {
+    const auto& item_params = xs_array.GetParam(i);
+    InputParameters xs_entry_pars = GetXSMapEntryBlock();
+    xs_entry_pars.AssignParameters(item_params);
+
+    const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
+    block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    const auto& block_ids = block_ids_param.GetVectorValue<int>();
+    auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
+    for (const auto& block_id : block_ids)
+      matid_to_xs_map_[block_id] = xs;
   }
 
   // Options
@@ -540,6 +560,16 @@ LBSSolver::GetBoundaryOptionsBlock()
   return params;
 }
 
+InputParameters
+LBSSolver::GetXSMapEntryBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription("Set the cross-section map for the solver.");
+  params.AddRequiredParameterArray("block_ids", "Mesh block IDs");
+  params.AddRequiredParameter<std::shared_ptr<MultiGroupXS>>("xs", "Cross-section object");
+  return params;
+}
+
 void
 LBSSolver::SetOptions(const InputParameters& input)
 {
@@ -937,53 +967,24 @@ LBSSolver::InitializeMaterials()
                          " cells encountered with an invalid material id.");
 
   // Get ready for processing
-  std::stringstream materials_list;
-  matid_to_xs_map_.clear();
-
-  // Process materials
-  for (const int& mat_id : unique_material_ids)
+  for (auto [blk_id, mat] : matid_to_xs_map_)
   {
-    materials_list << "Material id " << mat_id;
-
-    const auto& current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
-
-    // Extract properties
-    bool found_transport_xs = false;
-    for (const auto& property : current_material->properties)
-    {
-      if (property->GetType() == PropertyType::TRANSPORT_XSECTIONS)
-      {
-        auto xs = std::static_pointer_cast<MultiGroupXS>(property);
-        xs->SetAdjointMode(options_.adjoint);
-        matid_to_xs_map_[mat_id] = xs;
-        found_transport_xs = true;
-      }
-    } // for property
-
-    // Check valid property
-    OpenSnLogicalErrorIf(not found_transport_xs,
-                         "Material \"" + current_material->name + "\" does not contain " +
-                           "transport cross sections.");
-
-    // Check number of groups legal
-    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->GetNumGroups() < groups_.size(),
-                         "Material \"" + current_material->name + "\" has fewer groups (" +
-                           std::to_string(matid_to_xs_map_[mat_id]->GetNumGroups()) + ") than " +
-                           "the simulation (" + std::to_string(groups_.size()) + "). " +
-                           "A material must have at least as many groups as the simulation.");
+    mat->SetAdjointMode(options_.adjoint);
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() < options_.scattering_order)
+    if (matid_to_xs_map_[blk_id]->GetScatteringOrder() < options_.scattering_order)
     {
-      log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name
-                        << "\" has a lower scattering order ("
-                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << ") "
+      log.Log0Warning() << __FUNCTION__ << ": Cross-sections on block \"" << blk_id
+                        << "\" has a lower scattering order (" << mat->GetScatteringOrder() << ") "
                         << "than the simulation (" << options_.scattering_order << ").";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
-                   << "\n";
-  } // for material id
+    OpenSnLogicalErrorIf(mat->GetNumGroups() < groups_.size(),
+                         "Cross-sections on block \"" + std::to_string(blk_id) +
+                           "\" has fewer groups (" + std::to_string(mat->GetNumGroups()) +
+                           ") than " + "the simulation (" + std::to_string(groups_.size()) + "). " +
+                           "Cross-sections must have at least as many groups as the simulation.");
+  }
 
   // Initialize precursor properties
   num_precursors_ = 0;
@@ -1022,8 +1023,6 @@ LBSSolver::InitializeMaterials()
 
       transport_view.ReassignXS(*xs_ptr);
     }
-
-  log.Log0Verbose1() << "Materials Initialized:\n" << materials_list.str() << "\n";
 
   mpi_comm.barrier();
 }

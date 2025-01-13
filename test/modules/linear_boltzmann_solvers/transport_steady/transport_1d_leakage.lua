@@ -33,10 +33,7 @@ grid:SetUniformMaterialID(0)
 num_groups = 1
 sigma_t = 1.0
 
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
 xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
-materials[1]:SetTransportXSections(xs1g)
 
 -- Setup Physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128, -1)
@@ -54,6 +51,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 100,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs1g },
   },
 }
 

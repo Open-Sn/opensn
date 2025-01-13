@@ -16,14 +16,10 @@ grid = meshgen:Execute()
 -- Set Material IDs
 grid:SetUniformMaterialID(0)
 
-materials = {}
-materials[1] = mat.AddMaterial("HDPE")
-
 num_groups = 172
 
--- Add cross sections to materials
+-- cross sections
 xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
-materials[1]:SetTransportXSections(xs_hdpe)
 
 strength = {}
 for g = 1, num_groups do
@@ -48,6 +44,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 30,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_hdpe },
   },
   sweep_type = "CBC",
   options = {

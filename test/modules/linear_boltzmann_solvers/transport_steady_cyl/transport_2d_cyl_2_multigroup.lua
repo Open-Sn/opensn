@@ -53,9 +53,7 @@ for g = 2, ngrp do
   source[g] = 0.
 end
 
-material0 = mat.AddMaterial("Material_0")
 xs_data = xs.LoadFromOpenSn("transport_2d_cyl_2_multigroup.xs")
-material0:SetTransportXSections(xs_data)
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = source })
 
 -- Setup Physics
@@ -77,6 +75,9 @@ lbs_block = {
       wgdsa_l_abs_tol = 1.0e-9,
       wgdsa_l_max_its = 50,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_data },
   },
 }
 

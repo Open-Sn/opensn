@@ -125,6 +125,16 @@ MGDiffusionSolver::GetBoundaryOptionsBlock()
   return params;
 }
 
+InputParameters
+MGDiffusionSolver::GetXSMapEntryBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription("Set the cross-section map for the solver.");
+  params.AddRequiredParameterArray("block_ids", "Mesh block IDs");
+  params.AddRequiredParameter<std::shared_ptr<MultiGroupXS>>("xs", "Cross-section object");
+  return params;
+}
+
 MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
   : opensn::Solver(params),
     grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
@@ -136,6 +146,24 @@ MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
     thermal_dphi_(nullptr),
     b_(nullptr)
 {
+  // Build XS map
+  const auto& xs_array = params.GetParam("xs_map");
+  const size_t num_xs = xs_array.GetNumParameters();
+  for (size_t i = 0; i < num_xs; ++i)
+  {
+    const auto& item_params = xs_array.GetParam(i);
+    InputParameters xs_entry_pars = GetXSMapEntryBlock();
+    xs_entry_pars.AssignParameters(item_params);
+    xs_entry_pars.DumpParameters();
+
+    const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
+    block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    const auto& block_ids = block_ids_param.GetVectorValue<int>();
+    auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
+    for (const auto& block_id : block_ids)
+      matid_to_xs_map_[block_id] = xs;
+  }
+
   basic_options_.AddOption<int64_t>("max_inner_iters",
                                     params.GetParamValue<int>("max_inner_iters"));
   basic_options_.AddOption("residual_tolerance",
@@ -406,7 +434,6 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
   // Process materials found
   const size_t num_physics_mats = material_stack.size();
-  bool first_material_read = true;
 
   for (const int& mat_id : material_ids)
   {
@@ -426,20 +453,8 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     }
 
     // Extract properties
-    using MatProperty = PropertyType;
     bool found_transport_xs = false;
-    for (const auto& property : current_material->properties)
-    {
-      if (property->GetType() == MatProperty::TRANSPORT_XSECTIONS)
-      {
-        auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
-        matid_to_xs_map_[mat_id] = transp_xs;
-        found_transport_xs = true;
-        if (first_material_read)
-          num_groups_ = transp_xs->GetNumGroups();
-
-      } // transport xs
-    }   // for property
+    for (const auto& property : current_material->properties) {} // for property
 
     // Check valid property
     if (not found_transport_xs)
@@ -473,7 +488,6 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
 
-    first_material_read = false;
   } // for material id
 
   log.Log() << "Materials Initialized:\n" << materials_list.str() << "\n";

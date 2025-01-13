@@ -51,6 +51,8 @@ public:
 
   static InputParameters GetBoundaryOptionsBlock();
 
+  static InputParameters GetXSMapEntryBlock();
+
   void SetOptions(const InputParameters& params);
 
   void SetBoundaryOptions(const InputParameters& params);
