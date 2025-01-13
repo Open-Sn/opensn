@@ -187,5 +187,33 @@
         "abs_tol": 1.0e-4
       }
     ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_exo_wedge.lua",
+    "comment": "3D_2G Infinite medium testing wedge elements of EXODUSII; should agree with the hex model",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.9293377,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_exo_hex.lua",
+    "comment": "3D_2G Infinite medium testing hex elements of EXODUSII; should agree with the wedge model",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.9293377,
+        "abs_tol": 1e-07
+      }
+    ]
   }
 ]
