@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/lib/parse_table.h"
-#include "framework/materials/material_property.h"
 #include "framework/mesh/mesh_vector.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/parameters/parameter_block.h"

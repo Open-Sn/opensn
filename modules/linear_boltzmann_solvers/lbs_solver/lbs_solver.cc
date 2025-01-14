@@ -15,7 +15,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/time_integrations/time_integration.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/materials/material.h"
 #include "framework/logging/log.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
@@ -944,8 +943,6 @@ LBSSolver::InitializeMaterials()
   log.Log0Verbose1() << "Initializing Materials";
 
   // Create set of material ids locally relevant
-  const size_t num_physics_mats = material_stack.size();
-
   int invalid_mat_cell_count = 0;
   std::set<int> unique_material_ids;
   for (auto& cell : grid_ptr_->local_cells)

@@ -6,7 +6,6 @@
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/materials/material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -433,11 +432,8 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
   std::stringstream materials_list;
 
   // Process materials found
-  const size_t num_physics_mats = material_stack.size();
-
   for (const int& mat_id : material_ids)
   {
-    auto current_material = GetStackItemPtr(material_stack, mat_id, __FUNCTION__);
     materials_list << "Material id " << mat_id;
 
     // Check valid ids
@@ -446,30 +442,13 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
       throw std::logic_error(
         "MG-diff-InitializeMaterials: Cells encountered with no assigned material.");
     }
-    if (static_cast<size_t>(mat_id) >= num_physics_mats)
-    {
-      throw std::logic_error("MG-diff-InitializeMaterials: Cells encountered with "
-                             "material id that matches no material in physics material library.");
-    }
 
     // Extract properties
-    bool found_transport_xs = false;
-    for (const auto& property : current_material->properties) {} // for property
-
-    // Check valid property
-    if (not found_transport_xs)
-    {
-      log.LogAllError() << "MG-Diff-InitializeMaterials: Found no transport cross-section property "
-                           "for "
-                        << "material \"" << current_material->name << "\".";
-      Exit(EXIT_FAILURE);
-    }
     // Check number of groups legal
     if (matid_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
     {
-      log.LogAllError() << "MG-Diff-InitializeMaterials: Found material \""
-                        << current_material->name << "\" has "
-                        << matid_to_xs_map_[mat_id]->GetNumGroups() << " groups and "
+      log.LogAllError() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
+                        << "\" has " << matid_to_xs_map_[mat_id]->GetNumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
       Exit(EXIT_FAILURE);
@@ -478,8 +457,8 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     // Check number of moments
     if (matid_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
     {
-      log.Log0Warning() << "MG-Diff-InitializeMaterials: Found material \""
-                        << current_material->name << "\" has a scattering order of "
+      log.Log0Warning() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
+                        << "\" has a scattering order of "
                         << matid_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";

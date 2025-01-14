@@ -49,7 +49,6 @@ extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
 extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 
-extern std::vector<std::shared_ptr<Material>> material_stack;
 extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
