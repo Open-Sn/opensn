@@ -2,9 +2,40 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 
 namespace opensn
 {
+
+template <typename Functor>
+int
+LBSVecOps::GroupsetScopedCopy(LBSSolver& lbs_solver, int gsi, int gss, Functor&& func)
+{
+  CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
+
+  auto& grid = lbs_solver.Grid();
+  auto& cell_transport_views = lbs_solver.GetCellTransportViews();
+  auto num_moments = lbs_solver.NumMoments();
+
+  int64_t idx = -1;
+  for (const auto& cell : grid.local_cells)
+  {
+    auto& transport_view = cell_transport_views[cell.local_id];
+    for (int i = 0; i < cell.vertex_ids.size(); ++i)
+    {
+      for (int m = 0; m < num_moments; ++m)
+      {
+        size_t mapped_idx = transport_view.MapDOF(i, m, gsi);
+        for (int g = 0; g < gss; ++g)
+        {
+          ++idx;
+          func(idx, mapped_idx + g);
+        }
+      }
+    }
+  }
+  return idx;
+}
 
 void
 LBSVecOps::SetPhiVectorScalarValues(LBSSolver& lbs_solver, PhiSTLOption phi_opt, double value)
