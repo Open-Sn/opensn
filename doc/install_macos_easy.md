@@ -104,7 +104,7 @@ python3 tools/configure_dependencies.py -d /path/to/dependencies
 It is recommended that `path/to/dependencies` be outside the OpenSn
 source tree. Set environment variables for building OpenSn:
 ```shell
-export CMAKE_PREFIX_PATH=/path/to/dependencies:$CMAKE_PREFIX_PATH`
+export CMAKE_PREFIX_PATH=/path/to/dependencies${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}`
 ```
 
 ## Step 5 - Configure and Build OpenSn
