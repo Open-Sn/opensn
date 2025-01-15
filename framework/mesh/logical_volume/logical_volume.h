@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "framework/object.h"
-#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_vector.h"
 #include "framework/logging/log.h"
+#include "framework/object.h"
 #include <array>
 
 namespace opensn

@@ -3,13 +3,16 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/data_types/data_types.h"
+#include "framework/mesh/mesh_vector.h"
 #include <tuple>
+#include <vector>
 
 // Appending cell types to namespace
 namespace opensn
 {
+
+class MeshContinuum;
 
 enum class CellType
 {
