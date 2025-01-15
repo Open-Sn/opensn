@@ -795,7 +795,6 @@ try:
     env_script_file.write(
         f'export CMAKE_PREFIX_PATH="{install_dir}"'
         f'${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}\n')
-    env_script_file.write(f'export PETSC_DIR={petsc_dir}\n')
 
     if os.path.exists(f"{vtk_dir}/lib64"):
         env_script_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH\n')
@@ -811,7 +810,6 @@ try:
     print("\nWhen opening OpenSn in an IDE, the following environment variables need to be set:\n")
 
     print(f'CMAKE_PREFIX_PATH="{install_dir}"${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}')
-    print(f'PETSC_DIR={petsc_dir}')
     print()
     print(TextColors.WARNING
           + "When compiling OpenSn, in a terminal, the following environment variables need to be "
@@ -819,7 +817,6 @@ try:
 
     print(
         f'export CMAKE_PREFIX_PATH="{install_dir}"${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}')
-    print(f'export PETSC_DIR="{petsc_dir}"')
     if os.path.exists(f"{vtk_dir}/lib64"):
         print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH')
     else:
