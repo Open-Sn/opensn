@@ -796,11 +796,6 @@ try:
         f'export CMAKE_PREFIX_PATH="{install_dir}"'
         f'${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}\n')
 
-    if os.path.exists(f"{vtk_dir}/lib64"):
-        env_script_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH\n')
-    else:
-        env_script_file.write(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH\n')
-
     env_script_file.close()
 
     ExecSub(f"chmod u+x {env_script_name}", log_file)
@@ -817,10 +812,6 @@ try:
 
     print(
         f'export CMAKE_PREFIX_PATH="{install_dir}"${{CMAKE_PREFIX_PATH:+:${{CMAKE_PREFIX_PATH}}}}')
-    if os.path.exists(f"{vtk_dir}/lib64"):
-        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib":$LD_LIBRARY_PATH')
-    else:
-        print(f'export LD_LIBRARY_PATH="{vtk_dir}/lib64":$LD_LIBRARY_PATH')
 
     print()
     print("To set these terminal environment variables automatically, execute:")
