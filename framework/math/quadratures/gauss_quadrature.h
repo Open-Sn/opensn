@@ -34,13 +34,14 @@ public:
   std::vector<Vector3> qpoints;
   std::vector<double> weights;
 
-  static InputParameters GetInputParameters();
-
   QuadratureOrder GetOrder() { return order_; }
 
   const std::pair<double, double>& GetRange() const { return range_; }
 
   void SetRange(const std::pair<double, double>& range);
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

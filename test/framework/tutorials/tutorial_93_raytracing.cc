@@ -2,7 +2,7 @@
 #include "framework/math/random_number_generation/random_number_generator.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/logging/log.h"
@@ -13,12 +13,8 @@ using namespace opensn;
 namespace unit_sim_tests
 {
 
-ParameterBlock SimTest93_RayTracing(const InputParameters& params);
-
-RegisterWrapperFunctionInNamespace(unit_tests, SimTest93_RayTracing, nullptr, SimTest93_RayTracing);
-
-ParameterBlock
-SimTest93_RayTracing(const InputParameters&)
+void
+SimTest93_RayTracing()
 {
   const std::string fname = "SimTest93_RayTracing";
   opensn::log.Log() << "SimTest93_RayTracing";
@@ -332,8 +328,8 @@ SimTest93_RayTracing(const InputParameters&)
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
   FieldFunctionGridBased::ExportMultipleToVTK("SimTest_93", const_ff_list);
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_sim_tests, SimTest93_RayTracing);
 
 } // namespace unit_sim_tests

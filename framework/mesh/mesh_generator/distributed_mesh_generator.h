@@ -20,14 +20,6 @@ class DistributedMeshGenerator : public MeshGenerator
 {
 public:
   /**
-   * Get the input parameters for this class.
-   *
-   * \return Input parameters for configuring the DistributedMeshGenerator.
-   */
-  static InputParameters GetInputParameters();
-
-public:
-  /**
    * Constructor for the DistributedMeshGenerator.
    *
    * \param params Input parameters for mesh generation and distribution.
@@ -110,6 +102,15 @@ private:
 private:
   /// The number of partitions for distributing the mesh.
   const int num_parts_;
+
+public:
+  /**
+   * Get the input parameters for this class.
+   *
+   * \return Input parameters for configuring the DistributedMeshGenerator.
+   */
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<DistributedMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

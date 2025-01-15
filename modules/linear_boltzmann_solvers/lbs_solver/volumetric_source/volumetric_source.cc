@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
+#include "framework/math/functions/function.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -9,6 +10,7 @@
 #include "framework/math/functions/vector_spatial_function.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
+#include <memory>
 
 namespace opensn
 {
@@ -35,29 +37,31 @@ VolumetricSource::GetInputParameters()
                                    std::vector<double>(),
                                    "An array of multi-group source strength values. Note that this "
                                    "is only used when a function is not provided.");
-  params.AddOptionalParameter(
-    "logical_volume_handle",
-    SIZE_T_INVALID,
+  params.AddOptionalParameter<std::shared_ptr<LogicalVolume>>(
+    "logical_volume",
+    std::shared_ptr<LogicalVolume>{},
     "Handle to the logical volume the volumetric source is defined within.");
-  params.AddOptionalParameter(
-    "function_handle",
-    SIZE_T_INVALID,
-    "Handle to a SpatialMaterialFunction object to be used to define the source.");
+  params.AddOptionalParameter<std::shared_ptr<Function>>(
+    "func",
+    std::shared_ptr<Function>{},
+    "SpatialMaterialFunction object to be used to define the source.");
 
   return params;
 }
 
+std::shared_ptr<VolumetricSource>
+VolumetricSource::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<VolumetricSource>("lbs::VolumetricSource", params);
+}
+
 VolumetricSource::VolumetricSource(const InputParameters& params)
   : block_ids_(params.GetParamVectorValue<int>("block_ids")),
-    logvol_(params.ParametersAtAssignment().Has("logical_volume_handle")
-              ? GetStackItemPtrAsType<LogicalVolume>(
-                  object_stack, params.GetParamValue<size_t>("logical_volume_handle"))
-              : nullptr),
+    logvol_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
     strength_(params.GetParamVectorValue<double>("group_strength")),
-    function_(params.ParametersAtAssignment().Has("function_handle")
-                ? GetStackItemPtrAsType<VectorSpatialFunction>(
-                    object_stack, params.GetParamValue<size_t>("function_handle"))
-                : nullptr)
+    function_(std::dynamic_pointer_cast<VectorSpatialFunction>(
+      params.GetParamValue<std::shared_ptr<Function>>("func")))
 {
   if (not logvol_ and block_ids_.empty())
     throw std::invalid_argument("A volumetric source must be defined with a logical volume, "

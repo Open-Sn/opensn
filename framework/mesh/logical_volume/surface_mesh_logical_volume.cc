@@ -20,16 +20,22 @@ SurfaceMeshLogicalVolume::GetInputParameters()
 
   params.SetDocGroup("LuaLogicVolumes");
 
-  params.AddRequiredParameter<size_t>("surface_mesh_handle",
-                                      "Handle to a surface mesh that will represent this object");
+  params.AddRequiredParameter<std::shared_ptr<SurfaceMesh>>(
+    "surface_mesh", "Handle to a surface mesh that will represent this object");
 
   return params;
 }
 
+std::shared_ptr<SurfaceMeshLogicalVolume>
+SurfaceMeshLogicalVolume::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<SurfaceMeshLogicalVolume>("logvol::SurfaceMeshLogicalVolume", params);
+}
+
 SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    surf_mesh_(GetStackItemPtrAsType<SurfaceMesh>(
-      object_stack, params.GetParamValue<size_t>("surface_mesh_handle"), __FUNCTION__)),
+    surf_mesh_(params.GetParamValue<std::shared_ptr<SurfaceMesh>>("surface_mesh")),
     xbounds_({1.0e6, -1.0e6}),
     ybounds_({1.0e6, -1.0e6}),
     zbounds_({1.0e6, -1.0e6})

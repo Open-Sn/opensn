@@ -29,23 +29,28 @@ GaussChebyshevQuadrature::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<GaussChebyshevQuadrature>
+GaussChebyshevQuadrature::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<GaussChebyshevQuadrature>("squad::GaussChebyshevQuadrature", params);
+}
+
 GaussChebyshevQuadrature::GaussChebyshevQuadrature(const InputParameters& params)
   : GaussQuadrature(params)
 {
-  const auto& assigned_params = params.ParametersAtAssignment();
-
-  const int param_count = int(assigned_params.Has("order")) + int(assigned_params.Has("N"));
+  const int param_count = int(params.IsParameterValid("order")) + int(params.IsParameterValid("N"));
   OpenSnInvalidArgumentIf(param_count == 2,
                           "Either \"order\" or \"N\" must be specified, not both");
 
-  if (assigned_params.Has("order"))
+  if (params.IsParameterValid("order"))
   {
     const auto n = static_cast<unsigned int>(order_);
     Initialize(n);
   }
   else
   {
-    const auto n = assigned_params.GetParamValue<unsigned int>("N");
+    const auto n = params.GetParamValue<unsigned int>("N");
     order_ = static_cast<QuadratureOrder>(std::min(n, 43u));
     Initialize(n);
   }

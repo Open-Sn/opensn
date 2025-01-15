@@ -65,6 +65,7 @@ public:
   static InputParameters GetInputParameters();
   static InputParameters OptionsBlock();
   static InputParameters BoundaryOptionsBlock();
+  static std::shared_ptr<DFEMDiffusionSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

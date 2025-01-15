@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/object.h"
+#include <memory>
 
 namespace opensn
 {
@@ -61,8 +62,8 @@ private:
   using AdjointBuffer = std::pair<FluxMomentBuffer, AngularFluxBuffer>;
 
   using MaterialSources = std::map<int, std::vector<double>>;
-  using PointSources = std::vector<PointSource>;
-  using VolumetricSources = std::vector<VolumetricSource>;
+  using PointSources = std::vector<std::shared_ptr<PointSource>>;
+  using VolumetricSources = std::vector<std::shared_ptr<VolumetricSource>>;
   using BoundarySources = std::map<uint64_t, BoundaryPreference>;
 
 public:
@@ -106,7 +107,7 @@ private:
                                                 double time = 0.0) const;
 
 private:
-  LBSSolver& lbs_solver_;
+  std::shared_ptr<LBSSolver> lbs_solver_;
 
   std::map<std::string, AdjointBuffer> adjoint_buffers_;
 
@@ -118,6 +119,7 @@ private:
 public:
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
+  static std::shared_ptr<ResponseEvaluator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

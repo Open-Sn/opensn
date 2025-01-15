@@ -5,7 +5,7 @@ num_procs = 4
 -- NOTE: For command line inputs, specify as:
 --       variable=[[argument]]
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -64,7 +64,7 @@ end
 -- ##### Run problem #####
 -- ##################################################
 
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 dx = L / n_cells
 for i = 0, n_cells do
@@ -72,26 +72,26 @@ for i = 0, n_cells do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Fissile Material")
 
-xs_file = "../transport_keigen/simple_fissile.xs"
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, xs_file)
+xs_simple_fissile = xs.LoadFromOpenSn("../transport_keigen/simple_fissile.xs")
+materials[1]:SetTransportXSections(xs_simple_fissile)
 
---############################################### Setup Physics
+-- Setup Physics
 num_groups = 1
 lbs_block = {
   num_groups = num_groups,
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, n_angles),
+      angular_quadrature = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, n_angles, -1),
       inner_linear_method = "petsc_gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,
@@ -109,18 +109,18 @@ lbs_options = {
 }
 
 phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
-lbs.SetOptions(phys, lbs_options)
+phys:SetOptions(lbs_options)
 
 k_solver0 = lbs.NonLinearKEigen.Create({
-  lbs_solver_handle = phys,
+  lbs_solver = phys,
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance,
 })
-solver.Initialize(k_solver0)
-solver.Execute(k_solver0)
+k_solver0:Initialize()
+k_solver0:Execute()
 
---############################################### Get field functions
---############################################### Line plot
---############################################### Volume integrations
---############################################### Exports
---############################################### Plots
+-- Get field functions
+-- Line plot
+-- Volume integrations
+-- Exports
+-- Plots

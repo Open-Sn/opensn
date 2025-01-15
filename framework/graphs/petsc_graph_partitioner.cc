@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/petsc_graph_partitioner.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "petsc.h"
@@ -23,6 +22,13 @@ PETScGraphPartitioner::GetInputParameters()
   params.AddOptionalParameter("type", "parmetis", "The type of PETSc partitioner");
 
   return params;
+}
+
+std::shared_ptr<PETScGraphPartitioner>
+PETScGraphPartitioner::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", params);
 }
 
 PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)

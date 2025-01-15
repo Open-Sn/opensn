@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/kba_graph_partitioner.h"
-#include "framework/object_factory.h"
 #include "framework/utils/utils.h"
 #include "framework/mesh/mesh.h"
 #include "framework/runtime.h"
@@ -35,6 +34,13 @@ KBAGraphPartitioner::GetInputParameters()
     "zcuts", std::vector<double>{}, "Location of the internal z-cuts. Require nz-1 entries");
 
   return params;
+}
+
+std::shared_ptr<KBAGraphPartitioner>
+KBAGraphPartitioner::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<KBAGraphPartitioner>("mesh::KBAGraphPartitioner", params);
 }
 
 KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)

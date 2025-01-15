@@ -14,4 +14,4 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create({
     zcuts = { 1.1 },
   }),
 })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()

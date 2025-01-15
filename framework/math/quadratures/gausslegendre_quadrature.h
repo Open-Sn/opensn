@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/math/quadratures/gauss_quadrature.h"
+#include "framework/object_factory.h"
 
 namespace opensn
 {
@@ -37,8 +38,6 @@ private:
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit GaussLegendreQuadrature(const InputParameters& params);
 
   /**
@@ -60,6 +59,10 @@ public:
                                    bool verbose = false,
                                    unsigned int max_iters = 1000,
                                    double tol = 1.0e-12);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GaussLegendreQuadrature> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

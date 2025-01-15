@@ -5,21 +5,20 @@
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 
 using namespace opensn;
 
 namespace unit_sim_tests
 {
 
-/**This is a simple test of the Finite Volume spatial discretization applied
- * to Laplace's problem. */
-ParameterBlock SimTest02_FV(const InputParameters& params);
+/**
+ * This is a simple test of the Finite Volume spatial discretization applied
+ * to Laplace's problem.
+ */
 
-RegisterWrapperFunctionInNamespace(unit_sim_tests, SimTest02_FV, nullptr, SimTest02_FV);
-
-ParameterBlock
-SimTest02_FV(const InputParameters&)
+void
+SimTest02_FV()
 {
   opensn::log.Log() << "Coding Tutorial 2";
 
@@ -208,8 +207,8 @@ SimTest02_FV(const InputParameters&)
   ff_grad->UpdateFieldVector(grad_phi);
 
   FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad", {ff_grad});
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_sim_tests, SimTest02_FV);
 
 } // namespace unit_sim_tests

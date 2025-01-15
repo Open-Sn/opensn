@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -32,8 +33,8 @@ LBSGroupset::GetInputParameters()
     "This is useful for increasing pipeline size for parallel simulations");
 
   // Anglesets
-  params.AddRequiredParameter<size_t>("angular_quadrature_handle",
-                                      "A handle to an angular quadrature");
+  params.AddRequiredParameter<std::shared_ptr<AngularQuadrature>>(
+    "angular_quadrature", "A handle to an angular quadrature");
   params.AddOptionalParameter(
     "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
   params.AddOptionalParameter("angle_aggregation_num_subsets",
@@ -167,8 +168,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   master_num_grp_subsets = params.GetParamValue<int>("groupset_num_subsets");
 
   // Add quadrature
-  const size_t quad_handle = params.GetParamValue<size_t>("angular_quadrature_handle");
-  quadrature = GetStackItemPtr<AngularQuadrature>(angular_quadrature_stack, quad_handle, fname);
+  quadrature = params.GetParamValue<std::shared_ptr<AngularQuadrature>>("angular_quadrature");
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");

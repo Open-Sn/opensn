@@ -23,10 +23,10 @@ protected:
 
   explicit FieldFunctionInterface(const InputParameters& params);
 
-  FieldFunction* GetFieldFunction() const;
+  std::shared_ptr<FieldFunction> GetFieldFunction() const;
 
 private:
-  ParameterBlock field_function_param_;
+  std::shared_ptr<FieldFunction> field_function_;
 };
 
 } // namespace opensn

@@ -14,9 +14,6 @@ namespace opensn
 {
 
 OpenSnRegisterObjectAliasInNamespace(diffusion, FVSolver, FVDiffusionSolver);
-OpenSnRegisterSyntaxBlockInNamespace(diffusion,
-                                     FVBoundaryOptionsBlock,
-                                     FVDiffusionSolver::BoundaryOptionsBlock);
 
 FVDiffusionSolver::FVDiffusionSolver(const std::string& name) : DiffusionSolverBase(name)
 {
@@ -72,11 +69,9 @@ FVDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFuncti
 void
 FVDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  const auto& user_params = params.ParametersAtAssignment();
-
-  for (size_t p = 0; p < user_params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = params.GetParam(p);
     if (spec.Name() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
@@ -95,9 +90,8 @@ FVDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = "FVSolver::SetBoundaryOptions";
 
-  const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary = user_params.GetParamValue<std::string>("boundary");
-  const auto bc_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary = params.GetParamValue<std::string>("boundary");
+  const auto bc_type = params.GetParamValue<std::string>("type");
   const auto bc_type_lc = LowerCase(bc_type);
 
   if (bc_type_lc == "reflecting")
@@ -109,7 +103,7 @@ FVDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "dirichlet")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = params.GetParamVectorValue<double>("coeffs");
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto boundary_value = coeffs[0];
@@ -122,7 +116,7 @@ FVDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "neumann")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = params.GetParamVectorValue<double>("coeffs");
     if (coeffs.size() < 1)
       throw std::invalid_argument("Expecting one value in the 'coeffs' parameter.");
     auto f_value = coeffs[0];
@@ -143,7 +137,7 @@ FVDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "robin")
   {
-    const auto coeffs = user_params.GetParamVectorValue<double>("coeffs");
+    const auto coeffs = params.GetParamVectorValue<double>("coeffs");
     if (coeffs.size() < 3)
       throw std::invalid_argument("Expecting three values in the 'coeffs' parameter.");
     auto a_value = coeffs[0];

@@ -19,9 +19,6 @@ namespace opensn
 class SurfaceMesh : public Object
 {
 public:
-  static InputParameters GetInputParameters();
-
-protected:
   explicit SurfaceMesh(const InputParameters& params);
 
 protected:
@@ -70,6 +67,10 @@ public:
    * Does not actually perform these cuts.
    */
   void ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<double>& y_cuts);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<SurfaceMesh> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

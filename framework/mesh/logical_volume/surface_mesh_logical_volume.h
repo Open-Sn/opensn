@@ -12,7 +12,6 @@ namespace opensn
 class SurfaceMeshLogicalVolume : public LogicalVolume
 {
 public:
-  static InputParameters GetInputParameters();
   explicit SurfaceMeshLogicalVolume(const InputParameters& params);
 
   bool Inside(const Vector3& point) const override;
@@ -22,6 +21,10 @@ private:
   std::array<double, 2> xbounds_;
   std::array<double, 2> ybounds_;
   std::array<double, 2> zbounds_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<SurfaceMeshLogicalVolume> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

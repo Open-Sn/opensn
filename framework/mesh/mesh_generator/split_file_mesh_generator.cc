@@ -53,6 +53,13 @@ SplitFileMeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<SplitFileMeshGenerator>
+SplitFileMeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<SplitFileMeshGenerator>("mesh::SplitFileMeshGenerator", params);
+}
+
 SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     num_parts_(params.GetParamValue<int>("num_partitions")),

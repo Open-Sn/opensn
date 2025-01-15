@@ -92,22 +92,22 @@ public:
   const std::vector<LBSGroupset>& Groupsets() const;
 
   /// Adds a point source to the solver.
-  void AddPointSource(PointSource&& point_source);
+  void AddPointSource(std::shared_ptr<PointSource> point_source);
 
   /// Clears all the point sources from the solver.
   void ClearPointSources();
 
   /// Constant accessor to the list of point sources.
-  const std::vector<PointSource>& PointSources() const;
+  const std::vector<std::shared_ptr<PointSource>>& PointSources() const;
 
   /// Adds a volumetric source to the solver.
-  void AddVolumetricSource(VolumetricSource&& volumetric_source);
+  void AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source);
 
   /// Clears all the volumetric sources from the solver.
   void ClearVolumetricSources();
 
   /// Constant accessor to the list of volumetric sources.
-  const std::vector<VolumetricSource>& VolumetricSources() const;
+  const std::vector<std::shared_ptr<VolumetricSource>>& VolumetricSources() const;
 
   size_t& LastRestartTime();
 
@@ -337,8 +337,8 @@ protected:
   std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map_;
   std::map<int, std::shared_ptr<IsotropicMultiGroupSource>> matid_to_src_map_;
 
-  std::vector<PointSource> point_sources_;
-  std::vector<VolumetricSource> volumetric_sources_;
+  std::vector<std::shared_ptr<PointSource>> point_sources_;
+  std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
 
   std::shared_ptr<MeshContinuum> grid_ptr_;
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;

@@ -61,7 +61,7 @@ enum class AngleAggregationType
   AZIMUTHAL = 3,
 };
 
-enum class BoundaryType
+enum class LBSBoundaryType
 {
   VACUUM = 1,     ///< Zero for all angles, space
   ISOTROPIC = 2,  ///< One value for all angles, homogenous in space
@@ -71,7 +71,7 @@ enum class BoundaryType
 
 struct BoundaryPreference
 {
-  BoundaryType type;
+  LBSBoundaryType type;
   std::vector<double> isotropic_mg_source;
   std::string source_function;
 };

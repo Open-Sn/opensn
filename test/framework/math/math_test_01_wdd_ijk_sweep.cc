@@ -1,5 +1,5 @@
 #include "framework/math/quadratures/angular/product_quadrature.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/math/math_range.h"
 #include "framework/logging/log.h"
@@ -12,13 +12,6 @@ using namespace opensn;
 
 namespace unit_tests
 {
-
-ParameterBlock math_Test01_WDD_IJK_Sweep(const InputParameters& params);
-
-RegisterWrapperFunctionInNamespace(unit_tests,
-                                   math_Test01_WDD_IJK_Sweep,
-                                   nullptr,
-                                   math_Test01_WDD_IJK_Sweep);
 
 NDArray<double, 3>
 WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
@@ -124,8 +117,8 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   return phi_0;
 }
 
-ParameterBlock
-math_Test01_WDD_IJK_Sweep(const InputParameters&)
+void
+math_Test01_WDD_IJK_Sweep()
 {
   opensn::log.Log() << "GOLD_BEGIN";
   bool verbose = true;
@@ -153,7 +146,8 @@ math_Test01_WDD_IJK_Sweep(const InputParameters&)
   }
 
   opensn::log.Log() << "GOLD_END";
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, math_Test01_WDD_IJK_Sweep);
 
 } //  namespace unit_tests

@@ -13,24 +13,21 @@ LogicalVolumeInterface::GetInputParameters()
 {
   InputParameters params;
 
-  params.AddOptionalParameter("logical_volume", 0, "Handle to a logical_volume.");
+  params.AddOptionalParameter(
+    "logical_volume", std::shared_ptr<LogicalVolume>{}, "Handle to a logical_volume.");
 
   return params;
 }
 
 LogicalVolumeInterface::LogicalVolumeInterface(const InputParameters& params)
-  : logical_volume_(
-      params.ParametersAtAssignment().Has("logical_volume")
-        ? GetStackItemPtrAsType<const LogicalVolume>(
-            object_stack, params.GetParamValue<size_t>("logical_volume"), __FUNCTION__)
-        : nullptr)
+  : logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume"))
 {
 }
 
-const LogicalVolume*
+const std::shared_ptr<LogicalVolume>
 LogicalVolumeInterface::GetLogicalVolume() const
 {
-  return logical_volume_ ? &(*logical_volume_) : nullptr;
+  return logical_volume_;
 }
 
 } // namespace opensn

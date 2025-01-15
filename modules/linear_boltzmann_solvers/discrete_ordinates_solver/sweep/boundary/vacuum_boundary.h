@@ -20,7 +20,8 @@ private:
 public:
   explicit VacuumBoundary(size_t num_groups,
                           CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::VACUUM, num_groups, coord_type), boundary_flux_(num_groups, 0.0)
+    : SweepBoundary(LBSBoundaryType::VACUUM, num_groups, coord_type),
+      boundary_flux_(num_groups, 0.0)
   {
   }
 

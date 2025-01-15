@@ -16,7 +16,8 @@ enum class VaryingDataType : int
   STRING = 2,          ///< Datatype mapping to std::string
   BOOL = 3,            ///< Datatype mapping to bool
   INTEGER = 4,         ///< Datatype mapping to int64_t
-  FLOAT = 5            ///< Datatype mapping to double
+  FLOAT = 5,           ///< Datatype mapping to double
+  USER_DATA = 6        ///< Datatype mapping to user data
 };
 
 /// Provides a string-name for an enumerated VaryingDataType.

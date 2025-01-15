@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 40
 L = 14.0
@@ -9,7 +9,7 @@ for i = 1, (N + 1) do
   nodes[i] = xmin + k * dx
 end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 mesh.SetUniformMaterialID(0)
 
@@ -20,4 +20,4 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)

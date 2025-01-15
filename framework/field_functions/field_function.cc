@@ -50,7 +50,7 @@ FieldFunction::FieldFunction(std::string name, Unknown unknown)
 }
 
 void
-FieldFunction::PushOntoStack(std::shared_ptr<Object>& new_object)
+FieldFunction::PushOntoStack(std::shared_ptr<Object> new_object)
 {
   auto ff_ptr = std::dynamic_pointer_cast<FieldFunction>(new_object);
 
