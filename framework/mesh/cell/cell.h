@@ -7,6 +7,7 @@
 #include "framework/mesh/mesh_vector.h"
 #include <tuple>
 #include <vector>
+#include <cstdint>
 
 // Appending cell types to namespace
 namespace opensn
