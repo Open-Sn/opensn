@@ -88,7 +88,8 @@ lbs_options = {
   },
   scattering_order = 1,
   save_angular_flux = true,
-  --write_restart_time_interval = 60,
+  --restart_writes_enabled = true,
+  --write_delayed_psi_to_restart = true,
   --write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
   read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
 }

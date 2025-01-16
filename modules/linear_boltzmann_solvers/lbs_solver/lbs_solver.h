@@ -248,19 +248,19 @@ public:
   void DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
                                       const std::vector<double>& delta_phi_local,
                                       std::vector<double>& ref_phi_new);
-
-  bool RestartsEnabled() { return options_.write_restart_time_interval > std::chrono::seconds(0); }
-
   bool TriggerRestartDump()
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
       return false;
-  
+
     auto elapsed = std::chrono::system_clock::now() - options_.last_restart_write_time;
     return elapsed >= options_.write_restart_time_interval;
   }
 
-  void UpdateRestartWriteTime() { options_.last_restart_write_time = std::chrono::system_clock::now(); }
+  void UpdateRestartWriteTime()
+  {
+    options_.last_restart_write_time = std::chrono::system_clock::now();
+  }
 
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();

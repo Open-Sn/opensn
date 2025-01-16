@@ -66,6 +66,7 @@ PowerIterationKEigen::Initialize()
 {
   lbs_solver_->Initialize();
 
+  auto& options = lbs_solver_->GetOptions();
   active_set_source_function_ = lbs_solver_->GetActiveSetSourceFunction();
   ags_solver_ = lbs_solver_->GetAGSSolver();
 
@@ -80,7 +81,7 @@ PowerIterationKEigen::Initialize()
     wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
-  ags_solver_->SetVerbosity(lbs_solver_->GetOptions().verbose_ags_iterations);
+  ags_solver_->SetVerbosity(options.verbose_ags_iterations);
 
   front_wgs_solver_ = lbs_solver_->GetWGSSolvers().at(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
@@ -88,24 +89,17 @@ PowerIterationKEigen::Initialize()
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
   bool restart_successful = false;
-  if (not lbs_solver_.Options().read_restart_path.empty())
-  {
-    if (ReadRestartData())
-    {
-      restart_successful = true;
-      log.Log() << "Successfully read restart data." << std::endl;
-    }
-    else
-      log.Log() << "Failed to read restart data." << std::endl;
-  }
-  
+  if (not options.read_restart_path.empty())
+    restart_successful = ReadRestartData();
+
   if (reset_phi0_ and not restart_successful)
-    LBSVecOps::SetPhiVectorScalarValues(lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(*lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
 }
 
 void
 PowerIterationKEigen::Execute()
 {
+  auto& options = lbs_solver_->GetOptions();
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
@@ -136,7 +130,7 @@ PowerIterationKEigen::Execute()
       converged = true;
 
     // Print iteration summary
-    if (lbs_solver_->GetOptions().verbose_outer_iterations)
+    if (options.verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
       k_iter_info << program_timer.GetTimeString() << " "
@@ -149,16 +143,8 @@ PowerIterationKEigen::Execute()
       log.Log() << k_iter_info.str();
     }
 
-    if (lbs_solver_.TriggerRestartDump())
-    {
-      if(WriteRestartData())
-      {
-        lbs_solver_.UpdateRestartWriteTime();
-        log.Log() << "Successfully wrote restart data." << std::endl;
-      }
-      else
-        log.Log() << "Failed to write restart data." << std::endl;
-    }
+    if (options.restart_writes_enabled and lbs_solver_->TriggerRestartDump())
+      WriteRestartData();
 
     if (converged)
       break;
@@ -166,16 +152,8 @@ PowerIterationKEigen::Execute()
 
   // If restarts are enabled, always write a restart dump upon convergence or
   // when we reach the iteration limit
-  if (lbs_solver_.RestartsEnabled())
-  {
-    if(WriteRestartData())
-    {
-      lbs_solver_.UpdateRestartWriteTime();
-      log.Log() << "Successfully wrote restart data." << std::endl;
-    }
-    else
-      log.Log() << "Failed to write restart data." << std::endl;
-  }
+  if (options.restart_writes_enabled)
+    WriteRestartData();
 
   // Print summary
   int total_num_sweeps = 0;
@@ -192,7 +170,7 @@ PowerIterationKEigen::Execute()
             << " (Total number of sweeps:" << total_num_sweeps << ")"
             << "\n\n";
 
-  if (lbs_solver_->GetOptions().use_precursors)
+  if (options.use_precursors)
   {
     lbs_solver_->ComputePrecursors();
     Scale(lbs_solver_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
@@ -237,9 +215,9 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 bool
 PowerIterationKEigen::ReadRestartData()
 {
-  auto& fname = lbs_solver_.Options().read_restart_path;
-  auto& phi_old_local = lbs_solver_.PhiOldLocal();
-  auto& groupsets = lbs_solver_.Groupsets();
+  auto& fname = lbs_solver_->GetOptions().read_restart_path;
+  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
+  auto& groupsets = lbs_solver_->GetGroupsets();
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -266,11 +244,16 @@ PowerIterationKEigen::ReadRestartData()
     }
 
     // Read keff and Fprev
-    success &= H5ReadAttribute<double>(file, "keff", k_eff_) and 
+    success &= H5ReadAttribute<double>(file, "keff", k_eff_) and
                H5ReadAttribute<double>(file, "Fprev", F_prev_);
 
     H5Fclose(file);
   }
+
+  if (success)
+    log.Log() << "Successfully read restart data." << std::endl;
+  else
+    log.Log() << "Failed to read restart data." << std::endl;
 
   return success;
 }
@@ -278,9 +261,10 @@ PowerIterationKEigen::ReadRestartData()
 bool
 PowerIterationKEigen::WriteRestartData()
 {
-  auto fname = lbs_solver_.Options().write_restart_path;
-  auto& phi_old_local = lbs_solver_.PhiOldLocal();
-  auto& groupsets = lbs_solver_.Groupsets();
+  auto& options = lbs_solver_->GetOptions();
+  auto fname = options.write_restart_path;
+  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
+  auto& groupsets = lbs_solver_->GetGroupsets();
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -288,21 +272,24 @@ PowerIterationKEigen::WriteRestartData()
   {
     // Write phi
     success &= H5WriteDataset1D<double>(file, "phi_old", phi_old_local);
- 
+
     // Write psi
-    int gs_id = 0;
-    for (auto gs : lbs_solver_.Groupsets())
+    if (options.write_delayed_psi_to_restart)
     {
-      if (gs.angle_agg)
+      int gs_id = 0;
+      for (auto gs : lbs_solver_->GetGroupsets())
       {
-        auto psi = gs.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
-        if (not psi.empty())
+        if (gs.angle_agg)
         {
-          std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-          success &= H5WriteDataset1D<double>(file, name, psi);
+          auto psi = gs.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+          if (not psi.empty())
+          {
+            std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
+            success &= H5WriteDataset1D<double>(file, name, psi);
+          }
         }
+        ++gs_id;
       }
-      ++gs_id;
     }
 
     success &= H5CreateAttribute<double>(file, "keff", k_eff_) and
@@ -310,6 +297,14 @@ PowerIterationKEigen::WriteRestartData()
 
     H5Fclose(file);
   }
+
+  if (success)
+  {
+    lbs_solver_->UpdateRestartWriteTime();
+    log.Log() << "Successfully wrote restart data." << std::endl;
+  }
+  else
+    log.Log() << "Failed to write restart data." << std::endl;
 
   return success;
 }

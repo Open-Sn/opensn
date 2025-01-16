@@ -430,6 +430,11 @@ LBSSolver::GetOptionsBlock()
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
   params.AddOptionalParameter(
+    "restart_writes_enabled", false, "Flag that controls writing of restart dumps");
+  params.AddOptionalParameter("write_delayed_psi_to_restart",
+                              true,
+                              "Flag that controls writing of delayed angular fluxes to restarts.");
+  params.AddOptionalParameter(
     "read_restart_path", "", "Full path for reading restart dumps including file stem.");
   params.AddOptionalParameter(
     "write_restart_path", "", "Full path for writing restart dumps including file stem.");
@@ -613,20 +618,26 @@ LBSSolver::SetOptions(const InputParameters& input)
     else if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
-    else if (spec.Name() == "read_restart_path")
+    else if (spec.GetName() == "restart_writes_enabled")
+      options_.restart_writes_enabled = spec.GetValue<bool>();
+
+    else if (spec.GetName() == "write_delayed_psi_to_restart")
+      options_.write_delayed_psi_to_restart = spec.GetValue<bool>();
+
+    else if (spec.GetName() == "read_restart_path")
     {
       options_.read_restart_path = spec.GetValue<std::string>();
       options_.read_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
     }
 
-    else if (spec.Name() == "write_restart_time_interval")
-      options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>());
-
-    else if (spec.Name() == "write_restart_path")
+    else if (spec.GetName() == "write_restart_path")
     {
       options_.write_restart_path = spec.GetValue<std::string>();
       options_.write_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
     }
+
+    else if (spec.GetName() == "write_restart_time_interval")
+      options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>());
 
     else if (spec.GetName() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
@@ -718,7 +729,7 @@ LBSSolver::SetOptions(const InputParameters& input)
     }
   } // for p
 
-  if (user_params.Has("write_restart_time_interval"))
+  if (options_.restart_writes_enabled)
   {
     // Create restart directory if necessary
     auto dir = options_.write_restart_path.parent_path();

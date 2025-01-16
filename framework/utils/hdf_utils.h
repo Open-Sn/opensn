@@ -119,7 +119,7 @@ template <typename T>
 bool
 H5WriteDataset1D(hid_t id, const std::string& name, std::vector<T> data)
 {
-  bool retval = false;
+  bool success = false;
 
   hsize_t dim[1], maxdims[1];
   dim[0] = data.size();
@@ -132,20 +132,20 @@ H5WriteDataset1D(hid_t id, const std::string& name, std::vector<T> data)
     if (dataset != H5I_INVALID_HID)
     {
       if (H5Dwrite(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) >= 0)
-        retval = true;
+        success = true;
       H5Dclose(dataset);
     }
     H5Sclose(dataspace);
   }
 
-  return retval;
+  return success;
 }
 
 template <typename T>
 bool
 H5CreateAttribute(hid_t id, const std::string& name, T& data)
 {
-  bool retval = false;
+  bool success = false;
 
   auto dataspace = H5Screate(H5S_SCALAR);
   if (dataspace != H5I_INVALID_HID)
@@ -155,20 +155,20 @@ H5CreateAttribute(hid_t id, const std::string& name, T& data)
     if (attribute != H5I_INVALID_HID)
     {
       if (H5Awrite(attribute, get_datatype<T>(), &data) >= 0)
-        retval = true;
+        success = true;
       H5Aclose(attribute);
     }
     H5Sclose(dataspace);
   }
 
-  return retval;
+  return success;
 }
 
 template <typename T>
 bool
 H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
 {
-  bool retval = true;
+  bool success = true;
 
   auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
   if (dataset != H5I_INVALID_HID)
@@ -184,7 +184,7 @@ H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
         {
           data.clear();
           data.shrink_to_fit();
-          retval = false;
+          success = false;
         }
       }
       H5Sclose(dataspace);
@@ -207,7 +207,7 @@ H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
           {
             data.clear();
             data.shrink_to_fit();
-            retval = false;
+            success = false;
           }
         }
         H5Aclose(attribute);
@@ -215,14 +215,14 @@ H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
     }
   }
 
-  return retval;
+  return success;
 }
 
 template <typename T>
 bool
 H5ReadAttribute(hid_t id, const std::string& name, T& value)
 {
-  bool retval = false;
+  bool success = false;
 
   if (H5Aexists(id, name.c_str()))
   {
@@ -230,19 +230,19 @@ H5ReadAttribute(hid_t id, const std::string& name, T& value)
     if (attribute != H5I_INVALID_HID)
     {
       if (H5Aread(attribute, get_datatype<T>(), &value) >= 0)
-        retval = true;
+        success = true;
       H5Aclose(attribute);
     }
   }
 
-  return retval;
+  return success;
 }
 
 template <>
 inline bool
 H5ReadAttribute<std::string>(hid_t id, const std::string& name, std::string& value)
 {
-  bool retval = false;
+  bool success = false;
 
   if (H5Aexists(id, name.c_str()))
   {
@@ -258,21 +258,21 @@ H5ReadAttribute<std::string>(hid_t id, const std::string& name, std::string& val
         if (H5Aread(attribute, string_type, buffer.data()) >= 0)
         {
           value = buffer.data();
-          retval = true;
+          success = true;
         }
       }
       H5Aclose(attribute);
     }
   }
 
-  return retval;
+  return success;
 }
 
 template <>
 inline bool
 H5ReadAttribute<bool>(hid_t id, const std::string& name, bool& value)
 {
-  bool retval = false;
+  bool success = false;
 
   if (H5Aexists(id, name.c_str()))
   {
@@ -280,28 +280,28 @@ H5ReadAttribute<bool>(hid_t id, const std::string& name, bool& value)
     if (attribute != H5I_INVALID_HID)
     {
       if (H5Aread(attribute, H5T_NATIVE_INT, &value) >= 0)
-        retval = true;
+        success = true;
       H5Aclose(attribute);
     }
   }
 
-  return retval;
+  return success;
 }
 
 template <typename T>
 bool
 H5ReadGroupAttribute(hid_t id, const std::string& group_id, const std::string& name, T& value)
 {
-  bool retval = false;
+  bool success = false;
 
   auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
   if (group != H5I_INVALID_HID)
   {
-    retval = H5ReadAttribute<T>(group, name, value);
+    success = H5ReadAttribute<T>(group, name, value);
     H5Gclose(group);
   }
 
-  return retval;
+  return success;
 }
 
 template <>
@@ -311,16 +311,16 @@ H5ReadGroupAttribute<std::string>(hid_t id,
                                   const std::string& name,
                                   std::string& value)
 {
-  bool retval = false;
+  bool success = false;
 
   auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
   if (group != H5I_INVALID_HID)
   {
-    retval = H5ReadAttribute<std::string>(group, name, value);
+    success = H5ReadAttribute<std::string>(group, name, value);
     H5Gclose(group);
   }
 
-  return retval;
+  return success;
 }
 
 template <>
@@ -330,16 +330,16 @@ H5ReadGroupAttribute<bool>(hid_t id,
                            const std::string& name,
                            bool& value)
 {
-  bool retval = false;
+  bool success = false;
 
   auto group = H5Gopen2(id, group_id.c_str(), H5P_DEFAULT);
   if (group != H5I_INVALID_HID)
   {
-    retval = H5ReadAttribute<bool>(group, name, value);
+    success = H5ReadAttribute<bool>(group, name, value);
     H5Gclose(group);
   }
 
-  return retval;
+  return success;
 }
 
 } // namespace opensn
