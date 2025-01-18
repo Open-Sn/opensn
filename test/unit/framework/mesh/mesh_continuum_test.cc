@@ -1,31 +1,11 @@
 #include "test/unit/opensn_unit_test.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
 
 using namespace opensn;
 
 class MeshContinuumTest : public OpenSnUnitTest
 {
 };
-
-/// Helper for building a MeshContinuum for an orthogonal mesh
-/// given an array of nodes (one for each dimension)
-std::shared_ptr<MeshContinuum>
-BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
-{
-  ParameterBlock array("node_sets");
-  for (std::size_t i = 0; i < node_sets.size(); ++i)
-    array.AddParameter(ParameterBlock(std::to_string(i + 1), node_sets[i]));
-  array.ChangeToArray();
-
-  ParameterBlock block("");
-  block.AddParameter(array);
-
-  auto params = OrthogonalMeshGenerator::GetInputParameters();
-  params.AssignParameters(block);
-  auto grid_ptr = OrthogonalMeshGenerator(params).Execute();
-  return grid_ptr;
-}
 
 /// Helper for the PointInsideCellXD tests
 void
