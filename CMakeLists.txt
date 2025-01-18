@@ -219,7 +219,8 @@ if(OPENSN_WITH_LUA)
 
     add_custom_target(test
       COMMAND
-          ${CMAKE_SOURCE_DIR}/test/run_tests
+      ${CMAKE_BINARY_DIR}/test/opensn-unit &&
+              ${CMAKE_SOURCE_DIR}/test/run_tests
               -d ${CMAKE_SOURCE_DIR}/test
               --exe ${CMAKE_BINARY_DIR}/test/opensn-test
               -w3
