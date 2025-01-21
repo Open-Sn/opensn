@@ -9,8 +9,7 @@
 namespace opensnlua
 {
 
-void MeshSetMaterialIDFromFunction(std::shared_ptr<opensn::MeshContinuum> grid,
-                                   const char* lua_fname);
+void MeshSetBlockIDFromFunction(std::shared_ptr<opensn::MeshContinuum> grid, const char* lua_fname);
 void MeshSetBoundaryIDFromFunction(std::shared_ptr<opensn::MeshContinuum> grid,
                                    const char* lua_fname);
 void MeshExportToPVTU(std::shared_ptr<opensn::MeshContinuum> grid, const std::string& file_name);

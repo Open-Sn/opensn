@@ -14,7 +14,7 @@ namespace opensnlua
 {
 
 void
-MeshSetMaterialIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* lua_fname)
+MeshSetBlockIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* lua_fname)
 {
   auto L = Console::GetInstance().GetConsoleState();
   auto lua_fn = luabridge::getGlobal(L, lua_fname);
