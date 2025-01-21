@@ -14,7 +14,7 @@ grid = meshgen1:Execute()
 
 mesh.ExportToPVTU("ZMeshPhase1")
 
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 --Sets a middle square to material 1
 function MatIDFunction1(pt, cur_id)

@@ -39,8 +39,8 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen:Execute()
 
--- Set material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 vol1a = logvol.RPPLogicalVolume.Create({
   infx = true,

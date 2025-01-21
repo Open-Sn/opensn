@@ -19,7 +19,7 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen:Execute()
 
--- Set Material IDs
+-- Set block IDs
 z_min = 0.0
 z_max = widths[1]
 for imat = 1, Nmat do

@@ -43,7 +43,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 grid = meshgen1:Execute()
 
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
 

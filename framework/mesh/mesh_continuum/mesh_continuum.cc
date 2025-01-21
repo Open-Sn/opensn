@@ -625,17 +625,17 @@ MeshContinuum::GetGlobalNumberOfCells() const
 }
 
 void
-MeshContinuum::SetUniformMaterialID(int mat_id)
+MeshContinuum::SetUniformBlockID(int blk_id)
 {
   for (auto& cell : local_cells)
-    cell.block_id = mat_id;
+    cell.block_id = blk_id;
 
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].block_id = mat_id;
+    cells[ghost_id].block_id = blk_id;
 
   mpi_comm.barrier();
-  opensn::log.Log() << program_timer.GetTimeString() << " Done setting Block id " << mat_id
+  opensn::log.Log() << program_timer.GetTimeString() << " Done setting Block ID " << blk_id
                     << " to all cells";
 }
 

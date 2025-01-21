@@ -27,7 +27,7 @@ end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen:Execute()
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 -- Add materials
 num_groups = 1

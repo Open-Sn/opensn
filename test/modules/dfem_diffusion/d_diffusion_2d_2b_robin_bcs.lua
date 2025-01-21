@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Set Material IDs
+-- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 

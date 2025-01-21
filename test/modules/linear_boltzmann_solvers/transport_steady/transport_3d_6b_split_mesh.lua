@@ -63,7 +63,7 @@ meshgen1 = mesh.SplitFileMeshGenerator.Create({
 
 grid = meshgen1:Execute()
 
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
