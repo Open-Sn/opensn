@@ -272,7 +272,7 @@ FVDiffusionSolver::Execute()
     const auto volume_P = cell_P.volume;
     const auto& x_cc_P = cell_P.centroid;
 
-    const auto imat = cell_P.material_id;
+    const auto imat = cell_P.block_id;
 
     const double sigma_a = sigma_a_function_->Evaluate(imat, x_cc_P);
     const double q_ext = q_ext_function_->Evaluate(imat, x_cc_P);
@@ -292,7 +292,7 @@ FVDiffusionSolver::Execute()
       if (face.has_neighbor)
       {
         const auto& cell_N = grid.cells[face.neighbor_id];
-        const int jmat = cell_N.material_id;
+        const int jmat = cell_N.block_id;
         const auto& x_cc_N = cell_N.centroid;
         const auto x_PN = x_cc_N - x_cc_P;
 

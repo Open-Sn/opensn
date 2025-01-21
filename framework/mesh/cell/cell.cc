@@ -278,7 +278,7 @@ Cell::operator=(const Cell& other)
   local_id = other.local_id;
   partition_id = other.partition_id;
   centroid = other.centroid;
-  material_id = other.material_id;
+  block_id = other.block_id;
   vertex_ids = other.vertex_ids;
   faces = other.faces;
 
@@ -366,7 +366,7 @@ Cell::Serialize() const
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
   raw.Write<double>(centroid.z);
-  raw.Write<int>(material_id);
+  raw.Write<int>(block_id);
 
   raw.Write<CellType>(cell_type_);
   raw.Write<CellType>(cell_sub_type_);
@@ -391,7 +391,7 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);
   auto cell_centroid_z = raw.Read<double>(address, &address);
-  auto cell_matrl_id = raw.Read<int>(address, &address);
+  auto cell_block_id = raw.Read<int>(address, &address);
 
   auto cell_type = raw.Read<CellType>(address, &address);
   auto cell_sub_type = raw.Read<CellType>(address, &address);
@@ -403,7 +403,7 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   cell.centroid.x = cell_centroid_x;
   cell.centroid.y = cell_centroid_y;
   cell.centroid.z = cell_centroid_z;
-  cell.material_id = cell_matrl_id;
+  cell.block_id = cell_block_id;
 
   auto num_vertex_ids = raw.Read<size_t>(address, &address);
   cell.vertex_ids.reserve(num_vertex_ids);
@@ -429,7 +429,7 @@ Cell::ToString() const
   outstr << "local_id: " << local_id << "\n";
   outstr << "partition_id: " << partition_id << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
-  outstr << "material_id: " << material_id << "\n";
+  outstr << "block_id: " << block_id << "\n";
 
   outstr << "num_vertex_ids: " << vertex_ids.size() << "\n";
   {

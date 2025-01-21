@@ -202,7 +202,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   cell->centroid = raw_cell.centroid;
   cell->global_id = global_id;
   cell->partition_id = partition_id;
-  cell->material_id = raw_cell.material_id;
+  cell->block_id = raw_cell.material_id;
 
   cell->vertex_ids = raw_cell.vertex_ids;
 

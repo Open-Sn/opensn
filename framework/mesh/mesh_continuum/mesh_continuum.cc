@@ -553,14 +553,14 @@ void
 MeshContinuum::SetUniformMaterialID(const int mat_id)
 {
   for (auto& cell : local_cells)
-    cell.material_id = mat_id;
+    cell.block_id = mat_id;
 
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].material_id = mat_id;
+    cells[ghost_id].block_id = mat_id;
 
   mpi_comm.barrier();
-  log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+  log.Log() << program_timer.GetTimeString() << " Done setting block id " << mat_id
             << " to all cells";
 }
 
@@ -574,7 +574,7 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol,
   {
     if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell.material_id = mat_id;
+      cell.block_id = mat_id;
       ++num_cells_modified;
     }
   }
@@ -584,7 +584,7 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol,
   {
     auto& cell = cells[ghost_id];
     if (log_vol.Inside(cell.centroid) and sense)
-      cell.material_id = mat_id;
+      cell.block_id = mat_id;
   }
 
   int global_num_cells_modified;
@@ -775,7 +775,7 @@ MeshContinuum::ComputeVolumePerMaterialID()
   // Create a map to hold local volume with local material as key
   std::map<int, double> material_volumes;
   for (auto& cell : this->local_cells)
-    material_volumes[cell.material_id] += cell.volume;
+    material_volumes[cell.block_id] += cell.volume;
 
   // Collect all local material IDs
   std::set<int> unique_material_ids;

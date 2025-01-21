@@ -333,9 +333,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
-      if (material_sources_.count(cell.material_id) > 0)
+      if (material_sources_.count(cell.block_id) > 0)
       {
-        const auto& src = material_sources_.at(cell.material_id);
+        const auto& src = material_sources_.at(cell.block_id);
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
