@@ -239,7 +239,7 @@ ResponseEvaluator::GetMaterialSourceOptionsBlock()
     "Options for adding material-based forward sources to the response evaluator.");
   params.SetDocGroup("LBSResponseEvaluator");
 
-  params.AddRequiredParameter<int>("material_id", "The material id the source belongs to.");
+  params.AddRequiredParameter<int>("block_id", "The block id the source belongs to.");
   params.AddRequiredParameterArray("strength", "The group-wise material source strength.");
 
   return params;
@@ -248,9 +248,9 @@ ResponseEvaluator::GetMaterialSourceOptionsBlock()
 void
 ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 {
-  const auto matid = params.GetParamValue<int>("material_id");
-  OpenSnInvalidArgumentIf(material_sources_.count(matid) > 0,
-                          "A material source for material id " + std::to_string(matid) +
+  const auto blkid = params.GetParamValue<int>("block_id");
+  OpenSnInvalidArgumentIf(material_sources_.count(blkid) > 0,
+                          "A material source for block id " + std::to_string(blkid) +
                             " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
@@ -261,8 +261,8 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                             std::to_string(lbs_solver_->GetNumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
 
-  material_sources_[matid] = values;
-  log.Log0Verbose1() << "Material source for material id " << matid << " added to the stack.";
+  material_sources_[blkid] = values;
+  log.Log0Verbose1() << "Material source for block id " << blkid << " added to the stack.";
 }
 
 void

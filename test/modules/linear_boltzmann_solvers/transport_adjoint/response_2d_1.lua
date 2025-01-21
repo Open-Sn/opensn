@@ -149,7 +149,7 @@ lbs.WriteFluxMoments(phys, "adjoint_2d_1")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_1" } } }
-mat_sources = { { material_id = 2, strength = { 3.0 } } }
+mat_sources = { { block_id = 2, strength = { 3.0 } } }
 response_options = {
   lbs_solver = phys,
   options = {
