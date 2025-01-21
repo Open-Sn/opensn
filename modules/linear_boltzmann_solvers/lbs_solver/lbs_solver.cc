@@ -944,10 +944,10 @@ LBSSolver::InitializeMaterials()
 
   // Create set of material ids locally relevant
   int invalid_mat_cell_count = 0;
-  std::set<int> unique_material_ids;
+  std::set<int> unique_block_ids;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    unique_material_ids.insert(cell.block_id);
+    unique_block_ids.insert(cell.block_id);
     if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
@@ -955,7 +955,7 @@ LBSSolver::InitializeMaterials()
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
-    unique_material_ids.insert(cell.block_id);
+    unique_block_ids.insert(cell.block_id);
     if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
