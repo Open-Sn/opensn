@@ -17,7 +17,7 @@ grid = meshgen:Execute()
 
 -- assign mat ID 10 to whole domain
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol0, 10, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 10, true)
 
 -- create a logical volume as an analytical RPP
 vol1 = logvol.RPPLogicalVolume.Create({
@@ -29,13 +29,13 @@ vol1 = logvol.RPPLogicalVolume.Create({
   zmax = 0.5,
 })
 -- assign mat ID 11 to lv of RPP
-grid:SetMaterialIDFromLogicalVolume(vol1, 11, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 11, true)
 -- create a logical volume as the interior of a skin mesh
 surfmesh = mesh.SurfaceMesh.Create({})
 surfmesh:ImportFromOBJFile("./cube_with_normals.obj", false, Vector3(0, 0, 0))
 lv_skinmesh = logvol.SurfaceMeshLogicalVolume.Create({ surface_mesh = surfmesh })
 -- assign mat ID 15 to lv of skin mesh
-grid:SetMaterialIDFromLogicalVolume(lv_skinmesh, 15, true)
+grid:SetBlockIDFromLogicalVolume(lv_skinmesh, 15, true)
 
 -- export to vtk
 mesh.ExportToPVTU(grid, "lv_skinmesh_out")

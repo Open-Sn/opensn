@@ -13,7 +13,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({
 grid = meshgen1:Execute()
 
 lv1 = logvol.RCCLogicalVolume.Create({ r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 })
-grid:SetMaterialIDFromLogicalVolume(lv1, 1, true)
+grid:SetBlockIDFromLogicalVolume(lv1, 1, true)
 
 lv2 = logvol.RCCLogicalVolume.Create({
   r = 1.3,
@@ -24,6 +24,6 @@ lv2 = logvol.RCCLogicalVolume.Create({
   vy = 1.0,
   vz = 3.0,
 })
-grid:SetMaterialIDFromLogicalVolume(lv2, 2, true)
+grid:SetBlockIDFromLogicalVolume(lv2, 2, true)
 
 mesh.ExportToPVTU(grid, "lv_rcc_test1")

@@ -116,8 +116,8 @@ public:
   /// Sets block ids for all cells to the specified block id.
   void SetUniformBlockID(const int blk_id);
 
-  /// Sets material ids using a logical volume.
-  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
+  /// Sets block IDs using a logical volume.
+  void SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, bool sense);
 
   /// Sets boundary ids using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
