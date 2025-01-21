@@ -296,7 +296,7 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("ComputeVolumePerMaterialID", &MeshContinuum::ComputeVolumePerMaterialID)
       .addFunction("Dimension", &MeshContinuum::GetDimension)
       .addFunction("SetDimension", &MeshContinuum::SetDimension)
-      .addFunction("SetUniformMaterialID", &MeshContinuum::SetUniformMaterialID)
+      .addFunction("SetUniformBlockID", &MeshContinuum::SetUniformBlockID)
       .addFunction("SetMaterialIDFromLogicalVolume", &MeshContinuum::SetMaterialIDFromLogical)
       .addFunction("SetBoundaryIDFromLogicalVolume", &MeshContinuum::SetBoundaryIDFromLogical)
       .addFunction("SetupOrthogonalBoundaries", &MeshContinuum::SetupOrthogonalBoundaries)

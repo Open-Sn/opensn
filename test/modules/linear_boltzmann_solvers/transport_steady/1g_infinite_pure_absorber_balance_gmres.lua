@@ -13,8 +13,8 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 num_groups = 1
 

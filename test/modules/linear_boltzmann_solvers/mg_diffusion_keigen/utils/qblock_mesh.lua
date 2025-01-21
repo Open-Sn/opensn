@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({
   xmin = -1000.0,

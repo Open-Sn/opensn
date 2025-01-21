@@ -550,17 +550,17 @@ MeshContinuum::GetLocalBoundingBox() const
 }
 
 void
-MeshContinuum::SetUniformMaterialID(const int mat_id)
+MeshContinuum::SetUniformBlockID(const int blk_id)
 {
   for (auto& cell : local_cells)
-    cell.block_id = mat_id;
+    cell.block_id = blk_id;
 
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].block_id = mat_id;
+    cells[ghost_id].block_id = blk_id;
 
   mpi_comm.barrier();
-  log.Log() << program_timer.GetTimeString() << " Done setting block id " << mat_id
+  log.Log() << program_timer.GetTimeString() << " Done setting block id " << blk_id
             << " to all cells";
 }
 

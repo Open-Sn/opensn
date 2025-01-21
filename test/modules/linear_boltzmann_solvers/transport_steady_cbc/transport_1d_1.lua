@@ -29,8 +29,8 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen1:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 num_groups = 168
 xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")

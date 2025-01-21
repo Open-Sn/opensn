@@ -113,8 +113,8 @@ public:
   /// Returns the bounding box corners for the locally owned cells.
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
-  /// Sets material ids for all cells to the specified material id.
-  void SetUniformMaterialID(int mat_id);
+  /// Sets block ids for all cells to the specified block id.
+  void SetUniformBlockID(const int blk_id);
 
   /// Sets material ids using a logical volume.
   void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
