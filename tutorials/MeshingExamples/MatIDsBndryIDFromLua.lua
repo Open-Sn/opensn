@@ -25,7 +25,7 @@ function MatIDFunction1(pt, cur_id)
   return cur_id
 end
 
-mesh.SetMaterialIDFromFunction("MatIDFunction1")
+mesh.SetBlockIDFromFunction("MatIDFunction1")
 
 mesh.ExportToPVTU("ZMeshPhase2")
 

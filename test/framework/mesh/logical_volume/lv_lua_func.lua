@@ -27,8 +27,8 @@ function MatIDFunction1(pt, cur_id)
   return cur_id
 end
 
--- assign mat ID 11 to lv using lua function
-mesh.SetMaterialIDFromFunction(grid, "MatIDFunction1")
+-- assign block ID 11 to lv using lua function
+mesh.SetBlockIDFromFunction(grid, "MatIDFunction1")
 
 -- export to vtk
 mesh.ExportToPVTU(grid, "lv_lua_func_out")

@@ -289,7 +289,7 @@ static bool reg = opensnlua::Console::Bind(
 
     luabridge::getGlobalNamespace(L)
       .beginNamespace("mesh")
-      .addFunction("SetMaterialIDFromFunction", &MeshSetMaterialIDFromFunction)
+      .addFunction("SetBlockIDFromFunction", &MeshSetBlockIDFromFunction)
       .addFunction("SetBoundaryIDFromFunction", &MeshSetBoundaryIDFromFunction)
       .addFunction("ExportToPVTU", &MeshExportToPVTU)
       .beginClass<MeshContinuum>("MeshContinuum")
