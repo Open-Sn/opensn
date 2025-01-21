@@ -16,7 +16,7 @@ namespace opensn
 FromFileMeshGenerator::FromFileMeshGenerator(const InputParameters& params)
   : MeshGenerator(params),
     filename_(params.GetParamValue<std::string>("filename")),
-    material_id_fieldname_(params.GetParamValue<std::string>("material_id_fieldname")),
+    block_id_fieldname_(params.GetParamValue<std::string>("block_id_fieldname")),
     boundary_id_fieldname_(params.GetParamValue<std::string>("boundary_id_fieldname"))
 {
 }
@@ -31,7 +31,7 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   UnpartitionedMesh::Options options;
   options.file_name = filename_;
   options.scale = scale_;
-  options.material_id_fieldname = material_id_fieldname_;
+  options.block_id_fieldname = block_id_fieldname_;
   options.boundary_id_fieldname = boundary_id_fieldname_;
 
   const std::filesystem::path filepath(filename_);
@@ -68,7 +68,7 @@ FromFileMeshGenerator::GetInputParameters()
   params.SetDocGroup("doc_MeshGenerators");
 
   params.AddRequiredParameter<std::string>("filename", "Path to the file.");
-  params.AddOptionalParameter("material_id_fieldname",
+  params.AddOptionalParameter("block_id_fieldname",
                               "BlockID",
                               "The name of the field storing cell block/material ids. Only really "
                               "used for .vtu, .pvtu and .e files.");

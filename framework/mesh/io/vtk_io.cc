@@ -639,8 +639,7 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
 
   // Copy Data
   // Block-IDs will get set from block-id arrays
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Always do this
   mesh->SetDimension(max_dimension);
@@ -689,15 +688,14 @@ MeshIO::FromVTU(const UnpartitionedMesh::Options& options)
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
-  auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, options.material_id_fieldname);
+  auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, options.block_id_fieldname);
 
   // Copy Data
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Set block ids
   const auto block_ids =
-    BuildCellBlockIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
+    BuildCellBlockIDsFromField(ugrid, options.block_id_fieldname, options.file_name);
   SetBlockIDsFromList(mesh, block_ids);
 
   // Always do this
@@ -747,12 +745,11 @@ MeshIO::FromPVTU(const UnpartitionedMesh::Options& options)
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
   // Copy Data
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Set block ids
   const auto block_ids =
-    BuildCellBlockIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
+    BuildCellBlockIDsFromField(ugrid, options.block_id_fieldname, options.file_name);
   SetBlockIDsFromList(mesh, block_ids);
 
   // Always do this
@@ -825,8 +822,7 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
 
   // Copy Data
   // Block-IDs will get set form block-id arrays
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Always do this
   mesh->SetDimension(max_dimension);
