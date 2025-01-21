@@ -361,7 +361,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 }
 
 void
-InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
+InputParameters::MarkParameterDeprecatedWarning(const std::string& param_name,
                                                 const std::string& deprecation_message)
 {
   if (Has(param_name))
@@ -371,7 +371,7 @@ InputParameters::MarkParamaterDeprecatedWarning(const std::string& param_name,
 }
 
 void
-InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
+InputParameters::MarkParameterDeprecatedError(const std::string& param_name,
                                               const std::string& deprecation_message)
 {
   if (Has(param_name))
@@ -381,7 +381,7 @@ InputParameters::MarkParamaterDeprecatedError(const std::string& param_name,
 }
 
 void
-InputParameters::MarkParamaterRenamed(const std::string& param_name,
+InputParameters::MarkParameterRenamed(const std::string& param_name,
                                       const std::string& renaming_description)
 {
   if (Has(param_name))
