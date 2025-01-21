@@ -44,7 +44,7 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
 num_groups = 168
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")

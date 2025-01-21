@@ -40,7 +40,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   zmin = -L / 16,
   zmax = L / 16,
 })
-grid:SetMaterialIDFromLogicalVolume(vol0, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 1, true)
 
 mesh.ExportToPVTU("TheMesh")
 

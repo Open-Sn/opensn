@@ -25,9 +25,9 @@ grid = meshgen1:Execute()
 
 -- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
 num_groups = 168
 xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")

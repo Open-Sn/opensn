@@ -640,14 +640,14 @@ MeshContinuum::SetUniformBlockID(int blk_id)
 }
 
 void
-MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense)
+MeshContinuum::SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, bool sense)
 {
   int num_cells_modified = 0;
   for (auto& cell : local_cells)
   {
     if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell.block_id = mat_id;
+      cell.block_id = blk_id;
       ++num_cells_modified;
     }
   }
@@ -657,14 +657,14 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id
   {
     auto& cell = cells[ghost_id];
     if (log_vol.Inside(cell.centroid) and sense)
-      cell.block_id = mat_id;
+      cell.block_id = blk_id;
   }
 
   int global_num_cells_modified;
   mpi_comm.all_reduce(num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
 
   log.Log0Verbose1() << program_timer.GetTimeString()
-                     << " Done setting material id from logical volume. "
+                     << " Done setting block ID from logical volume. "
                      << "Number of cells modified = " << global_num_cells_modified << ".";
 }
 

@@ -20,4 +20,4 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)

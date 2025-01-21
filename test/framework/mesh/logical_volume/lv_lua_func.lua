@@ -17,7 +17,7 @@ grid = meshgen:Execute()
 
 -- assign mat ID 10 to whole domain
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol0, 10, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 10, true)
 
 --Sets lua function describing a sphere (material 11)
 function MatIDFunction1(pt, cur_id)
