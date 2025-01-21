@@ -78,7 +78,7 @@ public:
   /// Customized boundary function by calling a lua routine.
   virtual std::vector<double>
   Evaluate(size_t cell_global_id,
-           int cell_material_id,
+           int cell_block_id,
            unsigned int face_index,
            unsigned int face_node_index,
            const Vector3& face_node_location,
