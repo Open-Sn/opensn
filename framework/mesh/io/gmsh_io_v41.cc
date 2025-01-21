@@ -392,12 +392,12 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   file.close();
 
-  // Remap material-ids
-  std::set<int> material_ids_set_as_read;
-  std::map<int, int> material_mapping;
+  // Remap block-ids
+  std::set<int> block_ids_set_as_read;
+  std::map<int, int> block_mapping;
 
   for (auto& cell : mesh->GetRawCells())
-    material_ids_set_as_read.insert(cell->block_id);
+    block_ids_set_as_read.insert(cell->block_id);
 
   std::set<int> boundary_ids_set_as_read;
   std::map<int, int> boundary_mapping;
@@ -407,8 +407,8 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   {
     int m = 0;
-    for (const auto& mat_id : material_ids_set_as_read)
-      material_mapping.insert(std::make_pair(mat_id, m++));
+    for (const auto& blk_id : block_ids_set_as_read)
+      block_mapping.insert(std::make_pair(blk_id, m++));
 
     int b = 0;
     for (const auto& bndry_id : boundary_ids_set_as_read)
@@ -416,7 +416,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   }
 
   for (auto& cell : mesh->GetRawCells())
-    cell->block_id = material_mapping[cell->block_id];
+    cell->block_id = block_mapping[cell->block_id];
 
   for (auto& cell : mesh->GetRawBoundaryCells())
     cell->block_id = boundary_mapping[cell->block_id];
