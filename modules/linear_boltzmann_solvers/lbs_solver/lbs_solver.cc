@@ -947,16 +947,16 @@ LBSSolver::InitializeMaterials()
   std::set<int> unique_material_ids;
   for (auto& cell : grid_ptr_->local_cells)
   {
-    unique_material_ids.insert(cell.material_id);
-    if (cell.material_id < 0)
+    unique_material_ids.insert(cell.block_id);
+    if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_ptr_->cells[cell_id];
-    unique_material_ids.insert(cell.material_id);
-    if (cell.material_id < 0)
+    unique_material_ids.insert(cell.block_id);
+    if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
@@ -1015,7 +1015,7 @@ LBSSolver::InitializeMaterials()
   if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& xs_ptr = matid_to_xs_map_[cell.material_id];
+      const auto& xs_ptr = matid_to_xs_map_[cell.block_id];
       auto& transport_view = cell_transport_views_[cell.local_id];
 
       transport_view.ReassignXS(*xs_ptr);
@@ -1291,7 +1291,7 @@ LBSSolver::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
-    int mat_id = cell.material_id;
+    int mat_id = cell.block_id;
 
     // compute cell volumes
     double cell_volume = 0.0;
@@ -1738,7 +1738,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->GetSigmaSGtoG();
+    const auto& sigma_s = matid_to_xs_map_[cell.block_id]->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1882,7 +1882,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& S = matid_to_xs_map_[cell.material_id]->GetTransferMatrix(0);
+    const auto& S = matid_to_xs_map_[cell.block_id]->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1925,7 +1925,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id).spectrum;
+    const auto& xi_g = map_mat_id_2_tginfo.at(cell.block_id).spectrum;
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -2008,7 +2008,7 @@ LBSSolver::UpdateFieldFunctions()
 
       const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
-      const auto& xs = matid_to_xs_map_.at(cell.material_id);
+      const auto& xs = matid_to_xs_map_.at(cell.block_id);
 
       if (not xs->IsFissionable())
         continue;

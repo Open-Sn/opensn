@@ -305,16 +305,16 @@ MGDiffusionSolver::Initialize()
   int invalid_mat_cell_count = 0;
   for (auto& cell : grid.local_cells)
   {
-    unique_material_ids.insert(cell.material_id);
-    if (cell.material_id < 0)
+    unique_material_ids.insert(cell.block_id);
+    if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid.cells[cell_id];
-    unique_material_ids.insert(cell.material_id);
-    if (cell.material_id < 0)
+    unique_material_ids.insert(cell.block_id);
+    if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
 
@@ -709,14 +709,14 @@ MGDiffusionSolver::AssembleAbext()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& xs = matid_to_xs_map_.at(cell.material_id);
+    const auto& xs = matid_to_xs_map_.at(cell.block_id);
     const auto& D = xs->GetDiffusionCoefficient();
     const auto& sigma_r = xs->GetSigmaRemoval();
 
     double collapsed_D = 0.0, collapsed_sig_a = 0.0;
     if (do_two_grid_)
     {
-      const auto& xstg = map_mat_id_2_tginfo_.at(cell.material_id);
+      const auto& xstg = map_mat_id_2_tginfo_.at(cell.block_id);
       collapsed_D = xstg.collapsed_D;
       collapsed_sig_a = xstg.collapsed_sig_a;
     }
@@ -977,7 +977,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& xs = matid_to_xs_map_.at(cell.material_id);
+    const auto& xs = matid_to_xs_map_.at(cell.block_id);
     const auto& S = xs->GetTransferMatrix(0);
 
     for (const auto& [row_g, gprime, sigma_sm] : S.Row(g))
@@ -1046,7 +1046,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& S = matid_to_xs_map_.at(cell.material_id)->GetTransferMatrix(0);
+    const auto& S = matid_to_xs_map_.at(cell.block_id)->GetTransferMatrix(0);
 
     for (unsigned g = last_fast_group_; g < num_groups_; ++g)
     {
@@ -1106,7 +1106,7 @@ MGDiffusionSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& xstg = map_mat_id_2_tginfo_.at(cell.material_id);
+    const auto& xstg = map_mat_id_2_tginfo_.at(cell.block_id);
 
     for (unsigned int g = last_fast_group_; g < num_groups_; ++g)
     {

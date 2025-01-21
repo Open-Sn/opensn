@@ -98,7 +98,7 @@ public:
   uint64_t local_id = 0;
   uint64_t partition_id = 0;
   Vector3 centroid;
-  int material_id = -1;
+  int block_id = -1;
 
   std::vector<uint64_t> vertex_ids;
   std::vector<CellFace> faces;

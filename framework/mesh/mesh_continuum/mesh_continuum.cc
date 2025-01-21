@@ -628,14 +628,14 @@ void
 MeshContinuum::SetUniformMaterialID(int mat_id)
 {
   for (auto& cell : local_cells)
-    cell.material_id = mat_id;
+    cell.block_id = mat_id;
 
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].material_id = mat_id;
+    cells[ghost_id].block_id = mat_id;
 
   mpi_comm.barrier();
-  opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+  opensn::log.Log() << program_timer.GetTimeString() << " Done setting Block id " << mat_id
                     << " to all cells";
 }
 
@@ -647,7 +647,7 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id
   {
     if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell.material_id = mat_id;
+      cell.block_id = mat_id;
       ++num_cells_modified;
     }
   }
@@ -657,7 +657,7 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id
   {
     auto& cell = cells[ghost_id];
     if (log_vol.Inside(cell.centroid) and sense)
-      cell.material_id = mat_id;
+      cell.block_id = mat_id;
   }
 
   int global_num_cells_modified;
@@ -712,7 +712,7 @@ MeshContinuum::ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> m
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const double volume = cell_mapping.GetCellVolume();
-    material_volumes[cell.material_id] += volume;
+    material_volumes[cell.block_id] += volume;
   }
 
   // Collect all local material IDs
