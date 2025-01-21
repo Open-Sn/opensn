@@ -445,20 +445,19 @@ SetBlockIDArrays(std::vector<vtkUGridPtrAndName>& ugrid_blocks)
 }
 
 std::vector<int>
-BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
-                              const std::string& field_name,
-                              const std::string& file_name)
+BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
+                           const std::string& field_name,
+                           const std::string& file_name)
 {
   const size_t total_cell_count = ugrid->GetNumberOfCells();
-  std::vector<int> material_ids(total_cell_count, -1);
+  std::vector<int> block_ids(total_cell_count, -1);
 
   // Determine if reading cell identifiers
   vtkDataArray* cell_id_array_ptr;
   if (field_name.empty())
   {
-    log.Log0Warning() << "A user-supplied field name from which to recover material "
-                         "identifiers "
-                      << "has not been found. Material-ids will be left unassigned.";
+    log.Log0Warning() << "A user-supplied field name from which to recover block identifiers has "
+                         "not been found. Block-ids will be left unassigned.";
     goto end_error_checks;
   }
   else
@@ -470,7 +469,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
     {
       log.Log0Warning() << "The VTU file : \"" << file_name << "\" "
                         << "does not contain a vtkCellData field of name : \"" << field_name
-                        << "\". Material-ids will be left unassigned.";
+                        << "\". Block-ids will be left unassigned.";
       goto end_error_checks;
     }
 
@@ -479,7 +478,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
     {
       log.Log0Warning() << "The VTU file : \"" << file_name << "\" "
                         << "with vtkCellData field of name : \"" << field_name << "\" "
-                        << "cannot be downcast to vtkDataArray. Material-ids will be left "
+                        << "cannot be downcast to vtkDataArray. Block-ids will be left "
                            "unassigned.";
       goto end_error_checks;
     }
@@ -491,7 +490,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
                         << "with vtkCellData field of name : \"" << field_name
                         << "\" has n. tuples : " << cell_id_n_tup
                         << ", but differs from the value expected : " << total_cell_count
-                        << ". Material-ids will be left unassigned.";
+                        << ". Block-ids will be left unassigned.";
       goto end_error_checks;
     }
 
@@ -502,7 +501,7 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
                         << "with vtkCellData field of name : \"" << field_name
                         << "\" has n. values : " << cell_id_n_val
                         << ", but differs from the value expected : " << total_cell_count
-                        << ". Material-ids will be left unassigned.";
+                        << ". Block-ids will be left unassigned.";
       goto end_error_checks;
     }
   }
@@ -514,11 +513,11 @@ BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
     cell_id_array_ptr->GetTuple(static_cast<vtkIdType>(c), cell_id_vec.data());
     const auto mat_id = (int)cell_id_vec.front();
 
-    material_ids[c] = mat_id;
+    block_ids[c] = mat_id;
   }
 
 end_error_checks:
-  return material_ids;
+  return block_ids;
 }
 
 vtkNew<vtkUnstructuredGrid>
@@ -527,13 +526,13 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;
   vtkNew<vtkPoints> points;
-  vtkNew<vtkIntArray> material_array;
+  vtkNew<vtkIntArray> block_array;
   vtkNew<vtkUnsignedIntArray> partition_id_array;
 
   points->SetDataType(VTK_DOUBLE);
 
   // Set names
-  material_array->SetName("Material");
+  block_array->SetName("Block");
   partition_id_array->SetName("Partition");
 
   std::vector<uint64_t> vertex_map;
@@ -563,12 +562,12 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
     }
 
-    material_array->InsertNextValue(cell.block_id);
+    block_array->InsertNextValue(cell.block_id);
     partition_id_array->InsertNextValue(cell.partition_id);
   } // for local cells
   ugrid->SetPoints(points);
 
-  ugrid->GetCellData()->AddArray(material_array);
+  ugrid->GetCellData()->AddArray(block_array);
   ugrid->GetCellData()->AddArray(partition_id_array);
 
   return ugrid;

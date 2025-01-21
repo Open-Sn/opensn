@@ -67,27 +67,27 @@ std::vector<vtkUGridPtrAndName>
 GetBlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks, int desired_dimension);
 
 /**
- * Given several unstructured grid blocks, each denoting a material id, this function sets material
+ * Given several unstructured grid blocks, each denoting a block id, this function sets block
  * ids accordingly.
  */
 std::vector<uint64_t> BuildBlockCellExtents(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
                                             int desired_dimension);
 
 /**
- * Given several unstructured grid blocks, each denoting a material id, this function creates a VTK
+ * Given several unstructured grid blocks, each denoting a block id, this function creates a VTK
  * cell-data array called "BlockID" that holds this information.
  */
 void SetBlockIDArrays(std::vector<vtkUGridPtrAndName>& ugrid_blocks);
 
 /**
- * Retrieves material-ids from a field.
+ * Retrieves block-ids from a field.
  */
-std::vector<int> BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
-                                               const std::string& field_name,
-                                               const std::string& file_name);
+std::vector<int> BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
+                                            const std::string& field_name,
+                                            const std::string& file_name);
 
 /**
- * Uploads vertices and cells to an unstructured grid. This routine also uploads cell material ids
+ * Uploads vertices and cells to an unstructured grid. This routine also uploads cell block ids
  * (sub-domain ids) and partition ids.
  */
 vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid,
