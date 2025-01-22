@@ -159,7 +159,7 @@ build process:</p>
 <p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
 libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. This can be
 accomplished with the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies/directory:<span class="nv">$CMAKE_PREFIX_PATH</span><span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies<span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="sb">`</span>
 </pre></div>
 </div>
 <p><strong>Important:</strong> It may be a good idea to add the <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> variable to

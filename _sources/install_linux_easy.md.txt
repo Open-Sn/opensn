@@ -82,7 +82,7 @@ libraries to your `CMAKE_PREFIX_PATH` environment variable. This can be
 accomplished with the following command:
 
 ```bash
-$ export CMAKE_PREFIX_PATH=/path/to/dependencies/directory:$CMAKE_PREFIX_PATH`
+$ export CMAKE_PREFIX_PATH=/path/to/dependencies${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}`
 ```
 
 **Important:** It may be a good idea to add the `CMAKE_PREFIX_PATH` variable to

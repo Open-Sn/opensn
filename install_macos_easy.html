@@ -189,7 +189,7 @@ python3<span class="w"> </span>tools/configure_dependencies.py<span class="w"> <
 </div>
 <p>It is recommended that <code class="docutils literal notranslate"><span class="pre">path/to/dependencies</span></code> be outside the OpenSn
 source tree. Set environment variables for building OpenSn:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies:<span class="nv">$CMAKE_PREFIX_PATH</span><span class="sb">`</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies<span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="sb">`</span>
 </pre></div>
 </div>
 </section>

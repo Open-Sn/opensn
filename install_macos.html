@@ -196,7 +196,7 @@ checking the installations. Follow these instructions.</p>
 <p>After a successful install, add the following environment variables to the
 <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> script:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PETSC_ROOT</span><span class="o">=</span><span class="s2">&quot;/path/to/petsc/install&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PETSC_ROOT</span><span class="si">}</span><span class="s2">:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PETSC_ROOT</span><span class="si">}${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </section>
