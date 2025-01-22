@@ -109,7 +109,7 @@ After a successful install, add the following environment variables to the
 `~/.bashrc` or `~/.bash_profile` script:
 ```shell
 export PETSC_ROOT="/path/to/petsc/install"
-export CMAKE_PREFIX_PATH="${PETSC_ROOT}:${CMAKE_PREFIX_PATH}"
+export CMAKE_PREFIX_PATH="${PETSC_ROOT}${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}"
 ```
 
 ## Step 4 - Install the Visualization Tool Kit
