@@ -13,6 +13,14 @@
 namespace opensn
 {
 
+std::shared_ptr<FieldFunctionInterpolationVolume>
+FieldFunctionInterpolationVolume::Create()
+{
+  auto ffi = std::make_shared<FieldFunctionInterpolationVolume>();
+  field_func_interpolation_stack.emplace_back(ffi);
+  return ffi;
+}
+
 void
 FieldFunctionInterpolationVolume::SetOperationFunction(
   std::shared_ptr<ScalarMaterialFunction> function)

@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
@@ -7,4 +7,4 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()

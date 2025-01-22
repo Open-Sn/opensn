@@ -4,7 +4,7 @@
 num_procs = 4
 --Unstructured mesh
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -16,7 +16,7 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
   os.exit(false)
 end
 
---############################################### Setup mesh
+-- Setup mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
@@ -24,8 +24,8 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-mesh.MeshGenerator.Execute(meshgen1)
---############################################### Exports
+meshgen1:Execute()
+-- Exports
 if master_export == nil then
   mesh.ExportToPVTU("ZObjMesh")
 end

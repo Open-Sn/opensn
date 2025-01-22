@@ -1,4 +1,4 @@
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/vector.h"
 #include "framework/logging/log.h"
@@ -9,8 +9,8 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock
-VectorTest(const InputParameters&)
+void
+VectorTest()
 {
   OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 1, "Requires 1 processor");
 
@@ -78,10 +78,8 @@ VectorTest(const InputParameters&)
   opensn::log.LogAll() << "b dot c = " << dp1 << std::endl;
 
   opensn::log.Log() << "GOLD_END";
-
-  return ParameterBlock();
 }
 
-RegisterWrapperFunctionInNamespace(unit_tests, VectorTest, nullptr, VectorTest);
+BIND_FUNCTION(unit_tests, VectorTest);
 
 } // namespace unit_tests

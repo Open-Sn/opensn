@@ -28,6 +28,13 @@ PointSource::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<PointSource>
+PointSource::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<PointSource>("lbs::PointSource", params);
+}
+
 PointSource::PointSource(const InputParameters& params)
   : Object(params),
     location_(params.GetParamVectorValue<double>("location")),

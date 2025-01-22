@@ -22,10 +22,10 @@ protected:
 
   explicit LogicalVolumeInterface(const InputParameters& params);
 
-  const LogicalVolume* GetLogicalVolume() const;
+  const std::shared_ptr<LogicalVolume> GetLogicalVolume() const;
 
 private:
-  const std::shared_ptr<const LogicalVolume> logical_volume_;
+  const std::shared_ptr<LogicalVolume> logical_volume_;
 };
 
 } // namespace opensn

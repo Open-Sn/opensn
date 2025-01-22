@@ -31,7 +31,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     zcuts = { 0. },
   }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set Material IDs
 mesh.SetUniformMaterialID(0)
@@ -52,11 +52,11 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes, nodes },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 --[[ @doc
 ## Export the mesh

@@ -34,8 +34,6 @@ private:
   std::string diff_accel_diffusion_petsc_options_;
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit PowerIterationKEigenSCDSA(const InputParameters& params);
 
   void Initialize() override;
@@ -64,6 +62,10 @@ public:
                             const SpatialDiscretization& pwlc_sdm,
                             const UnknownManager& uk_man,
                             const PowerIterationKEigenSCDSA::GhostInfo& ghost_info);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PowerIterationKEigenSCDSA> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

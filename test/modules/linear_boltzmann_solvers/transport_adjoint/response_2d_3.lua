@@ -37,7 +37,7 @@ for i = 0, N do
   nodes[i + 1] = i * ds
 end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set material IDs
 mesh.SetUniformMaterialID(0)
@@ -49,7 +49,7 @@ vol1a = logvol.RPPLogicalVolume.Create({
   infz = true,
 })
 
-mesh.SetMaterialIDFromLogicalVolume(vol1a, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1a, 1, true)
 
 vol0 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -57,7 +57,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   infy = true,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1b = logvol.RPPLogicalVolume.Create({
   xmin = -1 + 2.5,
@@ -66,7 +66,7 @@ vol1b = logvol.RPPLogicalVolume.Create({
   ymax = L,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1b, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1b, 1, true)
 
 -- Create materials
 materials = {}
@@ -75,8 +75,10 @@ materials[2] = mat.AddMaterial("Test Material2")
 
 -- Add cross sections to materials
 num_groups = 10
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "response_2d_3_mat1.xs")
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "response_2d_3_mat2.xs")
+xs_1 = xs.LoadFromOpenSn("response_2d_3_mat1.xs")
+materials[1]:SetTransportXSections(xs_1)
+xs_2 = xs.LoadFromOpenSn("response_2d_3_mat2.xs")
+materials[2]:SetTransportXSections(xs_2)
 
 -- Create sources
 src = {}
@@ -97,7 +99,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 500,
@@ -112,10 +114,10 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Forward solve
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 -- Define QoI region
 qoi_vol = logvol.RPPLogicalVolume.Create({
@@ -133,14 +135,14 @@ for g = 0, num_groups - 1 do
   ff = fieldfunc.GetHandleByName(
     "phi_g" .. string.format("%03d", g) .. "_m" .. string.format("%02d", 0)
   )
-  ffi = fieldfunc.FFInterpolationCreate(VOLUME)
-  fieldfunc.SetProperty(ffi, OPERATION, OP_SUM)
-  fieldfunc.SetProperty(ffi, LOGICAL_VOLUME, qoi_vol)
-  fieldfunc.SetProperty(ffi, ADD_FIELDFUNCTION, ff)
+  ffi = fieldfunc.FieldFunctionInterpolationVolume()
+  ffi:SetOperationType(OP_SUM)
+  ffi:SetLogicalVolume(qoi_vol)
+  ffi:AddFieldFunction(ff)
 
-  fieldfunc.Initialize(ffi)
-  fieldfunc.Execute(ffi)
-  fwd_qois[g + 1] = fieldfunc.GetValue(ffi)
+  ffi:Initialize()
+  ffi:Execute()
+  fwd_qois[g + 1] = ffi:GetValue()
 
   fwd_qoi_sum = fwd_qoi_sum + fwd_qois[g + 1]
 end
@@ -157,11 +159,12 @@ function ResponseFunction(xyz, mat_id)
   end
   return response
 end
-response_func = opensn.LuaVectorSpatialFunction.Create({ lua_function_name = "ResponseFunction" })
+
+response_func = LuaVectorSpatialFunction.Create({ function_name = "ResponseFunction" })
 
 adjoint_source = lbs.VolumetricSource.Create({
-  logical_volume_handle = qoi_vol,
-  function_handle = response_func,
+  logical_volume = qoi_vol,
+  func = response_func,
 })
 
 -- Switch to adjoint mode
@@ -169,17 +172,17 @@ adjoint_options = {
   adjoint = true,
   volumetric_sources = { adjoint_source },
 }
-lbs.SetOptions(phys, adjoint_options)
+phys:SetOptions(adjoint_options)
 
 -- Adjoint solve, write results
-solver.Execute(ss_solver)
+ss_solver:Execute()
 lbs.WriteFluxMoments(phys, "adjoint_2d_3")
 
 -- Create response evaluator
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_3" } } }
 pt_sources = { pt_src }
 response_options = {
-  lbs_solver_handle = phys,
+  lbs_solver = phys,
   options = {
     buffers = buffers,
     sources = { point = pt_sources },
@@ -188,7 +191,7 @@ response_options = {
 evaluator = lbs.ResponseEvaluator.Create(response_options)
 
 -- Evaluate response
-response = lbs.EvaluateResponse(evaluator, "buff")
+response = evaluator:EvaluateResponse("buff")
 
 -- Print results
 for g = 1, num_groups do

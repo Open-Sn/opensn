@@ -1,14 +1,10 @@
+#include "lua/lib/console.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/mesh/cell/cell.h"
-
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-
-#include "lua/framework/console/console.h"
-
 #include "framework/mpi/mpi_utils.h"
-
 #include <map>
 
 using namespace opensn;
@@ -16,12 +12,8 @@ using namespace opensn;
 namespace unit_tests
 {
 
-ParameterBlock data_types_Test00(const InputParameters& params);
-
-RegisterWrapperFunctionInNamespace(unit_tests, data_types_Test00, nullptr, data_types_Test00);
-
-ParameterBlock
-data_types_Test00(const InputParameters&)
+void
+data_types_Test00()
 {
   bool passed = true;
 
@@ -399,8 +391,8 @@ data_types_Test00(const InputParameters&)
   opensn::log.Log() << dummy.str();
 
   opensn::log.Log() << "GOLD_END";
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_tests, data_types_Test00);
 
 } //  namespace unit_tests

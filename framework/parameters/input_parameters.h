@@ -27,14 +27,14 @@ private:
   std::string doc_group_;
   std::map<std::string, InputParameterTag> parameter_class_tags_;
   std::map<std::string, std::string> parameter_doc_string_;
-
+  std::map<std::string, bool> parameter_valid_;
   std::map<std::string, std::string> deprecation_warning_tags_;
   std::map<std::string, std::string> deprecation_error_tags_;
   std::map<std::string, std::string> renamed_error_tags_;
   std::map<std::string, bool> type_mismatch_allowed_tags_;
   std::map<std::string, std::string> parameter_link_;
 
-  std::map<std::string, std::unique_ptr<AllowableRange>> constraint_tags_;
+  std::map<std::string, std::shared_ptr<AllowableRange>> constraint_tags_;
 
   std::string general_description_;
 
@@ -165,6 +165,8 @@ public:
    */
   const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
 
+  bool IsParameterValid(const std::string& param_name) const;
+
   /// Marks a parameters as deprecated but will only produce a warning.
   void MarkParamaterDeprecatedWarning(const std::string& param_name,
                                       const std::string& deprecation_message = "");
@@ -178,7 +180,7 @@ public:
 
   /// Creates a range based constraint for a given parameter.
   void ConstrainParameterRange(const std::string& param_name,
-                               std::unique_ptr<AllowableRange> allowable_range);
+                               std::shared_ptr<AllowableRange> allowable_range);
 
   /// Sets a tag for the given parameter that will allow its type to be mismatched upon assignment.
   void SetParameterTypeMismatchAllowed(const std::string& param_name);

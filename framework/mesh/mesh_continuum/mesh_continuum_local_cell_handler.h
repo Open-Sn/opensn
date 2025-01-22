@@ -12,14 +12,14 @@ namespace opensn
 class LocalCellHandler
 {
 public:
-  std::vector<std::unique_ptr<Cell>>& local_cells;
+  std::vector<std::shared_ptr<Cell>>& local_cells;
 
 private:
   /// Constructor.
-  explicit LocalCellHandler(std::vector<std::unique_ptr<Cell>>& cells) : local_cells(cells) {}
+  explicit LocalCellHandler(std::vector<std::shared_ptr<Cell>>& cells) : local_cells(cells) {}
 
 public:
-  static LocalCellHandler Create(std::vector<std::unique_ptr<Cell>>& native_cells)
+  static LocalCellHandler Create(std::vector<std::shared_ptr<Cell>>& native_cells)
   {
     return LocalCellHandler(native_cells);
   }

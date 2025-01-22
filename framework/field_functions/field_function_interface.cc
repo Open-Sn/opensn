@@ -14,39 +14,21 @@ FieldFunctionInterface::GetInputParameters()
 {
   InputParameters params;
 
-  params.AddRequiredParameterBlock("field_function", "Field function handle or name.");
+  params.AddRequiredParameter<std::shared_ptr<FieldFunction>>("field_function", "Field function.");
   params.SetParameterTypeMismatchAllowed("field_function");
 
   return params;
 }
 
 FieldFunctionInterface::FieldFunctionInterface(const InputParameters& params)
-  : field_function_param_(params.GetParam("field_function"))
+  : field_function_(params.GetParamValue<std::shared_ptr<FieldFunction>>("field_function"))
 {
 }
 
-FieldFunction*
+std::shared_ptr<FieldFunction>
 FieldFunctionInterface::GetFieldFunction() const
 {
-  std::shared_ptr<FieldFunction> ref_ff_ptr = nullptr;
-  if (field_function_param_.Type() == ParameterBlockType::STRING)
-  {
-    const auto name = field_function_param_.GetValue<std::string>();
-    for (const auto& ff_ptr : field_function_stack)
-      if (ff_ptr->Name() == name)
-        ref_ff_ptr = ff_ptr;
-
-    OpenSnInvalidArgumentIf(ref_ff_ptr == nullptr, "Field function \"" + name + "\" not found.");
-  }
-  else if (field_function_param_.Type() == ParameterBlockType::INTEGER)
-  {
-    const auto handle = field_function_param_.GetValue<size_t>();
-    ref_ff_ptr = GetStackItemPtrAsType<FieldFunction>(field_function_stack, handle, __FUNCTION__);
-  }
-  else
-    OpenSnInvalidArgument("Argument can only be STRING or INTEGER");
-
-  return &(*ref_ff_ptr);
+  return field_function_;
 }
 
 } // namespace opensn

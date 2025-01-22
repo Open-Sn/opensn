@@ -12,7 +12,7 @@ namespace opensn
 class PowerIterationKEigen : public opensn::Solver
 {
 protected:
-  LBSSolver& lbs_solver_;
+  std::shared_ptr<LBSSolver> lbs_solver_;
 
   size_t max_iters_;
   double k_eff_;
@@ -33,8 +33,6 @@ protected:
   std::shared_ptr<WGSContext> front_wgs_context_;
 
 public:
-  static InputParameters GetInputParameters();
-
   explicit PowerIterationKEigen(const InputParameters& params);
 
   void Initialize() override;
@@ -53,6 +51,10 @@ protected:
   void WriteRestartData();
 
   void ReadRestartData();
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PowerIterationKEigen> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

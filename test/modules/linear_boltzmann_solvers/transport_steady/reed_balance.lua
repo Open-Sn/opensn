@@ -17,7 +17,7 @@ for imat = 1, Nmat do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set Material IDs
 z_min = 0.0
@@ -26,7 +26,7 @@ for imat = 1, Nmat do
   z_max = z_min + widths[imat]
   log.Log(LOG_0, "imat=" .. imat .. ", zmin=" .. z_min .. ", zmax=" .. z_max)
   lv = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = z_min, zmax = z_max })
-  mesh.SetMaterialIDFromLogicalVolume(lv, imat - 1)
+  mesh.SetMaterialIDFromLogicalVolume(lv, imat - 1, true)
   z_min = z_max
 end
 
@@ -41,15 +41,18 @@ end
 total = { 50., 5., 0., 1., 1. }
 c = { 0., 0., 0., 0.9, 0.9 }
 for imat = 1, Nmat do
-  mat.SetProperty(materials[imat], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, total[imat], c[imat])
+  xs1g = xs.CreateSimpleOneGroup(total[imat], c[imat])
+  materials[imat]:SetTransportXSections(xs1g)
 end
 
 -- Create sources in 1st and 4th materials
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 50. })
-mat.SetProperty(materials[4], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 1. })
+src0 = xs.IsotropicMultiGroupSource.FromArray({ 50. })
+materials[1]:SetIsotropicMGSource(src0)
+src1 = xs.IsotropicMultiGroupSource.FromArray({ 1. })
+materials[4]:SetIsotropicMGSource(src1)
 
 -- Angular Quadrature
-gl_quad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 64)
+gl_quad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 64, -1)
 
 -- LBS block option
 num_groups = 1
@@ -58,7 +61,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = gl_quad,
+      angular_quadrature = gl_quad,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-9,
       l_max_its = 300,
@@ -75,10 +78,10 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Initialize and execute solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 -- compute particle balance
-lbs.ComputeBalance(phys)
+phys:ComputeBalance(phys)

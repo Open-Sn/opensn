@@ -1,3 +1,9 @@
+function PrintPoint(pt, indent)
+  print(string.rep(" ", indent) .. "1 " .. tostring(pt.x))
+  print(string.rep(" ", indent) .. "2 " .. tostring(pt.y))
+  print(string.rep(" ", indent) .. "3 " .. tostring(pt.z))
+end
+
 function PrintTable(t, indent)
   if not indent then
     indent = 0
@@ -7,7 +13,7 @@ function PrintTable(t, indent)
   for k, v in pairs(t) do
     if type(v) == "table" then
       print(string.rep(" ", indent) .. k .. " " .. "table")
-      PrintTable(v, indent + 2)
+      PrintPoint(v, indent + 2)
     else
       print(string.rep(" ", indent) .. k .. " " .. tostring(v))
     end
@@ -16,24 +22,18 @@ end
 
 print("GOLD_BEGIN")
 q = squad.GaussLegendreQuadrature.Create({ N = 4, verbose = true })
-
-qdata = math.Get1DQuadratureData(q)
-
 print("qpoints:")
-PrintTable(qdata.qpoints, 2)
+PrintTable(q.qpoints, 2)
 print("weights:")
-PrintTable(qdata.weights, 2)
+PrintTable(q.weights, 2)
 print()
 
---################################################
+--
 q = squad.GaussChebyshevQuadrature.Create({ N = 4, verbose = true })
-
-qdata = math.Get1DQuadratureData(q)
-
 print("qpoints:")
-PrintTable(qdata.qpoints, 2)
+PrintTable(q.qpoints, 2)
 print("weights:")
-PrintTable(qdata.weights, 2)
+PrintTable(q.weights, 2)
 
 print("Legendre(0, 0.25)", aquad.Legendre(0, 0.25))
 print("Legendre(1, 0.25)", aquad.Legendre(1, 0.25))

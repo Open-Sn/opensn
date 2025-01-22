@@ -20,7 +20,7 @@ NonLinearKEigen::GetInputParameters()
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigen");
-  params.AddRequiredParameter<size_t>("lbs_solver_handle", "Handle to an existing lbs solver");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver", "An existing lbs solver");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -44,10 +44,17 @@ NonLinearKEigen::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<NonLinearKEigen>
+NonLinearKEigen::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<NonLinearKEigen>("lbs::NonLinearKEigen", params);
+}
+
 NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(
-      GetStackItem<LBSSolver>(object_stack, params.GetParamValue<size_t>("lbs_solver_handle"))),
+    lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver"))),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_solver_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
@@ -71,32 +78,32 @@ NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
 void
 NonLinearKEigen::Initialize()
 {
-  lbs_solver_.Initialize();
+  lbs_solver_->Initialize();
 }
 
 void
 NonLinearKEigen::Execute()
 {
   if (reset_phi0_)
-    LBSVecOps::SetPhiVectorScalarValues(lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(*lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
 
   if (num_initial_power_its_ > 0)
   {
     double k_eff = 1.0;
     PowerIterationKEigen(
-      lbs_solver_, nl_solver_.ToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
+      *lbs_solver_, nl_solver_.ToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 
   nl_solver_.Setup();
   nl_solver_.Solve();
 
-  if (lbs_solver_.Options().use_precursors)
+  if (lbs_solver_->Options().use_precursors)
   {
-    lbs_solver_.ComputePrecursors();
-    Scale(lbs_solver_.PrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
+    lbs_solver_->ComputePrecursors();
+    Scale(lbs_solver_->PrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
-  lbs_solver_.UpdateFieldFunctions();
+  lbs_solver_->UpdateFieldFunctions();
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }

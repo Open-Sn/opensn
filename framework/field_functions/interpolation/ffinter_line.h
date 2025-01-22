@@ -39,11 +39,11 @@ public:
 
   Vector3 GetInitialPoint() { return pi_; }
 
-  void SetInitialPoint(Vector3 point) { pi_ = point; }
+  void SetInitialPoint(const Vector3& point) { pi_ = point; }
 
   Vector3 GetFinalPoint() { return pf_; }
 
-  void SetFinalPoint(Vector3 point) { pf_ = point; }
+  void SetFinalPoint(const Vector3& point) { pf_ = point; }
 
   void Initialize() override;
 
@@ -55,7 +55,10 @@ public:
 
   double GetOpValue() { return op_value_; }
 
-  void ExportToCSV(std::string base_name) override;
+  void ExportToCSV(std::string base_name) const override;
+
+public:
+  static std::shared_ptr<FieldFunctionInterpolationLine> Create();
 };
 
 } // namespace opensn

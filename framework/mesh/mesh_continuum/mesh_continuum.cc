@@ -612,8 +612,8 @@ MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense
 
 void
 MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
-                                        bool sense,
-                                        const std::string& boundary_name)
+                                        const std::string& boundary_name,
+                                        bool sense)
 {
   // Check if name already has id
   auto& grid_bndry_id_map = GetBoundaryIDMap();

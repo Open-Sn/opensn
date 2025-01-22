@@ -3,7 +3,7 @@
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "lua/framework/console/console.h"
+#include "lua/lib/console.h"
 #include "framework/math/math_range.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
@@ -16,12 +16,9 @@ namespace unit_sim_tests
 {
 
 /**PWLD Sweep. */
-ParameterBlock SimTest91_PWLD(const InputParameters&);
 
-RegisterWrapperFunctionInNamespace(unit_tests, SimTest91_PWLD, nullptr, SimTest91_PWLD);
-
-ParameterBlock
-SimTest91_PWLD(const InputParameters&)
+void
+SimTest91_PWLD()
 {
   const std::string fname = "SimTest91_PWLD";
 
@@ -518,8 +515,8 @@ SimTest91_PWLD(const InputParameters&)
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
   FieldFunctionGridBased::ExportMultipleToVTK("SimTest_91a_PWLD", const_ff_list);
-
-  return ParameterBlock();
 }
+
+BIND_FUNCTION(unit_sim_tests, SimTest91_PWLD);
 
 } // namespace unit_sim_tests

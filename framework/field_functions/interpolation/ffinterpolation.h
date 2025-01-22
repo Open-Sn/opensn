@@ -4,11 +4,13 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <vector>
 #include <string>
 
 namespace opensn
 {
+class FieldFunction;
 class FieldFunctionGridBased;
 
 enum class FieldFunctionInterpolationType : int
@@ -47,7 +49,7 @@ enum class FieldFunctionInterpolationProperty : int
 };
 
 /// Base class for field-function interpolation objects.
-class FieldFunctionInterpolation
+class FieldFunctionInterpolation : public std::enable_shared_from_this<FieldFunctionInterpolation>
 {
 protected:
   FieldFunctionInterpolationType type_;
@@ -65,13 +67,22 @@ public:
     return field_functions_;
   }
 
+  void AddFieldFunction(std::shared_ptr<FieldFunction> ff)
+  {
+    auto gbff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff);
+    if (gbff)
+      field_functions_.push_back(gbff);
+    else
+      throw std::runtime_error("Expected FieldFunctionGridBased field function");
+  }
+
   FieldFunctionInterpolationType Type() const { return type_; }
 
   virtual void Initialize(){};
 
   virtual void Execute(){};
 
-  virtual void ExportToCSV(std::string base_name){};
+  virtual void ExportToCSV(std::string base_name) const {};
 
   virtual void ExportToPython(std::string base_name){};
 };

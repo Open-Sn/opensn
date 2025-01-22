@@ -28,6 +28,13 @@ DistributedMeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<DistributedMeshGenerator>
+DistributedMeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<DistributedMeshGenerator>("mesh::DistributedMeshGenerator", params);
+}
+
 DistributedMeshGenerator::DistributedMeshGenerator(const InputParameters& params)
   : MeshGenerator(params), num_parts_(opensn::mpi_comm.size())
 {
@@ -176,7 +183,9 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t
     for (uint64_t vid : vertices_needed)
     {
       serial_data.Write(vid);
-      serial_data.Write(raw_vertices[vid]);
+      serial_data.Write(raw_vertices[vid].x);
+      serial_data.Write(raw_vertices[vid].y);
+      serial_data.Write(raw_vertices[vid].z);
     }
 
     if (pid == 0)

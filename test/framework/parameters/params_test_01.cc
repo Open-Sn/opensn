@@ -2,6 +2,9 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "lua/lib/console.h"
+#include "lua/lib/types.h"
+#include "LuaBridge/LuaBridge.h"
 
 namespace unit_tests
 {
@@ -52,6 +55,13 @@ TestObject::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<TestObject>
+TestObject::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<TestObject>("unit_testsB::TestObject", params);
+}
+
 TestObject::TestObject(const InputParameters& params)
   : solver_type_(params.GetParamValue<std::string>("solver_type")),
     sub_obj1_(InputParameters::MakeForObject<TestSubObject>(params.GetParam("sub_obj1"))),
@@ -75,6 +85,13 @@ TestSubObject::GetInputParameters()
   params.AddRequiredParameter<size_t>("num_groups", "Number of groups to use in the simulation");
 
   return params;
+}
+
+std::shared_ptr<TestSubObject>
+TestSubObject::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<TestSubObject>("unit_testsB::TestSubObject", params);
 }
 
 TestSubObject::TestSubObject(const InputParameters& params)
@@ -104,11 +121,41 @@ ChildTestObject::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<ChildTestObject>
+ChildTestObject::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<ChildTestObject>("unit_testsB::ChildTestObject", params);
+}
+
 ChildTestObject::ChildTestObject(const InputParameters& params)
   : TestObject(params), num_sub_groups_(params.GetParamValue<int>("num_sub_groups"))
 {
   opensn::log.Log() << "ChildTestObject created "
                     << "num_sub_groups=" << num_sub_groups_;
 }
+
+static bool reg = opensnlua::Console::Bind(
+  [](lua_State* L)
+  {
+    luabridge::getGlobalNamespace(L)
+      .beginNamespace("unit_testsB")
+      .beginClass<TestSubObject>("TestSubObject")
+      .addStaticFunction("Create", &TestSubObject::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<TestSubObject>>("TestSubObjectPtr")
+      .endClass()
+      .beginClass<TestObject>("TestObject")
+      .addStaticFunction("Create", &TestObject::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<TestObject>>("TestObjectPtr")
+      .endClass()
+      .beginClass<ChildTestObject>("ChildTestObject")
+      .addStaticFunction("Create", &ChildTestObject::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<ChildTestObject>>("ChildTestObjectPtr")
+      .endClass()
+      .endNamespace();
+  });
 
 } // namespace unit_tests

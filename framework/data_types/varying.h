@@ -4,13 +4,29 @@
 #pragma once
 
 #include "framework/data_types/data_types.h"
+#include "framework/mesh/mesh_vector.h"
+#include "framework/logging/log_exceptions.h"
 #include <cstddef>
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #include <memory>
 
 namespace opensn
 {
+
+template <typename T>
+struct is_shared_ptr : std::false_type
+{
+};
+
+template <typename T>
+struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
+{
+};
+
+template <typename T>
+inline constexpr bool is_shared_ptr_v = is_shared_ptr<T>::value;
 
 class Varying
 {
@@ -41,6 +57,12 @@ private:
   {
     static constexpr bool value = std::is_integral_v<T> and not std::is_same_v<T, bool>;
   };
+  template <typename T>
+  struct IsUserData
+  {
+    static constexpr bool value = std::is_pointer_v<T> or is_shared_ptr_v<T> or
+                                  (std::is_class_v<T> and not std::is_same_v<T, std::string>);
+  };
 
   template <typename T>
   using BoolType = typename std::enable_if_t<IsBool<T>::value, T>;
@@ -55,6 +77,8 @@ private:
   using FloatStorageType = typename std::enable_if_t<IsFloat<T>::value, double>;
   template <typename T>
   using IntegerStorageType = typename std::enable_if_t<IsInteger<T>::value, int64_t>;
+  template <typename T>
+  using UserDataStorageType = typename std::enable_if_t<IsUserData<T>::value, T>;
 
   template <typename T>
   BoolStorageType<T> CastValue(const T& value)
@@ -74,15 +98,21 @@ private:
     return static_cast<int64_t>(value);
   }
 
+  template <typename T>
+  UserDataStorageType<T> CastValue(const T& value)
+  {
+    return static_cast<T>(value);
+  }
+
   /// This acts as a base class for templated child arbitrary types
   class VaryingType
   {
   public:
-    virtual std::string StringValue() const;
-    virtual bool BoolValue() const;
-    virtual int64_t IntegerValue() const;
-    virtual double FloatValue() const;
-    virtual std::vector<std::byte> BytesValue() const;
+    virtual std::string StringValue() const = 0;
+    virtual bool BoolValue() const = 0;
+    virtual int64_t IntegerValue() const = 0;
+    virtual double FloatValue() const = 0;
+    virtual std::vector<std::byte> BytesValue() const = 0;
 
     virtual std::unique_ptr<VaryingType> Clone() const = 0;
     virtual size_t Size() const = 0;
@@ -108,19 +138,29 @@ private:
   {
   public:
     explicit VaryingArbitraryType(T value)
-      : VaryingType(IsByteArray<T>::value ? VaryingDataType::ARBITRARY_BYTES
-                    : IsString<T>::value  ? VaryingDataType::STRING
-                    : IsBool<T>::value    ? VaryingDataType::BOOL
-                    : IsInteger<T>::value ? VaryingDataType::INTEGER
-                    : IsFloat<T>::value   ? VaryingDataType::FLOAT
-                                          : VaryingDataType::VOID),
+      : VaryingType(IsByteArray<T>::value  ? VaryingDataType::ARBITRARY_BYTES
+                    : IsString<T>::value   ? VaryingDataType::STRING
+                    : IsBool<T>::value     ? VaryingDataType::BOOL
+                    : IsInteger<T>::value  ? VaryingDataType::INTEGER
+                    : IsFloat<T>::value    ? VaryingDataType::FLOAT
+                    : IsUserData<T>::value ? VaryingDataType::USER_DATA
+                                           : VaryingDataType::VOID),
         value_(value)
     {
     }
-    std::string StringValue() const override;
-    bool BoolValue() const override;
-    int64_t IntegerValue() const override;
-    double FloatValue() const override;
+
+    std::string StringValue() const override { OpenSnLogicalError("Method not implemented"); }
+
+    bool BoolValue() const override { OpenSnLogicalError("Method not implemented"); }
+
+    int64_t IntegerValue() const override { OpenSnLogicalError("Method not implemented"); }
+
+    double FloatValue() const override { OpenSnLogicalError("Method not implemented"); }
+
+    std::vector<std::byte> BytesValue() const override
+    {
+      OpenSnLogicalError("Method not implemented");
+    }
 
     std::unique_ptr<VaryingType> Clone() const override
     {
@@ -205,6 +245,8 @@ private:
       return (*this < that) or (*this == that);
     }
 
+    T Value() const { return value_; }
+
   private:
     T value_;
   };
@@ -230,7 +272,8 @@ public:
   template <typename T>
   explicit Varying(const T& value)
   {
-    constexpr bool is_supported_type = IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value;
+    constexpr bool is_supported_type =
+      IsBool<T>::value or IsFloat<T>::value or IsInteger<T>::value or IsUserData<T>::value;
     static_assert(is_supported_type, "Constructor called with unsupported type");
 
     if (IsBool<T>::value)
@@ -245,6 +288,8 @@ public:
     {
       type_ = VaryingDataType::INTEGER;
     }
+    else
+      type_ = VaryingDataType::USER_DATA;
 
     data_ = Helper(CastValue(value));
   }
@@ -262,6 +307,17 @@ public:
   static std::unique_ptr<VaryingType> Helper(const double& value)
   {
     return std::make_unique<VaryingArbitraryType<double>>(value);
+  }
+
+  static std::unique_ptr<VaryingType> Helper(const Vector3& value)
+  {
+    return std::make_unique<VaryingArbitraryType<Vector3>>(value);
+  }
+
+  template <typename T>
+  static std::unique_ptr<VaryingType> Helper(const std::shared_ptr<T>& value)
+  {
+    return std::make_unique<VaryingArbitraryType<std::shared_ptr<T>>>(value);
   }
 
   /// Constructor for an arbitrary sequence of bytes value.
@@ -367,6 +423,8 @@ public:
   using SignedIntegerType = typename std::enable_if_t<IsSignedInteger<T>::value, T>;
   template <typename T>
   using UnsignedIntegerType = typename std::enable_if_t<IsUnsignedInteger<T>::value, T>;
+  template <typename T>
+  using UserDataType = typename std::enable_if_t<IsUserData<T>::value, T>;
 
   /// Returns values of type bool if able.
   template <typename T>
@@ -423,6 +481,17 @@ public:
     return static_cast<T>(value);
   }
 
+  /// Returns user data if able.
+  template <typename T>
+  UserDataType<T> GetValue() const
+  {
+    CheckTypeMatch(type_, VaryingDataType::USER_DATA);
+
+    const auto value = dynamic_cast<VaryingArbitraryType<T>*>(data_.get())->Value();
+
+    return static_cast<T>(value);
+  }
+
   /// Returns the string value if valid. Otherwise throws std::logic_error.
   std::string StringValue() const;
 
@@ -434,6 +503,13 @@ public:
 
   /// Returns the float value if valid. Otherwise throws std::logic_error.
   double FloatValue() const;
+
+  template <typename T>
+  T UserDataValue() const
+  {
+    CheckTypeMatch(type_, VaryingDataType::USER_DATA);
+    return GetValue<T>();
+  }
 
   /// Returns the raw byte size associated with the type.
   size_t ByteSize() const;
@@ -451,6 +527,34 @@ public:
 public:
   ~Varying() = default;
 };
+
+template <>
+inline std::string
+Varying::VaryingArbitraryType<std::string>::StringValue() const
+{
+  return value_;
+}
+
+template <>
+inline bool
+Varying::VaryingArbitraryType<bool>::BoolValue() const
+{
+  return value_;
+}
+
+template <>
+inline int64_t
+Varying::VaryingArbitraryType<int64_t>::IntegerValue() const
+{
+  return value_;
+}
+
+template <>
+inline double
+Varying::VaryingArbitraryType<double>::FloatValue() const
+{
+  return value_;
+}
 
 } // namespace opensn
 

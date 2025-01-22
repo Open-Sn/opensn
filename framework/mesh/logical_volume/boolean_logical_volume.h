@@ -14,10 +14,13 @@ class BooleanLogicalVolume : public LogicalVolume
 public:
   std::vector<std::pair<bool, std::shared_ptr<const LogicalVolume>>> parts;
 
-  static InputParameters GetInputParameters();
   explicit BooleanLogicalVolume(const InputParameters& params);
 
   bool Inside(const Vector3& point) const override;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<BooleanLogicalVolume> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -26,7 +26,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 mesh.SetUniformMaterialID(0)
 
 -- Add materials
@@ -35,16 +35,17 @@ sigma_t = 1.0
 
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, SIMPLE_ONE_GROUP, sigma_t, 0.0)
+xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
+materials[1]:SetTransportXSections(xs1g)
 
 -- Setup Physics
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128)
+pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128, -1)
 lbs_block = {
   num_groups = num_groups,
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
@@ -74,16 +75,16 @@ lbs_options = {
 }
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-lbs.SetOptions(phys, lbs_options)
+phys:SetOptions(lbs_options)
 
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
 -- Solve the problem
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 -- Compute the leakage
-leakage = lbs.ComputeLeakage(phys)
+leakage = lbs.ComputeLeakage(phys, {})
 for k, v in pairs(leakage) do
   log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
 end

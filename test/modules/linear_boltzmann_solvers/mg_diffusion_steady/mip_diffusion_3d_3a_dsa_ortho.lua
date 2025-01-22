@@ -4,7 +4,7 @@
 -- and   WGS groups [63-167] Iteration    63 Residual 8.1975e-07 CONVERGED
 num_procs = 4
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -16,7 +16,7 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
   os.exit(false)
 end
 
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 20
 L = 100.0
@@ -32,9 +32,9 @@ znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes, znodes },
 })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 mesh.SetUniformMaterialID(0)
 
@@ -45,37 +45,31 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
 
 num_groups = 168
-mat.SetProperty(
-  materials[1],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "../transport_steady/xs_graphite_pure.xs"
-)
-mat.SetProperty(
-  materials[2],
-  TRANSPORT_XSECTIONS,
-  OPENSN_XSFILE,
-  "../transport_steady/xs_air50RH.xs"
-)
+xs_graphite = xs.LoadFromOpenSn("../transport_steady/xs_graphite_pure.xs")
+materials[1]:SetTransportXSections(xs_graphite)
+xs_air = xs.LoadFromOpenSn("../transport_steady/xs_air50RH.xs")
+materials[2]:SetTransportXSections(xs_air)
 
 src = {}
 for g = 1, num_groups do
   src[g] = 0.0
 end
 src[1] = 1.0
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mg_src0 = xs.IsotropicMultiGroupSource.FromArray(src)
+materials[1]:SetIsotropicMGSource(mg_src0)
 src[1] = 0.0
-mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mg_src1 = xs.IsotropicMultiGroupSource.FromArray(src)
+materials[2]:SetIsotropicMGSource(mg_src1)
 
---############################################### Setup Physics
+-- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 lbs_block = {
@@ -83,7 +77,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 62 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
@@ -95,7 +89,7 @@ lbs_block = {
     },
     {
       groups_from_to = { 63, num_groups - 1 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
@@ -114,20 +108,20 @@ lbs_options = {
 }
 
 phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
-lbs.SetOptions(phys1, lbs_options)
+phys1:SetOptions(lbs_options)
 
---############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
+-- Initialize and Execute Solver
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
---############################################### Get field functions
-fflist, count = lbs.GetScalarFieldFunctionList(phys1)
+-- Get field functions
+fflist = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Exports
+-- Exports
 if master_export == nil then
   fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
 end
 
---############################################### Plots
+-- Plots

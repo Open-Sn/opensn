@@ -10,7 +10,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 --Sets a middle square to material 1
 function mat_id(pt, cur_id)

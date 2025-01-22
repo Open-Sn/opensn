@@ -9,6 +9,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/cell/cell.h"
+#include <memory>
 
 namespace opensn
 {
@@ -25,12 +26,13 @@ MeshGenerator::GetInputParameters()
 
   params.AddOptionalParameter("scale", 1.0, "Uniform scale to apply to the mesh after reading.");
 
-  params.AddOptionalParameterArray(
-    "inputs", std::vector<size_t>{}, "A list of handles to MeshGenerator objects");
+  params.AddOptionalParameterArray("inputs",
+                                   std::vector<std::shared_ptr<MeshGenerator>>{},
+                                   "A list of handles to MeshGenerator objects");
 
   params.AddOptionalParameter(
     "partitioner",
-    0,
+    std::shared_ptr<GraphPartitioner>{},
     "Handle to a GraphPartitioner object to use for parallel partitioning."
     "This will default to PETScGraphPartitioner with a \"parmetis\" setting");
 
@@ -42,32 +44,33 @@ MeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<MeshGenerator>
+MeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<MeshGenerator>("mesh::MeshGenerator", params);
+}
+
 MeshGenerator::MeshGenerator(const InputParameters& params)
   : Object(params),
     scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
 {
   // Convert input handles
-  auto input_handles = params.GetParamVectorValue<size_t>("inputs");
-
-  for (const size_t input_handle : input_handles)
-  {
-    auto& mesh_generator = GetStackItem<MeshGenerator>(object_stack, input_handle, __FUNCTION__);
-    inputs_.push_back(&mesh_generator);
-  }
+  auto inputs = params.GetParamVectorValue<std::shared_ptr<MeshGenerator>>("inputs");
+  for (auto& mesh_generator : inputs)
+    inputs_.push_back(mesh_generator);
 
   // Set partitioner
-  size_t partitioner_handle;
-  if (params.ParametersAtAssignment().Has("partitioner"))
-    partitioner_handle = params.GetParamValue<size_t>("partitioner");
+  if (params.IsParameterValid("partitioner"))
+    partitioner_ = params.GetParamValue<std::shared_ptr<GraphPartitioner>>("partitioner");
   else
   {
     auto& factory = ObjectFactory::GetInstance();
     auto valid_params = PETScGraphPartitioner::GetInputParameters();
-    partitioner_handle =
-      factory.MakeRegisteredObjectOfType("mesh::PETScGraphPartitioner", ParameterBlock());
+    partitioner_ =
+      factory.Create<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", ParameterBlock());
   }
-  partitioner_ = &GetStackItem<GraphPartitioner>(object_stack, partitioner_handle, __FUNCTION__);
 }
 
 std::shared_ptr<UnpartitionedMesh>

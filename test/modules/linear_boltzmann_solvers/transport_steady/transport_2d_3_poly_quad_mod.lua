@@ -3,7 +3,7 @@
 -- Test: Max-value=0.50758 and 2.52527e-04
 num_procs = 4
 
---############################################### Check num_procs
+-- Check num_procs
 if check_num_procs == nil and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
@@ -15,7 +15,7 @@ if check_num_procs == nil and number_of_processes ~= num_procs then
   os.exit(false)
 end
 
---############################################### Setup mesh
+-- Setup mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
@@ -30,29 +30,31 @@ meshgen1 = mesh.MeshGenerator.Create({
     ycuts = { 0.0 },
   }),
 })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
---############################################### Add materials
+-- Add materials
 materials = {}
 materials[1] = mat.AddMaterial("Test Material")
 materials[2] = mat.AddMaterial("Test Material2")
 
 num_groups = 168
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "xs_3_170.xs")
+xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
+materials[1]:SetTransportXSections(xs_3_170)
+materials[2]:SetTransportXSections(xs_3_170)
 
 src = {}
 for g = 1, num_groups do
   src[g] = 0.0
 end
 --src[1] = 1.0
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
-mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
+materials[1]:SetIsotropicMGSource(mg_src)
+materials[2]:SetIsotropicMGSource(mg_src)
 
---############################################### Setup Physics
+-- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 1)
 aquad.OptimizeForPolarSymmetry(pquad0, 4.0 * math.pi)
 
@@ -61,7 +63,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 62 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 2,
       inner_linear_method = "petsc_gmres",
@@ -71,7 +73,7 @@ lbs_block = {
     },
     {
       groups_from_to = { 63, num_groups - 1 },
-      angular_quadrature_handle = pquad0,
+      angular_quadrature = pquad0,
       angle_aggregation_num_subsets = 1,
       groupset_num_subsets = 2,
       inner_linear_method = "petsc_gmres",
@@ -100,41 +102,41 @@ lbs_options = {
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-lbs.SetOptions(phys1, lbs_options)
+phys1:SetOptions(lbs_options)
 
---############################################### Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
+-- Initialize and Execute Solver
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
---############################################### Get field functions
-fflist, count = lbs.GetScalarFieldFunctionList(phys1)
+-- Get field functions
+fflist = lbs.GetScalarFieldFunctionList(phys1)
 
---############################################### Volume integrations
+-- Volume integrations
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
+ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
-fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
-fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[1])
+curffi:SetOperationType(OP_MAX)
+curffi:SetLogicalVolume(vol0)
+curffi:AddFieldFunction(fflist[1])
 
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
+curffi:Initialize()
+curffi:Execute()
+maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
---############################################### Volume integrations
-ffi1 = fieldfunc.FFInterpolationCreate(VOLUME)
+-- Volume integrations
+ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
-fieldfunc.SetProperty(curffi, OPERATION, OP_MAX)
-fieldfunc.SetProperty(curffi, LOGICAL_VOLUME, vol0)
-fieldfunc.SetProperty(curffi, ADD_FIELDFUNCTION, fflist[160])
+curffi:SetOperationType(OP_MAX)
+curffi:SetLogicalVolume(vol0)
+curffi:AddFieldFunction(fflist[160])
 
-fieldfunc.Initialize(curffi)
-fieldfunc.Execute(curffi)
-maxval = fieldfunc.GetValue(curffi)
+curffi:Initialize()
+curffi:Execute()
+maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))

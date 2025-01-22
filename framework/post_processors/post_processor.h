@@ -55,7 +55,7 @@ public:
    * Calls the base Object's method and adds a subscription to `opensn::PhysicsEventPublisher`
    * singleton.
    */
-  void PushOntoStack(std::shared_ptr<Object>& new_object) override;
+  void PushOntoStack(std::shared_ptr<Object> new_object) override;
 
   void ReceiveEventUpdate(const Event& event) override;
 

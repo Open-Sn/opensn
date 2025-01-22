@@ -5,8 +5,10 @@
 
 #include "framework/data_types/varying.h"
 #include <memory>
+#include <stdexcept>
 #include <vector>
 #include <string>
+#include <map>
 
 namespace opensn
 {
@@ -18,6 +20,7 @@ enum class ParameterBlockType
   FLOAT = 3,
   STRING = 4,
   INTEGER = 5,
+  USER_DATA = 6,
   ARRAY = 98,
   BLOCK = 99
 };
@@ -42,7 +45,7 @@ class ParameterBlock
 private:
   ParameterBlockType type_ = ParameterBlockType::BLOCK;
   std::string name_;
-  std::unique_ptr<Varying> value_ptr_ = nullptr;
+  std::shared_ptr<Varying> value_ptr_ = nullptr;
   std::vector<ParameterBlock> parameters_;
   std::string error_origin_scope_ = "Unknown Scope";
 
@@ -50,7 +53,6 @@ public:
   /// Sets the name of the block.
   void SetBlockName(const std::string& name);
 
-public:
   // Helpers
   template <typename T>
   struct IsBool
@@ -72,6 +74,13 @@ public:
   {
     static constexpr bool value = std::is_integral_v<T> and not std::is_same_v<T, bool>;
   };
+  template <typename T>
+  struct IsUserData
+  {
+    static constexpr bool value = (std::is_pointer_v<T> or is_shared_ptr_v<T> or
+                                   (std::is_class_v<T> and not std::is_same_v<T, std::string>)) and
+                                  (not std::is_same_v<T, const char*>);
+  };
 
   // Constructors
   /// Constructs an empty parameter block with the given name and type BLOCK.
@@ -91,8 +100,8 @@ public:
   template <typename T>
   explicit ParameterBlock(const std::string& name, T value) : name_(name)
   {
-    constexpr bool is_supported =
-      IsBool<T>::value or IsFloat<T>::value or IsString<T>::value or IsInteger<T>::value;
+    constexpr bool is_supported = IsBool<T>::value or IsFloat<T>::value or IsString<T>::value or
+                                  IsInteger<T>::value or IsUserData<T>::value;
 
     static_assert(is_supported, "Value type not supported for parameter block");
 
@@ -104,8 +113,10 @@ public:
       type_ = ParameterBlockType::STRING;
     if (IsInteger<T>::value)
       type_ = ParameterBlockType::INTEGER;
+    if (IsUserData<T>::value)
+      type_ = ParameterBlockType::USER_DATA;
 
-    value_ptr_ = std::make_unique<Varying>(value);
+    value_ptr_ = std::make_shared<Varying>(value);
   }
 
   /// Copy constructor
@@ -205,7 +216,6 @@ public:
   /// Gets a parameter by index.
   const ParameterBlock& GetParam(size_t index) const;
 
-public:
   /// Returns the value of the parameter.
   template <typename T>
   T GetValue() const

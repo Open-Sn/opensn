@@ -29,8 +29,6 @@ private:
   double period_tph_ = 0.0;
 
 public:
-  /// Sets input parameters.
-  static InputParameters GetInputParameters();
   /// Constructor.
   explicit PRKSolver(const InputParameters& params);
 
@@ -76,6 +74,10 @@ public:
 
   /// Sets the value of rho.
   void SetRho(double value);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<PRKSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -12,7 +12,6 @@ namespace opensn
 class SphereLogicalVolume : public LogicalVolume
 {
 public:
-  static InputParameters GetInputParameters();
   explicit SphereLogicalVolume(const InputParameters& params);
 
   bool Inside(const Vector3& point) const override;
@@ -20,6 +19,10 @@ public:
 protected:
   double r_;
   double x0_, y0_, z0_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<SphereLogicalVolume> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

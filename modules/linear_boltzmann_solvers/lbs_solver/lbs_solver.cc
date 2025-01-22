@@ -21,11 +21,13 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
 #include <cstring>
 #include <cassert>
+#include <memory>
 #include <sys/stat.h>
 
 namespace opensn
@@ -36,10 +38,6 @@ std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
 
 std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
   {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs, OptionsBlock, LBSSolver::OptionsBlock);
-
-OpenSnRegisterSyntaxBlockInNamespace(lbs, BoundaryOptionsBlock, LBSSolver::BoundaryOptionsBlock);
 
 LBSSolver::LBSSolver(const std::string& name) : Solver(name)
 {
@@ -89,7 +87,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   }
 
   // Options
-  if (params.ParametersAtAssignment().Has("options"))
+  if (params.IsParameterValid("options"))
   {
     auto options_params = LBSSolver::OptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
@@ -168,9 +166,9 @@ LBSSolver::Groupsets() const
 }
 
 void
-LBSSolver::AddPointSource(PointSource&& point_source)
+LBSSolver::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
-  point_sources_.push_back(std::move(point_source));
+  point_sources_.push_back(point_source);
 }
 
 void
@@ -179,16 +177,16 @@ LBSSolver::ClearPointSources()
   point_sources_.clear();
 }
 
-const std::vector<PointSource>&
+const std::vector<std::shared_ptr<PointSource>>&
 LBSSolver::PointSources() const
 {
   return point_sources_;
 }
 
 void
-LBSSolver::AddVolumetricSource(VolumetricSource&& volumetric_source)
+LBSSolver::AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source)
 {
-  volumetric_sources_.push_back(std::move(volumetric_source));
+  volumetric_sources_.push_back(volumetric_source);
 }
 
 void
@@ -197,7 +195,7 @@ LBSSolver::ClearVolumetricSources()
   volumetric_sources_.clear();
 }
 
-const std::vector<VolumetricSource>&
+const std::vector<std::shared_ptr<VolumetricSource>>&
 LBSSolver::VolumetricSources() const
 {
   return volumetric_sources_;
@@ -505,9 +503,10 @@ LBSSolver::OptionsBlock()
                               "Clears all boundary conditions. If no additional boundary "
                               "conditions are supplied, this results in all boundaries being "
                               "vacuum.");
-  params.AddOptionalParameterArray("point_sources", {}, "An array of handles to point sources.");
+  params.AddOptionalParameterArray<std::shared_ptr<PointSource>>(
+    "point_sources", {}, "An array of point sources.");
   params.AddOptionalParameter("clear_point_sources", false, "Clears all point sources.");
-  params.AddOptionalParameterArray(
+  params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
   params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
   params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
@@ -546,32 +545,33 @@ LBSSolver::BoundaryOptionsBlock()
 }
 
 void
-LBSSolver::SetOptions(const InputParameters& params)
+LBSSolver::SetOptions(const InputParameters& input)
 {
-  const auto& user_params = params.ParametersAtAssignment();
+  auto params = LBSSolver::OptionsBlock();
+  params.AssignParameters(input);
 
   // Handle order sensitive options
-  if (user_params.Has("clear_boundary_conditions"))
+  if (params.IsParameterValid("clear_boundary_conditions"))
   {
-    if (user_params.GetParamValue<bool>("clear_boundary_conditions"))
+    if (params.GetParamValue<bool>("clear_boundary_conditions"))
       boundary_preferences_.clear();
   }
 
-  if (user_params.Has("clear_point_sources"))
+  if (params.IsParameterValid("clear_point_sources"))
   {
-    if (user_params.GetParamValue<bool>("clear_point_sources"))
+    if (params.GetParamValue<bool>("clear_point_sources"))
       point_sources_.clear();
   }
 
-  if (user_params.Has("clear_volumetric_sources"))
+  if (params.IsParameterValid("clear_volumetric_sources"))
   {
-    if (user_params.GetParamValue<bool>("clear_volumetric_sources"))
+    if (params.GetParamValue<bool>("clear_volumetric_sources"))
       volumetric_sources_.clear();
   }
 
-  if (user_params.Has("adjoint"))
+  if (params.IsParameterValid("adjoint"))
   {
-    const bool adjoint = user_params.GetParamValue<bool>("adjoint");
+    const bool adjoint = params.GetParamValue<bool>("adjoint");
     if (adjoint != options_.adjoint)
     {
       options_.adjoint = adjoint;
@@ -603,9 +603,9 @@ LBSSolver::SetOptions(const InputParameters& params)
   }
 
   // Handle order insensitive options
-  for (size_t p = 0; p < user_params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.NumParameters(); ++p)
   {
-    const auto& spec = user_params.GetParam(p);
+    const auto& spec = params.GetParam(p);
 
     if (spec.Name() == "spatial_discretization")
     {
@@ -697,12 +697,11 @@ LBSSolver::SetOptions(const InputParameters& params)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
       {
-        point_sources_.push_back(
-          GetStackItem<PointSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+        point_sources_.push_back(sub_param.GetValue<std::shared_ptr<PointSource>>());
 
         // If a discretization exists, the point source can be initialized.
         if (discretization_)
-          point_sources_.back().Initialize(*this);
+          point_sources_.back()->Initialize(*this);
       }
     }
 
@@ -711,12 +710,11 @@ LBSSolver::SetOptions(const InputParameters& params)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
       {
-        volumetric_sources_.push_back(
-          GetStackItem<VolumetricSource>(object_stack, sub_param.GetValue<size_t>(), __FUNCTION__));
+        volumetric_sources_.push_back(sub_param.GetValue<std::shared_ptr<VolumetricSource>>());
 
         // If the discretization exists, the volumetric source can be initialized.
         if (discretization_)
-          volumetric_sources_.back().Initialize(*this);
+          volumetric_sources_.back()->Initialize(*this);
       }
     }
   } // for p
@@ -736,37 +734,36 @@ void
 LBSSolver::SetBoundaryOptions(const InputParameters& params)
 {
   const std::string fname = __FUNCTION__;
-  const auto& user_params = params.ParametersAtAssignment();
-  const auto boundary_name = user_params.GetParamValue<std::string>("name");
-  const auto bndry_type = user_params.GetParamValue<std::string>("type");
+  const auto boundary_name = params.GetParamValue<std::string>("name");
+  const auto bndry_type = params.GetParamValue<std::string>("type");
 
   const auto bid = supported_boundary_names.at(boundary_name);
-  const std::map<std::string, BoundaryType> type_list = {{"vacuum", BoundaryType::VACUUM},
-                                                         {"isotropic", BoundaryType::ISOTROPIC},
-                                                         {"reflecting", BoundaryType::REFLECTING},
-                                                         {"arbitrary", BoundaryType::ARBITRARY}};
+  const std::map<std::string, LBSBoundaryType> type_list = {
+    {"vacuum", LBSBoundaryType::VACUUM},
+    {"isotropic", LBSBoundaryType::ISOTROPIC},
+    {"reflecting", LBSBoundaryType::REFLECTING}};
 
   const auto type = type_list.at(bndry_type);
   switch (type)
   {
-    case BoundaryType::VACUUM:
-    case BoundaryType::REFLECTING:
+    case LBSBoundaryType::VACUUM:
+    case LBSBoundaryType::REFLECTING:
     {
       BoundaryPreferences()[bid] = {type};
       break;
     }
-    case BoundaryType::ISOTROPIC:
+    case LBSBoundaryType::ISOTROPIC:
     {
-      OpenSnInvalidArgumentIf(not user_params.Has("group_strength"),
+      OpenSnInvalidArgumentIf(not params.Has("group_strength"),
                               "Boundary conditions with type=\"isotropic\" require parameter "
                               "\"group_strength\"");
 
-      user_params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-      const auto group_strength = user_params.GetParamVectorValue<double>("group_strength");
+      params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
+      const auto group_strength = params.GetParamVectorValue<double>("group_strength");
       boundary_preferences_[bid] = {type, group_strength};
       break;
     }
-    case BoundaryType::ARBITRARY:
+    case LBSBoundaryType::ARBITRARY:
     {
       throw std::runtime_error("Arbitrary boundary conditions are not currently supported.");
       break;
@@ -793,11 +790,11 @@ LBSSolver::Initialize()
 
   // Initialize point sources
   for (auto& point_source : point_sources_)
-    point_source.Initialize(*this);
+    point_source->Initialize(*this);
 
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
-    volumetric_source.Initialize(*this);
+    volumetric_source->Initialize(*this);
 }
 
 void
@@ -1527,11 +1524,11 @@ LBSSolver::InitializeBoundaries()
       const auto& bndry_pref = boundary_preferences_.at(bid);
       const auto& mg_q = bndry_pref.isotropic_mg_source;
 
-      if (bndry_pref.type == BoundaryType::VACUUM)
+      if (bndry_pref.type == LBSBoundaryType::VACUUM)
         sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
-      else if (bndry_pref.type == BoundaryType::ISOTROPIC)
+      else if (bndry_pref.type == LBSBoundaryType::ISOTROPIC)
         sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
-      else if (bndry_pref.type == BoundaryType::REFLECTING)
+      else if (bndry_pref.type == LBSBoundaryType::REFLECTING)
       {
         // Locally check all faces, that subscribe to this boundary,
         // have the same normal

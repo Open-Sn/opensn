@@ -16,7 +16,6 @@ class ByteArray;
 class SplitFileMeshGenerator : public MeshGenerator
 {
 public:
-  static InputParameters GetInputParameters();
   explicit SplitFileMeshGenerator(const InputParameters& params);
 
   void Execute() override;
@@ -48,6 +47,10 @@ protected:
   const std::string file_prefix_;
   const bool read_only_;
   const int verbosity_level_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<SplitFileMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

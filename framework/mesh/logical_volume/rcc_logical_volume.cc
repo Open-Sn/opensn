@@ -27,6 +27,13 @@ RCCLogicalVolume::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<RCCLogicalVolume>
+RCCLogicalVolume::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<RCCLogicalVolume>("logvol::RCCLogicalVolume", params);
+}
+
 RCCLogicalVolume::RCCLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
     r_(params.GetParamValue<double>("r")),

@@ -25,15 +25,21 @@ OrthogonalMeshGenerator::GetInputParameters()
   return params;
 }
 
+std::shared_ptr<OrthogonalMeshGenerator>
+OrthogonalMeshGenerator::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<OrthogonalMeshGenerator>("mesh::OrthogonalMeshGenerator", params);
+}
+
 OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
   : MeshGenerator(params)
 {
   // Parse the node_sets param
-  if (params.ParametersAtAssignment().Has("node_sets"))
+  if (params.IsParameterValid("node_sets"))
   {
     auto& node_sets_param = params.GetParam("node_sets");
     node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-
     for (const auto& node_list_block : node_sets_param)
     {
       OpenSnInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,

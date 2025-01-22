@@ -19,7 +19,6 @@ struct ExtrusionLayer
 class ExtruderMeshGenerator : public MeshGenerator
 {
 public:
-  static InputParameters GetInputParameters();
   explicit ExtruderMeshGenerator(const InputParameters& params);
 
 protected:
@@ -30,6 +29,10 @@ protected:
   const std::string bottom_boundary_name_;
 
   std::vector<ExtrusionLayer> layers_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<ExtruderMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

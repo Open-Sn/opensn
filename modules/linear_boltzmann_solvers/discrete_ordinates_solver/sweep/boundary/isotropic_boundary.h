@@ -22,7 +22,7 @@ public:
   explicit IsotropicBoundary(size_t num_groups,
                              std::vector<double> boundary_flux,
                              CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(BoundaryType::ISOTROPIC, num_groups, coord_type),
+    : SweepBoundary(LBSBoundaryType::ISOTROPIC, num_groups, coord_type),
       boundary_flux_(std::move(boundary_flux))
   {
   }

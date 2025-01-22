@@ -25,12 +25,12 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
 -- ############################################### Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0)
+mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1)
+mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 mesh.ComputeVolumePerMaterialID()

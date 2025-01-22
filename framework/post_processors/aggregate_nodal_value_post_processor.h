@@ -17,7 +17,6 @@ class AggregateNodalValuePostProcessor : public PostProcessor,
                                          public LogicalVolumeInterface
 {
 public:
-  static InputParameters GetInputParameters();
   explicit AggregateNodalValuePostProcessor(const InputParameters& params);
 
   void Execute(const Event& event_context) override;
@@ -28,6 +27,10 @@ protected:
   const std::string operation_;
   bool initialized_ = false;
   std::vector<uint64_t> cell_local_ids_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<AggregateNodalValuePostProcessor> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

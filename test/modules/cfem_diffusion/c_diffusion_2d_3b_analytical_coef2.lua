@@ -1,4 +1,4 @@
---############################################### Setup mesh
+-- Setup mesh
 nodes = {}
 N = 40
 L = 1
@@ -10,9 +10,9 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen1)
+meshgen1:Execute()
 
---############################################### Set Material IDs
+-- Set Material IDs
 mesh.SetUniformMaterialID(0)
 
 -- governing law: -(u_xx + u_yy) = q, on domain [0,1]x[0,1]
@@ -46,10 +46,10 @@ w_bndry = "1"
 n_bndry = "2"
 s_bndry = "3"
 
-mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
-mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
+mesh.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, true)
+mesh.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, true)
 
 diff_options = {
   boundary_conditions = {
@@ -76,30 +76,37 @@ diff_options = {
   },
 }
 
+d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
+Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
+Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
+
 -- CFEM solver
 phys1 = diffusion.CFEMDiffusionSolver.Create({
   name = "CFEMDiffusionSolver",
   residual_tolerance = 1e-8,
 })
-diffusion.SetOptions(phys1, diff_options)
+phys1:SetOptions(diff_options)
+phys1:SetDCoefFunction(d_coef_fn)
+phys1:SetQExtFunction(Q_ext_fn)
+phys1:SetSigmaAFunction(Sigma_a_fn)
 
-solver.Initialize(phys1)
-solver.Execute(phys1)
+phys1:Initialize()
+phys1:Execute()
 
---############################################### Get field functions
-fflist, count = solver.GetFieldFunctionList(phys1)
+-- Get field functions
+fflist = phys1:GetFieldFunctions()
 
---############################################### Export VTU
+-- Export VTU
 if master_export == nil then
   fieldfunc.ExportToVTK(fflist[1], "CFEMDiff2D_analytic_coef2", "flux")
 end
 
---############################################### Volume integrations
+-- Volume integrations
 
---############################################### PostProcessors
-post.AggregateNodalValuePostProcessor.Create({
+-- PostProcessors
+maxval = post.AggregateNodalValuePostProcessor.Create({
   name = "maxval",
-  field_function = math.floor(fflist[1]),
+  field_function = fflist[1],
   operation = "max",
 })
-post.Execute({ "maxval" })
+post.Execute({ maxval })

@@ -11,7 +11,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 -- Set Material IDs
 mesh.SetUniformMaterialID(0)
@@ -22,14 +22,16 @@ materials[1] = mat.AddMaterial("HDPE")
 num_groups = 172
 
 -- Add cross sections to materials
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, OPENMC_XSLIB, "HDPE.h5", 294.0)
+xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
+materials[1]:SetTransportXSections(xs_hdpe)
 
 src = {}
 for g = 1, num_groups do
   src[g] = 0.0
 end
 src[1] = 1.0
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
+mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
+materials[1]:SetIsotropicMGSource(mg_src)
 
 -- Angular Quadrature
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -40,7 +42,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature_handle = pquad,
+      angular_quadrature = pquad,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-9,
       l_max_its = 300,
@@ -66,10 +68,10 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Initialize and execute solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-solver.Initialize(ss_solver)
-solver.Execute(ss_solver)
+ss_solver:Initialize()
+ss_solver:Execute()
 
 -- compute particle balance
-lbs.ComputeBalance(phys)
+phys:ComputeBalance()
