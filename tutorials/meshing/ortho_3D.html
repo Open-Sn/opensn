@@ -124,7 +124,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <span class="w">    </span><span class="nv">zcuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 <span class="c1">-- Set Material IDs</span>
 <span class="nv">mesh</span><span class="p">.</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -146,10 +146,10 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <span class="w">  </span><span class="nv">node_sets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 <span class="c1">-- Set Material IDs</span>
 <span class="nv">vol0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">logvol</span><span class="p">.</span><span class="py">RPPLogicalVolume</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">infx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">infy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">infz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="nv">vol0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="nv">vol0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -188,7 +188,7 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <span class="w">    </span><span class="nv">zcuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 <span class="c1">-- Set Material IDs</span>
 <span class="nv">mesh</span><span class="p">.</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -202,11 +202,11 @@ partition the domain in 2x2x2 parts with cuts placed exactly at x=0, y=0, and z=
 <span class="w">  </span><span class="nv">node_sets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 <span class="c1">-- Set Material IDs</span>
 <span class="nv">vol0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">logvol</span><span class="p">.</span><span class="py">RPPLogicalVolume</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">infx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">infy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">infz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="nv">vol0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetMaterialIDFromLogicalVolume</span><span class="p">(</span><span class="nv">vol0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 
 
 <span class="c1">-- Exporting the mesh</span>

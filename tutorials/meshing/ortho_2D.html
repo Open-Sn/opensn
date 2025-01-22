@@ -141,7 +141,7 @@ to avoid issues).</p>
 <span class="w">    </span><span class="nv">ycuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -171,7 +171,7 @@ with value 0 for each cell in the spatial domain.</p>
 <span class="w">  </span><span class="nv">node_sets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -209,7 +209,7 @@ with value 0 for each cell in the spatial domain.</p>
 <span class="w">    </span><span class="nv">ycuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 
 <span class="c1">-- Set Material IDs</span>
@@ -224,7 +224,7 @@ with value 0 for each cell in the spatial domain.</p>
 <span class="w">  </span><span class="nv">node_sets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">nodes</span><span class="p">,</span><span class="w"> </span><span class="nv">nodes</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">meshgen</span><span class="p">)</span>
+<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 
 <span class="c1">-- Exporting the mesh</span>

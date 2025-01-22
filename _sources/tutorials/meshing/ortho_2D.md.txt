@@ -45,7 +45,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0. },
   }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 ```
 
 ## Material IDs
@@ -75,7 +75,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 ```
 
 ## Export the mesh
@@ -113,7 +113,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0. },
   }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 
 -- Set Material IDs
@@ -128,7 +128,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
 })
-mesh.MeshGenerator.Execute(meshgen)
+meshgen:Execute()
 
 
 -- Exporting the mesh
