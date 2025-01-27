@@ -109,7 +109,7 @@ public:
   }
   unsigned int GetMapEnd() const { return map_begin + num_components - 1; }
 
-  unsigned int NumComponents() const { return num_components; }
+  unsigned int GetNumComponents() const { return num_components; }
 };
 
 /// General object for the management of unknowns in mesh-based mathematical model.
@@ -171,7 +171,7 @@ public:
     return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
   }
 
-  size_t NumberOfUnknowns() const { return unknowns.size(); }
+  size_t GetNumberOfUnknowns() const { return unknowns.size(); }
   const Unknown& GetUnknown(size_t id) const { return unknowns[id]; }
 
   void SetDOFStorageType(const UnknownStorageType storage_type) { dof_storage_type = storage_type; }

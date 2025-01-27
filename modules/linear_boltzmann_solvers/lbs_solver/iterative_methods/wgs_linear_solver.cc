@@ -21,7 +21,7 @@ WGSLinearSolver::WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_p
   : PETScLinearSolver(gs_context_ptr->groupset.iterative_method, gs_context_ptr)
 {
   auto& groupset = gs_context_ptr->groupset;
-  auto& solver_tol_options = this->ToleranceOptions();
+  auto& solver_tol_options = this->GetToleranceOptions();
   solver_tol_options.residual_absolute = groupset.residual_tolerance;
   solver_tol_options.maximum_iterations = groupset.max_iterations;
   solver_tol_options.gmres_restart_interval = groupset.gmres_restart_intvl;
@@ -56,7 +56,7 @@ WGSLinearSolver::SetSystemSize()
   CALI_CXX_MARK_SCOPE("WGSLinearSolver::SetSystemSize");
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-  const auto sizes = gs_context_ptr->SystemSize();
+  const auto sizes = gs_context_ptr->GetSystemSize();
 
   num_local_dofs_ = sizes.first;
   num_global_dofs_ = sizes.second;
@@ -164,7 +164,7 @@ WGSLinearSolver::SetRHS()
     log.Log() << program_timer.GetTimeString() << " Computing b";
 
   // SetSource for RHS
-  saved_q_moments_local_ = lbs_solver.QMomentsLocal();
+  saved_q_moments_local_ = lbs_solver.GetQMomentsLocal();
 
   const bool single_richardson =
     groupset.iterative_method == LinearSolver::IterativeMethod::PETSC_RICHARDSON and
@@ -174,7 +174,7 @@ WGSLinearSolver::SetRHS()
   {
     const auto scope = gs_context_ptr->rhs_src_scope | ZERO_INCOMING_DELAYED_PSI;
     gs_context_ptr->set_source_function(
-      groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
+      groupset, lbs_solver.GetQMomentsLocal(), lbs_solver.GetPhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
@@ -202,7 +202,7 @@ WGSLinearSolver::SetRHS()
   {
     const auto scope = gs_context_ptr->rhs_src_scope | gs_context_ptr->lhs_src_scope;
     gs_context_ptr->set_source_function(
-      groupset, lbs_solver.QMomentsLocal(), lbs_solver.PhiOldLocal(), scope);
+      groupset, lbs_solver.GetQMomentsLocal(), lbs_solver.GetPhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
@@ -253,7 +253,7 @@ WGSLinearSolver::PostSolveCallback()
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(lbs_solver, groupset, x_, PhiSTLOption::PHI_OLD);
 
   // Restore saved q_moms
-  lbs_solver.QMomentsLocal() = saved_q_moments_local_;
+  lbs_solver.GetQMomentsLocal() = saved_q_moments_local_;
 
   // Context specific callback
   gs_context_ptr->PostSolveCallback();

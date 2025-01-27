@@ -121,8 +121,8 @@ public:
   virtual ~Cell() = default;
 
 public:
-  CellType Type() const { return cell_type_; }
-  CellType SubType() const { return cell_sub_type_; }
+  CellType GetType() const { return cell_type_; }
+  CellType GetSubType() const { return cell_sub_type_; }
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;

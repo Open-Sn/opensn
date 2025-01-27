@@ -92,11 +92,11 @@ NLKEigenDiffSolver::PostSolveCallback()
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver;
-  auto& groupsets = lbs_solver.Groupsets();
+  auto& groupsets = lbs_solver.GetGroupsets();
   auto& front_gs = groupsets.front();
 
-  auto& phi_old_local = lbs_solver.PhiOldLocal();
-  auto& phi_new_local = lbs_solver.PhiNewLocal();
+  auto& phi_old_local = lbs_solver.GetPhiOldLocal();
+  auto& phi_new_local = lbs_solver.GetPhiNewLocal();
 
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(x_);
   auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1;

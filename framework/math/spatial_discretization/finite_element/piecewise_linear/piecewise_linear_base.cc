@@ -32,7 +32,7 @@ PieceWiseLinearBase::CreateCellMappings()
     using namespace opensn;
     std::unique_ptr<CellMapping> mapping;
 
-    switch (cell.Type())
+    switch (cell.GetType())
     {
       case CellType::SLAB:
       {
@@ -61,7 +61,7 @@ PieceWiseLinearBase::CreateCellMappings()
       default:
         throw std::invalid_argument(std::string(fname) +
                                     ": Unsupported cell type encountered. type_id=" +
-                                    std::to_string(static_cast<int>(cell.Type())));
+                                    std::to_string(static_cast<int>(cell.GetType())));
     }
     return mapping;
   };

@@ -20,22 +20,22 @@ class TimeStepper : public Object
 {
 public:
   /// Overridable method to get the timestep size.
-  double TimeStepSize() const;
+  double GetTimeStepSize() const;
 
   /// Returns the current controller time.
-  double Time() const;
+  double GetTime() const;
 
   /// Returns the current time index.
-  size_t TimeStepIndex() const;
+  size_t GetTimeStepIndex() const;
 
   /// Returns the current controller start_time.
-  double StartTime() const;
+  double GetStartTime() const;
 
   /// Returns the current controller end_time.
-  double EndTime() const;
+  double GetEndTime() const;
 
   /// Returns the current controller max time steps.
-  double MaxTimeSteps() const;
+  double GetMaxTimeSteps() const;
 
   /// If start_time <= time <= end_time, this will return true.
   bool IsActive() const;

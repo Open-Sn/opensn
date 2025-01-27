@@ -70,7 +70,7 @@ PRKSolver::PRKSolver(const InputParameters& params)
     time_integration_(params.GetParamValue<std::string>("time_integration")),
     num_precursors_(lambdas_.size())
 {
-  log.Log() << "Created solver " << Name();
+  log.Log() << "Created solver " << GetName();
   {
     std::stringstream outstr;
     outstr << "lambdas = ";
@@ -92,9 +92,9 @@ PRKSolver::Initialize()
 {
   // Check size
   if (lambdas_.size() != betas_.size())
-    throw std::logic_error(Name() + ": Number of precursors cannot be "
-                                    "deduced from precursor data because "
-                                    "the data lists are of different size.");
+    throw std::logic_error(GetName() + ": Number of precursors cannot be "
+                                       "deduced from precursor data because "
+                                       "the data lists are of different size.");
 
   beta_ = std::accumulate(betas_.begin(), betas_.end(), 0.0);
 
@@ -159,9 +159,9 @@ PRKSolver::Execute()
 void
 PRKSolver::Step()
 {
-  log.Log() << "Solver \"" + Name() + "\" " + timestepper_->StringTimeInfo();
+  log.Log() << "Solver \"" + GetName() + "\" " + timestepper_->StringTimeInfo();
 
-  const double dt = timestepper_->TimeStepSize();
+  const double dt = timestepper_->GetTimeStepSize();
 
   A_(0, 0) = beta_ * (rho_ - 1.0) / gen_time_;
 
@@ -216,7 +216,7 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   if (param_name == "neutron_population")
     return ParameterBlock("", x_t_(0));
   else if (param_name == "population_next")
-    return ParameterBlock("", PopulationNew());
+    return ParameterBlock("", GetPopulationNew());
   else if (param_name == "period")
     return ParameterBlock("", period_tph_);
   else if (param_name == "rho")
@@ -229,15 +229,15 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
   else if (param_name == "time_integration")
     return ParameterBlock("", time_integration_);
   else if (param_name == "time_next")
-    return ParameterBlock("", TimeNew());
+    return ParameterBlock("", GetTimeNew());
   else if (param_name == "test_arb_info")
   {
     ParameterBlock block;
 
-    block.AddParameter("name", Name());
+    block.AddParameter("name", GetName());
     block.AddParameter("time_integration", time_integration_);
     block.AddParameter("rho", rho_);
-    block.AddParameter("max_timesteps", timestepper_->MaxTimeSteps());
+    block.AddParameter("max_timesteps", timestepper_->GetMaxTimeSteps());
 
     return block;
   }
@@ -246,43 +246,43 @@ PRKSolver::GetInfo(const ParameterBlock& params) const
 }
 
 double
-PRKSolver::PopulationPrev() const
+PRKSolver::GetPopulationPrev() const
 {
   return x_t_(0);
 }
 
 double
-PRKSolver::PopulationNew() const
+PRKSolver::GetPopulationNew() const
 {
   return x_tp1_(0);
 }
 
 double
-PRKSolver::Period() const
+PRKSolver::GetPeriod() const
 {
   return period_tph_;
 }
 
 double
-PRKSolver::TimePrev() const
+PRKSolver::GetTimePrev() const
 {
-  return timestepper_->Time();
+  return timestepper_->GetTime();
 }
 
 double
-PRKSolver::TimeNew() const
+PRKSolver::GetTimeNew() const
 {
-  return timestepper_->Time() + timestepper_->TimeStepSize();
+  return timestepper_->GetTime() + timestepper_->GetTimeStepSize();
 }
 
 Vector<double>
-PRKSolver::SolutionPrev() const
+PRKSolver::GetSolutionPrev() const
 {
   return x_t_;
 }
 
 Vector<double>
-PRKSolver::SolutionNew() const
+PRKSolver::GetSolutionNew() const
 {
   return x_tp1_;
 }
@@ -300,7 +300,7 @@ PRKSolver::SetProperties(const ParameterBlock& params)
 
   for (const auto& param : params)
   {
-    const std::string& param_name = param.Name();
+    const std::string& param_name = param.GetName();
     if (param_name == "rho")
       SetRho(param.GetValue<double>());
   }

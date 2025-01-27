@@ -170,7 +170,7 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
 std::vector<int64_t>
 MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions)
 {
-  const auto& raw_cells = input_umesh.RawCells();
+  const auto& raw_cells = input_umesh.GetRawCells();
   const size_t num_raw_cells = raw_cells.size();
 
   OpenSnLogicalErrorIf(num_raw_cells == 0, "No cells in final input mesh");
@@ -256,11 +256,11 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
   // Convert mesh
   auto grid_ptr = MeshContinuum::New();
 
-  grid_ptr->GetBoundaryIDMap() = input_umesh->BoundaryIDMap();
+  grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
 
   auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
   size_t cell_globl_id = 0;
-  for (auto& raw_cell : input_umesh->RawCells())
+  for (auto& raw_cell : input_umesh->GetRawCells())
   {
     if (CellHasLocalScope(
           opensn::mpi_comm.rank(), *raw_cell, cell_globl_id, vertex_subs, cell_pids))
@@ -268,10 +268,10 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
       auto cell = SetupCell(*raw_cell,
                             cell_globl_id,
                             cell_pids[cell_globl_id],
-                            STLVertexListHelper(input_umesh->Vertices()));
+                            STLVertexListHelper(input_umesh->GetVertices()));
 
       for (uint64_t vid : cell->vertex_ids)
-        grid_ptr->vertices.Insert(vid, input_umesh->Vertices()[vid]);
+        grid_ptr->vertices.Insert(vid, input_umesh->GetVertices()[vid]);
 
       grid_ptr->cells.PushBack(std::move(cell));
     }
@@ -279,12 +279,12 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
     ++cell_globl_id;
   } // for raw_cell
 
-  grid_ptr->SetDimension(input_umesh->Dimension());
-  grid_ptr->SetType(input_umesh->Type());
-  grid_ptr->SetExtruded(input_umesh->Extruded());
-  grid_ptr->SetOrthoAttributes(input_umesh->OrthoAttributes());
+  grid_ptr->SetDimension(input_umesh->GetDimension());
+  grid_ptr->SetType(input_umesh->GetType());
+  grid_ptr->SetExtruded(input_umesh->IsExtruded());
+  grid_ptr->SetOrthoAttributes(input_umesh->GetOrthoAttributes());
 
-  grid_ptr->SetGlobalVertexCount(input_umesh->Vertices().size());
+  grid_ptr->SetGlobalVertexCount(input_umesh->GetVertices().size());
 
   ComputeAndPrintStats(*grid_ptr);
 
@@ -356,7 +356,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       vfc = vfc + vertices.at(fvid);
     newFace.centroid = vfc / static_cast<double>(newFace.vertex_ids.size());
 
-    if (cell->Type() == CellType::SLAB)
+    if (cell->GetType() == CellType::SLAB)
     {
       // A slab face is very easy. If it is the first face
       // the normal is -khat. If it is the second face then
@@ -366,7 +366,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       else
         newFace.normal = Vector3(0.0, 0.0, 1.0);
     }
-    else if (cell->Type() == CellType::POLYGON)
+    else if (cell->GetType() == CellType::POLYGON)
     {
       // A polygon face is just a line so we can just grab
       // the first vertex and form a vector with the face
@@ -378,7 +378,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
       newFace.normal = Vector3(0.0, 0.0, 1.0).Cross(vec_vvc);
       newFace.normal.Normalize();
     }
-    else if (cell->Type() == CellType::POLYHEDRON)
+    else if (cell->GetType() == CellType::POLYHEDRON)
     {
       // A face of a polyhedron can itself be a polygon
       // which can be multifaceted. Here we need the

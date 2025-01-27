@@ -42,36 +42,36 @@ public:
   virtual ~LBSSolver() = default;
 
   /// Returns a reference to the solver options.
-  LBSOptions& Options();
+  LBSOptions& GetOptions();
 
   /// Returns a constant reference to the solver options.
-  const LBSOptions& Options() const;
+  const LBSOptions& GetOptions() const;
 
-  static InputParameters OptionsBlock();
+  static InputParameters GetOptionsBlock();
 
-  static InputParameters BoundaryOptionsBlock();
+  static InputParameters GetBoundaryOptionsBlock();
 
   void SetOptions(const InputParameters& params);
 
   void SetBoundaryOptions(const InputParameters& params);
 
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
-  size_t NumMoments() const;
+  size_t GetNumMoments() const;
 
   /// Returns the number of groups for the solver. This will only be non-zero after initialization.
-  size_t NumGroups() const;
+  size_t GetNumGroups() const;
 
   /**
    * Returns the number of precursors for the solver. This will only be non-zero after
    * initialization.
    */
-  size_t NumPrecursors() const;
+  size_t GetNumPrecursors() const;
 
   /**
    * Returns the maximum number of precursors defined on any material. This will only be non-zero
    * after initialization.
    */
-  size_t MaxPrecursorsPerMaterial() const;
+  size_t GetMaxPrecursorsPerMaterial() const;
 
   /**
    * Adds a group to the list of groups. If group id < 0, the id will be logically derived from the
@@ -79,7 +79,7 @@ public:
    */
   void AddGroup(int id);
 
-  const std::vector<LBSGroup>& Groups() const;
+  const std::vector<LBSGroup>& GetGroups() const;
 
   /**
    * Adds a groupset to the list of groupsets. The groupset id will be logically derived from the
@@ -87,9 +87,9 @@ public:
    */
   void AddGroupset();
 
-  std::vector<LBSGroupset>& Groupsets();
+  std::vector<LBSGroupset>& GetGroupsets();
 
-  const std::vector<LBSGroupset>& Groupsets() const;
+  const std::vector<LBSGroupset>& GetGroupsets() const;
 
   /// Adds a point source to the solver.
   void AddPointSource(std::shared_ptr<PointSource> point_source);
@@ -98,7 +98,7 @@ public:
   void ClearPointSources();
 
   /// Constant accessor to the list of point sources.
-  const std::vector<std::shared_ptr<PointSource>>& PointSources() const;
+  const std::vector<std::shared_ptr<PointSource>>& GetPointSources() const;
 
   /// Adds a volumetric source to the solver.
   void AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source);
@@ -107,9 +107,9 @@ public:
   void ClearVolumetricSources();
 
   /// Constant accessor to the list of volumetric sources.
-  const std::vector<std::shared_ptr<VolumetricSource>>& VolumetricSources() const;
+  const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
-  size_t& LastRestartTime();
+  size_t& GetLastRestartTime();
 
   /// Returns a reference to the map of material ids to XSs.
   const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
@@ -118,10 +118,10 @@ public:
   const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>& GetMatID2IsoSrcMap() const;
 
   /// Obtains a reference to the grid.
-  const MeshContinuum& Grid() const;
+  const MeshContinuum& GetGrid() const;
 
   /// Obtains a reference to the spatial discretization.
-  const class SpatialDiscretization& SpatialDiscretization() const;
+  const class SpatialDiscretization& GetSpatialDiscretization() const;
 
   /// Returns read-only access to the unit cell matrices.
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
@@ -133,61 +133,61 @@ public:
   const std::vector<CellLBSView>& GetCellTransportViews() const;
 
   /// Read/Write access to the boundary preferences.
-  std::map<uint64_t, BoundaryPreference>& BoundaryPreferences();
+  std::map<uint64_t, BoundaryPreference>& GetBoundaryPreferences();
 
   /// Obtains a reference to the unknown manager for flux-moments.
-  const class UnknownManager& UnknownManager() const;
+  const UnknownManager& GetUnknownManager() const;
 
   /// Returns the local node count for the flux-moments data structures.
-  size_t LocalNodeCount() const;
+  size_t GetLocalNodeCount() const;
 
   /// Returns the global node count for the flux-moments data structures.
-  size_t GlobalNodeCount() const;
+  size_t GetGlobalNodeCount() const;
 
   /// Read/write access to source moments vector.
-  std::vector<double>& QMomentsLocal();
+  std::vector<double>& GetQMomentsLocal();
 
   /// Read access to source moments vector.
-  const std::vector<double>& QMomentsLocal() const;
+  const std::vector<double>& GetQMomentsLocal() const;
 
   /// Read/write access to exterior src moments vector.
-  std::vector<double>& ExtSrcMomentsLocal();
+  std::vector<double>& GetExtSrcMomentsLocal();
 
   /// Read access to exterior src moments vector.
-  const std::vector<double>& ExtSrcMomentsLocal() const;
+  const std::vector<double>& GetExtSrcMomentsLocal() const;
 
   /// Read/write access to last updated flux vector.
-  std::vector<double>& PhiOldLocal();
+  std::vector<double>& GetPhiOldLocal();
 
   /// Read access to last updated flux vector.
-  const std::vector<double>& PhiOldLocal() const;
+  const std::vector<double>& GetPhiOldLocal() const;
 
   /// Read/write access to newest updated flux vector.
-  std::vector<double>& PhiNewLocal();
+  std::vector<double>& GetPhiNewLocal();
 
   /// Read access to newest updated flux vector.
-  const std::vector<double>& PhiNewLocal() const;
+  const std::vector<double>& GetPhiNewLocal() const;
 
   /// Read/write access to newest updated precursors vector.
-  std::vector<double>& PrecursorsNewLocal();
+  std::vector<double>& GetPrecursorsNewLocal();
 
   /// Read access to newest updated precursors vector.
-  const std::vector<double>& PrecursorsNewLocal() const;
+  const std::vector<double>& GetPrecursorsNewLocal() const;
 
   /// Read/write access to newest updated angular flux vector.
-  std::vector<std::vector<double>>& PsiNewLocal();
+  std::vector<std::vector<double>>& GetPsiNewLocal();
 
   /// Read access to newest updated angular flux vector.
-  const std::vector<std::vector<double>>& PsiNewLocal() const;
+  const std::vector<std::vector<double>>& GetPsiNewLocal() const;
 
   /// Read/write access to the cell-wise densities.
-  std::vector<double>& DensitiesLocal();
+  std::vector<double>& GetDensitiesLocal();
 
   /// Read access to the cell-wise densities.
-  const std::vector<double>& DensitiesLocal() const;
+  const std::vector<double>& GetDensitiesLocal() const;
 
   /// Returns the sweep boundaries as a read only reference
-  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& SweepBoundaries() const;
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 

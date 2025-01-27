@@ -57,7 +57,7 @@ AggregateNodalValuePostProcessor::Initialize()
                        "Attempted to access invalid field"
                        "function");
 
-  const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
+  const auto& grid = grid_field_function->GetSpatialDiscretization().GetGrid();
 
   const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
@@ -90,7 +90,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
   const auto& ref_ff = *grid_field_function;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -108,7 +108,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   {
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -156,7 +156,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
   else
     OpenSnLogicalError("Unsupported operation type \"" + operation_ + "\".");
 
-  const int event_code = event_context.Code();
+  const int event_code = event_context.GetCode();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     const auto& event_params = event_context.Parameters();

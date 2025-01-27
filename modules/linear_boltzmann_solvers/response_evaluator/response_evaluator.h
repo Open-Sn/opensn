@@ -69,16 +69,16 @@ private:
 public:
   explicit ResponseEvaluator(const InputParameters& params);
 
-  static InputParameters OptionsBlock();
+  static InputParameters GetOptionsBlock();
   void SetOptions(const InputParameters& params);
 
-  static InputParameters BufferOptionsBlock();
+  static InputParameters GetBufferOptionsBlock();
   void SetBufferOptions(const InputParameters& params);
 
-  static InputParameters SourceOptionsBlock();
+  static InputParameters GetSourceOptionsBlock();
   void SetSourceOptions(const InputParameters& params);
 
-  static InputParameters MaterialSourceOptionsBlock();
+  static InputParameters GetMaterialSourceOptionsBlock();
   void SetMaterialSourceOptions(const InputParameters& params);
 
   void SetBoundarySourceOptions(const InputParameters& params);

@@ -37,19 +37,19 @@ public:
   };
 
   /// Returns the name of the post-processors.
-  const std::string& Name() const;
+  const std::string& GetName() const;
 
   /**
    *Returns the type of the post-processors. This is the generic type SCALAR, VECTOR, etc. not the
    * c++ type.
    */
-  PPType Type() const;
+  PPType GetType() const;
 
   /// Returns the numeric format of the post-processor for printing.
-  PPNumericFormat NumericFormat() const;
+  PPNumericFormat GetNumericFormat() const;
 
   /// Returns the numeric precision of the post-processor for printing.
-  size_t NumericPrecision() const;
+  size_t GetNumericPrecision() const;
 
   /**
    * Calls the base Object's method and adds a subscription to `opensn::PhysicsEventPublisher`

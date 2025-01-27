@@ -9,7 +9,7 @@ namespace opensn
 {
 
 size_t
-GridFaceHistogram::NumberOfFaceHistogramBins() const
+GridFaceHistogram::GetNumberOfFaceHistogramBins() const
 {
   return face_categories_.size();
 }

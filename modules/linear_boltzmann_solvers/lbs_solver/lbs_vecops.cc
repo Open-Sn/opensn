@@ -13,9 +13,9 @@ LBSVecOps::GroupsetScopedCopy(LBSSolver& lbs_solver, int gsi, int gss, Functor&&
 {
   CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
 
-  auto& grid = lbs_solver.Grid();
+  auto& grid = lbs_solver.GetGrid();
   auto& cell_transport_views = lbs_solver.GetCellTransportViews();
-  auto num_moments = lbs_solver.NumMoments();
+  auto num_moments = lbs_solver.GetNumMoments();
 
   int64_t idx = -1;
   for (const auto& cell : grid.local_cells)
@@ -43,11 +43,11 @@ LBSVecOps::SetPhiVectorScalarValues(LBSSolver& lbs_solver, PhiSTLOption phi_opt,
   CALI_CXX_MARK_SCOPE("LBSVecOps::SetPhiVectorScalarValues");
 
   auto& phi =
-    (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
-  auto& grid = lbs_solver.Grid();
-  auto& groups = lbs_solver.Groups();
-  auto& sdm = lbs_solver.SpatialDiscretization();
-  auto& unknown_manager = lbs_solver.UnknownManager();
+    (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
+  auto& grid = lbs_solver.GetGrid();
+  auto& groups = lbs_solver.GetGroups();
+  auto& sdm = lbs_solver.GetSpatialDiscretization();
+  auto& unknown_manager = lbs_solver.GetUnknownManager();
 
   const size_t first_grp = groups.front().id;
   const size_t final_grp = groups.back().id;
@@ -55,7 +55,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSSolver& lbs_solver, PhiSTLOption phi_opt,
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -71,8 +71,8 @@ LBSVecOps::ScalePhiVector(LBSSolver& lbs_solver, PhiSTLOption phi_opt, double va
   CALI_CXX_MARK_SCOPE("LBSVecOps::ScalePhiVector");
 
   auto& phi =
-    (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
-  auto& groupsets = lbs_solver.Groupsets();
+    (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
+  auto& groupsets = lbs_solver.GetGroupsets();
 
   Scale(phi, value);
   for (auto& groupset : groupsets)
@@ -102,7 +102,7 @@ LBSVecOps::SetGSPETScVecFromPrimarySTLvector(LBSSolver& lbs_solver,
                                              PhiSTLOption src)
 {
   const auto& src_phi =
-    (src == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
+    (src == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
   double* petsc_dest;
   VecGetArray(dest, &petsc_dest);
   int64_t index = GroupsetScopedCopy(lbs_solver,
@@ -127,7 +127,7 @@ LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(LBSSolver& lbs_solver,
                                              PhiSTLOption dest)
 {
   auto& dest_phi =
-    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
+    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
   const double* petsc_src;
   VecGetArrayRead(src, &petsc_src);
   int64_t index = GroupsetScopedCopy(lbs_solver,
@@ -166,7 +166,7 @@ LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
   LBSSolver& lbs_solver, int first_group_id, int last_group_id, Vec src, PhiSTLOption dest)
 {
   auto& dest_phi =
-    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
+    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
   const double* petsc_src;
   VecGetArrayRead(src, &petsc_src);
   GroupsetScopedCopy(lbs_solver,
@@ -196,9 +196,9 @@ LBSVecOps::GSScopedCopyPrimarySTLvectors(LBSSolver& lbs_solver,
                                          PhiSTLOption dest)
 {
   const auto& src_phi =
-    (src == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
+    (src == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
   auto& dest_phi =
-    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
+    (dest == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal() : lbs_solver.GetPhiOldLocal();
   int64_t index = GroupsetScopedCopy(lbs_solver,
                                      groupset.groups.front().id,
                                      groupset.groups.size(),
@@ -219,9 +219,9 @@ LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSSolver& lbs_solver,
                                                   Vec x,
                                                   PhiSTLOption which_phi)
 {
-  auto& y =
-    (which_phi == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
-  auto& groupsets = lbs_solver.Groupsets();
+  auto& y = (which_phi == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal()
+                                                 : lbs_solver.GetPhiOldLocal();
+  auto& groupsets = lbs_solver.GetGroupsets();
   double* x_ref;
   VecGetArray(x, &x_ref);
 
@@ -252,9 +252,9 @@ LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(LBSSolver& lbs_solver,
                                                   Vec x,
                                                   PhiSTLOption which_phi)
 {
-  auto& y =
-    (which_phi == PhiSTLOption::PHI_NEW) ? lbs_solver.PhiNewLocal() : lbs_solver.PhiOldLocal();
-  auto& groupsets = lbs_solver.Groupsets();
+  auto& y = (which_phi == PhiSTLOption::PHI_NEW) ? lbs_solver.GetPhiNewLocal()
+                                                 : lbs_solver.GetPhiOldLocal();
+  auto& groupsets = lbs_solver.GetGroupsets();
   const double* x_ref;
   VecGetArrayRead(x, &x_ref);
 

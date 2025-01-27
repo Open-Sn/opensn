@@ -90,7 +90,7 @@ public:
   static ObjectFactory& GetInstance() noexcept;
 
   /// Returns a constant reference to the object registry.
-  const std::map<std::string, ObjectRegistryEntry>& Registry() const;
+  const std::map<std::string, ObjectRegistryEntry>& GetRegistry() const;
 
   /// Checks if the object registry has a specific text key.
   bool RegistryHasKey(const std::string& key) const;

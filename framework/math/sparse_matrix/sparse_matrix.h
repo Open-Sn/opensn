@@ -33,8 +33,8 @@ public:
   /// Copy constructor.
   SparseMatrix(const SparseMatrix& matrix);
 
-  size_t NumRows() const { return row_size_; }
-  size_t NumCols() const { return col_size_; }
+  size_t GetNumRows() const { return row_size_; }
+  size_t GetNumCols() const { return col_size_; }
 
   /// Inserts a value into the matrix.
   void Insert(size_t i, size_t j, double value);
@@ -46,7 +46,7 @@ public:
    * Returns the value in the matrix at the given location. This is a rather inefficient routine.
    * Use the columns and values rather than directly this function.
    */
-  double ValueIJ(size_t i, size_t j) const;
+  double GetValueIJ(size_t i, size_t j) const;
 
   /// Sets the diagonal of the matrix using a vector.
   void SetDiagonal(const std::vector<double>& diag);

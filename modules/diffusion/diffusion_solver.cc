@@ -28,7 +28,7 @@ DiffusionSolverBase::GetInputParameters()
 }
 
 InputParameters
-DiffusionSolverBase::OptionsBlock()
+DiffusionSolverBase::GetOptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -38,7 +38,7 @@ DiffusionSolverBase::OptionsBlock()
 }
 
 InputParameters
-DiffusionSolverBase::BoundaryOptionsBlock()
+DiffusionSolverBase::GetBoundaryOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Set options for boundary conditions");
@@ -86,8 +86,8 @@ DiffusionSolverBase::InitFieldFunctions()
   if (field_functions_.empty())
   {
     std::string solver_name;
-    if (not Name().empty())
-      solver_name = Name() + "-";
+    if (not GetName().empty())
+      solver_name = GetName() + "-";
 
     std::string name = solver_name + "phi";
 

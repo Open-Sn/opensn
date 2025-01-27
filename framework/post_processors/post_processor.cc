@@ -93,24 +93,24 @@ PostProcessor::ConstructNumericFormat(const std::string& format_string)
 }
 
 const std::string&
-PostProcessor::Name() const
+PostProcessor::GetName() const
 {
   return name_;
 }
 PPType
-PostProcessor::Type() const
+PostProcessor::GetType() const
 {
   return type_;
 }
 
 PPNumericFormat
-PostProcessor::NumericFormat() const
+PostProcessor::GetNumericFormat() const
 {
   return print_numeric_format_;
 }
 
 size_t
-PostProcessor::NumericPrecision() const
+PostProcessor::GetNumericPrecision() const
 {
   return print_precision_;
 }
@@ -136,8 +136,9 @@ PostProcessor::PushOntoStack(std::shared_ptr<Object> new_object)
 void
 PostProcessor::ReceiveEventUpdate(const Event& event)
 {
-  auto it = std::find(
-    subscribed_events_for_execution_.begin(), subscribed_events_for_execution_.end(), event.Name());
+  auto it = std::find(subscribed_events_for_execution_.begin(),
+                      subscribed_events_for_execution_.end(),
+                      event.GetName());
 
   if (it != subscribed_events_for_execution_.end())
   {
@@ -149,10 +150,10 @@ PostProcessor::ReceiveEventUpdate(const Event& event)
 
     Execute(event);
     if (log.GetVerbosity() >= 1)
-      log.Log0Verbose1() << "Post processor \"" << Name()
+      log.Log0Verbose1() << "Post processor \"" << GetName()
                          << "\" executed on "
                             "event \""
-                         << event.Name() << "\".";
+                         << event.GetName() << "\".";
   }
 }
 
@@ -178,16 +179,16 @@ std::string
 PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
 {
   std::string value_string;
-  if (value.Type() == ParameterBlockType::BOOLEAN)
+  if (value.GetType() == ParameterBlockType::BOOLEAN)
   {
     value_string = value.GetValue<bool>() ? "true" : "false";
   }
-  else if (value.Type() == ParameterBlockType::FLOAT)
+  else if (value.GetType() == ParameterBlockType::FLOAT)
   {
     const auto dblval = value.GetValue<double>();
     char buffer[30];
-    const auto numeric_format = NumericFormat();
-    const size_t precision = NumericPrecision();
+    const auto numeric_format = GetNumericFormat();
+    const size_t precision = GetNumericPrecision();
     if (numeric_format == PPNumericFormat::SCIENTIFIC)
     {
       const std::string format_spec = "%." + std::to_string(precision) + "e";
@@ -219,11 +220,11 @@ PostProcessor::ConvertScalarValueToString(const ParameterBlock& value) const
 
     value_string = buffer;
   }
-  else if (value.Type() == ParameterBlockType::STRING)
+  else if (value.GetType() == ParameterBlockType::STRING)
   {
     value_string = value.GetValue<std::string>();
   }
-  else if (value.Type() == ParameterBlockType::INTEGER)
+  else if (value.GetType() == ParameterBlockType::INTEGER)
   {
     const auto intval = value.GetValue<int64_t>();
     char buffer[30];
@@ -242,21 +243,21 @@ PostProcessor::ConvertValueToString(const ParameterBlock& value) const
     return ConvertScalarValueToString(value);
   else if (type == PPType::VECTOR)
   {
-    if (value.NumParameters() == 0)
+    if (value.GetNumParameters() == 0)
       return "";
     const auto& first_entry = value.GetParam(0);
-    const auto first_entry_type = first_entry.Type();
+    const auto first_entry_type = first_entry.GetType();
 
     OpenSnLogicalErrorIf(FigureTypeFromValue(first_entry) != PPType::SCALAR,
-                         "The entries of the vector value of post-processor \"" + Name() +
+                         "The entries of the vector value of post-processor \"" + GetName() +
                            "\" must all be SCALAR.");
 
     std::string output;
     for (const auto& entry : value)
     {
-      OpenSnLogicalErrorIf(entry.Type() != first_entry_type,
+      OpenSnLogicalErrorIf(entry.GetType() != first_entry_type,
                            "Mixed typed encountered in the vector values of post-processor \"" +
-                             Name() + "\"");
+                             GetName() + "\"");
       output.append(ConvertScalarValueToString(entry) + " ");
     }
 
@@ -283,23 +284,23 @@ PostProcessor::FigureTypeFromValue(const ParameterBlock& value)
   auto IsScalar = [&scalar_types](const ParameterBlockType& block_type)
   { return std::find(scalar_types.begin(), scalar_types.end(), block_type) != scalar_types.end(); };
 
-  if (not value.HasValue() and value.NumParameters() == 0)
+  if (not value.HasValue() and value.GetNumParameters() == 0)
     return PPType::NO_VALUE;
-  else if (IsScalar(value.Type()))
+  else if (IsScalar(value.GetType()))
     return PPType::SCALAR;
-  else if (value.Type() == ParameterBlockType::ARRAY)
+  else if (value.GetType() == ParameterBlockType::ARRAY)
   {
-    if (value.NumParameters() == 0)
+    if (value.GetNumParameters() == 0)
       return PPType::NO_VALUE;
     else
     {
-      if (IsScalar(value.GetParam(0).Type()))
+      if (IsScalar(value.GetParam(0).GetType()))
         return PPType::VECTOR;
       else
         return PPType::ARBITRARY;
     }
   }
-  else if (value.Type() == ParameterBlockType::BLOCK)
+  else if (value.GetType() == ParameterBlockType::BLOCK)
     return PPType::ARBITRARY;
   else
     OpenSnLogicalError("Unsupported type");

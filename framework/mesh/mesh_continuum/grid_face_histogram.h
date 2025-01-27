@@ -22,7 +22,7 @@ public:
   }
 
   /// Returns the number of bins.
-  size_t NumberOfFaceHistogramBins() const;
+  size_t GetNumberOfFaceHistogramBins() const;
 
   /// Finds which bin holds the given number of vertices
   size_t MapFaceHistogramBins(size_t num_face_verts) const;

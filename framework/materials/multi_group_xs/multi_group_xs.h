@@ -63,11 +63,11 @@ public:
    */
   void ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
 
-  size_t NumGroups() const { return num_groups_; }
+  size_t GetNumGroups() const { return num_groups_; }
 
-  size_t ScatteringOrder() const { return scattering_order_; }
+  size_t GetScatteringOrder() const { return scattering_order_; }
 
-  size_t NumPrecursors() const { return num_precursors_; }
+  size_t GetNumPrecursors() const { return num_precursors_; }
 
   bool IsFissionable() const { return is_fissionable_; }
 
@@ -80,50 +80,50 @@ public:
 
   bool GetAdjointMode() const { return adjoint_; }
 
-  double ScalingFactor() const { return scaling_factor_; }
+  double GetScalingFactor() const { return scaling_factor_; }
 
-  const std::vector<double>& SigmaTotal() const { return sigma_t_; }
+  const std::vector<double>& GetSigmaTotal() const { return sigma_t_; }
 
-  const std::vector<double>& SigmaAbsorption() const { return sigma_a_; }
+  const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
 
-  const std::vector<SparseMatrix>& TransferMatrices() const
+  const std::vector<SparseMatrix>& GetTransferMatrices() const
   {
     return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
   }
 
-  const SparseMatrix& TransferMatrix(unsigned int ell) const
+  const SparseMatrix& GetTransferMatrix(unsigned int ell) const
   {
     return adjoint_ ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
   }
 
-  const std::vector<double>& Chi() const { return chi_; }
+  const std::vector<double>& GetChi() const { return chi_; }
 
-  const std::vector<double>& SigmaFission() const { return sigma_f_; }
+  const std::vector<double>& GetSigmaFission() const { return sigma_f_; }
 
-  const std::vector<double>& NuSigmaF() const { return nu_sigma_f_; }
+  const std::vector<double>& GetNuSigmaF() const { return nu_sigma_f_; }
 
-  const std::vector<double>& NuPromptSigmaF() const { return nu_prompt_sigma_f_; }
+  const std::vector<double>& GetNuPromptSigmaF() const { return nu_prompt_sigma_f_; }
 
-  const std::vector<double>& NuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
+  const std::vector<double>& GetNuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
 
-  const std::vector<std::vector<double>>& ProductionMatrix() const
+  const std::vector<std::vector<double>>& GetProductionMatrix() const
   {
     return adjoint_ ? transposed_production_matrix_ : production_matrix_;
   }
 
-  const std::vector<Precursor>& Precursors() const { return precursors_; }
+  const std::vector<Precursor>& GetPrecursors() const { return precursors_; }
 
-  const std::vector<double>& InverseVelocity() const { return inv_velocity_; }
+  const std::vector<double>& GetInverseVelocity() const { return inv_velocity_; }
 
   bool DiffusionInitialized() const { return diffusion_initialized_; }
 
-  const std::vector<double>& SigmaTransport() const { return sigma_tr_; }
+  const std::vector<double>& GetSigmaTransport() const { return sigma_tr_; }
 
-  const std::vector<double>& DiffusionCoefficient() const { return diffusion_coeff_; }
+  const std::vector<double>& GetDiffusionCoefficient() const { return diffusion_coeff_; }
 
-  const std::vector<double>& SigmaRemoval() const { return sigma_r_; }
+  const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }
 
-  const std::vector<double>& SigmaSGtoG() const { return sigma_s_gtog_; }
+  const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
 
 private:
   /// Total number of groups

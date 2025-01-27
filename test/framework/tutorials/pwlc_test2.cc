@@ -70,7 +70,7 @@ SimTest04_PWLC()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
 
@@ -79,14 +79,14 @@ SimTest04_PWLC()
       for (size_t j = 0; j < num_nodes; ++j)
       {
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij +=
             fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) * fe_vol_data.JxW(qp);
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
       {
         double res = MMS_q(fe_vol_data.QPointXYZ(qp))[0];
         cell_rhs(i) += res * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -190,7 +190,7 @@ SimTest04_PWLC()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // Grab nodal phi values
@@ -202,7 +202,7 @@ SimTest04_PWLC()
     } // for j
 
     // Quadrature loop
-    for (size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       double phi_fem = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)

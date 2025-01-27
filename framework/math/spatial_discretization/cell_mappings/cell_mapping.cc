@@ -37,13 +37,13 @@ CellMapping::ReferenceGrid() const
 }
 
 size_t
-CellMapping::NumNodes() const
+CellMapping::GetNumNodes() const
 {
   return num_nodes_;
 }
 
 size_t
-CellMapping::NumFaceNodes(size_t face_index) const
+CellMapping::GetNumFaceNodes(size_t face_index) const
 {
   return face_node_mappings_.at(face_index).size();
 }
@@ -55,13 +55,13 @@ CellMapping::GetFaceNodeMappings() const
 }
 
 double
-CellMapping::CellVolume() const
+CellMapping::GetCellVolume() const
 {
   return volume_;
 }
 
 double
-CellMapping::FaceArea(size_t face_index) const
+CellMapping::GetFaceArea(size_t face_index) const
 {
   return areas_[face_index];
 }
@@ -86,7 +86,7 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
                                        double& volume,
                                        std::vector<double>& areas)
 {
-  switch (cell.Type())
+  switch (cell.GetType())
   {
     case CellType::SLAB:
     {

@@ -18,7 +18,7 @@ public:
   static InputParameters GetInputParameters();
   explicit TimeIntegration(const InputParameters& params);
 
-  SteppingMethod Method() const;
+  SteppingMethod GetMethod() const;
 
   virtual ~TimeIntegration() = default;
 };

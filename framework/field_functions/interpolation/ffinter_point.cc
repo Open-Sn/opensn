@@ -28,7 +28,7 @@ FieldFunctionInterpolationPoint::Initialize()
   if (field_functions_.empty())
     throw std::logic_error("Unassigned field function in point field function interpolator.");
 
-  const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
+  const auto& grid = field_functions_.front()->GetSpatialDiscretization().GetGrid();
   std::vector<uint64_t> cells_potentially_owning_point;
   for (const auto& cell : grid.local_cells)
   {
@@ -71,7 +71,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto& ref_ff = *field_functions_.front();
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -81,7 +81,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto& cell = grid.cells[owning_cell_gid_];
   const auto& cell_mapping = sdm.GetCellMapping(cell);
-  const size_t num_nodes = cell_mapping.NumNodes();
+  const size_t num_nodes = cell_mapping.GetNumNodes();
 
   std::vector<double> node_dof_values(num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)

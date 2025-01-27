@@ -28,11 +28,11 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
   bool intersection_found = false;
   bool backward_tolerance_hit = false;
 
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     TraceSlab(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
     TracePolygon(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
     TracePolyhedron(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else
     throw std::logic_error("Unsupported cell type encountered in call to "
@@ -122,7 +122,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
 RayTracerOutputInformation
 RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i)
 {
-  const auto cell_type = cell.Type();
+  const auto cell_type = cell.GetType();
   const double cell_char_length = cell_sizes_[cell.local_id];
   const auto& grid = reference_grid_;
 
@@ -612,7 +612,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
   // centroid vc.
   // Since the triangles all share an edge we only determine
   // segment lengths from the strip defined by v0 to vc.
-  if (cell.Type() == CellType::POLYGON)
+  if (cell.GetType() == CellType::POLYGON)
   {
     for (auto& face : cell.faces) // edges
     {
@@ -634,7 +634,7 @@ PopulateRaySegmentLengths(const MeshContinuum& grid,
 
     } // for face
   }
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     auto& vcc = cell.centroid;
 

@@ -77,7 +77,7 @@ PowerIterationKEigenSMM::Create(const ParameterBlock& params)
 PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
   : PowerIterationKEigen(params),
     dimension_(0),
-    psi_new_local_(lbs_solver_->PsiNewLocal()),
+    psi_new_local_(lbs_solver_->GetPsiNewLocal()),
     accel_pi_max_its_(params.GetParamValue<unsigned int>("accel_pi_max_its")),
     accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
     accel_pi_verbose_(params.GetParamValue<bool>("accel_pi_verbose")),
@@ -88,8 +88,8 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
     diffusion_verbose_(params.GetParamValue<bool>("diff_verbose"))
 {
   ghosts_required_ = diffusion_sdm_name_ == "pwlc";
-  lbs_solver_->Options().save_angular_flux = true;
-  if (lbs_solver_->Groupsets().size() != 1)
+  lbs_solver_->GetOptions().save_angular_flux = true;
+  if (lbs_solver_->GetGroupsets().size() != 1)
     throw std::logic_error("The SMM k-eigenvalue executor is only implemented for "
                            "problems with a single groupset.");
 
@@ -97,7 +97,7 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
   // to get rid of the junk in the unconverged lagged angular fluxes.  Five
   // sweeps is a guess at how many initial sweeps are necessary.
   auto lbs_solver = std::dynamic_pointer_cast<DiscreteOrdinatesSolver>(lbs_solver_);
-  if (lbs_solver->SweepType() == "AAH" and front_gs_.max_iterations == 1)
+  if (lbs_solver->GetSweepType() == "AAH" and front_gs_.max_iterations == 1)
     throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
                            "the presence of lagged angular fluxes.  Multiple sweeps are "
                            "allowed, however, the number of sweeps required to get sensible "
@@ -110,14 +110,14 @@ PowerIterationKEigenSMM::Initialize()
   PowerIterationKEigen::Initialize();
 
   // Shorthand information
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& phi_uk_man = lbs_solver_->UnknownManager();
-  const auto num_groups = lbs_solver_->NumGroups();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
+  const auto& phi_uk_man = lbs_solver_->GetUnknownManager();
+  const auto num_groups = lbs_solver_->GetNumGroups();
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Specialized SMM data
-  dimension_ = lbs_solver_->Grid().Dimension();
+  dimension_ = lbs_solver_->GetGrid().GetDimension();
   ComputeAuxiliaryUnitCellMatrices();
   ComputeBoundaryFactors();
 
@@ -142,12 +142,12 @@ PowerIterationKEigenSMM::Initialize()
   UnknownManager diff_uk_man;
   diff_uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
-  for (const auto& [bid, bc] : lbs_solver_->BoundaryPreferences())
+  for (const auto& [bid, bc] : lbs_solver_->GetBoundaryPreferences())
     if ((bc.type == LBSBoundaryType::ISOTROPIC) or (bc.type == LBSBoundaryType::ARBITRARY))
       throw std::logic_error("Only vacuum and reflective boundaries are valid for "
                              "k-eigenvalue problems.");
 
-  const auto bcs = TranslateBCs(lbs_solver_->SweepBoundaries(), false);
+  const auto bcs = TranslateBCs(lbs_solver_->GetSweepBoundaries(), false);
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
@@ -158,7 +158,7 @@ PowerIterationKEigenSMM::Initialize()
   auto& diff_solver = diffusion_solver_;
   if (diffusion_sdm_name_ == "pwld")
   {
-    diff_solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_SMM"),
+    diff_solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_SMM"),
                                                        pwld,
                                                        diff_uk_man,
                                                        bcs,
@@ -169,7 +169,7 @@ PowerIterationKEigenSMM::Initialize()
   }
   else
   {
-    diff_solver = std::make_shared<DiffusionPWLCSolver>(std::string(Name() + "_SMM"),
+    diff_solver = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_SMM"),
                                                         *pwlc_ptr_,
                                                         diff_uk_man,
                                                         bcs,
@@ -302,7 +302,7 @@ PowerIterationKEigenSMM::Execute()
     LBSVecOps::GSScopedCopyPrimarySTLvectors(*lbs_solver_, front_gs_, phi_new_local_, phi_ell);
     ++nit;
 
-    if (lbs_solver_->Options().verbose_outer_iterations)
+    if (lbs_solver_->GetOptions().verbose_outer_iterations)
     {
       std::stringstream ss;
       ss << program_timer.GetTimeString() << " "
@@ -324,10 +324,10 @@ PowerIterationKEigenSMM::Execute()
             << " (Number of Sweeps:" << front_wgs_context_->counter_applications_of_inv_op << ")"
             << "\n";
 
-  if (lbs_solver_->Options().use_precursors)
+  if (lbs_solver_->GetOptions().use_precursors)
   {
     lbs_solver_->ComputePrecursors();
-    Scale(lbs_solver_->PrecursorsNewLocal(), 1.0 / k_eff_);
+    Scale(lbs_solver_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
   lbs_solver_->UpdateFieldFunctions();
@@ -336,8 +336,8 @@ PowerIterationKEigenSMM::Execute()
 void
 PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>& psi)
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
   const auto& transport_views = lbs_solver_->GetCellTransportViews();
 
   // Create a local tensor vector, set it to zero
@@ -346,7 +346,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
 
   // Loop over groupsets
   int gs = 0;
-  for (const auto& groupset : lbs_solver_->Groupsets())
+  for (const auto& groupset : lbs_solver_->GetGroupsets())
   {
     const auto& psi_uk_man = groupset.psi_uk_man_;
     const auto& quad = groupset.quadrature;
@@ -362,7 +362,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
       // Compute node-wise, groupset wise tensors
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         for (int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
@@ -402,7 +402,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
       {
         if (not face.has_neighbor)
         {
-          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
           for (int fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -410,7 +410,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
             const auto bfac = bndry_factors_[imap][gs];
 
             // Reset boundary closures
-            betas_[imap].assign(lbs_solver_->NumGroups(), 0.0);
+            betas_[imap].assign(lbs_solver_->GetNumGroups(), 0.0);
             auto& beta = betas_[imap];
 
             // Compute the boundary closure
@@ -446,13 +446,13 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
 std::vector<double>
 PowerIterationKEigenSMM::ComputeSourceCorrection() const
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
   const auto& matid_to_xs_map = lbs_solver_->GetMatID2XSMap();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -466,17 +466,17 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
   // Build the source
   for (const auto& cell : grid.local_cells)
   {
-    const auto& rho = lbs_solver_->DensitiesLocal()[cell.local_id];
+    const auto& rho = lbs_solver_->GetDensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto nodes = cell_mapping.GetNodeLocations();
-    const auto num_cell_nodes = cell_mapping.NumNodes();
+    const auto num_cell_nodes = cell_mapping.GetNumNodes();
     const auto num_cell_faces = cell.faces.size();
 
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& K = K_tensor_matrices_[cell.local_id];
 
     const auto& xs = matid_to_xs_map.at(cell.material_id);
-    const auto& sigma_tr = xs->SigmaTransport();
+    const auto& sigma_tr = xs->GetSigmaTransport();
 
     // Volumetric term
     for (int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -522,7 +522,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       const auto& face = cell.faces[f];
       const auto& normal = face.normal;
       const auto& face_G = fe_values.intS_shapeI_gradshapeJ[f];
-      const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
       // Interior face terms
       if (face.has_neighbor)
@@ -633,8 +633,8 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id) == 1)
-          bc = diffusion_solver_->BCS().at(face.neighbor_id);
+        if (diffusion_solver_->GetBCS().count(face.neighbor_id) == 1)
+          bc = diffusion_solver_->GetBCS().at(face.neighbor_id);
 
         // Contribute the boundary closure term to the diffusion source term.
         // This term is the sum of the integrated incident and outgoing
@@ -678,12 +678,12 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
 void
 PowerIterationKEigenSMM::AssembleDiffusionBCs() const
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto num_gs_groups = front_gs_.groups.size();
 
@@ -703,8 +703,8 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
       if (not face.has_neighbor)
       {
         BoundaryCondition bc;
-        if (diffusion_solver_->BCS().count(face.neighbor_id))
-          bc = diffusion_solver_->BCS().at(face.neighbor_id);
+        if (diffusion_solver_->GetBCS().count(face.neighbor_id))
+          bc = diffusion_solver_->GetBCS().at(face.neighbor_id);
 
         if (bc.type == BCType::ROBIN)
         {
@@ -714,7 +714,7 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
 
           const auto& face_M = fe_values.intS_shapeI_shapeJ[f];
 
-          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
           for (int fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -750,13 +750,13 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
 std::vector<double>
 PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) const
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& uk_man = lbs_solver_->UnknownManager();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
+  const auto& uk_man = lbs_solver_->GetUnknownManager();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
 
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -776,7 +776,7 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
   {
     const auto& M = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto num_cell_nodes = cell_mapping.NumNodes();
+    const auto num_cell_nodes = cell_mapping.GetNumNodes();
     for (int gsg = 0; gsg < num_gs_groups; ++gsg)
     {
       const auto g = first_grp + gsg;
@@ -802,8 +802,8 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
 std::vector<double>
 PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double>& phi0) const
 {
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                     : diff_sd.GetNumLocalDOFs(diff_uk_man);
 
@@ -824,8 +824,8 @@ PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double
 std::vector<double>
 PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double>& phi0) const
 {
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto num_local_diff_dofs = ghosts_required_ ? diff_sd.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                     : diff_sd.GetNumLocalDOFs(diff_uk_man);
 
@@ -849,7 +849,7 @@ PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double
 void
 PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
 {
-  const auto& discretization = lbs_solver_->SpatialDiscretization();
+  const auto& discretization = lbs_solver_->GetSpatialDiscretization();
 
   // Spatial weight functions
   struct SpatialWeightFunction
@@ -869,19 +869,19 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
   };
 
   auto swf = std::make_shared<SpatialWeightFunction>();
-  const auto geom_type = lbs_solver_->Options().geometry_type;
+  const auto geom_type = lbs_solver_->GetOptions().geometry_type;
   if (geom_type == GeometryType::ONED_SPHERICAL)
     swf = std::make_shared<SphericalWeightFunction>();
   else if (geom_type == GeometryType::TWOD_CYLINDRICAL)
     swf = std::make_shared<CylindricalWeightFunction>();
 
   // Compute integrals
-  const auto num_local_cells = lbs_solver_->Grid().local_cells.size();
+  const auto num_local_cells = lbs_solver_->GetGrid().local_cells.size();
   K_tensor_matrices_.resize(num_local_cells);
-  for (const auto& cell : lbs_solver_->Grid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
   {
     const auto& cell_mapping = discretization.GetCellMapping(cell);
-    const auto num_cell_nodes = cell_mapping.NumNodes();
+    const auto num_cell_nodes = cell_mapping.GetNumNodes();
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     NDArray<double, 4> K(
@@ -891,7 +891,7 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
       {
         for (int k = 0; k < dimension_; ++k)
           for (int l = 0; l < dimension_; ++l)
-            for (const auto& qp : qp_data.QuadraturePointIndices())
+            for (const auto& qp : qp_data.GetQuadraturePointIndices())
               K(i, j, k, l) += (*swf)(qp_data.QPointXYZ(qp)) *
                                qp_data.ShapeGrad(i, qp)[dimension_ > 1 ? k : 2] *
                                qp_data.ShapeGrad(j, qp)[dimension_ > 1 ? l : 2] * qp_data.JxW(qp);
@@ -907,13 +907,13 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
 void
 PowerIterationKEigenSMM::ComputeBoundaryFactors()
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto num_groupsets = lbs_solver_->Groupsets().size();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
+  const auto num_groupsets = lbs_solver_->GetGroupsets().size();
 
   // Loop over groupsets
   int gs = 0;
-  for (const auto& groupset : lbs_solver_->Groupsets())
+  for (const auto& groupset : lbs_solver_->GetGroupsets())
   {
     const auto& quad = groupset.quadrature;
     const auto num_gs_dirs = quad->omegas.size();
@@ -928,7 +928,7 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
       int f = 0;
       for (const auto& face : cell.faces)
       {
-        const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (int fi = 0; fi < num_face_nodes; ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -955,12 +955,12 @@ void
 PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>& input,
                                                       std::vector<double>& output) const
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
 
-  const auto& phi_uk_man = lbs_solver_->UnknownManager();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& phi_uk_man = lbs_solver_->GetUnknownManager();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -989,7 +989,7 @@ PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>&
     // This is the same for PWLC and PWLD, so only this is needed
     const auto& cell_mapping = pwld.GetCellMapping(cell);
 
-    for (int i = 0; i < cell_mapping.NumNodes(); ++i)
+    for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const auto input_dof_map = pwld.MapDOFLocal(cell, i, phi_uk_man, 0, first_grp);
       const auto output_dof_map = diff_sd.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
@@ -1002,12 +1002,12 @@ void
 PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>& input,
                                                       std::vector<double>& output) const
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& pwld = lbs_solver_->SpatialDiscretization();
-  const auto& diff_sd = diffusion_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& pwld = lbs_solver_->GetSpatialDiscretization();
+  const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
 
-  const auto& uk_man = lbs_solver_->UnknownManager();
-  const auto& diff_uk_man = diffusion_solver_->UnknownStructure();
+  const auto& uk_man = lbs_solver_->GetUnknownManager();
+  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -1027,7 +1027,7 @@ PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>&
   {
     // This is the same for PWLC and PWLD, so only this is needed
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto num_cell_nodes = cell_mapping.NumNodes();
+    const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
     for (int i = 0; i < num_cell_nodes; ++i)
     {
@@ -1042,9 +1042,9 @@ double
 PowerIterationKEigenSMM::CheckScalarFluxConvergence(const std::vector<double>& phi_new,
                                                     const std::vector<double>& phi_old)
 {
-  const auto& grid = lbs_solver_->Grid();
-  const auto& sdm = lbs_solver_->SpatialDiscretization();
-  const auto& uk_man = lbs_solver_->UnknownManager();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& sdm = lbs_solver_->GetSpatialDiscretization();
+  const auto& uk_man = lbs_solver_->GetUnknownManager();
 
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
@@ -1053,7 +1053,7 @@ PowerIterationKEigenSMM::CheckScalarFluxConvergence(const std::vector<double>& p
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const auto num_cell_nodes = cell_mapping.NumNodes();
+    const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
     for (int i = 0; i < num_cell_nodes; ++i)
       for (int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -1084,7 +1084,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   auto ghosted_pwld_vector = ghost_comm->MakeGhostedVector(pwld_vector);
   ghost_comm->CommunicateGhostEntries(ghosted_pwld_vector);
 
-  const auto& grid = pwld.Grid();
+  const auto& grid = pwld.GetGrid();
   const auto num_local_pwlc_dofs = pwlc.GetNumLocalAndGhostDOFs(uk_man);
 
   // Map a PWLD vector to a PWLC vector by summing all PWLD DoFs into
@@ -1102,8 +1102,8 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     // added into a PWLC DoF, a counter for that DoF is incremented so
     // that the PWLC DoFs can later be averaged.
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& vol = cell_mapping.CellVolume();
-    for (int i = 0; i < cell_mapping.NumNodes(); ++i)
+    const auto& vol = cell_mapping.GetCellVolume();
+    for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.unknowns.size(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
         {
@@ -1133,9 +1133,9 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   {
     const auto& cell = grid.cells[global_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& vol = cell_mapping.CellVolume();
+    const auto& vol = cell_mapping.GetCellVolume();
 
-    for (int i = 0; i < cell_mapping.NumNodes(); ++i)
+    for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       if (pvids.find(cell.vertex_ids[i]) != pvids.end())
         for (int u = 0; u < uk_man.unknowns.size(); ++u)
           for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
@@ -1162,7 +1162,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    for (int i = 0; i < cell_mapping.NumNodes(); ++i)
+    for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.unknowns.size(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
         {
@@ -1179,14 +1179,14 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
                                               const UnknownManager& uk_man)
 {
   std::set<int64_t> ghost_ids;
-  const auto& grid = pwld.Grid();
+  const auto& grid = pwld.GetGrid();
   for (const uint64_t ghost_id : grid.cells.GetGhostGlobalIDs())
   {
     const auto& cell = grid.cells[ghost_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    for (int i = 0; i < cell_mapping.NumNodes(); ++i)
-      for (int u = 0; u < uk_man.NumberOfUnknowns(); ++u)
-        for (int c = 0; c < uk_man.unknowns[u].NumComponents(); ++c)
+    for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
+      for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)
+        for (int c = 0; c < uk_man.unknowns[u].GetNumComponents(); ++c)
           ghost_ids.insert(pwld.MapDOF(cell, i, uk_man, u, c));
   }
   return {ghost_ids.begin(), ghost_ids.end()};

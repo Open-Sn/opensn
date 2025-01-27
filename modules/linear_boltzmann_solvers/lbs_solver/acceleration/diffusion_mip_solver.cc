@@ -46,7 +46,7 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string name,
                     suppress_bcs,
                     verbose)
 {
-  if (sdm_.Type() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
+  if (sdm_.GetType() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
     throw std::logic_error("acceleration::DiffusionMIPSolver can only be used with PWLD.");
 }
 
@@ -69,7 +69,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -101,7 +101,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         for (size_t j = 0; j < num_nodes; ++j)
         {
           double entry_aij = 0.0;
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
           {
             entry_aij += Dg * fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) *
                          fe_vol_data.JxW(qp);
@@ -118,7 +118,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         if (source_function_)
         {
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
@@ -131,7 +131,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       {
         const auto& face = cell.faces[f];
         const auto& n_f = face.normal;
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
         const double hm = HPerpendicular(cell, f);
@@ -149,11 +149,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
@@ -176,7 +176,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
               double aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                        fe_srf_data.JxW(qp);
 
@@ -197,7 +197,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) *
                            fe_srf_data.JxW(qp);
               const double aij = -0.5 * Dg * n_f.Dot(vec_aij);
@@ -215,7 +215,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             for (int j = 0; j < num_nodes; ++j)
             {
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) *
                            fe_srf_data.JxW(qp);
               const double aij = -0.5 * Dg * n_f.Dot(vec_aij);
@@ -254,11 +254,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -271,7 +271,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 const int jm = cell_mapping.MapFaceNode(f, fj);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                          fe_srf_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
@@ -279,7 +279,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   aij_bc_value = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij_bc_value += kappa *
                                     ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
@@ -301,7 +301,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               for (size_t j = 0; j < num_nodes; ++j)
               {
                 Vector3 vec_aij;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   vec_aij += fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                fe_srf_data.JxW(qp) +
                              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
@@ -313,7 +313,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   Vector3 vec_aij_mms;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
@@ -348,7 +348,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                   const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
                   double aij = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                            fe_srf_data.JxW(qp);
                   aij *= (aval / bval);
@@ -360,7 +360,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               if (std::fabs(fval) >= 1.0e-12)
               {
                 double rhs_val = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
                 rhs_val *= (fval / bval);
 
@@ -419,7 +419,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_groups = uk_man_.unknowns.front().num_components;
 
@@ -448,7 +448,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
         if (not source_function_)
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            for (size_t qp : fe_vol_data.QuadraturePointIndices())
+            for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             {
               entry_rhs_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) *
                              fe_vol_data.JxW(qp) * qg[j];
@@ -456,7 +456,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
           }   // for j
         else
         {
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
@@ -469,7 +469,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       {
         const auto& face = cell.faces[f];
         const auto& n_f = face.normal;
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
         const double hm = HPerpendicular(cell, f);
@@ -486,11 +486,11 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -503,7 +503,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 const int jm = cell_mapping.MapFaceNode(f, fj);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += kappa * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                          fe_srf_data.JxW(qp);
                 double aij_bc_value = aij * bc_value;
@@ -511,7 +511,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   aij_bc_value = 0.0;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     aij_bc_value += kappa * source_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                                     fe_srf_data.JxW(qp);
@@ -531,7 +531,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               for (size_t j = 0; j < num_nodes; ++j)
               {
                 Vector3 vec_aij;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   vec_aij += fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                fe_srf_data.JxW(qp) +
                              fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
@@ -543,7 +543,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 if (ref_solution_function_)
                 {
                   Vector3 vec_aij_mms;
-                  for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                     vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
@@ -571,7 +571,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               if (std::fabs(fval) >= 1.0e-12)
               {
                 double rhs_val = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
                 rhs_val *= (fval / bval);
 
@@ -618,7 +618,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -667,7 +667,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       {
         const auto& face = cell.faces[f];
         const auto& n_f = face.normal;
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
@@ -688,11 +688,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
@@ -782,11 +782,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -920,7 +920,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -958,7 +958,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
       {
         const auto& face = cell.faces[f];
         const auto& n_f = face.normal;
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
@@ -978,11 +978,11 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1073,7 +1073,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -1111,7 +1111,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
       {
         const auto& face = cell.faces[f];
         const auto& n_f = face.normal;
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
@@ -1131,11 +1131,11 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell.Type() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell.Type() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1215,24 +1215,24 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const size_t num_faces = cell.faces.size();
   const size_t num_vertices = cell.vertex_ids.size();
 
-  const double volume = cell_mapping.CellVolume();
-  const double face_area = cell_mapping.FaceArea(f);
+  const double volume = cell_mapping.GetCellVolume();
+  const double face_area = cell_mapping.GetFaceArea(f);
 
   /**Lambda to compute surface area.*/
   auto ComputeSurfaceArea = [&cell_mapping, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell_mapping.FaceArea(fr);
+      surface_area += cell_mapping.GetFaceArea(fr);
 
     return surface_area;
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -1254,7 +1254,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 
@@ -1288,7 +1288,7 @@ DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];
 
-  const size_t adj_face_num_nodes = adj_cell_mapping.NumFaceNodes(acf);
+  const size_t adj_face_num_nodes = adj_cell_mapping.GetNumFaceNodes(acf);
 
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {

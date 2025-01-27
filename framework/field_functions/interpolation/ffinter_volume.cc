@@ -40,7 +40,7 @@ FieldFunctionInterpolationVolume::Initialize()
   if (logical_volume_ == nullptr)
     throw std::logic_error("Unassigned logical volume in volume field function interpolator.");
 
-  const auto& grid = field_functions_.front()->GetSpatialDiscretization().Grid();
+  const auto& grid = field_functions_.front()->GetSpatialDiscretization().GetGrid();
 
   // Find cells inside volume
   for (const auto& cell : grid.local_cells)
@@ -53,7 +53,7 @@ FieldFunctionInterpolationVolume::Execute()
 {
   const auto& ref_ff = *field_functions_.front();
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -69,7 +69,7 @@ FieldFunctionInterpolationVolume::Execute()
   {
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     std::vector<double> node_dof_values(num_nodes, 0.0);
@@ -91,7 +91,7 @@ FieldFunctionInterpolationVolume::Execute()
       local_min = std::fmin(node_dof_values[i], local_min);
     }
 
-    for (const size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (const size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       double ff_value = 0.0;
       for (size_t j = 0; j < num_nodes; ++j)

@@ -21,7 +21,7 @@ DiffusionSolver::DiffusionSolver(std::string name,
                                  const bool requires_ghosts,
                                  const bool verbose)
   : name_(std::move(name)),
-    grid_(sdm.Grid()),
+    grid_(sdm.GetGrid()),
     sdm_(sdm),
     uk_man_(uk_man),
     bcs_(std::move(bcs)),
@@ -46,25 +46,25 @@ DiffusionSolver::~DiffusionSolver()
 }
 
 std::string
-DiffusionSolver::Name() const
+DiffusionSolver::GetName() const
 {
   return name_;
 }
 
 const Vec&
-DiffusionSolver::RHS() const
+DiffusionSolver::GetRHS() const
 {
   return rhs_;
 }
 
 const UnknownManager&
-DiffusionSolver::UnknownStructure() const
+DiffusionSolver::GetUnknownStructure() const
 {
   return uk_man_;
 }
 
 const SpatialDiscretization&
-DiffusionSolver::SpatialDiscretization() const
+DiffusionSolver::GetSpatialDiscretization() const
 {
   return sdm_;
 }
@@ -163,9 +163,9 @@ DiffusionSolver::Initialize()
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid_.Dimension() == 2)
+  if (grid_.GetDimension() == 2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  else if (grid_.Dimension() == 3)
+  else if (grid_.GetDimension() == 3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
   for (const auto& option : pc_options)

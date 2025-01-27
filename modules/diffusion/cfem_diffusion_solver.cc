@@ -40,7 +40,7 @@ CFEMDiffusionSolver::Create(const ParameterBlock& params)
 }
 
 InputParameters
-CFEMDiffusionSolver::OptionsBlock()
+CFEMDiffusionSolver::GetOptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -50,9 +50,9 @@ CFEMDiffusionSolver::OptionsBlock()
 }
 
 InputParameters
-CFEMDiffusionSolver::BoundaryOptionsBlock()
+CFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 
@@ -89,15 +89,15 @@ CFEMDiffusionSolver::SetSigmaAFunction(ScalarSpatialMaterialFunction* function)
 void
 CFEMDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
-    if (spec.Name() == "boundary_conditions")
+    if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -179,7 +179,7 @@ CFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "CFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.GetTimeString() << " " << GetName()
             << ": Initializing CFEM Diffusion solver ";
 
   // Get grid
@@ -307,7 +307,7 @@ CFEMDiffusionSolver::Execute()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const auto imat = cell.material_id;
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
 
@@ -316,7 +316,7 @@ CFEMDiffusionSolver::Execute()
       for (size_t j = 0; j < num_nodes; ++j)
       {
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
@@ -326,7 +326,7 @@ CFEMDiffusionSolver::Execute()
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         cell_rhs(i) += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
@@ -368,7 +368,7 @@ CFEMDiffusionSolver::Execute()
           const uint i = cell_mapping.MapFaceNode(f, fi);
 
           double entry_rhsi = 0.0;
-          for (size_t qp : fe_srf_data.QuadraturePointIndices())
+          for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
             entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
           cell_rhs(i) += fval / bval * entry_rhsi;
 
@@ -380,7 +380,7 @@ CFEMDiffusionSolver::Execute()
               const uint j = cell_mapping.MapFaceNode(f, fj);
 
               double entry_aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                              fe_srf_data.JxW(qp);
               Acell(i, j) += aval / bval * entry_aij;
@@ -452,12 +452,12 @@ CFEMDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  Name(),
+                                  GetName(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
-                                  basic_options_("residual_tolerance").FloatValue(),
-                                  basic_options_("max_iters").IntegerValue());
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_iters").GetIntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);

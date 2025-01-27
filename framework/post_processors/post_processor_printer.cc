@@ -121,7 +121,7 @@ PostProcessorPrinter::ReceiveEventUpdate(const Event& event)
 {
   {
     auto& vec = events_on_which_to_print_postprocs_;
-    auto it = std::find(vec.begin(), vec.end(), event.Name());
+    auto it = std::find(vec.begin(), vec.end(), event.GetName());
     if (it != vec.end())
       PrintPostProcessors(event);
   }
@@ -139,7 +139,7 @@ PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 
     // If we are not printing the latest values, then how would we get values
     // suitable for regression tests. This is how.
-    if (print_scalar_time_history_ and event.Name() == "ProgramExecuted")
+    if (print_scalar_time_history_ and event.GetName() == "ProgramExecuted")
       PrintPPsLatestValuesOnly("SCALAR", scalar_pps, event);
   }
 
@@ -152,11 +152,11 @@ PostProcessorPrinter::PrintPostProcessors(const Event& event) const
 
     // If we are not printing the latest values, then how would we get values
     // suitable for regression tests. This is how.
-    if (print_vector_time_history_ and event.Name() == "ProgramExecuted")
+    if (print_vector_time_history_ and event.GetName() == "ProgramExecuted")
       PrintPPsLatestValuesOnly("VECTOR", vector_pps, event);
   }
 
-  if (not csv_filename_.empty() and event.Name() == "ProgramExecuted")
+  if (not csv_filename_.empty() and event.GetName() == "ProgramExecuted")
     PrintCSVFile(event);
 }
 
@@ -172,7 +172,7 @@ PostProcessorPrinter::GetPrintedPostProcessors(
     const auto& value = pp->GetValue();
     const auto value_str = pp->ConvertValueToString(value);
 
-    scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
+    scalar_ppnames_and_vals.emplace_back(pp->GetName(), value_str);
   } // for pp
 
   if (not scalar_ppnames_and_vals.empty())
@@ -201,17 +201,17 @@ PostProcessorPrinter::PrintPPsLatestValuesOnly(const std::string& pps_typename,
     const auto& value = pp->GetValue();
     const auto value_str = pp->ConvertValueToString(value);
 
-    scalar_ppnames_and_vals.emplace_back(pp->Name(), value_str);
+    scalar_ppnames_and_vals.emplace_back(pp->GetName(), value_str);
   } // for pp
 
   if (not scalar_ppnames_and_vals.empty())
   {
     if (scalar_pp_table_format_ == ScalarPPTableFormat::HORIZONTAL)
-      outstr << PrintPPsHorizontal(scalar_ppnames_and_vals, event.Code());
+      outstr << PrintPPsHorizontal(scalar_ppnames_and_vals, event.GetCode());
     else if (scalar_pp_table_format_ == ScalarPPTableFormat::VERTICAL)
-      outstr << PrintPPsVertical(scalar_ppnames_and_vals, event.Code());
+      outstr << PrintPPsVertical(scalar_ppnames_and_vals, event.GetCode());
     log.Log() << "\n"
-              << pps_typename << " post-processors latest values at event \"" << event.Name()
+              << pps_typename << " post-processors latest values at event \"" << event.GetName()
               << "\"\n"
               << outstr.str() << "\n";
   }
@@ -449,7 +449,7 @@ PostProcessorPrinter::PrintPPsTimeHistory(const std::string& pps_typename,
       outstr << PrintPPsSubTimeHistory(sub_matrix);
 
     log.Log() << "\n"
-              << pps_typename << " post-processors history at event \"" << event.Name() << "\"\n"
+              << pps_typename << " post-processors history at event \"" << event.GetName() << "\"\n"
               << outstr.str();
   } // for each thing in pp_timehist_size_subs
 }
@@ -554,7 +554,7 @@ PostProcessorPrinter::PrintVectorPPsToCSV(std::ofstream& csvfile,
 
   for (const auto& pp : pp_list)
   {
-    csvfile << pp->Name() << "\n";
+    csvfile << pp->GetName() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
@@ -580,7 +580,7 @@ PostProcessorPrinter::PrintArbitraryPPsToCSV(std::ofstream& csvfile,
 
   for (const auto& pp : pp_list)
   {
-    csvfile << pp->Name() << "\n";
+    csvfile << pp->GetName() << "\n";
     const size_t timehistsize = pp->GetTimeHistory().size();
     const auto value_matrix = BuildPPHistoryMatrix(timehistsize, timehistsize, {pp});
     for (const auto& row : value_matrix)
@@ -607,10 +607,10 @@ PostProcessorPrinter::GetScalarPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
+    if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::SCALAR)
+    if (pp->GetType() == PPType::SCALAR)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -626,10 +626,10 @@ PostProcessorPrinter::GetVectorPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
+    if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::VECTOR)
+    if (pp->GetType() == PPType::VECTOR)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -645,10 +645,10 @@ PostProcessorPrinter::GetArbitraryPostProcessorsList(const Event& event)
     const auto& scope = pp->PrintScope();
 
     // Check whether the pp wants to be printed on this event
-    if (std::find(scope.begin(), scope.end(), event.Name()) == scope.end())
+    if (std::find(scope.begin(), scope.end(), event.GetName()) == scope.end())
       continue;
 
-    if (pp->Type() == PPType::ARBITRARY)
+    if (pp->GetType() == PPType::ARBITRARY)
       scalar_pp_list.push_back(&(*pp));
   }
 
@@ -676,7 +676,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
   // Do the header first
   value_matrix[0][0] = "Time";
   for (size_t j = 1; j <= pp_sub_list.size(); ++j)
-    value_matrix[0][j] = pp_sub_list.at(j - 1)->Name();
+    value_matrix[0][j] = pp_sub_list.at(j - 1)->GetName();
 
   // Now the time values
   for (size_t t = 0; t < (num_rows - 2); ++t)

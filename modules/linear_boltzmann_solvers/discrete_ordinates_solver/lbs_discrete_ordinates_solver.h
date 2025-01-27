@@ -23,7 +23,7 @@ public:
   explicit DiscreteOrdinatesSolver(const InputParameters& params);
   ~DiscreteOrdinatesSolver() override;
 
-  const std::string& SweepType() const { return sweep_type_; }
+  const std::string& GetSweepType() const { return sweep_type_; }
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
   void Initialize() override;

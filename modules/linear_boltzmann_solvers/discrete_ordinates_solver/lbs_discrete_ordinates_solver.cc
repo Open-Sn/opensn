@@ -197,7 +197,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
         for (int jdir = 0; jdir < num_gs_angles; ++jdir)
         {
           // Angles are opposite if their sum is zero
-          const auto sum = grid_ptr_->Dimension() == 1
+          const auto sum = grid_ptr_->GetDimension() == 1
                              ? Vector3(0.0, 0.0, omegas[idir].z + omegas[jdir].z)
                              : omegas[idir] + omegas[jdir];
           const bool opposite = sum.NormSquare() < 1.0e-8;
@@ -227,7 +227,7 @@ DiscreteOrdinatesSolver::ReorientAdjointSolution()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& transport_view = cell_transport_views_[cell.local_id];
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         // Reorient flux moments
         //
@@ -311,7 +311,7 @@ DiscreteOrdinatesSolver::ComputeBalance()
     const auto& cell_mapping = discretization_->GetCellMapping(cell);
     const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
-    const size_t num_nodes = transport_view.NumNodes();
+    const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
 
@@ -369,8 +369,8 @@ DiscreteOrdinatesSolver::ComputeBalance()
         local_out_flow += transport_view.GetOutflow(f, g);
 
     // Absorption and sources
-    const auto& xs = transport_view.XS();
-    const auto& sigma_a = xs.SigmaAbsorption();
+    const auto& xs = transport_view.GetXS();
+    const auto& sigma_a = xs.GetSigmaAbsorption();
     for (int i = 0; i < num_nodes; ++i)
     {
       for (int g = 0; g < num_groups_; ++g)
@@ -453,7 +453,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const unsigned int groupset_id,
       if (not face.has_neighbor and face.neighbor_id == boundary_id)
       {
         const auto& int_f_shape_i = fe_values.intS_shapeI[f];
-        const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -538,7 +538,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
         {
           auto& bndry_leakage = local_leakage[face.neighbor_id];
           const auto& int_f_shape_i = fe_values.intS_shapeI[f];
-          const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+          const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
           for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -647,7 +647,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->Id();
+        auto id = aah_spds->GetId();
         if (opensn::mpi_comm.rank() == (id % opensn::mpi_comm.size()))
           aah_spds->BuildGlobalSweepFAS();
       }
@@ -661,10 +661,10 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
       for (const auto& spds : quadrature.second)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->Id();
+        auto id = aah_spds->GetId();
         if ((id % opensn::mpi_comm.size()) == opensn::mpi_comm.rank())
         {
-          auto edges_to_remove = aah_spds->GlobalSweepFAS();
+          auto edges_to_remove = aah_spds->GetGlobalSweepFAS();
           local_edges_to_remove.push_back(id);
           local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
           local_edges_to_remove.insert(
@@ -704,7 +704,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         for (const auto& spds : quadrature.second)
         {
           auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-          if (aah_spds->Id() == spds_id)
+          if (aah_spds->GetId() == spds_id)
           {
             aah_spds->SetGlobalSweepFAS(edges);
             break;
@@ -729,7 +729,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
           for (const size_t dir_id : verbose_sweep_angles_)
           {
             auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-            if (aah_spds->Id() == dir_id)
+            if (aah_spds->GetId() == dir_id)
               aah_spds->PrintGhostedGraph();
           }
         }
@@ -828,7 +828,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     case AngleAggregationType::POLAR:
     {
       // Check geometry types
-      if (not(grid.Type() == ORTHOGONAL or grid.Dimension() == 2 or grid.Extruded()))
+      if (not(grid.GetType() == ORTHOGONAL or grid.GetDimension() == 2 or grid.Extruded()))
         throw std::logic_error(
           fname + ": The simulation is using polar angle aggregation for which only certain "
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
@@ -1019,7 +1019,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                                                           options_.max_mpi_message_size,
                                                           *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angle_set);
+          angle_set_group.GetAngleSets().push_back(angle_set);
         }
         else if (sweep_type_ == "CBC")
         {
@@ -1043,7 +1043,7 @@ DiscreteOrdinatesSolver::InitFluxDataStructures(LBSGroupset& groupset)
                                                           gs_ss,
                                                           *grid_local_comm_set_);
 
-          angle_set_group.AngleSets().push_back(angle_set);
+          angle_set_group.GetAngleSets().push_back(angle_set);
         }
         else
           OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");

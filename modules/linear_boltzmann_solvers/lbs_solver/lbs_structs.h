@@ -280,7 +280,7 @@ public:
     return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
   }
 
-  const MultiGroupXS& XS() const { return *xs_; }
+  const MultiGroupXS& GetXS() const { return *xs_; }
 
   bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
 
@@ -288,9 +288,9 @@ public:
 
   const Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
 
-  int NumNodes() const { return num_nodes_; }
+  int GetNumNodes() const { return num_nodes_; }
 
-  double Volume() const { return volume_; }
+  double GetVolume() const { return volume_; }
 
   void ZeroOutflow(int f, int g)
   {

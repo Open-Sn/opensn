@@ -60,7 +60,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
 }
 
@@ -72,9 +72,9 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
-  OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->LocalSize(),
+  OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->GetLocalSize(),
                           "Constructor called with incompatible size field vector.");
 
   ghosted_field_vector_->Set(field_vector);
@@ -88,7 +88,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->Grid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(field_value);
 }
@@ -102,25 +102,25 @@ FieldFunctionGridBased::GetSpatialDiscretization() const
 std::vector<double>&
 FieldFunctionGridBased::GetLocalFieldVector()
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 const std::vector<double>&
 FieldFunctionGridBased::GetLocalFieldVector() const
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 std::vector<double>
 FieldFunctionGridBased::GetGhostedFieldVector() const
 {
-  return ghosted_field_vector_->LocalSTLData();
+  return ghosted_field_vector_->GetLocalSTLData();
 }
 
 void
 FieldFunctionGridBased::UpdateFieldVector(const std::vector<double>& field_vector)
 {
-  OpenSnInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->LocalSize(),
+  OpenSnInvalidArgumentIf(field_vector.size() < ghosted_field_vector_->GetLocalSize(),
                           "Attempted update with a vector of insufficient size.");
 
   ghosted_field_vector_->Set(field_vector);
@@ -160,7 +160,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   if (point.x >= xmin and point.x <= xmax and point.y >= ymin and point.y <= ymax and
       point.z >= zmin and point.z <= zmax)
   {
-    const auto& grid = discretization_->Grid();
+    const auto& grid = discretization_->GetGrid();
     for (const auto& cell : grid.local_cells)
     {
       if (grid.CheckPointInsideCell(cell, point))
@@ -171,7 +171,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
         local_num_point_hits += 1;
 
-        const auto num_nodes = cell_mapping.NumNodes();
+        const auto num_nodes = cell_mapping.GetNumNodes();
         for (size_t c = 0; c < num_components; ++c)
         {
           for (size_t j = 0; j < num_nodes; ++j)
@@ -210,7 +210,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   cell_mapping.ShapeValues(position, shape_values);
 
   double value = 0.0;
-  const size_t num_nodes = cell_mapping.NumNodes();
+  const size_t num_nodes = cell_mapping.GetNumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
     const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
@@ -238,12 +238,12 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   for (const auto& ff_ptr : ff_list)
     if (ff_ptr != master_ff_ptr)
-      if (&ff_ptr->discretization_->Grid() != &master_ff_ptr->discretization_->Grid())
+      if (&ff_ptr->discretization_->GetGrid() != &master_ff_ptr->discretization_->GetGrid())
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
   // Get grid
-  const auto& grid = master_ff.discretization_->Grid();
+  const auto& grid = master_ff.discretization_->GetGrid();
 
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
@@ -257,11 +257,11 @@ FieldFunctionGridBased::ExportMultipleToVTK(
     const auto& uk_man = ff_ptr->GetUnknownManager();
     const auto& unknown = ff_ptr->GetUnknown();
     const auto& sdm = ff_ptr->discretization_;
-    const size_t num_comps = unknown.NumComponents();
+    const size_t num_comps = unknown.GetNumComponents();
 
     for (uint c = 0; c < num_comps; ++c)
     {
-      std::string component_name = ff_ptr->Name() + unknown.name;
+      std::string component_name = ff_ptr->GetName() + unknown.name;
       if (num_comps > 1)
         component_name += unknown.component_names[c];
 

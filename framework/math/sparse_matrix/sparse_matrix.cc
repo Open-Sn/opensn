@@ -18,7 +18,7 @@ SparseMatrix::SparseMatrix(size_t num_rows, size_t num_cols)
 }
 
 SparseMatrix::SparseMatrix(const SparseMatrix& matrix)
-  : row_size_(matrix.NumRows()), col_size_(matrix.NumCols())
+  : row_size_(matrix.GetNumRows()), col_size_(matrix.GetNumCols())
 {
   rowI_values.resize(row_size_, std::vector<double>());
   rowI_indices.resize(row_size_, std::vector<size_t>());
@@ -120,7 +120,7 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
 }
 
 double
-SparseMatrix::ValueIJ(size_t i, size_t j) const
+SparseMatrix::GetValueIJ(size_t i, size_t j) const
 {
   double retval = 0.0;
   if ((i < 0) or (i >= rowI_indices.size()))

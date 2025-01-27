@@ -128,7 +128,7 @@ protected:
   friend class AllowableRangeLowHighLimit;
   bool ChildIsAllowable(Varying value) const override
   {
-    if (value.Type() != low_limit_.Type())
+    if (value.GetType() != low_limit_.GetType())
       return false;
 
     if (low_closed_)
@@ -170,7 +170,7 @@ protected:
   friend class AllowableRangeLowHighLimit;
   bool ChildIsAllowable(Varying value) const override
   {
-    if (value.Type() != hi_limit_.Type())
+    if (value.GetType() != hi_limit_.GetType())
       return false;
 
     if (hi_closed_)

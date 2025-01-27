@@ -40,8 +40,8 @@ public:
    */
   std::vector<double> operator()(const Cell& cell, const Vector3& xyz, int num_groups) const;
 
-  size_t NumLocalSubscribers() const { return num_local_subsribers_; }
-  size_t NumGlobalSubsribers() const { return num_global_subscribers_; }
+  size_t GetNumLocalSubscribers() const { return num_local_subsribers_; }
+  size_t GetNumGlobalSubsribers() const { return num_global_subscribers_; }
 
   const std::vector<uint64_t>& GetSubscribers() const { return subscribers_; }
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logvol_; }

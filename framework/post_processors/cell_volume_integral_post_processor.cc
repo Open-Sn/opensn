@@ -59,7 +59,7 @@ CellVolumeIntegralPostProcessor::Initialize()
                        "Attempted to access invalid field"
                        "function");
 
-  const auto& grid = grid_field_function->GetSpatialDiscretization().Grid();
+  const auto& grid = grid_field_function->GetSpatialDiscretization().GetGrid();
 
   const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
@@ -92,7 +92,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
 
   const auto& ref_ff = *grid_field_function;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -108,7 +108,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   {
     const auto& cell = grid.local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     std::vector<double> node_dof_values(num_nodes, 0.0);
@@ -118,7 +118,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
       node_dof_values[i] = field_data[imap];
     } // for i
 
-    for (const size_t qp : fe_vol_data.QuadraturePointIndices())
+    for (const size_t qp : fe_vol_data.GetQuadraturePointIndices())
     {
       // phi_h = sum_j b_j phi_j
       double ff_value = 0.0;
@@ -142,7 +142,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
     value_ = ParameterBlock("", globl_integral / globl_volume);
   }
 
-  const int event_code = event_context.Code();
+  const int event_code = event_context.GetCode();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     const auto& event_params = event_context.Parameters();

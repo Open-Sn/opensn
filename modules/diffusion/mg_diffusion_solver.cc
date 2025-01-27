@@ -100,7 +100,7 @@ MGDiffusionSolver::GetInputParameters()
 }
 
 InputParameters
-MGDiffusionSolver::OptionsBlock()
+MGDiffusionSolver::GetOptionsBlock()
 {
   InputParameters params;
   params.AddOptionalParameterArray(
@@ -110,7 +110,7 @@ MGDiffusionSolver::OptionsBlock()
 }
 
 InputParameters
-MGDiffusionSolver::BoundaryOptionsBlock()
+MGDiffusionSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Set options for boundary conditions");
@@ -172,15 +172,15 @@ MGDiffusionSolver::~MGDiffusionSolver()
 void
 MGDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
-    if (spec.Name() == "boundary_conditions")
+    if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -260,7 +260,7 @@ void
 MGDiffusionSolver::Initialize()
 {
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.GetTimeString() << " " << GetName()
             << ": Initializing CFEM Multigroup Diffusion solver ";
 
   // Get grid
@@ -378,8 +378,8 @@ MGDiffusionSolver::Initialize()
     for (uint g = 0; g < num_groups_; ++g)
     {
       std::string solver_name;
-      if (not Name().empty())
-        solver_name = Name() + "-";
+      if (not GetName().empty())
+        solver_name = GetName() + "-";
 
       char buff[100];
       int dummy = snprintf(buff, 4, "%03d", g);
@@ -428,16 +428,16 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties)
     {
-      if (property->Type() == MatProperty::TRANSPORT_XSECTIONS)
+      if (property->GetType() == MatProperty::TRANSPORT_XSECTIONS)
       {
         auto transp_xs = std::static_pointer_cast<MultiGroupXS>(property);
         matid_to_xs_map_[mat_id] = transp_xs;
         found_transport_xs = true;
         if (first_material_read)
-          num_groups_ = transp_xs->NumGroups();
+          num_groups_ = transp_xs->GetNumGroups();
 
       } // transport xs
-      if (property->Type() == MatProperty::ISOTROPIC_MG_SOURCE)
+      if (property->GetType() == MatProperty::ISOTROPIC_MG_SOURCE)
       {
         auto mg_source = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 
@@ -466,27 +466,27 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
       Exit(EXIT_FAILURE);
     }
     // Check number of groups legal
-    if (matid_to_xs_map_[mat_id]->NumGroups() != num_groups_)
+    if (matid_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Found material \""
                         << current_material->name << "\" has "
-                        << matid_to_xs_map_[mat_id]->NumGroups() << " groups and "
+                        << matid_to_xs_map_[mat_id]->GetNumGroups() << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
       Exit(EXIT_FAILURE);
     }
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->ScatteringOrder() > 1)
+    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
     {
       log.Log0Warning() << "MG-Diff-InitializeMaterials: Found material \""
                         << current_material->name << "\" has a scattering order of "
-                        << matid_to_xs_map_[mat_id]->ScatteringOrder() << " and"
+                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->ScatteringOrder() + 1
+    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
 
     first_material_read = false;
@@ -507,7 +507,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
     for (const auto& mat_id_xs : matid_to_xs_map_)
     {
       // get the P0 transfer matrix
-      const auto& S = mat_id_xs.second->TransferMatrix(0);
+      const auto& S = mat_id_xs.second->GetTransferMatrix(0);
       // loop over all row of the transfer matrix
       const int G = static_cast<int>(num_groups_);
       for (int g = G - 1; g >= 0; --g)
@@ -524,7 +524,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
   last_fast_group_ = lfg;
 
   // Compute two-grid params
-  do_two_grid_ = basic_options_("do_two_grid").BoolValue();
+  do_two_grid_ = basic_options_("do_two_grid").GetBoolValue();
   if ((lfg == num_groups_) and do_two_grid_)
   {
     log.Log0Error() << "Two-grid is not possible with no upscattering.";
@@ -546,9 +546,9 @@ MGDiffusionSolver::ComputeTwoGridParams()
   {
 
     // get the P0 transfer matrix and total XS
-    const auto& isotropic_transfer_matrix = mat_id_xs.second->TransferMatrix(0);
-    const auto& sigma_t = mat_id_xs.second->SigmaTotal();
-    const auto& diffusion_coeff = mat_id_xs.second->DiffusionCoefficient();
+    const auto& isotropic_transfer_matrix = mat_id_xs.second->GetTransferMatrix(0);
+    const auto& sigma_t = mat_id_xs.second->GetSigmaTotal();
+    const auto& diffusion_coeff = mat_id_xs.second->GetDiffusionCoefficient();
 
     // put P0 transfer matrix in nicer form
     DenseMatrix<double> S(num_groups_, num_groups_, 0.0);
@@ -622,16 +622,16 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     VF_[counter].resize(num_nodes, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
       double vol_frac_shape_i = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         vol_frac_shape_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
-      vol_frac_shape_i /= cell_mapping.CellVolume();
+      vol_frac_shape_i /= cell_mapping.GetCellVolume();
       VF_[counter][i] = vol_frac_shape_i;
     } // for i
 
@@ -730,11 +730,11 @@ MGDiffusionSolver::AssembleAbext()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
-    const auto& D = xs->DiffusionCoefficient();
-    const auto& sigma_r = xs->SigmaRemoval();
+    const auto& D = xs->GetDiffusionCoefficient();
+    const auto& sigma_r = xs->GetSigmaRemoval();
 
     const auto& qext = matid_to_src_map_.at(cell.material_id);
     double collapsed_D = 0.0, collapsed_sig_a = 0.0;
@@ -761,7 +761,7 @@ MGDiffusionSolver::AssembleAbext()
       {
         double entry_mij = 0.0;
         double entry_kij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_mij +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
@@ -776,7 +776,7 @@ MGDiffusionSolver::AssembleAbext()
           Acell[num_groups_](i, j) = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
       } // for j
       double entry_rhsi = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       for (uint g = 0; g < num_groups_; ++g)
         rhs_cell[g](i) = entry_rhsi * (qext->source_value_g[g]);
@@ -829,7 +829,7 @@ MGDiffusionSolver::AssembleAbext()
               const uint i = cell_mapping.MapFaceNode(f, fi);
 
               double entry_rhsi = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 entry_rhsi += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               if (g < num_groups_) // check due to two-grid
                 rhs_cell[g](i) += fval[g] / bval[g] * entry_rhsi;
@@ -838,7 +838,7 @@ MGDiffusionSolver::AssembleAbext()
               {
                 const uint j = cell_mapping.MapFaceNode(f, fj);
                 double entry_aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   entry_aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                                fe_srf_data.JxW(qp);
                 Acell[g](i, j) += aval[g] / bval[g] * entry_aij;
@@ -901,19 +901,20 @@ MGDiffusionSolver::Execute()
 
   // Create Krylov Solver
   // setup KSP once for all
-  petsc_solver_ = CreateCommonKrylovSolverSetup(A_.front(),
-                                                Name(),
-                                                KSPCG,
-                                                PCGAMG,
-                                                0.0,
-                                                basic_options_("residual_tolerance").FloatValue(),
-                                                basic_options_("max_inner_iters").IntegerValue());
+  petsc_solver_ =
+    CreateCommonKrylovSolverSetup(A_.front(),
+                                  GetName(),
+                                  KSPCG,
+                                  PCGAMG,
+                                  0.0,
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_inner_iters").GetIntegerValue());
 
   KSPSetApplicationContext(petsc_solver_.ksp, (void*)&my_app_context_);
   KSPMonitorCancel(petsc_solver_.ksp);
   KSPMonitorSet(petsc_solver_.ksp, &MGKSPMonitor, nullptr, nullptr);
 
-  int64_t iverbose = basic_options_("verbose_level").IntegerValue();
+  int64_t iverbose = basic_options_("verbose_level").GetIntegerValue();
   my_app_context_.verbose = iverbose > 1 ? PETSC_TRUE : PETSC_FALSE;
   //  if (my_app_context.verbose == PETSC_TRUE)
   //    cout << "--context TRUE" << endl;
@@ -935,9 +936,9 @@ MGDiffusionSolver::Execute()
   // Solve thermal groups:
   unsigned int thermal_iteration = 0;
   // max # of thermal iterations
-  int64_t max_thermal_iters = basic_options_("max_thermal_iters").IntegerValue();
+  int64_t max_thermal_iters = basic_options_("max_thermal_iters").GetIntegerValue();
   // max thermal error between two successive iterates
-  double thermal_tol = basic_options_("thermal_flux_tolerance").FloatValue();
+  double thermal_tol = basic_options_("thermal_flux_tolerance").GetFloatValue();
   // computed error
   double thermal_error_all;
   double thermal_error_g;
@@ -1003,10 +1004,10 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xs = matid_to_xs_map_.at(cell.material_id);
-    const auto& S = xs->TransferMatrix(0);
+    const auto& S = xs->GetTransferMatrix(0);
 
     for (const auto& [row_g, gprime, sigma_sm] : S.Row(g))
     {
@@ -1026,7 +1027,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
 
             // get flux at node j
             const double flxj_gp = xlocal[jmap];
-            for (size_t qp : fe_vol_data.QuadraturePointIndices())
+            for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
               inscatter_g += sigma_sm * flxj_gp * fe_vol_data.ShapeValue(i, qp) *
                              fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
           } // for j
@@ -1072,9 +1073,9 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& S = matid_to_xs_map_.at(cell.material_id)->TransferMatrix(0);
+    const auto& S = matid_to_xs_map_.at(cell.material_id)->GetTransferMatrix(0);
 
     for (unsigned g = last_fast_group_; g < num_groups_; ++g)
     {
@@ -1098,7 +1099,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
 
               // get flux at node j
               const double delta_flxj_gp = xlocal[jmap] - xlocal_old[jmap];
-              for (size_t qp : fe_vol_data.QuadraturePointIndices())
+              for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
                 inscatter_g += sigma_sm * delta_flxj_gp * fe_vol_data.ShapeValue(i, qp) *
                                fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
             } // for j
@@ -1133,7 +1134,7 @@ MGDiffusionSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xstg = map_mat_id_2_tginfo_.at(cell.material_id);
 
     for (unsigned int g = last_fast_group_; g < num_groups_; ++g)

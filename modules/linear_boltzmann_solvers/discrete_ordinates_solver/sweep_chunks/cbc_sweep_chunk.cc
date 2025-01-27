@@ -78,7 +78,7 @@ CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   cell_mapping_ = &discretization_.GetCellMapping(*cell_);
   cell_transport_view_ = &cell_transport_views_[cell_->local_id];
   cell_num_faces_ = cell_->faces.size();
-  cell_num_nodes_ = cell_mapping_->NumNodes();
+  cell_num_nodes_ = cell_mapping_->GetNumNodes();
 
   // Get cell matrices
   G_ = unit_cell_matrices_[cell_local_id_].intV_shapeI_gradshapeJ;
@@ -98,11 +98,11 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
   std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
-  const auto& face_orientations = angle_set.GetSPDS().CellFaceOrientations()[cell_local_id_];
+  const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[cell_local_id_];
   std::vector<double> face_mu_values(cell_num_faces_);
 
   const auto& rho = densities_[cell_local_id_];
-  const auto& sigma_t = xs_.at(cell_->material_id)->SigmaTotal();
+  const auto& sigma_t = xs_.at(cell_->material_id)->GetSigmaTotal();
 
   // as = angle set
   // ss = subset
@@ -135,7 +135,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       const auto& face = cell_->faces[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
-      auto face_nodal_mapping = &fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, f);
+      auto face_nodal_mapping = &fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
 
       const std::vector<double>* psi_upwnd_data_block = nullptr;
       const double* psi_local_face_upwnd_data = nullptr;
@@ -151,7 +151,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       }
 
       // IntSf_mu_psi_Mij_dA
-      const size_t num_face_nodes = cell_mapping_->NumFaceNodes(f);
+      const size_t num_face_nodes = cell_mapping_->GetNumFaceNodes(f);
       for (int fi = 0; fi < num_face_nodes; ++fi)
       {
         const int i = cell_mapping_->MapFaceNode(f, fi);
@@ -275,8 +275,8 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       const auto& IntF_shapeI = IntS_shapeI_[f];
 
       const int locality = cell_transport_view_->FaceLocality(f);
-      const size_t num_face_nodes = cell_mapping_->NumFaceNodes(f);
-      auto& face_nodal_mapping = fluds_->CommonData().GetFaceNodalMapping(cell_local_id_, f);
+      const size_t num_face_nodes = cell_mapping_->GetNumFaceNodes(f);
+      auto& face_nodal_mapping = fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
       std::vector<double>* psi_dnwnd_data = nullptr;
       if (not is_boundary_face and not is_local_face)
       {

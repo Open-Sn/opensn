@@ -29,11 +29,11 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
     wgs_context->rhs_src_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
   }
 
-  auto& q_moments_local = lbs_solver.QMomentsLocal();
-  auto& phi_old_local = lbs_solver.PhiOldLocal();
-  auto& phi_new_local = lbs_solver.PhiNewLocal();
+  auto& q_moments_local = lbs_solver.GetQMomentsLocal();
+  auto& phi_old_local = lbs_solver.GetPhiOldLocal();
+  auto& phi_new_local = lbs_solver.GetPhiNewLocal();
   auto ags_solver = lbs_solver.GetAGSSolver();
-  auto& groupsets = lbs_solver.Groupsets();
+  auto& groupsets = lbs_solver.GetGroupsets();
   auto active_set_source_function = lbs_solver.GetActiveSetSourceFunction();
 
   auto& front_gs = groupsets.front();
@@ -46,7 +46,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
   double k_eff_change = 1.0;
 
   // Start power iterations
-  ags_solver->Verbosity(lbs_solver.Options().verbose_ags_iterations);
+  ags_solver->SetVerbosity(lbs_solver.GetOptions().verbose_ags_iterations);
   int nit = 0;
   bool converged = false;
   while (nit < max_iterations)
@@ -78,7 +78,7 @@ PowerIterationKEigen(LBSSolver& lbs_solver, double tolerance, int max_iterations
       converged = true;
 
     // Print iteration summary
-    if (lbs_solver.Options().verbose_outer_iterations)
+    if (lbs_solver.GetOptions().verbose_outer_iterations)
     {
       std::stringstream k_iter_info;
       k_iter_info << program_timer.GetTimeString() << " "

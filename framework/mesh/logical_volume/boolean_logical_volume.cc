@@ -41,7 +41,7 @@ BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : Logi
   const auto& input_parts = params.GetParam("parts");
   input_parts.RequireBlockTypeIs(ParameterBlockType::ARRAY);
 
-  for (size_t p = 0; p < input_parts.NumParameters(); ++p)
+  for (size_t p = 0; p < input_parts.GetNumParameters(); ++p)
   {
     const auto& part = input_parts.GetParam(p);
     part.RequireBlockTypeIs(ParameterBlockType::BLOCK);

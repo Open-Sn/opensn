@@ -21,13 +21,13 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   SNESGetApplicationContext(snes, &nl_context_ptr);
 
   auto& lbs_solver = nl_context_ptr->lbs_solver;
-  const auto& phi_old_local = lbs_solver->PhiOldLocal();
-  auto& q_moments_local = lbs_solver->QMomentsLocal();
+  const auto& phi_old_local = lbs_solver->GetPhiOldLocal();
+  auto& q_moments_local = lbs_solver->GetQMomentsLocal();
 
   auto active_set_source_function = lbs_solver->GetActiveSetSourceFunction();
 
   std::vector<int> groupset_ids;
-  for (const auto& groupset : lbs_solver->Groupsets())
+  for (const auto& groupset : lbs_solver->GetGroupsets())
     groupset_ids.push_back(groupset.id);
 
   // Disassemble phi vector
@@ -36,7 +36,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   // Compute 1/k F phi
   Set(q_moments_local, 0.0);
-  for (auto& groupset : lbs_solver->Groupsets())
+  for (auto& groupset : lbs_solver->GetGroupsets())
     active_set_source_function(groupset,
                                q_moments_local,
                                phi_old_local,
@@ -46,7 +46,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   Scale(q_moments_local, 1.0 / k_eff);
 
   // Now add MS phi
-  for (auto& groupset : lbs_solver->Groupsets())
+  for (auto& groupset : lbs_solver->GetGroupsets())
   {
     auto& wgs_context = lbs_solver->GetWGSContext(groupset.id);
     const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
@@ -58,7 +58,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   // Sweep all the groupsets
   // After this phi_new = DLinv(MSD phi + 1/k FD phi)
-  for (auto& groupset : lbs_solver->Groupsets())
+  for (auto& groupset : lbs_solver->GetGroupsets())
   {
     auto& wgs_context = lbs_solver->GetWGSContext(groupset.id);
     wgs_context.ApplyInverseTransportOperator(SourceFlags());
@@ -72,9 +72,9 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   VecAXPY(r, -1.0, phi);
 
-  for (auto& groupset : lbs_solver->Groupsets())
+  for (auto& groupset : lbs_solver->GetGroupsets())
   {
-    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_solver->Groupsets().size() > 1)
+    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_solver->GetGroupsets().size() > 1)
       throw std::logic_error(fname + ": Preconditioning currently only supports"
                                      "single groupset simulations.");
 

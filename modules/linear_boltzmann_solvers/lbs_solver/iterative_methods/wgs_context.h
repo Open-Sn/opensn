@@ -35,7 +35,7 @@ struct WGSContext : public LinearSolverContext
 
   int MatrixAction(Mat& matrix, Vec& action_vector, Vec& action) override;
 
-  virtual std::pair<int64_t, int64_t> SystemSize() = 0;
+  virtual std::pair<int64_t, int64_t> GetSystemSize() = 0;
 
   /**
    * This operation applies the inverse of the transform operator in the form Ay = x where the the

@@ -51,7 +51,7 @@ SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   if (params.IsParameterValid("solvername_filter"))
     solvername_filter_ = params.GetParamValue<std::string>("solvername_filter");
   else
-    solvername_filter_ = solver_->Name();
+    solvername_filter_ = solver_->GetName();
 }
 
 void
@@ -60,11 +60,11 @@ SolverInfoPostProcessor::Execute(const Event& event_context)
   value_ = solver_->GetInfoWithPreCheck(info_);
   SetType(FigureTypeFromValue(value_));
 
-  const int event_code = event_context.Code();
+  const int event_code = event_context.GetCode();
   if (event_code == Event::SolverInitialized or event_code == Event::SolverAdvanced)
   {
     TimeHistoryEntry entry{
-      solver_->GetTimeStepper().TimeStepIndex(), solver_->GetTimeStepper().Time(), value_};
+      solver_->GetTimeStepper().GetTimeStepIndex(), solver_->GetTimeStepper().GetTime(), value_};
     time_history_.push_back(std::move(entry));
   }
 }

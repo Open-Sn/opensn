@@ -132,7 +132,7 @@ public:
   ParameterBlock& operator=(ParameterBlock&& other) noexcept;
 
   // Accessors
-  ParameterBlockType Type() const;
+  ParameterBlockType GetType() const;
 
   /**
    * Returns true if the parameter block comprises a single value of any of the types BOOLEAN,
@@ -141,15 +141,15 @@ public:
   bool IsScalar() const;
 
   /// Returns a string version of the type.
-  std::string TypeName() const;
-  std::string Name() const;
-  const Varying& Value() const;
+  std::string GetTypeName() const;
+  std::string GetName() const;
+  const Varying& GetValue() const;
 
   /// Returns the number of parameters in a block. This is normally only useful for the ARRAY type.
-  size_t NumParameters() const;
+  size_t GetNumParameters() const;
 
   /// Returns the sub-parameters of this block.
-  const std::vector<ParameterBlock>& Parameters() const;
+  const std::vector<ParameterBlock>& GetParameters() const;
 
   /**
    * Returns whether or not the block has a value. If this block has sub-parameters it should not
@@ -223,14 +223,14 @@ public:
     if (value_ptr_ == nullptr)
       throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                              ": Value not available for block type " +
-                             ParameterBlockTypeName(Type()));
+                             ParameterBlockTypeName(GetType()));
     try
     {
-      return Value().GetValue<T>();
+      return GetValue().GetValue<T>();
     }
     catch (const std::exception& exc)
     {
-      throw std::logic_error(error_origin_scope_ + ":" + Name() + " " + exc.what());
+      throw std::logic_error(error_origin_scope_ + ":" + GetName() + " " + exc.what());
     }
   }
 
@@ -257,10 +257,10 @@ public:
   template <typename T>
   std::vector<T> GetVectorValue() const
   {
-    if (Type() != ParameterBlockType::ARRAY)
+    if (GetType() != ParameterBlockType::ARRAY)
       throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
                              ": Invalid type requested for parameter of type " +
-                             ParameterBlockTypeName(Type()));
+                             ParameterBlockTypeName(GetType()));
 
     std::vector<T> vec;
     if (parameters_.empty())
@@ -271,13 +271,13 @@ public:
 
     // Check that all other parameters are of the required type
     for (const auto& param : parameters_)
-      if (param.Type() != front_param.Type())
+      if (param.GetType() != front_param.GetType())
         throw std::logic_error(error_origin_scope_ + " " + std::string(__PRETTY_FUNCTION__) +
                                ": Parameter \"" + name_ +
                                "\", cannot construct vector from block because "
                                "the sub_parameters do not all have the correct type. param->" +
-                               ParameterBlockTypeName(param.Type()) + " vs param0->" +
-                               ParameterBlockTypeName(front_param.Type()));
+                               ParameterBlockTypeName(param.GetType()) + " vs param0->" +
+                               ParameterBlockTypeName(front_param.GetType()));
 
     const size_t num_params = parameters_.size();
     for (size_t k = 0; k < num_params; ++k)

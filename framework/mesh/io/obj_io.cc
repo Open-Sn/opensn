@@ -328,8 +328,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         edge.second = static_cast<int>(vertex_map[edge.second]);
       }
   }
-  mesh->Vertices() = cell_vertices;
-  mesh->RawCells() = block_data[main_block_id].cells;
+  mesh->GetVertices() = cell_vertices;
+  mesh->GetRawCells() = block_data[main_block_id].cells;
 
   // Always do this
   mesh->SetDimension(2);
@@ -347,7 +347,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   else
   {
     std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
-    for (auto& cell_ptr : mesh->RawCells())
+    for (auto& cell_ptr : mesh->GetRawCells())
       for (auto& face : cell_ptr->faces)
         if (not face.has_neighbor)
           bndry_faces.push_back(&face);

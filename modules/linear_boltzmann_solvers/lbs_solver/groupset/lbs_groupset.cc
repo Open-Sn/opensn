@@ -153,7 +153,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
   {
     for (size_t g = from; g <= to; ++g)
     {
-      groups.push_back(lbs_solver.Groups().at(g));
+      groups.push_back(lbs_solver.GetGroups().at(g));
     }
   }
   catch (const std::exception& exc)

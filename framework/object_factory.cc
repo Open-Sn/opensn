@@ -16,7 +16,7 @@ ObjectFactory::GetInstance() noexcept
 }
 
 const std::map<std::string, ObjectFactory::ObjectRegistryEntry>&
-ObjectFactory::Registry() const
+ObjectFactory::GetRegistry() const
 {
   return object_registry_;
 }
@@ -84,9 +84,9 @@ ObjectFactory::MakeRegisteredObjectOfType(const std::string& type,
   new_object->PushOntoStack(new_object);
 
   if (log.GetVerbosity() >= 2)
-    log.Log() << "Done making object type " << type << " with handle " << new_object->StackID();
+    log.Log() << "Done making object type " << type << " with handle " << new_object->GetStackID();
 
-  return new_object->StackID();
+  return new_object->GetStackID();
 }
 
 InputParameters

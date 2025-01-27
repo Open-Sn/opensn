@@ -97,7 +97,7 @@ ParameterBlock::operator=(ParameterBlock&& other) noexcept
 
 // Accessors
 ParameterBlockType
-ParameterBlock::Type() const
+ParameterBlock::GetType() const
 {
   return type_;
 }
@@ -108,20 +108,20 @@ ParameterBlock::IsScalar() const
   return (type_ >= ParameterBlockType::BOOLEAN and type_ <= ParameterBlockType::INTEGER);
 }
 std::string
-ParameterBlock::TypeName() const
+ParameterBlock::GetTypeName() const
 {
   return ParameterBlockTypeName(type_);
 }
 std::string
-ParameterBlock::Name() const
+ParameterBlock::GetName() const
 {
   return name_;
 }
 
 const Varying&
-ParameterBlock::Value() const
+ParameterBlock::GetValue() const
 {
-  switch (this->Type())
+  switch (this->GetType())
   {
     case ParameterBlockType::BOOLEAN:
     case ParameterBlockType::FLOAT:
@@ -131,26 +131,26 @@ ParameterBlock::Value() const
     {
       if (value_ptr_ == nullptr)
         throw std::runtime_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
-                                 ": Uninitialized Varying value for block " + this->Name());
+                                 ": Uninitialized Varying value for block " + this->GetName());
       return *value_ptr_;
     }
     default:
       throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) + ":\"" +
-                             this->Name() +
+                             this->GetName() +
                              "\""
                              " Called for block of type " +
-                             ParameterBlockTypeName(this->Type()) + " which has no value.");
+                             ParameterBlockTypeName(this->GetType()) + " which has no value.");
   }
 }
 
 size_t
-ParameterBlock::NumParameters() const
+ParameterBlock::GetNumParameters() const
 {
   return parameters_.size();
 }
 
 const std::vector<ParameterBlock>&
-ParameterBlock::Parameters() const
+ParameterBlock::GetParameters() const
 {
   return parameters_;
 }
@@ -175,7 +175,7 @@ ParameterBlock::ChangeToArray()
 
   const auto& first_param = parameters_.front();
   for (const auto& param : parameters_)
-    if (param.Type() != first_param.Type())
+    if (param.GetType() != first_param.GetType())
       throw std::logic_error(error_origin_scope_ + fname +
                              ": Cannot change ParameterBlock to "
                              "array. It has existing parameters and they are not of the same"
@@ -197,30 +197,30 @@ ParameterBlock::SetErrorOriginScope(const std::string& scope)
 void
 ParameterBlock::RequireBlockTypeIs(ParameterBlockType type) const
 {
-  if (Type() != type)
-    throw std::logic_error(error_origin_scope_ + ":" + Name() + " Is required to be of type " +
+  if (GetType() != type)
+    throw std::logic_error(error_origin_scope_ + ":" + GetName() + " Is required to be of type " +
                            ParameterBlockTypeName(type) + " but is " +
-                           ParameterBlockTypeName(Type()));
+                           ParameterBlockTypeName(GetType()));
 }
 
 void
 ParameterBlock::RequireParameter(const std::string& param_name) const
 {
   if (not Has(param_name))
-    throw std::logic_error(error_origin_scope_ + ":" + Name() + " Is required to have parameter " +
-                           param_name);
+    throw std::logic_error(error_origin_scope_ + ":" + GetName() +
+                           " Is required to have parameter " + param_name);
 }
 
 void
 ParameterBlock::AddParameter(ParameterBlock block)
 {
   for (const auto& param : parameters_)
-    if (param.Name() == block.Name())
+    if (param.GetName() == block.GetName())
       throw std::invalid_argument(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
-                                  ": Attempting to add duplicate parameter " + param.Name() +
+                                  ": Attempting to add duplicate parameter " + param.GetName() +
                                   " to "
                                   "block " +
-                                  this->Name());
+                                  this->GetName());
   parameters_.push_back(std::move(block));
 
   SortParameters();
@@ -233,7 +233,7 @@ ParameterBlock::SortParameters()
   {
     bool operator()(const ParameterBlock& paramA, const ParameterBlock& paramB)
     {
-      return paramA.Name() < paramB.Name();
+      return paramA.GetName() < paramB.GetName();
     }
   };
 
@@ -241,7 +241,7 @@ ParameterBlock::SortParameters()
   {
     bool operator()(const ParameterBlock& paramA, const ParameterBlock& paramB)
     {
-      return std::stoi(paramA.Name()) < std::stoi(paramB.Name());
+      return std::stoi(paramA.GetName()) < std::stoi(paramB.GetName());
     }
   };
 
@@ -249,7 +249,7 @@ ParameterBlock::SortParameters()
   // to have integer names that were converted to strings. It never showed up
   // because we were not testing with enough values. Essentially "11" < "2" in
   // the realm of strings but not in integer world.
-  if (this->Type() != ParameterBlockType::ARRAY)
+  if (this->GetType() != ParameterBlockType::ARRAY)
     std::sort(parameters_.begin(), parameters_.end(), AlphabeticFunctor());
   else
     std::sort(parameters_.begin(), parameters_.end(), AlphabeticNumericFunctor());
@@ -268,7 +268,7 @@ ParameterBlock&
 ParameterBlock::GetParam(const std::string& param_name)
 {
   for (auto& param : parameters_)
-    if (param.Name() == param_name)
+    if (param.GetName() == param_name)
       return param;
 
   throw std::out_of_range(error_origin_scope_ + ":" + std::string(__PRETTY_FUNCTION__) +
@@ -294,7 +294,7 @@ const ParameterBlock&
 ParameterBlock::GetParam(const std::string& param_name) const
 {
   for (const auto& param : parameters_)
-    if (param.Name() == param_name)
+    if (param.GetName() == param_name)
       return param;
 
   throw std::out_of_range(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
@@ -320,7 +320,7 @@ ParameterBlock::GetParam(size_t index) const
 void
 ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& offset) const
 {
-  outstr += offset + this->Name() + " = \n";
+  outstr += offset + this->GetName() + " = \n";
   outstr += offset + "{\n";
 
   if (HasValue())
@@ -329,33 +329,33 @@ ParameterBlock::RecursiveDumpToString(std::string& outstr, const std::string& of
   for (const auto& param : parameters_)
   {
 
-    switch (param.Type())
+    switch (param.GetType())
     {
       case ParameterBlockType::BOOLEAN:
       {
-        outstr += offset + "  " + param.Name() + " = ";
-        const bool value = param.Value().BoolValue();
+        outstr += offset + "  " + param.GetName() + " = ";
+        const bool value = param.GetValue().GetBoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
-        outstr += offset + "  " + param.Name() + " = ";
-        const double value = param.Value().FloatValue();
+        outstr += offset + "  " + param.GetName() + " = ";
+        const double value = param.GetValue().GetFloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
-        outstr += offset + "  " + param.Name() + " = ";
-        const auto& value = param.Value().StringValue();
+        outstr += offset + "  " + param.GetName() + " = ";
+        const auto& value = param.GetValue().GetStringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
-        outstr += offset + "  " + param.Name() + " = ";
-        const int64_t value = param.Value().IntegerValue();
+        outstr += offset + "  " + param.GetName() + " = ";
+        const int64_t value = param.GetValue().GetIntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
@@ -384,37 +384,37 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
     return;
   }
 
-  outstr += (this->Type() == ParameterBlockType::ARRAY ? "[" : "{");
+  outstr += (this->GetType() == ParameterBlockType::ARRAY ? "[" : "{");
   for (const auto& param : parameters_)
   {
 
-    switch (param.Type())
+    switch (param.GetType())
     {
       case ParameterBlockType::BOOLEAN:
       {
-        outstr += "\"" + param.Name() + "\" = ";
-        const bool value = param.Value().BoolValue();
+        outstr += "\"" + param.GetName() + "\" = ";
+        const bool value = param.GetValue().GetBoolValue();
         outstr += std::string(value ? "true" : "false") + ",\n";
         break;
       }
       case ParameterBlockType::FLOAT:
       {
-        outstr += "\"" + param.Name() + "\" = ";
-        const double value = param.Value().FloatValue();
+        outstr += "\"" + param.GetName() + "\" = ";
+        const double value = param.GetValue().GetFloatValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
       case ParameterBlockType::STRING:
       {
-        outstr += "\"" + param.Name() + "\" = ";
-        const auto& value = param.Value().StringValue();
+        outstr += "\"" + param.GetName() + "\" = ";
+        const auto& value = param.GetValue().GetStringValue();
         outstr += "\"" + value + "\",\n";
         break;
       }
       case ParameterBlockType::INTEGER:
       {
-        outstr += "\"" + param.Name() + "\" = ";
-        const int64_t value = param.Value().IntegerValue();
+        outstr += "\"" + param.GetName() + "\" = ";
+        const int64_t value = param.GetValue().GetIntegerValue();
         outstr += std::to_string(value) + ",\n";
         break;
       }
@@ -428,7 +428,7 @@ ParameterBlock::RecursiveDumpToJSON(std::string& outstr) const
         break;
     }
   } // for parameter
-  outstr += (this->Type() == ParameterBlockType::ARRAY ? "]" : "}");
+  outstr += (this->GetType() == ParameterBlockType::ARRAY ? "]" : "}");
 }
 // NOLINTEND(misc-no-recursion)
 

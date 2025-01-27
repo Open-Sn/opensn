@@ -11,7 +11,7 @@ BasicOptions::operator()(const std::string& option_name) const
 {
   for (const auto& option : options_)
   {
-    if (option.Name() == option_name)
+    if (option.GetName() == option_name)
       return option;
   }
 
@@ -33,7 +33,7 @@ BasicOptions::operator[](const std::string& option_name)
 {
   for (auto& option : options_)
   {
-    if (option.Name() == option_name)
+    if (option.GetName() == option_name)
       return option;
   }
 
@@ -84,7 +84,7 @@ BasicOptions::GetOptionIndexFromName(const std::string& option_name) const
   size_t index = 0;
   for (const auto& option : options_)
   {
-    if (option.Name() == option_name)
+    if (option.GetName() == option_name)
       return index;
     ++index;
   }

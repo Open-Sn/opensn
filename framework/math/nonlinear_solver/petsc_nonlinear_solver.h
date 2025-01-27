@@ -24,7 +24,7 @@ public:
 
   virtual ~PETScNonLinearSolver();
 
-  PETScNonLinearSolverOptions& ToleranceOptions() { return options_; }
+  PETScNonLinearSolverOptions& GetToleranceOptions() { return options_; }
 
   void ApplyToleranceOptions();
 

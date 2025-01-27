@@ -40,19 +40,19 @@ public:
    * Returns a direct pointer to the memory array used internally by the vector to store its owned
    * elements.
    */
-  double* Data() override;
+  double* GetData() override;
 
   /**
    * Returns a direct const pointer to the memory array used internally by the vector to store its
    * owned elements
    */
-  const double* Data() const override;
+  const double* GetData() const override;
 
   /// Returns a constant reference to the local data of the vector.
-  const std::vector<double>& LocalSTLData() const;
+  const std::vector<double>& GetLocalSTLData() const;
 
   /// Returns a reference to the local data of the vector.
-  std::vector<double>& LocalSTLData();
+  std::vector<double>& GetLocalSTLData();
 
   /**
    * Read only accessor to the entry at the given local index of the local vector.

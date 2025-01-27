@@ -60,7 +60,7 @@ public:
   void SetObjectType(const std::string& obj_type);
 
   /// Returns the object type string.
-  std::string ObjectType() const;
+  std::string GetObjectType() const;
 
   /// Sets the class name to be applied to this object. If not used a default will be generated.
   void SetClassName(const std::string& class_name) { class_name_ = class_name; }
@@ -163,7 +163,7 @@ public:
    * Returns the raw parameter block used at assignment. This can be used to see if a user supplied
    * an optional parameter or not.
    */
-  const ParameterBlock& ParametersAtAssignment() const { return param_block_at_assignment_; }
+  const ParameterBlock& GetParametersAtAssignment() const { return param_block_at_assignment_; }
 
   bool IsParameterValid(const std::string& param_name) const;
 

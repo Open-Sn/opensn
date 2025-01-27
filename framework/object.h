@@ -32,7 +32,7 @@ public:
    * Returns the stack id of this object. This can be used with input language to connect objects
    * together.
    */
-  size_t StackID() const;
+  size_t GetStackID() const;
 
   /**
    * An overridable callback that is called by the ObjectMaker and by default adds the object onto

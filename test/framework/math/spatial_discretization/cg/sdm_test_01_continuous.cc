@@ -68,7 +68,7 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
 
@@ -77,9 +77,9 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
 
     // Assemble continuous kernels
     {
-      const auto& shape = fe_vol_data.ShapeValues();
-      const auto& shape_grad = fe_vol_data.ShapeGradValues();
-      const auto& JxW = fe_vol_data.JxW_Values();
+      const auto& shape = fe_vol_data.GetShapeValues();
+      const auto& shape_grad = fe_vol_data.GetShapeGradValues();
+      const auto& JxW = fe_vol_data.GetJxWValues();
       for (size_t i = 0; i < num_nodes; ++i)
       {
         if (bndry_nodes.find(i) != bndry_nodes.end())
@@ -89,12 +89,12 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
           if (bndry_nodes.find(j) != bndry_nodes.end())
             continue;
           double entry_aij = 0.0;
-          for (size_t qp : fe_vol_data.QuadraturePointIndices())
+          for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
 
           Acell(i, j) = entry_aij;
         } // for j
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
           cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
     }   // continuous kernels
@@ -146,9 +146,9 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid.Dimension() == 2)
+  if (grid.GetDimension() == 2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  else if (grid.Dimension() == 3)
+  else if (grid.GetDimension() == 3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.7");
 
   for (const auto& option : pc_options)

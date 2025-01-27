@@ -41,7 +41,7 @@ SimTest91_PWLD()
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  auto dimension = grid.Dimension();
+  auto dimension = grid.GetDimension();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
@@ -121,7 +121,7 @@ SimTest91_PWLD()
   {
     const auto& cc = cell.centroid;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
     {
@@ -144,7 +144,7 @@ SimTest91_PWLD()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     MatVec3 IntV_shapeI_gradshapeJ(num_nodes, std::vector<Vector3>(num_nodes, Vector3(0, 0, 0)));
@@ -152,7 +152,7 @@ SimTest91_PWLD()
 
     for (unsigned int i = 0; i < num_nodes; ++i)
       for (unsigned int j = 0; j < num_nodes; ++j)
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_shapeI_gradshapeJ[i][j] +=
             fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeGrad(j, qp) * fe_vol_data.JxW(qp);
@@ -172,7 +172,7 @@ SimTest91_PWLD()
       DenseMatrix<double> IntS_shapeI_shapeJ(num_nodes, num_nodes, 0.0);
       for (unsigned int i = 0; i < num_nodes; ++i)
         for (unsigned int j = 0; j < num_nodes; ++j)
-          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
             IntS_shapeI_shapeJ(i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
 
@@ -213,7 +213,7 @@ SimTest91_PWLD()
     const auto& cell = grid.cells[cell_global_id];
     const auto cell_local_id = cell.local_id;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const size_t num_faces = cell.faces.size();
 
     const std::vector<double> zero_vector(num_groups, 0.0);
@@ -239,7 +239,7 @@ SimTest91_PWLD()
       {
         const auto& M_surf = cell_faceMmatrices[cell_local_id][f];
 
-        const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -265,7 +265,7 @@ SimTest91_PWLD()
       }     // if internal incident face
     }       // for face
 
-    const auto& sigma_t = cell_xs.SigmaTotal();
+    const auto& sigma_t = cell_xs.GetSigmaTotal();
     for (size_t g = 0; g < num_groups; ++g)
     {
       auto Atemp = A;
@@ -364,8 +364,8 @@ SimTest91_PWLD()
     for (const auto& cell : grid.local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
-      const auto& S = xs.TransferMatrices();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
+      const auto& S = xs.GetTransferMatrices();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -404,7 +404,7 @@ SimTest91_PWLD()
     for (const auto& cell : grid.local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {

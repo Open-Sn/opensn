@@ -48,14 +48,14 @@ ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
 {
   if (params.IsParameterValid("options"))
   {
-    auto options = OptionsBlock();
+    auto options = GetOptionsBlock();
     options.AssignParameters(params.GetParam("options"));
     SetOptions(options);
   }
 }
 
 InputParameters
-ResponseEvaluator::OptionsBlock()
+ResponseEvaluator::GetOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("A block of options for the response evaluator for adding adjoint "
@@ -81,9 +81,9 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
   {
     const auto& user_buffer_params = params.GetParam("buffers");
     user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    for (int p = 0; p < user_buffer_params.NumParameters(); ++p)
+    for (int p = 0; p < user_buffer_params.GetNumParameters(); ++p)
     {
-      auto buffer_params = BufferOptionsBlock();
+      auto buffer_params = GetBufferOptionsBlock();
       buffer_params.AssignParameters(user_buffer_params.GetParam(p));
       SetBufferOptions(buffer_params);
     }
@@ -100,14 +100,14 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
 
   if (params.IsParameterValid("sources"))
   {
-    auto source_params = SourceOptionsBlock();
+    auto source_params = GetSourceOptionsBlock();
     source_params.AssignParameters(params.GetParam("sources"));
     SetSourceOptions(source_params);
   }
 }
 
 InputParameters
-ResponseEvaluator::BufferOptionsBlock()
+ResponseEvaluator::GetBufferOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Options for adding adjoint buffers to the response evaluator.");
@@ -127,7 +127,7 @@ ResponseEvaluator::BufferOptionsBlock()
 void
 ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 {
-  auto params = opensn::ResponseEvaluator::BufferOptionsBlock();
+  auto params = opensn::ResponseEvaluator::GetBufferOptionsBlock();
   params.AssignParameters(input);
 
   const auto name = params.GetParamValue<std::string>("name");
@@ -151,7 +151,7 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 }
 
 InputParameters
-ResponseEvaluator::SourceOptionsBlock()
+ResponseEvaluator::GetSourceOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("A table of various forward source specifications.");
@@ -177,7 +177,7 @@ ResponseEvaluator::SourceOptionsBlock()
 void
 ResponseEvaluator::SetSourceOptions(const InputParameters& input)
 {
-  auto params = ResponseEvaluator::SourceOptionsBlock();
+  auto params = ResponseEvaluator::GetSourceOptionsBlock();
   params.AssignParameters(input);
 
   params.RequireBlockTypeIs(ParameterBlockType::BLOCK);
@@ -186,9 +186,9 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("material"))
   {
     const auto& user_msrc_params = params.GetParam("material");
-    for (int p = 0; p < user_msrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_msrc_params.GetNumParameters(); ++p)
     {
-      auto msrc_params = MaterialSourceOptionsBlock();
+      auto msrc_params = GetMaterialSourceOptionsBlock();
       msrc_params.AssignParameters(user_msrc_params.GetParam(p));
       SetMaterialSourceOptions(msrc_params);
     }
@@ -198,7 +198,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("point"))
   {
     const auto& user_psrc_params = params.GetParam("point");
-    for (int p = 0; p < user_psrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_psrc_params.GetNumParameters(); ++p)
     {
       point_sources_.push_back(
         user_psrc_params.GetParam(p).GetValue<std::shared_ptr<PointSource>>());
@@ -210,7 +210,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("volumetric"))
   {
     const auto& user_dsrc_params = params.GetParam("volumetric");
-    for (int p = 0; p < user_dsrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_dsrc_params.GetNumParameters(); ++p)
     {
       volumetric_sources_.push_back(
         user_dsrc_params.GetParam(p).GetValue<std::shared_ptr<VolumetricSource>>());
@@ -222,9 +222,9 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
   if (params.Has("boundary"))
   {
     const auto& user_bsrc_params = params.GetParam("boundary");
-    for (int p = 0; p < user_bsrc_params.NumParameters(); ++p)
+    for (int p = 0; p < user_bsrc_params.GetNumParameters(); ++p)
     {
-      auto bsrc_params = LBSSolver::BoundaryOptionsBlock();
+      auto bsrc_params = LBSSolver::GetBoundaryOptionsBlock();
       bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));
       SetBoundarySourceOptions(bsrc_params);
     }
@@ -232,7 +232,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
 }
 
 InputParameters
-ResponseEvaluator::MaterialSourceOptionsBlock()
+ResponseEvaluator::GetMaterialSourceOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription(
@@ -254,11 +254,11 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                             " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
-  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->NumGroups(),
+  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->GetNumGroups(),
                           "The number of material source values and groups "
                           "in the underlying solver do not match. "
                           "Expected " +
-                            std::to_string(lbs_solver_->NumGroups()) + " but got " +
+                            std::to_string(lbs_solver_->GetNumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
 
   material_sources_[matid] = values;
@@ -315,11 +315,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = lbs_solver_->Grid();
-  const auto& discretization = lbs_solver_->SpatialDiscretization();
+  const auto& grid = lbs_solver_->GetGrid();
+  const auto& discretization = lbs_solver_->GetSpatialDiscretization();
   const auto& transport_views = lbs_solver_->GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
-  const auto num_groups = lbs_solver_->NumGroups();
+  const auto num_groups = lbs_solver_->GetNumGroups();
 
   double local_response = 0.0;
 
@@ -331,7 +331,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& transport_view = transport_views[cell.local_id];
       const auto& fe_values = unit_cell_matrices[cell.local_id];
-      const auto num_cell_nodes = cell_mapping.NumNodes();
+      const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
       if (material_sources_.count(cell.material_id) > 0)
       {
@@ -351,7 +351,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   if (not boundary_sources_.empty())
   {
     size_t gs = 0;
-    for (const auto& groupset : lbs_solver_->Groupsets())
+    for (const auto& groupset : lbs_solver_->GetGroupsets())
     {
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;
@@ -369,7 +369,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
           if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
             const auto bndry_id = face.neighbor_id;
-            const auto num_face_nodes = cell_mapping.NumFaceNodes(f);
+            const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -404,15 +404,15 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   // Point sources
   for (const auto& point_source : point_sources_)
-    for (const auto& subscriber : point_source->Subscribers())
+    for (const auto& subscriber : point_source->GetSubscribers())
     {
       const auto& cell = grid.local_cells[subscriber.cell_local_id];
       const auto& transport_view = transport_views[cell.local_id];
 
-      const auto& src = point_source->Strength();
+      const auto& src = point_source->GetStrength();
       const auto& vol_wt = subscriber.volume_weight;
 
-      const auto num_cell_nodes = transport_view.NumNodes();
+      const auto num_cell_nodes = transport_view.GetNumNodes();
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -431,7 +431,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
-      const auto num_cell_nodes = transport_view.NumNodes();
+      const auto num_cell_nodes = transport_view.GetNumNodes();
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
         const auto& V_i = fe_values.intV_shapeI(i);

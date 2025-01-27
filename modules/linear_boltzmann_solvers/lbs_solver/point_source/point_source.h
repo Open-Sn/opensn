@@ -50,12 +50,12 @@ public:
    */
   void Initialize(const LBSSolver& lbs_solver);
 
-  size_t NumLocalSubscribers() const { return subscribers_.size(); }
-  size_t NumGlobalSubscribers() const { return num_global_subscribers_; }
-  const std::vector<Subscriber>& Subscribers() const { return subscribers_; }
+  size_t GetNumLocalSubscribers() const { return subscribers_.size(); }
+  size_t GetNumGlobalSubscribers() const { return num_global_subscribers_; }
+  const std::vector<Subscriber>& GetSubscribers() const { return subscribers_; }
 
-  const Vector3& Location() const { return location_; }
-  const std::vector<double>& Strength() const { return strength_; }
+  const Vector3& GetLocation() const { return location_; }
+  const std::vector<double>& GetStrength() const { return strength_; }
 
 private:
   const Vector3 location_;

@@ -82,9 +82,9 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     std::map<uint64_t, BoundaryCondition> bcs;
     for (auto& [bid, lbs_bndry] : sweep_boundaries_)
     {
-      if (lbs_bndry->Type() == LBSBoundaryType::REFLECTING)
+      if (lbs_bndry->GetType() == LBSBoundaryType::REFLECTING)
         bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-      else if (lbs_bndry->Type() == LBSBoundaryType::ISOTROPIC)
+      else if (lbs_bndry->GetType() == LBSBoundaryType::ISOTROPIC)
       {
         const bool has_bndry_preference = boundary_preferences_.count(bid) > 0;
         if (not has_bndry_preference)
@@ -107,8 +107,8 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
       const auto& mat_id = matid_xs_pair.first;
       const auto& xs = matid_xs_pair.second;
 
-      const auto& diffusion_coeff = xs->DiffusionCoefficient();
-      const auto& sigma_r = xs->SigmaRemoval();
+      const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+      const auto& sigma_r = xs->GetSigmaRemoval();
 
       std::vector<double> Dg(gs_G, 0.0);
       std::vector<double> sigR(gs_G, 0.0);
@@ -128,7 +128,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGSolver"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGSolver"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,

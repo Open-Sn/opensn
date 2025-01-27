@@ -17,7 +17,7 @@ public:
   AGSSolver(LBSSolver& lbs_solver, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
     : lbs_solver_(lbs_solver),
       wgs_solvers_(std::move(wgs_solvers)),
-      phi_old_(lbs_solver.PhiOldLocal().size()),
+      phi_old_(lbs_solver.GetPhiOldLocal().size()),
       max_iterations_(100),
       tolerance_(1.0e-6),
       verbose_(true)
@@ -30,15 +30,15 @@ public:
 
   bool IsVerbose() const { return verbose_; }
 
-  void Verbosity(bool verbose) { verbose_ = verbose; }
+  void SetVerbosity(bool verbose) { verbose_ = verbose; }
 
   double GetTolerance() { return tolerance_; }
 
-  void Tolerance(double tolerance) { tolerance_ = tolerance; }
+  void SetTolerance(double tolerance) { tolerance_ = tolerance; }
 
   int GetMaxIterations() { return max_iterations_; }
 
-  void MaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
+  void SetMaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
 
 private:
   LBSSolver& lbs_solver_;

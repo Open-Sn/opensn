@@ -35,16 +35,16 @@ DFEMDiffusionSolver::GetInputParameters()
 }
 
 InputParameters
-DFEMDiffusionSolver::OptionsBlock()
+DFEMDiffusionSolver::GetOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::OptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetOptionsBlock();
   return params;
 }
 
 InputParameters
-DFEMDiffusionSolver::BoundaryOptionsBlock()
+DFEMDiffusionSolver::GetBoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 
@@ -78,15 +78,15 @@ DFEMDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunc
 void
 DFEMDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
-    if (spec.Name() == "boundary_conditions")
+    if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -168,7 +168,7 @@ DFEMDiffusionSolver::Initialize()
 {
   const std::string fname = "DFEMSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.GetTimeString() << " " << GetName()
             << ": Initializing DFEM Diffusion solver ";
 
   // Get grid
@@ -298,7 +298,7 @@ DFEMDiffusionSolver::Execute()
   for (const auto& cell : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -313,7 +313,7 @@ DFEMDiffusionSolver::Execute()
       {
         const int64_t jmap = sdm.MapDOF(cell, j);
         double entry_aij = 0.0;
-        for (size_t qp : fe_vol_data.QuadraturePointIndices())
+        for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
           entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
@@ -324,7 +324,7 @@ DFEMDiffusionSolver::Execute()
         MatSetValue(A_, imap, jmap, entry_aij, ADD_VALUES);
       } // for j
       double entry_rhs_i = 0.0;
-      for (size_t qp : fe_vol_data.QuadraturePointIndices())
+      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         entry_rhs_i += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       VecSetValue(b_, imap, entry_rhs_i, ADD_VALUES);
@@ -336,7 +336,7 @@ DFEMDiffusionSolver::Execute()
     {
       const auto& face = cell.faces[f];
       const auto& n_f = face.normal;
-      const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell, f);
@@ -354,11 +354,11 @@ DFEMDiffusionSolver::Execute()
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           Ckappa = 2.0;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           Ckappa = 4.0;
 
         // Assembly penalty terms
@@ -377,7 +377,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             double aij = 0.0;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               aij +=
                 Ckappa *
                 (d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm +
@@ -412,7 +412,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp);
 
             Vector3 vec_aij;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) *
                          fe_srf_data.JxW(qp);
@@ -438,7 +438,7 @@ DFEMDiffusionSolver::Execute()
             const int64_t jmap = sdm.MapDOF(cell, j);
 
             Vector3 vec_aij;
-            for (size_t qp : fe_srf_data.QuadraturePointIndices())
+            for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) *
                          fe_srf_data.JxW(qp);
@@ -482,7 +482,7 @@ DFEMDiffusionSolver::Execute()
                 const int64_t jr = sdm.MapDOF(cell, j);
 
                 double aij = 0.0;
-                for (size_t qp : fe_srf_data.QuadraturePointIndices())
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                   aij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
                          fe_srf_data.JxW(qp);
                 aij *= (aval / bval);
@@ -494,7 +494,7 @@ DFEMDiffusionSolver::Execute()
             if (std::fabs(fval) >= 1.0e-12)
             {
               double rhs_val = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 rhs_val += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
               rhs_val *= (fval / bval);
 
@@ -507,11 +507,11 @@ DFEMDiffusionSolver::Execute()
           const double bc_value = bndry.values[0];
           // Compute kappa
           double Ckappa = 2.0;
-          if (cell.Type() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             Ckappa = 4.0; // fmax(4.0*Dg/hm,0.25);
-          if (cell.Type() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             Ckappa = 4.0;
-          if (cell.Type() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             Ckappa = 8.0;
 
           // Assembly penalty terms
@@ -526,7 +526,7 @@ DFEMDiffusionSolver::Execute()
               const int64_t jmmap = sdm.MapDOF(cell, jm);
 
               double aij = 0.0;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 aij += Ckappa * d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm *
                        fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                        fe_srf_data.JxW(qp);
@@ -551,7 +551,7 @@ DFEMDiffusionSolver::Execute()
               const int64_t jmap = sdm.MapDOF(cell, j);
 
               Vector3 vec_aij;
-              for (size_t qp : fe_srf_data.QuadraturePointIndices())
+              for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
                 vec_aij += (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) +
                             fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp)) *
                            fe_srf_data.JxW(qp) *
@@ -592,12 +592,12 @@ DFEMDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  Name(),
+                                  GetName(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
-                                  basic_options_("residual_tolerance").FloatValue(),
-                                  basic_options_("max_iters").IntegerValue());
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_iters").GetIntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);
@@ -621,24 +621,24 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const size_t num_faces = cell.faces.size();
   const size_t num_vertices = cell.vertex_ids.size();
 
-  const double volume = cell_mapping.CellVolume();
-  const double face_area = cell_mapping.FaceArea(f);
+  const double volume = cell_mapping.GetCellVolume();
+  const double face_area = cell_mapping.GetFaceArea(f);
 
   /**Lambda to compute surface area.*/
   auto ComputeSurfaceArea = [&cell_mapping, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell_mapping.FaceArea(fr);
+      surface_area += cell_mapping.GetFaceArea(fr);
 
     return surface_area;
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -660,7 +660,7 @@ DFEMDiffusionSolver::HPerpendicular(const Cell& cell, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 
@@ -696,7 +696,7 @@ DFEMDiffusionSolver::MapFaceNodeDisc(const Cell& cur_cell,
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];
 
-  const size_t adj_face_num_nodes = adj_cell_mapping.NumFaceNodes(acf);
+  const size_t adj_face_num_nodes = adj_cell_mapping.GetNumFaceNodes(acf);
 
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {

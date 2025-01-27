@@ -34,18 +34,18 @@ ClassicRichardson::Solve()
 
   auto& groupset = gs_context_ptr->groupset;
   auto& lbs_solver = gs_context_ptr->lbs_solver;
-  auto& phi_old = lbs_solver.PhiOldLocal();
-  auto& phi_new = lbs_solver.PhiNewLocal();
+  auto& phi_old = lbs_solver.GetPhiOldLocal();
+  auto& phi_new = lbs_solver.GetPhiNewLocal();
   const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
-  saved_q_moments_local_ = lbs_solver.QMomentsLocal();
+  saved_q_moments_local_ = lbs_solver.GetQMomentsLocal();
   psi_old_.resize(groupset.angle_agg->GetNumDelayedAngularDOFs().first, 0.0);
 
   double pw_phi_change_prev = 1.0;
   bool converged = false;
   for (int k = 0; k < groupset.max_iterations; ++k)
   {
-    lbs_solver.QMomentsLocal() = saved_q_moments_local_;
-    gs_context_ptr->set_source_function(groupset, lbs_solver.QMomentsLocal(), phi_old, scope);
+    lbs_solver.GetQMomentsLocal() = saved_q_moments_local_;
+    gs_context_ptr->set_source_function(groupset, lbs_solver.GetQMomentsLocal(), phi_old, scope);
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Apply WGDSA
@@ -105,7 +105,7 @@ ClassicRichardson::Solve()
       log.Log() << iter_stats.str();
   }
 
-  lbs_solver.QMomentsLocal() = saved_q_moments_local_;
+  lbs_solver.GetQMomentsLocal() = saved_q_moments_local_;
 
   gs_context_ptr->PostSolveCallback();
 }

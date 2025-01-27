@@ -96,7 +96,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
   using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
   std::map<CellFaceKey, std::vector<double>> received_messages;
   std::vector<uint64_t> cells_who_received_data;
-  auto& location_dependencies = fluds_.GetSPDS().LocationDependencies();
+  auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
   for (int locJ : location_dependencies)
   {
     auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
@@ -123,12 +123,12 @@ CBC_ASynchronousCommunicator::ReceiveData()
 
         received_messages[{cell_global_id, face_id}] = std::move(psi_data);
         cells_who_received_data.push_back(
-          fluds_.GetSPDS().Grid().MapCellGlobalID2LocalID(cell_global_id));
+          fluds_.GetSPDS().GetGrid().MapCellGlobalID2LocalID(cell_global_id));
       } // while not at end of buffer
     }   // Process each message embedded in buffer
   }
 
-  cbc_fluds_.DeplocsOutgoingMessages().merge(received_messages);
+  cbc_fluds_.GetDeplocsOutgoingMessages().merge(received_messages);
 
   return cells_who_received_data;
 }

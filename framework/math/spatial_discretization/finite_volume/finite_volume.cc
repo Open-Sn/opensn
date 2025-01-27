@@ -27,8 +27,8 @@ FiniteVolume::New(const MeshContinuum& grid, CoordinateSystemType cs_type)
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : sdm_stack)
-    if (sdm->Type() == SpatialDiscretizationType::FINITE_VOLUME and
-        std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->GetType() == SpatialDiscretizationType::FINITE_VOLUME and
+        std::addressof(sdm->GetGrid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto sdm_ptr = std::dynamic_pointer_cast<FiniteVolume>(sdm);
@@ -59,7 +59,7 @@ FiniteVolume::CreateCellMappings()
     using namespace opensn;
     std::unique_ptr<CellMapping> mapping;
 
-    switch (cell.Type())
+    switch (cell.GetType())
     {
       case CellType::SLAB:
       case CellType::POLYGON:

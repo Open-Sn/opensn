@@ -48,15 +48,15 @@ PointSource::PointSource(const InputParameters& params)
 void
 PointSource::Initialize(const LBSSolver& lbs_solver)
 {
-  OpenSnLogicalErrorIf(strength_.size() != lbs_solver.NumGroups(),
+  OpenSnLogicalErrorIf(strength_.size() != lbs_solver.GetNumGroups(),
                        "Incompatible point source strength vector at location " +
                          location_.PrintStr() + ". " + "There are " +
-                         std::to_string(lbs_solver.NumGroups()) + " simulation groups, but " +
+                         std::to_string(lbs_solver.GetNumGroups()) + " simulation groups, but " +
                          std::to_string(strength_.size()) + " source strength values.");
 
   // Get info from solver
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_solver.GetUnitCellMatrices();
   const auto& ghost_unit_cell_matrices = lbs_solver.GetUnitGhostCellMatrices();
 
@@ -77,11 +77,11 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
       const auto node_wgts = Mult(M_inv, shape_vals);
 
       // Increment the total volume
-      total_volume += cell_mapping.CellVolume();
+      total_volume += cell_mapping.GetCellVolume();
 
       // Add to subscribers
       subscribers.push_back(
-        Subscriber{cell_mapping.CellVolume(), cell.local_id, shape_vals, node_wgts});
+        Subscriber{cell_mapping.GetCellVolume(), cell.local_id, shape_vals, node_wgts});
     }
   }
 

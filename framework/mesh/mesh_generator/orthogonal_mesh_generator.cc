@@ -42,7 +42,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
     node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& node_list_block : node_sets_param)
     {
-      OpenSnInvalidArgumentIf(node_list_block.Type() != ParameterBlockType::ARRAY,
+      OpenSnInvalidArgumentIf(node_list_block.GetType() != ParameterBlockType::ARRAY,
                               "The entries of \"node_sets\" are required to be of type \"Array\".");
 
       node_sets_.push_back(node_list_block.GetVectorValue<double>());
@@ -137,9 +137,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   umesh->AddBoundary(ZMIN, "ZMIN");
   umesh->AddBoundary(ZMAX, "ZMAX");
 
-  umesh->Vertices().reserve(Nz);
+  umesh->GetVertices().reserve(Nz);
   for (auto& vertex : zverts)
-    umesh->Vertices().push_back(vertex);
+    umesh->GetVertices().push_back(vertex);
 
   // Create cells
   const size_t max_cz = zverts.size() - 2;
@@ -205,7 +205,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   umesh->AddBoundary(YMAX, "YMAX");
 
   std::vector<std::vector<uint64_t>> vertex_ij_to_i_map(Ny, std::vector<uint64_t>(Nx));
-  umesh->Vertices().reserve(Nx * Ny);
+  umesh->GetVertices().reserve(Nx * Ny);
   {
     uint64_t k = 0;
     for (size_t i = 0; i < Ny; ++i)
@@ -213,7 +213,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
       for (size_t j = 0; j < Nx; ++j)
       {
         vertex_ij_to_i_map[i][j] = k++;
-        umesh->Vertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], 0.0);
+        umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], 0.0);
       }
     }
   }
@@ -333,7 +333,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   for (auto& vec : vertex_ijk_to_i_map)
     vec.resize(Nx, std::vector<uint64_t>(Nz));
 
-  umesh->Vertices().reserve(Nx * Ny * Nz);
+  umesh->GetVertices().reserve(Nx * Ny * Nz);
   {
     uint64_t c = 0;
     for (size_t i = 0; i < Ny; ++i)
@@ -343,7 +343,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
         for (size_t k = 0; k < Nz; ++k)
         {
           vertex_ijk_to_i_map[i][j][k] = c++;
-          umesh->Vertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
+          umesh->GetVertices().emplace_back(vertices_1d_x[j], vertices_1d_y[i], vertices_1d_z[k]);
         }
       }
     }

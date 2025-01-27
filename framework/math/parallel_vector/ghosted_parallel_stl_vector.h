@@ -26,15 +26,16 @@ public:
     : ParallelSTLVector(local_size, global_size, communicator),
       ghost_comm_(local_size, global_size, ghost_ids, communicator)
   {
-    values_.assign(local_size_ + ghost_comm_.NumGhosts(), 0.0);
+    values_.assign(local_size_ + ghost_comm_.GetNumGhosts(), 0.0);
   }
 
   /// Initialize a ghosted parallel vector from a ghost communicator.
   explicit GhostedParallelSTLVector(const VectorGhostCommunicator& ghost_comm)
-    : ParallelSTLVector(ghost_comm.LocalSize(), ghost_comm.GlobalSize(), ghost_comm.Communicator()),
+    : ParallelSTLVector(
+        ghost_comm.GetLocalSize(), ghost_comm.GetGlobalSize(), ghost_comm.GetCommunicator()),
       ghost_comm_(ghost_comm)
   {
-    values_.assign(local_size_ + ghost_comm_.NumGhosts(), 0.0);
+    values_.assign(local_size_ + ghost_comm_.GetNumGhosts(), 0.0);
   }
 
   /// Copy constructor.
@@ -53,13 +54,13 @@ public:
   std::unique_ptr<ParallelVector> MakeClone() const override;
 
   /// Return the number of ghosts associated with the local vector.
-  uint64_t NumGhosts() const { return ghost_comm_.NumGhosts(); }
+  uint64_t GetNumGhosts() const { return ghost_comm_.GetNumGhosts(); }
 
   /// Return the total size of the local vector, including ghosts.
-  uint64_t LocalSizeWithGhosts() const { return values_.size(); }
+  uint64_t GetLocalSizeWithGhosts() const { return values_.size(); }
 
   /// Return the ghost indices associated with the local vector.
-  const std::vector<int64_t>& GhostIndices() const { return ghost_comm_.GhostIndices(); }
+  const std::vector<int64_t>& GetGhostIndices() const { return ghost_comm_.GetGhostIndices(); }
 
   /// Map a global ghost id to its respective local id.
   int64_t MapGhostToLocal(const int64_t ghost_id) const

@@ -33,47 +33,47 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   apply_ags_fission_src_ = (source_flags & APPLY_AGS_FISSION_SOURCES);
   suppress_wg_scatter_src_ = (source_flags & SUPPRESS_WG_SCATTER);
 
-  const auto& densities = lbs_solver_.DensitiesLocal();
+  const auto& densities = lbs_solver_.GetDensitiesLocal();
 
   // Get group setup
   gs_i_ = static_cast<size_t>(groupset.groups.front().id);
   gs_f_ = static_cast<size_t>(groupset.groups.back().id);
 
-  first_grp_ = static_cast<size_t>(lbs_solver_.Groups().front().id);
-  last_grp_ = static_cast<size_t>(lbs_solver_.Groups().back().id);
+  first_grp_ = static_cast<size_t>(lbs_solver_.GetGroups().front().id);
+  last_grp_ = static_cast<size_t>(lbs_solver_.GetGroups().back().id);
 
-  default_zero_src_.assign(lbs_solver_.Groups().size(), 0.0);
+  default_zero_src_.assign(lbs_solver_.GetGroups().size(), 0.0);
 
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
   const auto& matid_to_src_map = lbs_solver_.GetMatID2IsoSrcMap();
 
-  const auto num_moments = lbs_solver_.NumMoments();
-  const auto& ext_src_moments_local = lbs_solver_.ExtSrcMomentsLocal();
+  const auto num_moments = lbs_solver_.GetNumMoments();
+  const auto& ext_src_moments_local = lbs_solver_.GetExtSrcMomentsLocal();
 
   const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
   // Apply all nodal sources
-  const auto& grid = lbs_solver_.Grid();
+  const auto& grid = lbs_solver_.GetGrid();
   for (const auto& cell : grid.local_cells)
   {
     const auto& rho = densities[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
-    cell_volume_ = transport_view.Volume();
+    cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
+    const auto& xs = transport_view.GetXS();
 
     std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
     if (matid_to_src_map.count(cell.material_id) > 0)
       P0_src = matid_to_src_map.at(cell.material_id);
 
-    const auto& S = xs.TransferMatrices();
-    const auto& F = xs.ProductionMatrix();
-    const auto& precursors = xs.Precursors();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& S = xs.GetTransferMatrices();
+    const auto& F = xs.GetProductionMatrix();
+    const auto& precursors = xs.GetPrecursors();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over nodes
-    const auto num_nodes = transport_view.NumNodes();
+    const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       // Loop over moments
@@ -89,7 +89,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
         else
           fixed_src_moments_ = default_zero_src_.data();
 
-        if (lbs_solver_.Options().use_src_moments)
+        if (lbs_solver_.GetOptions().use_src_moments)
           fixed_src_moments_ = &ext_src_moments_local[uk_map];
 
         // Loop over groupset groups
@@ -137,7 +137,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
                 rhs += rho * F_g[gp] * phi_im[gp];
 
-            if (lbs_solver_.Options().use_precursors)
+            if (lbs_solver_.GetOptions().use_precursors)
               rhs += this->AddDelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
           }
 
@@ -195,19 +195,19 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
   const auto gs_f = groupset.groups.back().id;
 
   // Apply point sources
-  if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
+  if (not lbs_solver_.GetOptions().use_src_moments and apply_fixed_src)
   {
-    for (const auto& point_source : lbs_solver_.PointSources())
+    for (const auto& point_source : lbs_solver_.GetPointSources())
     {
-      for (const auto& subscriber : point_source->Subscribers())
+      for (const auto& subscriber : point_source->GetSubscribers())
       {
         auto& transport_view = transport_views[subscriber.cell_local_id];
 
-        const auto& strength = point_source->Strength();
+        const auto& strength = point_source->GetStrength();
         const auto& node_weights = subscriber.node_weights;
         const auto volume_weight = subscriber.volume_weight;
 
-        for (size_t i = 0; i < transport_view.NumNodes(); ++i)
+        for (size_t i = 0; i < transport_view.GetNumNodes(); ++i)
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
           for (size_t g = gs_i; g <= gs_f; ++g)
@@ -226,18 +226,18 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
 
-  const auto& grid = lbs_solver_.Grid();
-  const auto& discretization = lbs_solver_.SpatialDiscretization();
+  const auto& grid = lbs_solver_.GetGrid();
+  const auto& discretization = lbs_solver_.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
-  const auto num_groups = lbs_solver_.NumGroups();
+  const auto num_groups = lbs_solver_.GetNumGroups();
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
 
   // Go through each volumetric source, and its subscribing cells
-  if (not lbs_solver_.Options().use_src_moments and apply_fixed_src)
+  if (not lbs_solver_.GetOptions().use_src_moments and apply_fixed_src)
   {
-    for (const auto& volumetric_source : lbs_solver_.VolumetricSources())
+    for (const auto& volumetric_source : lbs_solver_.GetVolumetricSources())
     {
       for (const auto local_id : volumetric_source->GetSubscribers())
       {

@@ -212,10 +212,10 @@ CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N)
 void
 CopyParallelVectorToVec(const ParallelVector& y, Vec x)
 {
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
   double* x_data;
   VecGetArray(x, &x_data);
-  std::copy(y_data, y_data + y.LocalSize(), x_data);
+  std::copy(y_data, y_data + y.GetLocalSize(), x_data);
   VecRestoreArray(x, &x_data);
 }
 

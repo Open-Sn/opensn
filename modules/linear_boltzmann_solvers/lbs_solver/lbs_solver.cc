@@ -74,7 +74,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   // Make groupsets
   const auto& groupsets_array = params.GetParam("groupsets");
 
-  const size_t num_gs = groupsets_array.NumParameters();
+  const size_t num_gs = groupsets_array.GetNumParameters();
   for (size_t gs = 0; gs < num_gs; ++gs)
   {
     const auto& groupset_params = groupsets_array.GetParam(gs);
@@ -89,7 +89,7 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
   // Options
   if (params.IsParameterValid("options"))
   {
-    auto options_params = LBSSolver::OptionsBlock();
+    auto options_params = LBSSolver::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
 
     this->SetOptions(options_params);
@@ -97,37 +97,37 @@ LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
 }
 
 LBSOptions&
-LBSSolver::Options()
+LBSSolver::GetOptions()
 {
   return options_;
 }
 
 const LBSOptions&
-LBSSolver::Options() const
+LBSSolver::GetOptions() const
 {
   return options_;
 }
 
 size_t
-LBSSolver::NumMoments() const
+LBSSolver::GetNumMoments() const
 {
   return num_moments_;
 }
 
 size_t
-LBSSolver::NumGroups() const
+LBSSolver::GetNumGroups() const
 {
   return num_groups_;
 }
 
 size_t
-LBSSolver::NumPrecursors() const
+LBSSolver::GetNumPrecursors() const
 {
   return num_precursors_;
 }
 
 size_t
-LBSSolver::MaxPrecursorsPerMaterial() const
+LBSSolver::GetMaxPrecursorsPerMaterial() const
 {
   return max_precursors_per_material_;
 }
@@ -142,7 +142,7 @@ LBSSolver::AddGroup(int id)
 }
 
 const std::vector<LBSGroup>&
-LBSSolver::Groups() const
+LBSSolver::GetGroups() const
 {
   return groups_;
 }
@@ -154,13 +154,13 @@ LBSSolver::AddGroupset()
 }
 
 std::vector<LBSGroupset>&
-LBSSolver::Groupsets()
+LBSSolver::GetGroupsets()
 {
   return groupsets_;
 }
 
 const std::vector<LBSGroupset>&
-LBSSolver::Groupsets() const
+LBSSolver::GetGroupsets() const
 {
   return groupsets_;
 }
@@ -178,7 +178,7 @@ LBSSolver::ClearPointSources()
 }
 
 const std::vector<std::shared_ptr<PointSource>>&
-LBSSolver::PointSources() const
+LBSSolver::GetPointSources() const
 {
   return point_sources_;
 }
@@ -196,7 +196,7 @@ LBSSolver::ClearVolumetricSources()
 }
 
 const std::vector<std::shared_ptr<VolumetricSource>>&
-LBSSolver::VolumetricSources() const
+LBSSolver::GetVolumetricSources() const
 {
   return volumetric_sources_;
 }
@@ -214,13 +214,13 @@ LBSSolver::GetMatID2IsoSrcMap() const
 }
 
 const MeshContinuum&
-LBSSolver::Grid() const
+LBSSolver::GetGrid() const
 {
   return *grid_ptr_;
 }
 
 const SpatialDiscretization&
-LBSSolver::SpatialDiscretization() const
+LBSSolver::GetSpatialDiscretization() const
 {
   return *discretization_;
 }
@@ -244,109 +244,109 @@ LBSSolver::GetCellTransportViews() const
 }
 
 const UnknownManager&
-LBSSolver::UnknownManager() const
+LBSSolver::GetUnknownManager() const
 {
   return flux_moments_uk_man_;
 }
 
 size_t
-LBSSolver::LocalNodeCount() const
+LBSSolver::GetLocalNodeCount() const
 {
   return local_node_count_;
 }
 
 size_t
-LBSSolver::GlobalNodeCount() const
+LBSSolver::GetGlobalNodeCount() const
 {
   return global_node_count_;
 }
 
 std::vector<double>&
-LBSSolver::QMomentsLocal()
+LBSSolver::GetQMomentsLocal()
 {
   return q_moments_local_;
 }
 
 const std::vector<double>&
-LBSSolver::QMomentsLocal() const
+LBSSolver::GetQMomentsLocal() const
 {
   return q_moments_local_;
 }
 
 std::vector<double>&
-LBSSolver::ExtSrcMomentsLocal()
+LBSSolver::GetExtSrcMomentsLocal()
 {
   return ext_src_moments_local_;
 }
 
 const std::vector<double>&
-LBSSolver::ExtSrcMomentsLocal() const
+LBSSolver::GetExtSrcMomentsLocal() const
 {
   return ext_src_moments_local_;
 }
 
 std::vector<double>&
-LBSSolver::PhiOldLocal()
+LBSSolver::GetPhiOldLocal()
 {
   return phi_old_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PhiOldLocal() const
+LBSSolver::GetPhiOldLocal() const
 {
   return phi_old_local_;
 }
 
 std::vector<double>&
-LBSSolver::PhiNewLocal()
+LBSSolver::GetPhiNewLocal()
 {
   return phi_new_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PhiNewLocal() const
+LBSSolver::GetPhiNewLocal() const
 {
   return phi_new_local_;
 }
 
 std::vector<double>&
-LBSSolver::PrecursorsNewLocal()
+LBSSolver::GetPrecursorsNewLocal()
 {
   return precursor_new_local_;
 }
 
 const std::vector<double>&
-LBSSolver::PrecursorsNewLocal() const
+LBSSolver::GetPrecursorsNewLocal() const
 {
   return precursor_new_local_;
 }
 
 std::vector<std::vector<double>>&
-LBSSolver::PsiNewLocal()
+LBSSolver::GetPsiNewLocal()
 {
   return psi_new_local_;
 }
 
 const std::vector<std::vector<double>>&
-LBSSolver::PsiNewLocal() const
+LBSSolver::GetPsiNewLocal() const
 {
   return psi_new_local_;
 }
 
 std::vector<double>&
-LBSSolver::DensitiesLocal()
+LBSSolver::GetDensitiesLocal()
 {
   return densities_local_;
 }
 
 const std::vector<double>&
-LBSSolver::DensitiesLocal() const
+LBSSolver::GetDensitiesLocal() const
 {
   return densities_local_;
 }
 
 const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
-LBSSolver::SweepBoundaries() const
+LBSSolver::GetSweepBoundaries() const
 {
   return sweep_boundaries_;
 }
@@ -370,7 +370,7 @@ LBSSolver::GetWGSSolvers()
 }
 
 size_t&
-LBSSolver::LastRestartTime()
+LBSSolver::GetLastRestartTime()
 {
   return last_restart_write_time_;
 }
@@ -386,7 +386,7 @@ LBSSolver::GetWGSContext(int groupset_id)
 }
 
 std::map<uint64_t, BoundaryPreference>&
-LBSSolver::BoundaryPreferences()
+LBSSolver::GetBoundaryPreferences()
 {
   return boundary_preferences_;
 }
@@ -421,7 +421,7 @@ LBSSolver::GetHandleToPowerGenFieldFunc() const
 }
 
 InputParameters
-LBSSolver::OptionsBlock()
+LBSSolver::GetOptionsBlock()
 {
   InputParameters params;
 
@@ -519,7 +519,7 @@ LBSSolver::OptionsBlock()
 }
 
 InputParameters
-LBSSolver::BoundaryOptionsBlock()
+LBSSolver::GetBoundaryOptionsBlock()
 {
   InputParameters params;
 
@@ -547,7 +547,7 @@ LBSSolver::BoundaryOptionsBlock()
 void
 LBSSolver::SetOptions(const InputParameters& input)
 {
-  auto params = LBSSolver::OptionsBlock();
+  auto params = LBSSolver::GetOptionsBlock();
   params.AssignParameters(input);
 
   // Handle order sensitive options
@@ -603,86 +603,86 @@ LBSSolver::SetOptions(const InputParameters& input)
   }
 
   // Handle order insensitive options
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
 
-    if (spec.Name() == "spatial_discretization")
+    if (spec.GetName() == "spatial_discretization")
     {
       auto sdm_name = spec.GetValue<std::string>();
       if (sdm_name == "pwld")
         options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
-    else if (spec.Name() == "scattering_order")
+    else if (spec.GetName() == "scattering_order")
       options_.scattering_order = spec.GetValue<int>();
 
-    else if (spec.Name() == "max_mpi_message_size")
+    else if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
-    else if (spec.Name() == "read_restart_path")
+    else if (spec.GetName() == "read_restart_path")
       options_.read_restart_path = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "write_restart_time_interval")
+    else if (spec.GetName() == "write_restart_time_interval")
       options_.write_restart_time_interval = spec.GetValue<int>();
 
-    else if (spec.Name() == "write_restart_path")
+    else if (spec.GetName() == "write_restart_path")
       options_.write_restart_path = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "use_precursors")
+    else if (spec.GetName() == "use_precursors")
       options_.use_precursors = spec.GetValue<bool>();
 
-    else if (spec.Name() == "use_source_moments")
+    else if (spec.GetName() == "use_source_moments")
       options_.use_src_moments = spec.GetValue<bool>();
 
-    else if (spec.Name() == "save_angular_flux")
+    else if (spec.GetName() == "save_angular_flux")
       options_.save_angular_flux = spec.GetValue<bool>();
 
-    else if (spec.Name() == "verbose_inner_iterations")
+    else if (spec.GetName() == "verbose_inner_iterations")
       options_.verbose_inner_iterations = spec.GetValue<bool>();
 
-    else if (spec.Name() == "max_ags_iterations")
+    else if (spec.GetName() == "max_ags_iterations")
       options_.max_ags_iterations = spec.GetValue<int>();
 
-    else if (spec.Name() == "ags_tolerance")
+    else if (spec.GetName() == "ags_tolerance")
       options_.ags_tolerance = spec.GetValue<double>();
 
-    else if (spec.Name() == "ags_convergence_check")
+    else if (spec.GetName() == "ags_convergence_check")
     {
       auto check = spec.GetValue<std::string>();
       if (check == "pointwise")
         options_.ags_pointwise_convergence = true;
     }
 
-    else if (spec.Name() == "verbose_ags_iterations")
+    else if (spec.GetName() == "verbose_ags_iterations")
       options_.verbose_ags_iterations = spec.GetValue<bool>();
 
-    else if (spec.Name() == "verbose_outer_iterations")
+    else if (spec.GetName() == "verbose_outer_iterations")
       options_.verbose_outer_iterations = spec.GetValue<bool>();
 
-    else if (spec.Name() == "power_field_function_on")
+    else if (spec.GetName() == "power_field_function_on")
       options_.power_field_function_on = spec.GetValue<bool>();
 
-    else if (spec.Name() == "power_default_kappa")
+    else if (spec.GetName() == "power_default_kappa")
       options_.power_default_kappa = spec.GetValue<double>();
 
-    else if (spec.Name() == "power_normalization")
+    else if (spec.GetName() == "power_normalization")
       options_.power_normalization = spec.GetValue<double>();
 
-    else if (spec.Name() == "field_function_prefix_option")
+    else if (spec.GetName() == "field_function_prefix_option")
     {
       options_.field_function_prefix_option = spec.GetValue<std::string>();
     }
 
-    else if (spec.Name() == "field_function_prefix")
+    else if (spec.GetName() == "field_function_prefix")
       options_.field_function_prefix = spec.GetValue<std::string>();
 
-    else if (spec.Name() == "boundary_conditions")
+    else if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -692,7 +692,7 @@ LBSSolver::SetOptions(const InputParameters& input)
         InitializeBoundaries();
     }
 
-    else if (spec.Name() == "point_sources")
+    else if (spec.GetName() == "point_sources")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
@@ -705,7 +705,7 @@ LBSSolver::SetOptions(const InputParameters& input)
       }
     }
 
-    else if (spec.Name() == "volumetric_sources")
+    else if (spec.GetName() == "volumetric_sources")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
@@ -749,7 +749,7 @@ LBSSolver::SetBoundaryOptions(const InputParameters& params)
     case LBSBoundaryType::VACUUM:
     case LBSBoundaryType::REFLECTING:
     {
-      BoundaryPreferences()[bid] = {type};
+      GetBoundaryPreferences()[bid] = {type};
       break;
     }
     case LBSBoundaryType::ISOTROPIC:
@@ -841,7 +841,7 @@ LBSSolver::PerformInputChecks()
   }
 
   // Determine geometry type
-  const auto dim = grid_ptr_->Dimension();
+  const auto dim = grid_ptr_->GetDimension();
   if (dim == 1)
     options_.geometry_type = GeometryType::ONED_SLAB;
   else if (dim == 2)
@@ -861,7 +861,7 @@ LBSSolver::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << Name() << "\n\n"
+    outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
            << "Scattering order    : " << options_.scattering_order << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
@@ -936,7 +936,7 @@ LBSSolver::InitializeMaterials()
     bool found_transport_xs = false;
     for (const auto& property : current_material->properties)
     {
-      if (property->Type() == PropertyType::TRANSPORT_XSECTIONS)
+      if (property->GetType() == PropertyType::TRANSPORT_XSECTIONS)
       {
         auto xs = std::static_pointer_cast<MultiGroupXS>(property);
         xs->SetAdjointMode(options_.adjoint);
@@ -944,7 +944,7 @@ LBSSolver::InitializeMaterials()
         found_transport_xs = true;
       }
 
-      if (property->Type() == PropertyType::ISOTROPIC_MG_SOURCE)
+      if (property->GetType() == PropertyType::ISOTROPIC_MG_SOURCE)
       {
         const auto& src = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
 
@@ -970,22 +970,22 @@ LBSSolver::InitializeMaterials()
                            "transport cross sections.");
 
     // Check number of groups legal
-    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->NumGroups() < groups_.size(),
+    OpenSnLogicalErrorIf(matid_to_xs_map_[mat_id]->GetNumGroups() < groups_.size(),
                          "Material \"" + current_material->name + "\" has fewer groups (" +
-                           std::to_string(matid_to_xs_map_[mat_id]->NumGroups()) + ") than " +
+                           std::to_string(matid_to_xs_map_[mat_id]->GetNumGroups()) + ") than " +
                            "the simulation (" + std::to_string(groups_.size()) + "). " +
                            "A material must have at least as many groups as the simulation.");
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->ScatteringOrder() < options_.scattering_order)
+    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() < options_.scattering_order)
     {
       log.Log0Warning() << __FUNCTION__ << ": Material \"" << current_material->name
                         << "\" has a lower scattering order ("
-                        << matid_to_xs_map_[mat_id]->ScatteringOrder() << ") "
+                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << ") "
                         << "than the simulation (" << options_.scattering_order << ").";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->ScatteringOrder() + 1
+    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
   } // for material id
 
@@ -995,9 +995,9 @@ LBSSolver::InitializeMaterials()
   for (const auto& mat_id_xs : matid_to_xs_map_)
   {
     const auto& xs = mat_id_xs.second;
-    num_precursors_ += xs->NumPrecursors();
-    if (xs->NumPrecursors() > max_precursors_per_material_)
-      max_precursors_per_material_ = xs->NumPrecursors();
+    num_precursors_ += xs->GetNumPrecursors();
+    if (xs->GetNumPrecursors() > max_precursors_per_material_)
+      max_precursors_per_material_ = xs->GetNumPrecursors();
   }
 
   // if no precursors, turn off precursors
@@ -1078,7 +1078,7 @@ LBSSolver::ComputeUnitIntegrals()
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.NumNodes();
+    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_gradshapeI_gradshapeJ(cell_num_nodes, cell_num_nodes, 0.0);
@@ -1094,7 +1094,7 @@ LBSSolver::ComputeUnitIntegrals()
     {
       for (unsigned int j = 0; j < cell_num_nodes; ++j)
       {
-        for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+        for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
         {
           IntV_gradshapeI_gradshapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) *
@@ -1111,7 +1111,7 @@ LBSSolver::ComputeUnitIntegrals()
         }                                                        // for qp
       }                                                          // for j
 
-      for (const auto& qp : fe_vol_data.QuadraturePointIndices())
+      for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) +=
           swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -1130,7 +1130,7 @@ LBSSolver::ComputeUnitIntegrals()
       {
         for (unsigned int j = 0; j < cell_num_nodes; ++j)
         {
-          for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+          for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
           {
             IntS_shapeI_shapeJ[f](i, j) += swf(fe_srf_data.QPointXYZ(qp)) *
                                            fe_srf_data.ShapeValue(i, qp) *
@@ -1141,7 +1141,7 @@ LBSSolver::ComputeUnitIntegrals()
           } // for qp
         }   // for j
 
-        for (const auto& qp : fe_srf_data.QuadraturePointIndices())
+        for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) +=
             swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
@@ -1441,7 +1441,7 @@ LBSSolver::InitializeFieldFunctions()
           prefix += "_";
       }
       if (options_.field_function_prefix_option == "solver_name")
-        prefix = Name() + "_";
+        prefix = GetName() + "_";
 
       char buff[100];
       snprintf(
@@ -1469,7 +1469,7 @@ LBSSolver::InitializeFieldFunctions()
         prefix += "_";
     }
     if (options_.field_function_prefix_option == "solver_name")
-      prefix = Name() + "_";
+      prefix = GetName() + "_";
 
     auto power_ff = std::make_shared<FieldFunctionGridBased>(
       prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
@@ -1595,15 +1595,15 @@ LBSSolver::InitializeSolverSchemes()
   ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
   if (groupsets_.size() == 1)
   {
-    ags_solver_->MaxIterations(1);
-    ags_solver_->Verbosity(false);
+    ags_solver_->SetMaxIterations(1);
+    ags_solver_->SetVerbosity(false);
   }
   else
   {
-    ags_solver_->MaxIterations(options_.max_ags_iterations);
-    ags_solver_->Verbosity(options_.verbose_ags_iterations);
+    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
+    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
   }
-  ags_solver_->Tolerance(options_.ags_tolerance);
+  ags_solver_->SetTolerance(options_.ags_tolerance);
 }
 
 void
@@ -1628,7 +1628,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_WGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,
@@ -1668,7 +1668,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   CALI_CXX_MARK_SCOPE("LBSSolver::WGSCopyOnlyPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1679,7 +1679,7 @@ LBSSolver::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1707,7 +1707,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::GSProjectBackPhi0");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1716,7 +1716,7 @@ LBSSolver::GSProjectBackPhi0(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1740,7 +1740,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::AssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1752,8 +1752,8 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->SigmaSGtoG();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& sigma_s = matid_to_xs_map_[cell.material_id]->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1779,7 +1779,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   CALI_CXX_MARK_SCOPE("LBSSolver::DisAssembleWGDSADeltaPhiVector");
 
   const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->UnknownStructure();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
   const int gsi = groupset.groups.front().id;
@@ -1788,7 +1788,7 @@ LBSSolver::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1844,7 +1844,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
     // Create solver
     const auto& sdm = *discretization_;
 
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(Name() + "_TGDSA"),
+    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_TGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,
@@ -1896,8 +1896,8 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
-    const auto& S = matid_to_xs_map_[cell.material_id]->TransferMatrix(0);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& S = matid_to_xs_map_[cell.material_id]->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1938,7 +1938,7 @@ LBSSolver::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   for (const auto& cell : grid_ptr_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xi_g = map_mat_id_2_tginfo.at(cell.material_id).spectrum;
 
@@ -2072,7 +2072,7 @@ LBSSolver::UpdateFieldFunctions()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
@@ -2096,7 +2096,7 @@ LBSSolver::UpdateFieldFunctions()
     for (const auto& cell : grid_ptr_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.NumNodes();
+      const size_t num_nodes = cell_mapping.GetNumNodes();
 
       const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
@@ -2113,7 +2113,7 @@ LBSSolver::UpdateFieldFunctions()
         double nodal_power = 0.0;
         for (size_t g = 0; g < groups_.size(); ++g)
         {
-          const double sigma_fg = xs->SigmaFission()[g];
+          const double sigma_fg = xs->GetSigmaFission()[g];
           // const double kappa_g = xs->Kappa()[g];
           const double kappa_g = options_.power_default_kappa;
 
@@ -2171,7 +2171,7 @@ LBSSolver::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
       for (const auto& cell : grid_ptr_->local_cells)
       {
         const auto& cell_mapping = sdm.GetCellMapping(cell);
-        const size_t num_nodes = cell_mapping.NumNodes();
+        const size_t num_nodes = cell_mapping.GetNumNodes();
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
@@ -2204,15 +2204,15 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
-    const auto& F = xs.ProductionMatrix();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& xs = transport_view.GetXS();
+    const auto& F = xs.GetProductionMatrix();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     if (not xs.IsFissionable())
       continue;
 
     // Loop over nodes
-    const int num_nodes = transport_view.NumNodes();
+    const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
@@ -2226,7 +2226,7 @@ LBSSolver::ComputeFissionProduction(const std::vector<double>& phi)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options_.use_precursors)
-          for (unsigned int j = 0; j < xs.NumPrecursors(); ++j)
+          for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
             local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
@@ -2255,15 +2255,15 @@ LBSSolver::ComputeFissionRate(const std::vector<double>& phi)
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
-    const auto& sigma_f = xs.SigmaFission();
+    const auto& xs = transport_view.GetXS();
+    const auto& sigma_f = xs.GetSigmaFission();
 
     // skip non-fissionable material
     if (not xs.IsFissionable())
       continue;
 
     // Loop over nodes
-    const int num_nodes = transport_view.NumNodes();
+    const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
@@ -2296,22 +2296,22 @@ LBSSolver::ComputePrecursors()
   {
     const auto& fe_values = unit_cell_matrices_[cell.local_id];
     const auto& transport_view = cell_transport_views_[cell.local_id];
-    const double cell_volume = transport_view.Volume();
+    const double cell_volume = transport_view.GetVolume();
 
     // Obtain xs
-    const auto& xs = transport_view.XS();
-    const auto& precursors = xs.Precursors();
-    const auto& nu_delayed_sigma_f = xs.NuDelayedSigmaF();
+    const auto& xs = transport_view.GetXS();
+    const auto& precursors = xs.GetPrecursors();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over precursors
-    for (uint64_t j = 0; j < xs.NumPrecursors(); ++j)
+    for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
     {
       size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];
       const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
       // Loop over nodes
-      for (int i = 0; i < transport_view.NumNodes(); ++i)
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         const size_t uk_map = transport_view.MapDOF(i, 0, 0);
         const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;

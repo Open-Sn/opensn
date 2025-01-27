@@ -23,15 +23,15 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
   hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   OpenSnLogicalErrorIf(file_id < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
 
-  const auto& groupset = lbs_solver.Groupsets().at(groupset_id);
+  const auto& groupset = lbs_solver.GetGroupsets().at(groupset_id);
   std::vector<double>& src =
-    opt_src.has_value() ? opt_src.value().get() : lbs_solver.PsiNewLocal().at(groupset_id);
+    opt_src.has_value() ? opt_src.value().get() : lbs_solver.GetPsiNewLocal().at(groupset_id);
 
   log.Log() << "Writing groupset " << groupset_id << " angular flux file to " << file_base;
 
   // Write macro info
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
   const auto& uk_man = groupset.psi_uk_man_;
 
   auto num_local_nodes = discretization.GetNumLocalNodes();
@@ -106,9 +106,9 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
-  const auto& groupset = lbs_solver.Groupsets().at(groupset_id);
+  const auto& groupset = lbs_solver.GetGroupsets().at(groupset_id);
   std::vector<double>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.PsiNewLocal().at(groupset_id);
+    opt_dest.has_value() ? opt_dest.value().get() : lbs_solver.GetPsiNewLocal().at(groupset_id);
 
   log.Log() << "Reading groupset " << groupset.id << " angular flux file " << file_base;
 
@@ -120,8 +120,8 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
 
   // Check compatibility with system macro info
-  const auto& grid = lbs_solver.Grid();
-  const auto& discretization = lbs_solver.SpatialDiscretization();
+  const auto& grid = lbs_solver.GetGrid();
+  const auto& discretization = lbs_solver.GetSpatialDiscretization();
   const auto& uk_man = groupset.psi_uk_man_;
 
   const auto num_local_nodes = discretization.GetNumLocalNodes();

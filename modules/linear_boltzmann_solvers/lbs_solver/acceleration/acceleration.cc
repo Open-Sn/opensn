@@ -17,9 +17,9 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
   std::map<uint64_t, BoundaryCondition> bcs;
   for (auto& [bid, lbs_bndry] : sweep_boundaries)
   {
-    if (lbs_bndry->Type() == LBSBoundaryType::REFLECTING)
+    if (lbs_bndry->GetType() == LBSBoundaryType::REFLECTING)
       bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-    else if (lbs_bndry->Type() == LBSBoundaryType::VACUUM)
+    else if (lbs_bndry->GetType() == LBSBoundaryType::VACUUM)
       if (vacuum_bcs_are_dirichlet)
         bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
       else
@@ -49,8 +49,8 @@ PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_m
     std::vector<double> sigma_r(num_gs_groups, 0.0);
 
     size_t g = 0;
-    const auto& diffusion_coeff = xs->DiffusionCoefficient();
-    const auto& sigma_removal = xs->SigmaRemoval();
+    const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+    const auto& sigma_removal = xs->GetSigmaRemoval();
     for (size_t gprime = first_grp_index; gprime <= last_group_index; ++gprime)
     {
       D[g] = diffusion_coeff[gprime];

@@ -53,24 +53,24 @@ ParallelSTLVector::MakeClone() const
 }
 
 double*
-ParallelSTLVector::Data()
+ParallelSTLVector::GetData()
 {
   return values_.data();
 }
 const double*
-ParallelSTLVector::Data() const
+ParallelSTLVector::GetData() const
 {
   return values_.data();
 }
 
 const std::vector<double>&
-ParallelSTLVector::LocalSTLData() const
+ParallelSTLVector::GetLocalSTLData() const
 {
   return values_;
 }
 
 std::vector<double>&
-ParallelSTLVector::LocalSTLData()
+ParallelSTLVector::GetLocalSTLData()
 {
   return values_;
 }
@@ -138,12 +138,12 @@ ParallelSTLVector::BlockSet(const std::vector<double>& y, int64_t local_offset, 
 void
 ParallelSTLVector::CopyLocalValues(const ParallelVector& y)
 {
-  OpenSnLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
-  OpenSnLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
+  OpenSnLogicalErrorIf(y.GetLocalSize() != local_size_, "y.LocalSize() != local_size_");
+  OpenSnLogicalErrorIf(y.GetGlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
 
   std::copy(y_data, y_data + local_size_, values_.begin());
 }
@@ -174,10 +174,10 @@ ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
   const int64_t y_end = y_offset + num_values;
   const int64_t local_end = local_offset + num_values;
 
-  OpenSnInvalidArgumentIf(y_end > y.LocalSize(),
+  OpenSnInvalidArgumentIf(y_end > y.GetLocalSize(),
                           "y_offset + num_values=" + std::to_string(y_end) +
                             ", is out of range for vector y with local size " +
-                            std::to_string(y.LocalSize()));
+                            std::to_string(y.GetLocalSize()));
 
   OpenSnInvalidArgumentIf(local_end > local_size_,
                           "local_offset + num_values=" + std::to_string(local_end) +
@@ -186,7 +186,7 @@ ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
 
   std::copy(y_data + y_offset, y_data + y_offset + num_values, values_.begin() + local_offset);
 }
@@ -257,12 +257,12 @@ ParallelSTLVector::SetValues(const std::vector<int64_t>& global_ids,
 void
 ParallelSTLVector::operator+=(const ParallelVector& y)
 {
-  OpenSnLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
-  OpenSnLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
+  OpenSnLogicalErrorIf(y.GetLocalSize() != local_size_, "y.LocalSize() != local_size_");
+  OpenSnLogicalErrorIf(y.GetGlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
 
   for (int64_t i = 0; i < local_size_; ++i)
     values_[i] += y_data[i];
@@ -271,12 +271,12 @@ ParallelSTLVector::operator+=(const ParallelVector& y)
 void
 ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
 {
-  OpenSnLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
-  OpenSnLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
+  OpenSnLogicalErrorIf(y.GetLocalSize() != local_size_, "y.LocalSize() != local_size_");
+  OpenSnLogicalErrorIf(y.GetGlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
 
   if (a == 1.0)
     for (int64_t i = 0; i < local_size_; ++i)
@@ -292,12 +292,12 @@ ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
 void
 ParallelSTLVector::AXPlusY(double a, const ParallelVector& y)
 {
-  OpenSnLogicalErrorIf(y.LocalSize() != local_size_, "y.LocalSize() != local_size_");
-  OpenSnLogicalErrorIf(y.GlobalSize() != global_size_, "y.GlobalSize() != global_size_");
+  OpenSnLogicalErrorIf(y.GetLocalSize() != local_size_, "y.LocalSize() != local_size_");
+  OpenSnLogicalErrorIf(y.GetGlobalSize() != global_size_, "y.GlobalSize() != global_size_");
 
   // This prevents us from unnecessarily going through the operator[]
   // of y, which again applies bounds checking
-  const double* y_data = y.Data();
+  const double* y_data = y.GetData();
 
   for (int64_t i = 0; i < local_size_; ++i)
     values_[i] = a * values_[i] + y_data[i];

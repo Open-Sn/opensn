@@ -51,19 +51,19 @@ public:
    * Returns a direct pointer to the memory array used internally by the vector to store its owned
    * elements
    */
-  virtual double* Data() = 0;
+  virtual double* GetData() = 0;
 
   /**
    * Returns a direct const pointer to the memory array used internally by the vector to store its
    * owned elements
    */
-  virtual const double* Data() const = 0;
+  virtual const double* GetData() const = 0;
 
   /// Return the size of the locally owned portion of the parallel vector.
-  uint64_t LocalSize() const { return local_size_; }
+  uint64_t GetLocalSize() const { return local_size_; }
 
   /// Return the global size of the parallel vector.
-  uint64_t GlobalSize() const { return global_size_; }
+  uint64_t GetGlobalSize() const { return global_size_; }
 
   /**
    * Read only accessor to the entry at the given local index of the local vector.

@@ -42,7 +42,7 @@ FieldFunctionInterpolationLine::Initialize()
 
   ref_ff_ = field_functions_.front();
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
 
   // Find local points and associated cells
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
@@ -70,7 +70,7 @@ FieldFunctionInterpolationLine::Execute()
   log.Log0Verbose1() << "Executing line interpolator.";
 
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.Grid();
+  const auto& grid = sdm.GetGrid();
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;
@@ -85,7 +85,7 @@ FieldFunctionInterpolationLine::Execute()
     auto cell_local_index = local_cells_[p];
     const auto& cell = grid.local_cells[cell_local_index];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     Vector<double> shape_function_vals(num_nodes, 0.0);
     cell_mapping.ShapeValues(point, shape_function_vals);
@@ -181,9 +181,9 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
 
     // Write sorted data to CSV file
     std::ofstream ofile;
-    std::string filename = base_name + "_" + ref_ff_->Name() + std::string(".csv");
+    std::string filename = base_name + "_" + ref_ff_->GetName() + std::string(".csv");
     ofile.open(filename);
-    ofile << "x,y,z," << ref_ff_->Name() << "\n";
+    ofile << "x,y,z," << ref_ff_->GetName() << "\n";
     for (auto point_data : values)
     {
       auto [x, y, z, fv] = point_data;
@@ -191,8 +191,8 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
     }
     ofile.close();
 
-    log.Log() << "Exported CSV file for field func \"" << ref_ff_->Name() << "\" to \"" << filename
-              << "\"";
+    log.Log() << "Exported CSV file for field func \"" << ref_ff_->GetName() << "\" to \""
+              << filename << "\"";
   }
 }
 

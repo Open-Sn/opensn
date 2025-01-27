@@ -7,7 +7,7 @@ namespace opensn
 {
 
 const std::vector<unsigned int>&
-VolumetricFiniteElementData::QuadraturePointIndices() const
+VolumetricFiniteElementData::GetQuadraturePointIndices() const
 {
   return quadrature_point_indices_;
 }
@@ -33,25 +33,25 @@ VolumetricFiniteElementData::ShapeGrad(unsigned int i, unsigned int qp) const
 }
 
 const std::vector<Vector3>&
-VolumetricFiniteElementData::QPointsXYZ() const
+VolumetricFiniteElementData::GetQPointsXYZ() const
 {
   return qpoints_xyz_;
 }
 
 const std::vector<std::vector<double>>&
-VolumetricFiniteElementData::ShapeValues() const
+VolumetricFiniteElementData::GetShapeValues() const
 {
   return shape_value_;
 }
 
 const std::vector<std::vector<Vector3>>&
-VolumetricFiniteElementData::ShapeGradValues() const
+VolumetricFiniteElementData::GetShapeGradValues() const
 {
   return shape_grad_;
 }
 
 const std::vector<double>&
-VolumetricFiniteElementData::JxW_Values() const
+VolumetricFiniteElementData::GetJxWValues() const
 {
   return JxW_;
 }
@@ -70,7 +70,7 @@ VolumetricFiniteElementData::FaceDofMapping(size_t face, size_t face_node_index)
 }
 
 size_t
-VolumetricFiniteElementData::NumNodes() const
+VolumetricFiniteElementData::GetNumNodes() const
 {
   return num_nodes_;
 }
@@ -82,7 +82,7 @@ SurfaceFiniteElementData::Normal(unsigned int qp) const
 }
 
 const std::vector<Vector3>&
-SurfaceFiniteElementData::Normals() const
+SurfaceFiniteElementData::GetNormals() const
 {
   return normals_;
 }

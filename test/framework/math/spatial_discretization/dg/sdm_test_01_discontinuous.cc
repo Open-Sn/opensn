@@ -83,7 +83,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_nodes = cell_mapping.NumNodes();
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& cc_nodes = cell_mapping.GetNodeLocations();
 
@@ -96,9 +96,9 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
     // Assemble continuous kernels
     {
-      const auto& shape = qp_data.ShapeValues();
-      const auto& shape_grad = qp_data.ShapeGradValues();
-      const auto& JxW = qp_data.JxW_Values();
+      const auto& shape = qp_data.GetShapeValues();
+      const auto& shape_grad = qp_data.GetShapeGradValues();
+      const auto& JxW = qp_data.GetJxWValues();
       for (size_t i = 0; i < num_nodes; ++i)
       {
         if (bndry_nodes.find(i) != bndry_nodes.end())
@@ -108,12 +108,12 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
           if (bndry_nodes.find(j) != bndry_nodes.end())
             continue;
           double entry_aij = 0.0;
-          for (size_t qp : qp_data.QuadraturePointIndices())
+          for (size_t qp : qp_data.GetQuadraturePointIndices())
             entry_aij += shape_grad[i][qp].Dot(shape_grad[j][qp]) * JxW[qp];
 
           Acell(i, j) = entry_aij;
         } // for j
-        for (size_t qp : qp_data.QuadraturePointIndices())
+        for (size_t qp : qp_data.GetQuadraturePointIndices())
           cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
     }   // continuous kernels
@@ -123,7 +123,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
     {
       const auto& face = cell.faces[f];
       const auto& n_f = face.normal;
-      const size_t num_face_nodes = cell_mapping.NumFaceNodes(f);
+      const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
       const double hm = HPerpendicular(cell_mapping, f);
@@ -138,11 +138,11 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           kappa = 2.0 * penalty_factor * (D / hp + D / hm) * 0.5;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           kappa = 4.0 * penalty_factor * (D / hp + D / hm) * 0.5;
 
         // Assembly penalty terms
@@ -165,7 +165,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               aij +=
                 kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
 
@@ -197,7 +197,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(jm, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
@@ -225,7 +225,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(im, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -0.5 * D * n_f.Dot(vec_aij);
 
@@ -241,11 +241,11 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
         // Compute kappa
         double kappa = 1.0;
-        if (cell.Type() == CellType::SLAB)
+        if (cell.GetType() == CellType::SLAB)
           kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYGON)
+        if (cell.GetType() == CellType::POLYGON)
           kappa = 4.0 * penalty_factor * D / hm;
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
           kappa = 8.0 * penalty_factor * D / hm;
 
         // Assembly penalty terms
@@ -260,7 +260,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               aij +=
                 kappa * fqp_data.ShapeValue(i, qp) * fqp_data.ShapeValue(jm, qp) * fqp_data.JxW(qp);
             double aij_bc_value = aij * bc_value;
@@ -284,7 +284,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
             const int64_t jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
-            for (size_t qp : fqp_data.QuadraturePointIndices())
+            for (size_t qp : fqp_data.GetQuadraturePointIndices())
               vec_aij += fqp_data.ShapeValue(j, qp) * fqp_data.ShapeGrad(i, qp) * fqp_data.JxW(qp) +
                          fqp_data.ShapeValue(i, qp) * fqp_data.ShapeGrad(j, qp) * fqp_data.JxW(qp);
             const double aij = -D * n_f.Dot(vec_aij);
@@ -338,9 +338,9 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid.Dimension() == 2)
+  if (grid.GetDimension() == 2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  if (grid.Dimension() == 3)
+  if (grid.GetDimension() == 3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.7");
 
   for (const auto& option : pc_options)
@@ -403,7 +403,7 @@ MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];
 
-  const size_t adj_face_num_nodes = adj_cell_mapping.NumFaceNodes(acf);
+  const size_t adj_face_num_nodes = adj_cell_mapping.GetNumFaceNodes(acf);
 
   for (size_t fj = 0; fj < adj_face_num_nodes; ++fj)
   {
@@ -425,24 +425,24 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   const size_t num_faces = cell.faces.size();
   const size_t num_vertices = cell.vertex_ids.size();
 
-  const double volume = cell_mapping.CellVolume();
-  const double face_area = cell_mapping.FaceArea(f);
+  const double volume = cell_mapping.GetCellVolume();
+  const double face_area = cell_mapping.GetFaceArea(f);
 
   /**Lambda to compute surface area.*/
   auto ComputeSurfaceArea = [&cell_mapping, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell_mapping.FaceArea(fr);
+      surface_area += cell_mapping.GetFaceArea(fr);
 
     return surface_area;
   };
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
-  if (cell.Type() == CellType::SLAB)
+  if (cell.GetType() == CellType::SLAB)
     hp = volume / 2.0;
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
-  else if (cell.Type() == CellType::POLYGON)
+  else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
       hp = 2.0 * volume / face_area;
@@ -464,7 +464,7 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
     }
   }
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
-  else if (cell.Type() == CellType::POLYHEDRON)
+  else if (cell.GetType() == CellType::POLYHEDRON)
   {
     const double surface_area = ComputeSurfaceArea();
 

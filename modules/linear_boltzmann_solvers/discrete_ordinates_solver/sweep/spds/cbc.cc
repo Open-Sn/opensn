@@ -95,7 +95,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega, const MeshContinuum& grid, bool allow_c
 }
 
 const std::vector<Task>&
-CBC_SPDS::TaskList() const
+CBC_SPDS::GetTaskList() const
 {
   return task_list_;
 }

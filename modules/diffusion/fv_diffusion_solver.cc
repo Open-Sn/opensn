@@ -27,16 +27,16 @@ FVDiffusionSolver::GetInputParameters()
 }
 
 InputParameters
-FVDiffusionSolver::OptionsBlock()
+FVDiffusionSolver::GetOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::OptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetOptionsBlock();
   return params;
 }
 
 InputParameters
-FVDiffusionSolver::BoundaryOptionsBlock()
+FVDiffusionSolver::GetBoundaryOptionsBlock()
 {
-  InputParameters params = DiffusionSolverBase::BoundaryOptionsBlock();
+  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
   return params;
 }
 
@@ -69,15 +69,15 @@ FVDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFuncti
 void
 FVDiffusionSolver::SetOptions(const InputParameters& params)
 {
-  for (size_t p = 0; p < params.NumParameters(); ++p)
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
     const auto& spec = params.GetParam(p);
-    if (spec.Name() == "boundary_conditions")
+    if (spec.GetName() == "boundary_conditions")
     {
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.NumParameters(); ++b)
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
       {
-        auto bndry_params = BoundaryOptionsBlock();
+        auto bndry_params = GetBoundaryOptionsBlock();
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
@@ -159,7 +159,7 @@ FVDiffusionSolver::Initialize()
 {
   const std::string fname = "FVSolver::Initialize";
   log.Log() << "\n"
-            << program_timer.GetTimeString() << " " << Name()
+            << program_timer.GetTimeString() << " " << GetName()
             << ": Initializing FV Diffusion solver ";
 
   // Get grid
@@ -286,7 +286,7 @@ FVDiffusionSolver::Execute()
   for (const auto& cell_P : grid.local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell_P);
-    const double volume_P = cell_mapping.CellVolume(); // Volume of present cell
+    const double volume_P = cell_mapping.GetCellVolume(); // Volume of present cell
     const auto& x_cc_P = cell_P.centroid;
 
     const auto imat = cell_P.material_id;
@@ -304,7 +304,7 @@ FVDiffusionSolver::Execute()
       const auto& face = cell_P.faces[f];
       const auto& x_fc = face.centroid;
       const auto x_PF = x_fc - x_cc_P;
-      const auto A_f = cell_mapping.FaceArea(f);
+      const auto A_f = cell_mapping.GetFaceArea(f);
       const auto A_f_n = A_f * face.normal;
 
       if (face.has_neighbor)
@@ -375,12 +375,12 @@ FVDiffusionSolver::Execute()
   log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A_,
-                                  Name(),
+                                  GetName(),
                                   KSPCG,
                                   PCGAMG,
                                   0.0,
-                                  basic_options_("residual_tolerance").FloatValue(),
-                                  basic_options_("max_iters").IntegerValue());
+                                  basic_options_("residual_tolerance").GetFloatValue(),
+                                  basic_options_("max_iters").GetIntegerValue());
 
   // Solve
   KSPSolve(petsc_solver.ksp, b_, x_);

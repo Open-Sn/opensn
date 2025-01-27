@@ -33,7 +33,7 @@ PieceWiseLinearContinuous::New(const MeshContinuum& grid,
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : sdm_stack)
-    if (sdm->Type() == PWLC and std::addressof(sdm->Grid()) == std::addressof(grid) and
+    if (sdm->GetType() == PWLC and std::addressof(sdm->GetGrid()) == std::addressof(grid) and
         sdm->GetCoordinateSystemType() == cs_type)
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
@@ -266,7 +266,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   for (auto& cell : ref_grid_.local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
-    for (unsigned int i = 0; i < cell_mapping.NumNodes(); ++i)
+    for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const int64_t ir = MapDOF(cell, i);
       if (ir < 0)
@@ -277,7 +277,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         const int64_t il = dof_handler.MapIRLocal(ir);
         std::vector<int64_t>& node_links = nodal_connections[il];
 
-        for (unsigned int j = 0; j < cell_mapping.NumNodes(); ++j)
+        for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
           const int64_t jr = MapDOF(cell, j);
           if (jr < 0)
@@ -310,7 +310,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   {
     const auto& cell_mapping = GetCellMapping(cell);
 
-    for (unsigned int i = 0; i < cell_mapping.NumNodes(); ++i)
+    for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const int64_t ir = MapDOF(cell, i);
       if (ir < 0)
@@ -333,7 +333,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
         // Now add links
         auto& node_links = cur_ir_link->second;
-        for (unsigned int j = 0; j < cell_mapping.NumNodes(); ++j)
+        for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
           const int64_t jr = MapDOF(cell, j);
           if (jr < 0)

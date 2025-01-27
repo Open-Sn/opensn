@@ -396,14 +396,14 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vertices[p] == nullptr)
         throw std::logic_error(fname + ": Vertex pointer not assigned");
 
-    mesh->RawCells() = cells;
-    mesh->Vertices().reserve(total_point_count);
+    mesh->GetRawCells() = cells;
+    mesh->GetVertices().reserve(total_point_count);
     for (auto& vertex_ptr : vertices)
-      mesh->Vertices().push_back(*vertex_ptr);
+      mesh->GetVertices().push_back(*vertex_ptr);
   } // If global-ids available
   else
   {
-    auto& raw_cells = mesh->RawCells();
+    auto& raw_cells = mesh->GetRawCells();
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
@@ -436,7 +436,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
       vertex *= scale;
 
-      mesh->Vertices().emplace_back(point[0], point[1], point[2]);
+      mesh->GetVertices().emplace_back(point[0], point[1], point[2]);
     }
   } // if no global-ids
 
@@ -449,7 +449,7 @@ void
 SetMaterialIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh,
                        const std::vector<int>& material_ids)
 {
-  auto& raw_cells = mesh->RawCells();
+  auto& raw_cells = mesh->GetRawCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
     raw_cells[c]->material_id = material_ids[c];
@@ -460,7 +460,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
                          std::vector<vtkUGridPtrAndName>& bndry_grid_blocks)
 {
   const double EPSILON = 1.0e-12;
-  auto& raw_cells = mesh->RawCells();
+  auto& raw_cells = mesh->GetRawCells();
   // Build boundary faces
   std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells)
@@ -494,7 +494,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 
       bool map_found = false;
       for (const auto vid : bndry_vids_set)
-        if ((point - mesh->Vertices()[vid]).NormSquare() < EPSILON)
+        if ((point - mesh->GetVertices()[vid]).NormSquare() < EPSILON)
         {
           vertex_map[p] = vid;
           map_found = true;
@@ -866,7 +866,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     std::vector<CellFace> faces_to_export;
     for (auto& cell : grid->local_cells)
     {
-      if (cell.Type() == CellType::POLYHEDRON)
+      if (cell.GetType() == CellType::POLYHEDRON)
       {
         for (auto& face : cell.faces)
         {
@@ -952,7 +952,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       std::vector<CellFace> faces_to_export;
       for (const auto& cell : grid->local_cells)
       {
-        if (cell.Type() == CellType::POLYHEDRON)
+        if (cell.GetType() == CellType::POLYHEDRON)
         {
           if (cell.material_id != mat)
             continue;
@@ -1048,10 +1048,10 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   {
     const int mat_id = cell.material_id;
     if (block_id_map.count(mat_id) == 0)
-      block_id_map[mat_id] = cell.SubType();
+      block_id_map[mat_id] = cell.GetSubType();
     else
     {
-      if (cell.SubType() != block_id_map.at(mat_id))
+      if (cell.GetSubType() != block_id_map.at(mat_id))
         throw std::logic_error(fname + ": Material id " + std::to_string(mat_id) +
                                " appearing for more than one cell type.");
     }
@@ -1091,8 +1091,8 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     // Load cells
     for (const auto& cell : grid->local_cells)
     {
-      if (cell.SubType() == CellType::POLYGON or cell.SubType() == CellType::POLYHEDRON)
-        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.SubType()) +
+      if (cell.GetSubType() == CellType::POLYGON or cell.GetSubType() == CellType::POLYHEDRON)
+        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
       block_id_list->InsertNextValue(cell.material_id);
@@ -1136,9 +1136,9 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     // which a special mapping is required, are the prisms and hexes.
     const size_t num_faces = cell.faces.size();
     std::vector<int> face_mapping(num_faces, 0);
-    if (cell.SubType() == CellType::WEDGE)
+    if (cell.GetSubType() == CellType::WEDGE)
       face_mapping = {2, 3, 4, 0, 1};
-    else if (cell.SubType() == CellType::HEXAHEDRON)
+    else if (cell.GetSubType() == CellType::HEXAHEDRON)
       face_mapping = {2, 1, 3, 0, 4, 5};
     else
     {
