@@ -16,7 +16,7 @@ LBSSolverIO::WriteGroupsetAngularFluxes(
   const std::string& file_base,
   std::optional<const std::reference_wrapper<std::vector<double>>> opt_src)
 {
-  assert(groupset_id >= 0 and groupset_id < lbs_solver.Groupsets().size());
+  assert(groupset_id >= 0 and groupset_id < lbs_solver.GetGroupsets().size());
 
   // Open the HDF5 file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
@@ -99,7 +99,7 @@ LBSSolverIO::ReadGroupsetAngularFluxes(
   std::optional<std::reference_wrapper<std::vector<double>>> opt_dest)
 
 {
-  assert(groupset_id >= 0 and groupset_id < lbs_solver.Groupsets().size());
+  assert(groupset_id >= 0 and groupset_id < lbs_solver.GetGroupsets().size());
 
   // Open HDF5 file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
