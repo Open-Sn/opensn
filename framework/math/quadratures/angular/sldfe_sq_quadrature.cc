@@ -802,12 +802,12 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
 }
 
 void
-SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
+SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base)
 {
   log.Log() << "Printing SLDFE-Quadrature to file.";
 
   std::ofstream vert_file, cell_file, points_file, python_file;
-  vert_file.open(output_filename_prefix + "verts.txt");
+  vert_file.open(file_base + "verts.txt");
   {
     for (const auto& sq : deployed_SQs)
       for (int v = 0; v < 4; ++v)
@@ -826,20 +826,22 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   vert_file.close();
 
-  cell_file.open(output_filename_prefix + "cells.txt");
+  cell_file.open(file_base + "cells.txt");
   {
     int vi = 0;
     for (const auto& sq : deployed_SQs)
     {
       for (const auto& vert : sq.vertices_xyz)
+      {
         for (int d = 0; d <= 10; ++d)
           cell_file << vi++ << " ";
+      }
       cell_file << "\n";
     }
   }
   cell_file.close();
 
-  points_file.open(output_filename_prefix + "points.txt");
+  points_file.open(file_base + "points.txt");
   {
     for (auto& sq : deployed_SQs)
     {
@@ -856,7 +858,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
   }
   points_file.close();
 
-  python_file.open(output_filename_prefix + "python.py");
+  python_file.open(file_base + "python.py");
   python_file << "import matplotlib.pyplot as plt\n"
                  "from mpl_toolkits import mplot3d\n"
                  "import mpl_toolkits.mplot3d.art3d as art3d\n"
@@ -869,7 +871,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "#====================================== Read vertices\n"
                  "verts = []\n"
                  "verts_file = open(\""
-              << output_filename_prefix
+              << file_base
               << "verts.txt\")\n"
                  "for line in verts_file:\n"
                  "    words = line.split()\n"
@@ -881,7 +883,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "#====================================== Read cells\n"
                  "cells = []\n"
                  "cells_file = open(\""
-              << output_filename_prefix
+              << file_base
               << "cells.txt\")\n"
                  "for line in cells_file:\n"
                  "    words = line.split()\n"
@@ -895,7 +897,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "points = []\n"
                  "weightsum=0.0\n"
                  "points_file = open(\""
-              << output_filename_prefix
+              << file_base
               << "points.txt\")\n"
                  "for line in points_file:\n"
                  "    words = line.split()\n"
@@ -925,25 +927,13 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile()
                  "\n"
                  "#====================================== Plot polygons\n"
                  "fig = plt.figure(figsize=(10,8.5))\n"
-                 "ax = ax3.Axes3D(fig, proj_type = 'ortho')\n"
+                 "ax = fig.add_subplot(111, projection='3d')\n"
                  "\n"
-                 "ax.view_init(20,25)\n"
+                 "ax.view_init(20,45)\n"
                  "limit = 1\n"
-                 "end = int(len(patches)/limit)\n"
-                 "for poly in patches[0:end]:\n"
-                 "  ax.add_collection3d(poly)\n"
                  "\n"
-                 "avg_weight = 0.5*math.pi/len(points)\n"
-                 "\n"
-                 "psize=min(160.0,160*(1.0/avg_weight)*(48/len(points)))\n"
-                 "# psize=160\n"
-                 "# print(len(points))\n"
-                 "end = int(len(points_array)/limit)\n"
-                 "# ax.scatter3D(points_array[0:end,0],\n"
-                 "#              points_array[0:end,1],\n"
-                 "#              points_array[0:end,2],depthshade=False,\n"
-                 "#              s=psize*points_array[:,3],c=[[0,0,0,1]])\n"
-                 "\n"
+                 "for poly in patches:\n"
+                 "    ax.add_collection3d(poly)\n"
                  "\n"
                  "if limit==8:\n"
                  "    ax.set_xlim([0.0,1.0])\n"
