@@ -820,6 +820,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base
           auto vert = (1.0 - d / 10.0) * v0 + (d / 10.0) * v1;
           vert = vert * sq.octant_modifier;
           vert.Normalize();
+          // std::cout << "Verts " << vert.x << " " << vert.y << " " << vert.z << std::endl;
           vert_file << vert.x << " " << vert.y << " " << vert.z << "\n";
         }
       }
