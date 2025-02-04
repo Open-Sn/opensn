@@ -91,6 +91,8 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   else if (cls_name == "ProductQuadrature")
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
+  else if (cls_name == "SLDFESQuadrature")
+    block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   //
   else if (cls_name == "MultiGroupXS")
     block.AddParameter(key, CreateObjectPtr<opensn::MaterialProperty>(L));
