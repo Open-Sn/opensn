@@ -145,7 +145,7 @@ public:
 
 public:
   /// Prints the quadrature to file.
-  void PrintQuadratureToFile();
+  void PrintQuadratureToFile(const std::string& file_base);
 
 public:
   /// Locally refines the cells.
