@@ -140,6 +140,7 @@ To check if the code compiled correctly execute the test scripts:
 ```shell
 cd /path/to/opensn
 test/run_tests -j<N>
+build/test/opensn-unit
 ```
 
 ## Step 7 - OpenSn Documentation

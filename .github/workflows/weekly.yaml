@@ -22,3 +22,9 @@ jobs:
           export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/gcc/12
           test/run_tests -d test/ -j 32 -v 1 -w 4
+      - name: test unit
+        shell: bash
+        run: |
+          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
+          module load opensn/gcc/12
+          build/test/opensn-unit

@@ -184,7 +184,7 @@ export LUA_ROOT="/path/to/lua/install"
 export CMAKE_PREFIX_PATH="${LUA_ROOT}:${CMAKE_PREFIX_PATH}"
 ```
 
-## Step 6 - Install Caliper 
+## Step 6 - Install Caliper
 
 Download [Caliper 2.10.0](https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz) or
 into a suitable location and upack it into `/path/to/caliper`. Assuming Caliper will
@@ -259,6 +259,7 @@ To check if the code compiled correctly execute the test scripts:
 ```shell
 cd /path/to/opensn
 test/run_tests -j<N>
+build/test/opensn-unit
 ```
 
 ## Step 10 - OpenSn Documentation
