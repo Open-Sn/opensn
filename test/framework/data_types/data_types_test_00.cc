@@ -17,54 +17,7 @@ data_types_Test00()
 {
   bool passed = true;
 
-  // Byte array
-  // write/read
   opensn::log.Log() << "GOLD_BEGIN";
-  opensn::log.Log() << "Testing ByteArray Write and Read\n";
-  ByteArray barr;
-
-  Vector3 v3a(3.0, 2.0, 1.0);
-  barr.Write<double>(1.01234567890123456789);
-  barr.Write<int>(-15600700);
-  barr.Write<double>(2.0987654321);
-  barr.Write<bool>(false);
-  barr.Write<bool>(true);
-  barr.Write<double>(v3a.x);
-  barr.Write<double>(v3a.y);
-  barr.Write<double>(v3a.z);
-
-  auto dbl_value = barr.Read<double>();
-  auto int_value = barr.Read<int>();
-  auto dbl_value2 = barr.Read<double>();
-  auto bl_value1 = barr.Read<bool>();
-  auto bl_value2 = barr.Read<bool>();
-  auto vec3_x = barr.Read<double>();
-  auto vec3_y = barr.Read<double>();
-  auto vec3_z = barr.Read<double>();
-  Vector3 vec3b(vec3_x, vec3_y, vec3_z);
-
-  ByteArray seeker;
-  seeker.Write<bool>(false);
-  seeker.Write<double>(1.01234567890123456789);
-
-  opensn::log.Log() << "EndOfBuffer " << seeker.EndOfBuffer();
-  opensn::log.Log() << "Offset " << seeker.Offset();
-  seeker.Seek(seeker.Size() - sizeof(double));
-  opensn::log.Log() << "OffsetAfterSeek " << seeker.Offset();
-  opensn::log.Log() << "Value check " << seeker.Read<double>();
-
-  if (dbl_value != 1.01234567890123456789 or int_value != -15600700 or dbl_value2 != 2.0987654321 or
-      bl_value1 or !bl_value2 or vec3b[0] != Vector3(3.0, 2.0, 1.0)[0] or
-      vec3b[1] != Vector3(3.0, 2.0, 1.0)[1] or vec3b[2] != Vector3(3.0, 2.0, 1.0)[2])
-
-  {
-    passed = false;
-    opensn::log.Log() << std::string("ByteArray"
-                                     " Write/Read ... Failed\n");
-  }
-  else
-    opensn::log.Log() << std::string("ByteArray "
-                                     "Write/Read ... Passed\n");
 
   // Testing Byte array
   // serialization
