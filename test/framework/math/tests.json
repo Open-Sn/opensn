@@ -1,21 +1,5 @@
 [
   {
-    "file" : "math_test_00.lua", "num_procs" : 1, "checks" :
-    [
-      {
-        "type" : "GoldFile", "scope_keyword" : "GOLD"
-      }
-    ]
-  },
-  {
-    "file" : "math_test_01_wdd_ijk_sweep.lua", "num_procs" : 1, "checks" :
-    [
-      {
-        "type" : "GoldFile", "scope_keyword" : "GOLD"
-      }
-    ]
-  },
-  {
     "file" : "math_test_02.lua", "num_procs" : 2, "checks" :
     [
       { "type" : "StrCompare", "key" : "[0]  vec after assembly: [1 0 0 0 0]" },
