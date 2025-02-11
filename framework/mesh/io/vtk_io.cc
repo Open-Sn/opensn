@@ -94,18 +94,12 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       }
       break;
     }
-    // For wedges, we need to remap cell vertices and faces.
+    // For wedges, we need to remap cell faces
     case CellType::WEDGE:
     {
-      std::vector<uint64_t> remapping = {0, 2, 1, 3, 5, 4};
-      std::vector<uint64_t> remapped(6, 0);
-      for (int i = 0; i < 6; ++i)
-        remapped[i] = polyh_cell->vertex_ids[remapping[i]];
-      polyh_cell->vertex_ids = remapped;
-
       std::vector<std::vector<uint64_t>> face_vids = {
         {0, 1, 4, 3}, {1, 2, 5, 4}, {2, 0, 3, 5}, {3, 4, 5}, {0, 2, 1}};
-      for (int f = 0; f < 6; ++f)
+      for (int f = 0; f < 5; ++f)
       {
         UnpartitionedMesh::LightWeightFace face;
 
