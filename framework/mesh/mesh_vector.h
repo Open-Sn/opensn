@@ -172,18 +172,6 @@ struct Vector3 : public std::enable_shared_from_this<Vector3>
   }
 
   /**
-   * Tensor product of two vectors.
-   * \f$ \vec{\vec{T}} = \vec{x} \otimes \vec{y} \f$
-   */
-  TensorRank2Dim3 OTimes(const Vector3& that) const;
-
-  /**
-   * Dot product of vector and a rank-2 tensor.
-   * \f$ \vec{w} = \vec{x} \bullet \vec{\vec{T}} \f$
-   */
-  Vector3 Dot(const TensorRank2Dim3& that) const;
-
-  /**
    * Vector cross-product.
    * \f$ \vec{w} = \vec{x} \times \vec{y} \f$
    */

@@ -15,6 +15,7 @@ include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
 include(CheckCXXCompilerFlag)
+include(FetchContent)
 
 CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 
@@ -111,6 +112,14 @@ find_package(caliper REQUIRED)
 if(caliper_FOUND)
     message(STATUS "Found Caliper: ${caliper_DIR}")
 endif()
+
+# google test
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.15.2
+)
+FetchContent_MakeAvailable(googletest)
 
 # compile options
 set(OPENSN_CXX_FLAGS)
@@ -210,7 +219,8 @@ if(OPENSN_WITH_LUA)
 
     add_custom_target(test
       COMMAND
-          ${CMAKE_SOURCE_DIR}/test/run_tests
+      ${CMAKE_BINARY_DIR}/test/opensn-unit &&
+              ${CMAKE_SOURCE_DIR}/test/run_tests
               -d ${CMAKE_SOURCE_DIR}/test
               --exe ${CMAKE_BINARY_DIR}/test/opensn-test
               -w3
