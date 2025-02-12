@@ -48,12 +48,14 @@ protected:
                            bool additive,
                            bool suppress_wg_scat = false);
 
-  void WriteRestartData();
+private:
+  bool WriteRestartData();
 
-  void ReadRestartData();
+  bool ReadRestartData();
 
 public:
   static InputParameters GetInputParameters();
+
   static std::shared_ptr<PowerIterationKEigen> Create(const ParameterBlock& params);
 };
 

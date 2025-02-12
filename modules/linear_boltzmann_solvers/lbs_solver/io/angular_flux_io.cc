@@ -141,12 +141,14 @@ LBSSolverIO::ReadAngularFluxes(
                        "Incompatible number of groupsets found in file " + file_name + ".");
 
   // Read in mesh information
-  const auto file_cell_ids = H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids");
-  const auto file_num_cell_nodes = H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes");
+  std::vector<uint64_t> file_cell_ids, file_num_cell_nodes;
+  H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids", file_cell_ids);
+  H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes", file_num_cell_nodes);
 
-  const auto nodes_x = H5ReadDataset1D<double>(file_id, "mesh/nodes_x");
-  const auto nodes_y = H5ReadDataset1D<double>(file_id, "mesh/nodes_y");
-  const auto nodes_z = H5ReadDataset1D<double>(file_id, "mesh/nodes_z");
+  std::vector<double> nodes_x, nodes_y, nodes_z;
+  H5ReadDataset1D<double>(file_id, "mesh/nodes_x", nodes_x);
+  H5ReadDataset1D<double>(file_id, "mesh/nodes_y", nodes_y);
+  H5ReadDataset1D<double>(file_id, "mesh/nodes_z", nodes_z);
 
   // Validate mesh compatibility
   uint64_t curr_node = 0;
@@ -221,7 +223,8 @@ LBSSolverIO::ReadAngularFluxes(
 
     // Read the groupset angular flux vector
     uint64_t v = 0;
-    const auto values = H5ReadDataset1D<double>(file_id, group_name + "/values");
+    std::vector<double> values;
+    H5ReadDataset1D<double>(file_id, group_name + "/values", values);
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];

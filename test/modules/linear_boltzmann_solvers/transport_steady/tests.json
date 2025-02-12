@@ -502,6 +502,26 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_restart.lua",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_5_cycles_2_crichardson.lua",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD",
     "num_procs": 4,

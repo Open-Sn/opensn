@@ -38,7 +38,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
     throw std::runtime_error("Failure reading \"energy_groups\" from " + file_name);
 
   // Group structure
-  e_bounds_ = H5ReadDataset1D<double>(file, "/group structure");
+  H5ReadDataset1D<double>(file, "/group structure", e_bounds_);
   std::reverse(e_bounds_.begin(), e_bounds_.end());
 
   // Temperature
@@ -70,12 +70,12 @@ MultiGroupXS::Initialize(const std::string& file_name,
   num_precursors_ = 0;
 
   // Inverse velocity
-  inv_velocity_ = H5ReadDataset1D<double>(file, path + "inverse-velocity");
+  H5ReadDataset1D<double>(file, path + "inverse-velocity", inv_velocity_);
   OpenSnLogicalErrorIf(not IsNonNegative(inv_velocity_),
                        "Only positive inverse velocity values are permitted.");
 
   // Total
-  sigma_t_ = H5ReadDataset1D<double>(file, path + "total");
+  H5ReadDataset1D<double>(file, path + "total", sigma_t_);
   OpenSnLogicalErrorIf(sigma_t_.empty(), "\"total\" data block not found in " + file_name + ".");
   OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
                        "Only non-negative total cross-section values are permitted.");
@@ -91,9 +91,11 @@ MultiGroupXS::Initialize(const std::string& file_name,
   if (H5Has(file, path + "scatter_data/scatter_matrix"))
   {
     transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
-    auto flat_scatter_matrix = H5ReadDataset1D<double>(file, path + "scatter_data/scatter_matrix");
-    auto g_min = H5ReadDataset1D<int>(file, path + "scatter_data/g_min");
-    auto g_max = H5ReadDataset1D<int>(file, path + "scatter_data/g_max");
+    std::vector<double> flat_scatter_matrix;
+    H5ReadDataset1D<double>(file, path + "scatter_data/scatter_matrix", flat_scatter_matrix);
+    std::vector<int> g_min, g_max;
+    H5ReadDataset1D<int>(file, path + "scatter_data/g_min", g_min);
+    H5ReadDataset1D<int>(file, path + "scatter_data/g_max", g_max);
     int fidx = 0;
     for (int gp = 0; gp < num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
@@ -110,7 +112,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
   if (is_fissionable_)
   {
     // Fission
-    sigma_f_ = H5ReadDataset1D<double>(file, path + "fission");
+    H5ReadDataset1D<double>(file, path + "fission", sigma_f_);
     OpenSnLogicalErrorIf(sigma_f_.empty(),
                          "\"fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
@@ -123,7 +125,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
     }
 
     // Nu-Fission
-    nu_sigma_f_ = H5ReadDataset1D<double>(file, path + "nu-fission");
+    H5ReadDataset1D<double>(file, path + "nu-fission", nu_sigma_f_);
     OpenSnLogicalErrorIf(nu_sigma_f_.empty(),
                          "\"nu-fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(
@@ -137,7 +139,7 @@ MultiGroupXS::Initialize(const std::string& file_name,
     }
 
     // Chi
-    chi_ = H5ReadDataset1D<double>(file, path + "chi");
+    H5ReadDataset1D<double>(file, path + "chi", chi_);
     OpenSnLogicalErrorIf(chi_.empty(), "\"chi\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(not HasNonZero(chi_),
                          "Steady-state fission spectrum must have at least one non-zero value.");
