@@ -22,11 +22,6 @@ class SparseMatrix;
 class UnknownManager;
 class CDFSampler;
 class SpatialDiscretization;
-class SpatialDiscretization_FV;
-class SpatialDiscretization_PWLD;
-class SpatialDiscretization_PWLC;
-
-using MatVec3 = std::vector<std::vector<Vector3>>;
 
 /// Coordinate system type.
 enum class CoordinateSystemType
@@ -44,8 +39,6 @@ enum class SpatialDiscretizationType
   FINITE_VOLUME = 1,
   PIECEWISE_LINEAR_CONTINUOUS = 2,
   PIECEWISE_LINEAR_DISCONTINUOUS = 3,
-  LAGRANGE_CONTINUOUS = 4,
-  LAGRANGE_DISCONTINUOUS = 5
 };
 
 enum class NormType : int

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "framework/data_types/varying.h"
 
 namespace opensn
@@ -16,19 +18,22 @@ private:
   Varying value_;
 
 public:
-  BasicOption(const std::string& name, const std::string& string_value)
-    : name_(name), value_(string_value)
+  BasicOption(std::string name, const std::string& string_value)
+    : name_(std::move(name)), value_(string_value)
   {
   }
 
-  BasicOption(const std::string& name, const bool& bool_value) : name_(name), value_(bool_value) {}
-
-  BasicOption(const std::string& name, const int64_t& integer_value)
-    : name_(name), value_(integer_value)
+  BasicOption(std::string name, const bool& bool_value) : name_(std::move(name)), value_(bool_value)
   {
   }
 
-  BasicOption(const std::string& name, const double& float_value) : name_(name), value_(float_value)
+  BasicOption(std::string name, const int64_t& integer_value)
+    : name_(std::move(name)), value_(integer_value)
+  {
+  }
+
+  BasicOption(std::string name, const double& float_value)
+    : name_(std::move(name)), value_(float_value)
   {
   }
 

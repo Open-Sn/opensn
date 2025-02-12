@@ -41,9 +41,9 @@ private:
 
 public:
   /// constructor.
-  CDFSampler(std::vector<double>& cdf,
-             int subdiv_factor = AUTO_SUBDIV,
-             int final_res = AUTO_FINERES);
+  explicit CDFSampler(std::vector<double>& cdf,
+                      int subdiv_factor = AUTO_SUBDIV,
+                      int final_res = AUTO_FINERES);
 
   /// Initiates the sampling process.
   int Sample(double x);

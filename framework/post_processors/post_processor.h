@@ -79,7 +79,7 @@ public:
    */
   std::string ConvertValueToString(const ParameterBlock& value) const;
 
-  virtual ~PostProcessor() = default;
+  ~PostProcessor() override = default;
 
   static InputParameters GetInputParameters();
 
