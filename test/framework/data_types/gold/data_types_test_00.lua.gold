@@ -4,40 +4,8 @@
 [0]  Parsing argument 4 master_export=false
 [0]  OpenSn number of arguments supplied: 4
 [0]  GOLD_BEGIN
-[0]  Testing ByteArray Write and Read
-[0]  EndOfBuffer 0
-[0]  Offset 0
-[0]  OffsetAfterSeek 1
-[0]  Value check 1.01235
-[0]  ByteArray Write/Read ... Passed
 [0]  Testing ByteArray Serialization/DeSerialization
 [0]  ByteArraySerialization/DeSerialization ... Passed
-[0]  Testing NDArray
-[0]  Should be printing rank and 2x2x2=8 zeros
-[0]  3
-[0]  0 0 0 0 0 0 0 0 Done1
-[0]  Should be 2x2x2=8 zeros
-[0]  0 0 0 0 0 0 0 0 Done2
-[0]  Should be 2x2x2=8 zeros
-[0]  0 0 0 0 0 0 0 0 Done3
-[0]  Should be 2x2x2=8 zeros
-[0]  0 0 0 0 0 0 0 0 Done4
-[0]  Should be 2x2x2=8 zeros
-[0]  0 0 0 0 0 0 0 0 Done5
-[0]  Should be 2x2x2=8 zeros
-[0]  0 0 0 0 0 0 0 0 Done6
-[0]  Should not print anything
-[0]  Done7
-[0]  Should be 2x2x2=8 ones
-[0]  1 1 1 1 1 1 1 1 
-[0]  Done8
-[0]  Should be 2x2x2=8 ones
-[0]  1 1 1 1 1 1 1 1 
-[0]  Done9
-[0]  size 8
-[0]  empty() 0Should be 2x2x2=8 ones
-[0]  1 1 1 1 1 1 1 1 
-[0]  Done10
 [0]  GOLD_END
 
 
