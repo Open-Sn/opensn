@@ -52,7 +52,7 @@ materials[1]:SetIsotropicMGSource(mg_src)
 materials[2]:SetIsotropicMGSource(mg_src)
 
 -- Setup Physics
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 40, -1)
+pquad0 = aquad.CreateGLProductQuadrature1DSlab(80)
 lbs_block = {
   num_groups = num_groups,
   groupsets = {

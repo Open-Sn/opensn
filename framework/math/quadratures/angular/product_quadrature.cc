@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include <cmath>
 #include <sstream>
+#include <cassert>
 
 namespace opensn
 {
@@ -21,14 +22,6 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
   size_t Nw = wts.size();
-
-  if (Nw != Na * Np)
-  {
-    log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
-                         "angles and weights. Number of azimuthal angles times number "
-                         "polar angles must equal the amount of weights.";
-    Exit(EXIT_FAILURE);
-  }
 
   azimu_ang = azimuthal;
   polar_ang = polar;
@@ -144,9 +137,13 @@ ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
   azimu_ang = new_azimu_ang;
 }
 
-AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : ProductQuadrature()
+GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
+  : ProductQuadrature(1)
 {
-  GaussLegendreQuadrature gl_polar(Nphemi * 2);
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
+
+  GaussLegendreQuadrature gl_polar(Npolar);
 
   // Create azimuthal angles
   azimu_ang.clear();
@@ -154,7 +151,7 @@ AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : Pro
 
   // Create polar angles
   polar_ang.clear();
-  for (unsigned int j = 0; j < (Nphemi * 2); ++j)
+  for (auto j = 0; j < Npolar; ++j)
     polar_ang.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
 
   // Create combined weights
@@ -164,49 +161,70 @@ AngularQuadratureProdGL::AngularQuadratureProdGL(int Nphemi, bool verbose) : Pro
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
 }
 
-AngularQuadratureProdGLC::AngularQuadratureProdGLC(int Na, int Np, bool verbose)
+GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose)
+  : ProductQuadrature(2)
 {
-  GaussLegendreQuadrature gl_polar(Np * 2);
-  GaussChebyshevQuadrature gc_azimu(Na * 4);
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even.");
+
+  if (Nazimuthal % 4 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4.");
+
+  GaussLegendreQuadrature gl_polar(Npolar);
+  GaussChebyshevQuadrature gc_azimu(Nazimuthal);
 
   // Create azimuthal angles
   azimu_ang.clear();
-  for (unsigned int i = 0; i < (Na * 4); ++i)
-    azimu_ang.emplace_back(M_PI * (2 * (i + 1) - 1) / (Na * 4));
+  for (auto i = 0; i < Nazimuthal; ++i)
+    azimu_ang.emplace_back(M_PI * (2 * (i + 1) - 1) / Nazimuthal);
 
   // Create polar angles
   polar_ang.clear();
-  for (unsigned int j = 0; j < (Np * 2); ++j)
+  for (auto j = 0; j < Npolar; ++j)
     polar_ang.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
 
   // Create combined weights
   std::vector<double> weights;
-  for (unsigned int i = 0; i < azimu_ang.size(); ++i)
-    for (unsigned int j = 0; j < polar_ang.size(); ++j)
+  for (auto i = 0; i < azimu_ang.size(); ++i)
+    for (auto j = 0; j < polar_ang.size(); ++j)
       weights.emplace_back(2 * gc_azimu.weights[i] * gl_polar.weights[j]);
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+
+  OptimizeForPolarSymmetry(4.0 * M_PI);
 }
 
-AngularQuadratureProdCustom::AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
-                                                         const std::vector<double>& polar,
-                                                         const std::vector<double>& weights,
-                                                         bool verbose)
+GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose)
+  : ProductQuadrature(3)
 {
-  size_t Na = azimuthal.size();
-  size_t Np = polar.size();
-  size_t Nw = weights.size();
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Npolar must be even.");
 
-  if (Nw != Na * Np)
-  {
-    log.LogAllError() << "Product Quadrature, InitializeWithCustom: mismatch in the amount "
-                         "angles and weights. Number of azimuthal angles times number "
-                         "polar angles must equal the amount of weights.";
-    Exit(EXIT_FAILURE);
-  }
+  if (Nazimuthal % 4 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Nazimuthal must be a multiple of 4.");
 
-  AssembleCosines(azimuthal, polar, weights, verbose);
+  GaussLegendreQuadrature gl_polar(Npolar);
+  GaussChebyshevQuadrature gc_azimu(Nazimuthal);
+
+  // Create azimuthal angles
+  azimu_ang.clear();
+  for (auto i = 0; i < Nazimuthal; ++i)
+    azimu_ang.emplace_back(M_PI * (2 * (i + 1) - 1) / Nazimuthal);
+
+  // Create polar angles
+  polar_ang.clear();
+  for (auto j = 0; j < Npolar; ++j)
+    polar_ang.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
+
+  // Create combined weights
+  std::vector<double> weights;
+  for (auto i = 0; i < azimu_ang.size(); ++i)
+    for (auto j = 0; j < polar_ang.size(); ++j)
+      weights.emplace_back(2 * gc_azimu.weights[i] * gl_polar.weights[j]);
+
+  // Initialize
+  AssembleCosines(azimu_ang, polar_ang, weights, verbose);
 }
 
 } // namespace opensn

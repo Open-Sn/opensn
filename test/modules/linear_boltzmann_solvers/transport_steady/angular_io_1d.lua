@@ -52,7 +52,7 @@ src1 = xs.IsotropicMultiGroupSource.FromArray({ 1. })
 materials[4]:SetIsotropicMGSource(src1)
 
 -- Angular Quadrature
-gl_quad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 64, -1)
+gl_quad = aquad.CreateGLProductQuadrature1DSlab(64)
 
 -- LBS block option
 num_groups = 1
