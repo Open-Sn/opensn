@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binding C++ classes to Lua &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Developer Workflow" href="workflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Developer Workflow</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binding C++ classes to Lua</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#namespaces">Namespaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#member-functions">Member functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes-as-parameters">Classes as Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#member-variables">Member variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#more-details">More details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer’s Guide</a></li>
+      <li class="breadcrumb-item active">Binding C++ classes to Lua</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="binding-c-classes-to-lua">
+<h1>Binding C++ classes to Lua<a class="headerlink" href="#binding-c-classes-to-lua" title="Link to this heading"></a></h1>
+<p>The OpenSn package provides a set of Lua bindings for the C++ classes.
+The bindings are generated using the <a class="reference external" href="https://github.com/kunitoki/LuaBridge3">LuaBridge3</a> library
+which is embedded in the OpenSn repository.</p>
+<p>This guide explains how to bind C++ classes into Lua.</p>
+<p>All binding code is located in <code class="docutils literal notranslate"><span class="pre">lua/lib/opensn.cc</span></code> inside <code class="docutils literal notranslate"><span class="pre">opensnlua::Console::Bind</span></code>.</p>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<p>Outside of the global namespace we have several of our own that group together the code functionality:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">log</span></code> for logging events,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">squad</span></code> for spatial quadrature,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aquad</span></code> for angular quadrature,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logvol</span></code> for logical volumes,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code> for mesh-related functionality,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fieldfunc</span></code> for field functions,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs</span></code> for cross sections,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post</span></code> for post-processing,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solver</span></code> for solvers,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lbs</span></code> for linear Boltzmann solvers.</p></li>
+</ul>
+<p>The namespaces should not be changed unless directed by developers.
+All new bindings will be created inside the existing namespaces.</p>
+<p>Example code for a <code class="docutils literal notranslate"><span class="pre">squad</span></code> namespace binding:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">luabridge</span><span class="o">::</span><span class="n">getGlobalNamespace</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">beginNamespace</span><span class="p">(</span><span class="s">&quot;squad&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="p">.</span><span class="n">endNamespace</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<p>Let’s show how to bind a new class on an example.
+Say we have a new class <code class="docutils literal notranslate"><span class="pre">MyLovelyClass</span></code> that inherits from a <code class="docutils literal notranslate"><span class="pre">LogicalVolume</span></code> class.
+First, find the <code class="docutils literal notranslate"><span class="pre">logvol</span></code> namespace.
+You will see that the first class there is binding the <code class="docutils literal notranslate"><span class="pre">LogicalVolume</span></code> class.
+This is also the parent class of our new class.
+We add a new section for binding our new class (typically at the end of the namespace block before the <code class="docutils literal notranslate"><span class="pre">.endNamespace()</span></code> call).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="n">deriveClass</span><span class="o">&lt;</span><span class="n">MyLovelyClass</span><span class="p">,</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;MyLovelyClass&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">endClass</span><span class="p">()</span>
+<span class="p">.</span><span class="n">beginClass</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyLovelyClass</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;MyLovelyClassPtr&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">endClass</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is the basic binding for a class and should be self-explanatory.</p>
+<p>The second part of this block is for binding a shared pointer to the class and is essential for the correct
+operation of the scripts.</p>
+</section>
+<section id="member-functions">
+<h2>Member functions<a class="headerlink" href="#member-functions" title="Link to this heading"></a></h2>
+<p>To bind a member function of a class, we use the following syntax:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="n">deriveClass</span><span class="o">&lt;</span><span class="n">MyLovelyClass</span><span class="p">,</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;MyLovelyClass&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">addFunction</span><span class="p">(</span><span class="s">&quot;myFunction&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyLovelyClass</span><span class="o">::</span><span class="n">myFunction</span><span class="p">)</span>
+<span class="p">.</span><span class="n">endClass</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To bind a static member function of a class, use the following syntax:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">.</span><span class="n">deriveClass</span><span class="o">&lt;</span><span class="n">MyLovelyClass</span><span class="p">,</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;MyLovelyClass&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="n">addStaticFunction</span><span class="p">(</span><span class="s">&quot;myStaticFunction&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">MyLovelyClass</span><span class="o">::</span><span class="n">myStaticFunction</span><span class="p">)</span>
+<span class="p">.</span><span class="n">endClass</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If our class was using <code class="docutils literal notranslate"><span class="pre">InputParameters</span></code> for construction, this would be the syntax we would use for binding of the <code class="docutils literal notranslate"><span class="pre">Create</span></code> method.</p>
+</section>
+<section id="classes-as-parameters">
+<h2>Classes as Parameters<a class="headerlink" href="#classes-as-parameters" title="Link to this heading"></a></h2>
+<p>If our class would be used inside a Lua table (this is how <code class="docutils literal notranslate"><span class="pre">InputParameters</span></code> are represented in Lua),
+then we need to teach the parsing code how to construct such a class.</p>
+<p>This is done in <code class="docutils literal notranslate"><span class="pre">lua/lib/parse_table.cc</span></code> in the <code class="docutils literal notranslate"><span class="pre">SetBlockParam</span></code> function.</p>
+<p>We find the section for contructing logical volumes and add the following code:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cls_name</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;MyLovelyClass&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">block</span><span class="p">.</span><span class="n">AddParameter</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">CreateObjectPtr</span><span class="o">&lt;</span><span class="n">opensn</span><span class="o">::</span><span class="n">LogicalVolume</span><span class="o">&gt;</span><span class="p">(</span><span class="n">L</span><span class="p">));</span>
+</pre></div>
+</div>
+</section>
+<section id="member-variables">
+<h2>Member variables<a class="headerlink" href="#member-variables" title="Link to this heading"></a></h2>
+<p>Public member variables can be bound into Lua as properties.
+Let’s see an example how it is done on the <code class="docutils literal notranslate"><span class="pre">Vector3</span></code> class.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">luabridge</span><span class="o">::</span><span class="n">getGlobalNamespace</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">beginClass</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Vector3&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addProperty</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Vector3</span><span class="o">::</span><span class="n">x</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addProperty</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Vector3</span><span class="o">::</span><span class="n">y</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addProperty</span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Vector3</span><span class="o">::</span><span class="n">z</span><span class="p">)</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="p">.</span><span class="n">endClass</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h2>
+<p>Lua does not have an enum type, so we need to bind enum values as variables.</p>
+<p>For example, if we had an enum:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">MyEnum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">VALUE1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VALUE2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VALUE3</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The binding code would look like this:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">luabridge</span><span class="o">::</span><span class="n">getGlobalNamespace</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&quot;VALUE1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">MyEnum</span><span class="o">::</span><span class="n">VALUE1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&quot;VALUE2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">MyEnum</span><span class="o">::</span><span class="n">VALUE2</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&quot;VALUE3&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">MyEnum</span><span class="o">::</span><span class="n">VALUE3</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="more-details">
+<h2>More details<a class="headerlink" href="#more-details" title="Link to this heading"></a></h2>
+<p>For more details see the documentation of <a class="reference external" href="https://kunitoki.github.io/LuaBridge3/Manual#2---accessing-c-from-lua">LuaBridge3</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Developer Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
