@@ -10,15 +10,6 @@
 namespace opensn
 {
 
-enum class ProductQuadratureType
-{
-  UNKNOWN = 0,
-  GAUSS_LEGENDRE = 1,
-  GAUSS_CHEBYSHEV = 2,
-  GAUSS_LEGENDRE_CHEBYSHEV = 3,
-  CUSTOM_QUADRATURE = 4,
-};
-
 /// Class for product quadratures
 class ProductQuadrature : public AngularQuadrature
 {
@@ -26,19 +17,10 @@ protected:
   /// Linear indices of ordered directions mapped to polar level.
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 
-  ProductQuadrature() : AngularQuadrature(AngularQuadratureType::ProductQuadrature) {}
-
-public:
-  std::vector<double> polar_ang;
-  std::vector<double> azimu_ang;
-
-  ~ProductQuadrature() override = default;
-
-  /// Initializes the quadrature with custom angles and weights.
-  void AssembleCosines(const std::vector<double>& azimuthal,
-                       const std::vector<double>& polar,
-                       const std::vector<double>& weights,
-                       bool verbose);
+  ProductQuadrature(int dimension)
+    : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension)
+  {
+  }
 
   /**
    * Optimizes the angular quadrature for polar symmetry by removing all the direction with downward
@@ -48,7 +30,19 @@ public:
    *        any normalization. If a positive number is provided, the weights will be normalized to
    *        sum to this number.
    */
-  void OptimizeForPolarSymmetry(double normalization) override;
+  void OptimizeForPolarSymmetry(double normalization);
+
+  /// Initializes the quadrature with custom angles and weights.
+  void AssembleCosines(const std::vector<double>& azimuthal,
+                       const std::vector<double>& polar,
+                       const std::vector<double>& weights,
+                       bool verbose);
+
+public:
+  std::vector<double> polar_ang;
+  std::vector<double> azimu_ang;
+
+  ~ProductQuadrature() override = default;
 
   /**
    * Obtains the abscissae index given the indices of the polar angle index and the azimuthal angle
@@ -67,28 +61,25 @@ public:
   }
 };
 
-class AngularQuadratureProdGL : public ProductQuadrature
+class GLProductQuadrature1DSlab : public ProductQuadrature
 {
 public:
-  /// Constructor for Angular Gauss-Legendre.
-  explicit AngularQuadratureProdGL(int Np, bool verbose = false);
+  /// Constructor for 1D slab Gauss-Legendre product quadrature
+  explicit GLProductQuadrature1DSlab(int Npolar, bool verbose = false);
 };
 
-class AngularQuadratureProdGLC : public ProductQuadrature
+class GLCProductQuadrature2DXY : public ProductQuadrature
 {
 public:
-  /// Constructor for Angular Gauss-Legendre-Chebyshev.
-  explicit AngularQuadratureProdGLC(int Na, int Np, bool verbose = false);
+  /// Constructor for 2D XY Gauss-Legendre Chebyshev product quadrature
+  explicit GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose = false);
 };
 
-class AngularQuadratureProdCustom : public ProductQuadrature
+class GLCProductQuadrature3DXYZ : public ProductQuadrature
 {
 public:
-  /// Constructor for Custom Angular Product Quadrature.
-  AngularQuadratureProdCustom(const std::vector<double>& azimuthal,
-                              const std::vector<double>& polar,
-                              const std::vector<double>& weights,
-                              bool verbose);
+  /// Constructor for 3D XYZ Gauss-Legendre Chebyshev product quadrature
+  explicit GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose = false);
 };
 
 } // namespace opensn

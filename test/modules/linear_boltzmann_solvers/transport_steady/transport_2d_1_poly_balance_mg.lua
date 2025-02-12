@@ -51,8 +51,7 @@ materials[2]:SetIsotropicMGSource(mg_src1)
 
 -- Setup Physics
 fac = 1
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
 lbs_block = {
   num_groups = num_groups,
