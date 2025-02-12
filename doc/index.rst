@@ -54,5 +54,4 @@ most prominent features of OpenSn include:
    getting_started
    theory/index
    tutorials/index
-   coding_standard.md
-   workflow.md
+   devguide/index
