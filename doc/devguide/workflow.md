@@ -183,3 +183,35 @@ $ git checkout <my-branch-name>
 $ git rebase main
 ```
 Note: You will most likely run into conflicts that you will have to resolve.
+
+
+## Squashing Commits
+
+If you are told to squash your commits, do:
+
+```shell
+$ git rebase -i main
+```
+
+This will open an editor with a list of commits.
+Change `pick` to `f` for all but the first commit. It should look like this:
+
+```shell
+pick <sha1> Short description
+f <sha1> Some description
+f <sha1> Some other description
+```
+
+Save the file and quit the editor.
+Git will squash all commits into one.
+
+You can edit the commit message if you want to by using `git commit --amend`.
+Then push the changes to your fork:
+
+```shell
+$ git push -f
+```
+
+```{admonition} Attention
+This assumes you followed this guide and branched off of `main`.
+```
