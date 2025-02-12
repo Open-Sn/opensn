@@ -4,20 +4,22 @@
 #pragma once
 
 #include "framework/math/quadratures/angular/product_quadrature.h"
-#include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 
 namespace opensnlua
 {
 
-std::shared_ptr<opensn::ProductQuadrature>
-AQuadCreateProductQuadrature(opensn::ProductQuadratureType type, int n, int m);
+std::shared_ptr<opensn::ProductQuadrature> AQuadCreateGLProductQuadrature1DSlab(int Npolar);
 
-std::shared_ptr<opensn::ProductQuadrature>
-AQuadCreateCylindricalProductQuadrature(opensn::ProductQuadratureType type, int n, int m);
+std::shared_ptr<opensn::ProductQuadrature> AQuadCreateGLCProductQuadrature2DXY(int Npolar,
+                                                                               int Nazimuthal);
 
-void AQuadOptimizeForPolarSymmetry(std::shared_ptr<opensn::AngularQuadrature> aquad,
-                                   double normalization);
+std::shared_ptr<opensn::ProductQuadrature> AQuadCreateGLCProductQuadrature3DXYZ(int Npolar,
+                                                                                int Nazimuthal);
+
+std::shared_ptr<opensn::ProductQuadrature> AQuadCreateGLCProductQuadrature2DRZ(int Npolar,
+                                                                               int Nazimuthal);
 
 std::shared_ptr<opensn::SimplifiedLDFESQ::Quadrature>
 AQuadCreateSLDFESQAngularQuadrature(int level);

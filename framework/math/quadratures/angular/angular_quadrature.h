@@ -13,9 +13,8 @@ struct QuadraturePointPhiTheta;
 
 enum class AngularQuadratureType
 {
-  Arbitrary = 1,
-  ProductQuadrature = 2,
-  SLDFESQ = 3
+  ProductQuadrature = 1,
+  SLDFESQ = 2
 };
 
 struct QuadraturePointPhiTheta
@@ -49,37 +48,29 @@ protected:
   std::vector<HarmonicIndices> m_to_ell_em_map_;
   bool d2m_op_built_ = false;
   bool m2d_op_built_ = false;
+  AngularQuadratureType type_;
+  int dimension_;
+
+  explicit AngularQuadrature(AngularQuadratureType type, int dimension)
+    : type_(type), dimension_(dimension)
+  {
+  }
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
-  virtual void MakeHarmonicIndices(unsigned int scattering_order, int dimension);
+  virtual void MakeHarmonicIndices(unsigned int scattering_order);
 
 public:
-  const AngularQuadratureType type;
   std::vector<QuadraturePointPhiTheta> abscissae;
   std::vector<double> weights;
   std::vector<Vector3> omegas;
 
-  AngularQuadrature() : type(AngularQuadratureType::Arbitrary) {}
-
-  explicit AngularQuadrature(AngularQuadratureType type) : type(type) {}
-
   virtual ~AngularQuadrature() = default;
 
-  /**
-   * Optimizes the angular quadrature for polar symmetry by removing all the direction with downward
-   * pointing polar angles.
-   *
-   * \param normalization float. (Optional) The default is a negative number which does not apply
-   *        any normalization. If a positive number is provided, the weights will be normalized to
-   *        sum to this number.
-   */
-  virtual void OptimizeForPolarSymmetry(double normalization);
-
   /// Computes the discrete to moment operator.
-  virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order, int dimension);
+  virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order);
 
   /// Computes the moment to discrete operator.
-  virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order, int dimension);
+  virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order);
 
   /**
    * Returns a reference to the precomputed d2m operator. This will throw a std::logic_error if the
@@ -100,16 +91,10 @@ public:
    * if the map has not been built yet.
    */
   const std::vector<HarmonicIndices>& GetMomentToHarmonicsIndexMap() const;
-};
 
-class AngularQuadratureCustom : public AngularQuadrature
-{
-public:
-  /// Constructor using custom directions.
-  AngularQuadratureCustom(std::vector<double>& azimuthal,
-                          std::vector<double>& polar,
-                          std::vector<double>& weights,
-                          bool verbose);
+  int GetDimension() { return dimension_; }
+
+  AngularQuadratureType GetType() const { return type_; }
 };
 
 } // namespace opensn

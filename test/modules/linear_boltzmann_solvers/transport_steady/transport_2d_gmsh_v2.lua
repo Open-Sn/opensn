@@ -3,7 +3,7 @@
 Ng = 64
 
 Npolar = 4
-Nazimuthal = 2
+Nazimuthal = 16
 
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
@@ -39,7 +39,7 @@ lbs_options = {
 }
 
 -- Quadrature
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, Npolar, Nazimuthal, false)
+pquad0 = aquad.CreateGLCProductQuadrature2DXY(Npolar, Nazimuthal)
 
 -- Set up solver
 gs1 = { 0, Ng - 1 }

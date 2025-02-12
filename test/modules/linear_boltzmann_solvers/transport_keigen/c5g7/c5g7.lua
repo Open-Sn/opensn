@@ -6,7 +6,7 @@ dofile("materials/materials.lua")
 -- Setup Physics
 
 -- Angular quadrature
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
+pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 -- Solver

@@ -71,14 +71,11 @@ SimTest06_WDD(const ParameterBlock& params)
   // Make an angular quadrature
   std::shared_ptr<AngularQuadrature> quadrature;
   if (dimension == 1)
-    quadrature = std::make_shared<AngularQuadratureProdGL>(8);
+    quadrature = std::make_shared<GLProductQuadrature1DSlab>(16);
   else if (dimension == 2)
-  {
-    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
-    quadrature->OptimizeForPolarSymmetry(4.0 * M_PI);
-  }
+    quadrature = std::make_shared<GLCProductQuadrature2DXY>(16, 32);
   else if (dimension == 3)
-    quadrature = std::make_shared<AngularQuadratureProdGLC>(8, 8);
+    quadrature = std::make_shared<GLCProductQuadrature3DXYZ>(16, 32);
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
@@ -88,8 +85,8 @@ SimTest06_WDD(const ParameterBlock& params)
   const size_t scat_order = 1;
   const size_t num_groups = 20;
 
-  quadrature->BuildMomentToDiscreteOperator(scat_order, dimension);
-  quadrature->BuildDiscreteToMomentOperator(scat_order, dimension);
+  quadrature->BuildMomentToDiscreteOperator(scat_order);
+  quadrature->BuildDiscreteToMomentOperator(scat_order);
 
   const auto& m2d = quadrature->GetMomentToDiscreteOperator();
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();

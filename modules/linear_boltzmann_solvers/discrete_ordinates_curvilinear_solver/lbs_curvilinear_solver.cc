@@ -4,8 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/math/quadratures/angular/cylindrical_quadrature.h"
-#include "framework/math/quadratures/angular/spherical_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -135,12 +134,12 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       case CoordinateSystemType::CYLINDRICAL:
       {
         const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<CylindricalQuadrature>(angular_quad_ptr);
+          std::dynamic_pointer_cast<GLCProductQuadrature2DRZ>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
-                            << static_cast<int>(angular_quad_ptr->type)
+                            << static_cast<int>(angular_quad_ptr->GetType())
                             << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
         }
@@ -149,12 +148,12 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
       case CoordinateSystemType::SPHERICAL:
       {
         const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<SphericalQuadrature>(angular_quad_ptr);
+          std::dynamic_pointer_cast<GLProductQuadrature1DSpherical>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
-                            << static_cast<int>(angular_quad_ptr->type)
+                            << static_cast<int>(angular_quad_ptr->GetType())
                             << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
         }

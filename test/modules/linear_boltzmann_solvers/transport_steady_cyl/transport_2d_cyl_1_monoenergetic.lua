@@ -55,7 +55,7 @@ material0:SetTransportXSections(xs_1g)
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { source } })
 
 -- Setup Physics
-pquad0 = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
+pquad0 = aquad.CreateGLCProductQuadrature2DRZ(4, 8)
 
 lbs_block = {
   mesh = grid,

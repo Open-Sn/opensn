@@ -53,8 +53,7 @@ mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = stre
 
 -- Setup Physics
 fac = 1
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
 lbs_block = {
   mesh = grid,
