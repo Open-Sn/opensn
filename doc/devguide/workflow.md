@@ -20,6 +20,10 @@ OpenSn development uses pull request workflow which is common on GitHub.
 This means all development is done on so-called feature branches.
 Do **not** develop on the `main` branch, you will most likely create problems for yourself down the road.
 
+```{admonition} Attention
+Do **NOT** merge `main` into your feature branch.
+```
+
 ## Create a Branch
 
 First, make sure you do not have any local changes:
@@ -179,5 +183,3 @@ $ git checkout <my-branch-name>
 $ git rebase main
 ```
 Note: You will most likely run into conflicts that you will have to resolve.
-
-Do **NOT** merge `main` into your feature branch.
