@@ -6,3 +6,4 @@ Developer's Guide
 
    coding_standard
    workflow
+   lua_bindings
