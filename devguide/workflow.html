@@ -53,6 +53,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#sending-a-pull-request">Sending a Pull Request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fixing-your-branch">Fixing your branch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#updating-your-branch">Updating Your Branch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#squashing-commits">Squashing Commits</a></li>
 </ul>
 </li>
 </ul>
@@ -101,6 +102,10 @@ Also set up an <code class="docutils literal notranslate"><span class="pre">upst
 <p>OpenSn development uses pull request workflow which is common on GitHub.
 This means all development is done on so-called feature branches.
 Do <strong>not</strong> develop on the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, you will most likely create problems for yourself down the road.</p>
+<div class="admonition-attention admonition">
+<p class="admonition-title">Attention</p>
+<p>Do <strong>NOT</strong> merge <code class="docutils literal notranslate"><span class="pre">main</span></code> into your feature branch.</p>
+</div>
 <section id="create-a-branch">
 <h2>Create a Branch<a class="headerlink" href="#create-a-branch" title="Link to this heading"></a></h2>
 <p>First, make sure you do not have any local changes:</p>
@@ -297,7 +302,31 @@ $<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </spa
 </pre></div>
 </div>
 <p>Note: You will most likely run into conflicts that you will have to resolve.</p>
-<p>Do <strong>NOT</strong> merge <code class="docutils literal notranslate"><span class="pre">main</span></code> into your feature branch.</p>
+</section>
+<section id="squashing-commits">
+<h2>Squashing Commits<a class="headerlink" href="#squashing-commits" title="Link to this heading"></a></h2>
+<p>If you are told to squash your commits, do:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>main
+</pre></div>
+</div>
+<p>This will open an editor with a list of commits.
+Change <code class="docutils literal notranslate"><span class="pre">pick</span></code> to <code class="docutils literal notranslate"><span class="pre">f</span></code> for all but the first commit. It should look like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pick<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Short<span class="w"> </span>description
+f<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Some<span class="w"> </span>description
+f<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Some<span class="w"> </span>other<span class="w"> </span>description
+</pre></div>
+</div>
+<p>Save the file and quit the editor.
+Git will squash all commits into one.</p>
+<p>You can edit the commit message if you want to by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--amend</span></code>.
+Then push the changes to your fork:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>-f
+</pre></div>
+</div>
+<div class="admonition-attention admonition">
+<p class="admonition-title">Attention</p>
+<p>This assumes you followed this guide and branched off of <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
+</div>
 </section>
 </section>
 
