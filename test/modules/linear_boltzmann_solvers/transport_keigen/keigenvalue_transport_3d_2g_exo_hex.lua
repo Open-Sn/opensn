@@ -23,7 +23,7 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-mesh.MeshGenerator.Execute(meshgen1)
+grid = mesh.MeshGenerator.Execute(meshgen1)
 
 -- Set Materials (Fuel)
 materials = {}
@@ -34,6 +34,7 @@ materials[1]:SetTransportXSections(xs_fuel_g2)
 num_groups = 2
 -- Initialize the LBSSolver
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

@@ -13,8 +13,6 @@ class MeshContinuumTest : public OpenSnUnitTest
 std::shared_ptr<MeshContinuum>
 BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
 {
-  EXPECT_EQ(mesh_stack.size(), 0);
-
   ParameterBlock array("node_sets");
   for (std::size_t i = 0; i < node_sets.size(); ++i)
     array.AddParameter(ParameterBlock(std::to_string(i + 1), node_sets[i]));
@@ -25,9 +23,7 @@ BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
 
   auto params = OrthogonalMeshGenerator::GetInputParameters();
   params.AssignParameters(block);
-  OrthogonalMeshGenerator(params).Execute();
-  auto grid_ptr = mesh_stack.back();
-  mesh_stack.clear();
+  auto grid_ptr = OrthogonalMeshGenerator(params).Execute();
   return grid_ptr;
 }
 
