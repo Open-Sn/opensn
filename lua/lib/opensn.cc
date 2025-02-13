@@ -163,7 +163,6 @@ static bool reg = opensnlua::Console::Bind(
     luabridge::getGlobalNamespace(L)
       .beginNamespace("aquad")
       .addFunction("Legendre", &Legendre)
-      .addFunction("LegendreDerivative", &dLegendredx)
       .addFunction("Ylm", &Ylm)
       .addFunction("CreateProductQuadrature", &AQuadCreateProductQuadrature)
       .addFunction("CreateCylindricalProductQuadrature", &AQuadCreateCylindricalProductQuadrature)
