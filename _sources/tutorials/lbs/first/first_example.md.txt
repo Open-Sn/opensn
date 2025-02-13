@@ -82,7 +82,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0.0 },
   }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 ```
 
 ### Material IDs
@@ -92,7 +92,7 @@ with value 0 for each cell in the spatial domain.
 
 ```lua
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 ```
 
 ## Materials
@@ -153,6 +153,7 @@ tolerances, and other solver options.
 ```lua
 -- Setup LBS parameters
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {
@@ -240,11 +241,11 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
   }),
 })
 
-meshgen:Execute()
+grid = meshgen:Execute()
 
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 
 -- Add materials
@@ -274,6 +275,7 @@ aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 -- Setup LBS parameters
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

@@ -173,7 +173,7 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 <span class="w">    </span><span class="nv">ycuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.0</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
+<span class="nv">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
@@ -183,7 +183,7 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
 with value 0 for each cell in the spatial domain.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Set Material IDs</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -249,6 +249,7 @@ tolerances, and other solver options.</p></li>
 </ul>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup LBS parameters</span>
 <span class="nv">lbs_block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">grid</span><span class="p">,</span>
 <span class="w">  </span><span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">num_groups</span><span class="p">,</span>
 <span class="w">  </span><span class="nv">groupsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="p">{</span>
@@ -338,11 +339,11 @@ on post-processing for more details on field functions.</p>
 <span class="w">  </span><span class="p">}),</span>
 <span class="p">})</span>
 
-<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
+<span class="nv">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 
 <span class="c1">-- Set Material IDs</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 
 <span class="c1">-- Add materials</span>
@@ -372,6 +373,7 @@ on post-processing for more details on field functions.</p>
 
 <span class="c1">-- Setup LBS parameters</span>
 <span class="nv">lbs_block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">grid</span><span class="p">,</span>
 <span class="w">  </span><span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">num_groups</span><span class="p">,</span>
 <span class="w">  </span><span class="nv">groupsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="p">{</span>

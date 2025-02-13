@@ -45,7 +45,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0. },
   }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 ```
 
 ## Material IDs
@@ -55,7 +55,7 @@ with value 0 for each cell in the spatial domain.
 
 ```lua
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 ```
 
 ## Export the mesh
@@ -64,7 +64,7 @@ We export to vtu format. The resulting mesh partition is shown below
 
 ```lua
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_KBA")
+mesh.ExportToPVTU(grid, "ortho_2D_KBA")
 ```
 
 ## Mesh (again) and Parmetis partition
@@ -84,7 +84,7 @@ On such a simple regular mesh, both partitioners are giving the same result. The
 
 ```lua
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_Parmetis")
+mesh.ExportToPVTU(grid, "ortho_2D_Parmetis")
 ```
 
 ___
@@ -113,15 +113,15 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0. },
   }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_KBA")
+mesh.ExportToPVTU(grid, "ortho_2D_KBA")
 
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({
@@ -132,5 +132,5 @@ meshgen:Execute()
 
 
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_Parmetis")
+mesh.ExportToPVTU(grid, "ortho_2D_Parmetis")
 ```

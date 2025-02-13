@@ -114,8 +114,8 @@ Finally, we export the mesh to a VTU file.</p>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;c5g7_mesh_only&quot;</span><span class="p">)</span>
+<span class="nv">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
+<span class="nv">mesh</span><span class="p">.</span><span class="nf">ExportToPVTU</span><span class="p">(</span><span class="nv">grid</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;c5g7_mesh_only&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -132,9 +132,9 @@ Finally, we export the mesh to a VTU file.</p>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">partitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">PETScGraphPartitioner</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;parmetis&quot;</span><span class="w"> </span><span class="p">}),</span>
 <span class="p">})</span>
-<span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
+<span class="nv">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
-<span class="nv">mesh</span><span class="p">.</span><span class="nf">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;c5g7_mesh_only&quot;</span><span class="p">)</span>
+<span class="nv">mesh</span><span class="p">.</span><span class="nf">ExportToPVTU</span><span class="p">(</span><span class="nv">grid</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;c5g7_mesh_only&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
