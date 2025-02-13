@@ -38,8 +38,6 @@ private:
   FindRoots(unsigned int N, unsigned int max_iters = 1000, double tol = 1.0e-12);
 
 public:
-  explicit GaussLegendreQuadrature(const InputParameters& params);
-
   /**
    * Populates the abscissae and weights for a Gauss-Legendre quadrature given the degree \f$ p \f$
    * of the mononomial such that the quadrature rule integrates exactly the weighted integrand \f$
@@ -59,10 +57,6 @@ public:
                                    bool verbose = false,
                                    unsigned int max_iters = 1000,
                                    double tol = 1.0e-12);
-
-public:
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<GaussLegendreQuadrature> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -4,67 +4,12 @@
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <cmath>
 #include <algorithm>
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(squad, GaussLegendreQuadrature);
-
-InputParameters
-GaussLegendreQuadrature::GetInputParameters()
-{
-  InputParameters params = GaussQuadrature::GetInputParameters();
-
-  params.SetGeneralDescription("General Gauss-Legendre quadrature");
-
-  params.SetDocGroup("LuaQuadrature");
-
-  params.ChangeExistingParamToOptional("order", 0);
-  params.ConstrainParameterRange("order", AllowableRangeLowHighLimit::New(0, 43));
-
-  params.AddOptionalParameter(
-    "max_root_finding_iters", 1000, "Maximum number of iterations used during root finding");
-  params.AddOptionalParameter("root_finding_tol", 1.0e-12, "Root finding iterative tolerance");
-
-  params.AddOptionalParameter("N", 1, "Number of quadrature points.");
-
-  return params;
-}
-
-std::shared_ptr<GaussLegendreQuadrature>
-GaussLegendreQuadrature::Create(const ParameterBlock& params)
-{
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<GaussLegendreQuadrature>("squad::GaussLegendreQuadrature", params);
-}
-
-GaussLegendreQuadrature::GaussLegendreQuadrature(const InputParameters& params)
-  : GaussQuadrature(params)
-{
-  const int param_count = int(params.IsParameterValid("order")) + int(params.IsParameterValid("N"));
-  OpenSnInvalidArgumentIf(param_count == 2,
-                          "Either \"order\" or \"N\" must be specified, not both");
-
-  const auto max_iters = params.GetParamValue<unsigned int>("max_root_finding_iters");
-
-  const double tol = params.GetParamValue<double>("root_finding_tol");
-
-  if (params.IsParameterValid("order"))
-  {
-    const unsigned int n = std::ceil((static_cast<int>(order_) + 1) / 2.0);
-    Initialize(n, verbose_, max_iters, tol);
-  }
-  else
-  {
-    const auto n = params.GetParamValue<unsigned int>("N");
-    order_ = static_cast<QuadratureOrder>(std::min(2 * n + 1, 43u));
-    Initialize(n, verbose_, max_iters, tol);
-  }
-}
 
 GaussLegendreQuadrature::GaussLegendreQuadrature(QuadratureOrder order,
                                                  bool verbose,
