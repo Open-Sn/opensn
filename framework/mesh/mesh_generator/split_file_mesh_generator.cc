@@ -70,7 +70,7 @@ SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
 {
 }
 
-void
+std::shared_ptr<MeshContinuum>
 SplitFileMeshGenerator::Execute()
 {
   const int num_mpi = opensn::mpi_comm.size();
@@ -99,13 +99,13 @@ SplitFileMeshGenerator::Execute()
   // Other locations wait here for files to be written
   opensn::mpi_comm.barrier();
 
+  std::shared_ptr<MeshContinuum> grid_ptr;
   if (opensn::mpi_comm.size() == num_parts)
   {
     log.Log() << "Reading split-mesh";
     auto mesh_info = ReadSplitMesh();
 
-    auto grid_ptr = SetupLocalMesh(mesh_info);
-    mesh_stack.push_back(grid_ptr);
+    grid_ptr = SetupLocalMesh(mesh_info);
 
     log.Log() << "Done reading split-mesh files";
   }
@@ -118,6 +118,7 @@ SplitFileMeshGenerator::Execute()
   }
 
   opensn::mpi_comm.barrier();
+  return grid_ptr;
 }
 
 void

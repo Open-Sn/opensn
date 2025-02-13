@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
+#include <memory>
 
 namespace opensn
 {
@@ -56,7 +58,8 @@ public:
   ComputeLeakage(const std::vector<uint64_t>& boundary_ids) const;
 
 protected:
-  explicit DiscreteOrdinatesSolver(const std::string& name);
+  explicit DiscreteOrdinatesSolver(const std::string& name,
+                                   std::shared_ptr<MeshContinuum> grid_ptr);
 
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;

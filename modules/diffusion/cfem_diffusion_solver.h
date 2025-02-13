@@ -22,7 +22,7 @@ class ScalarSpatialMaterialFunction;
 class CFEMDiffusionSolver : public DiffusionSolverBase
 {
 public:
-  explicit CFEMDiffusionSolver(const std::string& name);
+  explicit CFEMDiffusionSolver(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
   explicit CFEMDiffusionSolver(const InputParameters& params);
   ~CFEMDiffusionSolver() override;
 

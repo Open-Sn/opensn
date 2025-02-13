@@ -27,13 +27,13 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = -L / 4, zmax = L / 4 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 1, true)
 
 -- Add materials
 materials = {}
@@ -200,5 +200,6 @@ function MyCallBack()
     )
   )
 end
+
 LBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
 solver.Execute(phys1)

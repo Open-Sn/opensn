@@ -39,7 +39,8 @@ std::map<std::string, uint64_t> LBSSolver::supported_boundary_names = {
 std::map<uint64_t, std::string> LBSSolver::supported_boundary_ids = {
   {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
-LBSSolver::LBSSolver(const std::string& name) : Solver(name)
+LBSSolver::LBSSolver(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr)
+  : Solver(name), grid_ptr_(grid_ptr)
 {
 }
 
@@ -49,6 +50,8 @@ LBSSolver::GetInputParameters()
   InputParameters params = Solver::GetInputParameters();
 
   params.ChangeExistingParamToOptional("name", "LBSDatablock");
+
+  params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
 
   params.AddRequiredParameter<size_t>("num_groups", "The total number of groups within the solver");
 
@@ -64,7 +67,8 @@ LBSSolver::GetInputParameters()
   return params;
 }
 
-LBSSolver::LBSSolver(const InputParameters& params) : Solver(params)
+LBSSolver::LBSSolver(const InputParameters& params)
+  : Solver(params), grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -848,8 +852,6 @@ LBSSolver::PerformInputChecks()
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
     Exit(EXIT_FAILURE);
   }
-
-  grid_ptr_ = GetCurrentMesh();
 
   if (grid_ptr_ == nullptr)
   {

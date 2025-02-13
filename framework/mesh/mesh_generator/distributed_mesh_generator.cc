@@ -40,7 +40,7 @@ DistributedMeshGenerator::DistributedMeshGenerator(const InputParameters& params
 {
 }
 
-void
+std::shared_ptr<MeshContinuum>
 DistributedMeshGenerator::Execute()
 {
   const int rank = opensn::mpi_comm.rank();
@@ -72,11 +72,12 @@ DistributedMeshGenerator::Execute()
   }
 
   auto grid_ptr = SetupLocalMesh(mesh_info);
-  mesh_stack.push_back(grid_ptr);
 
   opensn::mpi_comm.barrier();
 
   log.Log() << program_timer.GetTimeString() << " Mesh successfully distributed";
+
+  return grid_ptr;
 }
 
 ByteArray

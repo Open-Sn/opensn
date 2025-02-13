@@ -12,12 +12,12 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
-unit_sim_tests.SimTest02_FV(m)
+unit_sim_tests.SimTest02_FV({ mesh = grid })
 MPIBarrier()
 if location_id == 0 then
   os.execute("rm CodeTut2_FV*")

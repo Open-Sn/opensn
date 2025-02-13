@@ -10,11 +10,11 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 mesh.ExportToPVTU("ZMeshPhase1")
 
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 --Sets a middle square to material 1
 function MatIDFunction1(pt, cur_id)
@@ -38,6 +38,7 @@ function dot_product(v1, v2)
   result = v1[1] * v2[1] + v1[2] * v2[2] + v1[3] * v2[3]
   return result
 end
+
 function BndryIDFunction1(pt, normal, cur_bid)
   epsilon = 1.0e-6
   n = { normal.x, normal.y, normal.z }

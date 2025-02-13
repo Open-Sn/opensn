@@ -29,15 +29,15 @@ for k = 0, 8 do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 -- Add materials
 materials = {}
@@ -62,6 +62,7 @@ materials[2]:SetIsotropicMGSource(mg_src0)
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

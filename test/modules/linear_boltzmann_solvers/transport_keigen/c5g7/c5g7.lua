@@ -19,6 +19,7 @@ else
 end
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create({
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

@@ -18,7 +18,7 @@ class SplitFileMeshGenerator : public MeshGenerator
 public:
   explicit SplitFileMeshGenerator(const InputParameters& params);
 
-  void Execute() override;
+  std::shared_ptr<MeshContinuum> Execute() override;
 
 protected:
   void WriteSplitMesh(const std::vector<int64_t>& cell_pids,

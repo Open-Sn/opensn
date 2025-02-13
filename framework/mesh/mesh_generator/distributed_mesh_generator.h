@@ -33,7 +33,7 @@ public:
    * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,
    * and set up the local mesh.
    */
-  void Execute() override;
+  std::shared_ptr<MeshContinuum> Execute() override;
 
 private:
   /**

@@ -27,10 +27,10 @@ for i = 0, N do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 -- Set material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol1a = logvol.RPPLogicalVolume.Create({
   infx = true,
@@ -39,7 +39,7 @@ vol1a = logvol.RPPLogicalVolume.Create({
   infz = true,
 })
 
-mesh.SetMaterialIDFromLogicalVolume(vol1a, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1a, 1, true)
 
 vol0 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -47,7 +47,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   infy = true,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol2 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -56,7 +56,7 @@ vol2 = logvol.RPPLogicalVolume.Create({
   ymax = 2 * 0.166666,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol2, 2, true)
+grid:SetMaterialIDFromLogicalVolume(vol2, 2, true)
 
 vol1b = logvol.RPPLogicalVolume.Create({
   xmin = -1 + 2.5,
@@ -65,7 +65,7 @@ vol1b = logvol.RPPLogicalVolume.Create({
   ymax = L,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1b, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1b, 1, true)
 
 -- Create materials
 materials = {}
@@ -89,6 +89,7 @@ pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 48, 6)
 aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 lbs_block = {
+  mesh = grid,
   num_groups = 1,
   groupsets = {
     {

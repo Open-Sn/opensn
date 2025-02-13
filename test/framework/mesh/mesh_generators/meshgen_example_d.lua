@@ -8,4 +8,4 @@ meshgen1 = mesh.MeshGenerator.Create({
     }),
   },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()

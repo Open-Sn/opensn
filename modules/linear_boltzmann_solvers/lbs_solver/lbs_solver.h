@@ -30,7 +30,7 @@ struct WGSContext;
 class LBSSolver : public opensn::Solver
 {
 public:
-  explicit LBSSolver(const std::string& name);
+  explicit LBSSolver(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
 
   /// Input parameters based construction.
   explicit LBSSolver(const InputParameters& params);

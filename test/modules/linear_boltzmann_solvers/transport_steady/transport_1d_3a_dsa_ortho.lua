@@ -31,13 +31,13 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = -10.0, zmax = 10.0 })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 -- Add materials
 materials = {}
@@ -66,6 +66,7 @@ pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2, false)
 --pquad1 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 8, false)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

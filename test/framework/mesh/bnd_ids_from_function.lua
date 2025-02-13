@@ -10,7 +10,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Setting left, right, top and bottom boundaries
 -- left = 0
@@ -41,6 +41,6 @@ function bnd_id(pt, normal, cur_bid)
   return cur_bid
 end
 
-mesh.SetBoundaryIDFromFunction("bnd_id")
+mesh.SetBoundaryIDFromFunction(grid, "bnd_id")
 
-mesh.ExportToPVTU("new_bnd_ids")
+mesh.ExportToPVTU(grid, "new_bnd_ids")

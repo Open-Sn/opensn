@@ -30,15 +30,15 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create({
     ycuts = { 0.0 },
   }),
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 -- Add materials
 materials = {}
@@ -63,6 +63,7 @@ materials[2]:SetIsotropicMGSource(mg_src)
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

@@ -31,7 +31,7 @@ for d = 1, dim do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes[1], nodes[2] } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({
@@ -41,7 +41,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   ymax = length[2],
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
 -- Add materials
 ngrp = 1
@@ -59,6 +59,7 @@ material0:SetIsotropicMGSource(mg_src)
 pquad0 = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
 
 lbs_block = {
+  mesh = grid,
   coord_system = 2,
   num_groups = ngrp,
   groupsets = {

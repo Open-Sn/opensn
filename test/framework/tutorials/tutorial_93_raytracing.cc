@@ -14,13 +14,13 @@ namespace unit_sim_tests
 {
 
 void
-SimTest93_RayTracing()
+SimTest93_RayTracing(const ParameterBlock& params)
 {
   const std::string fname = "SimTest93_RayTracing";
   opensn::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

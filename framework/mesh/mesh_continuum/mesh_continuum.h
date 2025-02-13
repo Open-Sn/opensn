@@ -151,7 +151,7 @@ public:
   void SetUniformMaterialID(int mat_id);
 
   /// Sets material id's using a logical volume.
-  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id);
+  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
 
   /// Sets boundary id's using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
@@ -169,6 +169,8 @@ public:
    */
   std::array<std::array<Vector3, 3>, 4>
   GetTetrahedralFaceVertices(const Cell& cell, const CellFace& face, const size_t side) const;
+
+  void SetupOrthogonalBoundaries();
 
 private:
   /// Spatial dimension

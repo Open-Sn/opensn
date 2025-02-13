@@ -44,8 +44,6 @@ extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
 
 /// Global stack of handlers
-extern std::vector<std::shared_ptr<MeshContinuum>> mesh_stack;
-extern int current_mesh_handler;
 
 extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;

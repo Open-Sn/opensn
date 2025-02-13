@@ -28,7 +28,7 @@ public:
     std::array<double, 3> values;
   };
 
-  explicit DiffusionSolverBase(const std::string& name);
+  explicit DiffusionSolverBase(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
   explicit DiffusionSolverBase(const InputParameters& params);
   ~DiffusionSolverBase() override;
 

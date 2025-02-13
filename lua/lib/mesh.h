@@ -4,21 +4,15 @@
 #pragma once
 
 #include "framework/mesh/logical_volume/logical_volume.h"
+#include "framework/mesh/mesh.h"
 
 namespace opensnlua
 {
 
-void MeshSetUniformMaterialID(int mat_id);
-void MeshSetMaterialIDFromLogicalVolume(std::shared_ptr<opensn::LogicalVolume> lv,
-                                        int mat_id,
-                                        bool sense = true);
-void MeshSetBoundaryIDFromLogicalVolume(std::shared_ptr<opensn::LogicalVolume> lv,
-                                        const std::string& boundary_name,
-                                        bool sense = true);
-void MeshSetupOrthogonalBoundaries();
-void MeshSetMaterialIDFromFunction(const char* lua_fname);
-void MeshSetBoundaryIDFromFunction(const char* lua_fname);
-void MeshExportToPVTU(const std::string& file_name);
-void MeshComputeVolumePerMaterialID();
+void MeshSetMaterialIDFromFunction(std::shared_ptr<opensn::MeshContinuum> grid,
+                                   const char* lua_fname);
+void MeshSetBoundaryIDFromFunction(std::shared_ptr<opensn::MeshContinuum> grid,
+                                   const char* lua_fname);
+void MeshExportToPVTU(std::shared_ptr<opensn::MeshContinuum> grid, const std::string& file_name);
 
 } // namespace opensnlua

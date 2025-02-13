@@ -15,7 +15,9 @@ namespace opensn
 
 OpenSnRegisterObjectAliasInNamespace(diffusion, FVSolver, FVDiffusionSolver);
 
-FVDiffusionSolver::FVDiffusionSolver(const std::string& name) : DiffusionSolverBase(name)
+FVDiffusionSolver::FVDiffusionSolver(const std::string& name,
+                                     std::shared_ptr<MeshContinuum> grid_ptr)
+  : DiffusionSolverBase(name, grid_ptr)
 {
 }
 
@@ -163,10 +165,9 @@ FVDiffusionSolver::Initialize()
             << ": Initializing FV Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentMesh();
-  const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
+  const auto& grid = *grid_ptr_;
 
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 

@@ -44,7 +44,7 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
     ycuts = { 0. },
   }),
 })
-meshgen:Execute()
+grid = meshgen:Execute()
 
 --[[ @doc
 ## Material IDs
@@ -53,7 +53,7 @@ assign material IDs to all cells. Here, we have a homogeneous domain, so we assi
 with value 0 for each cell in the spatial domain.
 --]]
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 --[[ @doc
 ## Export the mesh
@@ -61,7 +61,7 @@ We export to vtu format. The resulting mesh partition is shown below
 ![below](images/ortho_2D_KBA.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_KBA")
+mesh.ExportToPVTU(grid, "ortho_2D_KBA")
 
 --[[ @doc
 ## Mesh (again) and Parmetis partition
@@ -79,4 +79,4 @@ On such a simple regular mesh, both partitioners are giving the same result. The
 ![below](images/ortho_2D_Parmetis.png)
 --]]
 -- Exporting the mesh
-mesh.ExportToPVTU("ortho_2D_Parmetis")
+mesh.ExportToPVTU(grid, "ortho_2D_Parmetis")

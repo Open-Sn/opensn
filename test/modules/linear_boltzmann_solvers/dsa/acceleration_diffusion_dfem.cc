@@ -32,13 +32,13 @@ CreateFunction(const std::string& function_name)
 } // namespace
 
 void
-acceleration_Diffusion_DFEM()
+acceleration_Diffusion_DFEM(const ParameterBlock& params)
 {
   using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

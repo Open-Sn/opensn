@@ -32,11 +32,11 @@ znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({
   node_sets = { nodes, nodes, znodes },
 })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({
   xmin = -10.0,
@@ -45,7 +45,7 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
 -- Add materials
 materials = {}
@@ -73,6 +73,7 @@ materials[2]:SetIsotropicMGSource(mg_src1)
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
 
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

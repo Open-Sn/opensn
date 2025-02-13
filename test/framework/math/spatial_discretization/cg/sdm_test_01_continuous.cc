@@ -6,6 +6,7 @@
 #include "framework/logging/log.h"
 #include "lua/lib/types.h"
 #include "lua/lib/console.h"
+#include <memory>
 
 using namespace opensn;
 
@@ -18,7 +19,7 @@ math_SDM_Test01_Continuous(const ParameterBlock& params)
   const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

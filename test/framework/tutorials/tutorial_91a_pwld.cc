@@ -18,7 +18,7 @@ namespace unit_sim_tests
 /**PWLD Sweep. */
 
 void
-SimTest91_PWLD()
+SimTest91_PWLD(const ParameterBlock& params)
 {
   const std::string fname = "SimTest91_PWLD";
 
@@ -28,7 +28,7 @@ SimTest91_PWLD()
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto& grid = *grid_ptr;
 
   opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();

@@ -10,7 +10,7 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 --Sets a middle square to material 1
 function mat_id(pt, cur_id)
@@ -20,6 +20,6 @@ function mat_id(pt, cur_id)
   return cur_id
 end
 
-mesh.SetMaterialIDFromFunction("mat_id")
+mesh.SetMaterialIDFromFunction(grid, "mat_id")
 
-mesh.ExportToPVTU("new_mat_ids")
+mesh.ExportToPVTU(grid, "new_mat_ids")

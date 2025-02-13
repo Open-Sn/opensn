@@ -26,8 +26,8 @@ for i = 1, (N + 1) do
 end
 
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-meshgen:Execute()
-mesh.SetUniformMaterialID(0)
+grid = meshgen:Execute()
+grid:SetUniformMaterialID(0)
 
 -- Add materials
 num_groups = 1
@@ -41,6 +41,7 @@ materials[1]:SetTransportXSections(xs1g)
 -- Setup Physics
 pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 128, -1)
 lbs_block = {
+  mesh = grid,
   num_groups = num_groups,
   groupsets = {
     {

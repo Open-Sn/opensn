@@ -67,7 +67,8 @@ MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
   return 0;
 }
 
-MGDiffusionSolver::MGDiffusionSolver(const std::string& name)
+MGDiffusionSolver::MGDiffusionSolver(const std::string& name,
+                                     std::shared_ptr<MeshContinuum> grid_ptr)
   : opensn::Solver(name,
                    {{"max_inner_iters", int64_t(500)},
                     {"residual_tolerance", 1.0e-2},
@@ -75,6 +76,7 @@ MGDiffusionSolver::MGDiffusionSolver(const std::string& name)
                     {"thermal_flux_tolerance", 1.0e-2},
                     {"max_thermal_iters", int64_t(500)},
                     {"do_two_grid", false}}),
+    grid_ptr_(grid_ptr),
     num_groups_(0),
     last_fast_group_(0),
     do_two_grid_(false),
@@ -89,6 +91,7 @@ InputParameters
 MGDiffusionSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
+  params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
   params.AddOptionalParameter<int>("max_inner_iters", 500, "Maximum number of inner iterations");
   params.AddOptionalParameter<double>("residual_tolerance", 1.0e-2, "Solver relative tolerance");
   params.AddOptionalParameter<int>("verbose_level", 0, "Verbose level");
@@ -125,6 +128,7 @@ MGDiffusionSolver::GetBoundaryOptionsBlock()
 
 MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
   : opensn::Solver(params),
+    grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
     num_groups_(0),
     last_fast_group_(0),
     do_two_grid_(false),
@@ -264,10 +268,9 @@ MGDiffusionSolver::Initialize()
             << ": Initializing CFEM Multigroup Diffusion solver ";
 
   // Get grid
-  grid_ptr_ = GetCurrentMesh();
-  const auto& grid = *grid_ptr_;
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
+  const auto& grid = *grid_ptr_;
 
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 

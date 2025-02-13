@@ -42,12 +42,12 @@ ComputePointwisePhiChange(
   std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_solver.GetPhiOldLocal();
 
-  auto grid_ptr = GetCurrentMesh();
+  auto grid_ptr = lbs_solver.GetGrid();
   auto& cell_transport_views = lbs_solver.GetCellTransportViews();
   auto num_moments = lbs_solver.GetNumMoments();
 
   double pw_change = 0.0;
-  for (const auto& cell : grid_ptr->local_cells)
+  for (const auto& cell : grid_ptr.local_cells)
   {
     auto& transport_view = cell_transport_views[cell.local_id];
     for (auto i = 0; i < cell.vertex_ids.size(); ++i)

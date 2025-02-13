@@ -27,10 +27,10 @@ for i = 1, (N + 1) do
 end
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-meshgen1:Execute()
+grid = meshgen1:Execute()
 
 -- Set Material IDs
-mesh.SetUniformMaterialID(0)
+grid:SetUniformMaterialID(0)
 
 vol0 = logvol.RPPLogicalVolume.Create({
   xmin = -L / 16,
@@ -40,7 +40,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   zmin = -L / 16,
   zmax = L / 16,
 })
-mesh.SetMaterialIDFromLogicalVolume(vol0, 1, true)
+grid:SetMaterialIDFromLogicalVolume(vol0, 1, true)
 
 mesh.ExportToPVTU("TheMesh")
 

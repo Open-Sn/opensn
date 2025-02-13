@@ -584,10 +584,14 @@ MeshContinuum::SetUniformMaterialID(int mat_id)
   const auto& ghost_ids = cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
     cells[ghost_id].material_id = mat_id;
+
+  mpi_comm.barrier();
+  opensn::log.Log() << program_timer.GetTimeString() << " Done setting material id " << mat_id
+                    << " to all cells";
 }
 
 void
-MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, bool sense, int mat_id)
+MeshContinuum::SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense)
 {
   int num_cells_modified = 0;
   for (auto& cell : local_cells)
@@ -650,9 +654,7 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 void
 MeshContinuum::ComputeVolumePerMaterialID() const
 {
-  auto grid_ptr = GetCurrentMesh();
-  const auto& grid = *grid_ptr;
-  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(*this);
   const auto& sdm = *sdm_ptr;
 
   // Create a map to hold local volume with local material as key
@@ -735,6 +737,50 @@ MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
   const auto& v2 = vertices[face.vertex_ids[sp1]];
   const auto& v3 = cell.centroid;
   return {{{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
+}
+
+void
+MeshContinuum::SetupOrthogonalBoundaries()
+{
+  opensn::log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
+
+  const Vector3 ihat(1.0, 0.0, 0.0);
+  const Vector3 jhat(0.0, 1.0, 0.0);
+  const Vector3 khat(0.0, 0.0, 1.0);
+
+  for (auto& cell : local_cells)
+  {
+    for (auto& face : cell.faces)
+    {
+      if (not face.has_neighbor)
+      {
+        Vector3& n = face.normal;
+
+        std::string boundary_name;
+        if (n.Dot(ihat) < -0.999)
+          boundary_name = "XMIN";
+        else if (n.Dot(ihat) > 0.999)
+          boundary_name = "XMAX";
+        else if (n.Dot(jhat) < -0.999)
+          boundary_name = "YMIN";
+        else if (n.Dot(jhat) > 0.999)
+          boundary_name = "YMAX";
+        else if (n.Dot(khat) < -0.999)
+          boundary_name = "ZMIN";
+        else if (n.Dot(khat) > 0.999)
+          boundary_name = "ZMAX";
+
+        uint64_t bndry_id = MakeBoundaryID(boundary_name);
+
+        face.neighbor_id = bndry_id;
+
+        GetBoundaryIDMap()[bndry_id] = boundary_name;
+      }
+    }
+  }
+
+  opensn::mpi_comm.barrier();
+  opensn::log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
 }
 
 } // namespace opensn
