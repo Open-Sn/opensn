@@ -81,7 +81,7 @@ private:
 
 public:
   friend struct FunctionWeightFromRho;
-  Quadrature() : AngularQuadrature(AngularQuadratureType::SLDFESQ) {}
+  Quadrature() : AngularQuadrature(AngularQuadratureType::SLDFESQ, 3) {}
 
   virtual ~Quadrature() {}
 
