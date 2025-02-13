@@ -11,6 +11,7 @@
 
 namespace opensn
 {
+
 class MeshContinuum;
 struct Vector3;
 class Cell;

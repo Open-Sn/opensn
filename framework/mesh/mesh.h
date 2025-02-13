@@ -3,19 +3,10 @@
 
 #pragma once
 
-#include <vector>
-#include <iostream>
-#include <memory>
+#include <cstddef>
 
-/**
- * Meshes in OpenSn follow the concept of Regions. In any given region the boundaries are a
- * collection of either line-meshes (2D) or surface-meshes (3D).
- */
 namespace opensn
 {
-
-class SPDS;
-class MeshContinuum;
 
 enum MeshType : int
 {
@@ -41,10 +32,3 @@ struct OrthoMeshAttributes
 };
 
 } // namespace opensn
-
-#include "framework/mesh/mesh_vector.h"
-#include "framework/mesh/mesh_matrix3x3.h"
-#include "framework/mesh/mesh_face.h"
-#include "framework/mesh/mesh_edge_loops.h"
-#include "framework/mesh/cell/cell.h"
-#include "framework/mesh/logical_volume/logical_volume.h"

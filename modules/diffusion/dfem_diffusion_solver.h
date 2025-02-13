@@ -5,7 +5,7 @@
 
 #include "modules/diffusion/diffusion_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/mesh/mesh.h"
+
 #include <vector>
 
 namespace opensn
@@ -13,6 +13,7 @@ namespace opensn
 class MeshContinuum;
 class SpatialDiscretization;
 class ScalarSpatialMaterialFunction;
+class Cell;
 
 /// DFEM diffusion solver
 class DFEMDiffusionSolver : public DiffusionSolverBase

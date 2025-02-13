@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/field_functions/interpolation/ffinterpolation.h"
-#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_vector.h"
 
 namespace opensn
 {
