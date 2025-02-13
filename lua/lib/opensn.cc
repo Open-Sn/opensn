@@ -4,6 +4,7 @@
 #include "framework/logging/log.h"
 #include "framework/materials/material_property.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/mesh/mesh_vector.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/parameters/parameter_block.h"
@@ -125,7 +126,6 @@ static bool reg = opensnlua::Console::Bind(
       .addVariable("GAUSS_LEGENDRE_CHEBYSHEV",
                    opensn::ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
       .addVariable("CUSTOM_QUADRATURE", opensn::ProductQuadratureType::CUSTOM_QUADRATURE);
-
     //
 
     luabridge::getGlobalNamespace(L)
@@ -186,6 +186,9 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("CreateProductQuadrature", &AQuadCreateProductQuadrature)
       .addFunction("CreateCylindricalProductQuadrature", &AQuadCreateCylindricalProductQuadrature)
       .addFunction("OptimizeForPolarSymmetry", &AQuadOptimizeForPolarSymmetry)
+      .addFunction("CreateSLDFESQuadrature", &AQuadCreateSLDFESQAngularQuadrature)
+      .addFunction("LocallyRefineSLDFESQ", &AQuadLocallyRefineSLDFESQ)
+      .addFunction("PrintQuadratureToFile", &AQuadPrintQuadratureToFile)
       //
       .beginClass<AngularQuadrature>("AngularQuadrature")
       .endClass()
@@ -200,6 +203,10 @@ static bool reg = opensnlua::Console::Bind(
       .deriveClass<AngularQuadratureProdGL, ProductQuadrature>("AngularQuadratureProdGL")
       .endClass()
       .beginClass<std::shared_ptr<AngularQuadratureProdGL>>("AngularQuadratureProdGLPtr")
+      .endClass()
+      .deriveClass<SimplifiedLDFESQ::Quadrature, AngularQuadrature>("SLDFESQuadrature")
+      .endClass()
+      .beginClass<std::shared_ptr<SimplifiedLDFESQ::Quadrature>>("SLDFESQuadraturePtr")
       .endClass()
       .endNamespace();
 
