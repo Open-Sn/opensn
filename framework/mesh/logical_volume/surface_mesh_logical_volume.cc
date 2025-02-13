@@ -3,6 +3,7 @@
 
 #include "framework/mesh/logical_volume/surface_mesh_logical_volume.h"
 #include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_face.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/object_factory.h"

@@ -5,9 +5,13 @@
 
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_vector.h"
 
 namespace opensn
 {
+
+class Cell;
+class MeshContinuum;
 
 /// Data structure to hold output info from the raytracer.
 struct RayTracerOutputInformation

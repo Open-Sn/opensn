@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/surface_mesh/surface_mesh.h"
+#include "framework/mesh/mesh_face.h"
+#include "framework/mesh/mesh_edge_loops.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"

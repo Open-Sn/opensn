@@ -13,6 +13,8 @@
 namespace opensn
 {
 
+class Cell;
+
 using DirIDs = std::vector<size_t>; ///< Direction-IDs
 using UniqueSOGroupings = std::vector<DirIDs>;
 using DirIDToSOMap = std::map<size_t, size_t>;

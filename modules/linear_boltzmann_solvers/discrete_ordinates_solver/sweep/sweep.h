@@ -3,12 +3,16 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
+#include <vector>
 #include <set>
 #include <memory>
 
 namespace opensn
 {
+
+class Cell;
+class SPDS;
+class MeshContinuum;
 
 enum class FaceOrientation : short
 {

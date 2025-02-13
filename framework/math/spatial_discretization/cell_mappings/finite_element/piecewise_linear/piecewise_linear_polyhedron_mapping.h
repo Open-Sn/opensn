@@ -6,10 +6,12 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 #include "framework/math/quadratures/spatial/tetrahedra_quadrature.h"
 #include "framework/math/quadratures/spatial/triangle_quadrature.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_matrix3x3.h"
 
 namespace opensn
 {
+
+class Cell;
 
 /**
  * Object for handling piecewise linear shape functions on polyhedron shaped 3D cells.

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/mesh/mesh_vector.h"
 #include <array>
 
 namespace opensn
