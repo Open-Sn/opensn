@@ -253,6 +253,16 @@ struct Vector3 : public std::enable_shared_from_this<Vector3>
     return out.str();
   }
 
+  /// Absolute equality check with another point.
+  bool AbsoluteEquals(const Vector3& other, const double tol = 1.e-6) const
+  {
+    if (std::abs(other.x - x) > tol)
+      return false;
+    if (std::abs(other.y - y) > tol)
+      return false;
+    return std::abs(other.z - z) < tol;
+  }
+
   static constexpr size_t Size() { return 3; }
 };
 
