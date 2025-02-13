@@ -728,7 +728,7 @@ MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
                                           const CellFace& face,
                                           const size_t side) const
 {
-  assert(cell.Type() == CellType::POLYHEDRON);
+  assert(cell.GetType() == CellType::POLYHEDRON);
   const auto num_sides = face.vertex_ids.size();
   assert(side < num_sides);
   const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
