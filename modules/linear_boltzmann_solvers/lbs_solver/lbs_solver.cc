@@ -627,13 +627,15 @@ LBSSolver::SetOptions(const InputParameters& input)
     else if (spec.GetName() == "read_restart_path")
     {
       options_.read_restart_path = spec.GetValue<std::string>();
-      options_.read_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+      if (not options_.read_restart_path.empty())
+        options_.read_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
     }
 
     else if (spec.GetName() == "write_restart_path")
     {
       options_.write_restart_path = spec.GetValue<std::string>();
-      options_.write_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+      if (not options_.write_restart_path.empty())
+        options_.write_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
     }
 
     else if (spec.GetName() == "write_restart_time_interval")
