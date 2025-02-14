@@ -98,7 +98,6 @@ which is embedded in the OpenSn repository.</p>
 <p>Outside of the global namespace we have several of our own that group together the code functionality:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">log</span></code> for logging events,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">squad</span></code> for spatial quadrature,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">aquad</span></code> for angular quadrature,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">logvol</span></code> for logical volumes,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code> for mesh-related functionality,</p></li>
@@ -110,9 +109,9 @@ which is embedded in the OpenSn repository.</p>
 </ul>
 <p>The namespaces should not be changed unless directed by developers.
 All new bindings will be created inside the existing namespaces.</p>
-<p>Example code for a <code class="docutils literal notranslate"><span class="pre">squad</span></code> namespace binding:</p>
+<p>Example code for a <code class="docutils literal notranslate"><span class="pre">aquad</span></code> namespace binding:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">luabridge</span><span class="o">::</span><span class="n">getGlobalNamespace</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
-<span class="w">  </span><span class="p">.</span><span class="n">beginNamespace</span><span class="p">(</span><span class="s">&quot;squad&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">.</span><span class="n">beginNamespace</span><span class="p">(</span><span class="s">&quot;aquad&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="p">...</span>
 <span class="w">  </span><span class="p">.</span><span class="n">endNamespace</span><span class="p">();</span>
 </pre></div>
