@@ -161,27 +161,8 @@ static bool reg = opensnlua::Console::Bind(
       .endClass();
 
     luabridge::getGlobalNamespace(L)
-      .beginNamespace("squad")
-      .beginClass<GaussQuadrature>("GaussQuadrature")
-      .addProperty("qpoints", &GaussQuadrature::qpoints)
-      .addProperty("weights", &GaussQuadrature::weights)
-      .endClass()
-      .deriveClass<GaussLegendreQuadrature, GaussQuadrature>("GaussLegendreQuadrature")
-      .addStaticFunction("Create", &GaussLegendreQuadrature::Create)
-      .endClass()
-      .beginClass<std::shared_ptr<GaussLegendreQuadrature>>("GaussLegendreQuadraturePtr")
-      .endClass()
-      .deriveClass<GaussChebyshevQuadrature, GaussQuadrature>("GaussChebyshevQuadrature")
-      .addStaticFunction("Create", &GaussChebyshevQuadrature::Create)
-      .endClass()
-      .beginClass<std::shared_ptr<GaussChebyshevQuadrature>>("GaussChebyshevQuadraturePtr")
-      .endClass()
-      .endNamespace();
-
-    luabridge::getGlobalNamespace(L)
       .beginNamespace("aquad")
       .addFunction("Legendre", &Legendre)
-      .addFunction("LegendreDerivative", &dLegendredx)
       .addFunction("Ylm", &Ylm)
       .addFunction("CreateProductQuadrature", &AQuadCreateProductQuadrature)
       .addFunction("CreateCylindricalProductQuadrature", &AQuadCreateCylindricalProductQuadrature)

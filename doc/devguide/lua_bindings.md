@@ -13,7 +13,6 @@ All binding code is located in `lua/lib/opensn.cc` inside `opensnlua::Console::B
 Outside of the global namespace we have several of our own that group together the code functionality:
 
 - `log` for logging events,
-- `squad` for spatial quadrature,
 - `aquad` for angular quadrature,
 - `logvol` for logical volumes,
 - `mesh` for mesh-related functionality,
@@ -26,11 +25,11 @@ Outside of the global namespace we have several of our own that group together t
 The namespaces should not be changed unless directed by developers.
 All new bindings will be created inside the existing namespaces.
 
-Example code for a `squad` namespace binding:
+Example code for a `aquad` namespace binding:
 
 ```cpp
 luabridge::getGlobalNamespace(L)
-  .beginNamespace("squad")
+  .beginNamespace("aquad")
   ...
   .endNamespace();
 ```

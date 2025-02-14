@@ -19,17 +19,11 @@ private:
   void Initialize(unsigned int N);
 
 public:
-  explicit GaussChebyshevQuadrature(const InputParameters& params);
-
   /**
    * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of
    * desired quadrature points. The order of the quadrature will be 2N-1.
    */
   explicit GaussChebyshevQuadrature(unsigned int N, bool verbose = false);
-
-public:
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<GaussChebyshevQuadrature> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn
