@@ -5,7 +5,6 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/material.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -440,24 +439,6 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
           num_groups_ = transp_xs->GetNumGroups();
 
       } // transport xs
-      if (property->GetType() == MatProperty::ISOTROPIC_MG_SOURCE)
-      {
-        auto mg_source = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
-
-        if (mg_source->source_value_g.size() < num_groups_)
-        {
-          log.LogAllWarning()
-            << "MG-Diff-InitializeMaterials: Isotropic Multigroup source specified "
-               "in "
-            << "material \"" << current_material->name << "\" has fewer "
-            << "energy groups than called for in the simulation. "
-            << "Source will be ignored.";
-        }
-        else
-        {
-          matid_to_src_map_[mat_id] = mg_source;
-        }
-      } // P0 source
     }   // for property
 
     // Check valid property
@@ -739,7 +720,6 @@ MGDiffusionSolver::AssembleAbext()
     const auto& D = xs->GetDiffusionCoefficient();
     const auto& sigma_r = xs->GetSigmaRemoval();
 
-    const auto& qext = matid_to_src_map_.at(cell.material_id);
     double collapsed_D = 0.0, collapsed_sig_a = 0.0;
     if (do_two_grid_)
     {
@@ -778,12 +758,7 @@ MGDiffusionSolver::AssembleAbext()
         if (do_two_grid_)
           Acell[num_groups_](i, j) = entry_mij * collapsed_sig_a + entry_kij * collapsed_D;
       } // for j
-      double entry_rhsi = 0.0;
-      for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-        entry_rhsi += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
-      for (uint g = 0; g < num_groups_; ++g)
-        rhs_cell[g](i) = entry_rhsi * (qext->source_value_g[g]);
-    } // for i
+    }   // for i
 
     // Deal with BC (all based on variations of Robin)
     const size_t num_faces = cell.faces.size();

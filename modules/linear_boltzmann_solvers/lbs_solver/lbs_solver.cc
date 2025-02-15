@@ -210,12 +210,6 @@ LBSSolver::GetMatID2XSMap() const
   return matid_to_xs_map_;
 }
 
-const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>&
-LBSSolver::GetMatID2IsoSrcMap() const
-{
-  return matid_to_src_map_;
-}
-
 const MeshContinuum&
 LBSSolver::GetGrid() const
 {
@@ -945,7 +939,6 @@ LBSSolver::InitializeMaterials()
   // Get ready for processing
   std::stringstream materials_list;
   matid_to_xs_map_.clear();
-  matid_to_src_map_.clear();
 
   // Process materials
   for (const int& mat_id : unique_material_ids)
@@ -965,26 +958,7 @@ LBSSolver::InitializeMaterials()
         matid_to_xs_map_[mat_id] = xs;
         found_transport_xs = true;
       }
-
-      if (property->GetType() == PropertyType::ISOTROPIC_MG_SOURCE)
-      {
-        const auto& src = std::static_pointer_cast<IsotropicMultiGroupSource>(property);
-
-        // Check for a valid source
-        if (src->source_value_g.size() < groups_.size())
-        {
-          log.LogAllWarning() << __FUNCTION__ << ": IsotropicMultiGroupSource specified in "
-                              << "material \"" << current_material->name << "\" has fewer "
-                              << "energy groups than called for in the simulation. "
-                              << "Source will be ignored.";
-        }
-
-        // Set the source if in forward mode
-        // Material sources are currently unused in adjoint mode
-        if (not options_.adjoint)
-          matid_to_src_map_[mat_id] = src;
-      } // P0 source
-    }   // for property
+    } // for property
 
     // Check valid property
     OpenSnLogicalErrorIf(not found_transport_xs,

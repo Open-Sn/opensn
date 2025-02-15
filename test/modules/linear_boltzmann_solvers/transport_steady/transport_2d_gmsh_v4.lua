@@ -22,13 +22,12 @@ materials[1] = mat.AddMaterial("Test Material")
 xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
 materials[0]:SetTransportXSections(xs_diag)
 materials[1]:SetTransportXSections(xs_diag)
-src = {}
+strength = {}
 for g = 1, Ng do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
-src[1] = 100.0
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
+strength[1] = 100.0
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 lbs_options = {
   boundary_conditions = {
@@ -36,6 +35,7 @@ lbs_options = {
     { name = "ymin", type = "reflecting" },
   },
   scattering_order = 0,
+  volumetric_sources = { mg_src },
 }
 
 -- Quadrature

@@ -39,13 +39,12 @@ num_groups = 1
 xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
 materials[1]:SetTransportXSections(xs_air)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
 --src[1] = 1.0
-mg_src0 = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src0)
+mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12, 2)
@@ -124,6 +123,7 @@ lbs_options = {
     },
   },
   scattering_order = 1,
+  volumetric_sources = { mg_src0 },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

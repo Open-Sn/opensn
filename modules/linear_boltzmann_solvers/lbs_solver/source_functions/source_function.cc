@@ -45,7 +45,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   default_zero_src_.assign(lbs_solver_.GetGroups().size(), 0.0);
 
   const auto& cell_transport_views = lbs_solver_.GetCellTransportViews();
-  const auto& matid_to_src_map = lbs_solver_.GetMatID2IsoSrcMap();
 
   const auto num_moments = lbs_solver_.GetNumMoments();
   const auto& ext_src_moments_local = lbs_solver_.GetExtSrcMomentsLocal();
@@ -62,10 +61,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
-
-    std::shared_ptr<IsotropicMultiGroupSource> P0_src = nullptr;
-    if (matid_to_src_map.count(cell.material_id) > 0)
-      P0_src = matid_to_src_map.at(cell.material_id);
 
     const auto& S = xs.GetTransferMatrices();
     const auto& F = xs.GetProductionMatrix();
@@ -84,10 +79,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
         const double* phi_im = &phi[uk_map];
 
         // Declare moment src
-        if (P0_src and ell == 0)
-          fixed_src_moments_ = P0_src->source_value_g.data();
-        else
-          fixed_src_moments_ = default_zero_src_.data();
+        fixed_src_moments_ = default_zero_src_.data();
 
         if (lbs_solver_.GetOptions().use_src_moments)
           fixed_src_moments_ = &ext_src_moments_local[uk_map];

@@ -14,14 +14,6 @@ Material::SetTransportXSections(std::shared_ptr<MultiGroupXS> xs)
   property = xs;
 }
 
-void
-Material::SetIsotropicMGSource(std::shared_ptr<IsotropicMultiGroupSource> mg_src)
-{
-  auto property_index = GetPropertyIndex(PropertyType::ISOTROPIC_MG_SOURCE);
-  auto& property = GetProperty<IsotropicMultiGroupSource>(property_index);
-  property = mg_src;
-}
-
 int
 Material::GetPropertyIndex(PropertyType property_type)
 {

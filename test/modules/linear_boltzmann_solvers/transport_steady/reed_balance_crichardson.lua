@@ -46,10 +46,8 @@ for imat = 1, Nmat do
 end
 
 -- Create sources in 1st and 4th materials
-mg_src0 = xs.IsotropicMultiGroupSource.FromArray({ 50. })
-materials[1]:SetIsotropicMGSource(mg_src0)
-mg_src1 = xs.IsotropicMultiGroupSource.FromArray({ 1. })
-materials[4]:SetIsotropicMGSource(mg_src1)
+mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50. } })
+mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 3 }, group_strength = { 1. } })
 
 -- Angular Quadrature
 gl_quad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 64, -1)
@@ -72,6 +70,7 @@ lbs_block = {
     scattering_order = 0,
     spatial_discretization = "pwld",
     boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
+    volumetric_sources = { mg_src0, mg_src1 },
   },
 }
 

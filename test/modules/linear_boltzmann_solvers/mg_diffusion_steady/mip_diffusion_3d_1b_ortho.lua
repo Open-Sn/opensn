@@ -52,13 +52,12 @@ num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("../transport_steady/xs_graphite_pure.xs")
 materials[1]:SetTransportXSections(xs_graphite)
 
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 0.0
+  strength[g] = 0.0
 end
-src[1] = 1.0
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
+strength[1] = 1.0
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -83,6 +82,7 @@ lbs_block = {
 
 lbs_options = {
   scattering_order = 1,
+  volumetric_sources = { mg_src },
 }
 if reflecting then
   lbs_options.boundary_conditions = { { name = "zmax", type = "reflecting" } }

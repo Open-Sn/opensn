@@ -52,8 +52,7 @@ source = sigmat * (1 - ratioc)
 material0 = mat.AddMaterial("Material_0")
 xs_1g = xs.CreateSimpleOneGroup(sigmat, ratioc)
 material0:SetTransportXSections(xs_1g)
-mg_src = xs.IsotropicMultiGroupSource.FromArray({ source })
-material0:SetIsotropicMGSource(mg_src)
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { source } })
 
 -- Setup Physics
 pquad0 = aquad.CreateCylindricalProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 8)
@@ -77,6 +76,7 @@ lbs_block = {
 lbs_options = {
   boundary_conditions = { { name = "xmin", type = "reflecting" } },
   scattering_order = 0,
+  volumetric_sources = { mg_src },
 }
 phys1 = lbs.DiscreteOrdinatesCurvilinearSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
