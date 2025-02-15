@@ -78,7 +78,7 @@ mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
 materials[1]:SetIsotropicMGSource(mg_src)
 
 -- Setup Physics
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 4, false)
+pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(8, 8)
 
 lbs_block = {
   mesh = grid,

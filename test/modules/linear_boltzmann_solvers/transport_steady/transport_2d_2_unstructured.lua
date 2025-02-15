@@ -57,8 +57,7 @@ materials[1]:SetIsotropicMGSource(mg_src)
 materials[2]:SetIsotropicMGSource(mg_src)
 
 -- Setup Physics
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 8, 4)
-aquad.OptimizeForPolarSymmetry(pquad0, 4.0 * math.pi)
+pquad0 = aquad.CreateGLCProductQuadrature2DXY(8, 32)
 
 lbs_block = {
   mesh = grid,

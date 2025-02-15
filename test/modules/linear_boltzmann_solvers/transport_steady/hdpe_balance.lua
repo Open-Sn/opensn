@@ -34,7 +34,7 @@ mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
 materials[1]:SetIsotropicMGSource(mg_src)
 
 -- Angular Quadrature
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
+pquad = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
 -- LBS block option
 lbs_block = {
