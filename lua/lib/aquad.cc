@@ -6,6 +6,7 @@
 #include "framework/logging/log.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
+#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/quadratures/angular/cylindrical_quadrature.h"
 #include <cstddef>
 #include <memory>
@@ -80,6 +81,30 @@ AQuadOptimizeForPolarSymmetry(std::shared_ptr<AngularQuadrature> aquad, double n
                       << "normalization factor " << normalization << ".";
 
   aquad->OptimizeForPolarSymmetry(normalization);
+}
+
+std::shared_ptr<SimplifiedLDFESQ::Quadrature>
+AQuadCreateSLDFESQAngularQuadrature(int level)
+{
+  auto sldfesq = std::make_shared<SimplifiedLDFESQ::Quadrature>();
+  sldfesq->GenerateInitialRefinement(level);
+  return sldfesq;
+}
+
+void
+AQuadLocallyRefineSLDFESQ(std::shared_ptr<SimplifiedLDFESQ::Quadrature> sldfesq,
+                          const opensn::Vector3& ref_dir,
+                          const double cone_size,
+                          const bool dir_as_plane_normal)
+{
+  sldfesq->LocallyRefine(ref_dir, cone_size, dir_as_plane_normal);
+}
+
+void
+AQuadPrintQuadratureToFile(std::shared_ptr<SimplifiedLDFESQ::Quadrature> sldfesq,
+                           const std::string& file_base)
+{
+  sldfesq->PrintQuadratureToFile(file_base);
 }
 
 } // namespace opensnlua

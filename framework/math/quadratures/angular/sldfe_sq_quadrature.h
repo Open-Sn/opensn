@@ -7,8 +7,9 @@
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/vector.h"
 #include "framework/math/dense_matrix.h"
-#include "framework/mesh/mesh_matrix3x3.h"
 #include "framework/math/math.h"
+#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh_matrix3x3.h"
 #include <vector>
 #include <array>
 
@@ -145,7 +146,7 @@ public:
 
 public:
   /// Prints the quadrature to file.
-  void PrintQuadratureToFile();
+  void PrintQuadratureToFile(const std::string& file_base);
 
 public:
   /// Locally refines the cells.
