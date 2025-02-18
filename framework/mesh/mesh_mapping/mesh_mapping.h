@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 namespace opensn
 {
@@ -22,7 +23,8 @@ public:
   MeshMapping() = default;
 
   /// Builds the mapping.
-  void Build(const MeshContinuum& fine_grid, const MeshContinuum& coarse_grif);
+  void Build(const std::shared_ptr<MeshContinuum> fine_grid,
+             const std::shared_ptr<MeshContinuum> coarse_grif);
 
   /// Identifier for an invalid face index that means a face maps to nothing.
   static const std::size_t invalid_face_index;

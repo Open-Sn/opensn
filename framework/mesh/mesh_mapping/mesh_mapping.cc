@@ -25,31 +25,32 @@ MeshMapping::FineMapping::FineMapping(const Cell& fine_cell)
 }
 
 void
-MeshMapping::Build(const MeshContinuum& fine_grid, const MeshContinuum& coarse_grid)
+MeshMapping::Build(const std::shared_ptr<MeshContinuum> fine_grid,
+                   const std::shared_ptr<MeshContinuum> coarse_grid)
 
 {
   if (opensn::mpi_comm.size() > 1)
     OpenSnLogicalError("MeshMapping is not currently supported in parallel.");
-  if (fine_grid.GetDimension() != coarse_grid.GetDimension())
+  if (fine_grid->GetDimension() != coarse_grid->GetDimension())
     OpenSnLogicalError("Grid dimensions are not equal for mapping. Fine dimension = " +
-                       std::to_string(fine_grid.GetDimension()) +
-                       ", coarse dimension = " + std::to_string(coarse_grid.GetDimension()) + ".");
+                       std::to_string(fine_grid->GetDimension()) +
+                       ", coarse dimension = " + std::to_string(coarse_grid->GetDimension()) + ".");
 
   coarse_to_fine_.clear();
   fine_to_coarse_.clear();
 
   // Instantiate the maps; constructors take the cell to size the face maps.
-  for (const auto& coarse_cell : coarse_grid.local_cells)
+  for (const auto& coarse_cell : coarse_grid->local_cells)
     coarse_to_fine_.emplace(&coarse_cell, coarse_cell);
-  for (const auto& fine_cell : fine_grid.local_cells)
+  for (const auto& fine_cell : fine_grid->local_cells)
     fine_to_coarse_.emplace(&fine_cell, fine_cell);
 
   // Volumetric mapping; find the coarse cell that contains a fine cell centroid
   for (auto& [fine_cell_ptr, fine_mapping] : fine_to_coarse_)
   {
     const auto& fine_cell = *fine_cell_ptr;
-    for (const auto& coarse_cell : coarse_grid.local_cells)
-      if (coarse_grid.CheckPointInsideCell(coarse_cell, fine_cell.centroid))
+    for (const auto& coarse_cell : coarse_grid->local_cells)
+      if (coarse_grid->CheckPointInsideCell(coarse_cell, fine_cell.centroid))
       {
         fine_mapping.coarse_cell = &coarse_cell;
         break;
@@ -103,7 +104,7 @@ MeshMapping::Build(const MeshContinuum& fine_grid, const MeshContinuum& coarse_g
       const auto& fine_face = fine_cell.faces[fine_face_i];
       for (size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size(); ++coarse_face_i)
       {
-        if (coarse_grid.CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid))
+        if (coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid))
         {
           coarse_mapping.fine_faces[coarse_face_i].emplace_back(fine_cell_ptr, fine_face_i);
           fine_mapping.coarse_faces[fine_face_i] = coarse_face_i;
@@ -124,10 +125,10 @@ MeshMapping::Build(const MeshContinuum& fine_grid, const MeshContinuum& coarse_g
       for (const auto& [fine_cell_ptr, fine_face_i] : fine_faces)
       {
         const auto& fine_face = fine_cell_ptr->faces[fine_face_i];
-        total_fine_face_area += fine_face.ComputeFaceArea(fine_grid);
+        total_fine_face_area += fine_face.ComputeFaceArea(fine_grid.get());
       }
       const auto& coarse_face = coarse_cell.faces[coarse_face_i];
-      const auto coarse_face_area = coarse_face.ComputeFaceArea(coarse_grid);
+      const auto coarse_face_area = coarse_face.ComputeFaceArea(coarse_grid.get());
       if (std::abs(total_fine_face_area - coarse_face_area) > 1.e-6)
       {
         std::ostringstream oss;

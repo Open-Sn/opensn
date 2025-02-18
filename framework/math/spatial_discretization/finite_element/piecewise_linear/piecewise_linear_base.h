@@ -20,7 +20,7 @@ class PieceWiseLinearBase : public FiniteElementBase
 {
 protected:
   /// Constructor
-  explicit PieceWiseLinearBase(const MeshContinuum& grid,
+  explicit PieceWiseLinearBase(const std::shared_ptr<MeshContinuum> grid,
                                QuadratureOrder q_order,
                                SpatialDiscretizationType sdm_type,
                                CoordinateSystemType cs_type);

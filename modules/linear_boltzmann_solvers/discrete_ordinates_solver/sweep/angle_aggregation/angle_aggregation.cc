@@ -26,7 +26,7 @@ AngleAggregation::AngleAggregation(
     boundaries_(boundaries)
 {
   for (auto& bndry_id_cond : boundaries)
-    bndry_id_cond.second->Setup(*grid, *quadrature);
+    bndry_id_cond.second->Setup(grid, *quadrature);
 
   is_setup_ = true;
 }

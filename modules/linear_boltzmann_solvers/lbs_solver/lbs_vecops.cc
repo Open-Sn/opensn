@@ -18,7 +18,7 @@ LBSVecOps::GroupsetScopedCopy(LBSSolver& lbs_solver, int gsi, int gss, Functor&&
   auto num_moments = lbs_solver.GetNumMoments();
 
   int64_t idx = -1;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     auto& transport_view = cell_transport_views[cell.local_id];
     for (int i = 0; i < cell.vertex_ids.size(); ++i)
@@ -52,7 +52,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSSolver& lbs_solver, PhiSTLOption phi_opt,
   const size_t first_grp = groups.front().id;
   const size_t final_grp = groups.back().id;
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();

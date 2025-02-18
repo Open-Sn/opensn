@@ -19,7 +19,7 @@ namespace opensn
 class FiniteVolumeMapping : public CellMapping
 {
 public:
-  explicit FiniteVolumeMapping(const MeshContinuum& grid,
+  explicit FiniteVolumeMapping(const std::shared_ptr<MeshContinuum> grid,
                                const Cell& cell,
                                const Vector3& cc,
                                std::vector<std::vector<int>> face_node_mappings)
@@ -34,14 +34,14 @@ public:
 
   double ShapeValue(int i, const Vector3& xyz) const override
   {
-    if (ref_grid_.CheckPointInsideCell(cell_, xyz))
+    if (ref_grid_->CheckPointInsideCell(cell_, xyz))
       return 1.0;
     else
       return 0.0;
   }
   void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const override
   {
-    if (ref_grid_.CheckPointInsideCell(cell_, xyz))
+    if (ref_grid_->CheckPointInsideCell(cell_, xyz))
       shape_values = Vector<double>(num_nodes_, 1.0);
     else
       shape_values = Vector<double>(num_nodes_, 0.0);

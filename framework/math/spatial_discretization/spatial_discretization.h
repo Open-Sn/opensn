@@ -32,7 +32,7 @@ public:
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
-  const MeshContinuum& GetGrid() const;
+  const std::shared_ptr<MeshContinuum> GetGrid() const;
 
   CoordinateSystemType GetCoordinateSystemType() const;
 
@@ -212,11 +212,11 @@ public:
   virtual ~SpatialDiscretization() = default;
 
 protected:
-  SpatialDiscretization(const MeshContinuum& grid,
+  SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
                         CoordinateSystemType cs_type,
                         SpatialDiscretizationType sdm_type);
 
-  const MeshContinuum& ref_grid_;
+  const std::shared_ptr<MeshContinuum> ref_grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
   std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
 

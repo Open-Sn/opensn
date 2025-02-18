@@ -21,7 +21,7 @@ public:
   QuadratureOrder GetQuadratureOrder() const;
 
 protected:
-  explicit FiniteElementBase(const MeshContinuum& grid,
+  explicit FiniteElementBase(const std::shared_ptr<MeshContinuum> grid,
                              CoordinateSystemType cs_type,
                              SpatialDiscretizationType sdm_type,
                              QuadratureOrder q_order)

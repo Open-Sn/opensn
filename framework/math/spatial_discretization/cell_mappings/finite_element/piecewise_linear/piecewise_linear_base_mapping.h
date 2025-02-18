@@ -20,13 +20,14 @@ class PieceWiseLinearBaseMapping : public CellMapping
 protected:
 public:
   /// Constructor.
-  PieceWiseLinearBaseMapping(const MeshContinuum& grid,
+  PieceWiseLinearBaseMapping(const std::shared_ptr<MeshContinuum> grid,
                              const Cell& cell,
                              size_t num_nodes,
                              std::vector<std::vector<int>> face_node_mappings);
 
 protected:
-  static std::vector<Vector3> GetVertexLocations(const MeshContinuum& grid, const Cell& cell);
+  static std::vector<Vector3> GetVertexLocations(const std::shared_ptr<MeshContinuum> grid,
+                                                 const Cell& cell);
 
   /**
    * This section just determines a mapping of face dofs to cell dofs. This is pretty simple since

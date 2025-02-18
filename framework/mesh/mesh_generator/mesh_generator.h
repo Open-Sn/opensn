@@ -88,7 +88,7 @@ protected:
                                          uint64_t partition_id,
                                          const VertexListHelper& vertices);
 
-  static void ComputeAndPrintStats(const MeshContinuum& grid);
+  static void ComputeAndPrintStats(const std::shared_ptr<MeshContinuum> grid);
 
   const double scale_;
   const bool replicated_;

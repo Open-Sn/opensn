@@ -63,9 +63,9 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
   // Find local subscribers
   double total_volume = 0.0;
   std::vector<Subscriber> subscribers;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
-    if (grid.CheckPointInsideCell(cell, location_))
+    if (grid->CheckPointInsideCell(cell, location_))
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& fe_values = unit_cell_matrices[cell.local_id];
@@ -87,11 +87,11 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
 
   // If the point source lies on a partition boundary, ghost cells must be
   // added to the total volume.
-  auto ghost_global_ids = grid.cells.GetGhostGlobalIDs();
+  auto ghost_global_ids = grid->cells.GetGhostGlobalIDs();
   for (uint64_t global_id : ghost_global_ids)
   {
-    const auto& nbr_cell = grid.cells[global_id];
-    if (grid.CheckPointInsideCell(nbr_cell, location_))
+    const auto& nbr_cell = grid->cells[global_id];
+    if (grid->CheckPointInsideCell(nbr_cell, location_))
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
       total_volume +=
@@ -108,7 +108,7 @@ PointSource::Initialize(const LBSSolver& lbs_solver)
 
     std::stringstream ss;
     ss << "Point source at " << location_.PrintStr() << " assigned to cell "
-       << grid.local_cells[sub.cell_local_id].global_id << " with shape values [ ";
+       << grid->local_cells[sub.cell_local_id].global_id << " with shape values [ ";
     for (const auto& value : sub.shape_values)
       ss << value << " ";
     ss << "] and volume weight " << sub.volume_weight / total_volume;

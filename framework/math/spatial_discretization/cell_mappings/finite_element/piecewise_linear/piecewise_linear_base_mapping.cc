@@ -10,7 +10,7 @@ namespace opensn
 {
 
 PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
-  const MeshContinuum& grid,
+  const std::shared_ptr<MeshContinuum> grid,
   const Cell& cell,
   size_t num_nodes,
   std::vector<std::vector<int>> face_node_mappings)
@@ -59,13 +59,14 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 }
 
 std::vector<Vector3>
-PieceWiseLinearBaseMapping::GetVertexLocations(const MeshContinuum& grid, const Cell& cell)
+PieceWiseLinearBaseMapping::GetVertexLocations(const std::shared_ptr<MeshContinuum> grid,
+                                               const Cell& cell)
 {
   std::vector<Vector3> verts;
   verts.reserve(cell.vertex_ids.size());
 
   for (const auto vid : cell.vertex_ids)
-    verts.push_back(grid.vertices[vid]);
+    verts.push_back(grid->vertices[vid]);
 
   return verts;
 }

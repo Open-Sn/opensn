@@ -118,7 +118,7 @@ public:
   const std::map<int, std::shared_ptr<IsotropicMultiGroupSource>>& GetMatID2IsoSrcMap() const;
 
   /// Obtains a reference to the grid.
-  const MeshContinuum& GetGrid() const;
+  const std::shared_ptr<MeshContinuum> GetGrid() const;
 
   /// Obtains a reference to the spatial discretization.
   const class SpatialDiscretization& GetSpatialDiscretization() const;

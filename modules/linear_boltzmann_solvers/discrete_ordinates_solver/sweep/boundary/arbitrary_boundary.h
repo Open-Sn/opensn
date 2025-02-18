@@ -41,7 +41,8 @@ public:
                       int group_num,
                       size_t gs_ss_begin) override;
 
-  void Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature) override;
+  void Setup(const std::shared_ptr<MeshContinuum> grid,
+             const AngularQuadrature& quadrature) override;
 };
 
 } // namespace opensn

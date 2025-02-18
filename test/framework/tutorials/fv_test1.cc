@@ -22,10 +22,9 @@ SimTest01_FV(const ParameterBlock& params)
   opensn::log.Log() << "Coding Tutorial 1";
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = FiniteVolume::New(grid);
@@ -57,7 +56,7 @@ SimTest01_FV(const ParameterBlock& params)
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const int64_t imap = sdm.MapDOF(cell, 0);
@@ -72,7 +71,7 @@ SimTest01_FV(const ParameterBlock& params)
 
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id];
+        const auto& adj_cell = grid->cells[face.neighbor_id];
         const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
 
         const auto& xn = adj_cell.centroid;

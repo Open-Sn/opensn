@@ -30,7 +30,7 @@ public:
   const Cell& ReferenceCell() const;
 
   /// Returns the grid on which the cell for this mapping lives.
-  const MeshContinuum& ReferenceGrid() const;
+  const std::shared_ptr<MeshContinuum> ReferenceGrid() const;
 
   /// Returns the number of nodes on this element.
   size_t GetNumNodes() const;
@@ -89,10 +89,10 @@ protected:
    * Otherwise (i.e. for higher order elements, the child-class should bind a different function to
    * this.
    */
-  using VolumeAndAreaFunction =
-    std::function<void(const MeshContinuum&, const Cell&, double&, std::vector<double>&)>;
+  using VolumeAndAreaFunction = std::function<void(
+    const std::shared_ptr<MeshContinuum>, const Cell&, double&, std::vector<double>&)>;
 
-  CellMapping(const MeshContinuum& grid,
+  CellMapping(const std::shared_ptr<MeshContinuum> grid,
               const Cell& cell,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
@@ -100,12 +100,12 @@ protected:
               const VolumeAndAreaFunction& volume_area_function);
 
   /// Static method that all child elements can use as a default.
-  static void ComputeCellVolumeAndAreas(const MeshContinuum& grid,
+  static void ComputeCellVolumeAndAreas(const std::shared_ptr<MeshContinuum> grid,
                                         const Cell& cell,
                                         double& volume,
                                         std::vector<double>& areas);
 
-  const MeshContinuum& ref_grid_;
+  const std::shared_ptr<MeshContinuum> ref_grid_;
   const Cell& cell_;
 
   const size_t num_nodes_;

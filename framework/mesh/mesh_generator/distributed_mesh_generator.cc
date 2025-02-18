@@ -301,7 +301,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
   grid_ptr->SetExtruded(mesh_info.extruded);
   grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices);
-  ComputeAndPrintStats(*grid_ptr);
+  ComputeAndPrintStats(grid_ptr);
 
   return grid_ptr;
 }

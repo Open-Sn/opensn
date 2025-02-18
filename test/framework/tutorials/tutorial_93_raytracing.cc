@@ -20,12 +20,11 @@ SimTest93_RayTracing(const ParameterBlock& params)
   opensn::log.Log() << "SimTest93_RayTracing";
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
-  const auto dimension = grid.GetDimension();
+  const auto dimension = grid->GetDimension();
 
   // Set parameters
   const size_t num_groups = 1;
@@ -87,8 +86,8 @@ SimTest93_RayTracing(const ParameterBlock& params)
 
   Cell const* source_cell_ptr = nullptr;
 
-  for (auto& cell : grid.local_cells)
-    if (grid.CheckPointInsideCell(cell, source_pos))
+  for (auto& cell : grid->local_cells)
+    if (grid->CheckPointInsideCell(cell, source_pos))
     {
       source_cell_ptr = &cell;
       break;
@@ -181,14 +180,14 @@ SimTest93_RayTracing(const ParameterBlock& params)
 
   auto GetCellApproximateSize = [&grid](const Cell& cell)
   {
-    const auto& v0 = grid.vertices[cell.vertex_ids[0]];
+    const auto& v0 = grid->vertices[cell.vertex_ids[0]];
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
 
     for (uint64_t vid : cell.vertex_ids)
     {
-      const auto& v = grid.vertices[vid];
+      const auto& v = grid->vertices[vid];
 
       xmin = std::min(xmin, v.x);
       xmax = std::max(xmax, v.x);
@@ -202,8 +201,8 @@ SimTest93_RayTracing(const ParameterBlock& params)
   };
 
   // Create raytracer
-  std::vector<double> cell_sizes(grid.local_cells.size(), 0.0);
-  for (const auto& cell : grid.local_cells)
+  std::vector<double> cell_sizes(grid->local_cells.size(), 0.0);
+  for (const auto& cell : grid->local_cells)
     cell_sizes[cell.local_id] = GetCellApproximateSize(cell);
 
   RayTracer ray_tracer(grid, cell_sizes);
@@ -223,7 +222,7 @@ SimTest93_RayTracing(const ParameterBlock& params)
     while (particle.alive)
     {
       // Get the current cell
-      const auto& cell = grid.cells[particle.cell_id];
+      const auto& cell = grid->cells[particle.cell_id];
 
       // Perform the trace to the next surface
       auto destination_info = ray_tracer.TraceRay(cell, particle.position, particle.direction);
@@ -267,7 +266,7 @@ SimTest93_RayTracing(const ParameterBlock& params)
   } // for ray n
 
   // Post process tallies
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     // Compute mass matrix and its inverse
     const auto& cell_mapping = sdm.GetCellMapping(cell);

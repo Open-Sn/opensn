@@ -123,7 +123,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
 
         received_messages[{cell_global_id, face_id}] = std::move(psi_data);
         cells_who_received_data.push_back(
-          fluds_.GetSPDS().GetGrid().MapCellGlobalID2LocalID(cell_global_id));
+          fluds_.GetSPDS().GetGrid()->MapCellGlobalID2LocalID(cell_global_id));
       } // while not at end of buffer
     }   // Process each message embedded in buffer
   }

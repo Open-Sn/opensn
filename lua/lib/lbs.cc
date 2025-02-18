@@ -49,7 +49,7 @@ LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesSolver> solver,
       bndry_ids.push_back(supported_boundary_names.at(name));
   }
   else
-    bndry_ids = solver->GetGrid().GetDomainUniqueBoundaryIDs();
+    bndry_ids = solver->GetGrid()->GetDomainUniqueBoundaryIDs();
 
   // Compute the leakage
   const auto leakage = solver->ComputeLeakage(bndry_ids);

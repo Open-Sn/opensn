@@ -28,7 +28,7 @@ public:
 
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
-             const MeshContinuum& grid,
+             const std::shared_ptr<MeshContinuum> grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              std::vector<CellLBSView>& cell_transport_views,
@@ -98,7 +98,7 @@ protected:
   /// Returns the surface src-active flag.
   bool IsSurfaceSourceActive() const { return surface_source_active_; }
 
-  const MeshContinuum& grid_;
+  const std::shared_ptr<MeshContinuum> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   std::vector<CellLBSView>& cell_transport_views_;

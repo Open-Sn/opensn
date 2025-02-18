@@ -64,13 +64,13 @@ CellVolumeIntegralPostProcessor::Initialize()
   const auto logical_volume_ptr_ = GetLogicalVolume();
   if (logical_volume_ptr_ == nullptr)
   {
-    cell_local_ids_.reserve(grid.local_cells.size());
-    for (const auto& cell : grid.local_cells)
+    cell_local_ids_.reserve(grid->local_cells.size());
+    for (const auto& cell : grid->local_cells)
       cell_local_ids_.push_back(cell.local_id);
   }
   else
   {
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
       if (logical_volume_ptr_->Inside(cell.centroid))
         cell_local_ids_.push_back(cell.local_id);
   }
@@ -106,7 +106,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
   double local_volume = 0.0;
   for (const uint64_t cell_local_id : cell_local_ids_)
   {
-    const auto& cell = grid.local_cells[cell_local_id];
+    const auto& cell = grid->local_cells[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();

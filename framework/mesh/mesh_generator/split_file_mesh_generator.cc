@@ -422,7 +422,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices);
 
-  ComputeAndPrintStats(*grid_ptr);
+  ComputeAndPrintStats(grid_ptr);
 
   return grid_ptr;
 }

@@ -23,7 +23,7 @@ class PieceWiseLinearPolygonMapping : public PieceWiseLinearBaseMapping
 {
 public:
   PieceWiseLinearPolygonMapping(const Cell& poly_cell,
-                                const MeshContinuum& ref_grid,
+                                const std::shared_ptr<MeshContinuum> ref_grid,
                                 const TriangleQuadrature& volume_quadrature,
                                 const LineQuadrature& surface_quadrature);
 

@@ -1314,7 +1314,7 @@ MeshIO::ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& fi
 {
   log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 
-  auto ugrid = PrepareVtkUnstructuredGrid(*grid, false);
+  auto ugrid = PrepareVtkUnstructuredGrid(grid, false);
 
   WritePVTUFiles(ugrid, file_base_name);
 

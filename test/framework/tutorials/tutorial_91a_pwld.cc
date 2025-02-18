@@ -28,20 +28,19 @@ SimTest91_PWLD(const ParameterBlock& params)
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make Orthogonal mapping
-  const auto ijk_info = grid.GetIJKInfo();
-  const auto& ijk_mapping = grid.MakeIJKToGlobalIDMapping();
+  const auto ijk_info = grid->GetIJKInfo();
+  const auto& ijk_mapping = grid->MakeIJKToGlobalIDMapping();
 
   const auto Nx = static_cast<int64_t>(ijk_info[0]);
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  auto dimension = grid.GetDimension();
+  auto dimension = grid->GetDimension();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
@@ -117,7 +116,7 @@ SimTest91_PWLD(const ParameterBlock& params)
   opensn::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cc = cell.centroid;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -141,7 +140,7 @@ SimTest91_PWLD(const ParameterBlock& params)
   std::vector<DenseMatrix<double>> cell_Mmatrices;
   std::vector<std::vector<DenseMatrix<double>>> cell_faceMmatrices;
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -210,7 +209,7 @@ SimTest91_PWLD(const ParameterBlock& params)
                                         const MultiGroupXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
-    const auto& cell = grid.cells[cell_global_id];
+    const auto& cell = grid->cells[cell_global_id];
     const auto cell_local_id = cell.local_id;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -250,7 +249,7 @@ SimTest91_PWLD(const ParameterBlock& params)
             const double* upwind_psi = zero_vector.data();
             if (face.has_neighbor)
             {
-              const auto& adj_cell = grid.cells[face.neighbor_id];
+              const auto& adj_cell = grid->cells[face.neighbor_id];
               const int aj = cell_adj_mapping[cell.local_id][f][fj];
               const int64_t ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
@@ -361,7 +360,7 @@ SimTest91_PWLD(const ParameterBlock& params)
                     num_moments,
                     &phi_uk_man]()
   {
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -401,7 +400,7 @@ SimTest91_PWLD(const ParameterBlock& params)
   {
     double pw_change = 0.0;
 
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();

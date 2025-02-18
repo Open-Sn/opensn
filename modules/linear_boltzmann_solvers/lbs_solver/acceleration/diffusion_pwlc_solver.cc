@@ -55,7 +55,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -259,7 +259,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -411,7 +411,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   VecGetArrayRead(petsc_q_vector, &q_vector);
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
