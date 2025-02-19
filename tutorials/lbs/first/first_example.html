@@ -212,14 +212,14 @@ section on materials for more details on cross sections.</p>
 </section>
 <section id="volumetric-source">
 <h2><span class="section-number">3.1.5. </span>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
-<p>We create a lua table containing the volumetric multigroup source and assign it to the material by passing that array.</p>
+<p>We create a volumetric multigroup source which will be assigned to the material with given block IDs.
+Volumetric sources are assigned to the solver via the <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter in the LBS block (see below).</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="nv">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="nv">strength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 <span class="kr">for</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">num_groups</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="nv">src</span><span class="p">[</span><span class="nv">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">  </span><span class="nv">strength</span><span class="p">[</span><span class="nv">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="nv">mg_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs</span><span class="p">.</span><span class="py">IsotropicMultiGroupSource</span><span class="p">.</span><span class="nf">FromArray</span><span class="p">(</span><span class="nv">src</span><span class="p">)</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">SetIsotropicMGSource</span><span class="p">(</span><span class="nv">mg_src</span><span class="p">)</span>
+<span class="nv">mg_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">VolumetricSource</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">block_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nv">group_strength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">strength</span><span class="w"> </span><span class="p">})</span>
 </pre></div>
 </div>
 </section>
@@ -261,6 +261,9 @@ tolerances, and other solver options.</p></li>
 <span class="w">      </span><span class="nv">l_max_its</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
 <span class="w">      </span><span class="nv">gmres_restart_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
 <span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">volumetric_sources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">mg_src</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
@@ -356,12 +359,11 @@ on post-processing for more details on field functions.</p>
 
 
 <span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="nv">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="nv">strength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 <span class="kr">for</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">num_groups</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="nv">src</span><span class="p">[</span><span class="nv">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">  </span><span class="nv">strength</span><span class="p">[</span><span class="nv">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span>
 <span class="kr">end</span>
-<span class="nv">mg_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs</span><span class="p">.</span><span class="py">IsotropicMultiGroupSource</span><span class="p">.</span><span class="nf">FromArray</span><span class="p">(</span><span class="nv">src</span><span class="p">)</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">SetIsotropicMGSource</span><span class="p">(</span><span class="nv">mg_src</span><span class="p">)</span>
+<span class="nv">mg_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">VolumetricSource</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">block_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nv">group_strength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">strength</span><span class="w"> </span><span class="p">})</span>
 
 
 <span class="c1">-- Setup the Angular Quadrature</span>
@@ -385,6 +387,9 @@ on post-processing for more details on field functions.</p>
 <span class="w">      </span><span class="nv">l_max_its</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
 <span class="w">      </span><span class="nv">gmres_restart_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
 <span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">volumetric_sources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">mg_src</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="p">}</span>
 
