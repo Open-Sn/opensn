@@ -12,6 +12,19 @@
         "CMAKE_C_FLAGS": "-g -O2 -Wall -fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fno-sanitize-recover -fno-omit-frame-pointer -fsanitize-ignorelist=${sourceDir}/tools/developer/ignorelist.txt",
         "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined,nullability,float-divide-by-zero,integer-divide-by-zero,implicit-conversion -fsanitize-address-use-after-scope -fno-sanitize-recover"
       }
+    },
+    {
+      "name": "clang+coverage",
+      "displayName": "Clang coverage",
+      "description": "Configure with Clang for coverage",
+      "generator": "Unix Makefiles",
+      "binaryDir": "build-coverage",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "-g -O0 -fprofile-instr-generate -fcoverage-mapping",
+        "CMAKE_C_FLAGS": "-g -O0 -fprofile-instr-generate -fcoverage-mapping",
+        "CMAKE_EXE_LINKER_FLAGS": "-fprofile-instr-generate -fcoverage-mapping"
+      }
     }
   ],
   "buildPresets": [
@@ -20,6 +33,12 @@
       "displayName": "Clang debug with sanitizer",
       "configurePreset": "clang+debug+sanitizer",
       "configuration": "Debug with sanitizer"
+    },
+    {
+      "name": "clang+coverage",
+      "displayName": "Clang coverage",
+      "configurePreset": "clang+coverage",
+      "configuration": "Coverage"
     }
   ]
 }
