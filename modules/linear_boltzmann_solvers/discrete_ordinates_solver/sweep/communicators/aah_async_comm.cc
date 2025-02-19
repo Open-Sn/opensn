@@ -62,12 +62,8 @@ AAH_ASynchronousCommunicator::Reset()
   done_sending_ = false;
   data_initialized_ = false;
   upstream_data_initialized_ = false;
-
-  for (auto& rcv_flags : preloc_msg_received_)
-    rcv_flags.assign(rcv_flags.size(), false);
-
-  for (auto& rcv_flags : delayed_preloc_msg_received_)
-    rcv_flags.assign(rcv_flags.size(), false);
+  preloc_recv_requests_.clear();
+  delayed_preloc_recv_requests_.clear();
 }
 
 void
@@ -90,7 +86,6 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   // Predecessor locations
   const size_t num_dependencies = spds.GetLocationDependencies().size();
   preloc_msg_data_.resize(num_dependencies);
-  preloc_msg_received_.resize(num_dependencies);
 
   for (auto i = 0; i < num_dependencies; ++i)
   {
@@ -112,14 +107,12 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     else
       --message_count;
 
-    preloc_msg_received_[i].resize(message_count, false);
     max_num_messages_ = std::max(message_count, max_num_messages_);
   }
 
   // Delayed predecessor locations
   const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
   delayed_preloc_msg_data_.resize(num_delayed_dependencies);
-  delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
   for (auto i = 0; i < num_delayed_dependencies; ++i)
   {
@@ -143,7 +136,6 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     else
       --message_count;
 
-    delayed_preloc_msg_received_[i].resize(message_count, false);
     max_num_messages_ = std::max(message_count, max_num_messages_);
   }
 
@@ -194,35 +186,36 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
   CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::ReceiveDelayedData");
 
   const auto& spds = fluds_.GetSPDS();
+  const auto num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
 
-  bool all_messages_received = true;
-  for (size_t i = 0; i < num_delayed_dependencies; ++i)
+  // Allocate delayed outgoing psi and post non-blocking receives
+  if (delayed_preloc_recv_requests_.empty())
   {
-    auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
-
-    for (size_t m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
+    delayed_preloc_recv_requests_.resize(num_delayed_dependencies);
+    for (auto i = 0; i < num_delayed_dependencies; ++i)
     {
-      const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const int tag = max_num_messages_ * angle_set_num + m;
-      if (not delayed_preloc_msg_received_[i][m])
+      const auto num_messages = delayed_preloc_msg_data_[i].size();
+      delayed_preloc_recv_requests_[i].resize(num_messages);
+      auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
+      for (auto m = 0; m < num_messages; ++m)
       {
-        if (not comm.iprobe(source, tag))
-        {
-          all_messages_received = false;
-          continue;
-        }
-        if (not comm.recv<double>(source, tag, &upstream_psi[block_pos], size).error())
-          delayed_preloc_msg_received_[i][m] = true;
+        const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
+        const int tag = max_num_messages_ * angle_set_num + m;
+        delayed_preloc_recv_requests_[i][m] =
+          comm.irecv<double>(source, tag, &upstream_psi[block_pos], size);
       }
     }
   }
 
-  if (not all_messages_received)
-    return false;
+  // Check for completion of all posted receives
+  bool all_received = true;
+  for (auto& delayed_preloc_requests : delayed_preloc_recv_requests_)
+    for (auto& request : delayed_preloc_requests)
+      if (not mpi::test(request))
+        all_received = false;
 
-  return true;
+  return all_received;
 }
 
 AngleSetStatus
@@ -231,42 +224,39 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
   CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::ReceiveUpstreamPsi");
 
   const auto& spds = fluds_.GetSPDS();
+  const auto num_dependencies = spds.GetLocationDependencies().size();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-  const size_t num_dependencies = spds.GetLocationDependencies().size();
 
-  // Resize FLUDS non-local incoming data
+  // Allocate outgoing psi and post non-blocking receives
   if (not upstream_data_initialized_)
   {
     fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_dependencies);
     upstream_data_initialized_ = true;
-  }
 
-  bool all_messages_received = true;
-  for (size_t i = 0; i < num_dependencies; ++i)
-  {
-    auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
-
-    for (auto m = 0; m < preloc_msg_data_[i].size(); ++m)
+    preloc_recv_requests_.resize(num_dependencies);
+    for (auto i = 0; i < num_dependencies; ++i)
     {
-      const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const int tag = max_num_messages_ * angle_set_num + m;
-      if (not preloc_msg_received_[i][m])
+      const auto num_messages = preloc_msg_data_[i].size();
+      preloc_recv_requests_[i].resize(num_messages);
+      auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
+      for (auto m = 0; m < num_messages; ++m)
       {
-        if (not comm.iprobe(source, tag))
-        {
-          all_messages_received = false;
-          continue;
-        }
-        if (not comm.recv(source, tag, &upstream_psi[block_pos], size).error())
-          preloc_msg_received_[i][m] = true;
+        const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
+        const int tag = max_num_messages_ * angle_set_num + m;
+        preloc_recv_requests_[i][m] =
+          comm.irecv<double>(source, tag, &upstream_psi[block_pos], size);
       }
     }
-
-    if (not all_messages_received)
-      return AngleSetStatus::RECEIVING;
   }
 
-  return AngleSetStatus::READY_TO_EXECUTE;
+  // Check for completion of all posted receives
+  bool all_received = true;
+  for (auto& preloc_requests : preloc_recv_requests_)
+    for (auto& request : preloc_requests)
+      if (not mpi::test(request))
+        all_received = false;
+
+  return all_received ? AngleSetStatus::READY_TO_EXECUTE : AngleSetStatus::RECEIVING;
 }
 
 void
@@ -276,9 +266,9 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();
-  const size_t num_successors = location_successors.size();
+  const auto num_successors = location_successors.size();
 
-  for (size_t i = 0, req = 0; i < num_successors; ++i)
+  for (auto i = 0, req = 0; i < num_successors; ++i)
   {
     const auto& comm = comm_set_.LocICommunicator(location_successors[i]);
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
