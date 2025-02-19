@@ -49,9 +49,7 @@ sigmat = 25.0
 ratioc = 0.1
 source = sigmat * (1 - ratioc)
 
-material0 = mat.AddMaterial("Material_0")
 xs_1g = xs.CreateSimpleOneGroup(sigmat, ratioc)
-material0:SetTransportXSections(xs_1g)
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { source } })
 
 -- Setup Physics
@@ -70,6 +68,9 @@ lbs_block = {
       l_max_its = 100,
       l_abs_tol = 1.0e-12,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_1g },
   },
 }
 

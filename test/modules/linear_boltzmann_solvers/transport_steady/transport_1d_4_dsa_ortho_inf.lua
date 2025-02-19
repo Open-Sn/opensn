@@ -36,16 +36,9 @@ grid = meshgen1:Execute()
 -- Set Material IDs
 grid:SetUniformMaterialID(0)
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-materials[2] = mat.AddMaterial("Test Material2")
-
 num_groups = 168
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
-materials[1]:SetTransportXSections(xs_graphite)
 xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
-materials[2]:SetTransportXSections(xs_air)
 
 strength = {}
 for g = 1, num_groups do
@@ -86,6 +79,10 @@ lbs_block = {
       apply_tgdsa = true,
       wgdsa_l_abs_tol = 1.0e-2,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_graphite },
+    { block_ids = { 1 }, xs = xs_air },
   },
 }
 

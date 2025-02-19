@@ -36,15 +36,8 @@ grid = meshgen1:Execute()
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 grid:SetUniformMaterialID(0)
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-materials[2] = mat.AddMaterial("Test Material2")
-
 num_groups = 168
 xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
-materials[1]:SetTransportXSections(xs_3_170)
-materials[2]:SetTransportXSections(xs_3_170)
 
 strength = {}
 for g = 1, num_groups do
@@ -79,6 +72,9 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 1000,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_3_170 },
   },
 }
 bsrc = {}

@@ -36,13 +36,8 @@ grid = meshgen1:Execute()
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
 grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-
 num_groups = 3
 xs_upscatter = xs.LoadFromOpenSn("simple_upscatter.xs")
-materials[1]:SetTransportXSections(xs_upscatter)
 
 strength = {}
 for g = 1, num_groups do
@@ -81,6 +76,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 30,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_upscatter },
   },
 }
 

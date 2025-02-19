@@ -47,10 +47,7 @@ grid = meshgen1:Execute()
 -- Materials
 --
 
-materials = {}
-materials[1] = mat.AddMaterial("Fissile Material")
 xs_uo2 = xs.LoadFromOpenMC("uo2.h5", "set1", 294.0)
-materials[1]:SetTransportXSections(xs_uo2)
 grid:SetUniformMaterialID(0)
 
 --
@@ -69,6 +66,9 @@ lbs_block = {
       l_max_its = 500,
       l_abs_tol = 1.0e-12,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_uo2 },
   },
 }
 

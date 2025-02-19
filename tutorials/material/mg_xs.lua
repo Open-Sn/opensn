@@ -37,21 +37,8 @@ TRANSFER_MOMENTS_END
 
 ```
 
-## Materials
-
-We create a material and add a property to it:
-+ TRANSPORT_XSECTIONS for the transport cross sections
-
-Recall that lua indexing starts at 1.
---]]
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Material_A")
---[[ @doc
-
 ## Cross Sections
 
-We assign the cross sections to the material by loading the file containing the cross sections.
+We load the cross sections from OpenSn file format.
 --]]
 xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")
-materials[1]:SetTransportXSections(xs_matA)

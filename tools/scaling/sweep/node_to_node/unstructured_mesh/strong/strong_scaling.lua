@@ -16,10 +16,7 @@ meshgen1 = mesh.DistributedMeshGenerator.Create({
 })
 mesh.MeshGenerator.Execute(meshgen1)
 
--- Material
-materials = {}
-materials[0] = mat.AddMaterial("Test Material")
-mat.SetProperty(materials[0], TRANSPORT_XSECTIONS, OPENSN_XSFILE, "diag_XS_64g_1mom_c0.99.xs")
+xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
 src = {}
 for g = 1, Ng do
   src[g] = 0.0
@@ -56,6 +53,9 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 9,
     },
+  },
+  xs_map = {
+    { block_ids = { 1 }, xs = xs_diag },
   },
 }
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

@@ -16,10 +16,7 @@ xss["6"] = xs.LoadFromOpenSn("materials/XS_fission_chamber.xs")
 num_groups = xss["0"].num_groups
 log.Log(LOG_0, "Num groups: " .. tostring(num_groups))
 
--- Create materials
-materials = {}
+xs_map = {}
 for m = 0, 6 do
-  key = tostring(m)
-  materials[key] = mat.AddMaterial("Material_" .. key)
-  materials[key]:SetTransportXSections(xss[key])
+  xs_map[m + 1] = { block_ids = { m }, xs = xss[tostring(m)] }
 end

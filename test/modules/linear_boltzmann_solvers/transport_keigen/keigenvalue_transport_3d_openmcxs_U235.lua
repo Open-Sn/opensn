@@ -43,15 +43,9 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 grid = meshgen1:Execute()
 
---
--- Materials
---
-
-materials = {}
-materials[1] = mat.AddMaterial("Fissile Material")
-xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
-materials[1]:SetTransportXSections(xs_u235)
 grid:SetUniformMaterialID(0)
+
+xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
 
 --
 -- Solver
@@ -69,6 +63,9 @@ lbs_block = {
       l_max_its = 500,
       l_abs_tol = 1.0e-12,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_u235 },
   },
 }
 

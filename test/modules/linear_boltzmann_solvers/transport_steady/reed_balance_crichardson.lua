@@ -30,19 +30,15 @@ for imat = 1, Nmat do
   z_min = z_max
 end
 
--- Create materials
-mat_names = { "AbsoSrc", "Abso", "Void", "ScatSrc", "Scat" }
-materials = {}
-for imat = 1, Nmat do
-  materials[imat] = mat.AddMaterial(mat_names[imat])
-end
-
 -- Add cross sections to materials
 total = { 50., 5., 0., 1., 1. }
 c = { 0., 0., 0., 0.9, 0.9 }
+xs_map = {}
 for imat = 1, Nmat do
-  xs1g = xs.CreateSimpleOneGroup(total[imat], c[imat])
-  materials[imat]:SetTransportXSections(xs1g)
+  xs_map[imat] = {
+    block_ids = { imat - 1 },
+    xs = xs.CreateSimpleOneGroup(total[imat], c[imat]),
+  }
 end
 
 -- Create sources in 1st and 4th materials
@@ -66,6 +62,7 @@ lbs_block = {
       l_max_its = 1000,
     },
   },
+  xs_map = xs_map,
   options = {
     scattering_order = 0,
     spatial_discretization = "pwld",

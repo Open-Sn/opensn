@@ -16,14 +16,10 @@ grid = meshgen:Execute()
 -- Set Material IDs
 grid:SetUniformMaterialID(0)
 
-materials = {}
-materials[1] = mat.AddMaterial("TestMat")
-
 num_groups = 1
 
 -- Add cross sections to materials
 xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
-materials[1]:SetTransportXSections(xs1g)
 
 strength = {}
 strength[1] = 1.0
@@ -44,6 +40,9 @@ lbs_block = {
       l_abs_tol = 1.0e-9,
       l_max_its = 300,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs1g },
   },
   options = {
     boundary_conditions = {

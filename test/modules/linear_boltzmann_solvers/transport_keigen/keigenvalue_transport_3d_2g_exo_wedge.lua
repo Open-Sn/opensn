@@ -26,10 +26,7 @@ meshgen1 = mesh.MeshGenerator.Create({
 grid = mesh.MeshGenerator.Execute(meshgen1)
 
 -- Set Materials (Fuel)
-materials = {}
-materials[1] = mat.AddMaterial("Fuel")
 xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")
-materials[1]:SetTransportXSections(xs_fuel_g2)
 
 num_groups = 2
 -- Initialize the LBSSolver
@@ -47,6 +44,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 30,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_fuel_g2 },
   },
 }
 
