@@ -458,7 +458,6 @@ static bool reg = opensnlua::Console::Bind(
       //
       .beginClass<Material>("Material")
       .addFunction("SetTransportXSections", &Material::SetTransportXSections)
-      .addFunction("SetIsotropicMGSource", &Material::SetIsotropicMGSource)
       .endClass()
       .beginClass<std::shared_ptr<Material>>("MaterialPtr")
       .endClass()
@@ -486,12 +485,6 @@ static bool reg = opensnlua::Console::Bind(
       .addProperty("inv_velocity", &MultiGroupXS::GetInverseVelocity)
       .endClass()
       .beginClass<std::shared_ptr<MultiGroupXS>>("MultiGroupXSPtr")
-      .endClass()
-      //
-      .deriveClass<IsotropicMultiGroupSource, MaterialProperty>("IsotropicMultiGroupSource")
-      .addStaticFunction("FromArray", &IsotropicMultiGroupSource::FromArray)
-      .endClass()
-      .beginClass<std::shared_ptr<IsotropicMultiGroupSource>>("IsotropicMultiGroupSourcePtr")
       .endClass()
       //
       .addFunction("Create", &XSCreate)

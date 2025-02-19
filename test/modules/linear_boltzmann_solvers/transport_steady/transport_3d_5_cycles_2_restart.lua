@@ -49,11 +49,9 @@ for g = 1, num_groups do
   src[g] = 0.0
 end
 
-mg_src0 = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[2]:SetIsotropicMGSource(mg_src0)
+mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = src })
 src[1] = 1.0
-mg_src1 = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src1)
+mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = src })
 
 -- Setup Physics
 pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
@@ -82,6 +80,7 @@ lbs_options = {
   --write_delayed_psi_to_restart = true,
   --write_restart_path = "transport_3d_5_cycles_2_restart/transport_3d_5_cycles_2",
   read_restart_path = "transport_3d_5_cycles_2_restart/transport_3d_5_cycles_2",
+  volumetric_sources = { mg_src0, mg_src1 },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

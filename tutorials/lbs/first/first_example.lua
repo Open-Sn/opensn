@@ -112,15 +112,15 @@ materials[1]:SetTransportXSections(xs_matA)
 
 --[[ @doc
 ## Volumetric Source
-We create a lua table containing the volumetric multigroup source and assign it to the material by passing that array.
+We create a volumetric multigroup source which will be assigned to the material with given block IDs.
+Volumetric sources are assigned to the solver via the `options` parameter in the LBS block (see below).
 --]]
 num_groups = 1
-src = {}
+strength = {}
 for g = 1, num_groups do
-  src[g] = 1.0
+  strength[g] = 1.0
 end
-mg_src = xs.IsotropicMultiGroupSource.FromArray(src)
-materials[1]:SetIsotropicMGSource(mg_src)
+mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
 --[[ @doc
 ## Angular Quadrature
@@ -158,6 +158,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 30,
     },
+  },
+  options = {
+    volumetric_sources = { mg_src },
   },
 }
 --[[ @doc

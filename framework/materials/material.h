@@ -3,10 +3,8 @@
 
 #pragma once
 
-#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/materials/material_property.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/logging/log_exceptions.h"
 #include <vector>
 #include <memory>
@@ -32,7 +30,6 @@ public:
   std::string name = "Unnamed Material";
 
   void SetTransportXSections(std::shared_ptr<MultiGroupXS> xs);
-  void SetIsotropicMGSource(std::shared_ptr<IsotropicMultiGroupSource> mg_src);
 
 private:
   int GetPropertyIndex(PropertyType property_type);
