@@ -233,7 +233,6 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_dependencies);
     upstream_data_initialized_ = true;
 
-    // preloc_recv_requests_.clear();
     preloc_recv_requests_.resize(num_dependencies);
     for (auto i = 0; i < num_dependencies; ++i)
     {
