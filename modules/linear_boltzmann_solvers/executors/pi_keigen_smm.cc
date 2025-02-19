@@ -110,14 +110,14 @@ PowerIterationKEigenSMM::Initialize()
   PowerIterationKEigen::Initialize();
 
   // Shorthand information
-  const auto& grid = lbs_solver_->GetGrid();
+  const auto grid = lbs_solver_->GetGrid();
   const auto& pwld = lbs_solver_->GetSpatialDiscretization();
   const auto& phi_uk_man = lbs_solver_->GetUnknownManager();
   const auto num_groups = lbs_solver_->GetNumGroups();
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Specialized SMM data
-  dimension_ = lbs_solver_->GetGrid().GetDimension();
+  dimension_ = lbs_solver_->GetGrid()->GetDimension();
   ComputeAuxiliaryUnitCellMatrices();
   ComputeBoundaryFactors();
 
@@ -356,7 +356,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
     const auto num_gs_groups = groupset.groups.size();
 
     // Loop over cells
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
       const auto& transport_view = transport_views[cell.local_id];
       const auto& cell_mapping = pwld.GetCellMapping(cell);
@@ -464,7 +464,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
     diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Build the source
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& rho = lbs_solver_->GetDensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
@@ -527,7 +527,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
       // Interior face terms
       if (face.has_neighbor)
       {
-        const auto& nbr_cell = grid.cells[face.neighbor_id];
+        const auto& nbr_cell = grid->cells[face.neighbor_id];
         const auto& nbr_cell_mapping = pwld.GetCellMapping(nbr_cell);
         const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
 
@@ -560,7 +560,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
               // Get the SM tensor DoFs
               const auto jmmap = pwld.MapDOFLocal(cell, jm, tensor_uk_man_, g, 0);
               const auto jpmap =
-                grid.IsCellLocal(face.neighbor_id)
+                grid->IsCellLocal(face.neighbor_id)
                   ? pwld.MapDOFLocal(nbr_cell, jp, tensor_uk_man_, g, 0)
                   : tensors_->MapGhostToLocal(pwld.MapDOF(nbr_cell, jp, tensor_uk_man_, g, 0));
 
@@ -691,7 +691,7 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
   std::vector<int64_t> rows;
   std::vector<int64_t> cols;
   std::vector<double> vals;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto& fe_values = unit_cell_matrices[cell.local_id];
@@ -772,7 +772,7 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
     diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Test the nodal source against diffusion test functions
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& M = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
     const auto& cell_mapping = pwld.GetCellMapping(cell);
@@ -876,9 +876,9 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
     swf = std::make_shared<CylindricalWeightFunction>();
 
   // Compute integrals
-  const auto num_local_cells = lbs_solver_->GetGrid().local_cells.size();
+  const auto num_local_cells = lbs_solver_->GetGrid()->local_cells.size();
   K_tensor_matrices_.resize(num_local_cells);
-  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid()->local_cells)
   {
     const auto& cell_mapping = discretization.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -920,7 +920,7 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
     const auto wt_sum = std::accumulate(quad->weights.begin(), quad->weights.end(), 0.0);
 
     // Loop over cells
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
@@ -984,7 +984,7 @@ PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>&
 
   // Go through the cells and transfer the data to the output vector
   output.assign(num_local_diff_dofs, 0.0);
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     // This is the same for PWLC and PWLD, so only this is needed
     const auto& cell_mapping = pwld.GetCellMapping(cell);
@@ -1023,7 +1023,7 @@ PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>&
 
   // Go through the cells and transfer data
   output.assign(pwld.GetNumLocalDOFs(uk_man), 0.0);
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     // This is the same for PWLC and PWLD, so only this is needed
     const auto& cell_mapping = pwld.GetCellMapping(cell);
@@ -1050,7 +1050,7 @@ PowerIterationKEigenSMM::CheckScalarFluxConvergence(const std::vector<double>& p
   const auto num_gs_groups = front_gs_.groups.size();
 
   double local_l2norm = 0.0;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -1096,7 +1096,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
 
   // Add local cell data
   std::set<uint64_t> partition_vertex_ids;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     // Add PWLD DoFs into a PWLC vector. Each time that a PWLD DoF is
     // added into a PWLC DoF, a counter for that DoF is incremented so
@@ -1121,17 +1121,17 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     // a PWLC DoF
     for (const auto& face : cell.faces)
       if (face.has_neighbor)
-        if (not grid.IsCellLocal(face.neighbor_id))
+        if (not grid->IsCellLocal(face.neighbor_id))
           for (const uint64_t vertex_id : face.vertex_ids)
             partition_vertex_ids.insert(vertex_id);
   } // for local cell
 
   // Add ghost cell data
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid->cells.GetGhostGlobalIDs();
   const auto& pvids = partition_vertex_ids;
   for (const uint64_t global_id : ghost_cell_ids)
   {
-    const auto& cell = grid.cells[global_id];
+    const auto& cell = grid->cells[global_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto& vol = cell_mapping.GetCellVolume();
 
@@ -1159,7 +1159,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
 
   // Project the PWLC vector back to PWLD
   std::vector<double> output = pwld_vector;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
@@ -1180,9 +1180,9 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
 {
   std::set<int64_t> ghost_ids;
   const auto& grid = pwld.GetGrid();
-  for (const uint64_t ghost_id : grid.cells.GetGhostGlobalIDs())
+  for (const uint64_t ghost_id : grid->cells.GetGhostGlobalIDs())
   {
-    const auto& cell = grid.cells[ghost_id];
+    const auto& cell = grid->cells[ghost_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)

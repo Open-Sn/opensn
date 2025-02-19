@@ -28,7 +28,7 @@ struct RayTracerOutputInformation
 class RayTracer
 {
 private:
-  const MeshContinuum& reference_grid_;
+  const std::shared_ptr<MeshContinuum> reference_grid_;
   std::vector<double> cell_sizes_;
   double epsilon_nudge_ = 1.0e-8;
   double backward_tolerance_ = 1.0e-10;
@@ -36,7 +36,7 @@ private:
   bool perform_concavity_checks_ = true;
 
 public:
-  explicit RayTracer(const MeshContinuum& grid,
+  explicit RayTracer(const std::shared_ptr<MeshContinuum> grid,
                      std::vector<double> cell_sizes,
                      bool perform_concavity_checks = true)
     : reference_grid_(grid),
@@ -46,7 +46,7 @@ public:
   }
 
 private:
-  const MeshContinuum& Grid() const;
+  const std::shared_ptr<MeshContinuum> Grid() const;
 
   void SetTolerancesFromCellSize(double cell_size)
   {
@@ -169,7 +169,7 @@ bool CheckPlaneTetIntersect(const Vector3& plane_normal,
                             const std::vector<Vector3>& tet_points);
 
 /// Populates segment lengths along a ray. Sorted along the direction.
-void PopulateRaySegmentLengths(const MeshContinuum& grid,
+void PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
                                const Cell& cell,
                                const Vector3& line_point0,
                                const Vector3& line_point1,

@@ -21,14 +21,15 @@ private:
   std::map<uint64_t, uint64_t> neighbor_cell_local_ids_;
 
 private:
-  explicit FiniteVolume(const MeshContinuum& grid, CoordinateSystemType cs_type);
+  explicit FiniteVolume(const std::shared_ptr<MeshContinuum> grid, CoordinateSystemType cs_type);
 
 public:
   virtual ~FiniteVolume() = default;
 
   /// Publicly accessible construction handler.
   static std::shared_ptr<FiniteVolume>
-  New(const MeshContinuum& grid, CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
+  New(const std::shared_ptr<MeshContinuum> grid,
+      CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
   void CreateCellMappings();
 

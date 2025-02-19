@@ -14,13 +14,13 @@ using namespace opensn;
 
 namespace unit_sim_tests
 {
-double ComputeRelativePWChange(const MeshContinuum& grid,
+double ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
                                const SpatialDiscretization& sdm,
                                const UnknownManager& phi_uk_man,
                                const std::vector<double>& in_phi_new,
                                const std::vector<double>& in_phi_old);
 
-std::vector<double> SetSource(const MeshContinuum& grid,
+std::vector<double> SetSource(const std::shared_ptr<MeshContinuum> grid,
                               const SpatialDiscretization& sdm,
                               const UnknownManager& phi_uk_man,
                               const std::vector<double>& q_source,
@@ -41,21 +41,20 @@ SimTest06_WDD(const ParameterBlock& params)
     throw std::logic_error(fname + ": Is serial only.");
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make Orthogonal mapping
-  const auto ijk_info = grid.GetIJKInfo();
-  const auto& ijk_mapping = grid.MakeIJKToGlobalIDMapping();
-  const auto cell_ortho_sizes = grid.MakeCellOrthoSizes();
+  const auto ijk_info = grid->GetIJKInfo();
+  const auto& ijk_mapping = grid->MakeIJKToGlobalIDMapping();
+  const auto cell_ortho_sizes = grid->MakeCellOrthoSizes();
 
   const auto Nx = static_cast<int64_t>(ijk_info[0]);
   const auto Ny = static_cast<int64_t>(ijk_info[1]);
   const auto Nz = static_cast<int64_t>(ijk_info[2]);
 
-  auto dimension = grid.GetDimension();
+  auto dimension = grid->GetDimension();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = FiniteVolume::New(grid);
@@ -131,7 +130,7 @@ SimTest06_WDD(const ParameterBlock& params)
   opensn::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cc = cell.centroid;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -174,7 +173,7 @@ SimTest06_WDD(const ParameterBlock& params)
                                 const MultiGroupXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
-    const auto& cell = grid.cells[cell_global_id];
+    const auto& cell = grid->cells[cell_global_id];
     const auto cell_local_id = cell.local_id;
 
     const auto& cell_ortho_size = cell_ortho_sizes[cell_local_id];
@@ -328,7 +327,7 @@ SimTest06_WDD(const ParameterBlock& params)
 }
 
 double
-ComputeRelativePWChange(const MeshContinuum& grid,
+ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
                         const SpatialDiscretization& sdm,
                         const UnknownManager& phi_uk_man,
                         const std::vector<double>& in_phi_new,
@@ -338,7 +337,7 @@ ComputeRelativePWChange(const MeshContinuum& grid,
   const size_t num_moments = phi_uk_man.unknowns.size();
   const size_t num_groups = phi_uk_man.unknowns.front().num_components;
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -379,7 +378,7 @@ ComputeRelativePWChange(const MeshContinuum& grid,
 }
 
 std::vector<double>
-SetSource(const MeshContinuum& grid,
+SetSource(const std::shared_ptr<MeshContinuum> grid,
           const SpatialDiscretization& sdm,
           const UnknownManager& phi_uk_man,
           const std::vector<double>& q_source,
@@ -393,7 +392,7 @@ SetSource(const MeshContinuum& grid,
   const size_t num_moments = phi_uk_man.unknowns.size();
   const size_t num_groups = phi_uk_man.unknowns.front().num_components;
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();

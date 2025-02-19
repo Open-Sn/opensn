@@ -326,7 +326,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   // Material sources
   if (not material_sources_.empty())
   {
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& transport_view = transport_views[cell.local_id];
@@ -358,7 +358,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& num_gs_angles = quadrature->omegas.size();
       const auto& num_gs_groups = groupset.groups.size();
 
-      for (const auto& cell : grid.local_cells)
+      for (const auto& cell : grid->local_cells)
       {
         const auto& cell_mapping = discretization.GetCellMapping(cell);
         const auto& fe_values = unit_cell_matrices[cell.local_id];
@@ -373,7 +373,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid.vertices[cell.vertex_ids[i]];
+              const auto& node = grid->vertices[cell.vertex_ids[i]];
               const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);
@@ -406,7 +406,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   for (const auto& point_source : point_sources_)
     for (const auto& subscriber : point_source->GetSubscribers())
     {
-      const auto& cell = grid.local_cells[subscriber.cell_local_id];
+      const auto& cell = grid->local_cells[subscriber.cell_local_id];
       const auto& transport_view = transport_views[cell.local_id];
 
       const auto& src = point_source->GetStrength();
@@ -426,7 +426,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   for (const auto& volumetric_source : volumetric_sources_)
     for (const uint64_t local_id : volumetric_source->GetSubscribers())
     {
-      const auto& cell = grid.local_cells[local_id];
+      const auto& cell = grid->local_cells[local_id];
       const auto& transport_view = transport_views[cell.local_id];
       const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto& nodes = discretization.GetCellNodeLocations(cell);

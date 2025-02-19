@@ -358,7 +358,7 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
 
   std::vector<double> output_phi_local(diff_num_local_dofs, 0.0);
 
-  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid()->local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -398,7 +398,7 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
-  for (const auto& cell : lbs_solver_->GetGrid().local_cells)
+  for (const auto& cell : lbs_solver_->GetGrid()->local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -434,10 +434,10 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
   std::set<int64_t> global_dof_ids_set;
 
   const auto& grid = lbs_solver_->GetGrid();
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid->cells.GetGhostGlobalIDs();
   for (const auto global_id : ghost_cell_ids)
   {
-    const auto& cell = grid.cells[global_id];
+    const auto& cell = grid->cells[global_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -501,7 +501,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -529,17 +529,17 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
     for (const auto& face : cell.faces)
       if (face.has_neighbor)
-        if (not grid.IsCellLocal(face.neighbor_id))
+        if (not grid->IsCellLocal(face.neighbor_id))
           for (const uint64_t vid : face.vertex_ids)
             partition_bndry_vertex_id_set.insert(vid);
   } // for local cell
 
   // Ghost cells
-  const auto ghost_cell_ids = grid.cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid->cells.GetGhostGlobalIDs();
   const auto& vid_set = partition_bndry_vertex_id_set;
   for (const auto global_id : ghost_cell_ids)
   {
-    const auto& cell = grid.cells[global_id];
+    const auto& cell = grid->cells[global_id];
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -579,7 +579,7 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
 
   // Project back to dfem
   auto output = input;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();

@@ -88,7 +88,7 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
   if (logvol_ and block_ids_.empty())
   {
     std::set<int> blk_ids;
-    for (const auto& cell : lbs_solver.GetGrid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid()->local_cells)
       if (logvol_->Inside(cell.centroid))
       {
         blk_ids.insert(cell.material_id);
@@ -97,13 +97,13 @@ VolumetricSource::Initialize(const LBSSolver& lbs_solver)
   }
   else if (not logvol_ and not block_ids_.empty())
   {
-    for (const auto& cell : lbs_solver.GetGrid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid()->local_cells)
       if (std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
         subscribers_.push_back(cell.local_id);
   }
   else
   {
-    for (const auto& cell : lbs_solver.GetGrid().local_cells)
+    for (const auto& cell : lbs_solver.GetGrid()->local_cells)
       if (logvol_->Inside(cell.centroid) and
           std::find(block_ids_.begin(), block_ids_.end(), cell.material_id) != block_ids_.end())
         subscribers_.push_back(cell.local_id);

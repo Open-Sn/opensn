@@ -46,8 +46,8 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
     for (auto& face : cell.faces)
     {
       if (face.has_neighbor)
-        if (not face.IsNeighborLocal(*this))
-          local_graph_edges.insert(face.GetNeighborPartitionID(*this));
+        if (not face.IsNeighborLocal(this))
+          local_graph_edges.insert(face.GetNeighborPartitionID(this));
     } // for f
   }   // for local cells
 
@@ -241,7 +241,7 @@ void
 MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                                       std::vector<short>& dof_mapping) const
 {
-  const int adj_face_idx = cur_face.GetNeighborAdjacentFaceIndex(*this);
+  const int adj_face_idx = cur_face.GetNeighborAdjacentFaceIndex(this);
   // Check face validity
   OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
@@ -701,14 +701,14 @@ MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
 }
 
 void
-MeshContinuum::ComputeVolumePerMaterialID() const
+MeshContinuum::ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> mesh)
 {
-  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(*this);
+  auto sdm_ptr = PieceWiseLinearContinuous::New(mesh);
   const auto& sdm = *sdm_ptr;
 
   // Create a map to hold local volume with local material as key
   std::map<int, double> material_volumes;
-  for (auto& cell : local_cells)
+  for (auto& cell : mesh->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const double volume = cell_mapping.GetCellVolume();

@@ -18,7 +18,7 @@ namespace opensn
 {
 
 void
-UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
+UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
                                 const Cell& cell,
                                 int64_t& node_counter,
                                 vtkNew<vtkPoints>& points,
@@ -31,9 +31,9 @@ UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
   {
     uint64_t vgi = cell.vertex_ids[v];
     std::vector<double> d_node(3);
-    d_node[0] = grid.vertices[vgi].x;
-    d_node[1] = grid.vertices[vgi].y;
-    d_node[2] = grid.vertices[vgi].z;
+    d_node[0] = grid->vertices[vgi].x;
+    d_node[1] = grid->vertices[vgi].y;
+    d_node[2] = grid->vertices[vgi].z;
 
     points->InsertPoint(node_counter, d_node.data());
     cell_vids[v] = node_counter++;
@@ -522,7 +522,7 @@ end_error_checks:
 }
 
 vtkNew<vtkUnstructuredGrid>
-PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
+PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool discontinuous)
 {
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;
@@ -539,15 +539,15 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
   std::vector<uint64_t> vertex_map;
   if (not discontinuous)
   {
-    vertex_map.assign(grid.GetGlobalVertexCount(), 0);
-    const size_t num_verts = grid.GetGlobalVertexCount();
+    vertex_map.assign(grid->GetGlobalVertexCount(), 0);
+    const size_t num_verts = grid->GetGlobalVertexCount();
     for (size_t v = 0; v < num_verts; ++v)
       vertex_map[v] = v;
   }
 
   // Populate cell information
   int64_t node_count = 0;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     if (discontinuous)
       UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
@@ -555,7 +555,7 @@ PrepareVtkUnstructuredGrid(const MeshContinuum& grid, bool discontinuous)
     {
       for (uint64_t vid : cell.vertex_ids)
       {
-        const auto& vertex = grid.vertices[vid];
+        const auto& vertex = grid->vertices[vid];
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
         vertex_map[vid] = node_count;
         ++node_count;

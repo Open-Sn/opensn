@@ -12,12 +12,14 @@
 namespace opensn
 {
 
-CBC_SPDS::CBC_SPDS(const Vector3& omega, const MeshContinuum& grid, bool allow_cycles)
+CBC_SPDS::CBC_SPDS(const Vector3& omega,
+                   const std::shared_ptr<MeshContinuum> grid,
+                   bool allow_cycles)
   : SPDS(omega, grid)
 {
   CALI_CXX_MARK_SCOPE("CBC_SPDS::CBC_SPDS");
 
-  size_t num_loc_cells = grid.local_cells.size();
+  size_t num_loc_cells = grid->local_cells.size();
 
   // Populate Cell Relationships
   std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
@@ -69,7 +71,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega, const MeshContinuum& grid, bool allow_c
   constexpr auto OUTGOING = FaceOrientation::OUTGOING;
 
   // For each local cell create a task
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
@@ -85,8 +87,8 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega, const MeshContinuum& grid, bool allow_c
       else if (cell_face_orientations_[cell.local_id][f] == OUTGOING)
       {
         const auto& face = cell.faces[f];
-        if (face.has_neighbor and grid.IsCellLocal(face.neighbor_id))
-          succesors.push_back(grid.cells[face.neighbor_id].local_id);
+        if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
+          succesors.push_back(grid->cells[face.neighbor_id].local_id);
       }
     }
 

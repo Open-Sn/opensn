@@ -65,7 +65,9 @@ public:
     return true;
   }
 
-  virtual void Setup(const MeshContinuum& grid, const AngularQuadrature& quadrature) {}
+  virtual void Setup(const std::shared_ptr<MeshContinuum> grid, const AngularQuadrature& quadrature)
+  {
+  }
 
   double* ZeroFlux(int group_num) { return &zero_boundary_flux_[group_num]; }
 };

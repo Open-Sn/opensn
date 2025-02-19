@@ -65,7 +65,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
   VecSet(rhs_, 0.0);
 
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -138,7 +138,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_.cells[face.neighbor_id];
+          const auto& adj_cell = grid_->cells[face.neighbor_id];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
@@ -415,7 +415,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
   VecSet(rhs_, 0.0);
 
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -614,7 +614,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -677,7 +677,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_.cells[face.neighbor_id];
+          const auto& adj_cell = grid_->cells[face.neighbor_id];
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
@@ -916,7 +916,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
@@ -1069,7 +1069,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   VecGetArrayRead(petsc_q_vector, &q_vector);
 
   VecSet(rhs_, 0.0);
-  for (const auto& cell : grid_.local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);

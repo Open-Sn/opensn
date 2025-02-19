@@ -184,12 +184,11 @@ CFEMDiffusionSolver::Initialize()
   // Get grid
   if (grid_ptr_ == nullptr)
     throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
-  const auto& grid = *grid_ptr_;
 
-  log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  log.Log() << "Global num cells: " << grid_ptr_->GetGlobalNumberOfCells();
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid_ptr_->GetDomainUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
   for (uint64_t bndry_id : globl_unique_bndry_ids)
@@ -262,7 +261,7 @@ CFEMDiffusionSolver::Initialize()
   } // for bndry
 
   // Make SDM
-  sdm_ptr_ = PieceWiseLinearContinuous::New(*grid_ptr_);
+  sdm_ptr_ = PieceWiseLinearContinuous::New(grid_ptr_);
   const auto& sdm = *sdm_ptr_;
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;

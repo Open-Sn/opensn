@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 template <class T>
 class vtkNew;
@@ -24,7 +25,7 @@ class CellFace;
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryDiscontinuous(const MeshContinuum& grid,
+void UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
                                      const Cell& cell,
                                      int64_t& node_counter,
                                      vtkNew<vtkPoints>& points,
@@ -89,7 +90,7 @@ std::vector<int> BuildCellMaterialIDsFromField(vtkUGridPtr& ugrid,
  * Uploads vertices and cells to an unstructured grid. This routine also uploads cell material ids
  * (sub-domain ids) and partition ids.
  */
-vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const MeshContinuum& grid,
+vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid,
                                                        bool discontinuous = true);
 
 /**

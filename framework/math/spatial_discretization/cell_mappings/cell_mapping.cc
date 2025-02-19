@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-CellMapping::CellMapping(const MeshContinuum& grid,
+CellMapping::CellMapping(const std::shared_ptr<MeshContinuum> grid,
                          const Cell& cell,
                          size_t num_nodes,
                          std::vector<Vector3> node_locations,
@@ -31,7 +31,7 @@ CellMapping::ReferenceCell() const
   return cell_;
 }
 
-const MeshContinuum&
+const std::shared_ptr<MeshContinuum>
 CellMapping::ReferenceGrid() const
 {
   return ref_grid_;
@@ -82,7 +82,7 @@ CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
 }
 
 void
-CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
+CellMapping::ComputeCellVolumeAndAreas(const std::shared_ptr<MeshContinuum> grid,
                                        const Cell& cell,
                                        double& volume,
                                        std::vector<double>& areas)
@@ -91,8 +91,8 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
   {
     case CellType::SLAB:
     {
-      const auto& v0 = grid.vertices[cell.vertex_ids[0]];
-      const auto& v1 = grid.vertices[cell.vertex_ids[1]];
+      const auto& v0 = grid->vertices[cell.vertex_ids[0]];
+      const auto& v1 = grid->vertices[cell.vertex_ids[1]];
 
       volume = (v1 - v0).Norm();
       areas = {1.0, 1.0};
@@ -111,8 +111,8 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
         const uint64_t v0i = cell.faces[f].vertex_ids[0];
         const uint64_t v1i = cell.faces[f].vertex_ids[1];
 
-        const auto& v0 = grid.vertices[v0i];
-        const auto& v1 = grid.vertices[v1i];
+        const auto& v0 = grid->vertices[v0i];
+        const auto& v1 = grid->vertices[v1i];
 
         areas.push_back((v1 - v0).Norm());
 
@@ -143,9 +143,9 @@ CellMapping::ComputeCellVolumeAndAreas(const MeshContinuum& grid,
           uint64_t v0i = face.vertex_ids[e];
           uint64_t v1i = face.vertex_ids[ep1];
 
-          const auto& v0 = grid.vertices[v0i];
+          const auto& v0 = grid->vertices[v0i];
           const auto& v1 = cell.faces[f].centroid;
-          const auto& v2 = grid.vertices[v1i];
+          const auto& v2 = grid->vertices[v1i];
           const auto& v3 = vcc;
 
           const auto sidev01 = v1 - v0;

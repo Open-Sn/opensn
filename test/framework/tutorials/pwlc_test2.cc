@@ -24,10 +24,9 @@ SimTest04_PWLC(const ParameterBlock& params)
   opensn::log.Log() << "Coding Tutorial 4";
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
@@ -64,7 +63,7 @@ SimTest04_PWLC(const ParameterBlock& params)
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -187,7 +186,7 @@ SimTest04_PWLC(const ParameterBlock& params)
   const auto field_wg = ff->GetGhostedFieldVector();
 
   double local_error = 0.0;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -220,7 +219,7 @@ SimTest04_PWLC(const ParameterBlock& params)
   global_error = std::sqrt(global_error);
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
-                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
+                    << " Num-cells: " << grid->GetGlobalNumberOfCells();
 }
 
 BIND_FUNCTION(unit_tests, SimTest04_PWLC);

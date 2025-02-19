@@ -21,7 +21,7 @@ class PieceWiseLinearSlabMapping : public PieceWiseLinearBaseMapping
 public:
   /// Constructor for a slab view.
   PieceWiseLinearSlabMapping(const Cell& slab_cell,
-                             const MeshContinuum& ref_grid,
+                             const std::shared_ptr<MeshContinuum> ref_grid,
                              const LineQuadrature& volume_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;

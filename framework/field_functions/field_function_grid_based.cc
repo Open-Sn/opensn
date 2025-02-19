@@ -61,7 +61,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
 {
 }
 
@@ -73,7 +73,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
 {
   OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->GetLocalSize(),
                           "Constructor called with incompatible size field vector.");
@@ -89,7 +89,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid().GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(field_value);
 }
@@ -162,9 +162,9 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
       point.z >= zmin and point.z <= zmax)
   {
     const auto& grid = discretization_->GetGrid();
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
     {
-      if (grid.CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(cell, point))
       {
         const auto& cell_mapping = discretization_->GetCellMapping(cell);
         Vector<double> shape_values;
@@ -239,7 +239,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   for (const auto& ff_ptr : ff_list)
     if (ff_ptr != master_ff_ptr)
-      if (&ff_ptr->discretization_->GetGrid() != &master_ff_ptr->discretization_->GetGrid())
+      if (ff_ptr->discretization_->GetGrid() != master_ff_ptr->discretization_->GetGrid())
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
@@ -273,7 +273,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
       cell_array->SetName(component_name.c_str());
 
       // Populate the array here
-      for (const auto& cell : grid.local_cells)
+      for (const auto& cell : grid->local_cells)
       {
         const size_t num_nodes = sdm->GetCellNumNodes(cell);
 
@@ -326,11 +326,11 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto& grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
   if (sdm_type == "FV")
-    return FiniteVolume::New(*grid_ptr);
+    return FiniteVolume::New(grid_ptr);
 
   CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
@@ -367,9 +367,9 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   }
 
   if (sdm_type == "PWLC")
-    return PieceWiseLinearContinuous::New(*grid_ptr, q_order, cs_type);
+    return PieceWiseLinearContinuous::New(grid_ptr, q_order, cs_type);
   else if (sdm_type == "PWLD")
-    return PieceWiseLinearDiscontinuous::New(*grid_ptr, q_order, cs_type);
+    return PieceWiseLinearDiscontinuous::New(grid_ptr, q_order, cs_type);
 
   // If not returned by now
   OpenSnInvalidArgument("Unsupported discretization \"" + sdm_type + "\"");

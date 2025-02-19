@@ -31,7 +31,7 @@ LBSSolverIO::WriteAngularFluxes(
   const auto& discretization = lbs_solver.GetSpatialDiscretization();
   const auto& groupsets = lbs_solver.GetGroupsets();
 
-  auto num_local_cells = grid.local_cells.size();
+  auto num_local_cells = grid->local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_groupsets = groupsets.size();
 
@@ -47,7 +47,7 @@ LBSSolverIO::WriteAngularFluxes(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     cell_ids.push_back(cell.global_id);
     num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
@@ -89,7 +89,7 @@ LBSSolverIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     std::vector<double> values;
-    for (const auto& cell : grid.local_cells)
+    for (const auto& cell : grid->local_cells)
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (uint64_t g = 0; g < num_gs_groups; ++g)
@@ -156,9 +156,9 @@ LBSSolverIO::ReadAngularFluxes(
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid.cells[cell_global_id];
+    const auto& cell = grid->cells[cell_global_id];
 
-    if (not grid.IsCellLocal(cell_global_id))
+    if (not grid->IsCellLocal(cell_global_id))
       continue;
 
     // Check for cell compatibility
@@ -228,7 +228,7 @@ LBSSolverIO::ReadAngularFluxes(
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid.cells[cell_global_id];
+      const auto& cell = grid->cells[cell_global_id];
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (uint64_t g = 0; g < num_gs_groups; ++g)

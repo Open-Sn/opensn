@@ -14,7 +14,7 @@ class LBSGroupset;
 class SweepChunkPwlrz : public SweepChunk
 {
 public:
-  SweepChunkPwlrz(const MeshContinuum& grid,
+  SweepChunkPwlrz(const std::shared_ptr<MeshContinuum> grid,
                   const SpatialDiscretization& discretization_primary,
                   const std::vector<UnitCellMatrices>& unit_cell_matrices,
                   const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,

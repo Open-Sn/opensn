@@ -13,7 +13,7 @@ namespace opensn
 class AahSweepChunk : public SweepChunk
 {
 public:
-  AahSweepChunk(const MeshContinuum& grid,
+  AahSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                 const SpatialDiscretization& discretization,
                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
                 std::vector<CellLBSView>& cell_transport_views,

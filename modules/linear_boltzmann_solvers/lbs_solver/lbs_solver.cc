@@ -210,10 +210,10 @@ LBSSolver::GetMatID2XSMap() const
   return matid_to_xs_map_;
 }
 
-const MeshContinuum&
+const std::shared_ptr<MeshContinuum>
 LBSSolver::GetGrid() const
 {
-  return *grid_ptr_;
+  return grid_ptr_;
 }
 
 const SpatialDiscretization&
@@ -1034,7 +1034,7 @@ LBSSolver::InitializeSpatialDiscretization()
   CALI_CXX_MARK_SCOPE("LBSSolver::InitializeSpatialDiscretization");
 
   log.Log() << "Initializing spatial discretization.\n";
-  discretization_ = PieceWiseLinearDiscontinuous::New(*grid_ptr_);
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_ptr_);
 
   ComputeUnitIntegrals();
 }
@@ -1341,7 +1341,7 @@ LBSSolver::InitializeParrays()
       } // if bndry
       else
       {
-        const int neighbor_partition = face.GetNeighborPartitionID(*grid_ptr_);
+        const int neighbor_partition = face.GetNeighborPartitionID(grid_ptr_.get());
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
         neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id];
@@ -1386,7 +1386,7 @@ LBSSolver::InitializeParrays()
       {
         grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
         grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
-        adj_face_idx = face.GetNeighborAdjacentFaceIndex(*grid_ptr_);
+        adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_ptr_.get());
       }
 
       cell_nodal_mapping.emplace_back(adj_face_idx, face_node_mapping, cell_node_mapping);

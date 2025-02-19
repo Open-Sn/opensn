@@ -31,7 +31,7 @@ LBSSolverIO::WriteFluxMoments(
 
   auto num_moments = lbs_solver.GetNumMoments();
   auto num_groups = lbs_solver.GetNumGroups();
-  auto num_local_cells = grid.local_cells.size();
+  auto num_local_cells = grid->local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_local_dofs = num_local_nodes * num_moments * num_groups;
   OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
@@ -49,7 +49,7 @@ LBSSolverIO::WriteFluxMoments(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
   // Loop through mesh nodes and store data
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     cell_ids.push_back(cell.global_id);
     num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
@@ -76,7 +76,7 @@ LBSSolverIO::WriteFluxMoments(
   // Loop through dof and store flux values
   std::vector<double> values;
   values.reserve(num_local_dofs);
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
         for (uint64_t g = 0; g < num_groups; ++g)
@@ -123,7 +123,7 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   const auto& discretization = lbs_solver.GetSpatialDiscretization();
   const auto uk_man = lbs_solver.GetUnknownManager();
 
-  const auto num_local_cells = grid.local_cells.size();
+  const auto num_local_cells = grid->local_cells.size();
   const auto num_local_nodes = discretization.GetNumLocalNodes();
   const auto num_moments = lbs_solver.GetNumMoments();
   const auto num_groups = lbs_solver.GetNumGroups();
@@ -154,9 +154,9 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid.cells[cell_global_id];
+    const auto& cell = grid->cells[cell_global_id];
 
-    if (not grid.IsCellLocal(cell_global_id))
+    if (not grid->IsCellLocal(cell_global_id))
       continue;
 
     // Check for cell compatibility
@@ -202,7 +202,7 @@ LBSSolverIO::ReadFluxMoments(LBSSolver& lbs_solver,
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid.cells[cell_global_id];
+    const auto& cell = grid->cells[cell_global_id];
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
         for (uint64_t g = 0; g < num_groups; ++g)

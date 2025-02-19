@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-AahSweepChunk::AahSweepChunk(const MeshContinuum& grid,
+AahSweepChunk::AahSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<CellLBSView>& cell_transport_views,
@@ -66,7 +66,7 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     auto cell_local_id = spls[spls_index];
-    auto& cell = grid_.local_cells[cell_local_id];
+    auto& cell = grid_->local_cells[cell_local_id];
     auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto cell_num_faces = cell.faces.size();

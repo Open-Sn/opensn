@@ -110,7 +110,7 @@ protected:
    * geometry into account.
    */
   static std::pair<UniqueSOGroupings, DirIDToSOMap>
-  AssociateSOsAndDirections(const MeshContinuum& grid,
+  AssociateSOsAndDirections(const std::shared_ptr<MeshContinuum> grid,
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
                             GeometryType lbs_geo_type);

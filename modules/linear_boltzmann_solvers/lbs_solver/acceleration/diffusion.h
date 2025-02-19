@@ -23,7 +23,7 @@ protected:
   using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
 
   const std::string name_;
-  const MeshContinuum& grid_;
+  const std::shared_ptr<MeshContinuum> grid_;
   const class SpatialDiscretization& sdm_;
   const UnknownManager uk_man_;
 

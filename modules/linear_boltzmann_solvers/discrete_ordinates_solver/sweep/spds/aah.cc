@@ -13,13 +13,16 @@
 namespace opensn
 {
 
-AAH_SPDS::AAH_SPDS(int id, const Vector3& omega, const MeshContinuum& grid, bool allow_cycles)
+AAH_SPDS::AAH_SPDS(int id,
+                   const Vector3& omega,
+                   const std::shared_ptr<MeshContinuum> grid,
+                   bool allow_cycles)
   : SPDS(omega, grid), id_(id), allow_cycles_(allow_cycles)
 {
   CALI_CXX_MARK_SCOPE("AAH_SPDS::AAH_SPDS");
 
   // Populate Cell Relationships
-  size_t num_loc_cells = grid.local_cells.size();
+  size_t num_loc_cells = grid->local_cells.size();
   std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
   std::set<int> location_dependencies;

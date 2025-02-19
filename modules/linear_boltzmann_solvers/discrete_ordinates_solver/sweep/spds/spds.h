@@ -33,10 +33,12 @@ public:
    * \param omega The angular direction vector.
    * \param grid Reference to the grid.
    */
-  SPDS(const Vector3& omega, const MeshContinuum& grid) : omega_(omega), grid_(grid) {}
+  SPDS(const Vector3& omega, const std::shared_ptr<MeshContinuum> grid) : omega_(omega), grid_(grid)
+  {
+  }
 
   /// Return a reference to the MeshContinuum object.
-  const MeshContinuum& GetGrid() const { return grid_; }
+  const std::shared_ptr<MeshContinuum> GetGrid() const { return grid_; }
 
   /// Return a reference to the direction vector.
   const Vector3& GetOmega() const { return omega_; }
@@ -150,7 +152,7 @@ protected:
   /// Angular direction vector.
   Vector3 omega_;
   /// Reference to the grid.
-  const MeshContinuum& grid_;
+  const std::shared_ptr<MeshContinuum> grid_;
   /// Sweep-plane local subgrid associated with this SPDS.
   std::vector<int> spls_;
   /// Levelized sweep-plane local subgrid associated with this SPDS.

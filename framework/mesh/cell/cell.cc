@@ -84,40 +84,40 @@ Cell::operator=(const Cell& other)
 }
 
 bool
-CellFace::IsNeighborLocal(const MeshContinuum& grid) const
+CellFace::IsNeighborLocal(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return false;
   if (opensn::mpi_comm.size() == 1)
     return true;
 
-  auto& adj_cell = grid.cells[neighbor_id];
+  auto& adj_cell = grid->cells[neighbor_id];
 
   return (adj_cell.partition_id == static_cast<uint64_t>(opensn::mpi_comm.rank()));
 }
 
 int
-CellFace::GetNeighborPartitionID(const MeshContinuum& grid) const
+CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return -1;
   if (opensn::mpi_comm.size() == 1)
     return 0;
 
-  auto& adj_cell = grid.cells[neighbor_id];
+  auto& adj_cell = grid->cells[neighbor_id];
 
   return static_cast<int>(adj_cell.partition_id);
 }
 
 uint64_t
-CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
+CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return -1;
   if (opensn::mpi_comm.size() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
-  auto& adj_cell = grid.cells[neighbor_id];
+  auto& adj_cell = grid->cells[neighbor_id];
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
@@ -126,7 +126,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum& grid) const
 }
 
 int
-CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const
+CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
@@ -139,7 +139,7 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const
     throw std::logic_error(outstr.str());
   }
 
-  const auto& adj_cell = grid.cells[cur_face.neighbor_id];
+  const auto& adj_cell = grid->cells[cur_face.neighbor_id];
 
   int adj_face_idx = -1;
   std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),
@@ -180,14 +180,14 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const
 }
 
 double
-CellFace::ComputeFaceArea(const MeshContinuum& grid) const
+CellFace::ComputeFaceArea(const MeshContinuum* grid) const
 {
   if (vertex_ids.size() <= 1)
     return 1.0;
   else if (vertex_ids.size() == 2)
   {
-    const auto& v0 = grid.vertices[vertex_ids[0]];
-    const auto& v1 = grid.vertices[vertex_ids[1]];
+    const auto& v0 = grid->vertices[vertex_ids[0]];
+    const auto& v1 = grid->vertices[vertex_ids[1]];
 
     return (v1 - v0).Norm();
   }
@@ -201,8 +201,8 @@ CellFace::ComputeFaceArea(const MeshContinuum& grid) const
       uint64_t vid0 = vertex_ids[v];
       uint64_t vid1 = (v < (num_verts - 1)) ? vertex_ids[v + 1] : vertex_ids[0];
 
-      const auto& v0 = grid.vertices[vid0];
-      const auto& v1 = grid.vertices[vid1];
+      const auto& v0 = grid->vertices[vid0];
+      const auto& v1 = grid->vertices[vid1];
 
       auto v01 = v1 - v0;
       auto v02 = v2 - v0;
@@ -284,11 +284,11 @@ CellFace::ToString() const
 }
 
 void
-CellFace::RecomputeCentroid(const MeshContinuum& grid)
+CellFace::RecomputeCentroid(const MeshContinuum* grid)
 {
   centroid = Vector3(0, 0, 0);
   for (uint64_t vid : vertex_ids)
-    centroid += grid.vertices[vid];
+    centroid += grid->vertices[vid];
   centroid /= static_cast<double>(vertex_ids.size());
 }
 

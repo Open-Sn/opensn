@@ -601,7 +601,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
     if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
     {
       quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
-        *grid_ptr_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
+        grid_ptr_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
     }
 
     if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)
@@ -634,7 +634,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         const size_t master_dir_id = so_grouping.front();
         const auto& omega = quadrature->omegas[master_dir_id];
         const auto new_swp_order = std::make_shared<AAH_SPDS>(
-          id, omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
+          id, omega, this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
         ++id;
       }
@@ -752,7 +752,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
         const size_t master_dir_id = so_grouping.front();
         const auto& omega = quadrature->omegas[master_dir_id];
         const auto new_swp_order = std::make_shared<CBC_SPDS>(
-          omega, *this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
+          omega, this->grid_ptr_, quadrature_allow_cycles_map_[quadrature]);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
       }
     }
@@ -792,7 +792,7 @@ DiscreteOrdinatesSolver::InitializeSweepDataStructures()
 }
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
-DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
+DiscreteOrdinatesSolver::AssociateSOsAndDirections(const std::shared_ptr<MeshContinuum> grid,
                                                    const AngularQuadrature& quadrature,
                                                    const AngleAggregationType agg_type,
                                                    const GeometryType lbs_geo_type)
@@ -830,7 +830,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const MeshContinuum& grid,
     case AngleAggregationType::POLAR:
     {
       // Check geometry types
-      if (not(grid.GetType() == ORTHOGONAL or grid.GetDimension() == 2 or grid.Extruded()))
+      if (not(grid->GetType() == ORTHOGONAL or grid->GetDimension() == 2 or grid->Extruded()))
         throw std::logic_error(
           fname + ": The simulation is using polar angle aggregation for which only certain "
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
@@ -1068,7 +1068,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
 
   if (sweep_type_ == "AAH")
   {
-    auto sweep_chunk = std::make_shared<AahSweepChunk>(*grid_ptr_,
+    auto sweep_chunk = std::make_shared<AahSweepChunk>(grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        cell_transport_views_,
@@ -1087,7 +1087,7 @@ DiscreteOrdinatesSolver::SetSweepChunk(LBSGroupset& groupset)
   {
     auto sweep_chunk = std::make_shared<CbcSweepChunk>(phi_new_local_,
                                                        psi_new_local_[groupset.id],
-                                                       *grid_ptr_,
+                                                       grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        cell_transport_views_,

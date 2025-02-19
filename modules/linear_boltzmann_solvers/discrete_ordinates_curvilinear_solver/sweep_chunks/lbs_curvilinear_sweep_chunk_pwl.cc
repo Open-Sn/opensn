@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
+SweepChunkPwlrz::SweepChunkPwlrz(const std::shared_ptr<MeshContinuum> grid,
                                  const SpatialDiscretization& discretization_primary,
                                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
                                  const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,
@@ -63,7 +63,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const MeshContinuum& grid,
       map_polar_level_.emplace(dir_idx, dir_set.first);
 
   //  set normal vector for symmetric boundary condition
-  const auto d = (grid_.GetDimension() == 1) ? 2 : 0;
+  const auto d = (grid_->GetDimension() == 1) ? 2 : 0;
   normal_vector_boundary_ = Vector3(0.0, 0.0, 0.0);
   normal_vector_boundary_(d) = 1;
 }
@@ -99,7 +99,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     auto cell_local_id = spls[spls_index];
-    auto& cell = grid_.local_cells[cell_local_id];
+    auto& cell = grid_->local_cells[cell_local_id];
     auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto cell_num_faces = cell.faces.size();

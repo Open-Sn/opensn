@@ -33,10 +33,9 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
   const bool export_vtk = params.Has("export_vtk") and params.GetParamValue<bool>("export_vtk");
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make SDM method
   const auto sdm_type = params.GetParamValue<std::string>("sdm_type");
@@ -79,7 +78,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -130,7 +129,7 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
 
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid.cells[face.neighbor_id];
+        const auto& adj_cell = grid->cells[face.neighbor_id];
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
@@ -338,9 +337,9 @@ math_SDM_Test02_DisContinuous(const ParameterBlock& params)
                                          "pc_hypre_boomeramg_coarsen_type HMIS",
                                          "pc_hypre_boomeramg_interp_type ext+i"};
 
-  if (grid.GetDimension() == 2)
+  if (grid->GetDimension() == 2)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  if (grid.GetDimension() == 3)
+  if (grid->GetDimension() == 3)
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.7");
 
   for (const auto& option : pc_options)

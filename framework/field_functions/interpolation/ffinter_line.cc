@@ -48,12 +48,12 @@ FieldFunctionInterpolationLine::Initialize()
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
   local_interpolation_points_.reserve(estimated_local_size);
   local_cells_.reserve(estimated_local_size);
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
-      if (grid.CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(cell, point))
       {
         local_interpolation_points_.push_back(point);
         local_cells_.push_back(cell.local_id);
@@ -83,7 +83,7 @@ FieldFunctionInterpolationLine::Execute()
   {
     auto& point = local_interpolation_points_[p];
     auto cell_local_index = local_cells_[p];
-    const auto& cell = grid.local_cells[cell_local_index];
+    const auto& cell = grid->local_cells[cell_local_index];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 

@@ -165,9 +165,6 @@ public:
 
   void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
 
-  /// Compute volume per material id's
-  void ComputeVolumePerMaterialID() const;
-
   /**
    * Get the face vertices of a tetrahedron contained within the given face and
    * side of a polyhedron.
@@ -194,6 +191,9 @@ private:
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
 
 public:
+  /// Compute volume per material id's
+  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> mesh);
+
   VertexHandler vertices;
   LocalCellHandler local_cells;
   GlobalCellHandler cells;

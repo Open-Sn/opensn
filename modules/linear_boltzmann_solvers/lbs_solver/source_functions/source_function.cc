@@ -53,7 +53,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
   // Apply all nodal sources
   const auto& grid = lbs_solver_.GetGrid();
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& rho = densities[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
@@ -233,7 +233,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
     {
       for (const auto local_id : volumetric_source->GetSubscribers())
       {
-        const auto& cell = grid.local_cells[local_id];
+        const auto& cell = grid->local_cells[local_id];
         const auto& transport_view = cell_transport_views[local_id];
         const auto nodes = discretization.GetCellNodeLocations(cell);
         const auto num_cell_nodes = discretization.GetCellNumNodes(cell);

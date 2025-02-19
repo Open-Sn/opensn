@@ -129,9 +129,9 @@ MeshGenerator::Execute()
 }
 
 void
-MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
+MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum> grid)
 {
-  const size_t num_local_cells = grid.local_cells.size();
+  const size_t num_local_cells = grid->local_cells.size();
   size_t num_global_cells = 0;
 
   mpi_comm.all_reduce(num_local_cells, num_global_cells, mpi::op::sum<size_t>());
@@ -143,7 +143,7 @@ MeshGenerator::ComputeAndPrintStats(const MeshContinuum& grid)
   mpi_comm.all_reduce(num_local_cells, min_num_local_cells, mpi::op::min<size_t>());
 
   const size_t avg_num_local_cells = num_global_cells / opensn::mpi_comm.size();
-  const size_t num_local_ghosts = grid.cells.GhostCellCount();
+  const size_t num_local_ghosts = grid->cells.GhostCellCount();
   const double local_ghost_to_local_cell_ratio = double(num_local_ghosts) / double(num_local_cells);
 
   double average_ghost_ratio;
@@ -287,7 +287,7 @@ MeshGenerator::SetupMesh(std::shared_ptr<UnpartitionedMesh> input_umesh,
 
   grid_ptr->SetGlobalVertexCount(input_umesh->GetVertices().size());
 
-  ComputeAndPrintStats(*grid_ptr);
+  ComputeAndPrintStats(grid_ptr);
 
   return grid_ptr;
 }

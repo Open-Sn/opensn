@@ -20,7 +20,7 @@ class PieceWiseLinearContinuous : public PieceWiseLinearBase
 public:
   /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearContinuous>
-  New(const MeshContinuum& grid,
+  New(const std::shared_ptr<MeshContinuum> grid,
       QuadratureOrder q_order = QuadratureOrder::SECOND,
       CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
 
@@ -62,7 +62,7 @@ protected:
   std::map<uint64_t, int64_t> ghost_node_mapping_;
 
 private:
-  explicit PieceWiseLinearContinuous(const MeshContinuum& grid,
+  explicit PieceWiseLinearContinuous(const std::shared_ptr<MeshContinuum> grid,
                                      QuadratureOrder q_order,
                                      CoordinateSystemType cs_type);
 };

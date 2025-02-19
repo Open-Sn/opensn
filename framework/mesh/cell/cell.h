@@ -56,20 +56,20 @@ public:
 
 public:
   /// Determines the neighbor's partition and whether its local or not.
-  bool IsNeighborLocal(const MeshContinuum& grid) const;
+  bool IsNeighborLocal(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's partition.
-  int GetNeighborPartitionID(const MeshContinuum& grid) const;
+  int GetNeighborPartitionID(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's local id.
-  uint64_t GetNeighborLocalID(const MeshContinuum& grid) const;
+  uint64_t GetNeighborLocalID(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's associated face.
-  int GetNeighborAdjacentFaceIndex(const MeshContinuum& grid) const;
+  int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
 
 public:
   /// Computes the face area.
-  double ComputeFaceArea(const MeshContinuum& grid) const;
+  double ComputeFaceArea(const MeshContinuum* grid) const;
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -81,7 +81,7 @@ public:
   std::string ToString() const;
 
   /// Recomputes the face centroid assuming the mesh vertices have been transformed.
-  void RecomputeCentroid(const MeshContinuum& grid);
+  void RecomputeCentroid(const MeshContinuum* grid);
 };
 
 /// Generic mesh cell object

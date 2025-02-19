@@ -38,10 +38,9 @@ acceleration_Diffusion_DFEM(const ParameterBlock& params)
   opensn::log.Log() << "SimTest92_DSA";
 
   // Get grid
-  auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto& grid = *grid_ptr;
+  auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
 
-  opensn::log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
+  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
@@ -65,10 +64,10 @@ acceleration_Diffusion_DFEM(const ParameterBlock& params)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices;
-  unit_cell_matrices.resize(grid.local_cells.size());
+  unit_cell_matrices.resize(grid->local_cells.size());
 
   // Build unit integrals
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces.size();
@@ -189,7 +188,7 @@ acceleration_Diffusion_DFEM(const ParameterBlock& params)
 
   double local_error = 0.0;
   lua_State* L = Console::GetInstance().GetConsoleState();
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -222,7 +221,7 @@ acceleration_Diffusion_DFEM(const ParameterBlock& params)
   global_error = std::sqrt(global_error);
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
-                    << " Num-cells: " << grid.GetGlobalNumberOfCells();
+                    << " Num-cells: " << grid->GetGlobalNumberOfCells();
 }
 
 BIND_FUNCTION(unit_sim_tests, acceleration_Diffusion_DFEM);
