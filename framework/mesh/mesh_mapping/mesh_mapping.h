@@ -23,33 +23,33 @@ public:
   MeshMapping() = default;
 
   /// Builds the mapping.
-  void Build(const std::shared_ptr<MeshContinuum> fine_grid,
-             const std::shared_ptr<MeshContinuum> coarse_grif);
-
-  /// Identifier for an invalid face index that means a face maps to nothing.
-  static const std::size_t invalid_face_index;
+  void Build(const std::shared_ptr<MeshContinuum>& fine_grid,
+             const std::shared_ptr<MeshContinuum>& coarse_grid);
 
   /// Helper struct for storing the mapping to a coarse cell from a fine cell.
   struct CoarseMapping
   {
     /// Constructor. Sizes fine_faces based on the number of faces within the coarse cell.
-    CoarseMapping(const Cell& coarse_cell);
+    explicit CoarseMapping(const Cell& coarse_cell);
+
     /// The fine cells contained within a coarse cell.
     std::vector<const Cell*> fine_cells;
     /// The fine cell faces contained within each coarse cell face.
     /// Outer index coarse cell face index (size == # of faces in coarse cell)
     /// Inner index is arbitrary and entries are fine Cell -> fine CellFace index
-    std::vector<std::vector<std::pair<const Cell*, std::size_t>>> fine_faces;
+    std::vector<std::vector<std::pair<const Cell*, size_t>>> fine_faces;
   };
+
   /// Helper struct for storing the mapping from a coarse cell to fine cells.
   struct FineMapping
   {
     /// Constructor. Sizes coarse_faces based on the number of faces within the fine cell.
-    FineMapping(const Cell& fine_cell);
+    explicit FineMapping(const Cell& fine_cell);
+
     /// The coarse cell that the fine cell is contained within.
     const Cell* coarse_cell;
     /// The coarse CellFace index each fine CellFace is contained within (if any)
-    std::vector<std::size_t> coarse_faces;
+    std::vector<size_t> coarse_faces;
   };
 
   /// Get the mapping from the given coarse mesh cell.
@@ -62,5 +62,9 @@ private:
   std::unordered_map<const Cell*, CoarseMapping> coarse_to_fine_;
   /// Mapping for fine cells to a coarse cell.
   std::unordered_map<const Cell*, FineMapping> fine_to_coarse_;
+
+public:
+  /// Identifier for an invalid face index that means a face maps to nothing.
+  static const size_t invalid_face_index;
 };
 } // namespace opensn

@@ -43,45 +43,6 @@ CellTypeName(const CellType type)
       return "NONE";
   }
 }
-Cell::Cell(const Cell& other)
-  : cell_type_(other.cell_type_),
-    cell_sub_type_(other.cell_sub_type_),
-    global_id(other.global_id),
-    local_id(other.local_id),
-    partition_id(other.partition_id),
-    centroid(other.centroid),
-    material_id(other.material_id),
-    vertex_ids(other.vertex_ids),
-    faces(other.faces)
-{
-}
-
-Cell::Cell(Cell&& other) noexcept
-  : cell_type_(other.cell_type_),
-    cell_sub_type_(other.cell_sub_type_),
-    global_id(other.global_id),
-    local_id(other.local_id),
-    partition_id(other.partition_id),
-    centroid(other.centroid),
-    material_id(other.material_id),
-    vertex_ids(std::move(other.vertex_ids)),
-    faces(std::move(other.faces))
-{
-}
-
-Cell&
-Cell::operator=(const Cell& other)
-{
-  global_id = other.global_id;
-  local_id = other.local_id;
-  partition_id = other.partition_id;
-  centroid = other.centroid;
-  material_id = other.material_id;
-  vertex_ids = other.vertex_ids;
-  faces = other.faces;
-
-  return *this;
-}
 
 bool
 CellFace::IsNeighborLocal(const MeshContinuum* grid) const
@@ -179,43 +140,62 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
   return adj_face_idx;
 }
 
-double
-CellFace::ComputeFaceArea(const MeshContinuum* grid) const
+void
+CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const unsigned int f)
 {
-  if (vertex_ids.size() <= 1)
-    return 1.0;
+
+  // Compute the centroid
+  centroid = Vector3(0.0, 0.0, 0.0);
+  for (const auto& vid : vertex_ids)
+    centroid += grid->vertices[vid];
+  centroid /= static_cast<double>(vertex_ids.size());
+
+  // Compute areas and normals
+  if (vertex_ids.size() == 1)
+  {
+    // For a 1D cell, a face has a unit area in Cartesian geometry.
+    // The first face always points in the negative direction while the
+    // right always points in the positive direction.
+    area = 1.0;
+    normal = Vector3(0.0, 0.0, f == 0 ? -1.0 : 1.0);
+  }
   else if (vertex_ids.size() == 2)
   {
     const auto& v0 = grid->vertices[vertex_ids[0]];
     const auto& v1 = grid->vertices[vertex_ids[1]];
 
-    return (v1 - v0).Norm();
+    // A polygon face is a line. The area is the distance between
+    // the two vertices. The outward pointing normal is orthogonal
+    // to the vector pointing from the first vertex to the second,
+    // which can be computed with the cross product of the unit
+    // vector in the +z direction with the prior.
+    area = (v1 - v0).Norm();
+    normal = Vector3(0.0, 0.0, 1.0).Cross(v0 - v1).Normalized();
   }
   else
   {
-    double area = 0.0;
-    auto& v2 = centroid;
+    // The face of a polyhedron is a polygon. The area can be computed
+    // by summing the volume of triangles formed with each edge and
+    // the centroid. The normal must be computed as the area-weighted
+    // average of the normal vector on each sub-triangle.
+    area = 0.0;
+    normal = Vector3(0.0, 0.0, 0.0);
     const auto num_verts = vertex_ids.size();
     for (uint64_t v = 0; v < num_verts; ++v)
     {
-      uint64_t vid0 = vertex_ids[v];
-      uint64_t vid1 = (v < (num_verts - 1)) ? vertex_ids[v + 1] : vertex_ids[0];
-
+      const auto vid0 = vertex_ids[v];
+      const auto vid1 = v < num_verts - 1 ? vertex_ids[v + 1] : vertex_ids[0];
       const auto& v0 = grid->vertices[vid0];
       const auto& v1 = grid->vertices[vid1];
 
-      auto v01 = v1 - v0;
-      auto v02 = v2 - v0;
+      const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
+      const auto subarea = 0.5 * subnormal.Norm();
 
-      Matrix3x3 J;
-      J.SetColJVec(0, v01);
-      J.SetColJVec(1, v02);
-      J.SetColJVec(2, Vector3(1.0, 1.0, 1.0));
-
-      area += 0.5 * std::fabs(J.Det());
+      area += subarea;
+      normal += subarea * subnormal.Normalized();
     }
-
-    return area;
+    normal /= area;
+    normal.Normalize();
   }
 }
 
@@ -283,13 +263,93 @@ CellFace::ToString() const
   return outstr.str();
 }
 
-void
-CellFace::RecomputeCentroid(const MeshContinuum* grid)
+Cell::Cell(const CellType cell_type, const CellType cell_sub_type)
+  : cell_type_(cell_type), cell_sub_type_(cell_sub_type)
 {
-  centroid = Vector3(0, 0, 0);
-  for (uint64_t vid : vertex_ids)
+}
+
+Cell&
+Cell::operator=(const Cell& other)
+{
+  if (cell_type_ != other.cell_type_ or cell_sub_type_ != other.cell_sub_type_)
+    throw std::runtime_error("Cannot copy from cells of different types.");
+
+  global_id = other.global_id;
+  local_id = other.local_id;
+  partition_id = other.partition_id;
+  centroid = other.centroid;
+  material_id = other.material_id;
+  vertex_ids = other.vertex_ids;
+  faces = other.faces;
+
+  return *this;
+}
+
+void
+Cell::ComputeGeometricInfo(const MeshContinuum* grid)
+{
+  // Compute cell centroid
+  centroid = Vector3(0.0, 0.0, 0.0);
+  for (const auto& vid : vertex_ids)
     centroid += grid->vertices[vid];
   centroid /= static_cast<double>(vertex_ids.size());
+
+  // Compute face geometric data
+  for (auto& face : faces)
+    face.ComputeGeometricInfo(grid);
+
+  // Compute cell volumes
+  volume = 0.0;
+  switch (cell_type_)
+  {
+    // The volume of a slab is the distance between the two vertices.
+    case CellType::SLAB:
+    {
+      const auto& v0 = grid->vertices[vertex_ids[0]];
+      const auto& v1 = grid->vertices[vertex_ids[1]];
+      volume = (v1 - v0).Norm();
+      break;
+    }
+
+    // The volume of a polygon is the sum of the sub-triangles formed
+    // with each edge and the centroid.
+    case CellType::POLYGON:
+    {
+      for (const auto& face : faces)
+      {
+        const auto& v0 = grid->vertices[face.vertex_ids[0]];
+        const auto& v1 = grid->vertices[face.vertex_ids[1]];
+        const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
+        volume += 0.5 * subnormal.Norm();
+        break;
+      }
+    }
+
+    // The volume of a polyhedron is the sum of the sub-tetrahedrons
+    // formed with on each face with the cell centroid.
+    case CellType::POLYHEDRON:
+    {
+      for (const auto& face : faces)
+      {
+        const auto num_verts = face.vertex_ids.size();
+        for (unsigned int v = 0; v < num_verts; ++v)
+        {
+          const auto vid1 = v < num_verts - 1 ? v + 1 : 0;
+          const auto& v0 = grid->vertices[face.vertex_ids[v]];
+          const auto& v1 = grid->vertices[face.vertex_ids[vid1]];
+
+          Matrix3x3 J;
+          J.SetColJVec(0, face.centroid - v0);
+          J.SetColJVec(1, v1 - v0);
+          J.SetColJVec(2, centroid - v0);
+          volume += J.Det() / 6.0;
+        }
+      }
+      break;
+    }
+    default:
+      throw std::runtime_error("Unknown cell type.");
+  }
 }
 
 ByteArray

@@ -432,7 +432,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
           // If it is in the current location
           if (face.IsNeighborLocal(grid_.get()))
           {
-            double weight = mu * face.ComputeFaceArea(grid_.get());
+            const auto weight = mu * face.area;
             cell_successors[c].insert(std::make_pair(face.GetNeighborLocalID(grid_.get()), weight));
           }
           else
