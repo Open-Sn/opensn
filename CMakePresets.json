@@ -14,16 +14,16 @@
       }
     },
     {
-      "name": "clang+coverage",
-      "displayName": "Clang coverage",
-      "description": "Configure with Clang for coverage",
+      "name": "coverage",
+      "displayName": "Coverage",
+      "description": "Configure for code coverage",
       "generator": "Unix Makefiles",
       "binaryDir": "build-coverage",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-g -O1 -fprofile-instr-generate -fcoverage-mapping",
-        "CMAKE_C_FLAGS": "-g -O1 -fprofile-instr-generate -fcoverage-mapping",
-        "CMAKE_EXE_LINKER_FLAGS": "-fprofile-instr-generate -fcoverage-mapping"
+        "CMAKE_CXX_FLAGS": "-g -O1 -fprofile-arcs -ftest-coverage",
+        "CMAKE_C_FLAGS": "-g -O1 -fprofile-arcs -ftest-coverage",
+        "CMAKE_EXE_LINKER_FLAGS": "-g -fprofile-arcs -ftest-coverage"
       }
     }
   ],
@@ -35,9 +35,9 @@
       "configuration": "Debug with sanitizer"
     },
     {
-      "name": "clang+coverage",
-      "displayName": "Clang coverage",
-      "configurePreset": "clang+coverage",
+      "name": "coverage",
+      "displayName": "Coverage",
+      "configurePreset": "coverage",
       "configuration": "Coverage"
     }
   ]
