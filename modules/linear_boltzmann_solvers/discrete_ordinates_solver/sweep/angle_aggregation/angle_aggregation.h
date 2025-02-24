@@ -31,7 +31,6 @@ class AngleAggregation
 private:
   bool is_setup_;
   size_t num_groups_;
-  size_t num_group_subsets_;
   bool num_ang_unknowns_avail_;
   std::pair<size_t, size_t> number_angular_unknowns_;
   std::shared_ptr<MeshContinuum> grid_;
@@ -41,7 +40,6 @@ private:
 public:
   AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                    size_t num_groups,
-                   size_t num_group_subsets,
                    std::shared_ptr<AngularQuadrature>& quadrature,
                    std::shared_ptr<MeshContinuum>& grid);
 
@@ -50,8 +48,6 @@ public:
   bool IsSetup() const { return is_setup_; }
 
   size_t GetNumberGroups() const { return num_groups_; }
-
-  size_t GetNumberGroupSubsets() const { return num_group_subsets_; }
 
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
   {

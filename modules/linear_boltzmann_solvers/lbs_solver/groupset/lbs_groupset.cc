@@ -26,12 +26,6 @@ LBSGroupset::GetInputParameters()
   params.AddRequiredParameterArray("groups_from_to",
                                    "The first and last group id this groupset operates on, e.g. A "
                                    "4 group problem <TT>groups_from_to= {0, 3}</TT>");
-  params.AddOptionalParameter(
-    "groupset_num_subsets",
-    1,
-    "The number of subsets to apply to the set of groups in this set. "
-    "This is useful for increasing pipeline size for parallel simulations");
-
   // Anglesets
   params.AddRequiredParameter<std::shared_ptr<AngularQuadrature>>(
     "angular_quadrature", "A handle to an angular quadrature");
@@ -82,7 +76,6 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("angle_aggregation_type",
                                  AllowableRangeList::New({"polar", "single", "azimuthal"}));
   params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("groupset_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
     "inner_linear_method",
     AllowableRangeList::New(
@@ -103,7 +96,6 @@ LBSGroupset::Init(int aid)
   id = aid;
   quadrature = nullptr;
   angle_agg = nullptr;
-  master_num_grp_subsets = 1;
   master_num_ang_subsets = 1;
   iterative_method = LinearSolver::IterativeMethod::PETSC_RICHARDSON;
   angleagg_method = AngleAggregationType::POLAR;
@@ -164,8 +156,6 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSS
       "the correct number of groups is specified and cross-section data is available\n"
       "for all groups.");
   }
-
-  master_num_grp_subsets = params.GetParamValue<int>("groupset_num_subsets");
 
   // Add quadrature
   quadrature = params.GetParamValue<std::shared_ptr<AngularQuadrature>>("angular_quadrature");
@@ -249,21 +239,6 @@ LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, GeometryType ge
   else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
     quadrature->BuildMomentToDiscreteOperator(scattering_order, 3);
-  }
-}
-
-void
-LBSGroupset::BuildSubsets()
-{
-  grp_subset_infos = MakeSubSets(groups.size(), master_num_grp_subsets);
-  {
-    size_t ss = 0;
-    for (const auto& info : grp_subset_infos)
-    {
-      log.Log() << "Groupset " << id << " has group-subset " << ss << " " << info.ss_begin << "->"
-                << info.ss_end;
-      ++ss;
-    }
   }
 }
 
