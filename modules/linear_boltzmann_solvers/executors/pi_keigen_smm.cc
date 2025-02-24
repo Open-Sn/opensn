@@ -1102,7 +1102,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
     // added into a PWLC DoF, a counter for that DoF is incremented so
     // that the PWLC DoFs can later be averaged.
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& vol = cell_mapping.GetCellVolume();
+    const auto& vol = cell.volume;
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.unknowns.size(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].num_components; ++c)
@@ -1133,7 +1133,7 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
   {
     const auto& cell = grid->cells[global_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& vol = cell_mapping.GetCellVolume();
+    const auto& vol = cell.volume;
 
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       if (pvids.find(cell.vertex_ids[i]) != pvids.end())

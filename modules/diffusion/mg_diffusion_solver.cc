@@ -608,7 +608,7 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
       double vol_frac_shape_i = 0.0;
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         vol_frac_shape_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
-      vol_frac_shape_i /= cell_mapping.GetCellVolume();
+      vol_frac_shape_i /= cell.volume;
       VF_[counter][i] = vol_frac_shape_i;
     } // for i
 

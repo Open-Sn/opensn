@@ -27,24 +27,21 @@ class CellMapping
 {
 public:
   /// Returns the cell this mapping is based on.
-  const Cell& ReferenceCell() const;
+  const Cell& GetCell() const { return cell_; }
 
   /// Returns the grid on which the cell for this mapping lives.
-  const std::shared_ptr<MeshContinuum> ReferenceGrid() const;
+  const std::shared_ptr<MeshContinuum> GetGrid() const { return grid_; }
 
   /// Returns the number of nodes on this element.
-  size_t GetNumNodes() const;
+  size_t GetNumNodes() const { return num_nodes_; }
 
   /// Returns the number of nodes on the given face.
   size_t GetNumFaceNodes(size_t face_index) const;
 
-  const std::vector<std::vector<int>>& GetFaceNodeMappings() const;
+  const std::vector<std::vector<int>>& GetFaceNodeMappings() const { return face_node_mappings_; }
 
-  /// Returns the cell volume.
-  double GetCellVolume() const;
-
-  /// Returns the given face area.
-  double GetFaceArea(size_t face_index) const;
+  /// Returns the node locations associated with this element.
+  const std::vector<Vector3>& GetNodeLocations() const { return node_locations_; }
 
   /**
    * Given the face index and the face node index, returns the index of the cell node the face node
@@ -71,9 +68,6 @@ public:
   virtual void GradShapeValues(const Vector3& xyz,
                                std::vector<Vector3>& gradshape_values) const = 0;
 
-  /// Returns the node locations associated with this element.
-  const std::vector<Vector3>& GetNodeLocations() const;
-
   /// Makes the volumetric/internal finite element data for this element.
   virtual VolumetricFiniteElementData MakeVolumetricFiniteElementData() const = 0;
 
@@ -83,36 +77,17 @@ public:
   virtual ~CellMapping() = default;
 
 protected:
-  /**
-   * This function gets called to compute the cell-volume andface-areas. If simple linear cells are
-   * used then the default CellMapping::ComputeCellVolumeAndAreas can be used as this function.
-   * Otherwise (i.e. for higher order elements, the child-class should bind a different function to
-   * this.
-   */
-  using VolumeAndAreaFunction = std::function<void(
-    const std::shared_ptr<MeshContinuum>, const Cell&, double&, std::vector<double>&)>;
-
-  CellMapping(const std::shared_ptr<MeshContinuum> grid,
+  CellMapping(std::shared_ptr<MeshContinuum> grid,
               const Cell& cell,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
-              std::vector<std::vector<int>> face_node_mappings,
-              const VolumeAndAreaFunction& volume_area_function);
+              std::vector<std::vector<int>> face_node_mappings);
 
-  /// Static method that all child elements can use as a default.
-  static void ComputeCellVolumeAndAreas(const std::shared_ptr<MeshContinuum> grid,
-                                        const Cell& cell,
-                                        double& volume,
-                                        std::vector<double>& areas);
-
-  const std::shared_ptr<MeshContinuum> ref_grid_;
+  const std::shared_ptr<MeshContinuum> grid_;
   const Cell& cell_;
 
   const size_t num_nodes_;
   const std::vector<Vector3> node_locations_;
-
-  double volume_ = 0.0;
-  std::vector<double> areas_;
 
   /**
    * For each cell face, map from the face node index to the corresponding cell node index. More

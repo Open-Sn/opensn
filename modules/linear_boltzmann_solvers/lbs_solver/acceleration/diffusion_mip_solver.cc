@@ -1212,26 +1212,26 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   const auto& cell_mapping = sdm_.GetCellMapping(cell);
   double hp;
 
-  const size_t num_faces = cell.faces.size();
-  const size_t num_vertices = cell.vertex_ids.size();
+  const auto num_faces = cell.faces.size();
+  const auto num_vertices = cell.vertex_ids.size();
 
-  const double volume = cell_mapping.GetCellVolume();
-  const double face_area = cell_mapping.GetFaceArea(f);
+  const auto volume = cell.volume;
+  const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/
-  auto ComputeSurfaceArea = [&cell_mapping, &num_faces]()
+  auto ComputeSurfaceArea = [&cell, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell_mapping.GetFaceArea(fr);
+      surface_area += cell.faces[fr].area;
 
     return surface_area;
   };
 
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLAB
   if (cell.GetType() == CellType::SLAB)
+  {
     hp = volume / 2.0;
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYGON
+  }
   else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
@@ -1240,7 +1240,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       hp = volume / face_area;
     else // Nv > 4
     {
-      const double surface_area = ComputeSurfaceArea();
+      const auto surface_area = ComputeSurfaceArea();
 
       if (num_faces % 2 == 0)
         hp = 4.0 * volume / surface_area;
@@ -1253,10 +1253,9 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       }
     }
   }
-  //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% POLYHEDRON
   else if (cell.GetType() == CellType::POLYHEDRON)
   {
-    const double surface_area = ComputeSurfaceArea();
+    const auto surface_area = ComputeSurfaceArea();
 
     if (num_faces == 4) // Tet
       hp = 3 * volume / surface_area;

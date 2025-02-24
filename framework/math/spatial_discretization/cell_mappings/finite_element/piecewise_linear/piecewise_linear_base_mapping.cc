@@ -14,12 +14,8 @@ PieceWiseLinearBaseMapping::PieceWiseLinearBaseMapping(
   const Cell& cell,
   size_t num_nodes,
   std::vector<std::vector<int>> face_node_mappings)
-  : CellMapping(grid,
-                cell,
-                num_nodes,
-                GetVertexLocations(grid, cell),
-                std::move(face_node_mappings),
-                &CellMapping::ComputeCellVolumeAndAreas)
+  : CellMapping(
+      grid, cell, num_nodes, GetVertexLocations(grid, cell), std::move(face_node_mappings))
 {
 }
 
@@ -45,11 +41,8 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
         }
       } // for cell i
       if (mapping < 0)
-      {
-        log.LogAllError() << "Unknown face mapping encountered. "
-                             "pwl_polyhedron.h";
-        Exit(EXIT_FAILURE);
-      }
+        throw std::runtime_error("Unknown face mapping encountered.");
+
       face_dof_mapping.push_back(mapping);
     } // for face i
 
@@ -59,7 +52,7 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const Cell& cell)
 }
 
 std::vector<Vector3>
-PieceWiseLinearBaseMapping::GetVertexLocations(const std::shared_ptr<MeshContinuum> grid,
+PieceWiseLinearBaseMapping::GetVertexLocations(const std::shared_ptr<MeshContinuum>& grid,
                                                const Cell& cell)
 {
   std::vector<Vector3> verts;
