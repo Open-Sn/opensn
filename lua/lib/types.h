@@ -6,7 +6,7 @@
 #include "framework/parameters/parameter_block.h"
 #include "lua/lib/parse_table.h"
 #include "framework/parameters/input_parameters.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "LuaBridge/LuaBridge.h"
 #include <stdexcept>
 extern "C"

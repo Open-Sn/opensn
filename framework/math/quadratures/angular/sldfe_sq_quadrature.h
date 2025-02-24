@@ -9,7 +9,7 @@
 #include "framework/math/dense_matrix.h"
 #include "framework/math/math.h"
 #include "framework/mesh/mesh.h"
-#include "framework/mesh/mesh_matrix3x3.h"
+#include "framework/math/matrix3x3.h"
 #include <vector>
 #include <array>
 

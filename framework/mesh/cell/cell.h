@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/data_types.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include <tuple>
 #include <vector>
 #include <cstdint>

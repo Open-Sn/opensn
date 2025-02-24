@@ -1,6 +1,6 @@
 #include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/byte_array.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
