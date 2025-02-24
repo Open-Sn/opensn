@@ -19,7 +19,6 @@ lbs_block = {
       l_max_its = 2,
       gmres_restart_interval = 50,
       l_abs_tol = 1.0e-10,
-      groupset_num_subsets = 1,
     },
   },
   options = {

@@ -37,8 +37,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
                num_moments,
                max_num_cell_dofs),
     fluds_(nullptr),
-    gs_ss_size_(0),
-    gs_ss_begin_(0),
+    gs_size_(0),
     gs_gi_(0),
     group_stride_(0),
     group_angle_stride_(0),
@@ -59,11 +58,8 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
-
-  gs_ss_size_ = grp_ss_info.ss_size;
-  gs_ss_begin_ = grp_ss_info.ss_begin;
-  gs_gi_ = groupset_.groups[gs_ss_begin_].id;
+  gs_size_ = groupset_.groups.size();
+  gs_gi_ = groupset_.groups.front().id;
 
   surface_source_active_ = IsSurfaceSourceActive();
   group_stride_ = angle_set.GetNumGroups();
@@ -114,7 +110,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
     auto wt = groupset_.quadrature->weights[direction_num];
 
     // Reset right-hand side
-    for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+    for (int gsg = 0; gsg < gs_size_; ++gsg)
       for (int i = 0; i < cell_num_nodes_; ++i)
         b[gsg](i) = 0.0;
 
@@ -169,7 +165,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
             assert(psi_local_face_upwnd_data);
             const unsigned int adj_cell_node = face_nodal_mapping->cell_node_mapping_[fj];
             psi = &psi_local_face_upwnd_data[adj_cell_node * groupset_angle_group_stride_ +
-                                             direction_num * groupset_group_stride_ + gs_ss_begin_];
+                                             direction_num * groupset_group_stride_];
           }
           else if (not is_boundary_face)
           {
@@ -184,20 +180,19 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
                                         f,
                                         fj,
                                         gs_gi_,
-                                        gs_ss_begin_,
                                         surface_source_active_);
 
           if (not psi)
             continue;
 
-          for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+          for (int gsg = 0; gsg < gs_size_; ++gsg)
             b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
       }   // for face node i
     }     // for f
 
     // Looping over groups, assembling mass terms
-    for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+    for (int gsg = 0; gsg < gs_size_; ++gsg)
     {
       double sigma_tg = rho * sigma_t[gs_gi_ + gsg];
 
@@ -240,7 +235,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       for (int i = 0; i < cell_num_nodes_; ++i)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
-        for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+        for (int gsg = 0; gsg < gs_size_; ++gsg)
           output_phi[ir + gsg] += wn_d2m * b[gsg](i);
       }
     }
@@ -255,8 +250,8 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         const size_t imap =
-          i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin_;
-        for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+          i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_;
+        for (int gsg = 0; gsg < gs_size_; ++gsg)
           cell_psi_data[imap + gsg] = b[gsg](i);
       }
     }
@@ -295,7 +290,7 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
 
         if (is_boundary_face)
         {
-          for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+          for (int gsg = 0; gsg < gs_size_; ++gsg)
             cell_transport_view_->AddOutflow(
               f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
         }
@@ -310,13 +305,12 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
           psi = &(*psi_dnwnd_data)[addr_offset];
         }
         else if (is_reflecting_boundary_face)
-          psi = angle_set.PsiReflected(
-            face.neighbor_id, direction_num, cell_local_id_, f, fi, gs_ss_begin_);
+          psi = angle_set.PsiReflected(face.neighbor_id, direction_num, cell_local_id_, f, fi);
         if (psi)
         {
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_ss_size_; ++gsg)
+            for (int gsg = 0; gsg < gs_size_; ++gsg)
               psi[gsg] = b[gsg](i);
           }
         }

@@ -71,11 +71,8 @@ SweepChunkPwlrz::SweepChunkPwlrz(const std::shared_ptr<MeshContinuum> grid,
 void
 SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 {
-  const SubSetInfo& grp_ss_info = groupset_.grp_subset_infos[angle_set.GetGroupSubset()];
-
-  auto gs_ss_size = grp_ss_info.ss_size;
-  auto gs_ss_begin = grp_ss_info.ss_begin;
-  auto gs_gi = groupset_.groups[gs_ss_begin].id;
+  auto gs_size = groupset_.groups.size();
+  auto gs_gi = groupset_.groups.front().id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -137,7 +134,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
       preloc_face_counter = ni_preloc_face_counter;
 
       // Reset right-hand side
-      for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+      for (int gsg = 0; gsg < gs_size; ++gsg)
         b[gsg] = Vector<double>(cell_num_nodes, 0.0);
 
       for (size_t i = 0; i < cell_num_nodes; ++i)
@@ -146,7 +143,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         {
           const auto jr =
             discretization_.MapDOFLocal(cell, j, unknown_manager_, polar_level, gs_gi);
-          for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+          for (int gsg = 0; gsg < gs_size; ++gsg)
             b[gsg](i) += fac_streaming_operator * Maux(i, j) * psi_sweep_[jr + gsg];
         }
       }
@@ -222,7 +219,6 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
                                                 f,
                                                 fj,
                                                 gs_gi,
-                                                gs_ss_begin,
                                                 IsSurfaceSourceActive());
                   }
                 }
@@ -234,14 +230,14 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
             if (not psi)
               continue;
 
-            for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+            for (int gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
         }   // for face node i
       }     // for f
 
       // Looping over groups, assembling mass terms
-      for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+      for (int gsg = 0; gsg < gs_size; ++gsg)
       {
         double sigma_tg = rho * sigma_t[gs_gi + gsg];
 
@@ -284,7 +280,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         for (int i = 0; i < cell_num_nodes; ++i)
         {
           const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
-          for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+          for (int gsg = 0; gsg < gs_size; ++gsg)
             output_phi[ir + gsg] += wn_d2m * b[gsg](i);
         }
       }
@@ -299,8 +295,8 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const size_t imap =
-            i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_ + gs_ss_begin;
-          for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+            i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_;
+          for (int gsg = 0; gsg < gs_size; ++gsg)
             cell_psi_data[imap + gsg] = b[gsg](i);
         }
       }
@@ -331,7 +327,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
 
           if (is_boundary_face and not is_reflecting_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+            for (int gsg = 0; gsg < gs_size; ++gsg)
               cell_transport_view.AddOutflow(
                 f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
           }
@@ -342,14 +338,13 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
           else if (not is_boundary_face)
             psi = fluds.NLOutgoingPsi(deploc_face_counter, fi, as_ss_idx);
           else if (is_reflecting_boundary_face)
-            psi = angle_set.PsiReflected(
-              face.neighbor_id, direction_num, cell_local_id, f, fi, gs_ss_begin);
+            psi = angle_set.PsiReflected(face.neighbor_id, direction_num, cell_local_id, f, fi);
           else
             continue;
 
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+            for (int gsg = 0; gsg < gs_size; ++gsg)
               psi[gsg] = b[gsg](i);
           }
         } // for fi
@@ -362,7 +357,7 @@ SweepChunkPwlrz::Sweep(AngleSet& angle_set)
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
         const auto ir = discretization_.MapDOFLocal(cell, i, unknown_manager_, polar_level, gs_gi);
-        for (int gsg = 0; gsg < gs_ss_size; ++gsg)
+        for (int gsg = 0; gsg < gs_size; ++gsg)
           psi_sweep_[ir + gsg] = f0 * b[gsg](i) - f1 * psi_sweep_[ir + gsg];
       }
     } // for angleset/subset

@@ -25,7 +25,7 @@ protected:
   AngularFluxData boundary_flux_old_;
 
   std::vector<int> reflected_anglenum_;
-  std::vector<std::vector<bool>> angle_readyflags_;
+  std::vector<bool> angle_readyflags_;
 
 public:
   ReflectingBoundary(size_t num_groups,
@@ -47,24 +47,22 @@ public:
 
   std::vector<int>& GetReflectedAngleIndexMap() { return reflected_anglenum_; }
 
-  std::vector<std::vector<bool>>& GetAngleReadyFlags() { return angle_readyflags_; }
+  std::vector<bool>& GetAngleReadyFlags() { return angle_readyflags_; }
 
   double* PsiIncoming(uint64_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      int group_num,
-                      size_t gs_ss_begin) override;
+                      int group_num) override;
 
   double* PsiOutgoing(uint64_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
-                      unsigned int angle_num,
-                      size_t gs_ss_begin) override;
+                      unsigned int angle_num) override;
 
-  void UpdateAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) override;
+  void UpdateAnglesReadyStatus(const std::vector<size_t>& angles) override;
 
-  bool CheckAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) override;
+  bool CheckAnglesReadyStatus(const std::vector<size_t>& angles) override;
 
   /// Resets angle ready flags to false.
   void ResetAnglesReadyStatus();

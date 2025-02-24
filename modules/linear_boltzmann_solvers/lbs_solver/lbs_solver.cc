@@ -1198,7 +1198,6 @@ LBSSolver::InitializeGroupsets()
 
     groupset.BuildDiscMomOperator(options_.scattering_order, options_.geometry_type);
     groupset.BuildMomDiscOperator(options_.scattering_order, options_.geometry_type);
-    groupset.BuildSubsets();
   } // for groupset
 }
 

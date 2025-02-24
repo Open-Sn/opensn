@@ -14,12 +14,10 @@ namespace opensn
 AngleAggregation::AngleAggregation(
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
   size_t num_groups,
-  size_t num_group_subsets,
   std::shared_ptr<AngularQuadrature>& quadrature,
   std::shared_ptr<MeshContinuum>& grid)
   : is_setup_(false),
     num_groups_(num_groups),
-    num_group_subsets_(num_group_subsets),
     num_ang_unknowns_avail_(false),
     grid_(grid),
     quadrature_(quadrature),
@@ -105,8 +103,7 @@ AngleAggregation::InitializeReflectingBCs()
       const auto& normal = rbndry.GetNormal();
 
       rbndry.GetReflectedAngleIndexMap().resize(tot_num_angles, -1);
-      rbndry.GetAngleReadyFlags().resize(tot_num_angles,
-                                         std::vector<bool>(num_group_subsets_, false));
+      rbndry.GetAngleReadyFlags().resize(tot_num_angles, false);
 
       // Determine reflected angle and check that it is within the quadrature
       for (int n = 0; n < tot_num_angles; ++n)

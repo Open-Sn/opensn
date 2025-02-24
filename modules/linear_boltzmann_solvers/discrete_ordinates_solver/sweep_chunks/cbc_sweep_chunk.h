@@ -34,8 +34,7 @@ public:
 
 private:
   CBC_FLUDS* fluds_;
-  size_t gs_ss_size_;
-  size_t gs_ss_begin_;
+  size_t gs_size_;
   int gs_gi_;
   size_t group_stride_;
   size_t group_angle_stride_;

@@ -31,10 +31,7 @@ public:
   UniqueSOGroupings unique_so_groupings;
   DirIDToSOMap dir_id_to_so_map;
 
-  int master_num_grp_subsets;
   int master_num_ang_subsets;
-
-  std::vector<SubSetInfo> grp_subset_infos;
 
   LinearSolver::IterativeMethod iterative_method;
   AngleAggregationType angleagg_method;
@@ -82,10 +79,6 @@ public:
   /// Computes the moment to discrete operator.
   void BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type);
 
-  /// Constructs the groupset subsets.
-  void BuildSubsets();
-
-  /// Constructs the groupset subsets.
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
 
 private:
