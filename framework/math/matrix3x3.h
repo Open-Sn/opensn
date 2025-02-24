@@ -7,7 +7,7 @@
 #include <sstream>
 #include <array>
 #include <algorithm>
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 
 namespace opensn
 {

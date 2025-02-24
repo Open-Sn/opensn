@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/math/quadratures/quadrature_order.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "framework/object.h"
 #include <vector>
 

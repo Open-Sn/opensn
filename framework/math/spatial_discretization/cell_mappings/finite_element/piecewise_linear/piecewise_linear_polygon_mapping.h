@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
-#include "framework/mesh/mesh_matrix3x3.h"
+#include "framework/math/matrix3x3.h"
 #include <array>
 
 namespace opensn

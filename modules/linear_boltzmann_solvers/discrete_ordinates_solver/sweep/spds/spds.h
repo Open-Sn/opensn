@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep.h"
 #include <boost/graph/directed_graph.hpp>
 #include <memory>
