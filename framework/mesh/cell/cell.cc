@@ -295,8 +295,9 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
+  unsigned int f = 0;
   for (auto& face : faces)
-    face.ComputeGeometricInfo(grid);
+    face.ComputeGeometricInfo(grid, f++);
 
   // Compute cell volumes
   volume = 0.0;
