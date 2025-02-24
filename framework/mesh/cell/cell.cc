@@ -319,10 +319,12 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
       {
         const auto& v0 = grid->vertices[face.vertex_ids[0]];
         const auto& v1 = grid->vertices[face.vertex_ids[1]];
-        const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
-        volume += 0.5 * subnormal.Norm();
-        break;
+
+        const auto e0 = v1 - v0;
+        const auto e1 = centroid - v0;
+        volume += 0.5 * std::fabs(e0.x * e1.y - e0.y * e1.x);
       }
+      break;
     }
 
     // The volume of a polyhedron is the sum of the sub-tetrahedrons

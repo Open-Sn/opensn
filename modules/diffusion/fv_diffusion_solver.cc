@@ -172,7 +172,7 @@ FVDiffusionSolver::Initialize()
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
   for (uint64_t bndry_id : globl_unique_bndry_ids)

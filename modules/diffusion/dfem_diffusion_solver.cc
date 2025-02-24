@@ -180,7 +180,7 @@ DFEMDiffusionSolver::Initialize()
   log.Log() << "Global num cells: " << grid_ptr_->GetGlobalNumberOfCells();
 
   // BIDs
-  auto globl_unique_bndry_ids = grid_ptr_->GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid_ptr_->GetUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
   for (uint64_t bndry_id : globl_unique_bndry_ids)

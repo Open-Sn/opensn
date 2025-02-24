@@ -327,7 +327,7 @@ MGDiffusionSolver::Initialize()
   InitializeMaterials(unique_material_ids);
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetDomainUniqueBoundaryIDs();
+  auto globl_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
   SetBCs(globl_unique_bndry_ids);
 
   // Make SDM
