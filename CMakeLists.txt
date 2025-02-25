@@ -39,6 +39,7 @@ if (OPENSN_WITH_CUDA)
 endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_LUA "Build with lua support" ON)
+option(OPENSN_WITH_PYTHON "Build with Python support" OFF)
 
 # dependencies
 find_package(MPI REQUIRED)
@@ -226,6 +227,10 @@ if(OPENSN_WITH_LUA)
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
+endif()
+
+if(OPENSN_WITH_PYTHON)
+    add_subdirectory(pyopensn)
 endif()
 
 configure_file(config.h.in config.h)
