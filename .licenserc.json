@@ -10,5 +10,9 @@
     "lua/**/*.{h,cpp}": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
+    ],
+    "pyopensn/**/*.{hpp,cpp}": [
+        "// SPDX-FileCopyrightText:",
+        "// SPDX-License-Identifier:"
     ]
 }
