@@ -48,22 +48,17 @@ public:
                               unsigned int face_num,
                               unsigned int fi,
                               unsigned int angle_num,
-                              int group_num,
-                              size_t gs_ss_begin);
+                              int group_num);
 
   /// Returns a pointer to the location of the outgoing flux.
   virtual double* PsiOutgoing(uint64_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
-                              unsigned int angle_num,
-                              size_t gs_ss_begin);
+                              unsigned int angle_num);
 
-  virtual void UpdateAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss) {}
+  virtual void UpdateAnglesReadyStatus(const std::vector<size_t>& angles) {}
 
-  virtual bool CheckAnglesReadyStatus(const std::vector<size_t>& angles, size_t gs_ss)
-  {
-    return true;
-  }
+  virtual bool CheckAnglesReadyStatus(const std::vector<size_t>& angles) { return true; }
 
   virtual void Setup(const std::shared_ptr<MeshContinuum> grid, const AngularQuadrature& quadrature)
   {

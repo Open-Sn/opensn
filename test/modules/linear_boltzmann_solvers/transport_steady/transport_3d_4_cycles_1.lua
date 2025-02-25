@@ -71,7 +71,6 @@ lbs_block = {
       angular_quadrature = pquad0,
       --angle_aggregation_type = "single",
       angle_aggregation_num_subsets = 1,
-      groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,

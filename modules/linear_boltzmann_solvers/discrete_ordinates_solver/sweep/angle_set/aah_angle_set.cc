@@ -12,14 +12,13 @@ namespace opensn
 
 AAH_AngleSet::AAH_AngleSet(size_t id,
                            size_t num_groups,
-                           size_t group_subset,
                            const SPDS& spds,
                            std::shared_ptr<FLUDS>& fluds,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            int maximum_message_size,
                            const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, group_subset),
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set)
 {
 }
@@ -47,7 +46,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 
   // Also check boundaries
   for (auto& [bid, boundary] : boundaries_)
-    if (not boundary->CheckAnglesReadyStatus(angles_, group_subset_))
+    if (not boundary->CheckAnglesReadyStatus(angles_))
     {
       status = AngleSetStatus::RECEIVING;
       break;
@@ -67,7 +66,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 
     // Update boundary readiness
     for (auto& [bid, boundary] : boundaries_)
-      boundary->UpdateAnglesReadyStatus(angles_, group_subset_);
+      boundary->UpdateAnglesReadyStatus(angles_);
 
     executed_ = true;
     return AngleSetStatus::FINISHED;
@@ -120,18 +119,15 @@ AAH_AngleSet::PsiBoundary(uint64_t boundary_id,
                           unsigned int face_num,
                           unsigned int fi,
                           int g,
-                          size_t gs_ss_begin,
                           bool surface_source_active)
 {
   if (boundaries_[boundary_id]->IsReflecting())
-    return boundaries_[boundary_id]->PsiIncoming(
-      cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
+    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
 
   if (not surface_source_active)
     return boundaries_[boundary_id]->ZeroFlux(g);
 
-  return boundaries_[boundary_id]->PsiIncoming(
-    cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
+  return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
 }
 
 double*
@@ -139,10 +135,9 @@ AAH_AngleSet::PsiReflected(uint64_t boundary_id,
                            unsigned int angle_num,
                            uint64_t cell_local_id,
                            unsigned int face_num,
-                           unsigned int fi,
-                           size_t gs_ss_begin)
+                           unsigned int fi)
 {
-  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num, gs_ss_begin);
+  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
 }
 
 } // namespace opensn
