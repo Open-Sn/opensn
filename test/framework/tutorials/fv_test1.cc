@@ -62,12 +62,12 @@ SimTest01_FV(const ParameterBlock& params)
     const int64_t imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid;
-    const double V = cell_mapping.GetCellVolume();
+    const auto V = cell.volume;
 
     size_t f = 0;
     for (const auto& face : cell.faces)
     {
-      const auto Af = face.normal * cell_mapping.GetFaceArea(f);
+      const auto Af = face.normal * cell.faces.at(f).area;
 
       if (face.has_neighbor)
       {

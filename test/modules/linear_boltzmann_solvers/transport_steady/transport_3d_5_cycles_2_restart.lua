@@ -76,9 +76,9 @@ lbs_block = {
 
 lbs_options = {
   scattering_order = 0,
-  --restart_writes_enabled = true,
-  --write_delayed_psi_to_restart = true,
-  --write_restart_path = "transport_3d_5_cycles_2_restart/transport_3d_5_cycles_2",
+--   restart_writes_enabled = true,
+--   write_delayed_psi_to_restart = true,
+--   write_restart_path = "transport_3d_5_cycles_2_restart/transport_3d_5_cycles_2",
   read_restart_path = "transport_3d_5_cycles_2_restart/transport_3d_5_cycles_2",
   volumetric_sources = { mg_src0, mg_src1 },
 }
