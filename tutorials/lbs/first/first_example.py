@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun, February 23
+Created on Sun, February 23 2025
 
 Copyright (c) 2025 quocdang1998
 """
@@ -33,12 +33,12 @@ if __name__ == "__main__":
 
     # generate the mesh
     meshgen = OrthogonalMeshGenerator(
-        node_sets = [nodes, nodes],
-        partitioner = KBAGraphPartitioner(
-            nx = 2,
-            ny = 2,
-            xcuts = [0.0],
-            ycuts = [0.0],
+        node_sets=[nodes, nodes],
+        partitioner=KBAGraphPartitioner(
+            nx=2,
+            ny=2,
+            xcuts=[0.0],
+            ycuts=[0.0],
         )
     )
     grid = meshgen.Execute()
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     strength = []
     for g in range(num_groups):
         strength.append(1.0)
-    mg_src = VolumetricSource(block_ids = [0], group_strength = strength)
+    mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # initialize quadrature
     nazimu = 1
@@ -69,9 +69,9 @@ if __name__ == "__main__":
 
     # create linear Boltzmann solver (LBS)
     phys = DiscreteOrdinatesSolver(
-        mesh = grid,
-        num_groups = num_groups,
-        groupsets = [
+        mesh=grid,
+        num_groups=num_groups,
+        groupsets=[
             {
                 "groups_from_to": (0, 0),
                 "angular_quadrature": pquad,
@@ -82,13 +82,13 @@ if __name__ == "__main__":
                 "gmres_restart_interval": 30
             }
         ],
-        options = {
+        options={
             "volumetric_sources": [mg_src],
         }
     )
 
     # initialize steady state solver and execute
-    ss_solver = SteadyStateSolver(lbs_solver = phys)
+    ss_solver = SteadyStateSolver(lbs_solver=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -96,6 +96,6 @@ if __name__ == "__main__":
     fflist = phys.GetScalarFieldFunctionList()
     vtk_basename = "first_example"
     FieldFunctionGridBased.ExportMultipleToVTK(
-        [fflist[0][0]],  # export only the field function of group 0 (first []), moment 0 (second [])
+        [fflist[0][0]],  # export only the flux of group 0 (first []), moment 0 (second [])
         vtk_basename
     )

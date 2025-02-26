@@ -3,9 +3,9 @@ find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
 # Get pybind11 CMake directory and append it to CMake prefix path
 execute_process(
-  COMMAND ${Python3_EXECUTABLE} -m pybind11 --cmakedir
-  OUTPUT_VARIABLE PYBIND11_CMAKE_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND ${Python3_EXECUTABLE} -m pybind11 --cmakedir
+    OUTPUT_VARIABLE PYBIND11_CMAKE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 list(APPEND CMAKE_PREFIX_PATH "${PYBIND11_CMAKE_DIR}")
 

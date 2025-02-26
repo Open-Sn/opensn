@@ -4,9 +4,9 @@
 #include "pyapi.hpp"
 
 #include "petsc.h"
-#include "framework/runtime.h"
 
 #include "config.h"
+#include "framework/runtime.h"
 
 PYBIND11_MODULE(pyopensn, pyopensn) {
     using namespace opensn;
@@ -16,13 +16,11 @@ PYBIND11_MODULE(pyopensn, pyopensn) {
     // environment
     if (PyEnv::p_default_env == nullptr) {
         PyEnv::p_default_env = new PyEnv();
-    }
-    ::Py_AtExit(
-        [](void) noexcept {
+        ::Py_AtExit([](void) noexcept {
             delete PyEnv::p_default_env;
             PyEnv::p_default_env = nullptr;
-        }
-    );
+        });
+    }
     // wrap libraries
     py_aquad(pyopensn);
     py_ffunc(pyopensn);

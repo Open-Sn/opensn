@@ -24,8 +24,7 @@ PyEnv::PyEnv(void) {
     mpi_comm = mpi::Communicator(*(::PyMPIComm_Get(comm_world.ptr())));
     if (mpi_comm.rank() == 0) {
         std::cout << program << " version " << GetVersionStr() << "\n";
-        std::cout << Timer::GetLocalDateTimeString() << " Running " << program << " with " << mpi_comm.size()
-                  << " processes.\n\n";
+        std::cout << Timer::GetLocalDateTimeString() << " Running " << program << " with " << mpi_comm.size() << " processes.\n\n";
     }
     // initialize PETSc and Opensn
     ::PetscOptionsSetValue(NULL, "-options_left", "0");
