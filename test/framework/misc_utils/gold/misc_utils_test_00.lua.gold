@@ -1,9 +1,0 @@
-[0]  Parsing argument 1 misc_utils_test_00.lua
-[0m[0]  Parsing argument 2 --suppress_color
-[0m[0]  Parsing argument 3 --supress_beg_end_timelog
-[0]  Parsing argument 4 master_export=false
-[0]  OpenSn number of arguments supplied: 4
-[0]  GOLD_BEGIN
-[0]  Testing misc_utils::PrintIterationProgress
-[0]    25.00  50.00  75.00 100.00
-[0]  GOLD_END
