@@ -21,15 +21,7 @@ public:
   void FlushConsole();
   void RunConsoleLoop() const;
   int ExecuteFile(const std::string& fileName) const;
-  void BindModule(const std::string& module_name, void (*wrap_function)(py::module&));
-
-  template <typename Func>
-  void BindFunction(const std::string& name, Func func)
-  {
-    assert(Py_IsInitialized());
-    py::module m = py::module::import("__main__");
-    m.def(name.c_str(), func);
-  }
+  void BindModule(std::function<void(py::module&)> bind_function);
 
 private:
   Console() noexcept = default;

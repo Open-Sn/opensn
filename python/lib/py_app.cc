@@ -28,20 +28,18 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::module sys = py::module::import("sys");
   py::exec("rank = " + std::to_string(comm.rank()));
   py::exec("size = " + std::to_string(comm.size()));
-  py::module main = py::module::import("__main__");
-  py::module aquad = main.def_submodule("aquad", "Angular quadrature module.");
-
-  console.BindModule("aquad", wrap_quadrature);
-  console.BindModule("ffunc", wrap_field_function);
-  console.BindModule("logvol", wrap_logical_volume);
-  console.BindModule("material", wrap_material);
-  console.BindModule("mesh", wrap_mesh);
-  console.BindModule("mesh", wrap_mesh_generator);
-  console.BindModule("mesh", wrap_graph_partitioner);
-  console.BindModule("solver", wrap_solver);
-  console.BindModule("source", wrap_source);
-  console.BindModule("xs", wrap_multigroup_xs);
-  console.BindModule("xs", wrap_create_load);
+  py::exec("opensn_console = True");
+  console.BindModule(wrap_quadrature);
+  console.BindModule(wrap_field_function);
+  console.BindModule(wrap_logical_volume);
+  console.BindModule(wrap_material);
+  console.BindModule(wrap_mesh);
+  console.BindModule(wrap_mesh_generator);
+  console.BindModule(wrap_graph_partitioner);
+  console.BindModule(wrap_solver);
+  console.BindModule(wrap_source);
+  console.BindModule(wrap_multigroup_xs);
+  console.BindModule(wrap_create_load);
 }
 
 int

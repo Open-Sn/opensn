@@ -62,12 +62,6 @@ if(OPENSN_WITH_LUA)
     find_package(Lua 5.3 REQUIRED)
 endif()
 
-if(OPENSN_WITH_PYTHON)
-    set(PYBIND11_FINDPYTHON ON)
-    find_package(pybind11 CONFIG REQUIRED)
-    find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-endif()
-
 find_package(VTK QUIET)
 if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
     find_package(VTK
@@ -195,9 +189,6 @@ endif()
 if (OPENSN_WITH_LUA)
     target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${LUA_INCLUDE_DIRS}>)
 endif()
-if (OPENSN_WITH_PYTHON)
-    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${Python3_INCLUDE_DIRS}>)
-endif()
 
 target_link_libraries(libopensn
     PRIVATE
@@ -213,11 +204,6 @@ endif()
 if(OPENSN_WITH_LUA)
     target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
     target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
-endif()
-if(OPENSN_WITH_PYTHON)
-    target_link_libraries(libopensn PUBLIC pybind11::embed)
-    target_link_libraries(libopensn PRIVATE ${Python3_LIBRARIES})
-    target_compile_definitions(libopensn PRIVATE OPENSN_WITH_PYTHON)
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
@@ -250,17 +236,9 @@ endif()
 
 if(OPENSN_WITH_PYTHON)
     add_subdirectory(python)
-    #    add_subdirectory(test)
-    # 
-    #add_custom_target(test
-    #  COMMAND
-    #  ${CMAKE_BINARY_DIR}/test/opensn-unit &&
-    #          ${CMAKE_SOURCE_DIR}/test/run_tests
-    #          -d ${CMAKE_SOURCE_DIR}/test
-    #          --exe ${CMAKE_BINARY_DIR}/test/opensn-test
-    #          -w3
-    #  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    #)
+endif()
+if(OPENSN_WITH_PYTHON_MODULE)
+    add_subdirectory(pyopensn)
 endif()
 
 configure_file(config.h.in config.h)

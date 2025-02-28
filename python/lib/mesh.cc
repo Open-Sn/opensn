@@ -25,10 +25,11 @@ namespace opensn
 void wrap_mesh(py::module &mesh)
 {
   auto mesh_continuum = py::class_<MeshContinuum, std::shared_ptr<MeshContinuum>>(
-    mesh, "MeshContinuum", R"(
-    Mesh continuum.
+    mesh, "MeshContinuum",
+    R"(
+      Mesh continuum.
 
-    Wrapper of :cpp:class:`opensn::MeshContinuum`.
+      Wrapper of :cpp:class:`opensn::MeshContinuum`.
     )");
 
   mesh_continuum.def_property("dimension", &MeshContinuum::GetDimension, &MeshContinuum::SetDimension,
@@ -42,29 +43,32 @@ void wrap_mesh(py::module &mesh)
   mesh_continuum.def("SetupOrthogonalBoundaries", &MeshContinuum::SetupOrthogonalBoundaries, "...");
 
   auto surface_mesh = py::class_<SurfaceMesh, std::shared_ptr<SurfaceMesh>>(
-    mesh, "SurfaceMesh", R"(
-    Surface mesh.
+    mesh, "SurfaceMesh",
+    R"(
+      Surface mesh.
 
-    Wrapper of :cpp:class:`opensn::SurfaceMesh`.
+      Wrapper of :cpp:class:`opensn::SurfaceMesh`.
     )");
 }
 
 void wrap_mesh_generator(py::module &mesh)
 {
   auto mesh_generator = py::class_<MeshGenerator, std::shared_ptr<MeshGenerator>>(
-    mesh, "MeshGenerator", R"(
-    Generic mesh generator.
+    mesh, "MeshGenerator",
+    R"(
+      Generic mesh generator.
 
-    Wrapper of :cpp:class:`opensn::MeshGenerator`.
+      Wrapper of :cpp:class:`opensn::MeshGenerator`.
     )");
   
   mesh_generator.def("Execute", &MeshGenerator::Execute, "Final execution step.");
 
   auto extruder_mesh_generator = py::class_<ExtruderMeshGenerator, std::shared_ptr<ExtruderMeshGenerator>, MeshGenerator>(
-    mesh, "ExtruderMeshGenerator", R"(
-    Extruded mesh generator.
+    mesh, "ExtruderMeshGenerator",
+    R"(
+      Extruded mesh generator.
 
-    Wrapper of :cpp:class:`opensn::ExtruderMeshGenerator`.
+      Wrapper of :cpp:class:`opensn::ExtruderMeshGenerator`.
     )");
   
   extruder_mesh_generator.def(py::init([](py::kwargs &params)
@@ -73,10 +77,11 @@ void wrap_mesh_generator(py::module &mesh)
   }), "Construct an extruded mesh generator.");
 
   auto orthogonal_mesh_generator = py::class_<OrthogonalMeshGenerator, std::shared_ptr<OrthogonalMeshGenerator>, MeshGenerator>(
-    mesh, "OrthogonalMeshGenerator", R"(
-    Orthogonal mesh generator.
+    mesh, "OrthogonalMeshGenerator",
+    R"(
+      Orthogonal mesh generator.
 
-    Wrapper of :cpp:class:`opensn::OrthogonalMeshGenerator`.
+      Wrapper of :cpp:class:`opensn::OrthogonalMeshGenerator`.
     )");
 
   orthogonal_mesh_generator.def(py::init([](py::kwargs &params)
@@ -88,17 +93,19 @@ void wrap_mesh_generator(py::module &mesh)
 void wrap_graph_partitioner(py::module &mesh)
 {
   auto graph_partitioner = py::class_<GraphPartitioner, std::shared_ptr<GraphPartitioner>>(
-    mesh, "GraphPartitioner", R"(
-    Generic graph partitioner.
+    mesh, "GraphPartitioner",
+    R"(
+      Generic graph partitioner.
 
-    Wrapper of :cpp:class:`opensn::GraphPartitioner`.
+      Wrapper of :cpp:class:`opensn::GraphPartitioner`.
     )");
 
   auto kba_graph_partitioner = py::class_<KBAGraphPartitioner, std::shared_ptr<KBAGraphPartitioner>, GraphPartitioner>(
-    mesh, "KBAGraphPartitioner", R"(
-    KBA graph partitioner.
+    mesh, "KBAGraphPartitioner",
+    R"(
+      KBA graph partitioner.
 
-    Wrapper of :cpp:class:`opensn::KBAGraphPartitioner`.
+      Wrapper of :cpp:class:`opensn::KBAGraphPartitioner`.
     )");
   
   kba_graph_partitioner.def(py::init([](py::kwargs &params)

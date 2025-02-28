@@ -27,30 +27,6 @@ void wrap_quadrature(py::module &aquad)
     )"
   );
 
-  angular_quadrature.def(
-    "OptimizeForPolarSymmetry",
-    [](AngularQuadrature &self, double normalization)
-    {
-      if (normalization > 0.0)
-      {
-        log.Log() << "Optimizing angular quadrature for polar symmetry. "
-                  << "Using normalization factor " << normalization << ".";
-      }
-      self.OptimizeForPolarSymmetry(normalization);
-    },
-    R"(
-      Optimizes the angular quadrature for polar symmetry by removing all directions with downward
-      pointing polar angles.
-
-      Parameters
-      ----------
-      normalization: float, default=-1.0
-          A negative number indicates no applied normalization. If a positive number is provided,
-          the weights will be normalized to sum to this number.
-    )",
-    py::arg("normalization") = -1.0
-  );
-
   // Product quadrature
   auto product_quadrature = py::class_<ProductQuadrature, std::shared_ptr<ProductQuadrature>, AngularQuadrature>(
     aquad, "ProductQuadrature",
@@ -61,64 +37,95 @@ void wrap_quadrature(py::module &aquad)
     )"
   );
 
-  product_quadrature.def(
+  // Gauss-Legendre 1D slab product quadrature
+  auto angular_quadrature_gl_prod_1d_slab = py::class_<GLProductQuadrature1DSlab,
+    std::shared_ptr<GLProductQuadrature1DSlab>, ProductQuadrature>(
+    aquad, "GLProductQuadrature1DSlab",
+    R"(
+      Gauss-Legendre product quadrature for 1D, slab geometry.
+
+      Wrapper of :cpp:class:`opensn::GLProductQuadrature1DSlab`.
+    )"
+  );
+
+  angular_quadrature_gl_prod_1d_slab.def(
     py::init(
-      [](const std::string &type, int n, int m)
+      [](int Npolar)
       {
-        std::shared_ptr<ProductQuadrature> result;
-
-        if (type == "gauss-legendre")
-        {
-          result = std::make_shared<AngularQuadratureProdGL>(n, false);
-          return result;
-        }
-        if (type == "gauss-legendre-chebyshev")
-        {
-          result = std::make_shared<AngularQuadratureProdGLC>(n, m, false);
-          return result;
-        }
-
-        log.LogAllError() << "In call to CreateProductQuadrature. "
-                          << "Unsupported quadrature type supplied. Given: " << type;
-        throw std::invalid_argument("Unknown option.");
-        return std::shared_ptr<ProductQuadrature>(nullptr);
+        return std::make_shared<GLProductQuadrature1DSlab>(Npolar);
       }
     ),
     R"(
-      Construct a product quadrature.
+      Construct a Gauss-Legendre product quadrature for 1D, slab geometry.
 
       Parameters
       ----------
-      type: {'gauss-legendre', 'gauss-legendre-chebyshev'}
-          Quadrature method.
-      n: int
-          Number of azimuthal angles.
-      m: int
-          Number of polar angles (for Gauss-Legendre-Chebyshev quadrature).
+      Npolar: int
+              Number of polar angles.
     )",
-    py::arg("type"), py::arg("n"), py::arg("m")
+    py::arg("Npolar")
   );
 
-  // Gauss-Legendre product quadrature
-  auto angular_quadrature_prod_gl = py::class_<AngularQuadratureProdGL,
-    std::shared_ptr<AngularQuadratureProdGL>, AngularQuadrature>(
-    aquad, "AngularQuadratureProdGL",
+  // Gauss-Legendre-Chebyshev 2D XY product quadrature
+  auto angular_quadrature_glc_prod_2d_xy = py::class_<GLCProductQuadrature2DXY,
+    std::shared_ptr<GLCProductQuadrature2DXY>, ProductQuadrature>(
+    aquad, "GLCProductQuadrature2DXY",
     R"(
-      Gauss-Legendre product quadrature.
+      Gauss-Legendre-Chebyshev product quadrature for 2D, XY geometry.
 
-      Wrapper of :cpp:class:`opensn::AngularQuadratureProdGL`.
+      Wrapper of :cpp:class:`opensn::GLCProductQuadrature2DXY`.
     )"
   );
 
-  // Gauss-Legendre-Chebyshev product quadrature
-  auto angular_quadrature_prod_glc = py::class_<AngularQuadratureProdGLC,
-    std::shared_ptr<AngularQuadratureProdGLC>, AngularQuadrature>(
-    aquad, "AngularQuadratureProdGLC",
+  angular_quadrature_glc_prod_2d_xy.def(
+    py::init(
+      [](int Npolar, int Nazimuthal)
+      {
+        return std::make_shared<GLCProductQuadrature2DXY>(Npolar, Nazimuthal);
+      }
+    ),
     R"(
-      Gauss-Legendre-Chebyshev product quadrature.
+      Construct a Gauss-Legendre-Chebyshev product quadrature for 2D, XY geometry.
 
-      Wrapper of :cpp:class:`opensn::AngularQuadratureProdGLC`.
+      Parameters
+      ----------
+      Npolar: int
+              Number of polar angles.
+      Nazimuthal: int
+              Number of azimuthal angles.
+    )",
+    py::arg("Npolar"), py::arg("Nazimuthal")
+  );
+
+  // Gauss-Legendre-Chebyshev 3D XYZ product quadrature
+  auto angular_quadrature_glc_prod_3d_xyz = py::class_<GLCProductQuadrature3DXYZ,
+    std::shared_ptr<GLCProductQuadrature3DXYZ>, ProductQuadrature>(
+    aquad, "GLCProductQuadrature3DXYZ",
+    R"(
+      Gauss-Legendre-Chebyshev product quadrature for 3D, XYZ geometry.
+
+      Wrapper of :cpp:class:`opensn::GLCProductQuadrature3DXYZ`.
     )"
+  );
+
+  angular_quadrature_glc_prod_3d_xyz.def(
+    py::init(
+      [](int Npolar, int Nazimuthal)
+      {
+        return std::make_shared<GLCProductQuadrature3DXYZ>(Npolar, Nazimuthal);
+      }
+    ),
+    R"(
+      Construct a Gauss-Legendre-Chebyshev product quadrature for 3D, XYZ geometry.
+
+      Parameters
+      ----------
+      Npolar: int
+              Number of polar angles.
+      Nazimuthal: int
+              Number of azimuthal angles.
+    )",
+    py::arg("Npolar"), py::arg("Nazimuthal")
   );
 
   // Simplified LDFESQ quadrature

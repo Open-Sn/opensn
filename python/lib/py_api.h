@@ -14,9 +14,9 @@ namespace opensn
 class PyEnv
 {
 public:
-  PyEnv(void);
+  PyEnv();
 
-  ~PyEnv(void);
+  ~PyEnv();
 
   /// Default environement.
   static PyEnv* p_default_env;

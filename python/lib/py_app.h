@@ -25,7 +25,6 @@ private:
   int RunInteractive();
   int RunBatch();
 
-  py::scoped_interpreter guard_{};
   bool sim_option_interactive_;
   bool allow_petsc_error_handler_;
 };

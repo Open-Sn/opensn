@@ -18,9 +18,9 @@ void wrap_source(py::module &src)
   auto point_source = py::class_<PointSource, std::shared_ptr<PointSource>>(
     src, "PointSource",
     R"(
-    Point sources, defined by its location and a group-wise strength vector.
+      Point sources, defined by its location and a group-wise strength vector.
 
-    Wrapper of :cpp:class:`opensn::PointSource`.
+      Wrapper of :cpp:class:`opensn::PointSource`.
     )");
 
   point_source.def(
@@ -30,23 +30,23 @@ void wrap_source(py::module &src)
         return PointSource::Create(kwargs_to_param_block(params));
       }),
     R"(
-    Construct a point source from its location and strength.
+      Construct a point source from its location and strength.
 
-    Parameters
-    ----------
-    location: Tuple[float, float, float]
-        Coordinates of the point source.
-    strength: List[float]
-        Group-wise point source strength.
+      Parameters
+      ----------
+      location: Tuple[float, float, float]
+          Coordinates of the point source.
+      strength: List[float]
+          Group-wise point source strength.
     )");
 
   // volumetric source
   auto volumetric_source = py::class_<VolumetricSource, std::shared_ptr<VolumetricSource>>(
     src, "VolumetricSource",
     R"(
-    Multi-group isotropic volumetric sources.
+      Multi-group isotropic volumetric sources.
 
-    Wrapper of :cpp:class:`opensn::VolumetricSource`.
+      Wrapper of :cpp:class:`opensn::VolumetricSource`.
     )");
 
   volumetric_source.def(
@@ -56,18 +56,18 @@ void wrap_source(py::module &src)
         return VolumetricSource::Create(kwargs_to_param_block(params));
       }),
     R"(
-    Construct a multi-group isotropic volumetric sources.
+      Construct a multi-group isotropic volumetric sources.
 
-    Parameters
-    ----------
-    block_ids: List[int]
-        ???
-    logical_volume: opensn.LogicalVolume
-        ???
-    group_strength: List[double]
-        ???
-    func: ???
-        ???
+      Parameters
+      ----------
+      block_ids: List[int]
+          ???
+      logical_volume: opensn.LogicalVolume
+          ???
+      group_strength: List[double]
+          ???
+      func: ???
+          ???
     )");
 }
 

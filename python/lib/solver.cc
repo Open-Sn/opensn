@@ -22,9 +22,9 @@ void wrap_solver(py::module &slv)
   auto solver = py::class_<Solver, std::shared_ptr<Solver>>(
     slv, "Solver",
     R"(
-    Base class for all solvers.
+      Base class for all solvers.
 
-    Wrapper of :cpp:class:opensn::Solver.
+      Wrapper of :cpp:class:opensn::Solver.
     )");
 
   solver.def("Initialize", &Solver::Initialize, "Initialize the solver.");
@@ -36,9 +36,9 @@ void wrap_solver(py::module &slv)
   auto lbs_solver = py::class_<LBSSolver, std::shared_ptr<LBSSolver>, Solver>(
     slv, "LBSSolver",
     R"(
-    Base class for all Linear Boltzmann solvers.
+      Base class for all Linear Boltzmann solvers.
 
-    Wrapper of :cpp:class:opensn::LBSSolver.
+      Wrapper of :cpp:class:opensn::LBSSolver.
     )");
 
   lbs_solver.def(
@@ -59,20 +59,20 @@ void wrap_solver(py::module &slv)
       return field_function_list_per_group;
     },
     R"(
-    Return, for each group, a list of field functions corresponding to each moment. 
-    Note that the moment index varies more rapidly than the group index.
+      Return, for each group, a list of field functions corresponding to each moment. 
+      Note that the moment index varies more rapidly than the group index.
     )");
 
   // Discrete ordinate solver
   auto discrete_ordinate_solver = py::class_<DiscreteOrdinatesSolver, std::shared_ptr<DiscreteOrdinatesSolver>, LBSSolver>(
     slv, "DiscreteOrdinatesSolver",
     R"(
-    Base class for discrete ordinates solvers.
+      Base class for discrete ordinates solvers.
 
-    This class mostly establishes utilities related to sweeping. From here, steady-state, transient, adjoint, 
-    and k-eigenvalue solver can be derived.
+      This class mostly establishes utilities related to sweeping. From here, steady-state, transient, adjoint, 
+      and k-eigenvalue solver can be derived.
 
-    Wrapper of :cpp:class:opensn::DiscreteOrdinatesSolver.
+      Wrapper of :cpp:class:opensn::DiscreteOrdinatesSolver.
     )");
 
   discrete_ordinate_solver.def(
@@ -82,16 +82,16 @@ void wrap_solver(py::module &slv)
         return DiscreteOrdinatesSolver::Create(kwargs_to_param_block(params));
       }),
     R"(
-    Construct a discrete ordinates solver object.
+      Construct a discrete ordinates solver object.
     )");
 
   // Steady state solver
   auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>, Solver>(
     slv, "SteadyStateSolver",
     R"(
-    ...
+      ...
 
-    Wrapper of :cpp:class:opensn::SteadyStateSolver.
+      Wrapper of :cpp:class:opensn::SteadyStateSolver.
     )");
 
   steady_state_solver.def(
@@ -101,7 +101,7 @@ void wrap_solver(py::module &slv)
         return SteadyStateSolver::Create(kwargs_to_param_block(params));
       }),
     R"(
-    Construct a steady state solver object.
+      Construct a steady state solver object.
     )");
 }
 

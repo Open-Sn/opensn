@@ -5,6 +5,7 @@
 #include "framework/utils/utils.h"
 #include "framework/runtime.h"
 #include <iostream>
+#include <functional>
 
 using namespace opensn;
 namespace py = pybind11;
@@ -22,11 +23,10 @@ Console::GetInstance() noexcept
 }
 
 void
-Console::BindModule(const std::string& module_name, void (*wrap_function)(py::module&))
+Console::BindModule(std::function<void(py::module&)> bind_function)
 {
   py::module main = py::module::import("__main__");
-  py::module mod = main.def_submodule(module_name.c_str(), ("Submodule: " + module_name).c_str());
-  wrap_function(mod);
+  bind_function(main);
 }
 
 void

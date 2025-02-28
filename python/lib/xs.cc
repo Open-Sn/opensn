@@ -22,14 +22,14 @@ void wrap_multigroup_xs(py::module &xs)
   auto multigroup_xs = py::class_<MultiGroupXS, std::shared_ptr<MultiGroupXS>, MaterialProperty>(
     xs, "MultiGroupXS",
     R"(
-    Multi-group cross section.
+      Multi-group cross section.
 
-    Wrapper of :cpp:class:`opensn::MultiGroupXS`.
+      Wrapper of :cpp:class:`opensn::MultiGroupXS`.
     )");
 
   multigroup_xs.def(
     py::init(
-      [](void)
+      []()
       {
         std::shared_ptr<MultiGroupXS> xs = std::make_shared<MultiGroupXS>();
         multigroup_xs_stack.push_back(xs);
