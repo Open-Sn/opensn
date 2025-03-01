@@ -12,7 +12,6 @@ extern "C"
 #include "LuaBridge/LuaBridge.h"
 #include "framework/logging/log.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
-#include "framework/math/quadratures/angular/product_quadrature.h"
 
 namespace luabridge
 {
@@ -43,17 +42,6 @@ struct Stack<opensn::FieldFunctionInterpolationOperation>
          opensn::FieldFunctionInterpolationOperation::OP_SUM_FUNC,
          opensn::FieldFunctionInterpolationOperation::OP_AVG_FUNC,
          opensn::FieldFunctionInterpolationOperation::OP_MAX_FUNC>
-{
-};
-
-template <>
-struct Stack<opensn::ProductQuadratureType>
-  : Enum<opensn::ProductQuadratureType,
-         opensn::ProductQuadratureType::UNKNOWN,
-         opensn::ProductQuadratureType::GAUSS_LEGENDRE,
-         opensn::ProductQuadratureType::GAUSS_CHEBYSHEV,
-         opensn::ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV,
-         opensn::ProductQuadratureType::CUSTOM_QUADRATURE>
 {
 };
 

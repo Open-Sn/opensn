@@ -121,6 +121,17 @@ DiscreteOrdinatesSolver::Initialize()
 
   LBSSolver::Initialize();
 
+  const auto grid_dim = grid_ptr_->GetDimension();
+  for (auto& groupset : groupsets_)
+  {
+    const auto quad_dim = groupset.quadrature->GetDimension();
+    OpenSnInvalidArgumentIf(grid_dim != quad_dim,
+                            "Dimensionality of quadrature set (" + std::to_string(quad_dim) +
+                              ") for groupset #" + std::to_string(groupset.id) +
+                              " does not match dimensionality of mesh (" +
+                              std::to_string(grid_dim) + ").");
+  }
+
   // Initialize source func
   using namespace std::placeholders;
   auto src_function = std::make_shared<SourceFunction>(*this);
@@ -836,7 +847,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const std::shared_ptr<MeshCon
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type;
+      const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using polar angle aggregation for "
                                        "which only Product-type quadratures are supported.");
@@ -901,7 +912,7 @@ DiscreteOrdinatesSolver::AssociateSOsAndDirections(const std::shared_ptr<MeshCon
                   "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
 
       // Check quadrature type
-      const auto quad_type = quadrature.type;
+      const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::ProductQuadrature)
         throw std::logic_error(fname + ": The simulation is using azimuthal angle aggregation for "
                                        "which only Product-type quadratures are supported.");

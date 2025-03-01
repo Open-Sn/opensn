@@ -88,8 +88,7 @@ pt_src = lbs.PointSource.Create({
 
 -- Setup Physics
 solver_name = "LBS"
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 12 * 2 * 4, 12 * 4)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
 lbs_block = {
   name = solver_name,
   mesh = grid,

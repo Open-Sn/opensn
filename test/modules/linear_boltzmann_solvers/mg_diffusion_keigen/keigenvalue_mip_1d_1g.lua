@@ -33,7 +33,7 @@ end
 
 -- Transport angle information
 if n_angles == nil then
-  n_angles = 16
+  n_angles = 32
 end
 if scat_order == nil then
   scat_order = 0
@@ -92,7 +92,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, n_angles, -1),
+      angular_quadrature = aquad.CreateGLProductQuadrature1DSlab(n_angles),
       inner_linear_method = "petsc_gmres",
       l_max_its = si_max_iterations,
       l_abs_tol = si_tolerance,

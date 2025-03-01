@@ -210,16 +210,16 @@ LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, GeometryType ge
   if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
       geometry_type == GeometryType::ONED_SPHERICAL)
   {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order, 1);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order);
   }
   else if (geometry_type == GeometryType::TWOD_CARTESIAN or
            geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order, 2);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order);
   }
   else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order, 3);
+    quadrature->BuildDiscreteToMomentOperator(scattering_order);
   }
 }
 
@@ -229,16 +229,16 @@ LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, GeometryType ge
   if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
       geometry_type == GeometryType::ONED_SPHERICAL)
   {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order, 1);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order);
   }
   else if (geometry_type == GeometryType::TWOD_CARTESIAN or
            geometry_type == GeometryType::TWOD_CYLINDRICAL)
   {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order, 2);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order);
   }
   else if (geometry_type == GeometryType::THREED_CARTESIAN)
   {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order, 3);
+    quadrature->BuildMomentToDiscreteOperator(scattering_order);
   }
 }
 
