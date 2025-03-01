@@ -225,15 +225,13 @@ Volumetric sources are assigned to the solver via the <code class="docutils lite
 </section>
 <section id="angular-quadrature">
 <h2><span class="section-number">3.1.6. </span>Angular Quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
-<p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the number of <strong>positive</strong> polar cosines
-(here <code class="docutils literal notranslate"><span class="pre">npolar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>one quadrant</strong> (<code class="docutils literal notranslate"><span class="pre">nazimu</span> <span class="pre">=</span> <span class="pre">1</span></code>).
-This creates a 3D angular quadrature.</p>
-<p>We finish by optimizing the quadrature to only use the positive hemisphere for 2D simulations.</p>
+<p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the total number of polar cosines
+(here <code class="docutils literal notranslate"><span class="pre">npolar</span> <span class="pre">=</span> <span class="pre">4</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">nazimu</span> <span class="pre">=</span> <span class="pre">4</span></code>).
+This creates a 2D angular quadrature for XY geometry.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the Angular Quadrature</span>
-<span class="nv">nazimu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="nv">npolar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="nv">pquad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aquad</span><span class="p">.</span><span class="nf">CreateProductQuadrature</span><span class="p">(</span><span class="nv">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="w"> </span><span class="nv">nazimu</span><span class="p">,</span><span class="w"> </span><span class="nv">npolar</span><span class="p">)</span>
-<span class="nv">aquad</span><span class="p">.</span><span class="nf">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="nv">pquad</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="nv">nazimu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="nv">npolar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="nv">pquad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aquad</span><span class="p">.</span><span class="nf">CreateGLCProductQuadrature2DXY</span><span class="p">(</span><span class="nv">npolar</span><span class="p">,</span><span class="w"> </span><span class="nv">nazimu</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -367,10 +365,9 @@ on post-processing for more details on field functions.</p>
 
 
 <span class="c1">-- Setup the Angular Quadrature</span>
-<span class="nv">nazimu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="nv">npolar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="nv">pquad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aquad</span><span class="p">.</span><span class="nf">CreateProductQuadrature</span><span class="p">(</span><span class="nv">GAUSS_LEGENDRE_CHEBYSHEV</span><span class="p">,</span><span class="w"> </span><span class="nv">nazimu</span><span class="p">,</span><span class="w"> </span><span class="nv">npolar</span><span class="p">)</span>
-<span class="nv">aquad</span><span class="p">.</span><span class="nf">OptimizeForPolarSymmetry</span><span class="p">(</span><span class="nv">pquad</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">math.pi</span><span class="p">)</span>
+<span class="nv">nazimu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="nv">npolar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="nv">pquad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aquad</span><span class="p">.</span><span class="nf">CreateGLCProductQuadrature2DXY</span><span class="p">(</span><span class="nv">npolar</span><span class="p">,</span><span class="w"> </span><span class="nv">nazimu</span><span class="p">)</span>
 
 
 <span class="c1">-- Setup LBS parameters</span>
