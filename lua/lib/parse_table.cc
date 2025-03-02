@@ -14,6 +14,7 @@
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/post_processors/post_processor.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/physics/solver.h"
 #include "framework/math/vector3.h"
 #include "framework/runtime.h"
@@ -92,6 +93,14 @@ SetBlockParam(lua_State* L,
   else if (cls_name == "ProductQuadrature")
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   else if (cls_name == "SLDFESQuadrature")
+    block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
+  else if (cls_name == "GLProductQuadrature1DSlab")
+    block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
+  else if (cls_name == "GLCProductQuadrature2DXY")
+    block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
+  else if (cls_name == "GLCProductQuadrature2DRZ")
+    block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
+  else if (cls_name == "GLCProductQuadrature3DXYZ")
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   //
   else if (cls_name == "MultiGroupXS")

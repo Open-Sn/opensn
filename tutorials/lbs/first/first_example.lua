@@ -131,7 +131,7 @@ This creates a 2D angular quadrature for XY geometry.
 -- Setup the Angular Quadrature
 nazimu = 4
 npolar = 4
-pquad = aquad.CreateGLCProductQuadrature2DXY(npolar, nazimu)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = npolar, Nazimuthal = nazimu })
 
 --[[ @doc
 ## Linear Boltzmann Solver

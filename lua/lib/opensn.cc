@@ -159,10 +159,6 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("CreateSLDFESQuadrature", &AQuadCreateSLDFESQAngularQuadrature)
       .addFunction("LocallyRefineSLDFESQ", &AQuadLocallyRefineSLDFESQ)
       .addFunction("PrintQuadratureToFile", &AQuadPrintQuadratureToFile)
-      .addFunction("CreateGLProductQuadrature1DSlab", &AQuadCreateGLProductQuadrature1DSlab)
-      .addFunction("CreateGLCProductQuadrature2DXY", &AQuadCreateGLCProductQuadrature2DXY)
-      .addFunction("CreateGLCProductQuadrature2DRZ", &AQuadCreateGLCProductQuadrature2DRZ)
-      .addFunction("CreateGLCProductQuadrature3DXYZ", &AQuadCreateGLCProductQuadrature3DXYZ)
       //
       .beginClass<AngularQuadrature>("AngularQuadrature")
       .endClass()
@@ -173,9 +169,34 @@ static bool reg = opensnlua::Console::Bind(
       .endClass()
       .beginClass<std::shared_ptr<ProductQuadrature>>("ProductQuadraturePtr")
       .endClass()
+      //
       .deriveClass<SimplifiedLDFESQ::Quadrature, AngularQuadrature>("SLDFESQuadrature")
       .endClass()
       .beginClass<std::shared_ptr<SimplifiedLDFESQ::Quadrature>>("SLDFESQuadraturePtr")
+      .endClass()
+      //
+      .deriveClass<GLProductQuadrature1DSlab, ProductQuadrature>("GLProductQuadrature1DSlab")
+      .addStaticFunction("Create", &GLProductQuadrature1DSlab::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<GLProductQuadrature1DSlab>>("GLProductQuadrature1DSlabPtr")
+      .endClass()
+      //
+      .deriveClass<GLCProductQuadrature2DXY, ProductQuadrature>("GLCProductQuadrature2DXY")
+      .addStaticFunction("Create", &GLCProductQuadrature2DXY::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<GLCProductQuadrature2DXY>>("GLCProductQuadrature2DXYPtr")
+      .endClass()
+      //
+      .deriveClass<GLCProductQuadrature2DRZ, ProductQuadrature>("GLCProductQuadrature2DRZ")
+      .addStaticFunction("Create", &GLCProductQuadrature2DRZ::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<GLCProductQuadrature2DRZ>>("GLCProductQuadrature2DRZPtr")
+      .endClass()
+      //
+      .deriveClass<GLCProductQuadrature3DXYZ, ProductQuadrature>("GLCProductQuadrature3DXYZ")
+      .addStaticFunction("Create", &GLCProductQuadrature3DXYZ::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<GLCProductQuadrature3DXYZ>>("GLCProductQuadrature3DXYZPtr")
       .endClass()
       .endNamespace();
 

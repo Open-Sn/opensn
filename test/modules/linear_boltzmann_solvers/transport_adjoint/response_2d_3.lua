@@ -91,7 +91,7 @@ loc = { 1.25 - 0.5 * ds, 1.5 * ds, 0.0 }
 pt_src = lbs.PointSource.Create({ location = loc, strength = src })
 
 -- Setup physics
-pquad = aquad.CreateGLCProductQuadrature2DXY(4, 48)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 4, Nazimuthal = 48 })
 
 lbs_block = {
   mesh = grid,

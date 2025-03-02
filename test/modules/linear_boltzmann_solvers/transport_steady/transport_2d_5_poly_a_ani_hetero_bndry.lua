@@ -47,7 +47,7 @@ end
 mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
 -- Setup Physics
-pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 48)
+pquad0 = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 4, Nazimuthal = 48 })
 
 lbs_block = {
   mesh = grid,

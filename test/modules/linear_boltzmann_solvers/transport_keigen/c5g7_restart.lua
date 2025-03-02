@@ -38,7 +38,7 @@ for m = 0, 6 do
 end
 
 -- Angular quadrature
-pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 4, Nazimuthal = 8 })
 
 -- Solver
 phys1 = lbs.DiscreteOrdinatesSolver.Create({

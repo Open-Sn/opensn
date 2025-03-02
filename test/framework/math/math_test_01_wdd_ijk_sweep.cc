@@ -132,7 +132,7 @@ math_Test01_WDD_IJK_Sweep()
   //  sigma_t.Set(0.2);
   //  q.Set(0.0);
 
-  auto pquad = std::make_shared<GLProductQuadrature1DSlab>(2, verbose);
+  auto pquad = std::make_shared<GLProductQuadrature1DSlab>(2);
 
   pquad->BuildDiscreteToMomentOperator(0);
 

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/parameters/input_parameters.h"
 #include <map>
 #include <vector>
 
@@ -21,6 +22,8 @@ protected:
     : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension)
   {
   }
+
+  virtual ~ProductQuadrature() = default;
 
   /**
    * Optimizes the angular quadrature for polar symmetry by removing all the direction with downward
@@ -42,8 +45,6 @@ public:
   std::vector<double> polar_ang;
   std::vector<double> azimu_ang;
 
-  ~ProductQuadrature() override = default;
-
   /**
    * Obtains the abscissae index given the indices of the polar angle index and the azimuthal angle
    * index.
@@ -64,22 +65,52 @@ public:
 class GLProductQuadrature1DSlab : public ProductQuadrature
 {
 public:
-  /// Constructor for 1D slab Gauss-Legendre product quadrature
-  explicit GLProductQuadrature1DSlab(int Npolar, bool verbose = false);
+  /// Constructors for 1D slab Gauss-Legendre product quadrature
+  explicit GLProductQuadrature1DSlab(const InputParameters& params);
+  GLProductQuadrature1DSlab(int Npolar, bool verbose = false);
+
+  virtual ~GLProductQuadrature1DSlab() = default;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GLProductQuadrature1DSlab> Create(const ParameterBlock& params);
+
+private:
+  void Initialize(int Npolar, bool verbose);
 };
 
 class GLCProductQuadrature2DXY : public ProductQuadrature
 {
 public:
   /// Constructor for 2D XY Gauss-Legendre Chebyshev product quadrature
-  explicit GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose = false);
+  explicit GLCProductQuadrature2DXY(const InputParameters& params);
+  GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose = false);
+
+  virtual ~GLCProductQuadrature2DXY() = default;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GLCProductQuadrature2DXY> Create(const ParameterBlock& params);
+
+private:
+  void Initialize(int Npolar, int Nazimuthal, bool verbose);
 };
 
 class GLCProductQuadrature3DXYZ : public ProductQuadrature
 {
 public:
   /// Constructor for 3D XYZ Gauss-Legendre Chebyshev product quadrature
-  explicit GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose = false);
+  explicit GLCProductQuadrature3DXYZ(const InputParameters& params);
+  GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose = false);
+
+  virtual ~GLCProductQuadrature3DXYZ() = default;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GLCProductQuadrature3DXYZ> Create(const ParameterBlock& params);
+
+private:
+  void Initialize(int Npolar, int Nazimuthal, bool verbose);
 };
 
 } // namespace opensn

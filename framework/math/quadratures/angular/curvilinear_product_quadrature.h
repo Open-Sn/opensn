@@ -31,37 +31,43 @@ protected:
 
 public:
   const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
-
   const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
 };
 
 class GLCProductQuadrature2DRZ : public CurvilinearQuadrature
 {
+public:
+  explicit GLCProductQuadrature2DRZ(const InputParameters& params);
+  GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, bool verbose = false);
+
+  virtual ~GLCProductQuadrature2DRZ() = default;
+
+  void MakeHarmonicIndices(unsigned int scattering_order) override;
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GLCProductQuadrature2DRZ> Create(const ParameterBlock& params);
+
 private:
-  /**
-   * Initialize with one-dimensional quadratures: a polar quadrature and a possibly unique azimuthal
-   * quadrature for each polar level.
-   */
-  void Initialize(const GaussQuadrature& quad_polar,
-                  const std::vector<GaussQuadrature>& quad_azimu_vec,
-                  const bool verbose = false);
+  void Initialize(const int Npolar, const int Nazimuthal, bool verbose);
 
   /**
    * Initialize parametrizing factors of the cylindrical angular quadrature, starting from a fully
    * initialized underlying product quadrature.
    */
   void InitializeParameters();
-
-public:
-  GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, bool verbose = false);
-
-  virtual ~GLCProductQuadrature2DRZ() = default;
-
-  void MakeHarmonicIndices(unsigned int scattering_order) override;
 };
 
 class GLProductQuadrature1DSpherical : public CurvilinearQuadrature
 {
+public:
+  explicit GLProductQuadrature1DSpherical(const InputParameters& params);
+  GLProductQuadrature1DSpherical(int Npolar, bool verbose = false);
+
+  virtual ~GLProductQuadrature1DSpherical() = default;
+
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<GLProductQuadrature1DSpherical> Create(const ParameterBlock& params);
+  void MakeHarmonicIndices(unsigned int scattering_order) override;
+
 private:
   /// Initialize with one-dimensional quadrature.
   void Initialize(int Npolar, const bool verbose = false);
@@ -71,13 +77,6 @@ private:
    * initialized underlying product quadrature.
    */
   void InitializeParameters();
-
-public:
-  GLProductQuadrature1DSpherical(int Npolar, bool verbose = false);
-
-  virtual ~GLProductQuadrature1DSpherical() = default;
-
-  void MakeHarmonicIndices(unsigned int scattering_order) override;
 };
 
 } // namespace opensn

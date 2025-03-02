@@ -85,7 +85,7 @@ materials[3]:SetTransportXSections(xs_1g3)
 fwd_src = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = { 3.0 } })
 
 -- Setup physics
-pquad = aquad.CreateGLCProductQuadrature2DXY(12, 192)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 12, Nazimuthal = 192 })
 
 lbs_block = {
   mesh = grid,

@@ -50,7 +50,7 @@ mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 3 }, group_strength = { 1. } })
 
 -- Angular Quadrature
-gl_quad = aquad.CreateGLProductQuadrature1DSlab(128)
+gl_quad = aquad.GLProductQuadrature1DSlab.Create({ Npolar = 128 })
 
 -- LBS block option
 num_groups = 1

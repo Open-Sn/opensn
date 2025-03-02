@@ -39,7 +39,7 @@ lbs_options = {
 }
 
 -- Quadrature
-pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
+pquad0 = aquad.GLCProductQuadrature3DXYZ.Create({ Npolar = Npolar, Nazimuthal = Nazimuthal })
 
 -- Set up solver
 gs1 = { 0, Ng - 1 }

@@ -64,7 +64,7 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature = aquad.CreateGLCProductQuadrature3DXYZ(4, 32),
+      angular_quadrature = aquad.GLCProductQuadrature3DXYZ.Create({ Npolar = 4, Nazimuthal = 32 }),
       inner_linear_method = "petsc_gmres",
       l_max_its = 500,
       l_abs_tol = 1.0e-12,

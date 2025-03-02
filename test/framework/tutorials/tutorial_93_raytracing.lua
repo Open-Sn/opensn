@@ -88,7 +88,7 @@ pt_src = lbs.PointSource.Create({
 
 -- Setup Physics
 solver_name = "LBS"
-pquad = aquad.CreateGLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 12 * 4 * 2, Nazimuthal = 12 * 2 * 4 * 4 })
 lbs_block = {
   name = solver_name,
   mesh = grid,

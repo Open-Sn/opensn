@@ -5,6 +5,7 @@
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
 #include "framework/logging/log.h"
+#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <cmath>
 #include <sstream>
@@ -137,12 +138,54 @@ ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
   azimu_ang = new_azimu_ang;
 }
 
+OpenSnRegisterObjectInNamespace(aquad, GLProductQuadrature1DSlab);
+
+InputParameters
+GLProductQuadrature1DSlab::GetInputParameters()
+{
+  InputParameters params;
+
+  params.SetGeneralDescription("1D, slab geometry, Gauss-Legendre product quadrature");
+  params.SetDocGroup("LuaQuadrature");
+  params.AddRequiredParameter<int>("Npolar", "Total number of polar angles.");
+  params.ConstrainParameterRange("Npolar", AllowableRangeLowHighLimit::New(2, 1024));
+
+  return params;
+}
+
+std::shared_ptr<GLProductQuadrature1DSlab>
+GLProductQuadrature1DSlab::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<GLProductQuadrature1DSlab>("aquad::GLProductQuadrature1DSlab", params);
+}
+
+GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(const InputParameters& params)
+  : ProductQuadrature(1)
+{
+  const int param_count = int(params.IsParameterValid("Npolar"));
+  if (param_count != 1)
+    throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be specified");
+
+  const auto Npolar = params.GetParamValue<int>("Npolar");
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
+
+  Initialize(Npolar, false);
+}
+
 GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
   : ProductQuadrature(1)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
 
+  Initialize(Npolar, verbose);
+}
+
+void
+GLProductQuadrature1DSlab::Initialize(int Npolar, bool verbose)
+{
   GaussLegendreQuadrature gl_polar(Npolar);
 
   // Create azimuthal angles
@@ -161,15 +204,65 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
 }
 
+OpenSnRegisterObjectInNamespace(aquad, GLCProductQuadrature2DXY);
+
+InputParameters
+GLCProductQuadrature2DXY::GetInputParameters()
+{
+  InputParameters params;
+
+  params.SetGeneralDescription("2D, XY geometry, Gauss-Legendre-Chebyshev product quadrature");
+  params.SetDocGroup("LuaQuadrature");
+  params.AddRequiredParameter<int>("Npolar", "Total number of polar angles.");
+  params.ConstrainParameterRange("Npolar", AllowableRangeLowHighLimit::New(2, 1024));
+  params.AddRequiredParameter<int>("Nazimuthal", "Total number of azimuthal angles.");
+  params.ConstrainParameterRange("Nazimuthal", AllowableRangeLowHighLimit::New(4, 1024));
+
+  return params;
+}
+
+std::shared_ptr<GLCProductQuadrature2DXY>
+GLCProductQuadrature2DXY::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<GLCProductQuadrature2DXY>("aquad::GLCProductQuadrature2DXY", params);
+}
+
+GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(const InputParameters& params)
+  : ProductQuadrature(2)
+{
+  const int param_count =
+    int(params.IsParameterValid("Npolar")) + int(params.IsParameterValid("Nazimuthal"));
+  if (param_count != 2)
+  {
+    throw std::invalid_argument(
+      "GLCProductQuadrature2DXY: Both Npolar and Nazimuthal must be specified");
+  }
+
+  const auto Npolar = params.GetParamValue<int>("Npolar");
+  const auto Nazimuthal = params.GetParamValue<int>("Nazimuthal");
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even");
+  if (Nazimuthal % 4 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4");
+
+  Initialize(Npolar, Nazimuthal, false);
+}
+
 GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose)
   : ProductQuadrature(2)
 {
   if (Npolar % 2 != 0)
-    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even.");
-
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even");
   if (Nazimuthal % 4 != 0)
-    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4.");
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4");
 
+  Initialize(Npolar, Nazimuthal, verbose);
+}
+
+void
+GLCProductQuadrature2DXY::Initialize(int Npolar, int Nazimuthal, bool verbose)
+{
   GaussLegendreQuadrature gl_polar(Npolar);
   GaussChebyshevQuadrature gc_azimu(Nazimuthal);
 
@@ -195,15 +288,65 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, b
   OptimizeForPolarSymmetry(4.0 * M_PI);
 }
 
+OpenSnRegisterObjectInNamespace(aquad, GLCProductQuadrature3DXYZ);
+
+InputParameters
+GLCProductQuadrature3DXYZ::GetInputParameters()
+{
+  InputParameters params;
+
+  params.SetGeneralDescription("3D, XYZ geometry, Gauss-Legendre-Chebyshev product quadrature");
+  params.SetDocGroup("LuaQuadrature");
+  params.AddRequiredParameter<int>("Npolar", "Total number of polar angles.");
+  params.ConstrainParameterRange("Npolar", AllowableRangeLowHighLimit::New(2, 1024));
+  params.AddRequiredParameter<int>("Nazimuthal", "Total number of azimuthal angles.");
+  params.ConstrainParameterRange("Nazimuthal", AllowableRangeLowHighLimit::New(4, 1024));
+
+  return params;
+}
+
+std::shared_ptr<GLCProductQuadrature3DXYZ>
+GLCProductQuadrature3DXYZ::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<GLCProductQuadrature3DXYZ>("aquad::GLCProductQuadrature3DXYZ", params);
+}
+
+GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(const InputParameters& params)
+  : ProductQuadrature(3)
+{
+  const int param_count =
+    int(params.IsParameterValid("Npolar")) + int(params.IsParameterValid("Nazimuthal"));
+  if (param_count != 2)
+  {
+    throw std::invalid_argument(
+      "GLCProductQuadrature3DXYZ: Both Npolar and Nazimuthal must be specified");
+  }
+
+  const auto Npolar = params.GetParamValue<int>("Npolar");
+  const auto Nazimuthal = params.GetParamValue<int>("Nazimuthal");
+  if (Npolar % 2 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even");
+  if (Nazimuthal % 4 != 0)
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4");
+
+  Initialize(Npolar, Nazimuthal, false);
+}
+
 GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose)
   : ProductQuadrature(3)
 {
   if (Npolar % 2 != 0)
-    throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Npolar must be even.");
-
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even");
   if (Nazimuthal % 4 != 0)
-    throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Nazimuthal must be a multiple of 4.");
+    throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4");
 
+  Initialize(Npolar, Nazimuthal, verbose);
+}
+
+void
+GLCProductQuadrature3DXYZ::Initialize(int Npolar, int Nazimuthal, bool verbose)
+{
   GaussLegendreQuadrature gl_polar(Npolar);
   GaussChebyshevQuadrature gc_azimu(Nazimuthal);
 
