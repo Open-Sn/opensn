@@ -7,7 +7,6 @@ dofile("materials/materials.lua")
 
 -- Angular quadrature
 pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
 -- Solver
 if string.find(k_method, "scdsa") or string.find(k_method, "smm") then
