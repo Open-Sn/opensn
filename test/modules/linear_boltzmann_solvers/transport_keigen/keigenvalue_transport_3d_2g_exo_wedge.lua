@@ -39,9 +39,8 @@ lbs_block = {
   groupsets = {
     {
       groups_from_to = { 0, 1 },
-      angular_quadrature = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4),
+      angular_quadrature = aquad.CreateGLCProductQuadrature3DXYZ(8, 16),
       angle_aggregation_type = "single",
-      groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,

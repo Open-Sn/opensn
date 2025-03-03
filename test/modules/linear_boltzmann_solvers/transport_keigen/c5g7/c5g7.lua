@@ -6,8 +6,7 @@ dofile("materials/materials.lua")
 -- Setup Physics
 
 -- Angular quadrature
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
 -- Solver
 if string.find(k_method, "scdsa") or string.find(k_method, "smm") then
@@ -30,7 +29,6 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
       l_abs_tol = 1.0e-10,
       angle_aggregation_type = "polar",
       angle_aggregation_num_subsets = 1,
-      groupset_num_subsets = 1,
     },
   },
   options = {

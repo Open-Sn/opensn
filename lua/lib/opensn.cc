@@ -5,7 +5,7 @@
 #include "framework/materials/material_property.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/post_processors/post_processor.h"
@@ -121,14 +121,6 @@ static bool reg = opensnlua::Console::Bind(
       .addVariable("OP_MAX_FUNC", opensn::FieldFunctionInterpolationOperation::OP_MAX_FUNC);
 
     luabridge::getGlobalNamespace(L)
-      .addVariable("GAUSS_LEGENDRE", opensn::ProductQuadratureType::GAUSS_LEGENDRE)
-      .addVariable("GAUSS_CHEBYSHEV", opensn::ProductQuadratureType::GAUSS_CHEBYSHEV)
-      .addVariable("GAUSS_LEGENDRE_CHEBYSHEV",
-                   opensn::ProductQuadratureType::GAUSS_LEGENDRE_CHEBYSHEV)
-      .addVariable("CUSTOM_QUADRATURE", opensn::ProductQuadratureType::CUSTOM_QUADRATURE);
-    //
-
-    luabridge::getGlobalNamespace(L)
       .beginClass<LuaLogger>("log")
       .addStaticFunction("Log", &LuaLogger::Log)
       .addStaticFunction("Log0", &LuaLogger::Log0)
@@ -164,12 +156,13 @@ static bool reg = opensnlua::Console::Bind(
       .beginNamespace("aquad")
       .addFunction("Legendre", &Legendre)
       .addFunction("Ylm", &Ylm)
-      .addFunction("CreateProductQuadrature", &AQuadCreateProductQuadrature)
-      .addFunction("CreateCylindricalProductQuadrature", &AQuadCreateCylindricalProductQuadrature)
-      .addFunction("OptimizeForPolarSymmetry", &AQuadOptimizeForPolarSymmetry)
       .addFunction("CreateSLDFESQuadrature", &AQuadCreateSLDFESQAngularQuadrature)
       .addFunction("LocallyRefineSLDFESQ", &AQuadLocallyRefineSLDFESQ)
       .addFunction("PrintQuadratureToFile", &AQuadPrintQuadratureToFile)
+      .addFunction("CreateGLProductQuadrature1DSlab", &AQuadCreateGLProductQuadrature1DSlab)
+      .addFunction("CreateGLCProductQuadrature2DXY", &AQuadCreateGLCProductQuadrature2DXY)
+      .addFunction("CreateGLCProductQuadrature2DRZ", &AQuadCreateGLCProductQuadrature2DRZ)
+      .addFunction("CreateGLCProductQuadrature3DXYZ", &AQuadCreateGLCProductQuadrature3DXYZ)
       //
       .beginClass<AngularQuadrature>("AngularQuadrature")
       .endClass()
@@ -179,11 +172,6 @@ static bool reg = opensnlua::Console::Bind(
       .deriveClass<ProductQuadrature, AngularQuadrature>("ProductQuadrature")
       .endClass()
       .beginClass<std::shared_ptr<ProductQuadrature>>("ProductQuadraturePtr")
-      .endClass()
-      //
-      .deriveClass<AngularQuadratureProdGL, ProductQuadrature>("AngularQuadratureProdGL")
-      .endClass()
-      .beginClass<std::shared_ptr<AngularQuadratureProdGL>>("AngularQuadratureProdGLPtr")
       .endClass()
       .deriveClass<SimplifiedLDFESQ::Quadrature, AngularQuadrature>("SLDFESQuadrature")
       .endClass()

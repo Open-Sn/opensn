@@ -3,7 +3,7 @@
 Ng = 64
 
 Npolar = 4
-Nazimuthal = 2
+Nazimuthal = 16
 
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
@@ -39,7 +39,7 @@ lbs_options = {
 }
 
 -- Quadrature
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, Npolar, Nazimuthal, false)
+pquad0 = aquad.CreateGLCProductQuadrature2DXY(Npolar, Nazimuthal)
 
 -- Set up solver
 gs1 = { 0, Ng - 1 }
@@ -52,7 +52,6 @@ lbs_block = {
       angular_quadrature = pquad0,
       angle_aggregation_type = "single",
       angle_aggregation_num_subsets = 1,
-      groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,

@@ -3,7 +3,6 @@
 
 #include "lua/lib/parse_table.h"
 #include "framework/materials/material_property.h"
-#include "framework/mesh/mesh_vector.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/parameters/input_parameters.h"
@@ -16,6 +15,7 @@
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/post_processors/post_processor.h"
 #include "framework/physics/solver.h"
+#include "framework/math/vector3.h"
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"

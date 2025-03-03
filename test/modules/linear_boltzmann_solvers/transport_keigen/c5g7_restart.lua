@@ -38,8 +38,7 @@ for m = 0, 6 do
 end
 
 -- Angular quadrature
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
 -- Solver
 phys1 = lbs.DiscreteOrdinatesSolver.Create({
@@ -54,7 +53,6 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
       l_abs_tol = 1.0e-10,
       angle_aggregation_type = "polar",
       angle_aggregation_num_subsets = 1,
-      groupset_num_subsets = 1,
     },
   },
   options = {

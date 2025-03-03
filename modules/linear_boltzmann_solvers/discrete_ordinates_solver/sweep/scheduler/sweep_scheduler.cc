@@ -109,46 +109,18 @@ SweepScheduler::InitializeAlgoDOG()
     } // for anglesets
   }   // for quadrants/anglesetgroups
 
-  // Init sort functions
-  struct
-  {
-    bool operator()(const RuleValues& a, const RuleValues& b)
-    {
-      return a.depth_of_graph > b.depth_of_graph;
-    }
-  } compare_D;
-
-  struct
-  {
-    bool operator()(const RuleValues& a, const RuleValues& b)
-    {
-      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax > b.sign_of_omegax);
-    }
-  } compare_omega_x;
-
-  struct
-  {
-    bool operator()(const RuleValues& a, const RuleValues& b)
-    {
-      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
-             (a.sign_of_omegay > b.sign_of_omegay);
-    }
-  } compare_omega_y;
-
-  struct
-  {
-    bool operator()(const RuleValues& a, const RuleValues& b)
-    {
-      return (a.depth_of_graph == b.depth_of_graph) and (a.sign_of_omegax == b.sign_of_omegax) and
-             (a.sign_of_omegay == b.sign_of_omegay) and (a.sign_of_omegaz > b.sign_of_omegaz);
-    }
-  } compare_omega_z;
-
-  // Sort
-  std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_D);
-  std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_x);
-  std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_y);
-  std::stable_sort(rule_values_.begin(), rule_values_.end(), compare_omega_z);
+  std::stable_sort(rule_values_.begin(),
+                   rule_values_.end(),
+                   [](const RuleValues& a, const RuleValues& b)
+                   {
+                     if (a.depth_of_graph != b.depth_of_graph)
+                       return a.depth_of_graph > b.depth_of_graph;
+                     if (a.sign_of_omegax != b.sign_of_omegax)
+                       return a.sign_of_omegax > b.sign_of_omegax;
+                     if (a.sign_of_omegay != b.sign_of_omegay)
+                       return a.sign_of_omegay > b.sign_of_omegay;
+                     return a.sign_of_omegaz > b.sign_of_omegaz;
+                   });
 }
 
 void
@@ -173,24 +145,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       //      Meaning it has received all upstream data and can be executed
       //  - FINISHED.
       //      Meaning the angleset has executed its sweep chunk
-      AngleSetStatus status =
-        angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::NO_EXEC_IF_READY);
-
-      // Execute if ready and allowed
-      // If this angleset is the one scheduled to run
-      // and it is ready then it will be given permission
-      if (status == AngleSetStatus::READY_TO_EXECUTE)
-      {
-        std::stringstream message_i;
-        message_i << "Angleset " << angleset->GetID() << " executed on location "
-                  << opensn::mpi_comm.rank();
-
-        status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-
-        std::stringstream message_f;
-        message_f << "Angleset " << angleset->GetID() << " finished on location "
-                  << opensn::mpi_comm.rank();
-      }
+      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
 
       if (status != AngleSetStatus::FINISHED)
         finished = false;

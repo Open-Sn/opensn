@@ -124,17 +124,14 @@ mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = stren
 
 --[[ @doc
 ## Angular Quadrature
-We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the number of **positive** polar cosines
-(here `npolar = 2`) and the number of azimuthal subdivisions in **one quadrant** (`nazimu = 1`).
-This creates a 3D angular quadrature.
-
-We finish by optimizing the quadrature to only use the positive hemisphere for 2D simulations.
+We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the total number of polar cosines
+(here `npolar = 4`) and the number of azimuthal subdivisions in **four quadrants** (`nazimu = 4`).
+This creates a 2D angular quadrature for XY geometry.
 --]]
 -- Setup the Angular Quadrature
-nazimu = 1
-npolar = 2
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, nazimu, npolar)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+nazimu = 4
+npolar = 4
+pquad = aquad.CreateGLCProductQuadrature2DXY(npolar, nazimu)
 
 --[[ @doc
 ## Linear Boltzmann Solver

@@ -75,9 +75,6 @@ protected:
    * SPDS mirrors an angle-index-set in i)
    * iii) is again a mapping, per quadrature, to a collection of Template FLUDS
    * where each FLUDS mirrors a SPDS in ii).
-   *
-   * The Template FLUDS can be scaled with number of angles and groups which
-   * provides us with the angle-set-subset- and groupset-subset capability.
    */
   void InitializeSweepDataStructures();
 

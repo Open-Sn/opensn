@@ -5,8 +5,7 @@ dofile("utils/qblock_mesh.lua")
 dofile("utils/qblock_materials.lua") --num_groups assigned here
 
 -- Setup Physics
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4, 4)
-aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
+pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
 
 lbs_block = {
   mesh = grid,
@@ -19,7 +18,6 @@ lbs_block = {
       l_max_its = 50,
       gmres_restart_interval = 50,
       l_abs_tol = 1.0e-10,
-      groupset_num_subsets = 2,
     },
   },
   options = {

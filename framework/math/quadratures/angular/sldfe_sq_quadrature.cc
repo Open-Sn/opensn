@@ -5,7 +5,7 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "framework/runtime.h"
 #include <algorithm>
 #include <map>

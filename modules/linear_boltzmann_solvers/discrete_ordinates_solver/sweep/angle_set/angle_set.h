@@ -25,7 +25,6 @@ protected:
   std::shared_ptr<FLUDS> fluds_;
   const std::vector<size_t> angles_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries_;
-  const size_t group_subset_;
   bool executed_ = false;
 
 public:
@@ -34,15 +33,13 @@ public:
            const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
-           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-           const size_t group_subset)
+           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
     : id_(id),
       num_groups_(num_groups),
       spds_(spds),
       fluds_(fluds),
       angles_(angle_indices),
-      boundaries_(boundaries),
-      group_subset_(group_subset)
+      boundaries_(boundaries)
   {
   }
 
@@ -54,9 +51,6 @@ public:
 
   /// Returns a reference to the associated fluds_.
   FLUDS& GetFLUDS() { return *fluds_; }
-
-  /// Return the group subset number.
-  size_t GetGroupSubset() const { return group_subset_; }
 
   /// Returns the angle indices associated with this angleset.
   const std::vector<size_t>& GetAngleIndices() const { return angles_; }
@@ -103,7 +97,6 @@ public:
                                     unsigned int face_num,
                                     unsigned int fi,
                                     int g,
-                                    size_t gs_ss_begin,
                                     bool surface_source_active) = 0;
 
   /// Returns a pointer to outbound reflected flux data.
@@ -111,8 +104,7 @@ public:
                                unsigned int angle_num,
                                uint64_t cell_local_id,
                                unsigned int face_num,
-                               unsigned int fi,
-                               size_t gs_ss_begin) = 0;
+                               unsigned int fi) = 0;
 
   virtual ~AngleSet() = default;
 };

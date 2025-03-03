@@ -1,6 +1,7 @@
-[![Development Branch Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml)
+[![Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml)
 [![Weekly Tests](https://github.com/Open-Sn/openSn/actions/workflows/weekly.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/weekly.yaml)
-[![Nightly builds](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml/badge.svg)](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml)
+[![Nightly Builds](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml/badge.svg)](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/Open-Sn/opensn/badge.svg)](https://coveralls.io/github/Open-Sn/opensn)
 
 <p align="center">
   <img src="doc/images/CoolPics/banner.png" width="700">

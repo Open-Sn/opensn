@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 #include "framework/logging/log.h"
 #include "framework/object.h"
 #include <array>

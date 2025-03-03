@@ -27,25 +27,21 @@ jobs:
       - name: build
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/${{ matrix.compiler }}
           mkdir build && cd build && cmake .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/${{ matrix.compiler }}
           test/run_tests -d test/ -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/${{ matrix.compiler }}
           test/run_tests -d tutorials -j 32 -v 1 -w 3
       - name: test unit
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/${{ matrix.compiler }}
           build/test/opensn-unit
 
@@ -56,21 +52,50 @@ jobs:
       - name: build
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/clang/17
           cmake --preset clang+debug+sanitizer
           cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
           test/run_tests -d test/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
       - name: test tutorials
         shell: bash
         run: |
-          export MODULEPATH=/scratch-local/software/modulefiles:$MODULEPATH
           module load opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
           test/run_tests -d tutorials/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
+
+  coverage:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        shell: bash
+        run: |
+          module load opensn/gcc/14
+          cmake --preset coverage
+          cmake --build --preset coverage -j64
+      - name: test
+        shell: bash
+        run: |
+          module load opensn/gcc/14
+          test/run_tests -d test/ -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
+      - name: unit tests
+        shell: bash
+        run: |
+          module load opensn/gcc/14
+          ./build-coverage/test/opensn-unit
+      - name: test tutorials
+        shell: bash
+        run: |
+          module load opensn/gcc/14
+          test/run_tests -d tutorials/ -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
+      - name: coveralls
+        shell: bash
+        run: |
+          module load opensn/gcc/14
+          gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|lua|modules)/' --coveralls coverage.json
+          /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json

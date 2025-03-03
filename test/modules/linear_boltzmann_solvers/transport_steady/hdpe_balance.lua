@@ -33,7 +33,7 @@ strength[1] = 1.0
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
 -- Angular Quadrature
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
+pquad = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
 -- LBS block option
 lbs_block = {

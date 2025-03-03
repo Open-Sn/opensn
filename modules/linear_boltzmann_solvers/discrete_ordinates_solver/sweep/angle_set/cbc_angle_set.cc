@@ -20,9 +20,8 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                           size_t group_subset,
                            const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, group_subset),
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     async_comm_(id, *fluds, comm_set)
 {
@@ -56,7 +55,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 
   // Check if boundaries allow for execution
   for (auto& [bid, boundary] : boundaries_)
-    if (not boundary->CheckAnglesReadyStatus(angles_, group_subset_))
+    if (not boundary->CheckAnglesReadyStatus(angles_))
       return AngleSetStatus::NOT_FINISHED;
 
   bool all_tasks_completed = true;
@@ -90,7 +89,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   {
     // Update boundary readiness
     for (auto& [bid, boundary] : boundaries_)
-      boundary->UpdateAnglesReadyStatus(angles_, group_subset_);
+      boundary->UpdateAnglesReadyStatus(angles_);
     executed_ = true;
     return AngleSetStatus::FINISHED;
   }
@@ -114,18 +113,15 @@ CBC_AngleSet::PsiBoundary(uint64_t boundary_id,
                           unsigned int face_num,
                           unsigned int fi,
                           int g,
-                          size_t gs_ss_begin,
                           bool surface_source_active)
 {
   if (boundaries_[boundary_id]->IsReflecting())
-    return boundaries_[boundary_id]->PsiIncoming(
-      cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
+    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
 
   if (not surface_source_active)
     return boundaries_[boundary_id]->ZeroFlux(g);
 
-  return boundaries_[boundary_id]->PsiIncoming(
-    cell_local_id, face_num, fi, angle_num, g, gs_ss_begin);
+  return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
 }
 
 double*
@@ -133,10 +129,9 @@ CBC_AngleSet::PsiReflected(uint64_t boundary_id,
                            unsigned int angle_num,
                            uint64_t cell_local_id,
                            unsigned int face_num,
-                           unsigned int fi,
-                           size_t gs_ss_begin)
+                           unsigned int fi)
 {
-  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num, gs_ss_begin);
+  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
 }
 
 } // namespace opensn

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/math/functions/function.h"
-#include "framework/mesh/mesh_vector.h"
+#include "framework/math/vector3.h"
 
 namespace opensn
 {

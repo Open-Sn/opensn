@@ -60,7 +60,7 @@ strength[1] = 1.0
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
 -- Setup Physics
-pquad0 = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2, 2)
+pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
 lbs_block = {
   mesh = grid,
@@ -71,7 +71,6 @@ lbs_block = {
       angular_quadrature = pquad0,
       angle_aggregation_type = "single",
       angle_aggregation_num_subsets = 1,
-      groupset_num_subsets = 1,
       inner_linear_method = "petsc_gmres",
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
