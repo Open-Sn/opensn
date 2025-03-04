@@ -68,17 +68,10 @@ vol1b = logvol.RPPLogicalVolume.Create({
 })
 grid:SetMaterialIDFromLogicalVolume(vol1b, 1, true)
 
--- Create materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material1")
-materials[2] = mat.AddMaterial("Test Material2")
-
 -- Add cross sections to materials
 num_groups = 10
 xs_1 = xs.LoadFromOpenSn("response_2d_3_mat1.xs")
-materials[1]:SetTransportXSections(xs_1)
 xs_2 = xs.LoadFromOpenSn("response_2d_3_mat2.xs")
-materials[2]:SetTransportXSections(xs_2)
 
 -- Create sources
 src = {}
@@ -105,6 +98,10 @@ lbs_block = {
       l_max_its = 500,
       gmres_restart_interval = 100,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_1 },
+    { block_ids = { 1 }, xs = xs_2 },
   },
   options = {
     scattering_order = 0,

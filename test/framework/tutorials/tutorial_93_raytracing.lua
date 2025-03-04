@@ -23,13 +23,8 @@ grid:SetupOrthogonalBoundaries()
 
 unit_sim_tests.SimTest93_RayTracing({ mesh = grid })
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-
 num_groups = 1
 xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
-materials[1]:SetTransportXSections(xs1g)
 
 ---- Setup Physics
 --solver_name = "LBS"
@@ -101,6 +96,9 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 0,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs1g },
   },
   options = {
     scattering_order = 0,

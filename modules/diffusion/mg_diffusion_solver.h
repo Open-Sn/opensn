@@ -121,6 +121,7 @@ public:
   static InputParameters GetInputParameters();
   static InputParameters GetOptionsBlock();
   static InputParameters GetBoundaryOptionsBlock();
+  static InputParameters GetXSMapEntryBlock();
 };
 
 } // namespace opensn

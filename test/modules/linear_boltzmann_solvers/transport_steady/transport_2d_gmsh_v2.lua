@@ -16,12 +16,7 @@ grid = meshgen1:Execute()
 
 -- Material
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-materials = {}
-materials[0] = mat.AddMaterial("Test Material")
-materials[1] = mat.AddMaterial("Test Material")
 xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
-materials[0]:SetTransportXSections(xs_diag)
-materials[1]:SetTransportXSections(xs_diag)
 strength = {}
 for g = 1, Ng do
   strength[g] = 0.0
@@ -56,6 +51,9 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 300,
     },
+  },
+  xs_map = {
+    { block_ids = { 0, 1 }, xs = xs_diag },
   },
 }
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

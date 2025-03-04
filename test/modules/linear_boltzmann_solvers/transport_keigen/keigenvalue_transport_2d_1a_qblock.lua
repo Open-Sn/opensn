@@ -32,6 +32,7 @@ lbs_block = {
     verbose_inner_iterations = false,
     verbose_outer_iterations = true,
   },
+  xs_map = xs_map,
 }
 
 --lbs_options =

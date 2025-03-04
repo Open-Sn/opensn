@@ -34,15 +34,8 @@ meshgen1 = mesh.MeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-materials[2] = mat.AddMaterial("Test Material2")
-
 num_groups = 5
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
-materials[1]:SetTransportXSections(xs_graphite)
-materials[2]:SetTransportXSections(xs_graphite)
 
 strength = {}
 for g = 1, num_groups do
@@ -68,6 +61,9 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 1000,
     },
+  },
+  xs_map = {
+    { block_ids = { 0, 1 }, xs = xs_graphite },
   },
 }
 

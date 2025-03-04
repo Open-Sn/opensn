@@ -46,8 +46,3 @@ log.Log(LOG_0, "chi[1] before: " .. chi_before)
 log.Log(LOG_0, "chi[1] after : " .. chi_after)
 log.Log(LOG_0, "sigt[1] before: " .. sigt_before)
 log.Log(LOG_0, "sigt[1] after : " .. sigt_after)
-
--- Create a material
-materials = {}
-materials[0] = mat.AddMaterial("Material_fuel")
-materials[0]:SetTransportXSections(my_xs["fuel"])

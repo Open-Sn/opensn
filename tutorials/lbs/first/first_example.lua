@@ -93,22 +93,11 @@ with value 0 for each cell in the spatial domain.
 grid:SetUniformMaterialID(0)
 
 --[[ @doc
-## Materials
-We create a material and add two properties to it:
-+ TRANSPORT_XSECTIONS for the transport cross sections, and
-+ ISOTROPIC_MG_SOURCE for the isotropic volumetric source
---]]
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Material_A")
-
---[[ @doc
 ## Cross Sections
-We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials'
-section on materials for more details on cross sections.
+We load the cross sections from an OpenSn file format.
+See the tutorials' section on materials for more details on cross sections.
 --]]
 xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")
-materials[1]:SetTransportXSections(xs_matA)
 
 --[[ @doc
 ## Volumetric Source
@@ -155,6 +144,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 30,
     },
+  },
+  xs_map = {
+    { block_ids = { 0 }, xs = xs_matA },
   },
   options = {
     volumetric_sources = { mg_src },
