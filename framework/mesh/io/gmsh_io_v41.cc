@@ -328,7 +328,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
       continue;
 
     auto& cell = *raw_cell;
-    cell.material_id = physical_reg;
+    cell.block_id = physical_reg;
     std::vector<uint64_t> nodes(node_tags.size());
     for (size_t i = 0; i < node_tags.size(); ++i)
       nodes[i] = node_tags[i] - 1;
@@ -397,13 +397,13 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   std::map<int, int> material_mapping;
 
   for (auto& cell : mesh->GetRawCells())
-    material_ids_set_as_read.insert(cell->material_id);
+    material_ids_set_as_read.insert(cell->block_id);
 
   std::set<int> boundary_ids_set_as_read;
   std::map<int, int> boundary_mapping;
 
   for (auto& cell : mesh->GetRawBoundaryCells())
-    boundary_ids_set_as_read.insert(cell->material_id);
+    boundary_ids_set_as_read.insert(cell->block_id);
 
   {
     int m = 0;
@@ -416,10 +416,10 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   }
 
   for (auto& cell : mesh->GetRawCells())
-    cell->material_id = material_mapping[cell->material_id];
+    cell->block_id = material_mapping[cell->block_id];
 
   for (auto& cell : mesh->GetRawBoundaryCells())
-    cell->material_id = boundary_mapping[cell->material_id];
+    cell->block_id = boundary_mapping[cell->block_id];
 
   unsigned int dimension = (mesh_is_2D) ? 2 : 3;
   mesh->SetDimension(dimension);

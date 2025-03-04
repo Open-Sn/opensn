@@ -287,7 +287,7 @@ SplitFileMeshGenerator::ReadSplitMesh() const
     UnpartitionedMesh::LightWeightCell new_cell(cell_type, cell_sub_type);
 
     new_cell.centroid = ReadBinaryValue<Vector3>(ifile);
-    new_cell.material_id = ReadBinaryValue<int>(ifile);
+    new_cell.block_id = ReadBinaryValue<int>(ifile);
 
     const auto num_vids = ReadBinaryValue<size_t>(ifile);
     for (size_t v = 0; v < num_vids; ++v)
@@ -406,7 +406,7 @@ SplitFileMeshGenerator::SerializeCell(const UnpartitionedMesh::LightWeightCell& 
   serial_buffer.Write(cell.type);
   serial_buffer.Write(cell.sub_type);
   serial_buffer.Write(cell.centroid);
-  serial_buffer.Write(cell.material_id);
+  serial_buffer.Write(cell.block_id);
   serial_buffer.Write(cell.vertex_ids.size());
   for (const uint64_t vid : cell.vertex_ids)
     serial_buffer.Write(vid);

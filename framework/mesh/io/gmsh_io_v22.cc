@@ -241,7 +241,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       continue;
 
     auto& cell = *raw_cell;
-    cell.material_id = physical_region;
+    cell.block_id = physical_region;
     cell.vertex_ids = ReadNodes(num_cell_nodes);
 
     // Populate faces
@@ -302,23 +302,23 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   file.close();
 
-  // Remap material-ids
-  std::set<int> material_ids_set_as_read;
-  std::map<int, int> material_mapping;
+  // Remap block-ids
+  std::set<int> block_ids_set_as_read;
+  std::map<int, int> block_mapping;
 
   for (auto& cell : mesh->GetRawCells())
-    material_ids_set_as_read.insert(cell->material_id);
+    block_ids_set_as_read.insert(cell->block_id);
 
   std::set<int> boundary_ids_set_as_read;
   std::map<int, int> boundary_mapping;
 
   for (auto& cell : mesh->GetRawBoundaryCells())
-    boundary_ids_set_as_read.insert(cell->material_id);
+    boundary_ids_set_as_read.insert(cell->block_id);
 
   {
     int m = 0;
-    for (const auto& mat_id : material_ids_set_as_read)
-      material_mapping.insert(std::make_pair(mat_id, m++));
+    for (const auto& mat_id : block_ids_set_as_read)
+      block_mapping.insert(std::make_pair(mat_id, m++));
 
     int b = 0;
     for (const auto& bndry_id : boundary_ids_set_as_read)
@@ -326,10 +326,10 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   }
 
   for (auto& cell : mesh->GetRawCells())
-    cell->material_id = material_mapping[cell->material_id];
+    cell->block_id = block_mapping[cell->block_id];
 
   for (auto& cell : mesh->GetRawBoundaryCells())
-    cell->material_id = boundary_mapping[cell->material_id];
+    cell->block_id = boundary_mapping[cell->block_id];
 
   unsigned int dimension = (mesh_is_2D) ? 2 : 3;
   mesh->SetDimension(dimension);

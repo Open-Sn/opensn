@@ -163,7 +163,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t
       serial_data.Write(cell.centroid.x);
       serial_data.Write(cell.centroid.y);
       serial_data.Write(cell.centroid.z);
-      serial_data.Write(cell.material_id);
+      serial_data.Write(cell.block_id);
       serial_data.Write(cell.vertex_ids.size());
       for (const auto vid : cell.vertex_ids)
         serial_data.Write(vid);
@@ -240,7 +240,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     cell.centroid.x = serial_data.Read<double>();
     cell.centroid.y = serial_data.Read<double>();
     cell.centroid.z = serial_data.Read<double>();
-    cell.material_id = serial_data.Read<int>();
+    cell.block_id = serial_data.Read<int>();
 
     const auto num_vids = serial_data.Read<size_t>();
     for (size_t v = 0; v < num_vids; ++v)
