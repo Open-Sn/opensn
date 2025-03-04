@@ -46,15 +46,8 @@ vol1 =
   logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
 grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
--- Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Test Material")
-materials[2] = mat.AddMaterial("Test Material2")
-
 num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
-materials[1]:SetTransportXSections(xs_graphite)
-materials[2]:SetTransportXSections(xs_graphite)
 
 strength = {}
 for g = 1, num_groups do
@@ -80,6 +73,9 @@ lbs_block = {
       l_max_its = 300,
       gmres_restart_interval = 100,
     },
+  },
+  xs_map = {
+    { block_ids = { 0, 1 }, xs = xs_graphite },
   },
 }
 bsrc = {}

@@ -30,7 +30,6 @@ std::filesystem::path input_path;
 std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
 std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
-std::vector<std::shared_ptr<Material>> material_stack;
 std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
@@ -67,7 +66,6 @@ Finalize()
   surface_mesh_stack.clear();
   field_func_interpolation_stack.clear();
   unpartitionedmesh_stack.clear();
-  material_stack.clear();
   multigroup_xs_stack.clear();
   function_stack.clear();
   object_stack.clear();

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "lua/lib/parse_table.h"
-#include "framework/materials/material_property.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/parameters/input_parameters.h"
@@ -95,7 +94,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::AngularQuadrature>(L));
   //
   else if (cls_name == "MultiGroupXS")
-    block.AddParameter(key, CreateObjectPtr<opensn::MaterialProperty>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::MultiGroupXS>(L));
   //
   else if (cls_name == "AggregateNodalValuePostProcessor")
     block.AddParameter(key, CreateObjectPtr<opensn::PostProcessor>(L));

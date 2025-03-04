@@ -31,6 +31,7 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
       angle_aggregation_num_subsets = 1,
     },
   },
+  xs_map = xs_map,
   options = {
     boundary_conditions = {
       { name = "xmin", type = "reflecting" },

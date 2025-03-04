@@ -3,18 +3,16 @@
 
 #pragma once
 
-#include "framework/materials/material_property.h"
 #include "framework/math/sparse_matrix/sparse_matrix.h"
 
 namespace opensn
 {
 
-class MultiGroupXS : public MaterialProperty
+class MultiGroupXS : public std::enable_shared_from_this<MultiGroupXS>
 {
 public:
   MultiGroupXS()
-    : MaterialProperty(PropertyType::TRANSPORT_XSECTIONS),
-      num_groups_(0),
+    : num_groups_(0),
       scattering_order_(0),
       num_precursors_(0),
       is_fissionable_(false),

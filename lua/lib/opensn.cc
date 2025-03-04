@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/logging/log.h"
-#include "framework/materials/material_property.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/vector3.h"
@@ -20,9 +19,8 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/functions/function.h"
 #include "framework/math/functions/scalar_spatial_function.h"
-#include "framework/materials/material.h"
+#include "lua/lib/functions.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/materials/isotropic_multigroup_source.h"
 #include "framework/mesh/logical_volume/boolean_logical_volume.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/logical_volume/rcc_logical_volume.h"
@@ -72,7 +70,6 @@
 #include "lua/lib/post.h"
 #include "lua/lib/solver.h"
 #include "lua/lib/xs.h"
-#include "lua/lib/mat.h"
 #include "lua/lib/lbs.h"
 #include "LuaBridge/LuaBridge.h"
 #include <lua.h>
@@ -438,24 +435,8 @@ static bool reg = opensnlua::Console::Bind(
       .endNamespace();
 
     luabridge::getGlobalNamespace(L)
-      .beginNamespace("mat")
-      .beginClass<MaterialProperty>("MaterialProperty")
-      .endClass()
-      .beginClass<std::shared_ptr<MaterialProperty>>("MaterialPropertyPtr")
-      .endClass()
-      //
-      .beginClass<Material>("Material")
-      .addFunction("SetTransportXSections", &Material::SetTransportXSections)
-      .endClass()
-      .beginClass<std::shared_ptr<Material>>("MaterialPtr")
-      .endClass()
-      //
-      .addFunction("AddMaterial", &MatAddMaterial)
-      .endNamespace();
-
-    luabridge::getGlobalNamespace(L)
       .beginNamespace("xs")
-      .deriveClass<MultiGroupXS, MaterialProperty>("MultiGroupXS")
+      .beginClass<MultiGroupXS>("MultiGroupXS")
       .addFunction("Initialize", luabridge::overload<double, double>(&MultiGroupXS::Initialize))
       .addFunction("SetScalingFactor", &MultiGroupXS::SetScalingFactor)
       .addProperty("num_groups", &MultiGroupXS::GetNumGroups)

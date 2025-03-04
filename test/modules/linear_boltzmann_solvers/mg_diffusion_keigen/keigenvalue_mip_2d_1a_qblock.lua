@@ -20,6 +20,10 @@ lbs_block = {
       l_abs_tol = 1.0e-10,
     },
   },
+  xs_map = {
+    { block_ids = { 0 }, xs = xss["0"] },
+    { block_ids = { 1 }, xs = xss["1"] },
+  },
 }
 
 lbs_options = {

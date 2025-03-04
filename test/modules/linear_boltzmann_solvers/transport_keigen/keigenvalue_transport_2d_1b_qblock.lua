@@ -20,6 +20,7 @@ lbs_block = {
       l_abs_tol = 1.0e-10,
     },
   },
+  xs_map = xs_map,
 }
 
 lbs_options = {
