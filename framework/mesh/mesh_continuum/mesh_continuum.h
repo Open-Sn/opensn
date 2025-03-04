@@ -192,7 +192,7 @@ private:
 
 public:
   /// Compute volume per material id's
-  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> mesh);
+  static void ComputeVolumePerBlockID(const std::shared_ptr<MeshContinuum> mesh);
 
   VertexHandler vertices;
   LocalCellHandler local_cells;
