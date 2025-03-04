@@ -344,7 +344,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
         if (cfvids == afvids)
         {
-          face.neighbor = adj_cell->material_id;
+          face.neighbor = adj_cell->block_id;
           break;
         }
       } // for adj_cell_id

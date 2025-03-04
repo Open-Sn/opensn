@@ -362,7 +362,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
         for (uint64_t& vid : face.vertex_ids)
           vid = node_map[vid];
 
-      raw_cell->material_id = block_id_array->GetValue(c);
+      raw_cell->block_id = block_id_array->GetValue(c);
 
       cells[cell_gid] = raw_cell;
     } // for cell c
@@ -418,7 +418,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       else
         throw std::logic_error(fname + ": Unsupported cell dimension.");
 
-      raw_cells.back()->material_id = block_id_array->GetValue(c);
+      raw_cells.back()->block_id = block_id_array->GetValue(c);
     }
 
     // Push points
@@ -446,7 +446,7 @@ SetMaterialIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh,
   auto& raw_cells = mesh->GetRawCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
-    raw_cells[c]->material_id = material_ids[c];
+    raw_cells[c]->block_id = material_ids[c];
 }
 
 void

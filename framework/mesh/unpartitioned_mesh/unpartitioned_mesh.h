@@ -32,7 +32,7 @@ public:
     const CellType type;
     const CellType sub_type;
     Vector3 centroid;
-    int material_id = -1;
+    int block_id = -1;
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
 
