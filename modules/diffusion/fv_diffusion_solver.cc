@@ -172,10 +172,10 @@ FVDiffusionSolver::Initialize()
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
+  auto global_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
-  for (uint64_t bndry_id : globl_unique_bndry_ids)
+  for (uint64_t bndry_id : global_unique_bndry_ids)
   {
     if (grid_boundary_id_map.count(bndry_id) == 0)
       throw std::logic_error(fname + ": Boundary id " + std::to_string(bndry_id) +

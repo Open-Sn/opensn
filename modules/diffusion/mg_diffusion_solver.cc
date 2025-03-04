@@ -327,8 +327,8 @@ MGDiffusionSolver::Initialize()
   InitializeMaterials(unique_material_ids);
 
   // BIDs
-  auto globl_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
-  SetBCs(globl_unique_bndry_ids);
+  auto global_unique_bndry_ids = grid.GetUniqueBoundaryIDs();
+  SetBCs(global_unique_bndry_ids);
 
   // Make SDM
   sdm_ptr_ = PieceWiseLinearContinuous::New(grid_ptr_);
@@ -617,19 +617,19 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
 }
 
 void
-MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids)
+MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids)
 {
   const std::string fname = "MGSolver::SetBCs";
   log.Log0Verbose1() << "Setting Boundary Conditions";
 
   uint64_t max_boundary_id = 0;
-  for (const auto& id : globl_unique_bndry_ids)
+  for (const auto& id : global_unique_bndry_ids)
     max_boundary_id = std::max(id, max_boundary_id);
 
   log.Log() << "Max boundary id identified: " << max_boundary_id;
 
   const auto& grid_boundary_id_map = grid_ptr_->GetBoundaryIDMap();
-  for (uint64_t bndry_id : globl_unique_bndry_ids)
+  for (uint64_t bndry_id : global_unique_bndry_ids)
   {
     if (grid_boundary_id_map.count(bndry_id) == 0)
       throw std::logic_error(fname + ": Boundary id " + std::to_string(bndry_id) +
@@ -1113,9 +1113,9 @@ MGDiffusionSolver::UpdateFluxWithTwoGrid(int64_t iverbose)
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const int64_t imap = sdm.MapDOFLocal(cell, i);
-        const int64_t imap_globl = sdm.MapDOF(cell, i);
+        const int64_t imap_global = sdm.MapDOF(cell, i);
         const double aux = xlocal_tg[imap] * VF_[counter][i] * xstg.spectrum[g];
-        VecSetValue(x_[g], imap_globl, aux, ADD_VALUES);
+        VecSetValue(x_[g], imap_global, aux, ADD_VALUES);
       } // i
     }   // g
     counter++;

@@ -132,26 +132,26 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
 
   if (operation_ == "max")
   {
-    double globl_max_value;
-    mpi_comm.all_reduce(local_max_value, globl_max_value, mpi::op::sum<double>());
+    double global_max_value;
+    mpi_comm.all_reduce(local_max_value, global_max_value, mpi::op::sum<double>());
 
-    value_ = ParameterBlock("", globl_max_value);
+    value_ = ParameterBlock("", global_max_value);
   }
   else if (operation_ == "min")
   {
-    double globl_min_value;
-    mpi_comm.all_reduce(local_min_value, globl_min_value, mpi::op::min<double>());
+    double global_min_value;
+    mpi_comm.all_reduce(local_min_value, global_min_value, mpi::op::min<double>());
 
-    value_ = ParameterBlock("", globl_min_value);
+    value_ = ParameterBlock("", global_min_value);
   }
   else if (operation_ == "avg")
   {
-    double globl_accumulation;
-    mpi_comm.all_reduce(local_accumulation, globl_accumulation, mpi::op::sum<double>());
+    double global_accumulation;
+    mpi_comm.all_reduce(local_accumulation, global_accumulation, mpi::op::sum<double>());
 
-    const size_t num_globl_dofs =
+    const size_t num_global_dofs =
       ref_ff.GetSpatialDiscretization().GetNumGlobalDOFs(ref_ff.GetUnknownManager());
-    value_ = ParameterBlock("", globl_accumulation / double(num_globl_dofs));
+    value_ = ParameterBlock("", global_accumulation / double(num_global_dofs));
   }
   else
     OpenSnLogicalError("Unsupported operation type \"" + operation_ + "\".");

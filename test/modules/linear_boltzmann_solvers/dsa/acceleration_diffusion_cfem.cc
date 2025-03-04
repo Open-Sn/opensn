@@ -31,10 +31,10 @@ acceleration_Diffusion_CFEM(const ParameterBlock& params)
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
   const size_t num_local_dofs = sdm.GetNumLocalAndGhostDOFs(OneDofPerNode);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_global_dofs;
 
   // Make Boundary conditions
   std::map<uint64_t, BoundaryCondition> bcs;

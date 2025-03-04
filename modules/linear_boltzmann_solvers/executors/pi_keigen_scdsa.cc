@@ -424,9 +424,9 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
   log.Log() << "Making PWLD ghost communicator";
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(uk_man);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(uk_man);
+  const size_t num_global_dofs = sdm.GetNumGlobalDOFs(uk_man);
 
-  log.Log() << "Number of global dofs" << num_globl_dofs;
+  log.Log() << "Number of global dofs" << num_global_dofs;
 
   const size_t num_unknowns = uk_man.unknowns.size();
 
@@ -460,7 +460,7 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
 
   // Create the vector ghost communicator
   auto vgc = std::make_shared<VectorGhostCommunicator>(
-    num_local_dofs, num_globl_dofs, global_indices, mpi_comm);
+    num_local_dofs, num_global_dofs, global_indices, mpi_comm);
 
   // Create the map
   std::map<int64_t, int64_t> ghost_global_id_2_local_map;
@@ -515,9 +515,9 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
           const int64_t dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_globl = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
 
-          cfem_dof_global2local_map[dof_cfem_map_globl] = dof_cfem_map;
+          cfem_dof_global2local_map[dof_cfem_map_global] = dof_cfem_map;
 
           const double phi_value = input[dof_dfem_map];
 
@@ -553,12 +553,12 @@ PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
         const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
-          const int64_t dof_dfem_map_globl = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_globl = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
-          if (cfem_dof_global2local_map.count(dof_cfem_map_globl) > 0)
+          const int64_t dof_dfem_map_global = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
+          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          if (cfem_dof_global2local_map.count(dof_cfem_map_global) > 0)
           {
-            const int64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_globl);
-            const int64_t dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_globl];
+            const int64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);
+            const int64_t dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_global];
 
             const double phi_value = input_with_ghosts[dof_dfem_map];
 

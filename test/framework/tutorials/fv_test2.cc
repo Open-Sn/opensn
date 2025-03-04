@@ -34,14 +34,14 @@ SimTest02_FV(const ParameterBlock& params)
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_global_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
-  const auto N = static_cast<int64_t>(num_globl_dofs);
+  const auto N = static_cast<int64_t>(num_global_dofs);
   Mat A;
   Vec x, b;
 
@@ -143,7 +143,7 @@ SimTest02_FV(const ParameterBlock& params)
   // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
-  VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::mpi_comm);
+  VectorGhostCommunicator vgc(num_local_dofs, num_global_dofs, ghost_ids, opensn::mpi_comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);
