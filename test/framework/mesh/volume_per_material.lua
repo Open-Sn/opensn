@@ -33,4 +33,4 @@ grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = true, infz = true })
 grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
-grid:ComputeVolumePerMaterialID()
+grid:ComputeVolumePerBlockID()

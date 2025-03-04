@@ -144,8 +144,8 @@ public:
   LocalCellHandler local_cells;
   GlobalCellHandler cells;
 
-  /// Compute volume per material id's
-  void ComputeVolumePerMaterialID();
+  /// Compute volume per block IDs
+  void ComputeVolumePerBlockID();
 
 private:
   /// Spatial dimension

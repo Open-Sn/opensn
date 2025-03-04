@@ -768,25 +768,25 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, const uns
 }
 
 void
-MeshContinuum::ComputeVolumePerMaterialID()
+MeshContinuum::ComputeVolumePerBlockID()
 {
-  // Create a map to hold local volume with local material as key
-  std::map<int, double> material_volumes;
+  // Create a map to hold local volume with local block as key
+  std::map<int, double> block_volumes;
   for (auto& cell : this->local_cells)
-    material_volumes[cell.block_id] += cell.volume;
+    block_volumes[cell.block_id] += cell.volume;
 
-  // Collect all local material IDs
-  std::set<int> unique_material_ids;
-  for (const auto& [matid, vol] : material_volumes)
-    unique_material_ids.insert(matid);
+  // Collect all local block IDs
+  std::set<int> unique_block_ids;
+  for (const auto& [matid, vol] : block_volumes)
+    unique_block_ids.insert(matid);
 
   // convert set to vector
-  const std::vector<int> local_material_ids(unique_material_ids.begin(), unique_material_ids.end());
-  const auto local_size = static_cast<int>(local_material_ids.size());
+  const std::vector<int> local_block_ids(unique_block_ids.begin(), unique_block_ids.end());
+  const auto local_size = static_cast<int>(local_block_ids.size());
 
   // Initialize vector to hold sizes from all processes
   std::vector<int> all_sizes(mpi_comm.size());
-  // Gather all local material ID sizes from all processes
+  // Gather all local block ID sizes from all processes
   mpi_comm.all_gather(local_size, all_sizes);
 
   // Compute the displacement and total size
@@ -798,37 +798,36 @@ MeshContinuum::ComputeVolumePerMaterialID()
     total_size += all_sizes[i];
   }
 
-  // Initialize vector to hold all material IDs from all processes
-  std::vector<int> global_material_ids(total_size);
-  // Gather all material IDs at root
-  mpi_comm.all_gather(local_material_ids, global_material_ids, all_sizes, displs);
+  // Initialize vector to hold all block IDs from all processes
+  std::vector<int> global_block_ids(total_size);
+  // Gather all block IDs at root
+  mpi_comm.all_gather(local_block_ids, global_block_ids, all_sizes, displs);
 
-  // Create a union of all unique material IDs
-  std::set<int> global_unique_material_ids(global_material_ids.begin(), global_material_ids.end());
+  // Create a union of all unique block IDs
+  std::set<int> global_unique_block_ids(global_block_ids.begin(), global_block_ids.end());
 
-  // Assign unique material IDs for global reduction
-  global_material_ids.assign(global_unique_material_ids.begin(), global_unique_material_ids.end());
-  std::vector<double> local_volumes(global_material_ids.size(), 0.0);
-  std::vector<double> global_volumes(global_material_ids.size(), 0.0);
+  // Assign unique block IDs for global reduction
+  global_block_ids.assign(global_unique_block_ids.begin(), global_unique_block_ids.end());
+  std::vector<double> local_volumes(global_block_ids.size(), 0.0);
+  std::vector<double> global_volumes(global_block_ids.size(), 0.0);
 
-  // Fill local volumes vector based on the local material volumes
-  // and perform the reduction one material at a time
-  std::map<int, double> global_material_volumes;
-  for (size_t i = 0; i < global_material_ids.size(); ++i)
+  // Fill local volumes vector based on the local block volumes
+  // and perform the reduction one block at a time
+  std::map<int, double> global_block_volumes;
+  for (size_t i = 0; i < global_block_ids.size(); ++i)
   {
-    if (material_volumes.find(global_material_ids[i]) != material_volumes.end())
-      local_volumes[i] = material_volumes[global_material_ids[i]];
+    if (block_volumes.find(global_block_ids[i]) != block_volumes.end())
+      local_volumes[i] = block_volumes[global_block_ids[i]];
 
     mpi_comm.all_reduce(local_volumes[i], global_volumes[i], mpi::op::sum<double>());
-    global_material_volumes[global_material_ids[i]] = global_volumes[i];
+    global_block_volumes[global_block_ids[i]] = global_volumes[i];
   }
 
   // Output the volumes per material_id on the root process
   if (mpi_comm.rank() == 0)
   {
-    for (const auto& [matid, vol] : global_material_volumes)
-      log.Log() << "Material ID: " << matid << " Volume: " << std::setprecision(12) << vol
-                << std::endl;
+    for (const auto& [id, vol] : global_block_volumes)
+      log.Log() << "Block ID: " << id << " Volume: " << std::setprecision(12) << vol << std::endl;
     log.Log() << std::endl;
   }
 }

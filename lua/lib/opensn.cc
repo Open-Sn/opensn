@@ -293,7 +293,7 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("SetBoundaryIDFromFunction", &MeshSetBoundaryIDFromFunction)
       .addFunction("ExportToPVTU", &MeshExportToPVTU)
       .beginClass<MeshContinuum>("MeshContinuum")
-      .addFunction("ComputeVolumePerMaterialID", &MeshContinuum::ComputeVolumePerMaterialID)
+      .addFunction("ComputeVolumePerBlockID", &MeshContinuum::ComputeVolumePerBlockID)
       .addFunction("Dimension", &MeshContinuum::GetDimension)
       .addFunction("SetDimension", &MeshContinuum::SetDimension)
       .addFunction("SetUniformBlockID", &MeshContinuum::SetUniformBlockID)
