@@ -52,14 +52,13 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">3.1. A First Example</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#check-the-number-of-processes">3.1.1. Check the number of processes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mesh">3.1.2. Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#materials">3.1.3. Materials</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cross-sections">3.1.4. Cross Sections</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#volumetric-source">3.1.5. Volumetric Source</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">3.1.6. Angular Quadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#linear-boltzmann-solver">3.1.7. Linear Boltzmann Solver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#post-processing-via-field-functions">3.1.8. Post-Processing via Field Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#possible-extensions">3.1.9. Possible Extensions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#the-complete-input-is-below">3.1.10. The complete input is below:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cross-sections">3.1.3. Cross Sections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volumetric-source">3.1.4. Volumetric Source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">3.1.5. Angular Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linear-boltzmann-solver">3.1.6. Linear Boltzmann Solver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#post-processing-via-field-functions">3.1.7. Post-Processing via Field Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#possible-extensions">3.1.8. Possible Extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-complete-input-is-below">3.1.9. The complete input is below:</a></li>
 </ul>
 </li>
 </ul>
@@ -188,30 +187,16 @@ with value 0 for each cell in the spatial domain.</p>
 </div>
 </section>
 </section>
-<section id="materials">
-<h2><span class="section-number">3.1.3. </span>Materials<a class="headerlink" href="#materials" title="Link to this heading"></a></h2>
-<p>We create a material and add two properties to it:</p>
-<ul class="simple">
-<li><p>TRANSPORT_XSECTIONS for the transport cross sections, and</p></li>
-<li><p>ISOTROPIC_MG_SOURCE for the isotropic volumetric source</p></li>
-</ul>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Add materials</span>
-<span class="nv">materials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mat</span><span class="p">.</span><span class="nf">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 <section id="cross-sections">
-<h2><span class="section-number">3.1.4. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
-<p>We assign the cross sections to the material by loading the file containing the cross sections. See the tutorials’
-section on materials for more details on cross sections.</p>
+<h2><span class="section-number">3.1.3. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h2>
+<p>We load the cross sections from an OpenSn file format.
+See the tutorials’ section on materials for more details on cross sections.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">xs_matA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs</span><span class="p">.</span><span class="nf">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">SetTransportXSections</span><span class="p">(</span><span class="nv">xs_matA</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="volumetric-source">
-<h2><span class="section-number">3.1.5. </span>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.4. </span>Volumetric Source<a class="headerlink" href="#volumetric-source" title="Link to this heading"></a></h2>
 <p>We create a volumetric multigroup source which will be assigned to the material with given block IDs.
 Volumetric sources are assigned to the solver via the <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter in the LBS block (see below).</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
@@ -224,7 +209,7 @@ Volumetric sources are assigned to the solver via the <code class="docutils lite
 </div>
 </section>
 <section id="angular-quadrature">
-<h2><span class="section-number">3.1.6. </span>Angular Quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.5. </span>Angular Quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the total number of polar cosines
 (here <code class="docutils literal notranslate"><span class="pre">npolar</span> <span class="pre">=</span> <span class="pre">4</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">nazimu</span> <span class="pre">=</span> <span class="pre">4</span></code>).
 This creates a 2D angular quadrature for XY geometry.</p>
@@ -236,9 +221,9 @@ This creates a 2D angular quadrature for XY geometry.</p>
 </div>
 </section>
 <section id="linear-boltzmann-solver">
-<h2><span class="section-number">3.1.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#linear-boltzmann-solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.6. </span>Linear Boltzmann Solver<a class="headerlink" href="#linear-boltzmann-solver" title="Link to this heading"></a></h2>
 <section id="options-for-the-linear-boltzmann-solver-lbs">
-<h3><span class="section-number">3.1.7.1. </span>Options for the Linear Boltzmann Solver (LBS)<a class="headerlink" href="#options-for-the-linear-boltzmann-solver-lbs" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.6.1. </span>Options for the Linear Boltzmann Solver (LBS)<a class="headerlink" href="#options-for-the-linear-boltzmann-solver-lbs" title="Link to this heading"></a></h3>
 <p>In the LBS block, we provide</p>
 <ul class="simple">
 <li><p>the number of energy groups,</p></li>
@@ -260,6 +245,9 @@ tolerances, and other solver options.</p></li>
 <span class="w">      </span><span class="nv">gmres_restart_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">xs_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nv">block_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nv">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs_matA</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nv">volumetric_sources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">mg_src</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">},</span>
@@ -268,7 +256,7 @@ tolerances, and other solver options.</p></li>
 </div>
 </section>
 <section id="putting-the-linear-boltzmann-solver-together">
-<h3><span class="section-number">3.1.7.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#putting-the-linear-boltzmann-solver-together" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.1.6.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#putting-the-linear-boltzmann-solver-together" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">phys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nv">lbs_block</span><span class="p">)</span>
 <span class="c1">-- Initialize and Execute Solver</span>
@@ -280,7 +268,7 @@ tolerances, and other solver options.</p></li>
 </section>
 </section>
 <section id="post-processing-via-field-functions">
-<h2><span class="section-number">3.1.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#post-processing-via-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.7. </span>Post-Processing via Field Functions<a class="headerlink" href="#post-processing-via-field-functions" title="Link to this heading"></a></h2>
 <p>We extract the scalar flux (i.e., the first entry in the field function list; recall that lua
 indexing starts at 1) and export it to a VTK file whose name is supplied by the user. See the tutorials’ section
 on post-processing for more details on field functions.</p>
@@ -294,7 +282,7 @@ on post-processing for more details on field functions.</p>
 </div>
 </section>
 <section id="possible-extensions">
-<h2><span class="section-number">3.1.9. </span>Possible Extensions<a class="headerlink" href="#possible-extensions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.8. </span>Possible Extensions<a class="headerlink" href="#possible-extensions" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Change the number of MPI processes (you may want to delete the safeguard at the top of the input file to run with any number of MPI ranks);</p></li>
 <li><p>Change the spatial resolution by increasing or decreasing the number of cells;</p></li>
@@ -303,7 +291,7 @@ on post-processing for more details on field functions.</p>
 </section>
 <hr class="docutils" />
 <section id="the-complete-input-is-below">
-<h2><span class="section-number">3.1.10. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.1.9. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
 <p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/lbs/first/first_example.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Check num_procs</span>
 <span class="nv">num_procs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
@@ -347,13 +335,7 @@ on post-processing for more details on field functions.</p>
 <span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 
-<span class="c1">-- Add materials</span>
-<span class="nv">materials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mat</span><span class="p">.</span><span class="nf">AddMaterial</span><span class="p">(</span><span class="s2">&quot;Material_A&quot;</span><span class="p">)</span>
-
-
 <span class="nv">xs_matA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs</span><span class="p">.</span><span class="nf">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
-<span class="nv">materials</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">SetTransportXSections</span><span class="p">(</span><span class="nv">xs_matA</span><span class="p">)</span>
 
 
 <span class="nv">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
@@ -384,6 +366,9 @@ on post-processing for more details on field functions.</p>
 <span class="w">      </span><span class="nv">l_max_its</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
 <span class="w">      </span><span class="nv">gmres_restart_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
 <span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">xs_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nv">block_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nv">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs_matA</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nv">volumetric_sources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">mg_src</span><span class="w"> </span><span class="p">},</span>
