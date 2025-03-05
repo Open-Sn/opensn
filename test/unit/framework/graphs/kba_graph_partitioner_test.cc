@@ -1,20 +1,15 @@
-#include "lua/lib/console.h"
+#include "test/unit/opensn_unit_test.h"
 #include "framework/graphs/kba_graph_partitioner.h"
-#include "framework/object_factory.h"
-#include "framework/mesh/mesh.h"
-#include "framework/runtime.h"
-#include "framework/logging/log.h"
+#include <gmock/gmock.h>
 
 using namespace opensn;
 
-namespace unit_tests
+class KBAGraphPartitionerTest : public OpenSnUnitTest
 {
+};
 
-void
-TestKBAGraphPartitioner00()
+TEST_F(KBAGraphPartitionerTest, Partition)
 {
-  opensn::log.Log() << "GOLD_BEGIN";
-
   ParameterBlock input_parameters;
 
   input_parameters.AddParameter("nx", 2);
@@ -42,13 +37,5 @@ TestKBAGraphPartitioner00()
                                     {1.0, 1.0, 1.0}};
 
   auto cell_pids = partitioner.Partition(dummy_graph, centroids, 2 * 2 * 2);
-
-  for (const int64_t pid : cell_pids)
-    opensn::log.Log() << pid;
-
-  opensn::log.Log() << "GOLD_END";
+  EXPECT_THAT(cell_pids, testing::ElementsAre(0, 1, 2, 3, 4, 5, 6, 7));
 }
-
-BIND_FUNCTION(unit_tests, TestKBAGraphPartitioner00);
-
-} //  namespace unit_tests
