@@ -39,6 +39,11 @@ if (OPENSN_WITH_CUDA)
 endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_LUA "Build with lua support" ON)
+option(OPENSN_WITH_PYTHON "Build with python support" OFF)
+
+if(OPENSN_WITH_PYTHON)
+    set(OPENSN_WITH_LUA OFF CACHE BOOL "Python interface requested, disabling Lua" FORCE)
+endif()
 
 # dependencies
 find_package(MPI REQUIRED)
@@ -173,7 +178,6 @@ target_include_directories(libopensn
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
     PUBLIC
-    $<BUILD_INTERFACE:${LUA_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${caliper_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
@@ -181,6 +185,9 @@ target_include_directories(libopensn
 )
 if (OPENSN_WITH_CUDA)
     target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>)
+endif()
+if (OPENSN_WITH_LUA)
+    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${LUA_INCLUDE_DIRS}>)
 endif()
 
 target_link_libraries(libopensn
@@ -194,7 +201,6 @@ target_link_libraries(libopensn
 if (OPENSN_WITH_CUDA)
     target_link_libraries(libopensn PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
 endif()
-
 if(OPENSN_WITH_LUA)
     target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
     target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
@@ -226,6 +232,13 @@ if(OPENSN_WITH_LUA)
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
+endif()
+
+if(OPENSN_WITH_PYTHON)
+    add_subdirectory(python)
+endif()
+if(OPENSN_WITH_PYTHON_MODULE)
+    add_subdirectory(pyopensn)
 endif()
 
 configure_file(config.h.in config.h)
@@ -301,6 +314,22 @@ if(OPENSN_WITH_LUA)
 
     install(
         DIRECTORY ${CMAKE_SOURCE_DIR}/lua
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+        FILES_MATCHING PATTERN "*.h"
+    )
+endif()
+
+if(OPENSN_WITH_PYTHON)
+    install(
+        TARGETS opensn libopensnpy
+        EXPORT openSnTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+
+    install(
+        DIRECTORY ${CMAKE_SOURCE_DIR}/python
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
         FILES_MATCHING PATTERN "*.h"
     )
