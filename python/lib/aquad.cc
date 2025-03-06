@@ -34,7 +34,8 @@ void WrapQuadrature(py::module& aquad)
 void WrapProductQuadrature(py::module& aquad)
 {
   // Product quadrature
-  auto product_quadrature = py::class_<ProductQuadrature, std::shared_ptr<ProductQuadrature>, AngularQuadrature>(
+  auto product_quadrature = py::class_<ProductQuadrature, std::shared_ptr<ProductQuadrature>,
+                                       AngularQuadrature>(
     aquad,
     "ProductQuadrature",
     R"(
@@ -46,7 +47,8 @@ void WrapProductQuadrature(py::module& aquad)
 
   // Gauss-Legendre 1D slab product quadrature
   auto angular_quadrature_gl_prod_1d_slab = py::class_<GLProductQuadrature1DSlab,
-                                                       std::shared_ptr<GLProductQuadrature1DSlab>, ProductQuadrature>(
+                                                       std::shared_ptr<GLProductQuadrature1DSlab>,
+                                                       ProductQuadrature>(
     aquad,
     "GLProductQuadrature1DSlab",
     R"(
@@ -78,7 +80,8 @@ void WrapProductQuadrature(py::module& aquad)
 
   // Gauss-Legendre-Chebyshev 2D XY product quadrature
   auto angular_quadrature_glc_prod_2d_xy = py::class_<GLCProductQuadrature2DXY,
-                                                      std::shared_ptr<GLCProductQuadrature2DXY>, ProductQuadrature>(
+                                                      std::shared_ptr<GLCProductQuadrature2DXY>,
+                                                      ProductQuadrature>(
     aquad,
     "GLCProductQuadrature2DXY",
     R"(
@@ -113,7 +116,8 @@ void WrapProductQuadrature(py::module& aquad)
 
   // Gauss-Legendre-Chebyshev 3D XYZ product quadrature
   auto angular_quadrature_glc_prod_3d_xyz = py::class_<GLCProductQuadrature3DXYZ,
-                                                       std::shared_ptr<GLCProductQuadrature3DXYZ>, ProductQuadrature>(
+                                                       std::shared_ptr<GLCProductQuadrature3DXYZ>,
+                                                       ProductQuadrature>(
     aquad,
     "GLCProductQuadrature3DXYZ",
     R"(
@@ -145,9 +149,11 @@ void WrapProductQuadrature(py::module& aquad)
 }
 
 // Wrap curvilinear quadrature
-void WrapCurvilinearQuadrature(py::module& aquad) {
+void WrapCurvilinearQuadrature(py::module& aquad)
+{
   // curvilinear quadrature
-  auto curvilinear_quadrature = py::class_<CurvilinearQuadrature, std::shared_ptr<CurvilinearQuadrature>,
+  auto curvilinear_quadrature = py::class_<CurvilinearQuadrature,
+                                           std::shared_ptr<CurvilinearQuadrature>,
                                            ProductQuadrature>(
     aquad,
     "CurvilinearQuadrature",
@@ -160,7 +166,8 @@ void WrapCurvilinearQuadrature(py::module& aquad) {
 
   // Gauss-Legendre-Chebyshev 2D RZ curvilinear quadrature
   auto curvilinear_quadrature_glc_2d_rz = py::class_<GLCProductQuadrature2DRZ,
-                                                     std::shared_ptr<GLCProductQuadrature2DRZ>, CurvilinearQuadrature>(
+                                                     std::shared_ptr<GLCProductQuadrature2DRZ>,
+                                                     CurvilinearQuadrature>(
     aquad,
     "GLCProductQuadrature2DRZ",
     R"(
@@ -171,7 +178,8 @@ void WrapCurvilinearQuadrature(py::module& aquad) {
   );
   curvilinear_quadrature_glc_2d_rz.def(
     py::init(
-      [](int n_polar, int n_azimuthal, bool verbose) {
+      [](int n_polar, int n_azimuthal, bool verbose)
+      {
         return std::make_shared<GLCProductQuadrature2DRZ>(n_polar, n_azimuthal, verbose);
       }
     ),
@@ -194,10 +202,12 @@ void WrapCurvilinearQuadrature(py::module& aquad) {
 }
 
 // Wrap SLDFES quadrature
-void WrapSLDFESQuadrature(py::module& aquad) {
+void WrapSLDFESQuadrature(py::module& aquad)
+{
   // Simplified LDFES quadrature
   auto simplified_ldfes_quadrature = py::class_<SimplifiedLDFESQ::Quadrature,
-                                                std::shared_ptr<SimplifiedLDFESQ::Quadrature>, AngularQuadrature>(
+                                                std::shared_ptr<SimplifiedLDFESQ::Quadrature>,
+                                                AngularQuadrature>(
     aquad,
     "SLDFESQuadrature",
     R"(
@@ -208,7 +218,8 @@ void WrapSLDFESQuadrature(py::module& aquad) {
   );
   simplified_ldfes_quadrature.def(
     py::init(
-      [](int level) {
+      [](int level)
+      {
         SimplifiedLDFESQ::Quadrature * quad = new SimplifiedLDFESQ::Quadrature();
         quad->GenerateInitialRefinement(level);
         return quad;
@@ -226,7 +237,9 @@ void WrapSLDFESQuadrature(py::module& aquad) {
   );
   simplified_ldfes_quadrature.def(
     "LocallyRefine",
-    [](SimplifiedLDFESQ::Quadrature& self, py::sequence& ref_dir, double cone_size, bool dir_as_plane_normal) {
+    [](SimplifiedLDFESQ::Quadrature& self, py::sequence& ref_dir, double cone_size,
+       bool dir_as_plane_normal)
+    {
       self.LocallyRefine(to_vect3(ref_dir), cone_size, dir_as_plane_normal);
     },
     R"(
@@ -260,6 +273,33 @@ void WrapSLDFESQuadrature(py::module& aquad) {
   );
 }
 
+// Wrap spherical harmonics
+void WrapYlm(py::module& aquad)
+{
+  aquad.def(
+    "Ylm",
+    &Ylm,
+    R"(
+    Compute the tesseral spherical harmonics.
+
+    Parameters
+    ----------
+    l: int
+        Degree of the associated Legendre polynomial.
+    m: int
+        Order of the associated Legendre polynomial.
+    theta: float
+        Polar angle of the evaluation point.
+    varphi: float
+        Azimuthal angle of the evaluation point.
+    )",
+    py::arg("l"),
+    py::arg("m"),
+    py::arg("theta"),
+    py::arg("varphi")
+  );
+}
+
 // Wrap the angular quadrature components of OpenSn
 void py_aquad(py::module& pyopensn)
 {
@@ -268,6 +308,7 @@ void py_aquad(py::module& pyopensn)
   WrapProductQuadrature(aquad);
   WrapCurvilinearQuadrature(aquad);
   WrapSLDFESQuadrature(aquad);
+  WrapYlm(aquad);
 }
 
 } // namespace opensn

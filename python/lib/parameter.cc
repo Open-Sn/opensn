@@ -26,8 +26,7 @@ namespace opensn
 {
 
 // Convert a Python object into a ParameterBlock
-ParameterBlock
-pyobj_to_param_block(const std::string& key, const py::object& obj)
+ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& obj)
 {
   // basic types
   if (py::isinstance<py::bool_>(obj))
@@ -89,8 +88,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
 }
 
 // Translate a Python dictionary into a ParameterBlock
-ParameterBlock
-kwargs_to_param_block(const py::kwargs& params)
+ParameterBlock kwargs_to_param_block(const py::kwargs& params)
 {
   // initialize main parameter dict
   ParameterBlock main;

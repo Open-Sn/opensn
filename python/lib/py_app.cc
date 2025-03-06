@@ -34,17 +34,24 @@ PyApp::PyApp(const mpi::Communicator& comm)
   console.BindModule(WrapProductQuadrature);
   console.BindModule(WrapCurvilinearQuadrature);
   console.BindModule(WrapSLDFESQuadrature);
+  console.BindModule(WrapYlm);
+
+  console.BindModule(WrapLogicalVolume);
+
+  console.BindModule(WrapMesh);
+  console.BindModule(WrapMeshGenerator);
+  console.BindModule(WrapGraphPartitioner);
+
+  console.BindModule(WrapPointSource);
+  console.BindModule(WrapVolumetricSource);
 
   console.BindModule(WrapMultiGroupXS);
   console.BindModule(WrapCreateLoadXS);
 
   console.BindModule(wrap_field_function);
-  console.BindModule(wrap_logical_volume);
-  console.BindModule(wrap_mesh);
-  console.BindModule(wrap_mesh_generator);
-  console.BindModule(wrap_graph_partitioner);
+
   console.BindModule(wrap_solver);
-  console.BindModule(wrap_source);
+  
 }
 
 int
