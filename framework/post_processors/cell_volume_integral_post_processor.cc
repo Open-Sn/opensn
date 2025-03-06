@@ -130,16 +130,16 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
     } // for qp
   }   // for cell-id
 
-  double globl_integral;
-  mpi_comm.all_reduce(local_integral, globl_integral, mpi::op::sum<double>());
+  double global_integral;
+  mpi_comm.all_reduce(local_integral, global_integral, mpi::op::sum<double>());
   if (not compute_volume_average_)
-    value_ = ParameterBlock("", globl_integral);
+    value_ = ParameterBlock("", global_integral);
   else
   {
-    double globl_volume;
-    mpi_comm.all_reduce(local_volume, globl_volume, mpi::op::sum<double>());
+    double global_volume;
+    mpi_comm.all_reduce(local_volume, global_volume, mpi::op::sum<double>());
 
-    value_ = ParameterBlock("", globl_integral / globl_volume);
+    value_ = ParameterBlock("", global_integral / global_volume);
   }
 
   const int event_code = event_context.GetCode();

@@ -25,33 +25,42 @@ public:
   MeshContinuum();
 
   unsigned int GetDimension() const { return dim_; }
-  void SetDimension(unsigned int dim) { dim_ = dim; }
+  void SetDimension(const unsigned int dim) { dim_ = dim; }
+
+  MeshType GetType() const { return mesh_type_; }
+  void SetType(const MeshType type) { mesh_type_ = type; }
+
+  bool Extruded() const { return extruded_; }
+  void SetExtruded(const bool extruded) { extruded_ = extruded; }
+
+  /// Gets and orthogonal mesh interface object.
+  std::array<size_t, 3> GetIJKInfo() const;
+  void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
+  size_t GetGlobalNumberOfCells() const;
 
   std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
-
   const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
+  /// Returns the unique boundary ids present in the problem.
+  std::vector<uint64_t> GetUniqueBoundaryIDs() const;
+
+  /// Compute the geometric data for the cells and faces in the mesh.
+  void ComputeGeometricInfo();
+
+  /// Method to be called if cells and nodes have been transferred to another grid.
+  void ClearCellReferences();
 
   /**
-   * Makes a bndry id given a name. If the bndry name already exists,
-   * the associated bndry id will be returned. Other the id will be set
-   * to one more than the maximum boundary id.
+   * Makes a boundary id given a name. If the boundary name already exists, the associated
+   * boundary id will be returned. Other the id will be set to one more than the maximum boundary
+   * id.
    */
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
-  static std::shared_ptr<MeshContinuum> New() { return std::make_shared<MeshContinuum>(); }
-
-  /// Method to be called if cells and nodes have been transferred to another grid.
-  void ClearCellReferences()
-  {
-    local_cells_.clear();
-    ghost_cells_.clear();
-    global_cell_id_to_local_id_map_.clear();
-    global_cell_id_to_nonlocal_id_map_.clear();
-    vertices.Clear();
-  }
+  /// Defines the standard x/y/z min/max boundaries.
+  void SetupOrthogonalBoundaries();
 
   /**
    * Populates a face histogram.
@@ -71,108 +80,69 @@ public:
   std::shared_ptr<GridFaceHistogram> MakeGridFaceHistogram(double master_tolerance = 100.0,
                                                            double slave_tolerance = 1.1) const;
 
+  /// Returns whether the cell with the given global id is locally owned.
+  bool IsCellLocal(uint64_t global_id) const;
   /**
-   * Check whether a cell is local by attempting to find the key in
-   * the native index map.
-   */
-  bool IsCellLocal(uint64_t cell_global_index) const;
-
-  /**
-   * Check whether a cell is a boundary by checking if the key is found in the native or foreign
-   * cell maps.
-   */
-  static int GetCellDimension(const Cell& cell);
-
-  /// Creates a mapping of the current face local-ids to the adjacent face's local ids.
-  void FindAssociatedVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
-
-  /// Creates a mapping of the current face local-ids to the adjacent cell's local ids.
-  void FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
-
-  /**
-   * Given the current cell, cell A, and its adjacent cell, cell B, with
-   * cell B adjacent to A at the `f`-th face of cell A. Will determine the
-   * `af`-th index of the face on cell B that interface with the `f`-th face
-   * of cell A.
-   */
-  static size_t MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
-
-  /**
-   * Given a global-id of a cell, will return the local-id if the cell is local, otherwise will
-   * throw out_of_range.
+   * Given a global id of a cell, returns the local id if the cell is local, otherwise throws
+   * an out_of_range error.
    */
   size_t MapCellGlobalID2LocalID(uint64_t global_id) const;
 
-  /// Computes the centroid from nodes specified by the given list.
-  Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;
+  /// Creates a mapping of the current face local ids to the adjacent face's local ids.
+  void FindAssociatedVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
+  /// Creates a mapping of the current face local ids to the adjacent cell's local ids.
+  void FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
 
-  /**
-   * Gets the communicator-set for interprocess communication,
-   * associated with this mesh. If not created yet, it will create it.
-   */
-  std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
-
-  /// Returns the total number of global cells.
-  size_t GetGlobalNumberOfCells() const;
-
-  /// Builds and returns a vector of unique boundary id's present in the mesh.
-  std::vector<uint64_t> GetDomainUniqueBoundaryIDs() const;
-
-  /**
-   * Counts the number of cells within a logical volume across all partitions.
-   */
+  /// Counts the number of cells within a logical volume across all partitions.
   size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
 
   /// Checks whether a point is within a cell.
   bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
-
   /// Checks whether a point is within a cell face.
-  bool
-  CheckPointInsideCellFace(const Cell& cell, const std::size_t face_i, const Vector3& point) const;
-
-  MeshType GetType() const { return mesh_type_; }
-
-  void SetType(MeshType type) { mesh_type_ = type; }
-
-  bool Extruded() const { return extruded_; }
-
-  void SetExtruded(bool extruded) { extruded_ = extruded; }
-
-  /// Gets and orthogonal mesh interface object.
-  std::array<size_t, 3> GetIJKInfo() const;
+  bool CheckPointInsideCellFace(const Cell& cell, size_t face_i, const Vector3& point) const;
 
   /// Provides a mapping from cell ijk indices to global ids.
   NDArray<uint64_t, 3> MakeIJKToGlobalIDMapping() const;
 
   /**
-   * Determines the bounding box size of each cell and returns it as
-   * a list of 3-component vectors, one Vector3 for each cell.
+   * Determines the bounding box size of each cell and returns it as a list of 3-component vectors,
+   * one Vector3 for each cell.
    */
   std::vector<Vector3> MakeCellOrthoSizes() const;
 
+  /// Returns the bounding box corners for the locally owned cells.
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
-  /// Sets material id's for all cells to the specified material id.
+  /// Sets material ids for all cells to the specified material id.
   void SetUniformMaterialID(int mat_id);
 
-  /// Sets material id's using a logical volume.
+  /// Sets material ids using a logical volume.
   void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
 
-  /// Sets boundary id's using a logical volume.
+  /// Sets boundary ids using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
                                 const std::string& boundary_name,
                                 bool sense = true);
 
-  void SetOrthoAttributes(const OrthoMeshAttributes& attrs) { ortho_attributes_ = attrs; }
+  /// Computes the centroid from nodes specified by the given list.
+  Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;
 
   /**
    * Get the face vertices of a tetrahedron contained within the given face and
    * side of a polyhedron.
    */
   std::array<std::array<Vector3, 3>, 4>
-  GetTetrahedralFaceVertices(const Cell& cell, const CellFace& face, const size_t side) const;
+  GetTetrahedralFaceVertices(const Cell& cell, const CellFace& face, size_t side) const;
 
-  void SetupOrthogonalBoundaries();
+  /**
+   * Gets the communicator-set for interprocess communication, associated with this mesh.
+   * If not created yet, it will create it.
+   */
+  std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
+
+  VertexHandler vertices;
+  LocalCellHandler local_cells;
+  GlobalCellHandler cells;
 
 private:
   /// Spatial dimension
@@ -184,19 +154,30 @@ private:
 
   uint64_t global_vertex_count_;
 
-  std::vector<std::shared_ptr<Cell>> local_cells_; ///< Actual local cells
-  std::vector<std::shared_ptr<Cell>> ghost_cells_; ///< Locally stored ghosts
+  /// Locally owned cells
+  std::vector<std::shared_ptr<Cell>> local_cells_;
+  /// Locally stored ghost cells
+  std::vector<std::shared_ptr<Cell>> ghost_cells_;
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
 
 public:
-  /// Compute volume per material id's
-  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> mesh);
+  /// Returns a new instance of the spatial discretization.
+  static std::shared_ptr<MeshContinuum> New() { return std::make_shared<MeshContinuum>(); }
 
-  VertexHandler vertices;
-  LocalCellHandler local_cells;
-  GlobalCellHandler cells;
+  /// Returns the spatial dimensionality of the cell.
+  static int GetCellDimension(const Cell& cell);
+
+  /**
+   * Given the current cell, cell A, and its adjacent cell, cell B, with cell B adjacent to
+   * A at the `f`-th face of cell A. Will determine the `af`-th index of the face on cell B
+   * that interface with the `f`-th face of cell A.
+   */
+  static size_t MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
+
+  /// Compute volume per material id's
+  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum>& mesh);
 };
 
 } // namespace opensn

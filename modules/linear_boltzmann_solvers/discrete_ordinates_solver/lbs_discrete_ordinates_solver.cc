@@ -97,21 +97,21 @@ DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns()
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_globl_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const size_t num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
 
   size_t num_local_psi_dofs = 0;
-  size_t num_globl_psi_dofs = 0;
+  size_t num_global_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
     const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
     num_local_psi_dofs += num_delayed_psi_info.first;
-    num_globl_psi_dofs += num_delayed_psi_info.second;
+    num_global_psi_dofs += num_delayed_psi_info.second;
   }
 
   const size_t num_local_dofs = num_local_phi_dofs + num_local_psi_dofs;
-  const size_t num_globl_dofs = num_globl_phi_dofs + num_globl_psi_dofs;
+  const size_t num_global_dofs = num_global_phi_dofs + num_global_psi_dofs;
 
-  return {num_local_dofs, num_globl_dofs};
+  return {num_local_dofs, num_global_dofs};
 }
 
 void
@@ -406,25 +406,25 @@ DiscreteOrdinatesSolver::ComputeBalance()
   size_t table_size = local_balance_table.size();
 
   // Compute global balance
-  std::vector<double> globl_balance_table(table_size, 0.0);
+  std::vector<double> global_balance_table(table_size, 0.0);
   mpi_comm.all_reduce(
-    local_balance_table.data(), table_size, globl_balance_table.data(), mpi::op::sum<double>());
-  double globl_absorption = globl_balance_table.at(0);
-  double globl_production = globl_balance_table.at(1);
-  double globl_in_flow = globl_balance_table.at(2);
-  double globl_out_flow = globl_balance_table.at(3);
-  double globl_balance = globl_balance_table.at(4);
-  double globl_gain = globl_balance_table.at(5);
+    local_balance_table.data(), table_size, global_balance_table.data(), mpi::op::sum<double>());
+  double global_absorption = global_balance_table.at(0);
+  double global_production = global_balance_table.at(1);
+  double global_in_flow = global_balance_table.at(2);
+  double global_out_flow = global_balance_table.at(3);
+  double global_balance = global_balance_table.at(4);
+  double global_gain = global_balance_table.at(5);
 
   log.Log() << "Balance table:\n"
             << std::setprecision(6) << std::scientific
-            << " Absorption rate             = " << globl_absorption << "\n"
-            << " Production rate             = " << globl_production << "\n"
-            << " In-flow rate                = " << globl_in_flow << "\n"
-            << " Out-flow rate               = " << globl_out_flow << "\n"
-            << " Gain (In-flow + Production) = " << globl_gain << "\n"
-            << " Balance (Gain - Loss)       = " << globl_balance << "\n"
-            << " Balance/Gain, in %          = " << globl_balance / globl_gain * 100. << "\n";
+            << " Absorption rate             = " << global_absorption << "\n"
+            << " Production rate             = " << global_production << "\n"
+            << " In-flow rate                = " << global_in_flow << "\n"
+            << " Out-flow rate               = " << global_out_flow << "\n"
+            << " Gain (In-flow + Production) = " << global_gain << "\n"
+            << " Balance (Gain - Loss)       = " << global_balance << "\n"
+            << " Balance/Gain, in %          = " << global_balance / global_gain * 100. << "\n";
 
   opensn::mpi_comm.barrier();
 }
@@ -510,7 +510,7 @@ DiscreteOrdinatesSolver::ComputeLeakage(const std::vector<uint64_t>& boundary_id
                        "The option `save_angular_flux` must be set to `true` in order "
                        "to compute outgoing currents.");
 
-  const auto unique_bids = grid_ptr_->GetDomainUniqueBoundaryIDs();
+  const auto unique_bids = grid_ptr_->GetUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)
   {
     const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);

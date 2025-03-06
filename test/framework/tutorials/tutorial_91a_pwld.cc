@@ -49,10 +49,10 @@ SimTest91_PWLD(const ParameterBlock& params)
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
   const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_global_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local nodes: " << num_local_nodes;
-  opensn::log.Log() << "Num globl nodes: " << num_globl_nodes;
+  opensn::log.Log() << "Num globl nodes: " << num_global_nodes;
 
   // Make an angular quadrature
   std::shared_ptr<AngularQuadrature> quadrature;

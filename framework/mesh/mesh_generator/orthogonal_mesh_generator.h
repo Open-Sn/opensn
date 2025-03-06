@@ -17,6 +17,13 @@ protected:
   std::shared_ptr<UnpartitionedMesh>
   GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
 
+  std::vector<std::vector<double>> node_sets_;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<OrthogonalMeshGenerator> Create(const ParameterBlock& params);
+
+protected:
   static std::shared_ptr<UnpartitionedMesh>
   CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices);
 
@@ -28,12 +35,6 @@ protected:
   CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                  const std::vector<double>& vertices_1d_y,
                                  const std::vector<double>& vertices_1d_z);
-
-  std::vector<std::vector<double>> node_sets_;
-
-public:
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<OrthogonalMeshGenerator> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -17,8 +17,8 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
 {
   v0i_ = slab_cell.vertex_ids[0];
   v1i_ = slab_cell.vertex_ids[1];
-  v0_ = ref_grid_->vertices[v0i_];
-  const auto& v1 = ref_grid_->vertices[v1i_];
+  v0_ = grid_->vertices[v0i_];
+  const auto& v1 = grid_->vertices[v1i_];
 
   Vector3 v01 = v1 - v0_;
   h_ = v01.Norm();
@@ -64,8 +64,8 @@ PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
 double
 PieceWiseLinearSlabMapping::ShapeValue(const int i, const Vector3& xyz) const
 {
-  const auto& p0 = ref_grid_->vertices[v0i_];
-  const auto& p1 = ref_grid_->vertices[v1i_];
+  const auto& p0 = grid_->vertices[v0i_];
+  const auto& p1 = grid_->vertices[v1i_];
   Vector3 xyz_ref = xyz - p0;
 
   Vector3 v01 = p1 - p0;
@@ -87,8 +87,8 @@ void
 PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
-  const auto& p0 = ref_grid_->vertices[v0i_];
-  const auto& p1 = ref_grid_->vertices[v1i_];
+  const auto& p0 = grid_->vertices[v0i_];
+  const auto& p1 = grid_->vertices[v1i_];
   Vector3 xyz_ref = xyz - p0;
 
   Vector3 v01 = p1 - p0;

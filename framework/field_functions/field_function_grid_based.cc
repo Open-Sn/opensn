@@ -188,16 +188,16 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   }         // if in bounding box
 
   // Communicate number of point hits
-  size_t globl_num_point_hits;
-  mpi_comm.all_reduce(local_num_point_hits, globl_num_point_hits, mpi::op::sum<size_t>());
+  size_t global_num_point_hits;
+  mpi_comm.all_reduce(local_num_point_hits, global_num_point_hits, mpi::op::sum<size_t>());
 
-  std::vector<double> globl_point_value(num_components, 0.0);
+  std::vector<double> global_point_value(num_components, 0.0);
   mpi_comm.all_reduce(
-    local_point_value.data(), 1, globl_point_value.data(), mpi::op::sum<double>());
+    local_point_value.data(), 1, global_point_value.data(), mpi::op::sum<double>());
 
-  Scale(globl_point_value, 1.0 / static_cast<double>(globl_num_point_hits));
+  Scale(global_point_value, 1.0 / static_cast<double>(global_num_point_hits));
 
-  return globl_point_value;
+  return global_point_value;
 }
 
 double

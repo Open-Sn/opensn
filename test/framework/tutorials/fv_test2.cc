@@ -34,14 +34,14 @@ SimTest02_FV(const ParameterBlock& params)
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_globl_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const size_t num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::log.Log() << "Num globl DOFs: " << num_globl_dofs;
+  opensn::log.Log() << "Num globl DOFs: " << num_global_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
-  const auto N = static_cast<int64_t>(num_globl_dofs);
+  const auto N = static_cast<int64_t>(num_global_dofs);
   Mat A;
   Vec x, b;
 
@@ -63,12 +63,12 @@ SimTest02_FV(const ParameterBlock& params)
     const int64_t imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid;
-    const double V = cell_mapping.GetCellVolume();
+    const auto V = cell.volume;
 
     size_t f = 0;
     for (const auto& face : cell.faces)
     {
-      const auto Af = face.normal * cell_mapping.GetFaceArea(f);
+      const auto Af = face.normal * face.area;
 
       if (face.has_neighbor)
       {
@@ -143,7 +143,7 @@ SimTest02_FV(const ParameterBlock& params)
   // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
-  VectorGhostCommunicator vgc(num_local_dofs, num_globl_dofs, ghost_ids, opensn::mpi_comm);
+  VectorGhostCommunicator vgc(num_local_dofs, num_global_dofs, ghost_ids, opensn::mpi_comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);
 
   vgc.CommunicateGhostEntries(field_wg);
@@ -171,7 +171,7 @@ SimTest02_FV(const ParameterBlock& params)
     for (const auto& face : cell.faces)
     {
       const auto& xf = face.centroid;
-      const auto Af = cell_mapping.GetFaceArea(f) * face.normal;
+      const auto Af = face.normal * face.area;
 
       double phi_N = 0.0;
       auto xn = xp + 2 * (xf - xp);
@@ -188,7 +188,7 @@ SimTest02_FV(const ParameterBlock& params)
       grad_phi_P += Af * ((xn - xf).Norm() * phi_P + (xf - xp).Norm() * phi_N) / (xn - xp).Norm();
       ++f;
     } // for face
-    grad_phi_P /= cell_mapping.GetCellVolume();
+    grad_phi_P /= cell.volume;
 
     const int64_t xmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 0);
     const int64_t ymap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 1);

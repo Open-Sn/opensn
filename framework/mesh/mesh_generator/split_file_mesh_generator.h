@@ -15,6 +15,20 @@ class ByteArray;
  */
 class SplitFileMeshGenerator : public MeshGenerator
 {
+protected:
+  struct SplitMeshInfo
+  {
+    unsigned int dimension;
+    MeshType mesh_type;
+    bool extruded;
+    OrthoMeshAttributes ortho_attributes;
+
+    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+    std::map<uint64_t, Vector3> vertices;
+    std::map<uint64_t, std::string> boundary_id_map;
+    size_t num_global_vertices;
+  };
+
 public:
   explicit SplitFileMeshGenerator(const InputParameters& params);
 
@@ -23,26 +37,11 @@ public:
 protected:
   void WriteSplitMesh(const std::vector<int64_t>& cell_pids,
                       const UnpartitionedMesh& umesh,
-                      int num_parts);
-  static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
-                            ByteArray& serial_buffer);
-  struct SplitMeshInfo
-  {
-    unsigned int dimension;
-    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
-    std::map<uint64_t, Vector3> vertices;
-    std::map<uint64_t, std::string> boundary_id_map;
-    MeshType mesh_type;
-    bool extruded;
-    OrthoMeshAttributes ortho_attributes;
-    size_t num_global_vertices;
-  };
-  SplitMeshInfo ReadSplitMesh();
+                      int num_partitions) const;
 
-  static std::shared_ptr<MeshContinuum> SetupLocalMesh(SplitMeshInfo& mesh_info);
+  SplitMeshInfo ReadSplitMesh() const;
 
-  // void
-  const int num_parts_;
+  const int num_partitions_;
   const std::string split_mesh_dir_path_;
   const std::string file_prefix_;
   const bool read_only_;
@@ -51,6 +50,12 @@ protected:
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<SplitFileMeshGenerator> Create(const ParameterBlock& params);
+
+protected:
+  static std::shared_ptr<MeshContinuum> SetupLocalMesh(SplitMeshInfo& mesh_info);
+
+  static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
+                            ByteArray& serial_buffer);
 };
 
 } // namespace opensn
