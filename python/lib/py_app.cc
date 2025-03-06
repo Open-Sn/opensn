@@ -29,17 +29,47 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::exec("rank = " + std::to_string(comm.rank()));
   py::exec("size = " + std::to_string(comm.size()));
   py::exec("opensn_console = True");
-  console.BindModule(wrap_quadrature);
-  console.BindModule(wrap_field_function);
-  console.BindModule(wrap_logical_volume);
-  console.BindModule(wrap_material);
-  console.BindModule(wrap_mesh);
-  console.BindModule(wrap_mesh_generator);
-  console.BindModule(wrap_graph_partitioner);
-  console.BindModule(wrap_solver);
-  console.BindModule(wrap_source);
-  console.BindModule(wrap_multigroup_xs);
-  console.BindModule(wrap_create_load);
+
+  console.BindBarrier(comm);
+
+  console.BindModule(WrapYlm);
+  console.BindModule(WrapVector3);
+  console.BindModule(WrapFunctors);
+
+  console.BindModule(WrapQuadrature);
+  console.BindModule(WrapProductQuadrature);
+  console.BindModule(WrapCurvilinearQuadrature);
+  console.BindModule(WrapSLDFESQuadrature);
+
+  console.BindModule(WrapMesh);
+  console.BindModule(WrapMeshGenerator);
+  console.BindModule(WrapGraphPartitioner);
+
+  console.BindModule(WrapLogicalVolume);
+
+  console.BindModule(WrapPointSource);
+  console.BindModule(WrapVolumetricSource);
+
+  console.BindModule(WrapMultiGroupXS);
+
+  console.BindModule(WrapFieldFunction);
+  console.BindModule(WrapFieldFunctionGridBased);
+  console.BindModule(WrapFieldFunctionInterpolation);
+
+  console.BindModule(WrapResEval);
+
+  console.BindModule(WrapSolver);
+  console.BindModule(WrapLBS);
+  console.BindModule(WrapSteadyState);
+  console.BindModule(WrapNLKEigen);
+  console.BindModule(WrapPIteration);
+  console.BindModule(WrapPRK);
+
+  console.BindModule(WrapDiffusion);
+
+  console.BindModule(WrapPostProcessor);
+  console.BindModule(WrapPrinter);
+
 }
 
 int
