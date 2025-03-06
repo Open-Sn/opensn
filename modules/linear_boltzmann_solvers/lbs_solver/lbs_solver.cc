@@ -106,7 +106,7 @@ LBSSolver::LBSSolver(const InputParameters& params)
     const auto& block_ids = block_ids_param.GetVectorValue<int>();
     auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
     for (const auto& block_id : block_ids)
-      matid_to_xs_map_[block_id] = xs;
+      block_id_to_xs_map_[block_id] = xs;
   }
 
   // Options
@@ -226,7 +226,7 @@ LBSSolver::GetVolumetricSources() const
 const std::map<int, std::shared_ptr<MultiGroupXS>>&
 LBSSolver::GetMatID2XSMap() const
 {
-  return matid_to_xs_map_;
+  return block_id_to_xs_map_;
 }
 
 const std::shared_ptr<MeshContinuum>
@@ -964,12 +964,12 @@ LBSSolver::InitializeMaterials()
                          " cells encountered with an invalid material id.");
 
   // Get ready for processing
-  for (auto [blk_id, mat] : matid_to_xs_map_)
+  for (auto [blk_id, mat] : block_id_to_xs_map_)
   {
     mat->SetAdjointMode(options_.adjoint);
 
     // Check number of moments
-    if (matid_to_xs_map_[blk_id]->GetScatteringOrder() < options_.scattering_order)
+    if (block_id_to_xs_map_[blk_id]->GetScatteringOrder() < options_.scattering_order)
     {
       log.Log0Warning() << __FUNCTION__ << ": Cross-sections on block \"" << blk_id
                         << "\" has a lower scattering order (" << mat->GetScatteringOrder() << ") "
@@ -986,7 +986,7 @@ LBSSolver::InitializeMaterials()
   // Initialize precursor properties
   num_precursors_ = 0;
   max_precursors_per_material_ = 0;
-  for (const auto& mat_id_xs : matid_to_xs_map_)
+  for (const auto& mat_id_xs : block_id_to_xs_map_)
   {
     const auto& xs = mat_id_xs.second;
     num_precursors_ += xs->GetNumPrecursors();
@@ -1001,7 +1001,7 @@ LBSSolver::InitializeMaterials()
   // check compatibility when precursors are on
   if (options_.use_precursors)
   {
-    for (const auto& [mat_id, xs] : matid_to_xs_map_)
+    for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
       OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
                            "Incompatible cross-section data encountered for material ID " +
@@ -1015,7 +1015,7 @@ LBSSolver::InitializeMaterials()
   if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
     for (const auto& cell : grid_ptr_->local_cells)
     {
-      const auto& xs_ptr = matid_to_xs_map_[cell.block_id];
+      const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
       auto& transport_view = cell_transport_views_[cell.local_id];
 
       transport_view.ReassignXS(*xs_ptr);
@@ -1353,7 +1353,7 @@ LBSSolver::InitializeParrays()
                                        num_grps,
                                        num_moments_,
                                        num_faces,
-                                       *matid_to_xs_map_[mat_id],
+                                       *block_id_to_xs_map_[mat_id],
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
@@ -1608,7 +1608,7 @@ LBSSolver::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
 
     // Make xs map
     auto matid_2_mgxs_map =
-      PackGroupsetXS(matid_to_xs_map_, groupset.groups.front().id, groupset.groups.back().id);
+      PackGroupsetXS(block_id_to_xs_map_, groupset.groups.front().id, groupset.groups.back().id);
 
     // Create solver
     const auto& sdm = *discretization_;
@@ -1738,7 +1738,7 @@ LBSSolver::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = matid_to_xs_map_[cell.block_id]->GetSigmaSGtoG();
+    const auto& sigma_s = block_id_to_xs_map_[cell.block_id]->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -1803,7 +1803,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
     auto bcs = TranslateBCs(sweep_boundaries_);
 
     // Make TwoGridInfo
-    for (const auto& mat_id_xs_pair : matid_to_xs_map_)
+    for (const auto& mat_id_xs_pair : block_id_to_xs_map_)
     {
       const auto& mat_id = mat_id_xs_pair.first;
       const auto& xs = mat_id_xs_pair.second;
@@ -1816,7 +1816,7 @@ LBSSolver::InitTGDSA(LBSGroupset& groupset)
 
     // Make xs map
     std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
-    for (const auto& matid_xs_pair : matid_to_xs_map_)
+    for (const auto& matid_xs_pair : block_id_to_xs_map_)
     {
       const auto& mat_id = matid_xs_pair.first;
 
@@ -1882,7 +1882,7 @@ LBSSolver::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& S = matid_to_xs_map_[cell.block_id]->GetTransferMatrix(0);
+    const auto& S = block_id_to_xs_map_[cell.block_id]->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -2008,7 +2008,7 @@ LBSSolver::UpdateFieldFunctions()
 
       const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
 
-      const auto& xs = matid_to_xs_map_.at(cell.block_id);
+      const auto& xs = block_id_to_xs_map_.at(cell.block_id);
 
       if (not xs->IsFissionable())
         continue;

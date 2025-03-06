@@ -160,7 +160,7 @@ MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
     const auto& block_ids = block_ids_param.GetVectorValue<int>();
     auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
     for (const auto& block_id : block_ids)
-      matid_to_xs_map_[block_id] = xs;
+      block_id_to_xs_map_[block_id] = xs;
   }
 
   basic_options_.AddOption<int64_t>("max_inner_iters",
@@ -445,26 +445,27 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
     // Extract properties
     // Check number of groups legal
-    if (matid_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
+    if (block_id_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
     {
       log.LogAllError() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
-                        << "\" has " << matid_to_xs_map_[mat_id]->GetNumGroups() << " groups and "
+                        << "\" has " << block_id_to_xs_map_[mat_id]->GetNumGroups()
+                        << " groups and "
                         << "the simulation has " << num_groups_ << " groups. The material "
                         << "must have the same number of groups.";
       Exit(EXIT_FAILURE);
     }
 
     // Check number of moments
-    if (matid_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
+    if (block_id_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
     {
       log.Log0Warning() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
                         << "\" has a scattering order of "
-                        << matid_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
+                        << block_id_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
                         << " the simulation has a scattering order of One (MG-Diff)"
                         << " The higher moments will therefore not be used.";
     }
 
-    materials_list << " number of moments " << matid_to_xs_map_[mat_id]->GetScatteringOrder() + 1
+    materials_list << " number of moments " << block_id_to_xs_map_[mat_id]->GetScatteringOrder() + 1
                    << "\n";
 
   } // for material id
@@ -481,7 +482,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
   if (num_groups_ > 1)
   {
     // loop over all materials
-    for (const auto& mat_id_xs : matid_to_xs_map_)
+    for (const auto& mat_id_xs : block_id_to_xs_map_)
     {
       // get the P0 transfer matrix
       const auto& S = mat_id_xs.second->GetTransferMatrix(0);
@@ -519,7 +520,7 @@ void
 MGDiffusionSolver::ComputeTwoGridParams()
 {
   // loop over all materials
-  for (const auto& mat_id_xs : matid_to_xs_map_)
+  for (const auto& mat_id_xs : block_id_to_xs_map_)
   {
 
     // get the P0 transfer matrix and total XS
@@ -709,7 +710,7 @@ MGDiffusionSolver::AssembleAbext()
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& xs = matid_to_xs_map_.at(cell.block_id);
+    const auto& xs = block_id_to_xs_map_.at(cell.block_id);
     const auto& D = xs->GetDiffusionCoefficient();
     const auto& sigma_r = xs->GetSigmaRemoval();
 
@@ -977,7 +978,7 @@ MGDiffusionSolver::AssembleRhs(unsigned int g, int64_t iverbose)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& xs = matid_to_xs_map_.at(cell.block_id);
+    const auto& xs = block_id_to_xs_map_.at(cell.block_id);
     const auto& S = xs->GetTransferMatrix(0);
 
     for (const auto& [row_g, gprime, sigma_sm] : S.Row(g))
@@ -1046,7 +1047,7 @@ MGDiffusionSolver::AssembleRhsTwoGrid(int64_t iverbose)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& S = matid_to_xs_map_.at(cell.block_id)->GetTransferMatrix(0);
+    const auto& S = block_id_to_xs_map_.at(cell.block_id)->GetTransferMatrix(0);
 
     for (unsigned g = last_fast_group_; g < num_groups_; ++g)
     {
