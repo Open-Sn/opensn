@@ -24,6 +24,17 @@ Do **not** develop on the `main` branch, you will most likely create problems fo
 Do **NOT** merge `main` into your feature branch.
 ```
 
+## Formating
+
+- C++ code should be formatted according to our `clang-format` choices, found in 
+[the .clang_format file in the repository root.](https://github.com/Open-Sn/opensn/blob/main/.clang-format)
+
+- Lua input files must be formated using StyLua, [see these instructions.](https://github.com/Open-Sn/opensn/blob/main/tools/lua-input-style.md)
+
+- Python linting and style guide checking is performed using [flake8](https://flake8.pycqa.org/en/latest/index.html) 
+and our style guide configuration is found in the [.flake8 file in the repository root.](https://github.com/Open-Sn/opensn/blob/main/.flake8)
+
+
 ## Create a Branch
 
 First, make sure you do not have any local changes:
@@ -213,5 +224,5 @@ $ git push -f
 ```
 
 ```{admonition} Attention
-This assumes you followed this guide and branched off of `main`.
+This assumes you followed this guide and worked in your_branch `branch name` and not in `main`.
 ```
