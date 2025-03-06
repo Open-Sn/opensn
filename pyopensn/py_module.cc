@@ -30,7 +30,6 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   py_aquad(pyopensn);
   py_ffunc(pyopensn);
   py_logvol(pyopensn);
-  py_mat(pyopensn);
   py_mesh(pyopensn);
   py_solver(pyopensn);
   py_source(pyopensn);

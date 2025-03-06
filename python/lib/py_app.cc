@@ -29,17 +29,22 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::exec("rank = " + std::to_string(comm.rank()));
   py::exec("size = " + std::to_string(comm.size()));
   py::exec("opensn_console = True");
-  console.BindModule(wrap_quadrature);
+
+  console.BindModule(WrapQuadrature);
+  console.BindModule(WrapProductQuadrature);
+  console.BindModule(WrapCurvilinearQuadrature);
+  console.BindModule(WrapSLDFESQuadrature);
+
+  console.BindModule(WrapMultiGroupXS);
+  console.BindModule(WrapCreateLoadXS);
+
   console.BindModule(wrap_field_function);
   console.BindModule(wrap_logical_volume);
-  console.BindModule(wrap_material);
   console.BindModule(wrap_mesh);
   console.BindModule(wrap_mesh_generator);
   console.BindModule(wrap_graph_partitioner);
   console.BindModule(wrap_solver);
   console.BindModule(wrap_source);
-  console.BindModule(wrap_multigroup_xs);
-  console.BindModule(wrap_create_load);
 }
 
 int

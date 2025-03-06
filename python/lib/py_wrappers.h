@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include "framework/parameters/parameter_block.h"
 #include <pybind11/pybind11.h>
 #include <vector>
+
+#include "framework/parameters/parameter_block.h"
 
 namespace py = pybind11;
 
@@ -23,9 +24,28 @@ convert_vector(const std::vector<T>& vec)
 /// Translate a Python dictionary into a ParameterBlock.
 ParameterBlock kwargs_to_param_block(const py::kwargs& params);
 
+/// Convert a Python sequence to opensn::Vector3
+inline Vector3 to_vect3(py::sequence & seq)
+{
+  switch (seq.size()) {
+    case 0 :
+      return Vector3();
+    case 1 :
+      return Vector3(seq[0].cast<double>());
+    case 2 :
+      return Vector3(seq[0].cast<double>(), seq[1].cast<double>());
+    case 3 :
+      return Vector3(seq[0].cast<double>(), seq[1].cast<double>(), seq[2].cast<double>());
+  }
+  throw std::range_error("Expected sequence of size less than 4, got " + std::to_string(seq.size()) + ".");
+}
+
 /// Wrap the angular quadrature components of OpenSn (unfinished).
 void py_aquad(py::module& pyopensn);
-void wrap_quadrature(py::module& aquad);
+void WrapQuadrature(py::module& aquad);
+void WrapProductQuadrature(py::module& aquad);
+void WrapCurvilinearQuadrature(py::module& aquad);
+void WrapSLDFESQuadrature(py::module& aquad);
 
 /// Wrap the field function components of OpenSn (unfinished).
 void py_ffunc(py::module& pyopensn);
@@ -36,8 +56,8 @@ void py_logvol(py::module& pyopensn);
 void wrap_logical_volume(py::module& logvol);
 
 /// Wrap the material components of OpenSn.
-void py_mat(py::module& pyopensn);
-void wrap_material(py::module& mat);
+// void py_mat(py::module& pyopensn);
+// void WrapMaterial(py::module& mat);
 
 /// Wrap the mesh components of OpenSn (unfinished).
 void py_mesh(py::module& pyopensn);
@@ -55,7 +75,7 @@ void wrap_source(py::module& src);
 
 /// Wrap the cross section components of OpenSn.
 void py_xs(py::module& pyopensn);
-void wrap_multigroup_xs(py::module& xs);
-void wrap_create_load(py::module& xs);
+void WrapMultiGroupXS(py::module& xs);
+void WrapCreateLoadXS(py::module& xs);
 
 } // namespace opensn
