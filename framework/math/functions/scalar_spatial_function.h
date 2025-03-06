@@ -13,6 +13,7 @@ namespace opensn
 class ScalarSpatialFunction : public Function
 {
 public:
+  ScalarSpatialFunction() = default;
   static InputParameters GetInputParameters() { return Function::GetInputParameters(); }
   explicit ScalarSpatialFunction(const InputParameters& params) : Function(params) {}
 

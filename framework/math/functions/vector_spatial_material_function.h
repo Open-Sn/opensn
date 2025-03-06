@@ -13,6 +13,7 @@ namespace opensn
 class VectorSpatialMaterialFunction : public Function
 {
 public:
+  VectorSpatialMaterialFunction() = default;
   static InputParameters GetInputParameters() { return Function::GetInputParameters(); }
   explicit VectorSpatialMaterialFunction(const InputParameters& params) : Function(params) {}
 

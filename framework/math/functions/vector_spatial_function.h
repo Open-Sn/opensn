@@ -13,6 +13,7 @@ namespace opensn
 class VectorSpatialFunction : public Function
 {
 public:
+  VectorSpatialFunction() = default;
   static InputParameters GetInputParameters() { return Function::GetInputParameters(); }
   explicit VectorSpatialFunction(const InputParameters& params) : Function(params) {}
 

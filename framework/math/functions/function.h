@@ -12,6 +12,7 @@ namespace opensn
 class Function : public Object
 {
 public:
+  Function() = default;
   static InputParameters GetInputParameters() { return Object::GetInputParameters(); }
 
 protected:

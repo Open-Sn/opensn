@@ -27,12 +27,12 @@ protected:
 
   CurvilinearQuadrature(int dimension) : ProductQuadrature(dimension) {}
 
-  virtual ~CurvilinearQuadrature() = default;
-
 public:
   const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
 
   const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
+
+  virtual ~CurvilinearQuadrature() = default;
 };
 
 class GLCProductQuadrature2DRZ : public CurvilinearQuadrature

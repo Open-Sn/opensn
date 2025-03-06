@@ -13,6 +13,7 @@ namespace opensn
 class ScalarMaterialFunction : public Function
 {
 public:
+  ScalarMaterialFunction() = default;
   static InputParameters GetInputParameters() { return Function::GetInputParameters(); }
   explicit ScalarMaterialFunction(const InputParameters& params) : Function(params) {}
 
