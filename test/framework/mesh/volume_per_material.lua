@@ -33,4 +33,4 @@ grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = true, infz = true })
 grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
 
-mesh.ComputeVolumePerMaterialID(grid)
+grid:ComputeVolumePerMaterialID()

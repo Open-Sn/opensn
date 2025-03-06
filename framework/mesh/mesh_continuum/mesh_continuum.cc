@@ -770,11 +770,11 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, const uns
 }
 
 void
-MeshContinuum::ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum>& mesh)
+MeshContinuum::ComputeVolumePerMaterialID()
 {
   // Create a map to hold local volume with local material as key
   std::map<int, double> material_volumes;
-  for (auto& cell : mesh->local_cells)
+  for (auto& cell : this->local_cells)
     material_volumes[cell.material_id] += cell.volume;
 
   // Collect all local material IDs

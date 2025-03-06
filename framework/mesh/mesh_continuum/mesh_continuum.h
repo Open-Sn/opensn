@@ -144,6 +144,9 @@ public:
   LocalCellHandler local_cells;
   GlobalCellHandler cells;
 
+  /// Compute volume per material id's
+  void ComputeVolumePerMaterialID();
+
 private:
   /// Spatial dimension
   unsigned int dim_;
@@ -175,9 +178,6 @@ public:
    * that interface with the `f`-th face of cell A.
    */
   static size_t MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
-
-  /// Compute volume per material id's
-  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum>& mesh);
 };
 
 } // namespace opensn
