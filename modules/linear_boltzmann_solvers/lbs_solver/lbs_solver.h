@@ -333,7 +333,7 @@ protected:
   std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
 
-  std::map<int, std::shared_ptr<MultiGroupXS>> matid_to_xs_map_;
+  std::map<int, std::shared_ptr<MultiGroupXS>> block_id_to_xs_map_;
 
   std::vector<std::shared_ptr<PointSource>> point_sources_;
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
