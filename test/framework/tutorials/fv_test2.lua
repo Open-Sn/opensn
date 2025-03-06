@@ -14,8 +14,8 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 unit_sim_tests.SimTest02_FV({ mesh = grid })
 MPIBarrier()

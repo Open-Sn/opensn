@@ -362,7 +362,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
         for (uint64_t& vid : face.vertex_ids)
           vid = node_map[vid];
 
-      raw_cell->material_id = block_id_array->GetValue(c);
+      raw_cell->block_id = block_id_array->GetValue(c);
 
       cells[cell_gid] = raw_cell;
     } // for cell c
@@ -418,7 +418,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       else
         throw std::logic_error(fname + ": Unsupported cell dimension.");
 
-      raw_cells.back()->material_id = block_id_array->GetValue(c);
+      raw_cells.back()->block_id = block_id_array->GetValue(c);
     }
 
     // Push points
@@ -440,13 +440,12 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 }
 
 void
-SetMaterialIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh,
-                       const std::vector<int>& material_ids)
+SetBlockIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh, const std::vector<int>& block_ids)
 {
   auto& raw_cells = mesh->GetRawCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
-    raw_cells[c]->material_id = material_ids[c];
+    raw_cells[c]->block_id = block_ids[c];
 }
 
 void
@@ -639,9 +638,8 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
   // Copy Data
-  // Material-IDs will get set form block-id arrays
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  // Block-IDs will get set from block-id arrays
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Always do this
   mesh->SetDimension(max_dimension);
@@ -690,16 +688,15 @@ MeshIO::FromVTU(const UnpartitionedMesh::Options& options)
     GetBlocksOfDesiredDimension(grid_blocks, max_dimension - 1);
 
   // Process blocks
-  auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, options.material_id_fieldname);
+  auto ugrid = ConsolidateGridBlocks(domain_grid_blocks, options.block_id_fieldname);
 
   // Copy Data
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
-  // Set material ids
-  const auto material_ids =
-    BuildCellMaterialIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
-  SetMaterialIDsFromList(mesh, material_ids);
+  // Set block ids
+  const auto block_ids =
+    BuildCellBlockIDsFromField(ugrid, options.block_id_fieldname, options.file_name);
+  SetBlockIDsFromList(mesh, block_ids);
 
   // Always do this
   mesh->SetDimension(max_dimension);
@@ -748,13 +745,12 @@ MeshIO::FromPVTU(const UnpartitionedMesh::Options& options)
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
   // Copy Data
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
-  // Set material ids
-  const auto material_ids =
-    BuildCellMaterialIDsFromField(ugrid, options.material_id_fieldname, options.file_name);
-  SetMaterialIDsFromList(mesh, material_ids);
+  // Set block ids
+  const auto block_ids =
+    BuildCellBlockIDsFromField(ugrid, options.block_id_fieldname, options.file_name);
+  SetBlockIDsFromList(mesh, block_ids);
 
   // Always do this
   mesh->SetDimension(max_dimension);
@@ -825,9 +821,8 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
   auto ugrid = ConsolidateGridBlocks(domain_grid_blocks);
 
   // Copy Data
-  // Material-IDs will get set form block-id arrays
-  CopyUGridCellsAndPoints(
-    mesh, *ugrid, options.scale, max_dimension, options.material_id_fieldname);
+  // Block-IDs will get set form block-id arrays
+  CopyUGridCellsAndPoints(mesh, *ugrid, options.scale, max_dimension, options.block_id_fieldname);
 
   // Always do this
   mesh->SetDimension(max_dimension);
@@ -943,18 +938,18 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   std::map<int, CellType> block_id_map;
   for (const auto& cell : grid->local_cells)
   {
-    const int mat_id = cell.material_id;
-    if (block_id_map.count(mat_id) == 0)
-      block_id_map[mat_id] = cell.GetSubType();
+    const int blk_id = cell.block_id;
+    if (block_id_map.count(blk_id) == 0)
+      block_id_map[blk_id] = cell.GetSubType();
     else
     {
-      if (cell.GetSubType() != block_id_map.at(mat_id))
-        throw std::logic_error(fname + ": Material id " + std::to_string(mat_id) +
+      if (cell.GetSubType() != block_id_map.at(blk_id))
+        throw std::logic_error(fname + ": Block id " + std::to_string(blk_id) +
                                " appearing for more than one cell type.");
     }
   }
 
-  // Create unstructured meshes for each material-type pair
+  // Create unstructured meshes for each block-type pair
   vtkNew<vtkMultiBlockDataSet> grid_blocks;
   int max_dimension = 0;
   {
@@ -992,7 +987,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
         throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
-      block_id_list->InsertNextValue(cell.material_id);
+      block_id_list->InsertNextValue(cell.block_id);
       max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.

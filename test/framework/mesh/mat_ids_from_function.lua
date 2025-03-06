@@ -20,6 +20,6 @@ function mat_id(pt, cur_id)
   return cur_id
 end
 
-mesh.SetMaterialIDFromFunction(grid, "mat_id")
+mesh.SetBlockIDFromFunction(grid, "mat_id")
 
 mesh.ExportToPVTU(grid, "new_mat_ids")

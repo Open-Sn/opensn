@@ -152,11 +152,11 @@ public:
 
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
-  /// Sets material id's for all cells to the specified material id.
-  void SetUniformMaterialID(int mat_id);
+  /// Sets block IDs for all cells to the specified block id.
+  void SetUniformBlockID(int mat_id);
 
-  /// Sets material id's using a logical volume.
-  void SetMaterialIDFromLogical(const LogicalVolume& log_vol, int mat_id, bool sense);
+  /// Sets block IDs using a logical volume.
+  void SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, bool sense);
 
   /// Sets boundary id's using a logical volume.
   void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
@@ -192,7 +192,7 @@ private:
 
 public:
   /// Compute volume per material id's
-  static void ComputeVolumePerMaterialID(const std::shared_ptr<MeshContinuum> mesh);
+  static void ComputeVolumePerBlockID(const std::shared_ptr<MeshContinuum> mesh);
 
   VertexHandler vertices;
   LocalCellHandler local_cells;

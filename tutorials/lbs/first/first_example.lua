@@ -89,8 +89,8 @@ When using the in-house `OrthogonalMeshGenerator`, no material IDs are assigned.
 assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
 with value 0 for each cell in the spatial domain.
 --]]
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 --[[ @doc
 ## Cross Sections

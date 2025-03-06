@@ -33,11 +33,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen1:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = -10.0, zmax = 10.0 })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
 num_groups = 168
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")

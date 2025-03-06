@@ -14,7 +14,7 @@ namespace opensnlua
 {
 
 void
-MeshSetMaterialIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* lua_fname)
+MeshSetBlockIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* lua_fname)
 {
   auto L = Console::GetInstance().GetConsoleState();
   auto lua_fn = luabridge::getGlobal(L, lua_fname);
@@ -22,10 +22,10 @@ MeshSetMaterialIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* l
   int local_num_cells_modified = 0;
   for (auto& cell : grid->local_cells)
   {
-    int new_matid = lua_fn(cell.centroid, cell.material_id)[0];
-    if (cell.material_id != new_matid)
+    int new_blkid = lua_fn(cell.centroid, cell.block_id)[0];
+    if (cell.block_id != new_blkid)
     {
-      cell.material_id = new_matid;
+      cell.block_id = new_blkid;
       ++local_num_cells_modified;
     }
   } // for local cell
@@ -34,11 +34,11 @@ MeshSetMaterialIDFromFunction(std::shared_ptr<MeshContinuum> grid, const char* l
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = grid->cells[ghost_id];
-    int new_matid = lua_fn(cell.centroid, cell.material_id)[0];
+    int new_blkid = lua_fn(cell.centroid, cell.block_id)[0];
 
-    if (cell.material_id != new_matid)
+    if (cell.block_id != new_blkid)
     {
-      cell.material_id = new_matid;
+      cell.block_id = new_blkid;
       ++local_num_cells_modified;
     }
   } // for ghost cell id

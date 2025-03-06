@@ -202,7 +202,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
           CellType::POLYHEDRON, extruded_subtype);
         auto& new_cell = *new_cell_ptr;
 
-        new_cell.material_id = template_cell->material_id;
+        new_cell.block_id = template_cell->block_id;
 
         // Build vertices
         const size_t tc_num_verts = template_cell->vertex_ids.size();

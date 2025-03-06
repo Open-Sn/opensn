@@ -34,9 +34,9 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set Material IDs
+-- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 vol1 = logvol.RPPLogicalVolume.Create({
   xmin = -10.0,
@@ -45,7 +45,7 @@ vol1 = logvol.RPPLogicalVolume.Create({
   ymax = 10.0,
   infz = true,
 })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
 num_groups = 168
 xs_graphite = xs.LoadFromOpenSn("../transport_steady/xs_graphite_pure.xs")

@@ -66,7 +66,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
@@ -271,7 +271,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
     const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
