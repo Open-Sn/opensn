@@ -46,22 +46,36 @@ private:
   {
     /// Dimension of the mesh (2D, 3D).
     unsigned int dimension;
-    /// Map of cells (partition ID, cell global ID).
-    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
-    /// Map of vertices by global vertex ID.
-    std::map<uint64_t, Vector3> vertices;
-    /// Map of boundary IDs to boundary names.
-    std::map<uint64_t, std::string> boundary_id_map;
     /// Type of mesh.
     MeshType mesh_type;
     /// Whether the mesh is extruded or not.
     bool extruded;
     /// Attributes for orthogonal mesh, if applicable.
     OrthoMeshAttributes ortho_attributes;
+
+    /// Map of cells (partition ID, cell global ID).
+    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+    /// Map of vertices by global vertex ID.
+    std::map<uint64_t, Vector3> vertices;
+    /// Map of boundary IDs to boundary names.
+    std::map<uint64_t, std::string> boundary_id_map;
     /// Number of global vertices in the mesh.
     size_t num_global_vertices;
   };
 
+  /// The number of partitions for distributing the mesh.
+  const int num_partitions_;
+
+public:
+  /**
+   * Get the input parameters for this class.
+   *
+   * \return Input parameters for configuring the DistributedMeshGenerator.
+   */
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<DistributedMeshGenerator> Create(const ParameterBlock& params);
+
+private:
   /**
    * Serializes and distributes the mesh data to other MPI ranks.
    *
@@ -70,12 +84,12 @@ private:
    *
    * \param cell_pids A vector of cell partition IDs.
    * \param umesh The unpartitioned mesh object containing mesh information.
-   * \param num_parts The number of partitions to distribute.
+   * \param num_partitions The number of partitions to distribute.
    * \return The serialized mesh data for location 0.
    */
-  ByteArray DistributeSerializedMeshData(const std::vector<int64_t>& cell_pids,
-                                         const UnpartitionedMesh& umesh,
-                                         int num_parts);
+  static ByteArray DistributeSerializedMeshData(const std::vector<int64_t>& cell_pids,
+                                                const UnpartitionedMesh& umesh,
+                                                int num_partitions);
 
   /**
    * Deserializes the mesh data from a `ByteArray`.
@@ -85,7 +99,7 @@ private:
    * \param serial_data The serialized mesh data in a `ByteArray`.
    * \return The deserialized mesh data.
    */
-  DistributedMeshData DeserializeMeshData(ByteArray& serial_data);
+  static DistributedMeshData DeserializeMeshData(ByteArray& serial_data);
 
   /**
    * Sets up the local mesh on each MPI rank from the deserialized mesh data.
@@ -97,20 +111,7 @@ private:
    * boundaries.
    * \return A shared pointer to the local mesh.
    */
-  std::shared_ptr<MeshContinuum> SetupLocalMesh(DistributedMeshData& mesh_info);
-
-private:
-  /// The number of partitions for distributing the mesh.
-  const int num_parts_;
-
-public:
-  /**
-   * Get the input parameters for this class.
-   *
-   * \return Input parameters for configuring the DistributedMeshGenerator.
-   */
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<DistributedMeshGenerator> Create(const ParameterBlock& params);
+  static std::shared_ptr<MeshContinuum> SetupLocalMesh(DistributedMeshData& mesh_info);
 };
 
 } // namespace opensn

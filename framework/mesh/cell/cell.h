@@ -43,19 +43,7 @@ std::string CellTypeName(CellType type);
 class CellFace
 {
 public:
-  /// A list of the vertices
-  std::vector<uint64_t> vertex_ids;
-  /// The average/geometric normal
-  Vector3 normal;
-  /// The face centroid
-  Vector3 centroid;
-  /// Flag indicating whether face has a neighbor
-  bool has_neighbor = false;
-  /// If face has neighbor, contains the global_id. Otherwise contains boundary_id.
-  uint64_t neighbor_id = 0;
-
-public:
-  /// Determines the neighbor's partition and whether its local or not.
+  /// Determines the neighbor's partition and whether it's local or not.
   bool IsNeighborLocal(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's partition.
@@ -67,9 +55,8 @@ public:
   /// Determines the neighbor's associated face.
   int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
 
-public:
-  /// Computes the face area.
-  double ComputeFaceArea(const MeshContinuum* grid) const;
+  /// Computes the geometric info on the face.
+  void ComputeGeometricInfo(const MeshContinuum* grid, unsigned int f);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -80,49 +67,40 @@ public:
   /// Provides string information of the face.
   std::string ToString() const;
 
-  /// Recomputes the face centroid assuming the mesh vertices have been transformed.
-  void RecomputeCentroid(const MeshContinuum* grid);
+  /// Flag indicating whether face has a neighbor
+  bool has_neighbor = false;
+  /// If face has neighbor, contains the global_id, otherwise, contains boundary_id.
+  uint64_t neighbor_id = 0;
+
+  /// The average/geometric normal
+  Vector3 normal;
+  /// The face centroid
+  Vector3 centroid;
+  /// The area of the face
+  double area = 0.0;
+
+  /// A list of the vertices
+  std::vector<uint64_t> vertex_ids;
 };
 
 /// Generic mesh cell object
 class Cell
 {
-private:
-  /// Primary type, i.e. SLAB, POLYGON, POLYHEDRON
-  const CellType cell_type_;
-  /// Sub-type i.e. SLAB, QUADRILATERAL, HEXAHEDRON
-  const CellType cell_sub_type_;
-
 public:
-  uint64_t global_id = 0;
-  uint64_t local_id = 0;
-  uint64_t partition_id = 0;
-  Vector3 centroid;
-  int material_id = -1;
+  Cell(const Cell& other) = default;
+  Cell(Cell&& other) noexcept = default;
 
-  std::vector<uint64_t> vertex_ids;
-  std::vector<CellFace> faces;
-
-public:
-  /// Copy constructor
-  Cell(const Cell& other);
-
-  /// Move constructor
-  Cell(Cell&& other) noexcept;
-
-  explicit Cell(CellType cell_type, CellType cell_sub_type)
-    : cell_type_(cell_type), cell_sub_type_(cell_sub_type)
-  {
-  }
-
-  /// Copy operator.
-  Cell& operator=(const Cell& other);
+  explicit Cell(CellType cell_type, CellType cell_sub_type);
 
   virtual ~Cell() = default;
 
-public:
+  Cell& operator=(const Cell& other);
+
   CellType GetType() const { return cell_type_; }
   CellType GetSubType() const { return cell_sub_type_; }
+
+  /// Computes the geometric info on the cell.
+  void ComputeGeometricInfo(const MeshContinuum* grid);
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;
@@ -132,6 +110,23 @@ public:
 
   /// Provides string information of the cell.
   std::string ToString() const;
+
+  uint64_t global_id = 0;
+  uint64_t local_id = 0;
+  uint64_t partition_id = 0;
+  int material_id = -1;
+
+  Vector3 centroid;
+  double volume = 0.0;
+
+  std::vector<uint64_t> vertex_ids;
+  std::vector<CellFace> faces;
+
+private:
+  /// Primary type, i.e. SLAB, POLYGON, POLYHEDRON
+  const CellType cell_type_;
+  /// Subtype i.e. SLAB, QUADRILATERAL, HEXAHEDRON
+  const CellType cell_sub_type_;
 };
 
 } // namespace opensn

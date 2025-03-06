@@ -58,13 +58,13 @@ std::pair<int64_t, int64_t>
 MIPWGSContext::GetSystemSize()
 {
   const size_t local_node_count = lbs_solver.GetLocalNodeCount();
-  const size_t globl_node_count = lbs_solver.GetGlobalNodeCount();
+  const size_t global_node_count = lbs_solver.GetGlobalNodeCount();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const size_t local_size = local_node_count * groupset_numgrps;
-  const size_t globl_size = globl_node_count * groupset_numgrps;
+  const size_t global_size = global_node_count * groupset_numgrps;
 
-  return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
+  return {static_cast<int64_t>(local_size), static_cast<int64_t>(global_size)};
 }
 
 void

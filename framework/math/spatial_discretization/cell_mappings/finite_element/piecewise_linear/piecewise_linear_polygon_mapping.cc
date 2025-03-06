@@ -31,8 +31,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   {
     const CellFace& face = poly_cell.faces[side];
 
-    const auto& v0 = ref_grid_->vertices[face.vertex_ids[0]];
-    const auto& v1 = ref_grid_->vertices[face.vertex_ids[1]];
+    const auto& v0 = grid_->vertices[face.vertex_ids[0]];
+    const auto& v1 = grid_->vertices[face.vertex_ids[1]];
     Vector3 v2 = vc_;
 
     Vector3 sidev01 = v1 - v0;
@@ -189,7 +189,7 @@ PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
 {
   for (int s = 0; s < num_of_subtris_; ++s)
   {
-    const auto& p0 = ref_grid_->vertices[sides_[s].v_index[0]];
+    const auto& p0 = grid_->vertices[sides_[s].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
 
     Vector3 xi_eta_zeta = sides_[s].Jinv * xyz_ref;
@@ -227,7 +227,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& s
   shape_values.Resize(num_nodes_, 0.0);
   for (int s = 0; s < num_of_subtris_; ++s)
   {
-    const auto& p0 = ref_grid_->vertices[sides_[s].v_index[0]];
+    const auto& p0 = grid_->vertices[sides_[s].v_index[0]];
     Vector3 xi_eta_zeta = sides_[s].Jinv * (xyz - p0);
 
     double xi = xi_eta_zeta.x;
@@ -267,7 +267,7 @@ PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const Vector3& xyz) c
 
   for (int e = 0; e < num_of_subtris_; ++e)
   {
-    const auto& p0 = ref_grid_->vertices[sides_[e].v_index[0]];
+    const auto& p0 = grid_->vertices[sides_[e].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
 
     Vector3 xi_eta_zeta = sides_[e].Jinv * xyz_ref;

@@ -14,7 +14,7 @@ FiniteVolumeMapping::MakeVolumetricFiniteElementData() const
                                      {{cell_.centroid}},
                                      {{1.0}},
                                      {{Vector3(0, 0, 0)}},
-                                     {volume_},
+                                     {cell_.volume},
                                      face_node_mappings_,
                                      num_nodes_);
 }
@@ -26,7 +26,7 @@ FiniteVolumeMapping::MakeSurfaceFiniteElementData(size_t face_index) const
                                   {{Vector3(0, 0, 0)}},
                                   {{1.0}},
                                   {{Vector3(0, 0, 0)}},
-                                  {areas_[face_index]},
+                                  {cell_.faces[face_index].area},
                                   {{Vector3(0, 0, 0)}},
                                   face_node_mappings_,
                                   1);

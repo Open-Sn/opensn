@@ -73,30 +73,30 @@ SweepWGSContext::GetSystemSize()
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
   const size_t local_node_count = lbs_solver.GetLocalNodeCount();
-  const size_t globl_node_count = lbs_solver.GetGlobalNodeCount();
+  const size_t global_node_count = lbs_solver.GetGlobalNodeCount();
   const size_t num_moments = lbs_solver.GetNumMoments();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
-  const size_t globl_size =
-    globl_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
+  const size_t global_size =
+    global_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
   const size_t num_angles = groupset.quadrature->abscissae.size();
-  const size_t num_psi_global = globl_node_count * num_angles * groupset.groups.size();
-  const size_t num_delayed_psi_globl = num_delayed_psi_info.second;
+  const size_t num_psi_global = global_node_count * num_angles * groupset.groups.size();
+  const size_t num_delayed_psi_global = num_delayed_psi_info.second;
 
   if (log_info)
   {
     log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
-              << "Number of lagged angular unknowns: " << num_delayed_psi_globl << "("
+              << "Number of lagged angular unknowns: " << num_delayed_psi_global << "("
               << std::setprecision(2)
-              << static_cast<double>(num_delayed_psi_globl) * 100 /
+              << static_cast<double>(num_delayed_psi_global) * 100 /
                    static_cast<double>(num_psi_global)
               << "%)";
   }
 
-  return {static_cast<int64_t>(local_size), static_cast<int64_t>(globl_size)};
+  return {static_cast<int64_t>(local_size), static_cast<int64_t>(global_size)};
 }
 
 void

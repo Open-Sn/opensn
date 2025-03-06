@@ -66,7 +66,7 @@ public:
 
 private:
   void InitializeMaterials(std::set<int>& material_ids);
-  void SetBCs(const std::vector<uint64_t>& globl_unique_bndry_ids);
+  void SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids);
   void AssembleAbext();
   void ComputeTwoGridParams();
   void ComputeTwoGridVolumeFractions();

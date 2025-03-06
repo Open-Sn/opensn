@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-const std::size_t MeshMapping::invalid_face_index = std::numeric_limits<std::size_t>::max();
+const size_t MeshMapping::invalid_face_index = std::numeric_limits<size_t>::max();
 
 MeshMapping::CoarseMapping::CoarseMapping(const Cell& coarse_cell)
   : fine_faces{coarse_cell.faces.size()}
@@ -25,11 +25,11 @@ MeshMapping::FineMapping::FineMapping(const Cell& fine_cell)
 }
 
 void
-MeshMapping::Build(const std::shared_ptr<MeshContinuum> fine_grid,
-                   const std::shared_ptr<MeshContinuum> coarse_grid)
+MeshMapping::Build(const std::shared_ptr<MeshContinuum>& fine_grid,
+                   const std::shared_ptr<MeshContinuum>& coarse_grid)
 
 {
-  if (opensn::mpi_comm.size() > 1)
+  if (mpi_comm.size() > 1)
     OpenSnLogicalError("MeshMapping is not currently supported in parallel.");
   if (fine_grid->GetDimension() != coarse_grid->GetDimension())
     OpenSnLogicalError("Grid dimensions are not equal for mapping. Fine dimension = " +
@@ -56,13 +56,10 @@ MeshMapping::Build(const std::shared_ptr<MeshContinuum> fine_grid,
         break;
       }
 
-    if (!fine_mapping.coarse_cell)
-    {
-      std::ostringstream oss;
-      oss << "Failed to find a corresponding coarse cell for fine cell " << fine_cell.global_id
-          << " with centroid " << fine_cell.centroid.PrintStr() << ".";
-      OpenSnLogicalError(oss.str());
-    }
+    if (not fine_mapping.coarse_cell)
+      throw std::runtime_error("Failed to find a corresponding coarse cell for fine cell " +
+                               std::to_string(fine_cell.global_id) + " with centroid " +
+                               fine_cell.centroid.PrintStr() + ".");
 
     coarse_to_fine_.at(fine_mapping.coarse_cell).fine_cells.push_back(fine_cell_ptr);
   }
@@ -75,22 +72,17 @@ MeshMapping::Build(const std::shared_ptr<MeshContinuum> fine_grid,
   for (const auto& [coarse_cell_ptr, coarse_mapping] : coarse_to_fine_)
   {
     const auto& coarse_cell = *coarse_cell_ptr;
-    const auto& coarse_cell_mapping = coarse_sdm.GetCellMapping(coarse_cell);
-    const auto coarse_cell_volume = coarse_cell_mapping.GetCellVolume();
-    double total_fine_volume = 0;
+
+    double total_fine_volume = 0.0;
     for (const auto fine_cell_ptr : coarse_mapping.fine_cells)
     {
       const auto& fine_cell = *fine_cell_ptr;
-      const auto& fine_cell_mapping = fine_sdm.GetCellMapping(fine_cell);
-      total_fine_volume += fine_cell_mapping.GetCellVolume();
+      total_fine_volume += fine_cell.volume;
     }
-    if (std::abs(total_fine_volume - coarse_cell_volume) > 1.e-6)
-    {
-      std::ostringstream oss;
-      oss << "Coarse cell " << coarse_cell.global_id << " with centroid "
-          << coarse_cell.centroid.PrintStr() << " volumetric mapping failed.";
-      OpenSnLogicalError(oss.str());
-    }
+    if (std::abs(total_fine_volume - coarse_cell.volume) > 1.e-6)
+      throw std::runtime_error("Coarse cell " + std::to_string(coarse_cell.global_id) +
+                               " with centroid " + coarse_cell.centroid.PrintStr() +
+                               " volumetric mapping failed.");
   }
 
   // Surface mapping; find the coarse cell face that contains a fine cell face centroid
@@ -125,17 +117,13 @@ MeshMapping::Build(const std::shared_ptr<MeshContinuum> fine_grid,
       for (const auto& [fine_cell_ptr, fine_face_i] : fine_faces)
       {
         const auto& fine_face = fine_cell_ptr->faces[fine_face_i];
-        total_fine_face_area += fine_face.ComputeFaceArea(fine_grid.get());
+        total_fine_face_area += fine_face.area;
       }
       const auto& coarse_face = coarse_cell.faces[coarse_face_i];
-      const auto coarse_face_area = coarse_face.ComputeFaceArea(coarse_grid.get());
-      if (std::abs(total_fine_face_area - coarse_face_area) > 1.e-6)
-      {
-        std::ostringstream oss;
-        oss << "Coarse cell " << coarse_cell.global_id << " face " << coarse_face_i
-            << " with centroid " << coarse_face.centroid.PrintStr() << " surface mapping failed.";
-        OpenSnLogicalError(oss.str());
-      }
+      if (std::abs(total_fine_face_area - coarse_face.area) > 1.e-6)
+        throw std::runtime_error("Coarse cell " + std::to_string(coarse_cell.global_id) + " face " +
+                                 std::to_string(coarse_face_i) + " with centroid " +
+                                 coarse_face.centroid.PrintStr() + " surface mapping failed.");
     }
   }
 }
