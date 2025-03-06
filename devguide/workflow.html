@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Binding C++ classes to Lua" href="lua_bindings.html" />
-    <link rel="prev" title="Coding Standards" href="coding_standard.html" /> 
+    <link rel="next" title="Coding Standards" href="coding_standard.html" />
+    <link rel="prev" title="Developer’s Guide" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,8 +47,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s Guide</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Developer Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#formating">Formating</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-a-branch">Create a Branch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-a-commit">Create a Commit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sending-a-pull-request">Sending a Pull Request</a></li>
@@ -57,6 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#squashing-commits">Squashing Commits</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lua_bindings.html">Binding C++ classes to Lua</a></li>
 </ul>
 </li>
@@ -108,6 +109,16 @@ Do <strong>not</strong> develop on the <code class="docutils literal notranslate
 <p class="admonition-title">Attention</p>
 <p>Do <strong>NOT</strong> merge <code class="docutils literal notranslate"><span class="pre">main</span></code> into your feature branch.</p>
 </div>
+<section id="formating">
+<h2>Formating<a class="headerlink" href="#formating" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>C++ code should be formatted according to our <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> choices, found in
+<a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.clang-format">the .clang_format</a> file in the repository root.</p></li>
+<li><p>Lua input files must be formated using StyLua, <a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/tools/lua-input-style.md">see these instructions.</a></p></li>
+<li><p>Python linting and style guide checking is performed using <a class="reference external" href="https://flake8.pycqa.org/en/latest/index.html">flake8</a>
+and our style guide configuration is found in the <a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.flake8">.flake8</a> file in the repository root.</p></li>
+</ul>
+</section>
 <section id="create-a-branch">
 <h2>Create a Branch<a class="headerlink" href="#create-a-branch" title="Link to this heading"></a></h2>
 <p>First, make sure you do not have any local changes:</p>
@@ -327,7 +338,7 @@ Then push the changes to your fork:</p>
 </div>
 <div class="admonition-attention admonition">
 <p class="admonition-title">Attention</p>
-<p>This assumes you followed this guide and branched off of <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
+<p>This assumes you followed this guide and worked in your branch <code class="docutils literal notranslate"><span class="pre">branch</span> <span class="pre">name</span></code> and not in <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
 </div>
 </section>
 </section>
@@ -336,8 +347,8 @@ Then push the changes to your fork:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="coding_standard.html" class="btn btn-neutral float-left" title="Coding Standards" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="lua_bindings.html" class="btn btn-neutral float-right" title="Binding C++ classes to Lua" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Developer’s Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="coding_standard.html" class="btn btn-neutral float-right" title="Coding Standards" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
