@@ -76,8 +76,8 @@ void WrapVolumetricSource(py::module& src)
     group_strength: List[double]
         An array of multi-group source strength values. Note that this is only used when a function
         is not provided.
-    func: ???
-        ???
+    func: pyopensn.math.VectorSpatialFunction
+        Function to be used to define the source.
     )"
   );
 }

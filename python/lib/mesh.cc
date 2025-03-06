@@ -9,6 +9,7 @@
 #include "framework/graphs/kba_graph_partitioner.h"
 #include "framework/graphs/linear_graph_partitioner.h"
 #include "framework/graphs/petsc_graph_partitioner.h"
+#include "framework/mesh/io/mesh_io.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_generator/mesh_generator.h"
@@ -44,22 +45,67 @@ void WrapMesh(py::module& mesh)
   mesh_continuum.def(
     "SetUniformMaterialID",
     &MeshContinuum::SetUniformMaterialID,
-    "Set material ID's for all cells to the specified material ID."
+    "Set material ID's for all cells to the specified material ID.",
+    py::arg("mat_id")
   );
   mesh_continuum.def(
-    "SetMaterialIDFromLogical",
+    "SetMaterialIDFromLogicalVolume",
     &MeshContinuum::SetMaterialIDFromLogical,
-    "Set material ID's using a logical volume."
+    R"(
+    Set material ID's using a logical volume.
+
+    Parameters
+    ----------
+    log_vol: pyopensn.logvol.LogicalVolume
+        ???
+    mat_id: int
+        ???
+    sense: bool
+        ???
+    )",
+    py::arg("log_vol"),
+    py::arg("mat_id"),
+    py::arg("sense")
   );
   mesh_continuum.def(
-    "SetBoundaryIDFromLogical",
+    "SetBoundaryIDFromLogicalVolume",
     &MeshContinuum::SetBoundaryIDFromLogical,
-    "Set boundary ID's using a logical volume."
+    R"(
+    Set boundary ID's using a logical volume.
+
+    Parameters
+    ----------
+
+    log_vol: pyopensn.logvol.LogicalVolume
+        ???
+    boundary_name: str
+        ???
+    sense: bool
+        ???
+    )",
+    py::arg("log_vol"),
+    py::arg("boundary_name"),
+    py::arg("sense") = true
   );
   mesh_continuum.def(
     "SetupOrthogonalBoundaries",
     &MeshContinuum::SetupOrthogonalBoundaries,
-    "..."
+    "???"
+  );
+  mesh_continuum.def(
+    "ExportToPVTU",
+    [](std::shared_ptr<MeshContinuum> self, const std::string& file_name) {
+        MeshIO::ToPVTU(self, file_name);
+    },
+    R"(
+    Write grid cells into PVTU format.
+
+    Parameters
+    ----------
+    file_base_name: str
+        Base name of the output file.
+    )",
+    py::arg("file_base_name")
   );
 
   // Surface mesh
@@ -87,9 +133,7 @@ void WrapMesh(py::module& mesh)
   );
   surface_mesh.def(
     "ImportFromOBJFile",
-    [](SurfaceMesh& self, const std::string& file_name, bool as_poly, py::sequence& transform) {
-      return self.ImportFromOBJFile(file_name, as_poly, to_vect3(transform));
-    },
+    &SurfaceMesh::ImportFromOBJFile,
     R"(
     Loads a surface mesh from a wavefront .obj file.
 
@@ -99,12 +143,12 @@ void WrapMesh(py::module& mesh)
         ???
     as_poly: bool, default=False
         ???
-    transform: List[float], default=[]
+    transform: pyopensn.math.Vector3, default=(0.0, 0.0, 0.0)
         ???
     )",
     py::arg("file_name"),
     py::arg("as_poly") = false,
-    py::arg("transform") = py::list()
+    py::arg("transform") = Vector3()
   );
   surface_mesh.def(
     "ImportFromTriangleFiles",

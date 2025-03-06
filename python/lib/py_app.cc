@@ -34,9 +34,12 @@ PyApp::PyApp(const mpi::Communicator& comm)
   console.BindModule(WrapProductQuadrature);
   console.BindModule(WrapCurvilinearQuadrature);
   console.BindModule(WrapSLDFESQuadrature);
-  console.BindModule(WrapYlm);
 
   console.BindModule(WrapLogicalVolume);
+
+  console.BindModule(WrapYlm);
+  console.BindModule(WrapVector3);
+  console.BindModule(WrapFunctors);
 
   console.BindModule(WrapMesh);
   console.BindModule(WrapMeshGenerator);

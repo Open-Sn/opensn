@@ -8,7 +8,6 @@
 
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
-#include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 
@@ -237,18 +236,14 @@ void WrapSLDFESQuadrature(py::module& aquad)
   );
   simplified_ldfes_quadrature.def(
     "LocallyRefine",
-    [](SimplifiedLDFESQ::Quadrature& self, py::sequence& ref_dir, double cone_size,
-       bool dir_as_plane_normal)
-    {
-      self.LocallyRefine(to_vect3(ref_dir), cone_size, dir_as_plane_normal);
-    },
+    &SimplifiedLDFESQ::Quadrature::LocallyRefine,
     R"(
     Locally refines the cells.
 
     Parameters
     ----------
-    ref_dir: Sequence[float]
-        List/tuple of size 3 storing...
+    ref_dir: pyopensn.math.Vector3
+        ???
     cone_size: float
         ???
     dir_as_plane_normal: bool, default=False
@@ -270,33 +265,6 @@ void WrapSLDFESQuadrature(py::module& aquad)
         File base name.
     )",
     py::arg("file_base")
-  );
-}
-
-// Wrap spherical harmonics
-void WrapYlm(py::module& aquad)
-{
-  aquad.def(
-    "Ylm",
-    &Ylm,
-    R"(
-    Compute the tesseral spherical harmonics.
-
-    Parameters
-    ----------
-    l: int
-        Degree of the associated Legendre polynomial.
-    m: int
-        Order of the associated Legendre polynomial.
-    theta: float
-        Polar angle of the evaluation point.
-    varphi: float
-        Azimuthal angle of the evaluation point.
-    )",
-    py::arg("l"),
-    py::arg("m"),
-    py::arg("theta"),
-    py::arg("varphi")
   );
 }
 

@@ -17,6 +17,7 @@
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/physics/solver.h"
+#include "python/lib/functor.h"  // temporary!!
 
 #define TO_PARAMBLOCK(class_name)                                                                  \
   if (py::isinstance<class_name>(obj))                                                             \
@@ -82,6 +83,11 @@ ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& ob
   TO_PARAMBLOCK(PointSource);
   TO_PARAMBLOCK(VolumetricSource);
   TO_PARAMBLOCK(Solver);
+
+  // function binder (temporary)
+  TO_PARAMBLOCK(PySMFunction);
+  TO_PARAMBLOCK(PySSMFunction);
+  TO_PARAMBLOCK(PyVSFunction);
 
   // throw and return
   throw std::invalid_argument("Unsupported argument type.");

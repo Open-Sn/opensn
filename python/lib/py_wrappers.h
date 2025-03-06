@@ -27,22 +27,6 @@ py::memoryview convert_vector(const std::vector<T>& vec)
 /// Translate a Python dictionary into a ParameterBlock.
 ParameterBlock kwargs_to_param_block(const py::kwargs& params);
 
-/// Convert a Python sequence to opensn::Vector3
-inline Vector3 to_vect3(py::sequence & seq)
-{
-  switch (seq.size()) {
-    case 0 :
-      return Vector3();
-    case 1 :
-      return Vector3(seq[0].cast<double>());
-    case 2 :
-      return Vector3(seq[0].cast<double>(), seq[1].cast<double>());
-    case 3 :
-      return Vector3(seq[0].cast<double>(), seq[1].cast<double>(), seq[2].cast<double>());
-  }
-  throw std::range_error("Expected sequence of size less than 4, got " + std::to_string(seq.size()) + ".");
-}
-
 // Module wrappers
 // ---------------
 
@@ -52,7 +36,6 @@ void WrapQuadrature(py::module& aquad);
 void WrapProductQuadrature(py::module& aquad);
 void WrapCurvilinearQuadrature(py::module& aquad);
 void WrapSLDFESQuadrature(py::module& aquad);
-void WrapYlm(py::module& aquad);
 
 /// Wrap the field function components of OpenSn (unfinished).
 void py_ffunc(py::module& pyopensn);
@@ -61,6 +44,12 @@ void wrap_field_function(py::module& ffunc);
 /// Wrap the logical volume components of OpenSn (unfinished).
 void py_logvol(py::module& pyopensn);
 void WrapLogicalVolume(py::module& logvol);
+
+// Wrap the math components of OpenSn
+void py_math(py::module& pyopensn);
+void WrapYlm(py::module& math);
+void WrapVector3(py::module& math);
+void WrapFunctors(py::module& math);
 
 /// Wrap the mesh components of OpenSn.
 void py_mesh(py::module& pyopensn);

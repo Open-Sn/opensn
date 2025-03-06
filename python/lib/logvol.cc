@@ -30,11 +30,8 @@ void WrapLogicalVolume(py::module& logvol)
   );
   logical_volume.def(
     "Inside",
-    [](LogicalVolume& self, py::sequence& point)
-    {
-      return self.Inside(to_vect3(point));
-    },
-    "Logical operation for surface mesh."
+    &LogicalVolume::Inside,
+    "Logical operation for surface mesh???"
   );
 
   // Boolean logical volume
@@ -60,8 +57,16 @@ void WrapLogicalVolume(py::module& logvol)
 
     Parameters
     ----------
-    parts: ???
-        Array of combinatorial logic each entry has the following required params ???.
+    parts: List[Dict]
+        List of dictionary of combinatorial logic. Each logical dictionary contains two keys:
+        - `'op'` maps to a boolean. True means included and False means excluded.
+        - `'lv'` maps to a :py:class:`pyopensn.logvol.LogicalVolume`.
+
+    Examples
+    --------
+    >>> blv = BooleanLogicalVolume(
+    ...     parts=[{ "op": True, "lv": volume1 }, { "op": False, "lv": volume2 }]
+    ... )
     )"
   );
 
