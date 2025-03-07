@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "py_api.h"
-
-#include <memory>
-#include <stdexcept>
-#include <string>
-
+#include "python/lib/py_wrappers.h"
+#include "python/lib/functor.h"  // temporary!!
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "framework/graphs/graph_partitioner.h"
@@ -17,7 +13,9 @@
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/physics/solver.h"
-#include "python/lib/functor.h"  // temporary!!
+#include <memory>
+#include <stdexcept>
+#include <string>
 
 #define TO_PARAMBLOCK(class_name)                                                                  \
   if (py::isinstance<class_name>(obj))                                                             \

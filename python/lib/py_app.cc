@@ -35,6 +35,10 @@ PyApp::PyApp(const mpi::Communicator& comm)
   console.BindModule(WrapCurvilinearQuadrature);
   console.BindModule(WrapSLDFESQuadrature);
 
+  console.BindModule(WrapFieldFunction);
+  console.BindModule(WrapFieldFunctionGridBased);
+  console.BindModule(WrapFieldFunctionInterpolation);
+
   console.BindModule(WrapLogicalVolume);
 
   console.BindModule(WrapYlm);
@@ -49,12 +53,9 @@ PyApp::PyApp(const mpi::Communicator& comm)
   console.BindModule(WrapVolumetricSource);
 
   console.BindModule(WrapMultiGroupXS);
-  console.BindModule(WrapCreateLoadXS);
-
-  console.BindModule(wrap_field_function);
 
   console.BindModule(wrap_solver);
-  
+
 }
 
 int

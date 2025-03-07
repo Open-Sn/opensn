@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-
-#include <memory>
-
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
+#include <memory>
 
 namespace opensn
 {
@@ -71,7 +69,7 @@ void WrapVolumetricSource(py::module& src)
     ----------
     block_ids: List[int]
         An array of block IDs the volumetric source is present within.
-    logical_volume: pyopensn.LogicalVolume
+    logical_volume: pyopensn.logvol.LogicalVolume
         Logical volume that the volumetric source is defined within.
     group_strength: List[double]
         An array of multi-group source strength values. Note that this is only used when a function
@@ -83,7 +81,7 @@ void WrapVolumetricSource(py::module& src)
 }
 
 // Wrap the source components of OpenSn
-void py_source(py::module &pyopensn)
+void py_source(py::module& pyopensn)
 {
   py::module src = pyopensn.def_submodule("source", "Source module.");
   WrapPointSource(src);

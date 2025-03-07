@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-
-#include <memory>
-#include <stdexcept>
-
-#include <pybind11/functional.h>
-#include <pybind11/stl.h>
-
+#include "python/lib/functor.h"  // temporary!!
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/vector3.h"
-#include "python/lib/functor.h"  // temporary!!
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+#include <memory>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -103,21 +100,23 @@ void WrapFunctors(py::module& math)
     math,
     "ScalarMaterialFunction",
     R"(
+    Scalar material function.
+
     Functions that accept a material ID and a value as input and return a scalar.
 
     Wrapper of :cpp:class:`opensn::ScalarMaterialFunction`.
 
     Examples
     --------
-    # Create from a Python function
+    >>> # Create from a Python function
     >>> def foo(val, id):
     ...     return val * id
     >>> f = ScalarMaterialFunction(foo)
-
-    # Create from lambda
+    >>> 
+    >>> # Create from lambda
     >>> g = ScalarMaterialFunction(lambda x, i : 2*x)
-
-    # Evaluate
+    >>> 
+    >>> # Evaluate
     >>> f(1.0, 1)
     1.0
     >>> g(1.0, 1)
@@ -163,21 +162,23 @@ void WrapFunctors(py::module& math)
     math,
     "ScalarSpatialMaterialFunction",
     R"(
+    Scalar spatial material function.
+
     Functions that accept a material ID and a point as input and return a scalar.
 
     Wrapper of :cpp:class:`opensn::ScalarSpatialMaterialFunction`.
 
     Examples
     --------
-    # Create from a Python function
+    >>> # Create from a Python function
     >>> def foo(id, xyz):
     ...     return 0.0
     >>> f = ScalarSpatialMaterialFunction(foo)
-
-    # Create from lambda
+    >>>
+    >>> # Create from lambda
     >>> g = ScalarSpatialMaterialFunction(lambda id, p : p.x + p.y + p.z)
-
-    # Evaluate
+    >>>
+    >>> # Evaluate
     >>> f(0, Vector3())
     0.0
     >>> g(0, Vector3(1.0, 2.0, 3.0))
@@ -223,21 +224,23 @@ void WrapFunctors(py::module& math)
     math,
     "VectorSpatialFunction",
     R"(
+    Vector spatial function.
+
     Functions that accept a point and a number of groups as input and return a vector (per group).
 
     Wrapper of :cpp:class:`opensn::VectorSpatialFunction`.
 
     Examples
     --------
-    # Create from a Python function
+    >>> # Create from a Python function
     >>> def foo(point, n_groups):
     ...     return [point.x * point.y] * n_groups
     >>> f = VectorSpatialFunction(foo)
-
-    # Create from lambda
+    >>> 
+    >>> # Create from lambda
     >>> g = VectorSpatialFunction(lambda p, n : [p.x + p.y + p.z] * n)
-
-    # Evaluate
+    >>> 
+    >>> # Evaluate
     >>> f(Vector3(1.0, 2.0, 3.0), 2)
     [2.0, 2.0]
     >>> g(Vector3(1.0, 2.0, 3.0), 3)

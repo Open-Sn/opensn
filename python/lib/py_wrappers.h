@@ -39,7 +39,9 @@ void WrapSLDFESQuadrature(py::module& aquad);
 
 /// Wrap the field function components of OpenSn (unfinished).
 void py_ffunc(py::module& pyopensn);
-void wrap_field_function(py::module& ffunc);
+void WrapFieldFunction(py::module& ffunc);
+void WrapFieldFunctionGridBased(py::module& ffunc);
+void WrapFieldFunctionInterpolation(py::module& ffunc);
 
 /// Wrap the logical volume components of OpenSn (unfinished).
 void py_logvol(py::module& pyopensn);
@@ -69,6 +71,5 @@ void WrapVolumetricSource(py::module& src);
 /// Wrap the cross section components of OpenSn.
 void py_xs(py::module& pyopensn);
 void WrapMultiGroupXS(py::module& xs);
-void WrapCreateLoadXS(py::module& xs);
 
 } // namespace opensn

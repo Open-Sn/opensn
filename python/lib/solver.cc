@@ -63,7 +63,7 @@ void wrap_solver(py::module &slv)
       Note that the moment index varies more rapidly than the group index.
     )");
 
-  // Discrete ordinate solver
+  // discrete ordinate solver
   auto discrete_ordinate_solver = py::class_<DiscreteOrdinatesSolver, std::shared_ptr<DiscreteOrdinatesSolver>, LBSSolver>(
     slv, "DiscreteOrdinatesSolver",
     R"(
@@ -85,7 +85,7 @@ void wrap_solver(py::module &slv)
       Construct a discrete ordinates solver object.
     )");
 
-  // Steady state solver
+  // steady state solver
   auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>, Solver>(
     slv, "SteadyStateSolver",
     R"(
@@ -106,7 +106,7 @@ void wrap_solver(py::module &slv)
 }
 
 // Wrap the solver components of OpenSn
-void py_solver(py::module &pyopensn)
+void py_solver(py::module& pyopensn)
 {
   py::module slv = pyopensn.def_submodule("solver", "Solver module.");
   wrap_solver(slv);

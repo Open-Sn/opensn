@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "framework/materials/multi_group_xs/multi_group_xs.h"
 
 #define XS_GETTER(method_name) [] (MultiGroupXS& self) { return convert_vector(self.method_name()); }
 
@@ -38,11 +36,43 @@ void WrapMultiGroupXS(py::module& xs)
     "Create an empty multi-group cross section."
   );
   multigroup_xs.def(
-    "Initialize",
-    [](MultiGroupXS &self, double sigma_t, double c) {
+    "CreateSimpleOneGroup",
+    [](MultiGroupXS& self, double sigma_t, double c) {
       self.Initialize(sigma_t, c);
     },
-    "Makes a simple material with a 1-group cross-section set."
+    R"(
+    Create a one-group cross section.
+
+    Parameters
+    ----------
+    sigma_t: float
+        Total cross sections.
+    c: float
+        Scattering ratio.
+    )",
+    py::arg("sigma_t"),
+    py::arg("c")
+  );
+  multigroup_xs.def(
+    "LoadFromOpenSn",
+    [](MultiGroupXS& self, const std::string& file_name)
+    {
+      self.Initialize(file_name);
+    },
+    "Load multi-group cross sections from an OpenSn cross section input file.",
+    py::arg("file_name")
+  );
+  multigroup_xs.def(
+    "LoadFromOpenMC",
+    [](MultiGroupXS& self, const std::string& file_name, const std::string& dataset_name,
+       double temperature)
+    {
+      self.Initialize(file_name, dataset_name, temperature);
+    },
+    "Load multi-group cross sections from an OpenMC cross-section file.",
+    py::arg("file_name"),
+    py::arg("dataset_name"),
+    py::arg("temperature")
   );
   multigroup_xs.def(
     "SetScalingFactor",
@@ -124,47 +154,11 @@ void WrapMultiGroupXS(py::module& xs)
   );
 }
 
-// Wrap create and load cross sections
-void WrapCreateLoadXS(py::module& xs)
-{
-  xs.def(
-    "CreateSimpleOneGroup",
-    [](double sigma_t, double c)
-    {
-      std::shared_ptr<MultiGroupXS> xs = std::make_shared<MultiGroupXS>();
-      xs->Initialize(sigma_t, c);
-      return xs;
-    },
-    "Create a one-group cross section."
-  );
-  xs.def(
-    "LoadFromOpenSn",
-    [](const std::string &file_name)
-    {
-      std::shared_ptr<MultiGroupXS> xs = std::make_shared<MultiGroupXS>();
-      xs->Initialize(file_name);
-      return xs;
-    },
-    "Load multi-group cross sections from an OpenSn cross section input file."
-  );
-  xs.def(
-    "LoadFromOpenMC",
-    [](const std::string &file_name, const std::string &dataset_name, double temperature)
-    {
-      std::shared_ptr<MultiGroupXS> xs = std::make_shared<MultiGroupXS>();
-      xs->Initialize(file_name, dataset_name, temperature);
-      return xs;
-    },
-    "Load multi-group cross sections from an OpenMC cross-section file."
-  );
-}
-
 // Wrap the cross section components of OpenSn
-void py_xs(py::module &pyopensn)
+void py_xs(py::module& pyopensn)
 {
   py::module xs = pyopensn.def_submodule("xs", "Cross section module.");
   WrapMultiGroupXS(xs);
-  WrapCreateLoadXS(xs);
 }
 
 } // namespace opensn

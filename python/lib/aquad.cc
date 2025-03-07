@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-
-#include <memory>
-#include <stdexcept>
-
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
+#include <memory>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -17,7 +15,7 @@ namespace opensn
 // Wrap angular quadrature
 void WrapQuadrature(py::module& aquad)
 {
-  // Angular quadrature
+  // angular quadrature
   auto angular_quadrature = py::class_<AngularQuadrature, std::shared_ptr<AngularQuadrature>>(
     aquad,
     "AngularQuadrature",
@@ -32,7 +30,7 @@ void WrapQuadrature(py::module& aquad)
 // Wrap product qudrature
 void WrapProductQuadrature(py::module& aquad)
 {
-  // Product quadrature
+  // product quadrature
   auto product_quadrature = py::class_<ProductQuadrature, std::shared_ptr<ProductQuadrature>,
                                        AngularQuadrature>(
     aquad,
@@ -203,7 +201,7 @@ void WrapCurvilinearQuadrature(py::module& aquad)
 // Wrap SLDFES quadrature
 void WrapSLDFESQuadrature(py::module& aquad)
 {
-  // Simplified LDFES quadrature
+  // simplified LDFES quadrature
   auto simplified_ldfes_quadrature = py::class_<SimplifiedLDFESQ::Quadrature,
                                                 std::shared_ptr<SimplifiedLDFESQ::Quadrature>,
                                                 AngularQuadrature>(
@@ -276,7 +274,6 @@ void py_aquad(py::module& pyopensn)
   WrapProductQuadrature(aquad);
   WrapCurvilinearQuadrature(aquad);
   WrapSLDFESQuadrature(aquad);
-  WrapYlm(aquad);
 }
 
 } // namespace opensn

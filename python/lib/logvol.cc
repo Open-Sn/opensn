@@ -2,15 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-
-#include <memory>
-
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/logical_volume/boolean_logical_volume.h"
 #include "framework/mesh/logical_volume/rcc_logical_volume.h"
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
 #include "framework/mesh/logical_volume/sphere_logical_volume.h"
 #include "framework/mesh/logical_volume/surface_mesh_logical_volume.h"
+#include <memory>
 
 namespace opensn
 {
@@ -18,7 +16,7 @@ namespace opensn
 // Wrap logical volume
 void WrapLogicalVolume(py::module& logvol)
 {
-  // Generic logical volume
+  // generic logical volume
   auto logical_volume = py::class_<LogicalVolume, std::shared_ptr<LogicalVolume>>(
     logvol,
     "LogicalVolume",
@@ -31,10 +29,11 @@ void WrapLogicalVolume(py::module& logvol)
   logical_volume.def(
     "Inside",
     &LogicalVolume::Inside,
-    "Logical operation for surface mesh???"
+    "Check if a point is inside or outside the logical volume.",
+    py::arg("point")
   );
 
-  // Boolean logical volume
+  // boolean logical volume
   auto boolean_logical_volume = py::class_<BooleanLogicalVolume,
                                            std::shared_ptr<BooleanLogicalVolume>, LogicalVolume>(
     logvol,
@@ -59,8 +58,8 @@ void WrapLogicalVolume(py::module& logvol)
     ----------
     parts: List[Dict]
         List of dictionary of combinatorial logic. Each logical dictionary contains two keys:
-        - `'op'` maps to a boolean. True means included and False means excluded.
-        - `'lv'` maps to a :py:class:`pyopensn.logvol.LogicalVolume`.
+         - ``op`` maps to a boolean. True means included and False means excluded.
+         - ``lv`` maps to a :py:class:`pyopensn.logvol.LogicalVolume`.
 
     Examples
     --------
@@ -154,7 +153,7 @@ void WrapLogicalVolume(py::module& logvol)
     )"
   );
 
-  // Spherical logical volume
+  // spherical logical volume
   auto spherical_logical_volume = py::class_<SphereLogicalVolume,
                                              std::shared_ptr<SphereLogicalVolume>, LogicalVolume>(
     logvol,
@@ -188,7 +187,7 @@ void WrapLogicalVolume(py::module& logvol)
     )"
   );
 
-  // Surface mesh logical volume
+  // surface mesh logical volume
   auto surface_mesh_logical_volume = py::class_<SurfaceMeshLogicalVolume,
                                                 std::shared_ptr<SurfaceMeshLogicalVolume>,
                                                 LogicalVolume>(
@@ -212,7 +211,7 @@ void WrapLogicalVolume(py::module& logvol)
 
     Parameters
     ----------
-    surface_mesh: pyopensn.SurfaceMesh
+    surface_mesh: pyopensn.mesh.SurfaceMesh
         Associated surface mesh.
     )"
   );
