@@ -86,6 +86,24 @@ DiffusionSolverBase::~DiffusionSolverBase()
 }
 
 void
+DiffusionSolverBase::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+{
+  d_coef_function_ = function;
+}
+
+void
+DiffusionSolverBase::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+{
+  q_ext_function_ = function;
+}
+
+void
+DiffusionSolverBase::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
+{
+  sigma_a_function_ = function;
+}
+
+void
 DiffusionSolverBase::InitFieldFunctions()
 {
   if (field_functions_.empty())

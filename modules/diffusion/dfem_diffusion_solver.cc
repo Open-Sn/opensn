@@ -60,24 +60,6 @@ DFEMDiffusionSolver::~DFEMDiffusionSolver()
 }
 
 void
-DFEMDiffusionSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  d_coef_function_ = function;
-}
-
-void
-DFEMDiffusionSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  q_ext_function_ = function;
-}
-
-void
-DFEMDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  sigma_a_function_ = function;
-}
-
-void
 DFEMDiffusionSolver::SetOptions(const InputParameters& params)
 {
   for (size_t p = 0; p < params.GetNumParameters(); ++p)
