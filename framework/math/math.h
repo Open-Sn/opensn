@@ -20,7 +20,6 @@ namespace opensn
 {
 class SparseMatrix;
 class UnknownManager;
-class CDFSampler;
 class SpatialDiscretization;
 class SpatialDiscretization_FV;
 class SpatialDiscretization_PWLD;
