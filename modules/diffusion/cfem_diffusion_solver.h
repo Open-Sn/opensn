@@ -26,23 +26,12 @@ public:
   explicit CFEMDiffusionSolver(const InputParameters& params);
   ~CFEMDiffusionSolver() override;
 
-  void SetDCoefFunction(ScalarSpatialMaterialFunction* function);
-  void SetQExtFunction(ScalarSpatialMaterialFunction* function);
-  void SetSigmaAFunction(ScalarSpatialMaterialFunction* function);
-
   void SetOptions(const InputParameters& params);
   void SetBoundaryOptions(const InputParameters& params);
 
   void Initialize() override;
-
   void Execute() override;
 
-private:
-  ScalarSpatialMaterialFunction* d_coef_function_;
-  ScalarSpatialMaterialFunction* sigma_a_function_;
-  ScalarSpatialMaterialFunction* q_ext_function_;
-
-public:
   static InputParameters GetInputParameters();
   static InputParameters GetOptionsBlock();
   static InputParameters GetBoundaryOptionsBlock();
