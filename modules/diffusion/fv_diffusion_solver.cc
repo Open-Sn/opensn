@@ -51,24 +51,6 @@ FVDiffusionSolver::~FVDiffusionSolver()
 }
 
 void
-FVDiffusionSolver::SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  d_coef_function_ = function;
-}
-
-void
-FVDiffusionSolver::SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  q_ext_function_ = function;
-}
-
-void
-FVDiffusionSolver::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function)
-{
-  sigma_a_function_ = function;
-}
-
-void
 FVDiffusionSolver::SetOptions(const InputParameters& params)
 {
   for (size_t p = 0; p < params.GetNumParameters(); ++p)

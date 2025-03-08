@@ -23,10 +23,6 @@ public:
   explicit DFEMDiffusionSolver(const InputParameters& params);
   ~DFEMDiffusionSolver() override;
 
-  void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-
   void SetOptions(const InputParameters& params);
   void SetBoundaryOptions(const InputParameters& params);
 
@@ -57,10 +53,6 @@ private:
                       double epsilon = 1.0e-12);
 
   std::vector<double> field_;
-
-  std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
 
 public:
   static InputParameters GetInputParameters();

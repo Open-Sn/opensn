@@ -17,10 +17,7 @@ OpenSnRegisterObjectInNamespace(diffusion, CFEMDiffusionSolver);
 
 CFEMDiffusionSolver::CFEMDiffusionSolver(const std::string& name,
                                          std::shared_ptr<MeshContinuum> grid_ptr)
-  : DiffusionSolverBase(name, grid_ptr),
-    d_coef_function_(nullptr),
-    sigma_a_function_(nullptr),
-    q_ext_function_(nullptr)
+  : DiffusionSolverBase(name, grid_ptr)
 {
 }
 
@@ -56,33 +53,12 @@ CFEMDiffusionSolver::GetBoundaryOptionsBlock()
 }
 
 CFEMDiffusionSolver::CFEMDiffusionSolver(const InputParameters& params)
-  : DiffusionSolverBase(params),
-    d_coef_function_(nullptr),
-    sigma_a_function_(nullptr),
-    q_ext_function_(nullptr)
+  : DiffusionSolverBase(params)
 {
 }
 
 CFEMDiffusionSolver::~CFEMDiffusionSolver()
 {
-}
-
-void
-CFEMDiffusionSolver::SetDCoefFunction(ScalarSpatialMaterialFunction* function)
-{
-  d_coef_function_ = function;
-}
-
-void
-CFEMDiffusionSolver::SetQExtFunction(ScalarSpatialMaterialFunction* function)
-{
-  q_ext_function_ = function;
-}
-
-void
-CFEMDiffusionSolver::SetSigmaAFunction(ScalarSpatialMaterialFunction* function)
-{
-  sigma_a_function_ = function;
 }
 
 void
