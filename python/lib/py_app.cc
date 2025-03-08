@@ -30,32 +30,40 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::exec("size = " + std::to_string(comm.size()));
   py::exec("opensn_console = True");
 
+  console.BindModule(WrapYlm);
+  console.BindModule(WrapVector3);
+  console.BindModule(WrapFunctors);
+
   console.BindModule(WrapQuadrature);
   console.BindModule(WrapProductQuadrature);
   console.BindModule(WrapCurvilinearQuadrature);
   console.BindModule(WrapSLDFESQuadrature);
 
-  console.BindModule(WrapFieldFunction);
-  console.BindModule(WrapFieldFunctionGridBased);
-  console.BindModule(WrapFieldFunctionInterpolation);
-
-  console.BindModule(WrapLogicalVolume);
-
-  console.BindModule(WrapYlm);
-  console.BindModule(WrapVector3);
-  console.BindModule(WrapFunctors);
-
   console.BindModule(WrapMesh);
   console.BindModule(WrapMeshGenerator);
   console.BindModule(WrapGraphPartitioner);
+
+  console.BindModule(WrapLogicalVolume);
 
   console.BindModule(WrapPointSource);
   console.BindModule(WrapVolumetricSource);
 
   console.BindModule(WrapMultiGroupXS);
 
-  console.BindModule(wrap_solver);
+  console.BindModule(WrapFieldFunction);
+  console.BindModule(WrapFieldFunctionGridBased);
+  console.BindModule(WrapFieldFunctionInterpolation);
 
+  console.BindModule(WrapResEval);
+
+  console.BindModule(WrapSolver);
+  console.BindModule(WrapLBS);
+  console.BindModule(WrapSteadyState);
+  console.BindModule(WrapNLKEigen);
+  console.BindModule(WrapPIteration);
+  console.BindModule(WrapPRK);
+
+  console.BindModule(WrapDiffusion);
 }
 
 int

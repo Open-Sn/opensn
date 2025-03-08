@@ -241,11 +241,12 @@ void WrapSLDFESQuadrature(py::module& aquad)
     Parameters
     ----------
     ref_dir: pyopensn.math.Vector3
-        ???
+        Reference direction :math:`\vec{r}`.
     cone_size: float
-        ???
+        Cone size (in radians) :math:`\theta`.
     dir_as_plane_normal: bool, default=False
-        ???
+        If true, interpret SQ-splitting as when :math:`|\omega \cdot \vec{r}| < \sin(\theta)`.
+        Otherwise, SQs will be split if :math:`\omega \cdot \vec{r} > \cos(\theta)`.
     )",
     py::arg("ref_dir"),
     py::arg("cone_size"),

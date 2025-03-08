@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary!!
+#include "python/lib/functor.h"  // temporary, see the included header for more details!
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/vector3.h"
 #include <pybind11/functional.h>

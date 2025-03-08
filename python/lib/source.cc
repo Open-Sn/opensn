@@ -88,6 +88,4 @@ void py_source(py::module& pyopensn)
   WrapVolumetricSource(src);
 }
 
-// clang-format on
-
 } // namespace opensn

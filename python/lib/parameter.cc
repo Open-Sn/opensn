@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary!!
+#include "python/lib/functor.h"  // temporary, see the included header for more details!
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
 #include "framework/graphs/graph_partitioner.h"

@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include <vector>
-
-#include <pybind11/pybind11.h>
-
 #include "framework/parameters/parameter_block.h"
+#include "framework/math/vector.h"
+#include <pybind11/pybind11.h>
+#include <vector>
 
 namespace py = pybind11;
 
@@ -15,7 +14,6 @@ namespace opensn
 {
 
 // Converter
-// ---------
 
 /// Convert a C++ vector to a Python memoryview.
 template <typename T>
@@ -24,11 +22,17 @@ py::memoryview convert_vector(const std::vector<T>& vec)
   return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
 }
 
+/// Convert an OpenSn vector to a Python memoryview.
+template <typename T>
+py::memoryview convert_vector(const Vector<T>& vec)
+{
+  return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
+}
+
 /// Translate a Python dictionary into a ParameterBlock.
 ParameterBlock kwargs_to_param_block(const py::kwargs& params);
 
 // Module wrappers
-// ---------------
 
 /// Wrap the angular quadrature components of OpenSn.
 void py_aquad(py::module& pyopensn);
@@ -37,13 +41,17 @@ void WrapProductQuadrature(py::module& aquad);
 void WrapCurvilinearQuadrature(py::module& aquad);
 void WrapSLDFESQuadrature(py::module& aquad);
 
-/// Wrap the field function components of OpenSn (unfinished).
+// Wrap the diffusion components of OpenSn
+void py_diffusion(py::module& pyopensn);
+void WrapDiffusion(py::module& diffusion);
+
+/// Wrap the field function components of OpenSn.
 void py_ffunc(py::module& pyopensn);
 void WrapFieldFunction(py::module& ffunc);
 void WrapFieldFunctionGridBased(py::module& ffunc);
 void WrapFieldFunctionInterpolation(py::module& ffunc);
 
-/// Wrap the logical volume components of OpenSn (unfinished).
+/// Wrap the logical volume components of OpenSn.
 void py_logvol(py::module& pyopensn);
 void WrapLogicalVolume(py::module& logvol);
 
@@ -59,11 +67,24 @@ void WrapMesh(py::module& mesh);
 void WrapMeshGenerator(py::module& mesh);
 void WrapGraphPartitioner(py::module& mesh);
 
+/// Wrap the response components of OpenSn (unfinished).
+void py_response(py::module& pyopensn);
+void WrapResEval(py::module& response);
+
 /// Wrap the solver components of OpenSn (unfinished).
 void py_solver(py::module& pyopensn);
-void wrap_solver(py::module& slv);
+void WrapSolver(py::module& slv);
+void WrapLBS(py::module& slv);
+void WrapSteadyState(py::module& slv);
+void WrapNLKEigen(py::module& slv);
+void WrapPIteration(py::module& slv);
+void WrapPRK(py::module& slv);
 
-/// Wrap the source components of OpenSn (unfinished).
+// Wrap the diffusion components of OpenSn
+void py_diffusion(py::module& pyopensn);
+void WrapDiffusion(py::module& diffusion);
+
+/// Wrap the source components of OpenSn.
 void py_source(py::module& pyopensn);
 void WrapPointSource(py::module& src);
 void WrapVolumetricSource(py::module& src);

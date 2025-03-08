@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary!
+#include "python/lib/functor.h"  // temporary, see the included header for more details!
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
@@ -300,7 +300,16 @@ void WrapFieldFunctionInterpolation(py::module& ffunc) {
     [](FieldFunctionInterpolationVolume& self, std::shared_ptr<PySMFunction> function)
     {
       self.SetOperationFunction(function);
-    }
+    },
+    R"(
+    ???
+
+    Parameters
+    ----------
+    function: pyopensn.math.ScalarMaterialFunction
+        ???
+    )",
+    py::arg("function")
   );
   field_func_interp_volume.def(
     "GetValue",

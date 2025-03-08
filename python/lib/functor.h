@@ -7,11 +7,10 @@
 
 #pragma once
 
-#include <functional>
-
 #include "framework/math/functions/scalar_material_function.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/math/functions/vector_spatial_function.h"
+#include <functional>
 
 namespace opensn
 {
