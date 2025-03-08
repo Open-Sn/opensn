@@ -53,7 +53,7 @@ xs_1g = xs.CreateSimpleOneGroup(sigmat, ratioc)
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { source } })
 
 -- Setup Physics
-pquad0 = aquad.CreateGLCProductQuadrature2DRZ(4, 8)
+pquad0 = aquad.GLCProductQuadrature2DRZ.Create({ Npolar = 4, Nazimuthal = 8 })
 
 lbs_block = {
   mesh = grid,
