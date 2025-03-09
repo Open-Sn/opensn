@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "py_api.h"
+#include "python/lib/py_wrappers.h"
+#include "python/lib/functor.h"  // temporary, see the included header for more details!
 #include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
-#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/materials/material_property.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_generator/mesh_generator.h"
@@ -18,14 +19,13 @@
 
 #define TO_PARAMBLOCK(class_name)                                                                  \
   if (py::isinstance<class_name>(obj))                                                             \
-  return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>())
+    return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>())
 
 namespace opensn
 {
 
 // Convert a Python object into a ParameterBlock
-ParameterBlock
-pyobj_to_param_block(const std::string& key, const py::object& obj)
+ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& obj)
 {
   // basic types
   if (py::isinstance<py::bool_>(obj))
@@ -74,21 +74,25 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   TO_PARAMBLOCK(AngularQuadrature);
   TO_PARAMBLOCK(GraphPartitioner);
   TO_PARAMBLOCK(LogicalVolume);
-  TO_PARAMBLOCK(MaterialProperty);
   TO_PARAMBLOCK(MeshContinuum);
   TO_PARAMBLOCK(MeshGenerator);
+  TO_PARAMBLOCK(MultiGroupXS);
   TO_PARAMBLOCK(SurfaceMesh);
   TO_PARAMBLOCK(PointSource);
   TO_PARAMBLOCK(VolumetricSource);
   TO_PARAMBLOCK(Solver);
+
+  // function binder (temporary)
+  TO_PARAMBLOCK(PySMFunction);
+  TO_PARAMBLOCK(PySSMFunction);
+  TO_PARAMBLOCK(PyVSFunction);
 
   // throw and return
   throw std::invalid_argument("Unsupported argument type.");
 }
 
 // Translate a Python dictionary into a ParameterBlock
-ParameterBlock
-kwargs_to_param_block(const py::kwargs& params)
+ParameterBlock kwargs_to_param_block(const py::kwargs& params)
 {
   // initialize main parameter dict
   ParameterBlock main;

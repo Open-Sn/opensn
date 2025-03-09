@@ -2,6 +2,8 @@ import os
 import sys
 import subprocess
 
+sys.path.append('@PROJECT_SOURCE_DIR@')
+
 project = 'OpenSn'
 copyright = '2023-present, OpenSn team'
 author = 'OpenSn team'
@@ -18,6 +20,8 @@ html_show_sourcelink = False
 
 extensions = [
     'breathe',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary',
     'sphinxcontrib.bibtex',
     'myst_parser'
 ]
