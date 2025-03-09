@@ -542,6 +542,26 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_bicgstab.lua",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "[0]  Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_6a_split_mesh.lua",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
