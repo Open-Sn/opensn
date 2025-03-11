@@ -29,8 +29,8 @@ grid = meshgen1:Execute()
 
 -- ############################################### Set Material IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
 vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
 
-grid:ComputeVolumePerMaterialID()
+grid:ComputeVolumePerBlockID()

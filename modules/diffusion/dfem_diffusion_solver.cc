@@ -284,7 +284,7 @@ DFEMDiffusionSolver::Execute()
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto imat = cell.material_id;
+    const auto block_id = cell.block_id;
 
     // Assemble volumetric terms
     for (size_t i = 0; i < num_nodes; ++i)
@@ -297,9 +297,9 @@ DFEMDiffusionSolver::Execute()
         double entry_aij = 0.0;
         for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
-          entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+          entry_aij += (d_coef_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
-                        sigma_a_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+                        sigma_a_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp)) *
                        fe_vol_data.JxW(qp);
         } // for qp
@@ -307,7 +307,7 @@ DFEMDiffusionSolver::Execute()
       } // for j
       double entry_rhs_i = 0.0;
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-        entry_rhs_i += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+        entry_rhs_i += q_ext_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       VecSetValue(b_, imap, entry_rhs_i, ADD_VALUES);
     } // for i
@@ -332,7 +332,7 @@ DFEMDiffusionSolver::Execute()
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
         const double hp_neigh = HPerpendicular(adj_cell, acf);
 
-        const auto imat_neigh = adj_cell.material_id;
+        const auto imat_neigh = adj_cell.block_id;
 
         // Compute Ckappa IP
         double Ckappa = 1.0;
@@ -362,7 +362,7 @@ DFEMDiffusionSolver::Execute()
             for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
               aij +=
                 Ckappa *
-                (d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm +
+                (d_coef_function_->Evaluate(block_id, fe_srf_data.QPointXYZ(qp)) / hm +
                  d_coef_function_->Evaluate(imat_neigh, fe_srf_data.QPointXYZ(qp)) / hp_neigh) /
                 2.0 * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                 fe_srf_data.JxW(qp);
@@ -395,7 +395,7 @@ DFEMDiffusionSolver::Execute()
 
             Vector3 vec_aij;
             for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-              vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
+              vec_aij += d_coef_function_->Evaluate(block_id, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(jm, qp) * fe_srf_data.ShapeGrad(i, qp) *
                          fe_srf_data.JxW(qp);
             const double aij = -0.5 * n_f.Dot(vec_aij);
@@ -421,7 +421,7 @@ DFEMDiffusionSolver::Execute()
 
             Vector3 vec_aij;
             for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-              vec_aij += d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) *
+              vec_aij += d_coef_function_->Evaluate(block_id, fe_srf_data.QPointXYZ(qp)) *
                          fe_srf_data.ShapeValue(im, qp) * fe_srf_data.ShapeGrad(j, qp) *
                          fe_srf_data.JxW(qp);
             const double aij = -0.5 * n_f.Dot(vec_aij);
@@ -509,8 +509,8 @@ DFEMDiffusionSolver::Execute()
 
               double aij = 0.0;
               for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                aij += Ckappa * d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp)) / hm *
-                       fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
+                aij += Ckappa * d_coef_function_->Evaluate(block_id, fe_srf_data.QPointXYZ(qp)) /
+                       hm * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                        fe_srf_data.JxW(qp);
               double aij_bc_value = aij * bc_value;
 
@@ -537,7 +537,7 @@ DFEMDiffusionSolver::Execute()
                 vec_aij += (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) +
                             fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp)) *
                            fe_srf_data.JxW(qp) *
-                           d_coef_function_->Evaluate(imat, fe_srf_data.QPointXYZ(qp));
+                           d_coef_function_->Evaluate(block_id, fe_srf_data.QPointXYZ(qp));
 
               const double aij = -n_f.Dot(vec_aij);
               double aij_bc_value = aij * bc_value;

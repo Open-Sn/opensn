@@ -29,11 +29,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen1:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = -L / 4, zmax = L / 4 })
-grid:SetMaterialIDFromLogicalVolume(vol0, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 1, true)
 
 -- Add materials
 materials = {}

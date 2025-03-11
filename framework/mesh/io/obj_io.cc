@@ -116,7 +116,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         sub_type = CellType::QUADRILATERAL;
 
       auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
-      cell->material_id = material_id;
+      cell->block_id = material_id;
 
       // Populate vertex-ids
       for (size_t k = 1; k <= number_of_verts; ++k)

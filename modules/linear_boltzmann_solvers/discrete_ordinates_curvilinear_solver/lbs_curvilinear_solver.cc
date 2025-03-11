@@ -396,7 +396,7 @@ DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(LBSGroupset& groupset)
                                                        psi_new_local_[groupset.id],
                                                        q_moments_local_,
                                                        groupset,
-                                                       matid_to_xs_map_,
+                                                       block_id_to_xs_map_,
                                                        num_moments_,
                                                        max_cell_dof_count_);
 

@@ -100,7 +100,7 @@ FieldFunctionInterpolationVolume::Execute()
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
           op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
-        function_value = oper_function_->Evaluate(ff_value, cell.material_id);
+        function_value = oper_function_->Evaluate(ff_value, cell.block_id);
 
       local_volume += fe_vol_data.JxW(qp);
       local_sum += function_value * fe_vol_data.JxW(qp);

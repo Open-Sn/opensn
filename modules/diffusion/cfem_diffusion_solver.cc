@@ -279,7 +279,7 @@ CFEMDiffusionSolver::Execute()
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto imat = cell.material_id;
+    const auto block_id = cell.block_id;
     const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
@@ -291,16 +291,16 @@ CFEMDiffusionSolver::Execute()
         double entry_aij = 0.0;
         for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
-          entry_aij += (d_coef_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+          entry_aij += (d_coef_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
-                        sigma_a_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+                        sigma_a_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp)) *
                        fe_vol_data.JxW(qp);
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-        cell_rhs(i) += q_ext_function_->Evaluate(imat, fe_vol_data.QPointXYZ(qp)) *
+        cell_rhs(i) += q_ext_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 

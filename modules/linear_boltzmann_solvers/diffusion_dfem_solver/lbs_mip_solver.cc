@@ -102,7 +102,7 @@ DiffusionDFEMSolver::InitializeWGSSolvers()
 
     // Make xs map
     std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
-    for (const auto& matid_xs_pair : matid_to_xs_map_)
+    for (const auto& matid_xs_pair : block_id_to_xs_map_)
     {
       const auto& mat_id = matid_xs_pair.first;
       const auto& xs = matid_xs_pair.second;

@@ -19,14 +19,14 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen:Execute()
 
--- Set Material IDs
+-- Set block IDs
 z_min = 0.0
 z_max = widths[1]
 for imat = 1, Nmat do
   z_max = z_min + widths[imat]
   log.Log(LOG_0, "imat=" .. imat .. ", zmin=" .. z_min .. ", zmax=" .. z_max)
   lv = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = z_min, zmax = z_max })
-  grid:SetMaterialIDFromLogicalVolume(lv, imat - 1, true)
+  grid:SetBlockIDFromLogicalVolume(lv, imat - 1, true)
   z_min = z_max
 end
 

@@ -33,9 +33,9 @@ meshgen1 = mesh.MeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set Material IDs
+-- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 num_groups = 168
 xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")

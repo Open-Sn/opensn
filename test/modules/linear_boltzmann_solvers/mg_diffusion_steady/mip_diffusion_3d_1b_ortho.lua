@@ -40,9 +40,9 @@ else
 end
 grid = meshgen1:Execute()
 
--- Set Material IDs
+-- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetUniformMaterialID(0)
+grid:SetUniformBlockID(0)
 
 num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("../transport_steady/xs_graphite_pure.xs")

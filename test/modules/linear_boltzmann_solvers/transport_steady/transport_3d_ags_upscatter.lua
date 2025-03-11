@@ -32,9 +32,9 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set Material IDs
+-- Set block IDs
 vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
 
 num_groups = 3
 xs_upscatter = xs.LoadFromOpenSn("simple_upscatter.xs")

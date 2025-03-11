@@ -114,7 +114,7 @@ public:
   uint64_t global_id = 0;
   uint64_t local_id = 0;
   uint64_t partition_id = 0;
-  int material_id = -1;
+  int block_id = -1;
 
   Vector3 centroid;
   double volume = 0.0;

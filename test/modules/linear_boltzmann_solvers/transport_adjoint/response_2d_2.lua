@@ -28,8 +28,8 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen:Execute()
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 vol1a = logvol.RPPLogicalVolume.Create({
   infx = true,
@@ -38,7 +38,7 @@ vol1a = logvol.RPPLogicalVolume.Create({
   infz = true,
 })
 
-grid:SetMaterialIDFromLogicalVolume(vol1a, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1a, 1, true)
 
 vol0 = logvol.RPPLogicalVolume.Create({
   xmin = 2.5 - 0.166666,
@@ -46,7 +46,7 @@ vol0 = logvol.RPPLogicalVolume.Create({
   infy = true,
   infz = true,
 })
-grid:SetMaterialIDFromLogicalVolume(vol0, 0, true)
+grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
 
 vol1b = logvol.RPPLogicalVolume.Create({
   xmin = -1 + 2.5,
@@ -55,7 +55,7 @@ vol1b = logvol.RPPLogicalVolume.Create({
   ymax = L,
   infz = true,
 })
-grid:SetMaterialIDFromLogicalVolume(vol1b, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1b, 1, true)
 
 -- Add cross sections
 xs_1g1 = xs.CreateSimpleOneGroup(0.01, 0.01)

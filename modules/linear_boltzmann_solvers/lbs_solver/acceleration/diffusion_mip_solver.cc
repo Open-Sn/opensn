@@ -73,7 +73,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
@@ -144,7 +144,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
-          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id);
+          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
@@ -423,7 +423,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_groups = uk_man_.unknowns.front().num_components;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<int64_t> cell_idxs(num_nodes);
@@ -625,7 +625,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
@@ -683,7 +683,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
-          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.material_id);
+          const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
@@ -926,7 +926,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<int64_t> cell_idxs(num_nodes);
@@ -1079,7 +1079,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.material_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<int64_t> cell_idxs(num_nodes);

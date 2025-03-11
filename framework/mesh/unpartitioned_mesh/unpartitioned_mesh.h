@@ -32,7 +32,7 @@ public:
     const CellType type;
     const CellType sub_type;
     Vector3 centroid;
-    int material_id = -1;
+    int block_id = -1;
     std::vector<uint64_t> vertex_ids;
     std::vector<LightWeightFace> faces;
 
@@ -42,7 +42,7 @@ public:
   struct Options
   {
     std::string file_name;
-    std::string material_id_fieldname = "BlockID";
+    std::string block_id_fieldname = "BlockID";
     std::string boundary_id_fieldname;
     double scale = 1.0;
   };
