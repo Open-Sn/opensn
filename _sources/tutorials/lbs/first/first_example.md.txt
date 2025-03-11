@@ -91,8 +91,8 @@ assign material IDs to all cells. Here, we have a homogeneous domain, so we assi
 with value 0 for each cell in the spatial domain.
 
 ```lua
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 ```
 
 ## Cross Sections
@@ -235,8 +235,8 @@ meshgen = mesh.OrthogonalMeshGenerator.Create({
 grid = meshgen:Execute()
 
 
--- Set Material IDs
-grid:SetUniformMaterialID(0)
+-- Set block IDs
+grid:SetUniformBlockID(0)
 
 
 xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")

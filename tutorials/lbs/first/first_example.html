@@ -181,8 +181,8 @@ cell center is located with respect to the various xcuts, ycuts, and zcuts (a fu
 <p>When using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to
 assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID
 with value 0 for each cell in the spatial domain.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Set Material IDs</span>
-<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Set block IDs</span>
+<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -331,8 +331,8 @@ on post-processing for more details on field functions.</p>
 <span class="nv">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">meshgen</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 
 
-<span class="c1">-- Set Material IDs</span>
-<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformMaterialID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1">-- Set block IDs</span>
+<span class="nv">grid</span><span class="p">:</span><span class="nf">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 
 <span class="nv">xs_matA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xs</span><span class="p">.</span><span class="nf">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;xs_1g_MatA.xs&quot;</span><span class="p">)</span>
