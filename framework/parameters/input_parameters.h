@@ -168,15 +168,15 @@ public:
   bool IsParameterValid(const std::string& param_name) const;
 
   /// Marks a parameters as deprecated but will only produce a warning.
-  void MarkParamaterDeprecatedWarning(const std::string& param_name,
+  void MarkParameterDeprecatedWarning(const std::string& param_name,
                                       const std::string& deprecation_message = "");
 
   /// Marks a parameters as deprecated and will produce an error if the parameter is specified.
-  void MarkParamaterDeprecatedError(const std::string& param_name,
+  void MarkParameterDeprecatedError(const std::string& param_name,
                                     const std::string& deprecation_message = "");
 
   /// Marks a parameters as renamed and will produce an error if the parameter is specified.
-  void MarkParamaterRenamed(const std::string& param_name, const std::string& renaming_description);
+  void MarkParameterRenamed(const std::string& param_name, const std::string& renaming_description);
 
   /// Creates a range based constraint for a given parameter.
   void ConstrainParameterRange(const std::string& param_name,

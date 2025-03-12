@@ -31,19 +31,19 @@ TestObject::GetInputParameters()
     "sub_obj2", sub_obj2_param_block, "A block of parameters for unit_testsB::TestSubObject");
 
   params.AddOptionalParameter("limiter_type", 1, "Type of limiter to use in the solver");
-  params.MarkParamaterDeprecatedWarning("limiter_type");
+  params.MarkParameterDeprecatedWarning("limiter_type");
 
   params.AddOptionalParameter("scheme", "Zorba", "What scheme to use");
-  params.MarkParamaterDeprecatedError("scheme");
+  params.MarkParameterDeprecatedError("scheme");
 
   params.AddRequiredParameter<bool>("format", "What output format to use");
-  params.MarkParamaterDeprecatedError("format");
+  params.MarkParameterDeprecatedError("format");
 
   params.AddOptionalParameter("use_my_stuff", false, "Yeah please do");
-  params.MarkParamaterRenamed("use_my_stuff", "Renamed to \"use_zaks_stuff\".");
+  params.MarkParameterRenamed("use_my_stuff", "Renamed to \"use_zaks_stuff\".");
 
   params.AddRequiredParameter<bool>("use_ragusas_stuff", "If you want");
-  params.MarkParamaterRenamed("use_ragusas_stuff", "Renamed to \"use_complicated_stuff\".");
+  params.MarkParameterRenamed("use_ragusas_stuff", "Renamed to \"use_complicated_stuff\".");
 
   return params;
 }
