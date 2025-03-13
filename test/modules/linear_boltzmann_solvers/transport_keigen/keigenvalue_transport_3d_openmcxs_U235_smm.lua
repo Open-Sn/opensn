@@ -1,5 +1,11 @@
--- 3D 172G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
--- Test: Final k-eigenvalue: 1.5029618
+-- 3D 76G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
+--
+-- Note that while this test uses the OpenMC MGXS 172G library, we only use data
+-- for the first 76 groups. This is because sigma_t for the remainder of the groups
+-- is zero. While this is fine for transport, it can cause problems with diffusion
+-- methods.
+--
+-- Test: Final k-eigenvalue: 2.2800213
 num_procs = 4
 
 --
@@ -43,18 +49,15 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 grid = meshgen1:Execute()
 
---
--- Materials
---
-
-xs_uo2 = xs.LoadFromOpenMC("uo2.h5", "set1", 294.0)
 grid:SetUniformBlockID(0)
+
+xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
 
 --
 -- Solver
 --
 
-num_groups = 172
+num_groups = 76
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,
@@ -62,13 +65,13 @@ lbs_block = {
     {
       groups_from_to = { 0, num_groups - 1 },
       angular_quadrature = aquad.CreateGLCProductQuadrature3DXYZ(2, 4),
-      inner_linear_method = "petsc_gmres",
-      l_max_its = 500,
+      inner_linear_method = "classic_richardson",
+      l_max_its = 2,
       l_abs_tol = 1.0e-12,
     },
   },
   xs_map = {
-    { block_ids = { 0 }, xs = xs_uo2 },
+    { block_ids = { 0 }, xs = xs_u235 },
   },
 }
 
@@ -90,10 +93,13 @@ lbs_options = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
-k_solver0 = lbs.NonLinearKEigen.Create({
+k_solver0 = lbs.PowerIterationKEigenSMM.Create({
   lbs_solver = phys,
-  nl_max_its = 500,
-  nl_abs_tol = 1.0e-8,
+  accel_pi_verbose = true,
+  k_tol = 1.0e-8,
+  accel_pi_k_tol = 1.0e-8,
+  accel_pi_max_its = 30,
+  diff_sdm = "pwld",
 })
 k_solver0:Initialize()
 k_solver0:Execute()
