@@ -5,7 +5,7 @@ dofile("utils/qblock_mesh.lua")
 dofile("utils/qblock_materials.lua") --num_groups assigned here
 
 -- Setup Physics
-pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
+pquad = aquad.GLCProductQuadrature2DXY.Create({ Npolar = 8, Nazimuthal = 16 })
 
 lbs_block = {
   mesh = grid,
