@@ -11,8 +11,9 @@ local function getWeightSum(quad_points)
   local weight_sum = 0.0
   local file = io.open(quad_points, "r")
   if file then
+    local header = file:read()
     for line in file:lines() do
-      local values = split_string(line, " ")
+      local values = split_string(line, ",")
       local float_values = {}
       weight_sum = weight_sum + tonumber(values[4])
     end
@@ -26,14 +27,14 @@ end
 -- Qudrature-1 : Test creation of SLDFESQ with initial refinement level of 0
 cquad1 = aquad.CreateSLDFESQuadrature(0)
 aquad.PrintQuadratureToFile(cquad1, "TestQuad1_")
-local quad1_sum = getWeightSum("TestQuad1_points.txt")
+local quad1_sum = getWeightSum("TestQuad1_points.csv")
 log.Log(LOG_0, string.format("Weight-Sum-1=%.3e\n\n", quad1_sum / (4 * math.pi)))
 
 -- Qudrature-2 : Test local refinement of SLDFESQ with initial refinement level of 1
 cquad2 = aquad.CreateSLDFESQuadrature(2)
 aquad.LocallyRefineSLDFESQ(cquad2, { x = 0.25, y = -0.85, z = 1.0 }, 30.0 * math.pi / 180, false)
 aquad.PrintQuadratureToFile(cquad2, "TestQuad2_")
-local quad2_sum = getWeightSum("TestQuad2_points.txt")
+local quad2_sum = getWeightSum("TestQuad2_points.csv")
 log.Log(LOG_0, string.format("Weight-Sum-2=%.3e", quad2_sum / (4 * math.pi)))
 
 os.execute("rm TestQuad1* TestQuad2*")
