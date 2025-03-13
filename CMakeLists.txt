@@ -57,7 +57,7 @@ if (OPENSN_WITH_CUDA)
 endif()
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED CONFIG)
 
 if(OPENSN_WITH_LUA)
     find_package(Lua 5.3 REQUIRED)
