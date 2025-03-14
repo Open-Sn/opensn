@@ -102,3 +102,5 @@ leakage_right_diff = leakage_right_1 - leakage_right_2
 
 log.Log(LOG_0, string.format("Leakage-Diff1=%.5e", leakage_left_diff))
 log.Log(LOG_0, string.format("Leakage-Diff2=%.5e", leakage_right_diff))
+
+os.execute("rm angular_io0.h5")
