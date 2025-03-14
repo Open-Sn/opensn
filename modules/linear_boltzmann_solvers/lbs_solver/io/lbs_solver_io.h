@@ -43,34 +43,6 @@ public:
       std::nullopt);
 
   /**
-   * Write an angular flux groupset vector to a file.
-   *
-   * \param lbs_solver LBS solver
-   * \param groupset_id Energy groupset id
-   * \param file_base File name stem
-   * \param per_material Optional angular flux source vector
-   */
-  static void WriteGroupsetAngularFluxes(
-    LBSSolver& lbs_solver,
-    const int groupset_id,
-    const std::string& file_stem,
-    std::optional<const std::reference_wrapper<std::vector<double>>> opt_src = std::nullopt);
-
-  /**
-   * Read an angular flux groupset vector from a file.
-   *
-   * \param lbs_solver LBS solver
-   * \param groupset_id Energy groupset id
-   * \param file_base File name stem
-   * \param per_material Optional angular flux destination vector
-   */
-  static void ReadGroupsetAngularFluxes(
-    LBSSolver& lbs_solver,
-    const int groupset_id,
-    const std::string& file_base,
-    std::optional<std::reference_wrapper<std::vector<double>>> opt_dest = std::nullopt);
-
-  /**
    * Write a flux moments vector to a file.
    *
    * \param lbs_solver LBS solver
