@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary, see the included header for more details!
+#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/vector3.h"
 #include <pybind11/functional.h>
@@ -15,8 +15,10 @@ namespace opensn
 {
 
 // Wrap spherical harmonics
-void WrapYlm(py::module& math)
+void
+WrapYlm(py::module& math)
 {
+  // clang-format off
   math.def(
     "Ylm",
     &Ylm,
@@ -39,11 +41,14 @@ void WrapYlm(py::module& math)
     py::arg("theta"),
     py::arg("varphi")
   );
+  // clang-format on
 }
 
 // Wrap Vector3
-void WrapVector3(py::module& math)
+void
+WrapVector3(py::module& math)
 {
+  // clang-format off
   auto vector3 = py::class_<Vector3, std::shared_ptr<Vector3>>(
     math,
     "Vector3",
@@ -200,11 +205,14 @@ void WrapVector3(py::module& math)
       return os.str();
     }
   );
+  // clang-format on
 }
 
 // Wrap functors (temporary solution until the Lua interface is eradicated)
-void WrapFunctors(py::module& math)
+void
+WrapFunctors(py::module& math)
 {
+  // clang-format off
   // scalar material function
   auto scalar_material_function = py::class_<PySMFunction, std::shared_ptr<PySMFunction>>(
     math,
@@ -390,10 +398,12 @@ void WrapFunctors(py::module& math)
     py::arg("xyz"),
     py::arg("num_groups")
   );
+  // clang-format on
 }
 
 // Wrap the angular quadrature components of OpenSn
-void py_math(py::module& pyopensn)
+void
+py_math(py::module& pyopensn)
 {
   py::module math = pyopensn.def_submodule("math", "Math module.");
   WrapYlm(math);

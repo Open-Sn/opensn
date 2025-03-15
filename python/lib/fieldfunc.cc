@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary, see the included header for more details!
+#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
@@ -18,19 +18,19 @@ namespace opensn
 {
 
 // dictionary to field function interpolation operation type
-static std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map
-{
+static std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map{
   {"sum", FieldFunctionInterpolationOperation::OP_SUM},
   {"avg", FieldFunctionInterpolationOperation::OP_AVG},
   {"max", FieldFunctionInterpolationOperation::OP_MAX},
   {"sum_func", FieldFunctionInterpolationOperation::OP_SUM_FUNC},
   {"avg_func", FieldFunctionInterpolationOperation::OP_AVG_FUNC},
-  {"max_func", FieldFunctionInterpolationOperation::OP_MAX_FUNC}
-};
+  {"max_func", FieldFunctionInterpolationOperation::OP_MAX_FUNC}};
 
 // Wrap field functions
-void WrapFieldFunction(py::module& ffunc)
+void
+WrapFieldFunction(py::module& ffunc)
 {
+  // clang-format off
   // field function
   auto field_func = py::class_<FieldFunction, std::shared_ptr<FieldFunction>>(
     ffunc,
@@ -41,11 +41,14 @@ void WrapFieldFunction(py::module& ffunc)
     Wrapper of :cpp:class:`opensn::FieldFunction`.
     )"
   );
+  // clang-format on
 }
 
 // Wrap field functions grid based
-void WrapFieldFunctionGridBased(py::module& ffunc)
+void
+WrapFieldFunctionGridBased(py::module& ffunc)
 {
+  // clang-format off
   // field function grid based
   auto field_func_grid_based = py::class_<FieldFunctionGridBased,
                                           std::shared_ptr<FieldFunctionGridBased>,
@@ -82,10 +85,14 @@ void WrapFieldFunctionGridBased(py::module& ffunc)
     )",
     py::arg("ff_list"), py::arg("base_name")
   );
+  // clang-format on
 }
 
 // Wrap field function interpolation
-void WrapFieldFunctionInterpolation(py::module& ffunc) {
+void
+WrapFieldFunctionInterpolation(py::module& ffunc)
+{
+  // clang-format off
   // field function interpolation
   auto field_func_interp = py::class_<FieldFunctionInterpolation,
                                       std::shared_ptr<FieldFunctionInterpolation>>(
@@ -318,10 +325,12 @@ void WrapFieldFunctionInterpolation(py::module& ffunc) {
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap the field function components of OpenSn
-void py_ffunc(py::module& pyopensn)
+void
+py_ffunc(py::module& pyopensn)
 {
   py::module ffunc = pyopensn.def_submodule("fieldfunc", "Field function module.");
   WrapFieldFunction(ffunc);

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary, see the included header for more details!
+#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/physics/solver.h"
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
@@ -13,8 +13,10 @@ namespace opensn
 {
 
 // Wrap diffusion solvers
-void WrapDiffusion(py::module& diffusion)
+void
+WrapDiffusion(py::module& diffusion)
 {
+  // clang-format off
   // diffusion solver
   auto diff_base = py::class_<DiffusionSolverBase, std::shared_ptr<DiffusionSolverBase>, Solver>(
     diffusion,
@@ -138,10 +140,12 @@ void WrapDiffusion(py::module& diffusion)
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap the diffusion components of OpenSn
-void py_diffusion(py::module& pyopensn)
+void
+py_diffusion(py::module& pyopensn)
 {
   py::module diffusion = pyopensn.def_submodule("diffusion", "Diffusion function module.");
   WrapDiffusion(diffusion);

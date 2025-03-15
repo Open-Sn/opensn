@@ -19,8 +19,10 @@ namespace opensn
 {
 
 // Wrap post processors
-void WrapPostProcessor(py::module& post)
+void
+WrapPostProcessor(py::module& post)
 {
+  // clang-format off
   // post processor
   auto pp = py::class_<PostProcessor, std::shared_ptr<PostProcessor>>(
     post,
@@ -134,12 +136,15 @@ void WrapPostProcessor(py::module& post)
     ----------
     ???
     )"
-  ); 
+  );
+  // clang-format on
 }
 
 // Wrap printer options
-void WrapPrinter(py::module& post)
+void
+WrapPrinter(py::module& post)
 {
+  // clang-format off
   // print
   post.def(
     "Print",
@@ -286,10 +291,12 @@ void WrapPrinter(py::module& post)
         seperated values.
     )"
   );
+  // clang-format on
 }
 
 // Wrap the post-processing components of OpenSn.
-void py_post(py::module& pyopensn)
+void
+py_post(py::module& pyopensn)
 {
   py::module post = pyopensn.def_submodule("post", "Post-processing module.");
   WrapPostProcessor(post);

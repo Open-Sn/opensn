@@ -13,8 +13,10 @@ namespace opensn
 {
 
 // Wrap settings
-static void WrapSettings(py::module& settings)
+static void
+WrapSettings(py::module& settings)
 {
+  // clang-format off
   // log settings
   settings.def(
     "SetVerbosityLevel",
@@ -88,10 +90,12 @@ static void WrapSettings(py::module& settings)
     Start the Caliper manager and mark the program begin.
     )"
   );
+  // clang-format on
 }
 
 // Wrap the settings components of OpenSn
-void py_settings(py::module& pyopensn)
+void
+py_settings(py::module& pyopensn)
 {
   py::module settings = pyopensn.def_submodule("settings", "Settings module.");
   WrapSettings(settings);

@@ -29,8 +29,10 @@ namespace opensn
 {
 
 // Wrap mesh continuum
-void WrapMesh(py::module& mesh)
+void
+WrapMesh(py::module& mesh)
 {
+  // clang-format off
   // mesh continuum
   auto mesh_continuum = py::class_<MeshContinuum, std::shared_ptr<MeshContinuum>>(
     mesh,
@@ -329,11 +331,14 @@ void WrapMesh(py::module& mesh)
     py::arg("file_name"),
     py::arg("as_poly")
   );
+  // clang-format on
 }
 
 // Wrap mesh generator
-void WrapMeshGenerator(py::module& mesh)
+void
+WrapMeshGenerator(py::module& mesh)
 {
+  // clang-format off
   // base mesh generator
   auto mesh_generator = py::class_<MeshGenerator, std::shared_ptr<MeshGenerator>>(
     mesh,
@@ -575,11 +580,14 @@ void WrapMeshGenerator(py::module& mesh)
         Flag, when set, makes the mesh appear in full fidelity on each process.
     )"
   );
+  // clang-format on
 }
 
 // Wrap graph partitioner
-void WrapGraphPartitioner(py::module& mesh)
+void
+WrapGraphPartitioner(py::module& mesh)
 {
+  // clang-format off
   // base graph partitioner
   auto graph_partitioner = py::class_<GraphPartitioner, std::shared_ptr<GraphPartitioner>>(
     mesh,
@@ -657,9 +665,11 @@ void WrapGraphPartitioner(py::module& mesh)
     Construct a linear graph partitioner.
     )"
   );
+  // clang-format on
 }
 
-void py_mesh(py::module& pyopensn)
+void
+py_mesh(py::module& pyopensn)
 {
   py::module mesh = pyopensn.def_submodule("mesh", "Mesh generation module.");
   WrapMesh(mesh);

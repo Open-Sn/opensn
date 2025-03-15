@@ -14,8 +14,10 @@ namespace opensn
 {
 
 // Wrap logical volume
-void WrapLogicalVolume(py::module& logvol)
+void
+WrapLogicalVolume(py::module& logvol)
 {
+  // clang-format off
   // generic logical volume
   auto logical_volume = py::class_<LogicalVolume, std::shared_ptr<LogicalVolume>>(
     logvol,
@@ -217,10 +219,12 @@ void WrapLogicalVolume(py::module& logvol)
         Associated surface mesh.
     )"
   );
+  // clang-format on
 }
 
 // Wrap the logical volume components of OpenSn
-void py_logvol(py::module &pyopensn)
+void
+py_logvol(py::module& pyopensn)
 {
   py::module logvol = pyopensn.def_submodule("logvol", "Logical volume module.");
   WrapLogicalVolume(logvol);

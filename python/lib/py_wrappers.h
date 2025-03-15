@@ -17,14 +17,16 @@ namespace opensn
 
 /// Convert a C++ vector to a Python memoryview.
 template <typename T>
-py::memoryview convert_vector(const std::vector<T>& vec)
+py::memoryview
+convert_vector(const std::vector<T>& vec)
 {
   return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
 }
 
 /// Convert an OpenSn vector to a Python memoryview.
 template <typename T>
-py::memoryview convert_vector(const Vector<T>& vec)
+py::memoryview
+convert_vector(const Vector<T>& vec)
 {
   return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
 }

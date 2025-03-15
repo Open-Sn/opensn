@@ -69,7 +69,6 @@ PyApp::PyApp(const mpi::Communicator& comm)
 
   console.BindModule(WrapPostProcessor);
   console.BindModule(WrapPrinter);
-
 }
 
 int

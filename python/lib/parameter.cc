@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h"  // temporary, see the included header for more details!
+#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
@@ -24,13 +24,14 @@
 
 #define TO_PARAMBLOCK(class_name)                                                                  \
   if (py::isinstance<class_name>(obj))                                                             \
-    return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>())
+  return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>())
 
 namespace opensn
 {
 
 // Convert a Python object into a ParameterBlock
-ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& obj)
+ParameterBlock
+pyobj_to_param_block(const std::string& key, const py::object& obj)
 {
   // basic types
   if (py::isinstance<py::bool_>(obj))
@@ -101,7 +102,8 @@ ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& ob
 }
 
 // Translate a Python dictionary into a ParameterBlock
-ParameterBlock kwargs_to_param_block(const py::kwargs& params)
+ParameterBlock
+kwargs_to_param_block(const py::kwargs& params)
 {
   // initialize main parameter dict
   ParameterBlock main;

@@ -7,14 +7,16 @@
 #include <string>
 #include <vector>
 
-#define XS_GETTER(method_name) [] (MultiGroupXS& self) { return convert_vector(self.method_name()); }
+#define XS_GETTER(method_name) [](MultiGroupXS& self) { return convert_vector(self.method_name()); }
 
 namespace opensn
 {
 
 // Wrap multi-group cross section
-void WrapMultiGroupXS(py::module& xs)
+void
+WrapMultiGroupXS(py::module& xs)
 {
+  // clang-format off
   // multi-group cross section
   auto multigroup_xs = py::class_<MultiGroupXS, std::shared_ptr<MultiGroupXS>>(
     xs,
@@ -152,10 +154,12 @@ void WrapMultiGroupXS(py::module& xs)
     "Get inverse velocity.",
     py::keep_alive<0, 1>()
   );
+  // clang-format on
 }
 
 // Wrap the cross section components of OpenSn
-void py_xs(py::module& pyopensn)
+void
+py_xs(py::module& pyopensn)
 {
   py::module xs = pyopensn.def_submodule("xs", "Cross section module.");
   WrapMultiGroupXS(xs);

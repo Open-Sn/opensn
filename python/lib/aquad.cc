@@ -13,8 +13,10 @@ namespace opensn
 {
 
 // Wrap angular quadrature
-void WrapQuadrature(py::module& aquad)
+void
+WrapQuadrature(py::module& aquad)
 {
+  // clang-format off
   // angular quadrature
   auto angular_quadrature = py::class_<AngularQuadrature, std::shared_ptr<AngularQuadrature>>(
     aquad,
@@ -25,11 +27,14 @@ void WrapQuadrature(py::module& aquad)
     Wrapper of :cpp:class:`opensn::AngularQuadrature`.
     )"
   );
+  // clang-format on
 }
 
 // Wrap product qudrature
-void WrapProductQuadrature(py::module& aquad)
+void
+WrapProductQuadrature(py::module& aquad)
 {
+  // clang-format off
   // product quadrature
   auto product_quadrature = py::class_<ProductQuadrature, std::shared_ptr<ProductQuadrature>,
                                        AngularQuadrature>(
@@ -143,11 +148,14 @@ void WrapProductQuadrature(py::module& aquad)
     py::arg("n_polar"),
     py::arg("n_azimuthal")
   );
+  // clang-format on
 }
 
 // Wrap curvilinear quadrature
-void WrapCurvilinearQuadrature(py::module& aquad)
+void
+WrapCurvilinearQuadrature(py::module& aquad)
 {
+  // clang-format off
   // curvilinear quadrature
   auto curvilinear_quadrature = py::class_<CurvilinearQuadrature,
                                            std::shared_ptr<CurvilinearQuadrature>,
@@ -196,11 +204,14 @@ void WrapCurvilinearQuadrature(py::module& aquad)
     py::arg("n_azimuthal"),
     py::arg("verbose") = false
   );
+  // clang-format on
 }
 
 // Wrap SLDFES quadrature
-void WrapSLDFESQuadrature(py::module& aquad)
+void
+WrapSLDFESQuadrature(py::module& aquad)
 {
+  // clang-format off
   // simplified LDFES quadrature
   auto simplified_ldfes_quadrature = py::class_<SimplifiedLDFESQ::Quadrature,
                                                 std::shared_ptr<SimplifiedLDFESQ::Quadrature>,
@@ -265,10 +276,12 @@ void WrapSLDFESQuadrature(py::module& aquad)
     )",
     py::arg("file_base")
   );
+  // clang-format on
 }
 
 // Wrap the angular quadrature components of OpenSn
-void py_aquad(py::module& pyopensn)
+void
+py_aquad(py::module& pyopensn)
 {
   py::module aquad = pyopensn.def_submodule("aquad", "Angular quadrature module.");
   WrapQuadrature(aquad);

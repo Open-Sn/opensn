@@ -32,6 +32,7 @@ Console::BindModule(std::function<void(py::module&)> bind_function)
 void
 Console::BindBarrier(const mpi::Communicator& comm)
 {
+  // clang-format off
   py::module main = py::module::import("__main__");
   main.def(
     "MPIBarrier",
@@ -41,6 +42,7 @@ Console::BindBarrier(const mpi::Communicator& comm)
     },
     "MPI barrier for console."
   );
+  // clang-format on
 }
 
 void

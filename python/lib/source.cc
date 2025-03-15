@@ -10,8 +10,10 @@ namespace opensn
 {
 
 // Wrap point source
-void WrapPointSource(py::module& src)
+void
+WrapPointSource(py::module& src)
 {
+  // clang-format off
   // point source
   auto point_source = py::class_<PointSource, std::shared_ptr<PointSource>>(
     src,
@@ -40,11 +42,14 @@ void WrapPointSource(py::module& src)
         Group-wise point source strength.
     )"
   );
+  // clang-format on
 }
 
 // Wrap volumetric source
-void WrapVolumetricSource(py::module& src)
+void
+WrapVolumetricSource(py::module& src)
 {
+  // clang-format off
   // volumetric source
   auto volumetric_source = py::class_<VolumetricSource, std::shared_ptr<VolumetricSource>>(
     src,
@@ -78,10 +83,12 @@ void WrapVolumetricSource(py::module& src)
         Function to be used to define the source.
     )"
   );
+  // clang-format on
 }
 
 // Wrap the source components of OpenSn
-void py_source(py::module& pyopensn)
+void
+py_source(py::module& pyopensn)
 {
   py::module src = pyopensn.def_submodule("source", "Source module.");
   WrapPointSource(src);

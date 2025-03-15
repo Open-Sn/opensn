@@ -9,8 +9,10 @@ namespace opensn
 {
 
 // Wrap response evaluator
-void WrapResEval(py::module& response)
+void
+WrapResEval(py::module& response)
 {
+  // clang-format off
   // response evaluator
   auto res_eval = py::class_<ResponseEvaluator, std::shared_ptr<ResponseEvaluator>>(
     response,
@@ -61,10 +63,12 @@ void WrapResEval(py::module& response)
     &ResponseEvaluator::ClearForwardSources,
     "Clear the existing forward sources from the response evaluator."
   );
+  // clang-format on
 }
 
 // Wrap the response components of OpenSn
-void py_response(py::module& pyopensn)
+void
+py_response(py::module& pyopensn)
 {
   py::module response = pyopensn.def_submodule("response", "Response module.");
   WrapResEval(response);

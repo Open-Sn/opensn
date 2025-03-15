@@ -28,8 +28,10 @@ namespace opensn
 {
 
 // Wrap solver
-void WrapSolver(py::module& slv)
+void
+WrapSolver(py::module& slv)
 {
+  // clang-format off
   // solver base
   auto solver = py::class_<Solver, std::shared_ptr<Solver> >(
     slv,
@@ -73,11 +75,14 @@ void WrapSolver(py::module& slv)
     },
     "Get the list of field functions."
   );
+  // clang-format on
 }
 
 // Wrap LBS solver
-void WrapLBS(py::module& slv)
+void
+WrapLBS(py::module& slv)
 {
+  // clang-format off
   // LBS solver
   auto lbs_solver = py::class_<LBSSolver, std::shared_ptr<LBSSolver>, Solver>(
     slv,
@@ -394,11 +399,14 @@ void WrapLBS(py::module& slv)
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap steady-state solver
-void WrapSteadyState(py::module& slv)
+void
+WrapSteadyState(py::module& slv)
 {
+  // clang-format off
   // steady state solver
   auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>,
                                         Solver>(
@@ -425,11 +433,14 @@ void WrapSteadyState(py::module& slv)
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap non-linear k-eigen solver
-void WrapNLKEigen(py::module& slv)
+void
+WrapNLKEigen(py::module& slv)
 {
+  // clang-format off
   // non-linear k-eigen solver
   auto non_linear_k_eigen_solver = py::class_<NonLinearKEigen, std::shared_ptr<NonLinearKEigen>,
                                               Solver>(
@@ -456,11 +467,14 @@ void WrapNLKEigen(py::module& slv)
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap power iteration solvers
-void WrapPIteration(py::module& slv)
+void
+WrapPIteration(py::module& slv)
 {
+  // clang-format off
   // power iteration k-eigen solver
   auto pi_k_eigen_solver = py::class_<PowerIterationKEigen, std::shared_ptr<PowerIterationKEigen>,
                                       Solver>(
@@ -543,11 +557,14 @@ void WrapPIteration(py::module& slv)
     ???
     )"
   );
+  // clang-format on
 }
 
 // Wrap PRK solver
-void WrapPRK(py::module& slv)
+void
+WrapPRK(py::module& slv)
 {
+  // clang-format off
   // point reactor kineatic solver
   auto prk_solver = py::class_<PRKSolver, std::shared_ptr<PRKSolver>, Solver>(
     slv,
@@ -636,10 +653,12 @@ void WrapPRK(py::module& slv)
     ??? (what is rho?)
     )"
   );
+  // clang-format on
 }
 
 // Wrap the solver components of OpenSn
-void py_solver(py::module& pyopensn)
+void
+py_solver(py::module& pyopensn)
 {
   py::module slv = pyopensn.def_submodule("solver", "Solver module.");
   WrapSolver(slv);
