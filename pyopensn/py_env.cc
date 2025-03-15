@@ -17,7 +17,7 @@ PyEnv::PyEnv()
   {
     return;
   }
-  // Import mpi4py and get the communicator
+  // import mpi4py and get the communicator
   ::import_mpi4py();
   py::object mpi_module = py::module::import("mpi4py.MPI");
   py::object comm_world = mpi_module.attr("COMM_WORLD");
@@ -28,7 +28,7 @@ PyEnv::PyEnv()
     std::cout << Timer::GetLocalDateTimeString() << " Running " << program << " with "
               << mpi_comm.size() << " processes.\n\n";
   }
-  // Initialize PETSc and OpenSn
+  // initialize PETSc and OpenSn
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
   ::PetscInitialize(nullptr, nullptr, nullptr, nullptr);
