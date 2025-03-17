@@ -295,6 +295,18 @@ ResponseEvaluator::ClearForwardSources()
   boundary_sources_.clear();
 }
 
+void
+ResponseEvaluator::AddResponseBuffers(const InputParameters& params)
+{
+  params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
+  {
+    auto spec = ResponseEvaluator::GetBufferOptionsBlock();
+    spec.AssignParameters(params.GetParam(p));
+    SetBufferOptions(spec);
+  }
+}
+
 double
 ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 {

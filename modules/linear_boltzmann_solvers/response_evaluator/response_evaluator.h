@@ -39,7 +39,7 @@ namespace opensn
  *    }
  *
  *    evaluator = lbs.ResponseEvaluator.Create({ lbs_solver_handle = phys })
- *    lbs.AddResponseBuffers(evaluator, buffers)
+ *    evaluator:AddResponseBuffers(buffers)
  *
  *    responses = {}
  *    for i = 1, M do
@@ -85,6 +85,8 @@ public:
 
   /// Clear the existing forward sources from the response evaluator.
   void ClearForwardSources();
+
+  void AddResponseBuffers(const InputParameters& params);
 
   /**
    * Evaluate a response using the specified adjoint buffer with the currently defined sources in
