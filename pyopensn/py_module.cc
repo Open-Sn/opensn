@@ -27,12 +27,16 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   }
 
   // Wrap libraries
+  py_settings(pyopensn);
+  py_math(pyopensn);
   py_aquad(pyopensn);
-  py_ffunc(pyopensn);
-  py_logvol(pyopensn);
-  py_mat(pyopensn);
   py_mesh(pyopensn);
-  py_solver(pyopensn);
+  py_logvol(pyopensn);
   py_source(pyopensn);
   py_xs(pyopensn);
+  py_ffunc(pyopensn);
+  py_response(pyopensn);
+  py_solver(pyopensn);
+  py_diffusion(pyopensn);
+  py_post(pyopensn);
 }

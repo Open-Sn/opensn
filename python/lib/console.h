@@ -3,11 +3,13 @@
 
 #pragma once
 
+#include "mpicpp-lite/mpicpp-lite.h"
 #include <vector>
 #include <string>
 #include <Python.h>
 #include <pybind11/embed.h>
 
+namespace mpi = mpicpp_lite;
 namespace py = pybind11;
 
 namespace opensnpy
@@ -22,6 +24,7 @@ public:
   void RunConsoleLoop() const;
   int ExecuteFile(const std::string& fileName) const;
   void BindModule(std::function<void(py::module&)> bind_function);
+  void BindBarrier(const mpi::Communicator& comm);
 
 private:
   Console() noexcept = default;

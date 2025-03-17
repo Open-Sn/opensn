@@ -30,6 +30,22 @@ Console::BindModule(std::function<void(py::module&)> bind_function)
 }
 
 void
+Console::BindBarrier(const mpi::Communicator& comm)
+{
+  // clang-format off
+  py::module main = py::module::import("__main__");
+  main.def(
+    "MPIBarrier",
+    [&comm](void)
+    {
+      comm.barrier();
+    },
+    "MPI barrier for console."
+  );
+  // clang-format on
+}
+
+void
 Console::ExecutePythonCommand(const std::string& command) const
 {
   try
