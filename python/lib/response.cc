@@ -59,9 +59,54 @@ WrapResEval(py::module& response)
     py::arg("buffer_name")
   );
   res_eval.def(
+    "SetOptions",
+    [](ResponseEvaluator& self, py::kwargs& params)
+    {
+      InputParameters input = ResponseEvaluator::GetOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetOptions(input);
+    },
+    R"(
+      Set options for the response evaluator for adding adjoint buffers and defining forward sources.
+
+      Parameters
+      ----------
+      buffers: List[Dict], default=[]
+      A list of dictionaries containing adjoint buffer specifications.
+      clear_sources: bool, default=False
+      A flag to clear existing sources.
+      sources: List[Dict], default=[]
+      A list of dictionaries containing source specification information.
+      )"
+    );
+  res_eval.def(
     "ClearForwardSources",
     &ResponseEvaluator::ClearForwardSources,
     "Clear the existing forward sources from the response evaluator."
+  );
+  res_eval.def(
+    "SetBufferOptions",
+    [](ResponseEvaluator& self, py::kwargs& params)
+    {
+      InputParameters input = ResponseEvaluator::BufferOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetBufferOptions(input);
+    },
+    R"(
+    ???
+    )"
+  );
+  res_eval.def(
+    "SetSourceOptions",
+    [](ResponseEvaluator& self, py::kwargs& params)
+    {
+      InputParameters input = ResponseEvaluator::GetSourceOptionsBlock();
+      input.AssignParameters(params);
+      self.SetSourceOptions(input);
+    },
+    R"(
+    ???
+    )"
   );
   // clang-format on
 }

@@ -95,24 +95,126 @@ WrapLBS(py::module& slv)
   );
   lbs_solver.def(
     "GetScalarFieldFunctionList",
-    [](LBSSolver& self)
+    [](LBSSolver& self, bool only_scalar_flux)
     {
       py::list field_function_list_per_group;
       for (std::size_t group = 0; group < self.GetNumGroups(); group++)
       {
-        py::list field_function_list_per_moment;
-        for (std::size_t moment = 0; moment < self.GetNumMoments(); moment++)
+        if (only_scalar_flux)
         {
-          std::size_t ff_index = self.MapPhiFieldFunction(group, moment);
-          field_function_list_per_moment.append(self.GetFieldFunctions()[ff_index]);
+          std::size_t ff_index = self.MapPhiFieldFunction(group, 0);
+          field_function_list_per_group.append(self.GetFieldFunctions()[ff_index]);
         }
-        field_function_list_per_group.append(field_function_list_per_moment);
+        else
+        {
+          py::list field_function_list_per_moment;
+          for (std::size_t moment = 0; moment < self.GetNumMoments(); moment++)
+          {
+            std::size_t ff_index = self.MapPhiFieldFunction(group, moment);
+            field_function_list_per_moment.append(self.GetFieldFunctions()[ff_index]);
+          }
+          field_function_list_per_group.append(field_function_list_per_moment);
+        }
       }
       return field_function_list_per_group;
     },
     R"(
     Return, for each group, a list of field functions corresponding to each moment. Note that the
     moment index varies more rapidly than the group index.
+
+    Parameters
+    ----------
+    only_scalar_flux: bool, default=True
+        If True, only return a list of of field functions corresponding to moment zero-th for each
+        group. The result is only a simple list of field functions. Otherwise, the result will be a
+        list per group of list per moment.
+    )",
+    py::arg("only_scalar_flux") = true
+  );
+  lbs_solver.def(
+    "GetPowerFieldFunction",
+    &LBSSolver::GetPowerFieldFunction,
+    R"(
+    Returns the power generation field function, if enabled.
+    )"
+  );
+  lbs_solver.def(
+    "SetOptions",
+    [](LBSSolver& self, py::kwargs& params)
+    {
+      InputParameters input = LBSSolver::GetOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetOptions(input);
+    },
+    R"(
+    Set options from a large list of parameters.
+
+    Parameters
+    ----------
+    spatial_discretization: str, default='pwld'
+        What spatial discretization to use. Currently only ``pwld`` is supported.
+    scattering_order: int, default=1
+        The level of harmonic expansion for the scattering source.
+    max_mpi_message_size: int default=32768
+        The maximum MPI message size used during sweep initialization.
+    restart_writes_enabled: bool, default=False
+        Flag that controls writing of restart dumps.
+    write_delayed_psi_to_restart: bool, default=True
+        Flag that controls writing of delayed angular fluxes to restarts.
+    read_restart_path: str, default=''
+        Full path for reading restart dumps including file stem.
+    write_restart_path: str, default=''
+        Full path for writing restart dumps including file stem.
+    write_restart_time_interval: int, default=0
+        Time interval in seconds at which restart data is to be written.
+    use_precursors: bool, default=False
+        Flag for using delayed neutron precursors.
+    use_source_moments: bool, default=False
+        Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.
+    save_angular_flux: bool, default=False
+        Flag indicating whether angular fluxes are to be stored or not.
+    adjoint: bool, default=False
+        Flag for toggling whether the solver is in adjoint mode.
+    verbose_inner_iterations: bool, default=True
+        Flag to control verbosity of inner iterations.
+    verbose_outer_iterations: bool, default=True
+        Flag to control verbosity of across-groupset iterations.
+    max_ags_iterations: int, default=100
+        Maximum number of across-groupset iterations.
+    ags_tolerance: float, default=1.0e-6
+        Across-groupset iterations tolerance.
+    ags_convergence_check: {'l2', 'pointwise'}, default='l2'
+        Type of convergence check for AGS iterations.
+    verbose_ags_iterations: bool, default=True
+        Flag to control verbosity of across-groupset iterations.
+    power_field_function_on: bool, default=False
+        Flag to control the creation of the power generation field function. If set to ``True``, a
+        field function will be created with the general name ``<solver_name>_power_generation``.
+    power_default_kappa: float, default=3.20435e-11
+        Default ``kappa`` value (Energy released per fission) to use for power generation when cross
+        sections do not have ``kappa`` values. Default corresponds to 200 MeV per fission.
+    power_normalization: float, default=-1.0
+        Power normalization factor to use. Supply a negative or zero number to turn this off.
+    field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
+        Prefix option on field function names. If unset, flux field functions will be exported as
+        ``phi_gXXX_mYYY``, where ``XXX`` is the zero-padded 3-digit group number and ``YYY`` is the
+        zero-padded 3-digit moment.
+    field_function_prefix: str, default=''
+        Prefix to use on all field functions. By default, this is empty. If specified, flux moments
+        are exported as ``prefix_phi_gXXX_mYYY``.
+    boundary_conditions: List[Dict], default=[]
+        A list containing tables for each boundary specification.
+    clear_boundary_conditions: bool, default=False
+        Clears all boundary conditions. If no additional boundary conditions are supplied, all
+        boundaries become vacuum.
+    point_sources: List[pyopensn.source.PointSource], default=[]
+        A list of point sources.
+    clear_point_sources: bool, default=False
+        Clear all point sources.
+    volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
+        A list of volumetric sources.
+    clear_volumetric_sources: bool, default=False
+        Clear all volumetric sources.
     )"
   );
   lbs_solver.def(
