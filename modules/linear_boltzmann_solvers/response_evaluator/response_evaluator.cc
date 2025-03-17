@@ -307,6 +307,14 @@ ResponseEvaluator::AddResponseBuffers(const InputParameters& params)
   }
 }
 
+void
+ResponseEvaluator::AddResponseSources(const InputParameters& params)
+{
+  auto spec = ResponseEvaluator::GetSourceOptionsBlock();
+  spec.AssignParameters(params);
+  SetSourceOptions(spec);
+}
+
 double
 ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 {

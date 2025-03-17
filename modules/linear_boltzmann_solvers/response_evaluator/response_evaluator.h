@@ -44,7 +44,7 @@ namespace opensn
  *    responses = {}
  *    for i = 1, M do
  *        lbs.ClearResponseSources(evaluator)
- *        lbs.AddResponseSources(evaluator, sources[i])
+ *        evaluator:AddResponseSources(sources[i])
  *
  *        responses[i] = {}
  *        for j = 1, N do
@@ -87,6 +87,8 @@ public:
   void ClearForwardSources();
 
   void AddResponseBuffers(const InputParameters& params);
+
+  void AddResponseSources(const InputParameters& params);
 
   /**
    * Evaluate a response using the specified adjoint buffer with the currently defined sources in
