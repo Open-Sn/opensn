@@ -43,13 +43,13 @@ namespace opensn
  *
  *    responses = {}
  *    for i = 1, M do
- *        lbs.ClearResponseSources(evaluator)
+ *        evaluator:ClearForwardSources()
  *        evaluator:AddResponseSources(sources[i])
  *
  *        responses[i] = {}
  *        for j = 1, N do
  *            responses[i][buffer_name[j]] =
- *                lbs.EvaluateResponse(evaluator, buffer_name[j])
+ *                evaluator:EvaluateResponse(buffer_name[j])
  *        end
  *    end
  * \endcode
