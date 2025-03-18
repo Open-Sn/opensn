@@ -20,7 +20,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
 
 if __name__ == "__main__":
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     bsrc[0] = 1.0 / 4.0 / math.pi
 
     # Create and configure the discrete ordinates solver
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[

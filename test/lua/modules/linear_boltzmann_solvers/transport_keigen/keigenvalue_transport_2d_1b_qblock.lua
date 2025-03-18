@@ -36,7 +36,7 @@ lbs_options = {
   verbose_outer_iterations = true,
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 k_solver0 = lbs.NonLinearKEigen.Create({ lbs_problem = phys1 })

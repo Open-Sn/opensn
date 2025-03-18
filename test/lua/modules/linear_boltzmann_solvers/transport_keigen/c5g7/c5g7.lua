@@ -17,7 +17,7 @@ else
   l_max_its = 5
 end
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create({
+phys1 = lbs.DiscreteOrdinatesProblem.Create({
   mesh = grid,
   num_groups = num_groups,
   groupsets = {

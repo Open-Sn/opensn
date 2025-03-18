@@ -19,7 +19,7 @@ OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesCurvilinearSolver);
 InputParameters
 DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
 {
-  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesProblem::GetInputParameters();
 
   params.SetGeneralDescription(
     "Solver for Discrete Ordinates in cylindrical and spherical coordinates");
@@ -45,7 +45,7 @@ DiscreteOrdinatesCurvilinearSolver::Create(const ParameterBlock& params)
 
 DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
   const InputParameters& params)
-  : DiscreteOrdinatesSolver(params),
+  : DiscreteOrdinatesProblem(params),
     coord_system_type_(static_cast<CoordinateSystemType>(params.GetParamValue<int>("coord_system")))
 {
 }
@@ -59,7 +59,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
   //  perform all verifications of Cartesian LBS
   //  --------------------------------------------------------------------------
 
-  DiscreteOrdinatesSolver::PerformInputChecks();
+  DiscreteOrdinatesProblem::PerformInputChecks();
 
   //  --------------------------------------------------------------------------
   //  perform additional verifications for curvilinear LBS

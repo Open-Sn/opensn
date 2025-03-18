@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
 
 if __name__ == "__main__":
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     bsrc = [0.0 for _ in range(num_groups)]
     bsrc[0] = 1.0 / 4.0 / math.pi
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[

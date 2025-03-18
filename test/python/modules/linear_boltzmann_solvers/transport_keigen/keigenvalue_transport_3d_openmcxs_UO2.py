@@ -18,7 +18,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesSolver, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigen
 
 if __name__ == "__main__":
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # Solver
     num_groups = 172
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[

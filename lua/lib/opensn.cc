@@ -52,7 +52,7 @@
 #include "modules/diffusion/diffusion_solver.h"
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
@@ -564,14 +564,14 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("GetPowerFieldFunction", &LBSProblem::GetPowerFieldFunction)
       .endClass()
       //
-      .deriveClass<DiscreteOrdinatesSolver, LBSProblem>("DiscreteOrdinatesSolver")
-      .addStaticFunction("Create", &DiscreteOrdinatesSolver::Create)
-      .addFunction("ComputeBalance", &DiscreteOrdinatesSolver::ComputeBalance)
+      .deriveClass<DiscreteOrdinatesProblem, LBSProblem>("DiscreteOrdinatesProblem")
+      .addStaticFunction("Create", &DiscreteOrdinatesProblem::Create)
+      .addFunction("ComputeBalance", &DiscreteOrdinatesProblem::ComputeBalance)
       .endClass()
-      .beginClass<std::shared_ptr<DiscreteOrdinatesSolver>>("DiscreteOrdinatesSolverPtr")
+      .beginClass<std::shared_ptr<DiscreteOrdinatesProblem>>("DiscreteOrdinatesProblemPtr")
       .endClass()
       //
-      .deriveClass<DiscreteOrdinatesCurvilinearSolver, DiscreteOrdinatesSolver>(
+      .deriveClass<DiscreteOrdinatesCurvilinearSolver, DiscreteOrdinatesProblem>(
         "DiscreteOrdinatesCurvilinearSolver")
       .addStaticFunction("Create", &DiscreteOrdinatesCurvilinearSolver::Create)
       .endClass()

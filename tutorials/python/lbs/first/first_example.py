@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.settings import EnableCaliper
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(npolar, nazimu)
 
     # create linear Boltzmann solver (LBS)
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[

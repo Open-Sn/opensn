@@ -108,7 +108,7 @@ lbs_block = {
   sweep_type = "CBC",
 }
 
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 k_solver0 = lbs.NonLinearKEigen.Create({
   lbs_problem = phys,

@@ -101,7 +101,7 @@ lbs_block = {
     volumetric_sources = { fwd_src },
   },
 }
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 -- Forward solve
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys })

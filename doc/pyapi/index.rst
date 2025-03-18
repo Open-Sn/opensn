@@ -289,7 +289,7 @@ Linear Boltzmann solver
    :nosignatures:
    :template: python.rst
 
-   solver.DiscreteOrdinatesSolver
+   solver.DiscreteOrdinatesProblem
    solver.DiscreteOrdinatesCurvilinearSolver
    solver.DiffusionDFEMSolver
 
@@ -416,4 +416,3 @@ Caliper configuration
 
    settings.SetCaliperConfig
    settings.EnableCaliper
-

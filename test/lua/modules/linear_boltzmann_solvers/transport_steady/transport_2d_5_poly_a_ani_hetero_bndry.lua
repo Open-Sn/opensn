@@ -123,7 +123,7 @@ lbs_options = {
   volumetric_sources = { mg_src0 },
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 -- Initialize and Execute Solver

@@ -37,7 +37,7 @@ lbs_block = {
   sweep_type = "CBC",
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 k_solver0 = lbs.NonLinearKEigen.Create({ lbs_problem = phys1 })
 k_solver0:Initialize()

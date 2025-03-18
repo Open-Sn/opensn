@@ -103,7 +103,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "LBSProblem")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "DiscreteOrdinatesSolver")
+  else if (cls_name == "DiscreteOrdinatesProblem")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "DiscreteOrdinatesCurvilinearSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));

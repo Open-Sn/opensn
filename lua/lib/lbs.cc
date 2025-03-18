@@ -34,12 +34,12 @@ LBSGetScalarFieldFunctionList(std::shared_ptr<LBSProblem> lbs_problem)
 }
 
 std::map<std::string, std::vector<double>>
-LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesSolver> solver,
+LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesProblem> solver,
                   const std::vector<std::string>& bnd_names)
 {
   // Get the supported boundaries
-  const auto supported_boundary_names = opensn::DiscreteOrdinatesSolver::supported_boundary_names;
-  const auto supported_boundary_ids = opensn::DiscreteOrdinatesSolver::supported_boundary_ids;
+  const auto supported_boundary_names = opensn::DiscreteOrdinatesProblem::supported_boundary_names;
+  const auto supported_boundary_ids = opensn::DiscreteOrdinatesProblem::supported_boundary_ids;
 
   // Get the boundaries to parse
   std::vector<uint64_t> bndry_ids;
