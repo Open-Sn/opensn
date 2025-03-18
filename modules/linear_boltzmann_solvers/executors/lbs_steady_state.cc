@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
 #include "caliper/cali.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <memory>
 
 namespace opensn
@@ -23,7 +23,7 @@ SteadyStateSolver::GetInputParameters()
                                "across-groupset (AGS) solver.");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver", "An existing lbs solver");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
 
   return params;
 }
@@ -37,8 +37,8 @@ SteadyStateSolver::Create(const ParameterBlock& params)
 
 SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver")))
+    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem")))
 {
 }
 
@@ -47,9 +47,9 @@ SteadyStateSolver::Initialize()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSolver::Initialize");
 
-  lbs_solver_->Initialize();
+  lbs_problem_->Initialize();
 
-  if (not lbs_solver_->GetOptions().read_restart_path.empty())
+  if (not lbs_problem_->GetOptions().read_restart_path.empty())
     ReadRestartData();
 }
 
@@ -58,29 +58,29 @@ SteadyStateSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSolver::Execute");
 
-  auto& options = lbs_solver_->GetOptions();
+  auto& options = lbs_problem_->GetOptions();
 
-  auto& ags_solver = *lbs_solver_->GetAGSSolver();
+  auto& ags_solver = *lbs_problem_->GetAGSSolver();
   ags_solver.Solve();
 
   if (options.restart_writes_enabled)
     WriteRestartData();
 
   if (options.use_precursors)
-    lbs_solver_->ComputePrecursors();
+    lbs_problem_->ComputePrecursors();
 
   if (options.adjoint)
-    lbs_solver_->ReorientAdjointSolution();
+    lbs_problem_->ReorientAdjointSolution();
 
-  lbs_solver_->UpdateFieldFunctions();
+  lbs_problem_->UpdateFieldFunctions();
 }
 
 bool
 SteadyStateSolver::ReadRestartData()
 {
-  auto& fname = lbs_solver_->GetOptions().read_restart_path;
-  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
-  auto& groupsets = lbs_solver_->GetGroupsets();
+  auto& fname = lbs_problem_->GetOptions().read_restart_path;
+  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
+  auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -120,10 +120,10 @@ SteadyStateSolver::ReadRestartData()
 bool
 SteadyStateSolver::WriteRestartData()
 {
-  auto& options = lbs_solver_->GetOptions();
+  auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;
-  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
-  auto& groupsets = lbs_solver_->GetGroupsets();
+  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
+  auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -136,7 +136,7 @@ SteadyStateSolver::WriteRestartData()
     if (options.write_delayed_psi_to_restart)
     {
       int gs_id = 0;
-      for (auto gs : lbs_solver_->GetGroupsets())
+      for (auto gs : lbs_problem_->GetGroupsets())
       {
         if (gs.angle_agg)
         {
@@ -156,7 +156,7 @@ SteadyStateSolver::WriteRestartData()
 
   if (success)
   {
-    lbs_solver_->UpdateRestartWriteTime();
+    lbs_problem_->UpdateRestartWriteTime();
     log.Log() << "Successfully wrote restart data." << std::endl;
   }
   else

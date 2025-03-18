@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 
 namespace opensn
 {
 
-class DiffusionDFEMSolver : public LBSSolver
+class DiffusionDFEMSolver : public LBSProblem
 {
 public:
   std::vector<std::shared_ptr<DiffusionMIPSolver>> gs_mip_solvers;

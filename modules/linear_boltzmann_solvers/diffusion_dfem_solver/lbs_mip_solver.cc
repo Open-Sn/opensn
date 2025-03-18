@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context.h"
 #include "framework/object_factory.h"
 
@@ -16,7 +16,7 @@ OpenSnRegisterObjectInNamespace(lbs, DiffusionDFEMSolver);
 InputParameters
 DiffusionDFEMSolver::GetInputParameters()
 {
-  InputParameters params = LBSSolver::GetInputParameters();
+  InputParameters params = LBSProblem::GetInputParameters();
 
   params.SetClassName("DiffusionDFEMSolver");
   params.SetDocGroup("lbs__LBSSolver");
@@ -33,7 +33,7 @@ DiffusionDFEMSolver::Create(const ParameterBlock& params)
   return factory.Create<DiffusionDFEMSolver>("lbs::DiffusionDFEMSolver", params);
 }
 
-DiffusionDFEMSolver::DiffusionDFEMSolver(const InputParameters& params) : LBSSolver(params)
+DiffusionDFEMSolver::DiffusionDFEMSolver(const InputParameters& params) : LBSProblem(params)
 {
 }
 
@@ -47,7 +47,7 @@ void
 DiffusionDFEMSolver::Initialize()
 {
   options_.scattering_order = 0; // overwrite any setting otherwise
-  LBSSolver::Initialize();
+  LBSProblem::Initialize();
 
   auto src_function = std::make_shared<SourceFunction>(*this);
 
@@ -60,7 +60,7 @@ DiffusionDFEMSolver::Initialize()
   for (auto& groupset : groupsets_)
     InitTGDSA(groupset);
 
-  LBSSolver::InitializeSolverSchemes();
+  LBSProblem::InitializeSolverSchemes();
 }
 
 void

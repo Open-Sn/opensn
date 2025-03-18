@@ -85,7 +85,7 @@ if __name__ == "__main__":
         sweep_type="CBC",
     )
     k_solver = PowerIterationKEigen(
-        lbs_solver=phys,
+        lbs_problem=phys,
         k_tol=1.0e-8,
     )
     k_solver.Initialize()

@@ -38,7 +38,7 @@ if __name__ == "__main__":
     xs_fuel_g2 = MultiGroupXS()
     xs_fuel_g2.LoadFromOpenSn("xs_fuel_g2.xs")
 
-    # Initialize the LBSSolver
+    # Initialize the LBSProblem
     phys = DiscreteOrdinatesSolver(
         mesh=grid,
         num_groups=num_groups,
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         },
     )
     k_solver = PowerIterationKEigen(
-        lbs_solver=phys,
+        lbs_problem=phys,
         k_tol=1e-6,
     )
     k_solver.Initialize()

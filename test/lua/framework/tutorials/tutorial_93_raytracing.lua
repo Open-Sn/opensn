@@ -110,7 +110,7 @@ lbs_block = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()

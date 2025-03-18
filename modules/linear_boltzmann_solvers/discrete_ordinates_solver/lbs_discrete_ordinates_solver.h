@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 #include <memory>
 
@@ -15,7 +15,7 @@ namespace opensn
  * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to
  * sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver.
  */
-class DiscreteOrdinatesSolver : public LBSSolver
+class DiscreteOrdinatesSolver : public LBSProblem
 {
 protected:
   using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;

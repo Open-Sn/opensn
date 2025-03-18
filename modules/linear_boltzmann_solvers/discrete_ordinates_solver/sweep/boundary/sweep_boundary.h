@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include <vector>
 
 namespace opensn

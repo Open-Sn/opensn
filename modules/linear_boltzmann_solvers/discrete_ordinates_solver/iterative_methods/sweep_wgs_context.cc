@@ -3,8 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <petscksp.h>
@@ -16,17 +16,17 @@ namespace opensn
 
 using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 
-SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
+SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_problem,
                                  LBSGroupset& groupset,
                                  const SetSourceFunction& set_source_function,
                                  SourceFlags lhs_scope,
                                  SourceFlags rhs_scope,
                                  bool log_info,
                                  std::shared_ptr<SweepChunk> swp_chnk)
-  : WGSContext(lbs_solver, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
+  : WGSContext(lbs_problem, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk(std::move(swp_chnk)),
-    sweep_scheduler(lbs_solver.GetSweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
-                                                       : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+    sweep_scheduler(lbs_problem.GetSweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
+                                                        : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
                     *groupset.angle_agg,
                     *sweep_chunk)
 {
@@ -72,9 +72,9 @@ SweepWGSContext::GetSystemSize()
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
-  const size_t local_node_count = lbs_solver.GetLocalNodeCount();
-  const size_t global_node_count = lbs_solver.GetGlobalNodeCount();
-  const size_t num_moments = lbs_solver.GetNumMoments();
+  const size_t local_node_count = lbs_problem.GetLocalNodeCount();
+  const size_t global_node_count = lbs_problem.GetGlobalNodeCount();
+  const size_t num_moments = lbs_problem.GetNumMoments();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
@@ -106,7 +106,7 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   ++counter_applications_of_inv_op;
   const bool use_bndry_source_flag =
-    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.GetOptions().use_src_moments);
+    (scope & APPLY_FIXED_SOURCES) and (not lbs_problem.GetOptions().use_src_moments);
 
   sweep_scheduler.SetBoundarySourceActiveFlag(use_bndry_source_flag);
 
@@ -114,7 +114,7 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
     sweep_scheduler.ZeroIncomingDelayedPsi();
 
   // Sweep
-  dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver).ZeroOutflowBalanceVars(groupset);
+  dynamic_cast<DiscreteOrdinatesSolver&>(lbs_problem).ZeroOutflowBalanceVars(groupset);
   sweep_scheduler.ZeroOutputFluxDataStructures();
   std::chrono::high_resolution_clock::time_point sweep_start =
     std::chrono::high_resolution_clock::now();
@@ -142,11 +142,11 @@ SweepWGSContext::PostSolveCallback()
   {
     const auto scope = lhs_src_scope | rhs_src_scope;
     set_source_function(
-      groupset, lbs_solver.GetQMomentsLocal(), lbs_solver.GetPhiOldLocal(), scope);
-    sweep_scheduler.SetDestinationPhi(lbs_solver.GetPhiNewLocal());
+      groupset, lbs_problem.GetQMomentsLocal(), lbs_problem.GetPhiOldLocal(), scope);
+    sweep_scheduler.SetDestinationPhi(lbs_problem.GetPhiNewLocal());
     ApplyInverseTransportOperator(scope);
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
-      lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+      lbs_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
   }
 
   if (log_info)
@@ -157,7 +157,7 @@ SweepWGSContext::PostSolveCallback()
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t num_unknowns = lbs_solver.GetGlobalNodeCount() * num_angles * groupset.groups.size();
+    size_t num_unknowns = lbs_problem.GetGlobalNodeCount() * num_angles * groupset.groups.size();
 
     log.Log() << "\n       Average sweep time (s):        "
               << tot_sweep_time / static_cast<double>(sweep_times.size())

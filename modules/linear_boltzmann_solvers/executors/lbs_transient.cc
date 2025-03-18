@@ -21,7 +21,7 @@ TransientSolver::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "TransientSolver");
 
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver", "An existing lbs solver");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
 
   params.AddRequiredParameter<size_t>("time_integration",
                                       "Handle to a time integration scheme to use");
@@ -31,8 +31,8 @@ TransientSolver::GetInputParameters()
 
 TransientSolver::TransientSolver(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver"))),
+    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
     time_integration_(GetStackItemPtrAsType<TimeIntegration>(
       object_stack, params.GetParamValue<size_t>("time_integration")))
 {
@@ -41,7 +41,7 @@ TransientSolver::TransientSolver(const InputParameters& params)
 void
 TransientSolver::Initialize()
 {
-  lbs_solver_->Initialize();
+  lbs_problem_->Initialize();
 }
 
 void

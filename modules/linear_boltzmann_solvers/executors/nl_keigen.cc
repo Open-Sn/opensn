@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/power_iteration_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/power_iteration_keigen.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 
@@ -19,8 +19,8 @@ NonLinearKEigen::GetInputParameters()
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigen");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver", "An existing lbs solver");
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -53,9 +53,9 @@ NonLinearKEigen::Create(const ParameterBlock& params)
 
 NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver"))),
-    nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_solver_)),
+    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
+    nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
@@ -78,32 +78,32 @@ NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
 void
 NonLinearKEigen::Initialize()
 {
-  lbs_solver_->Initialize();
+  lbs_problem_->Initialize();
 }
 
 void
 NonLinearKEigen::Execute()
 {
   if (reset_phi0_)
-    LBSVecOps::SetPhiVectorScalarValues(*lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
   if (num_initial_power_its_ > 0)
   {
     double k_eff = 1.0;
     PowerIterationKEigen(
-      *lbs_solver_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
+      *lbs_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 
   nl_solver_.Setup();
   nl_solver_.Solve();
 
-  if (lbs_solver_->GetOptions().use_precursors)
+  if (lbs_problem_->GetOptions().use_precursors)
   {
-    lbs_solver_->ComputePrecursors();
-    Scale(lbs_solver_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
+    lbs_problem_->ComputePrecursors();
+    Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
-  lbs_solver_->UpdateFieldFunctions();
+  lbs_problem_->UpdateFieldFunctions();
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }

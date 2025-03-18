@@ -108,12 +108,12 @@ if __name__ == "__main__":
     # Execute Solver
     if k_method == "pi":
         k_solver = PowerIterationKEigen(
-            lbs_solver=phys,
+            lbs_problem=phys,
             k_tol=1.0e-8,
         )
     elif k_method == "pi_scdsa":
         k_solver = PowerIterationKEigenSCDSA(
-            lbs_solver=phys,
+            lbs_problem=phys,
             diff_accel_sdm="pwld",
             accel_pi_verbose=True,
             k_tol=1.0e-8,
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_scdsa_pwlc":
         k_solver = PowerIterationKEigenSCDSA(
-            lbs_solver=phys,
+            lbs_problem=phys,
             diff_accel_sdm="pwlc",
             accel_pi_verbose=True,
             k_tol=1.0e-8,
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_smm":
         k_solver = PowerIterationKEigenSMM(
-            lbs_solver=phys,
+            lbs_problem=phys,
             accel_pi_verbose=True,
             k_tol=1.0e-8,
             accel_pi_k_tol=1.0e-8,
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_smm_pwld":
         k_solver = PowerIterationKEigenSMM(
-            lbs_solver=phys,
+            lbs_problem=phys,
             accel_pi_verbose=True,
             k_tol=1.0e-8,
             accel_pi_k_tol=1.0e-8,
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         )
     elif k_method == "jfnk":
         k_solver = NonLinearKEigen(
-            lbs_solver=phys,
+            lbs_problem=phys,
             nl_max_its=50,
             nl_abs_tol=1.0e-10,
             nl_rel_tol=1.0e-10,

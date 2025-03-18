@@ -5,8 +5,8 @@
 
 #include "framework/data_types/ndarray.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
 
 namespace opensn
 {

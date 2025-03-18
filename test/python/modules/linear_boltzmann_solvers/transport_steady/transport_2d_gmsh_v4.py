@@ -71,7 +71,7 @@ if __name__ == "__main__":
         },
     )
 
-    ss_solver = SteadyStateSolver(lbs_solver=phys)
+    ss_solver = SteadyStateSolver(lbs_problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 

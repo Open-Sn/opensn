@@ -5,15 +5,15 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 
 namespace opensn
 {
 
 struct SweepWGSContext : public WGSContext
 {
-  SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
+  SweepWGSContext(DiscreteOrdinatesSolver& lbs_problem,
                   LBSGroupset& groupset,
                   const SetSourceFunction& set_source_function,
                   SourceFlags lhs_scope,

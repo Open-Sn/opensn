@@ -3,10 +3,10 @@
 
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/iterative_methods/mip_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/preconditioning/lbs_shell_operations.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "framework/runtime.h"
 #include <petscksp.h>
 #include <iomanip>
@@ -57,8 +57,8 @@ MIPWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 MIPWGSContext::GetSystemSize()
 {
-  const size_t local_node_count = lbs_solver.GetLocalNodeCount();
-  const size_t global_node_count = lbs_solver.GetGlobalNodeCount();
+  const size_t local_node_count = lbs_problem.GetLocalNodeCount();
+  const size_t global_node_count = lbs_problem.GetGlobalNodeCount();
 
   const size_t groupset_numgrps = groupset.groups.size();
   const size_t local_size = local_node_count * groupset_numgrps;
@@ -71,21 +71,21 @@ void
 MIPWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
   ++counter_applications_of_inv_op;
-  auto& mip_solver = *dynamic_cast<DiffusionDFEMSolver&>(lbs_solver).gs_mip_solvers[groupset.id];
+  auto& mip_solver = *dynamic_cast<DiffusionDFEMSolver&>(lbs_problem).gs_mip_solvers[groupset.id];
 
-  lbs_solver.GetPhiNewLocal() = lbs_solver.GetQMomentsLocal();
+  lbs_problem.GetPhiNewLocal() = lbs_problem.GetQMomentsLocal();
 
   Vec work_vector;
   VecDuplicate(mip_solver.GetRHS(), &work_vector);
 
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-    lbs_solver, groupset, work_vector, PhiSTLOption::PHI_NEW);
+    lbs_problem, groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   mip_solver.Assemble_b(work_vector);
   mip_solver.Solve(work_vector);
 
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-    lbs_solver, groupset, work_vector, PhiSTLOption::PHI_NEW);
+    lbs_problem, groupset, work_vector, PhiSTLOption::PHI_NEW);
 
   VecDestroy(&work_vector);
 }
@@ -94,7 +94,7 @@ void
 MIPWGSContext::PostSolveCallback()
 {
   LBSVecOps::GSScopedCopyPrimarySTLvectors(
-    lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+    lbs_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
 
 } // namespace opensn

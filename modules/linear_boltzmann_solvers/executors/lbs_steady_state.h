@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 
 namespace opensn
 {
@@ -11,7 +11,7 @@ namespace opensn
 class SteadyStateSolver : public opensn::Solver
 {
 protected:
-  std::shared_ptr<LBSSolver> lbs_solver_;
+  std::shared_ptr<LBSProblem> lbs_problem_;
 
 public:
   explicit SteadyStateSolver(const InputParameters& params);

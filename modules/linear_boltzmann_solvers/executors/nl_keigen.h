@@ -4,8 +4,8 @@
 #pragma once
 
 #include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/nl_keigen_ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_solver.h"
 #include <petscsnes.h>
 
 namespace opensn
@@ -14,7 +14,7 @@ namespace opensn
 class NonLinearKEigen : public opensn::Solver
 {
 private:
-  std::shared_ptr<LBSSolver> lbs_solver_;
+  std::shared_ptr<LBSProblem> lbs_problem_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
 

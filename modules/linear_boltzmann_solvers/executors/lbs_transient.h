@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 
 namespace opensn
 {
@@ -12,7 +12,7 @@ class TimeIntegration;
 class TransientSolver : public opensn::Solver
 {
 protected:
-  std::shared_ptr<LBSSolver> lbs_solver_;
+  std::shared_ptr<LBSProblem> lbs_problem_;
   std::shared_ptr<TimeIntegration> time_integration_;
 
 public:

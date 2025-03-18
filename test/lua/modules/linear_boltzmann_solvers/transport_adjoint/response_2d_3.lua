@@ -111,7 +111,7 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 -- Forward solve
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys })
 
 ss_solver:Initialize()
 ss_solver:Execute()
@@ -179,7 +179,7 @@ lbs.WriteFluxMoments(phys, "adjoint_2d_3")
 buffers = { { name = "buff", file_prefixes = { flux_moments = "adjoint_2d_3" } } }
 pt_sources = { pt_src }
 response_options = {
-  lbs_solver = phys,
+  lbs_problem = phys,
   options = {
     buffers = buffers,
     sources = { point = pt_sources },

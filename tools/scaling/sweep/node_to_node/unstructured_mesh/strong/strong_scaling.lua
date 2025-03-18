@@ -60,7 +60,7 @@ lbs_block = {
 }
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 lbs.SetOptions(phys1, lbs_options)
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver_handle = phys1 })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem_handle = phys1 })
 
 -- Solve
 solver.Initialize(ss_solver)

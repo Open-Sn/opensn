@@ -85,7 +85,7 @@ if __name__ == "__main__":
         }
     )
     k_solver = PowerIterationKEigenSMM(
-        lbs_solver=phys,
+        lbs_problem=phys,
         accel_pi_verbose=True,
         k_tol=1.0e-8,
         accel_pi_k_tol=1.0e-8,

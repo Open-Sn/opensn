@@ -90,7 +90,7 @@ if __name__ == "__main__":
             "volumetric_sources": [mg_src],
         }
     )
-    ss_solver = SteadyStateSolver(lbs_solver=phys)
+    ss_solver = SteadyStateSolver(lbs_problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 
