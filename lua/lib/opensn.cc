@@ -56,7 +56,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
+#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
@@ -580,10 +580,10 @@ static bool reg = opensnlua::Console::Bind(
         "DiscreteOrdinatesCurvilinearProblemPtr")
       .endClass()
       //
-      .deriveClass<SteadyStateSolver, Solver>("SteadyStateSolver")
-      .addStaticFunction("Create", &SteadyStateSolver::Create)
+      .deriveClass<LBSSteadyStateSolver, Solver>("LBSSteadyStateSolver")
+      .addStaticFunction("Create", &LBSSteadyStateSolver::Create)
       .endClass()
-      .beginClass<std::shared_ptr<SteadyStateSolver>>("SteadyStateSolverPtr")
+      .beginClass<std::shared_ptr<LBSSteadyStateSolver>>("LBSSteadyStateSolverPtr")
       .endClass()
       //
       .deriveClass<NonLinearKEigen, Solver>("NonLinearKEigen")

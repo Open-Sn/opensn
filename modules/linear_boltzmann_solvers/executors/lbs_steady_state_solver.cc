@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
+#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
@@ -12,30 +12,30 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, SteadyStateSolver);
+OpenSnRegisterObjectInNamespace(lbs, LBSSteadyStateSolver);
 
 InputParameters
-SteadyStateSolver::GetInputParameters()
+LBSSteadyStateSolver::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
                                "across-groupset (AGS) solver.");
   params.SetDocGroup("LBSExecutors");
-  params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
+  params.ChangeExistingParamToOptional("name", "LBSSteadyStateSolver");
   params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
 
   return params;
 }
 
-std::shared_ptr<SteadyStateSolver>
-SteadyStateSolver::Create(const ParameterBlock& params)
+std::shared_ptr<LBSSteadyStateSolver>
+LBSSteadyStateSolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<SteadyStateSolver>("lbs::SteadyStateSolver", params);
+  return factory.Create<LBSSteadyStateSolver>("lbs::LBSSteadyStateSolver", params);
 }
 
-SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
+LBSSteadyStateSolver::LBSSteadyStateSolver(const InputParameters& params)
   : opensn::Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
       params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem")))
@@ -43,9 +43,9 @@ SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
 }
 
 void
-SteadyStateSolver::Initialize()
+LBSSteadyStateSolver::Initialize()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSolver::Initialize");
+  CALI_CXX_MARK_SCOPE("LBSSteadyStateSolver::Initialize");
 
   lbs_problem_->Initialize();
 
@@ -54,9 +54,9 @@ SteadyStateSolver::Initialize()
 }
 
 void
-SteadyStateSolver::Execute()
+LBSSteadyStateSolver::Execute()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSolver::Execute");
+  CALI_CXX_MARK_SCOPE("LBSSteadyStateSolver::Execute");
 
   auto& options = lbs_problem_->GetOptions();
 
@@ -76,7 +76,7 @@ SteadyStateSolver::Execute()
 }
 
 bool
-SteadyStateSolver::ReadRestartData()
+LBSSteadyStateSolver::ReadRestartData()
 {
   auto& fname = lbs_problem_->GetOptions().read_restart_path;
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
@@ -118,7 +118,7 @@ SteadyStateSolver::ReadRestartData()
 }
 
 bool
-SteadyStateSolver::WriteRestartData()
+LBSSteadyStateSolver::WriteRestartData()
 {
   auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;

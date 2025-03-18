@@ -53,7 +53,7 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
-  log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : enter";
+  log.Log() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : enter";
 
   //  --------------------------------------------------------------------------
   //  perform all verifications of Cartesian LBS
@@ -69,7 +69,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
   if (coord_system_type_ != CoordinateSystemType::CYLINDRICAL and
       coord_system_type_ != CoordinateSystemType::SPHERICAL)
   {
-    log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+    log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                       << "invalid coordinate system, static_cast<int>(type) = "
                       << static_cast<int>(coord_system_type_);
     Exit(EXIT_FAILURE);
@@ -84,7 +84,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       {
         default:
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid geometry, static_cast<int>(type) = "
                             << static_cast<int>(options_.geometry_type) << " "
                             << "for curvilinear coordinate system, static_cast<int>(type) = "
@@ -105,7 +105,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         }
         default:
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid geometry, static_cast<int>(type) = "
                             << static_cast<int>(options_.geometry_type) << " "
                             << "for curvilinear coordinate system, static_cast<int>(type) = "
@@ -117,7 +117,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     }
     default:
     {
-      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+      log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type) << " "
                         << "for curvilinear coordinate system";
@@ -137,7 +137,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           std::dynamic_pointer_cast<GLCProductQuadrature2DRZ>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
                             << static_cast<int>(angular_quad_ptr->GetType())
                             << ", for groupset = " << gs;
@@ -151,7 +151,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           std::dynamic_pointer_cast<GLProductQuadrature1DSpherical>(angular_quad_ptr);
         if (curvilinear_angular_quad_ptr == nullptr)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid angular quadrature, static_cast<int>(type) = "
                             << static_cast<int>(angular_quad_ptr->GetType())
                             << ", for groupset = " << gs;
@@ -161,7 +161,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       }
       default:
       {
-        log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+        log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                           << "invalid curvilinear coordinate system, static_cast<int>(type) = "
                           << static_cast<int>(coord_system_type_);
         Exit(EXIT_FAILURE);
@@ -176,7 +176,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       {
         if (angleagg_method != AngleAggregationType::AZIMUTHAL)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
                             << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
@@ -187,7 +187,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       {
         if (angleagg_method != AngleAggregationType::POLAR)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "invalid angle aggregation type, static_cast<int>(type) = "
                             << static_cast<int>(angleagg_method) << ", for groupset = " << gs;
           Exit(EXIT_FAILURE);
@@ -196,7 +196,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       }
       default:
       {
-        log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+        log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                           << "invalid curvilinear coordinate system, static_cast<int>(type) = "
                           << static_cast<int>(coord_system_type_);
         Exit(EXIT_FAILURE);
@@ -233,7 +233,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
               if (std::abs(vertex[d]) > 1.0e-12)
               {
                 throw std::logic_error(
-                  "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks: "
+                  "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks: "
                   "Mesh contains boundary faces with outward-oriented unit normal vector " +
                   (-1 * unit_normal_vectors[d]).PrintStr() + ", with vertices characterized by v(" +
                   std::to_string(d) + ") != 0.");
@@ -245,7 +245,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         }
         if (not face_orthogonal)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
+          log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : "
                             << "mesh contains boundary faces not orthogonal with respect to "
                             << "Cartesian reference frame.";
           Exit(EXIT_FAILURE);
@@ -254,7 +254,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     }
   }
 
-  log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : exit";
+  log.Log() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::PerformInputChecks : exit";
 }
 
 void
@@ -283,7 +283,7 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
     }
     default:
     {
-      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
+      log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::"
                            "InitializeSpatialDiscretization : "
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type);
@@ -316,7 +316,7 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
     }
     default:
     {
-      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
+      log.LogAllError() << "D_DO_RZ_SteadyState::LBSSteadyStateSolver::"
                            "InitializeSpatialDiscretization : "
                         << "invalid geometry, static_cast<int>(type) = "
                         << static_cast<int>(options_.geometry_type);

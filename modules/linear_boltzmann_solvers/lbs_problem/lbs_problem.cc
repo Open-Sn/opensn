@@ -849,7 +849,7 @@ LBSProblem::PerformInputChecks()
 {
   if (groups_.empty())
   {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to solver.";
+    log.LogAllError() << "LinearBoltzmann::LBSSteadyStateSolver: No groups added to solver.";
     Exit(EXIT_FAILURE);
   }
 
@@ -857,7 +857,7 @@ LBSProblem::PerformInputChecks()
 
   if (groupsets_.empty())
   {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No group-sets added to solver.";
+    log.LogAllError() << "LinearBoltzmann::LBSSteadyStateSolver: No group-sets added to solver.";
     Exit(EXIT_FAILURE);
   }
   int grpset_counter = 0;
@@ -865,7 +865,7 @@ LBSProblem::PerformInputChecks()
   {
     if (group_set.groups.empty())
     {
-      log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to groupset "
+      log.LogAllError() << "LinearBoltzmann::LBSSteadyStateSolver: No groups added to groupset "
                         << grpset_counter << ".";
       Exit(EXIT_FAILURE);
     }
@@ -874,13 +874,13 @@ LBSProblem::PerformInputChecks()
 
   if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
   {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
+    log.LogAllError() << "LinearBoltzmann::LBSSteadyStateSolver: No discretization_ method set.";
     Exit(EXIT_FAILURE);
   }
 
   if (grid_ptr_ == nullptr)
   {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No "
+    log.LogAllError() << "LinearBoltzmann::LBSSteadyStateSolver: No "
                          "grid_ptr_ available from region.";
     Exit(EXIT_FAILURE);
   }
@@ -906,7 +906,7 @@ LBSProblem::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
+    outstr << "\nInitializing LBS LBSSteadyStateSolver with name: " << GetName() << "\n\n"
            << "Scattering order    : " << options_.scattering_order << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
@@ -1205,14 +1205,14 @@ LBSProblem::ComputeNumberOfMoments()
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
     if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
         groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
-      throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
+      throw std::logic_error("LinearBoltzmann::LBSSteadyStateSolver::ComputeNumberOfMoments : "
                              "Moment-to-Harmonics mapping differs between "
                              "groupsets_, which is not allowed.");
 
   num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
 
   if (num_moments_ == 0)
-    throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
+    throw std::logic_error("LinearBoltzmann::LBSSteadyStateSolver::ComputeNumberOfMoments : "
                            "unable to infer number of moments from angular "
                            "quadrature.");
 }

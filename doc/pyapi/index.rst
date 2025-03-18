@@ -168,7 +168,7 @@ Solver
    solver.DiscreteOrdinatesSolver
    solver.DiscreteOrdinatesCurvilinearProblem
    solver.DiffusionDFEMSolver
-   solver.SteadyStateSolver
+   solver.LBSSteadyStateSolver
    solver.NonLinearKEigen
    solver.PowerIterationKEigen
    solver.PowerIterationKEigenSCDSA

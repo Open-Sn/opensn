@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
+#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
@@ -408,21 +408,21 @@ WrapSteadyState(py::module& slv)
 {
   // clang-format off
   // steady state solver
-  auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>,
+  auto steady_state_solver = py::class_<LBSSteadyStateSolver, std::shared_ptr<LBSSteadyStateSolver>,
                                         Solver>(
     slv,
-    "SteadyStateSolver",
+    "LBSSteadyStateSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::SteadyStateSolver`.
+    Wrapper of :cpp:class:`opensn::LBSSteadyStateSolver`.
     )"
   );
   steady_state_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return SteadyStateSolver::Create(kwargs_to_param_block(params));
+        return LBSSteadyStateSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
