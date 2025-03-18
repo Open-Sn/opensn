@@ -166,7 +166,7 @@ Solver
    solver.Solver
    solver.LBSSolver
    solver.DiscreteOrdinatesSolver
-   solver.DiscreteOrdinatesCurvilinearSolver
+   solver.DiscreteOrdinatesCurvilinearProblem
    solver.DiffusionDFEMSolver
    solver.SteadyStateSolver
    solver.NonLinearKEigen
@@ -220,4 +220,3 @@ Settings
    settings.EnablePETScErrorHandler
    settings.SetCaliperConfig
    settings.EnableCaliper
-

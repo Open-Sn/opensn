@@ -14,7 +14,7 @@ namespace opensn
  * A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
  * coordinates.
  */
-class DiscreteOrdinatesCurvilinearSolver : public DiscreteOrdinatesProblem
+class DiscreteOrdinatesCurvilinearProblem : public DiscreteOrdinatesProblem
 {
 private:
   /// Coordinate system type.
@@ -26,10 +26,11 @@ private:
   std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
 
 public:
-  explicit DiscreteOrdinatesCurvilinearSolver(const InputParameters& params);
+  explicit DiscreteOrdinatesCurvilinearProblem(const InputParameters& params);
 
-  DiscreteOrdinatesCurvilinearSolver(const DiscreteOrdinatesCurvilinearSolver&) = delete;
-  DiscreteOrdinatesCurvilinearSolver& operator=(const DiscreteOrdinatesCurvilinearSolver&) = delete;
+  DiscreteOrdinatesCurvilinearProblem(const DiscreteOrdinatesCurvilinearProblem&) = delete;
+  DiscreteOrdinatesCurvilinearProblem&
+  operator=(const DiscreteOrdinatesCurvilinearProblem&) = delete;
 
 protected:
   void PerformInputChecks() override;
@@ -41,7 +42,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
-  static std::shared_ptr<DiscreteOrdinatesCurvilinearSolver> Create(const ParameterBlock& params);
+  static std::shared_ptr<DiscreteOrdinatesCurvilinearProblem> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn
