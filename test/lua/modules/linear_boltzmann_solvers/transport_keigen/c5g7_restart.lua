@@ -77,7 +77,7 @@ phys1 = lbs.DiscreteOrdinatesProblem.Create({
 })
 
 -- Execute Solver
-k_solver = lbs.PowerIterationKEigen.Create({
+k_solver = lbs.PowerIterationKEigenSolver.Create({
   lbs_problem = phys1,
   k_tol = 1.0e-8,
 })

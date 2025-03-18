@@ -109,7 +109,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "NonLinearKEigenSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "PowerIterationKEigen")
+  else if (cls_name == "PowerIterationKEigenSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "PowerIterationKEigenSCDSA")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));

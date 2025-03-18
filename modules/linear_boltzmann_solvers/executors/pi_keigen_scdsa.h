@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
 
 namespace opensn
 {
 class VectorGhostCommunicator;
 
-class PowerIterationKEigenSCDSA : public PowerIterationKEigen
+class PowerIterationKEigenSCDSA : public PowerIterationKEigenSolver
 {
 private:
   int accel_pi_max_its_;

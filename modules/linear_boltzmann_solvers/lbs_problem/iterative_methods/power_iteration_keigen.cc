@@ -13,9 +13,12 @@ namespace opensn
 {
 
 void
-PowerIterationKEigen(LBSProblem& lbs_problem, double tolerance, int max_iterations, double& k_eff)
+PowerIterationKEigenSolver(LBSProblem& lbs_problem,
+                           double tolerance,
+                           int max_iterations,
+                           double& k_eff)
 {
-  const std::string fname = "PowerIterationKEigen";
+  const std::string fname = "PowerIterationKEigenSolver";
 
   for (auto& wgs_solver : lbs_problem.GetWGSSolvers())
   {

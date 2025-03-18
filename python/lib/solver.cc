@@ -10,7 +10,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
@@ -600,21 +600,21 @@ WrapPIteration(py::module& slv)
 {
   // clang-format off
   // power iteration k-eigen solver
-  auto pi_k_eigen_solver = py::class_<PowerIterationKEigen, std::shared_ptr<PowerIterationKEigen>,
+  auto pi_k_eigen_solver = py::class_<PowerIterationKEigenSolver, std::shared_ptr<PowerIterationKEigenSolver>,
                                       Solver>(
     slv,
-    "PowerIterationKEigen",
+    "PowerIterationKEigenSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::PowerIterationKEigen`.
+    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSolver`.
     )"
   );
   pi_k_eigen_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return PowerIterationKEigen::Create(kwargs_to_param_block(params));
+        return PowerIterationKEigenSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -629,7 +629,7 @@ WrapPIteration(py::module& slv)
   // power iteration k-eigen SCDSA solver
   auto pi_k_eigen_scdsa_solver = py::class_<PowerIterationKEigenSCDSA,
                                             std::shared_ptr<PowerIterationKEigenSCDSA>,
-                                            PowerIterationKEigen>(
+                                            PowerIterationKEigenSolver>(
     slv,
     "PowerIterationKEigenSCDSA",
     R"(
@@ -657,7 +657,7 @@ WrapPIteration(py::module& slv)
   // power iteration k-eigen SMM solver
   auto pi_k_eigen_smm_solver = py::class_<PowerIterationKEigenSMM,
                                           std::shared_ptr<PowerIterationKEigenSMM>,
-                                          PowerIterationKEigen>(
+                                          PowerIterationKEigenSolver>(
     slv,
     "PowerIterationKEigenSMM",
     R"(
