@@ -26,7 +26,7 @@ OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSMM);
 InputParameters
 PowerIterationKEigenSMM::GetInputParameters()
 {
-  InputParameters params = PowerIterationKEigen::GetInputParameters();
+  InputParameters params = PowerIterationKEigenSolver::GetInputParameters();
 
   params.SetGeneralDescription(
     "Implementation of a second-moment method based k-eigenvalue solver.");
@@ -75,7 +75,7 @@ PowerIterationKEigenSMM::Create(const ParameterBlock& params)
 }
 
 PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
-  : PowerIterationKEigen(params),
+  : PowerIterationKEigenSolver(params),
     dimension_(0),
     psi_new_local_(lbs_problem_->GetPsiNewLocal()),
     accel_pi_max_its_(params.GetParamValue<unsigned int>("accel_pi_max_its")),
@@ -107,7 +107,7 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
 void
 PowerIterationKEigenSMM::Initialize()
 {
-  PowerIterationKEigen::Initialize();
+  PowerIterationKEigenSolver::Initialize();
 
   // Shorthand information
   const auto grid = lbs_problem_->GetGrid();

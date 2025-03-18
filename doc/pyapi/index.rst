@@ -320,7 +320,7 @@ Power iteration solver
    :nosignatures:
    :template: python.rst
 
-   solver.PowerIterationKEigen
+   solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSA
    solver.PowerIterationKEigenSMM
 

@@ -19,7 +19,7 @@ NonLinearKEigenSolver::GetInputParameters()
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigen");
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs solver");
 
   // Non-linear solver parameters
@@ -90,7 +90,7 @@ NonLinearKEigenSolver::Execute()
   if (num_initial_power_its_ > 0)
   {
     double k_eff = 1.0;
-    PowerIterationKEigen(
+    PowerIterationKEigenSolver(
       *lbs_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 
