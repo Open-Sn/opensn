@@ -171,7 +171,7 @@ Solver
    solver.LBSSteadyStateSolver
    solver.NonLinearKEigenSolver
    solver.PowerIterationKEigenSolver
-   solver.PowerIterationKEigenSCDSA
+   solver.PowerIterationKEigenSCDSASolver
    solver.PowerIterationKEigenSMM
    solver.PRKSolver
 

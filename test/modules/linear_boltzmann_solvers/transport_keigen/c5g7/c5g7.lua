@@ -55,7 +55,7 @@ if k_method == "pi" then
     k_tol = 1.0e-8,
   })
 elseif k_method == "pi_scdsa" then
-  k_solver = lbs.PowerIterationKEigenSCDSA.Create({
+  k_solver = lbs.PowerIterationKEigenSCDSASolver.Create({
     lbs_problem = phys1,
     diff_accel_sdm = "pwld",
     accel_pi_verbose = true,
@@ -64,7 +64,7 @@ elseif k_method == "pi_scdsa" then
     accel_pi_max_its = 50,
   })
 elseif k_method == "pi_scdsa_pwlc" then
-  k_solver = lbs.PowerIterationKEigenSCDSA.Create({
+  k_solver = lbs.PowerIterationKEigenSCDSASolver.Create({
     lbs_problem = phys1,
     diff_accel_sdm = "pwlc",
     accel_pi_verbose = true,

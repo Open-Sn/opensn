@@ -10,7 +10,7 @@ namespace opensn
 {
 class VectorGhostCommunicator;
 
-class PowerIterationKEigenSCDSA : public PowerIterationKEigenSolver
+class PowerIterationKEigenSCDSASolver : public PowerIterationKEigenSolver
 {
 private:
   int accel_pi_max_its_;
@@ -34,7 +34,7 @@ private:
   std::string diff_accel_diffusion_petsc_options_;
 
 public:
-  explicit PowerIterationKEigenSCDSA(const InputParameters& params);
+  explicit PowerIterationKEigenSCDSASolver(const InputParameters& params);
 
   void Initialize() override;
 
@@ -61,11 +61,11 @@ public:
                             const SpatialDiscretization& pwld_sdm,
                             const SpatialDiscretization& pwlc_sdm,
                             const UnknownManager& uk_man,
-                            const PowerIterationKEigenSCDSA::GhostInfo& ghost_info);
+                            const PowerIterationKEigenSCDSASolver::GhostInfo& ghost_info);
 
 public:
   static InputParameters GetInputParameters();
-  static std::shared_ptr<PowerIterationKEigenSCDSA> Create(const ParameterBlock& params);
+  static std::shared_ptr<PowerIterationKEigenSCDSASolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn
