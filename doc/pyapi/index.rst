@@ -172,7 +172,7 @@ Solver
    solver.NonLinearKEigenSolver
    solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSASolver
-   solver.PowerIterationKEigenSMM
+   solver.PowerIterationKEigenSMMSolver
    solver.PRKSolver
 
 .. autosummary::

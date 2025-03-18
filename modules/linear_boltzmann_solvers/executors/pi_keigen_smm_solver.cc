@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
@@ -21,17 +21,17 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSMM);
+OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSMMSolver);
 
 InputParameters
-PowerIterationKEigenSMM::GetInputParameters()
+PowerIterationKEigenSMMSolver::GetInputParameters()
 {
   InputParameters params = PowerIterationKEigenSolver::GetInputParameters();
 
   params.SetGeneralDescription(
     "Implementation of a second-moment method based k-eigenvalue solver.");
   params.SetDocGroup("LBSExecutors");
-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSMM");
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSMMSolver");
 
   // Diffusion k-eigenvalue options
   params.AddOptionalParameter("accel_pi_max_its",
@@ -67,14 +67,15 @@ PowerIterationKEigenSMM::GetInputParameters()
   return params;
 }
 
-std::shared_ptr<PowerIterationKEigenSMM>
-PowerIterationKEigenSMM::Create(const ParameterBlock& params)
+std::shared_ptr<PowerIterationKEigenSMMSolver>
+PowerIterationKEigenSMMSolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PowerIterationKEigenSMM>("lbs::PowerIterationKEigenSMM", params);
+  return factory.Create<PowerIterationKEigenSMMSolver>("lbs::PowerIterationKEigenSMMSolver",
+                                                       params);
 }
 
-PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
+PowerIterationKEigenSMMSolver::PowerIterationKEigenSMMSolver(const InputParameters& params)
   : PowerIterationKEigenSolver(params),
     dimension_(0),
     psi_new_local_(lbs_problem_->GetPsiNewLocal()),
@@ -105,7 +106,7 @@ PowerIterationKEigenSMM::PowerIterationKEigenSMM(const InputParameters& params)
 }
 
 void
-PowerIterationKEigenSMM::Initialize()
+PowerIterationKEigenSMMSolver::Initialize()
 {
   PowerIterationKEigenSolver::Initialize();
 
@@ -204,7 +205,7 @@ PowerIterationKEigenSMM::Initialize()
 }
 
 void
-PowerIterationKEigenSMM::Execute()
+PowerIterationKEigenSMMSolver::Execute()
 {
   // Start transport power iterations
   double k_eff_ell = k_eff_;
@@ -334,7 +335,7 @@ PowerIterationKEigenSMM::Execute()
 }
 
 void
-PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>& psi)
+PowerIterationKEigenSMMSolver::ComputeClosures(const std::vector<std::vector<double>>& psi)
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -444,7 +445,7 @@ PowerIterationKEigenSMM::ComputeClosures(const std::vector<std::vector<double>>&
 }
 
 std::vector<double>
-PowerIterationKEigenSMM::ComputeSourceCorrection() const
+PowerIterationKEigenSMMSolver::ComputeSourceCorrection() const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -676,7 +677,7 @@ PowerIterationKEigenSMM::ComputeSourceCorrection() const
 }
 
 void
-PowerIterationKEigenSMM::AssembleDiffusionBCs() const
+PowerIterationKEigenSMMSolver::AssembleDiffusionBCs() const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -748,7 +749,7 @@ PowerIterationKEigenSMM::AssembleDiffusionBCs() const
 }
 
 std::vector<double>
-PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) const
+PowerIterationKEigenSMMSolver::AssembleDiffusionRHS(const std::vector<double>& q0) const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -800,7 +801,7 @@ PowerIterationKEigenSMM::AssembleDiffusionRHS(const std::vector<double>& q0) con
 }
 
 std::vector<double>
-PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double>& phi0) const
+PowerIterationKEigenSMMSolver::SetNodalDiffusionFissionSource(const std::vector<double>& phi0) const
 {
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
@@ -822,7 +823,7 @@ PowerIterationKEigenSMM::SetNodalDiffusionFissionSource(const std::vector<double
 }
 
 std::vector<double>
-PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double>& phi0) const
+PowerIterationKEigenSMMSolver::SetNodalDiffusionScatterSource(const std::vector<double>& phi0) const
 {
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
@@ -847,7 +848,7 @@ PowerIterationKEigenSMM::SetNodalDiffusionScatterSource(const std::vector<double
 }
 
 void
-PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
+PowerIterationKEigenSMMSolver::ComputeAuxiliaryUnitCellMatrices()
 {
   const auto& discretization = lbs_problem_->GetSpatialDiscretization();
 
@@ -905,7 +906,7 @@ PowerIterationKEigenSMM::ComputeAuxiliaryUnitCellMatrices()
 }
 
 void
-PowerIterationKEigenSMM::ComputeBoundaryFactors()
+PowerIterationKEigenSMMSolver::ComputeBoundaryFactors()
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -952,8 +953,8 @@ PowerIterationKEigenSMM::ComputeBoundaryFactors()
 }
 
 void
-PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>& input,
-                                                      std::vector<double>& output) const
+PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(const std::vector<double>& input,
+                                                            std::vector<double>& output) const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -999,8 +1000,8 @@ PowerIterationKEigenSMM::TransferTransportToDiffusion(const std::vector<double>&
 }
 
 void
-PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>& input,
-                                                      std::vector<double>& output) const
+PowerIterationKEigenSMMSolver::TransferDiffusionToTransport(const std::vector<double>& input,
+                                                            std::vector<double>& output) const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -1039,8 +1040,8 @@ PowerIterationKEigenSMM::TransferDiffusionToTransport(const std::vector<double>&
 }
 
 double
-PowerIterationKEigenSMM::CheckScalarFluxConvergence(const std::vector<double>& phi_new,
-                                                    const std::vector<double>& phi_old)
+PowerIterationKEigenSMMSolver::CheckScalarFluxConvergence(const std::vector<double>& phi_new,
+                                                          const std::vector<double>& phi_old)
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
@@ -1072,11 +1073,12 @@ PowerIterationKEigenSMM::CheckScalarFluxConvergence(const std::vector<double>& p
 }
 
 std::vector<double>
-PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<double>& pwld_vector,
-                                                          const SpatialDiscretization& pwld,
-                                                          const SpatialDiscretization& pwlc,
-                                                          const UnknownManager& uk_man,
-                                                          const GhostInfo& ghost_info)
+PowerIterationKEigenSMMSolver::ComputeNodallyAveragedPWLDVector(
+  const std::vector<double>& pwld_vector,
+  const SpatialDiscretization& pwld,
+  const SpatialDiscretization& pwlc,
+  const UnknownManager& uk_man,
+  const GhostInfo& ghost_info)
 {
   const auto& ghost_comm = ghost_info.vector_ghost_communicator;
   const auto& pwld_global_to_local_map = ghost_info.ghost_global_to_local_map;
@@ -1175,8 +1177,8 @@ PowerIterationKEigenSMM::ComputeNodallyAveragedPWLDVector(const std::vector<doub
 }
 
 std::vector<int64_t>
-PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
-                                              const UnknownManager& uk_man)
+PowerIterationKEigenSMMSolver::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
+                                                    const UnknownManager& uk_man)
 {
   std::set<int64_t> ghost_ids;
   const auto& grid = pwld.GetGrid();
@@ -1192,9 +1194,9 @@ PowerIterationKEigenSMM::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
   return {ghost_ids.begin(), ghost_ids.end()};
 }
 
-PowerIterationKEigenSMM::GhostInfo
-PowerIterationKEigenSMM::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
-                                           const UnknownManager& uk_man)
+PowerIterationKEigenSMMSolver::GhostInfo
+PowerIterationKEigenSMMSolver::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
+                                                 const UnknownManager& uk_man)
 
 {
   const auto num_local_dofs = pwld.GetNumLocalDOFs(uk_man);
@@ -1217,9 +1219,9 @@ PowerIterationKEigenSMM::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
 }
 
 int
-PowerIterationKEigenSMM::MapAssociatedFaceNode(const Vector3& node,
-                                               const std::vector<Vector3>& nbr_nodes,
-                                               const double epsilon)
+PowerIterationKEigenSMMSolver::MapAssociatedFaceNode(const Vector3& node,
+                                                     const std::vector<Vector3>& nbr_nodes,
+                                                     const double epsilon)
 {
   for (int j = 0; j < nbr_nodes.size(); ++j)
     if ((node - nbr_nodes[j]).NormSquare() < epsilon)
