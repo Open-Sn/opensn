@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/sweep_chunks/lbts_sweep_chunk_pwl.h"
 #if 0
 #include "framework/runtime.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 
 #include "framework/logging/log.h"
 

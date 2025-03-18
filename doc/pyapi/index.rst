@@ -166,13 +166,13 @@ Solver
    solver.Solver
    solver.LBSSolver
    solver.DiscreteOrdinatesSolver
-   solver.DiscreteOrdinatesCurvilinearSolver
+   solver.DiscreteOrdinatesCurvilinearProblem
    solver.DiffusionDFEMSolver
-   solver.SteadyStateSolver
-   solver.NonLinearKEigen
-   solver.PowerIterationKEigen
-   solver.PowerIterationKEigenSCDSA
-   solver.PowerIterationKEigenSMM
+   solver.LBSSteadyStateSolver
+   solver.NonLinearKEigenSolver
+   solver.PowerIterationKEigenSolver
+   solver.PowerIterationKEigenSCDSASolver
+   solver.PowerIterationKEigenSMMSolver
    solver.PRKSolver
 
 .. autosummary::
@@ -220,4 +220,3 @@ Settings
    settings.EnablePETScErrorHandler
    settings.SetCaliperConfig
    settings.EnableCaliper
-
