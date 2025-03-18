@@ -12,11 +12,11 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/iterative_methods/sweep_wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/classic_richardson.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/source_functions/source_function.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/logging/log.h"
@@ -35,14 +35,14 @@ OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesSolver);
 
 DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const std::string& name,
                                                  std::shared_ptr<MeshContinuum> grid_ptr)
-  : LBSSolver(name, grid_ptr)
+  : LBSProblem(name, grid_ptr)
 {
 }
 
 InputParameters
 DiscreteOrdinatesSolver::GetInputParameters()
 {
-  InputParameters params = LBSSolver::GetInputParameters();
+  InputParameters params = LBSProblem::GetInputParameters();
 
   params.SetClassName("DiscreteOrdinatesSolver");
   params.SetDocGroup("lbs__LBSSolver");
@@ -70,7 +70,7 @@ DiscreteOrdinatesSolver::Create(const ParameterBlock& params)
 }
 
 DiscreteOrdinatesSolver::DiscreteOrdinatesSolver(const InputParameters& params)
-  : LBSSolver(params),
+  : LBSProblem(params),
     verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
@@ -119,7 +119,7 @@ DiscreteOrdinatesSolver::Initialize()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesSolver::Initialize");
 
-  LBSSolver::Initialize();
+  LBSProblem::Initialize();
 
   const auto grid_dim = grid_ptr_->GetDimension();
   for (auto& groupset : groupsets_)

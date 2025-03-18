@@ -68,7 +68,7 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
 k_solver = lbs.PowerIterationKEigen.Create({
-  lbs_solver = phys,
+  lbs_problem = phys,
   k_tol = 1e-6,
 })
 k_solver:Initialize()

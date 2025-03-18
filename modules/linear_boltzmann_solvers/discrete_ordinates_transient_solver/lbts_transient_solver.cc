@@ -4,9 +4,9 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_transient_solver/lbts_transient_solver.h"
 
 #if 0
-#include "modules/linear_boltzmann_solvers/lbs_solver/SourceFunctions/transient_source_function.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/SourceFunctions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/B_DO_Solver/IterativeMethods/sweep_wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 

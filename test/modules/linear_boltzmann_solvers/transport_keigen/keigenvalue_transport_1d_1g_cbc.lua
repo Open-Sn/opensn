@@ -111,7 +111,7 @@ lbs_block = {
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
 k_solver0 = lbs.NonLinearKEigen.Create({
-  lbs_solver = phys,
+  lbs_problem = phys,
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance,
 })

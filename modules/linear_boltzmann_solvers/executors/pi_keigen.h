@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
 {
@@ -12,7 +12,7 @@ namespace opensn
 class PowerIterationKEigen : public opensn::Solver
 {
 protected:
-  std::shared_ptr<LBSSolver> lbs_solver_;
+  std::shared_ptr<LBSProblem> lbs_problem_;
 
   size_t max_iters_;
   double k_eff_;
