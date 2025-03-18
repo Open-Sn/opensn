@@ -105,7 +105,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "DiscreteOrdinatesProblem")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "DiscreteOrdinatesCurvilinearSolver")
+  else if (cls_name == "DiscreteOrdinatesCurvilinearProblem")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "NonLinearKEigen")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));

@@ -87,7 +87,7 @@ lbs_options = {
   volumetric_sources = { mg_src },
 }
 
-phys1 = lbs.DiscreteOrdinatesCurvilinearSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesCurvilinearProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 -- Initialize and Execute Solver
