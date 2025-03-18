@@ -91,7 +91,7 @@ elseif k_method == "pi_smm_pwld" then
     diff_sdm = "pwld",
   })
 elseif k_method == "jfnk" then
-  k_solver = lbs.NonLinearKEigen.Create({
+  k_solver = lbs.NonLinearKEigenSolver.Create({
     lbs_problem = phys1,
     nl_max_its = 50,
     nl_abs_tol = 1.0e-10,
