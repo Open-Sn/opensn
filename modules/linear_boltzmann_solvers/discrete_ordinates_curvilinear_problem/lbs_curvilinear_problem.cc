@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -14,20 +14,20 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesCurvilinearSolver);
+OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesCurvilinearProblem);
 
 InputParameters
-DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
+DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
 {
   InputParameters params = DiscreteOrdinatesProblem::GetInputParameters();
 
   params.SetGeneralDescription(
     "Solver for Discrete Ordinates in cylindrical and spherical coordinates");
 
-  params.SetClassName("DiscreteOrdinatesCurvilinearSolver");
+  params.SetClassName("DiscreteOrdinatesCurvilinearProblem");
   params.SetDocGroup("lbs__LBSSolver");
 
-  params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesCurvilinearSolver");
+  params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesCurvilinearProblem");
   params.AddRequiredParameter<int>("coord_system",
                                    "Coordinate system to use. Can only be 2 or "
                                    "3. 2=Cylindrical, 3=Spherical.");
@@ -35,15 +35,15 @@ DiscreteOrdinatesCurvilinearSolver::GetInputParameters()
   return params;
 }
 
-std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>
-DiscreteOrdinatesCurvilinearSolver::Create(const ParameterBlock& params)
+std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>
+DiscreteOrdinatesCurvilinearProblem::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<DiscreteOrdinatesCurvilinearSolver>(
-    "lbs::DiscreteOrdinatesCurvilinearSolver", params);
+  return factory.Create<DiscreteOrdinatesCurvilinearProblem>(
+    "lbs::DiscreteOrdinatesCurvilinearProblem", params);
 }
 
-DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
+DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
   const InputParameters& params)
   : DiscreteOrdinatesProblem(params),
     coord_system_type_(static_cast<CoordinateSystemType>(params.GetParamValue<int>("coord_system")))
@@ -51,7 +51,7 @@ DiscreteOrdinatesCurvilinearSolver::DiscreteOrdinatesCurvilinearSolver(
 }
 
 void
-DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
+DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
   log.Log() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : enter";
 
@@ -258,7 +258,7 @@ DiscreteOrdinatesCurvilinearSolver::PerformInputChecks()
 }
 
 void
-DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
+DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
 {
   log.Log() << "Initializing spatial discretization_.\n";
 
@@ -330,7 +330,7 @@ DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization()
 }
 
 void
-DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
+DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 {
   log.Log() << "Computing RZ secondary unit integrals.\n";
   const auto& sdm = *discretization_;
@@ -384,7 +384,7 @@ DiscreteOrdinatesCurvilinearSolver::ComputeSecondaryUnitIntegrals()
 }
 
 std::shared_ptr<SweepChunk>
-DiscreteOrdinatesCurvilinearSolver::SetSweepChunk(LBSGroupset& groupset)
+DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   auto sweep_chunk = std::make_shared<SweepChunkPwlrz>(grid_ptr_,
                                                        *discretization_,

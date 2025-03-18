@@ -6,7 +6,7 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
@@ -468,24 +468,24 @@ WrapLBS(py::module& slv)
     py::arg("bnd_names")
   );
 
-  // discrete ordinate curvilinear solver
-  auto do_curvilinear_solver = py::class_<DiscreteOrdinatesCurvilinearSolver,
-                                          std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>,
+  // discrete ordinates curvilinear problem
+  auto do_curvilinear_problem = py::class_<DiscreteOrdinatesCurvilinearProblem,
+                                          std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>,
                                           DiscreteOrdinatesProblem>(
     slv,
-    "DiscreteOrdinatesCurvilinearSolver",
+    "DiscreteOrdinatesCurvilinearProblem",
     R"(
     A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
     coordinates.
 
-    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesCurvilinearSolver`.
+    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesCurvilinearProblem`.
     )"
   );
-  do_curvilinear_solver.def(
+  do_curvilinear_problem.def(
     py::init(
       [](py::kwargs& params)
       {
-        return DiscreteOrdinatesCurvilinearSolver::Create(kwargs_to_param_block(params));
+        return DiscreteOrdinatesCurvilinearProblem::Create(kwargs_to_param_block(params));
       }
         ),
     R"(

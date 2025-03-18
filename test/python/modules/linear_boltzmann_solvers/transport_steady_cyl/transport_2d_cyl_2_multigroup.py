@@ -21,7 +21,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DRZ
-    from pyopensn.solver import DiscreteOrdinatesCurvilinearSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesCurvilinearProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
 
 if __name__ == "__main__":
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DRZ(4, 8)
 
     # Create and configure the curvilinear solver for cylindrical geometry
-    phys = DiscreteOrdinatesCurvilinearSolver(
+    phys = DiscreteOrdinatesCurvilinearProblem(
         mesh=grid,
         coord_system=2,
         num_groups=ngrp,
