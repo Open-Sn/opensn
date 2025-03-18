@@ -170,7 +170,7 @@ Solver
    solver.DiffusionDFEMSolver
    solver.LBSSteadyStateSolver
    solver.NonLinearKEigenSolver
-   solver.PowerIterationKEigen
+   solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSA
    solver.PowerIterationKEigenSMM
    solver.PRKSolver

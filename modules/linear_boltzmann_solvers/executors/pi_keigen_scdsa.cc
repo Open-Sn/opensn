@@ -25,7 +25,7 @@ OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSCDSA);
 InputParameters
 PowerIterationKEigenSCDSA::GetInputParameters()
 {
-  InputParameters params = PowerIterationKEigen::GetInputParameters();
+  InputParameters params = PowerIterationKEigenSolver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a k-eigenvalue solver using power iteration with "
                                "SCDSA acceleration.");
@@ -67,7 +67,7 @@ PowerIterationKEigenSCDSA::Create(const ParameterBlock& params)
 }
 
 PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& params)
-  : PowerIterationKEigen(params),
+  : PowerIterationKEigenSolver(params),
     accel_pi_max_its_(params.GetParamValue<int>("accel_pi_max_its")),
     accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
     accel_pi_verbose_(params.GetParamValue<bool>("accel_pi_verbose")),
@@ -96,7 +96,7 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
 void
 PowerIterationKEigenSCDSA::Initialize()
 {
-  PowerIterationKEigen::Initialize();
+  PowerIterationKEigenSolver::Initialize();
 
   // Make UnknownManager
   const size_t num_gs_groups = front_gs_.groups.size();

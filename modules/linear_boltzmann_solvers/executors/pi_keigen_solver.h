@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-class PowerIterationKEigen : public opensn::Solver
+class PowerIterationKEigenSolver : public opensn::Solver
 {
 protected:
   std::shared_ptr<LBSProblem> lbs_problem_;
@@ -33,7 +33,7 @@ protected:
   std::shared_ptr<WGSContext> front_wgs_context_;
 
 public:
-  explicit PowerIterationKEigen(const InputParameters& params);
+  explicit PowerIterationKEigenSolver(const InputParameters& params);
 
   void Initialize() override;
 
@@ -56,7 +56,7 @@ private:
 public:
   static InputParameters GetInputParameters();
 
-  static std::shared_ptr<PowerIterationKEigen> Create(const ParameterBlock& params);
+  static std::shared_ptr<PowerIterationKEigenSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn
