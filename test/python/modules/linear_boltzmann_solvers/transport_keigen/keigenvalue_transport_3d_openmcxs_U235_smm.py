@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSMM
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSMMSolver
 
 if __name__ == "__main__":
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = PowerIterationKEigenSMM(
+    k_solver = PowerIterationKEigenSMMSolver(
         lbs_problem=phys,
         accel_pi_verbose=True,
         k_tol=1.0e-8,
