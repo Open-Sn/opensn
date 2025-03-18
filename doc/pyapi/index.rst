@@ -322,7 +322,7 @@ Power iteration solver
    :template: python.rst
 
    solver.PowerIterationKEigenSolver
-   solver.PowerIterationKEigenSCDSA
+   solver.PowerIterationKEigenSCDSASolver
    solver.PowerIterationKEigenSMM
 
 Point kinetic trnasient solver

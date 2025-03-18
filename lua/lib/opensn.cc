@@ -59,7 +59,7 @@
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
@@ -597,10 +597,10 @@ static bool reg = opensnlua::Console::Bind(
       .beginClass<std::shared_ptr<PowerIterationKEigenSolver>>("PowerIterationKEigenPtr")
       .endClass()
       //
-      .deriveClass<PowerIterationKEigenSCDSA, Solver>("PowerIterationKEigenSCDSA")
-      .addStaticFunction("Create", &PowerIterationKEigenSCDSA::Create)
+      .deriveClass<PowerIterationKEigenSCDSASolver, Solver>("PowerIterationKEigenSCDSASolver")
+      .addStaticFunction("Create", &PowerIterationKEigenSCDSASolver::Create)
       .endClass()
-      .beginClass<std::shared_ptr<PowerIterationKEigenSCDSA>>("PowerIterationKEigenSCDSAPtr")
+      .beginClass<std::shared_ptr<PowerIterationKEigenSCDSASolver>>("PowerIterationKEigenSCDSAPtr")
       .endClass()
       //
       .deriveClass<PowerIterationKEigenSMM, Solver>("PowerIterationKEigenSMM")
