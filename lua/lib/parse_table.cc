@@ -113,7 +113,7 @@ SetBlockParam(lua_State* L,
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "PowerIterationKEigenSCDSASolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "PowerIterationKEigenSMM")
+  else if (cls_name == "PowerIterationKEigenSMMSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "SteadyStateSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));

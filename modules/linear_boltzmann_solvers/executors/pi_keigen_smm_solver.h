@@ -13,7 +13,7 @@ namespace opensn
 class VectorGhostCommunicator;
 class GhostedParallelSTLVector;
 
-class PowerIterationKEigenSMM : public PowerIterationKEigenSolver
+class PowerIterationKEigenSMMSolver : public PowerIterationKEigenSolver
 {
 protected:
   struct GhostInfo
@@ -23,7 +23,7 @@ protected:
   };
 
 public:
-  explicit PowerIterationKEigenSMM(const InputParameters& params);
+  explicit PowerIterationKEigenSMMSolver(const InputParameters& params);
 
   void Initialize() override;
   void Execute() override;
@@ -142,7 +142,7 @@ protected:
 
 public:
   static InputParameters GetInputParameters();
-  static std::shared_ptr<PowerIterationKEigenSMM> Create(const ParameterBlock& params);
+  static std::shared_ptr<PowerIterationKEigenSMMSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn
