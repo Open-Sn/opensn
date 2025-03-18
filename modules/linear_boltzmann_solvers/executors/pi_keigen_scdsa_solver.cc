@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa_solver.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
@@ -20,10 +20,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSCDSA);
+OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSCDSASolver);
 
 InputParameters
-PowerIterationKEigenSCDSA::GetInputParameters()
+PowerIterationKEigenSCDSASolver::GetInputParameters()
 {
   InputParameters params = PowerIterationKEigenSolver::GetInputParameters();
 
@@ -59,14 +59,15 @@ PowerIterationKEigenSCDSA::GetInputParameters()
   return params;
 }
 
-std::shared_ptr<PowerIterationKEigenSCDSA>
-PowerIterationKEigenSCDSA::Create(const ParameterBlock& params)
+std::shared_ptr<PowerIterationKEigenSCDSASolver>
+PowerIterationKEigenSCDSASolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PowerIterationKEigenSCDSA>("lbs::PowerIterationKEigenSCDSA", params);
+  return factory.Create<PowerIterationKEigenSCDSASolver>("lbs::PowerIterationKEigenSCDSASolver",
+                                                         params);
 }
 
-PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& params)
+PowerIterationKEigenSCDSASolver::PowerIterationKEigenSCDSASolver(const InputParameters& params)
   : PowerIterationKEigenSolver(params),
     accel_pi_max_its_(params.GetParamValue<int>("accel_pi_max_its")),
     accel_pi_k_tol_(params.GetParamValue<double>("accel_pi_k_tol")),
@@ -94,7 +95,7 @@ PowerIterationKEigenSCDSA::PowerIterationKEigenSCDSA(const InputParameters& para
 }
 
 void
-PowerIterationKEigenSCDSA::Initialize()
+PowerIterationKEigenSCDSASolver::Initialize()
 {
   PowerIterationKEigenSolver::Initialize();
 
@@ -166,7 +167,7 @@ PowerIterationKEigenSCDSA::Initialize()
 }
 
 void
-PowerIterationKEigenSCDSA::Execute()
+PowerIterationKEigenSCDSASolver::Execute()
 {
   auto phi_temp = phi_old_local_;
 
@@ -336,8 +337,8 @@ PowerIterationKEigenSCDSA::Execute()
 }
 
 std::vector<double>
-PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
-                                        const std::vector<double>& phi_in)
+PowerIterationKEigenSCDSASolver::CopyOnlyPhi0(const LBSGroupset& groupset,
+                                              const std::vector<double>& phi_in)
 {
   const auto& lbs_sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
@@ -382,9 +383,9 @@ PowerIterationKEigenSCDSA::CopyOnlyPhi0(const LBSGroupset& groupset,
 }
 
 void
-PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
-                                           const std::vector<double>& input,
-                                           std::vector<double>& output)
+PowerIterationKEigenSCDSASolver::ProjectBackPhi0(const LBSGroupset& groupset,
+                                                 const std::vector<double>& input,
+                                                 std::vector<double>& output)
 {
   const auto& lbs_sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
@@ -417,9 +418,9 @@ PowerIterationKEigenSCDSA::ProjectBackPhi0(const LBSGroupset& groupset,
   }   // for cell
 }
 
-PowerIterationKEigenSCDSA::GhostInfo
-PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
-                                                    const UnknownManager& uk_man)
+PowerIterationKEigenSCDSASolver::GhostInfo
+PowerIterationKEigenSCDSASolver::MakePWLDVecGhostCommInfo(const SpatialDiscretization& sdm,
+                                                          const UnknownManager& uk_man)
 {
   log.Log() << "Making PWLD ghost communicator";
 
@@ -475,12 +476,12 @@ PowerIterationKEigenSCDSA::MakePWLDVecGhostCommInfo(const SpatialDiscretization&
 }
 
 std::vector<double>
-PowerIterationKEigenSCDSA::NodallyAveragedPWLDVector(
+PowerIterationKEigenSCDSASolver::NodallyAveragedPWLDVector(
   const std::vector<double>& input,
   const SpatialDiscretization& pwld_sdm,
   const SpatialDiscretization& pwlc_sdm,
   const UnknownManager& uk_man,
-  const PowerIterationKEigenSCDSA::GhostInfo& ghost_info)
+  const PowerIterationKEigenSCDSASolver::GhostInfo& ghost_info)
 {
   const auto& vgc = ghost_info.vector_ghost_communicator;
   const auto& dfem_dof_global2local_map = ghost_info.ghost_global_id_2_local_map;

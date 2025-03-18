@@ -11,7 +11,7 @@
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
@@ -627,22 +627,22 @@ WrapPIteration(py::module& slv)
   );
 
   // power iteration k-eigen SCDSA solver
-  auto pi_k_eigen_scdsa_solver = py::class_<PowerIterationKEigenSCDSA,
-                                            std::shared_ptr<PowerIterationKEigenSCDSA>,
+  auto pi_k_eigen_scdsa_solver = py::class_<PowerIterationKEigenSCDSASolver,
+                                            std::shared_ptr<PowerIterationKEigenSCDSASolver>,
                                             PowerIterationKEigenSolver>(
     slv,
-    "PowerIterationKEigenSCDSA",
+    "PowerIterationKEigenSCDSASolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSCDSA`.
+    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSCDSASolver`.
     )"
   );
   pi_k_eigen_scdsa_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return PowerIterationKEigenSCDSA::Create(kwargs_to_param_block(params));
+        return PowerIterationKEigenSCDSASolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
