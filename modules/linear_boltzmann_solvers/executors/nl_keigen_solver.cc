@@ -90,7 +90,7 @@ NonLinearKEigenSolver::Execute()
   if (num_initial_power_its_ > 0)
   {
     double k_eff = 1.0;
-    PowerIterationKEigen(
+    PowerIterationKEigenSolver(
       *lbs_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 

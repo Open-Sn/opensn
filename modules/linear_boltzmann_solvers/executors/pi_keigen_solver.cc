@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/logging/log_exceptions.h"
@@ -17,10 +17,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigen);
+OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
 
 InputParameters
-PowerIterationKEigen::GetInputParameters()
+PowerIterationKEigenSolver::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
@@ -37,14 +37,14 @@ PowerIterationKEigen::GetInputParameters()
   return params;
 }
 
-std::shared_ptr<PowerIterationKEigen>
-PowerIterationKEigen::Create(const ParameterBlock& params)
+std::shared_ptr<PowerIterationKEigenSolver>
+PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PowerIterationKEigen>("lbs::PowerIterationKEigen", params);
+  return factory.Create<PowerIterationKEigenSolver>("lbs::PowerIterationKEigenSolver", params);
 }
 
-PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
+PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : opensn::Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
       params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
@@ -62,7 +62,7 @@ PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
 }
 
 void
-PowerIterationKEigen::Initialize()
+PowerIterationKEigenSolver::Initialize()
 {
   lbs_problem_->Initialize();
 
@@ -97,7 +97,7 @@ PowerIterationKEigen::Initialize()
 }
 
 void
-PowerIterationKEigen::Execute()
+PowerIterationKEigenSolver::Execute()
 {
   auto& options = lbs_problem_->GetOptions();
   double k_eff_prev = 1.0;
@@ -182,7 +182,8 @@ PowerIterationKEigen::Execute()
 }
 
 void
-PowerIterationKEigen::SetLBSFissionSource(const std::vector<double>& input, const bool additive)
+PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
+                                                const bool additive)
 {
   if (not additive)
     Set(q_moments_local_, 0.0);
@@ -195,9 +196,9 @@ PowerIterationKEigen::SetLBSFissionSource(const std::vector<double>& input, cons
 }
 
 void
-PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
-                                          const bool additive,
-                                          const bool suppress_wg_scat)
+PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input,
+                                                const bool additive,
+                                                const bool suppress_wg_scat)
 {
   if (not additive)
     Set(q_moments_local_, 0.0);
@@ -213,7 +214,7 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 }
 
 bool
-PowerIterationKEigen::ReadRestartData()
+PowerIterationKEigenSolver::ReadRestartData()
 {
   auto& fname = lbs_problem_->GetOptions().read_restart_path;
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
@@ -259,7 +260,7 @@ PowerIterationKEigen::ReadRestartData()
 }
 
 bool
-PowerIterationKEigen::WriteRestartData()
+PowerIterationKEigenSolver::WriteRestartData()
 {
   auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
 
@@ -13,7 +13,7 @@ namespace opensn
 class VectorGhostCommunicator;
 class GhostedParallelSTLVector;
 
-class PowerIterationKEigenSMM : public PowerIterationKEigen
+class PowerIterationKEigenSMM : public PowerIterationKEigenSolver
 {
 protected:
   struct GhostInfo

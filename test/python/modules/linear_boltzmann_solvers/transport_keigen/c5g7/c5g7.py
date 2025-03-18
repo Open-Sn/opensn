@@ -13,7 +13,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
     from pyopensn.solver import PowerIterationKEigenSCDSA, PowerIterationKEigenSMM, NonLinearKEigenSolver
 
 if __name__ == "__main__":
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     # Execute Solver
     if k_method == "pi":
-        k_solver = PowerIterationKEigen(
+        k_solver = PowerIterationKEigenSolver(
             lbs_problem=phys,
             k_tol=1.0e-8,
         )
