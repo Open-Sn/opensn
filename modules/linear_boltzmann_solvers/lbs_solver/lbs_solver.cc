@@ -421,13 +421,13 @@ LBSSolver::MapPhiFieldFunction(size_t g, size_t m) const
   return phi_field_functions_local_map_.at({g, m});
 }
 
-size_t
-LBSSolver::GetHandleToPowerGenFieldFunc() const
+std::shared_ptr<FieldFunctionGridBased>
+LBSSolver::GetPowerFieldFunction() const
 {
   OpenSnLogicalErrorIf(not options_.power_field_function_on,
                        "Called when options_.power_field_function_on == false");
 
-  return power_gen_fieldfunc_local_handle_;
+  return field_functions_[power_gen_fieldfunc_local_handle_];
 }
 
 InputParameters
