@@ -73,7 +73,7 @@ elseif k_method == "pi_scdsa_pwlc" then
     accel_pi_max_its = 50,
   })
 elseif k_method == "pi_smm" then
-  k_solver = lbs.PowerIterationKEigenSMM.Create({
+  k_solver = lbs.PowerIterationKEigenSMMSolver.Create({
     lbs_problem = phys1,
     accel_pi_verbose = true,
     k_tol = 1.0e-8,
@@ -82,7 +82,7 @@ elseif k_method == "pi_smm" then
     diff_sdm = "pwlc",
   })
 elseif k_method == "pi_smm_pwld" then
-  k_solver = lbs.PowerIterationKEigenSMM.Create({
+  k_solver = lbs.PowerIterationKEigenSMMSolver.Create({
     lbs_problem = phys1,
     accel_pi_verbose = true,
     k_tol = 1.0e-8,

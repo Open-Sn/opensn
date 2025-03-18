@@ -60,7 +60,7 @@
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
+#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm_solver.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
 #include "lua/lib/aquad.h"
@@ -603,10 +603,10 @@ static bool reg = opensnlua::Console::Bind(
       .beginClass<std::shared_ptr<PowerIterationKEigenSCDSASolver>>("PowerIterationKEigenSCDSAPtr")
       .endClass()
       //
-      .deriveClass<PowerIterationKEigenSMM, Solver>("PowerIterationKEigenSMM")
-      .addStaticFunction("Create", &PowerIterationKEigenSMM::Create)
+      .deriveClass<PowerIterationKEigenSMMSolver, Solver>("PowerIterationKEigenSMMSolver")
+      .addStaticFunction("Create", &PowerIterationKEigenSMMSolver::Create)
       .endClass()
-      .beginClass<std::shared_ptr<PowerIterationKEigenSMM>>("PowerIterationKEigenSMMPtr")
+      .beginClass<std::shared_ptr<PowerIterationKEigenSMMSolver>>("PowerIterationKEigenSMMPtr")
       .endClass()
       //
       .deriveClass<DiffusionDFEMSolver, LBSProblem>("DiffusionDFEMSolver")

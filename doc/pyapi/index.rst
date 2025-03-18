@@ -323,7 +323,7 @@ Power iteration solver
 
    solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSASolver
-   solver.PowerIterationKEigenSMM
+   solver.PowerIterationKEigenSMMSolver
 
 Point kinetic trnasient solver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
