@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigenSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = NonLinearKEigen(
+    k_solver = NonLinearKEigenSolver(
         lbs_problem=phys,
         nl_max_its=500,
         nl_abs_tol=1.0e-8,

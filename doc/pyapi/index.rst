@@ -310,7 +310,7 @@ Non-linear k-eigen
    :nosignatures:
    :template: python.rst
 
-   solver.NonLinearKEigen
+   solver.NonLinearKEigenSolver
 
 Power iteration solver
 ^^^^^^^^^^^^^^^^^^^^^^
