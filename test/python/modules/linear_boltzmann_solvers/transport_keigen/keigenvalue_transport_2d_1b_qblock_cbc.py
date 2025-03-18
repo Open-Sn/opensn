@@ -16,7 +16,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigenSolver
 
 if __name__ == "__main__":
 
@@ -57,6 +57,6 @@ if __name__ == "__main__":
         },
         sweep_type="CBC",
     )
-    k_solver = NonLinearKEigen(lbs_problem=phys)
+    k_solver = NonLinearKEigenSolver(lbs_problem=phys)
     k_solver.Initialize()
     k_solver.Execute()

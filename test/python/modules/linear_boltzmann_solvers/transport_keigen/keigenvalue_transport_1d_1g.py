@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, NonLinearKEigenSolver
 
 if __name__ == "__main__":
 
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = NonLinearKEigen(
+    k_solver = NonLinearKEigenSolver(
         lbs_problem=phys,
         nl_max_its=kes_max_iterations,
         nl_abs_tol=kes_tolerance,

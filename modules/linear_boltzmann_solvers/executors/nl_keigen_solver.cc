@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/power_iteration_keigen.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/object_factory.h"
@@ -10,10 +10,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigen);
+OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigenSolver);
 
 InputParameters
-NonLinearKEigen::GetInputParameters()
+NonLinearKEigenSolver::GetInputParameters()
 {
   InputParameters params = opensn::Solver::GetInputParameters();
 
@@ -44,14 +44,14 @@ NonLinearKEigen::GetInputParameters()
   return params;
 }
 
-std::shared_ptr<NonLinearKEigen>
-NonLinearKEigen::Create(const ParameterBlock& params)
+std::shared_ptr<NonLinearKEigenSolver>
+NonLinearKEigenSolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<NonLinearKEigen>("lbs::NonLinearKEigen", params);
+  return factory.Create<NonLinearKEigenSolver>("lbs::NonLinearKEigenSolver", params);
 }
 
-NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
+NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
   : opensn::Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
       params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
@@ -76,13 +76,13 @@ NonLinearKEigen::NonLinearKEigen(const InputParameters& params)
 }
 
 void
-NonLinearKEigen::Initialize()
+NonLinearKEigenSolver::Initialize()
 {
   lbs_problem_->Initialize();
 }
 
 void
-NonLinearKEigen::Execute()
+NonLinearKEigenSolver::Execute()
 {
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);

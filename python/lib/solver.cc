@@ -9,7 +9,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
-#include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
+#include "modules/linear_boltzmann_solvers/executors/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
@@ -566,21 +566,21 @@ WrapNLKEigen(py::module& slv)
 {
   // clang-format off
   // non-linear k-eigen solver
-  auto non_linear_k_eigen_solver = py::class_<NonLinearKEigen, std::shared_ptr<NonLinearKEigen>,
+  auto non_linear_k_eigen_solver = py::class_<NonLinearKEigenSolver, std::shared_ptr<NonLinearKEigenSolver>,
                                               Solver>(
     slv,
-    "NonLinearKEigen",
+    "NonLinearKEigenSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::NonLinearKEigen`.
+    Wrapper of :cpp:class:`opensn::NonLinearKEigenSolver`.
     )"
   );
   non_linear_k_eigen_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return NonLinearKEigen::Create(kwargs_to_param_block(params));
+        return NonLinearKEigenSolver::Create(kwargs_to_param_block(params));
       }
         ),
     R"(
