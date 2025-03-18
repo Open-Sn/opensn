@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
 
 namespace opensn

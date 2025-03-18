@@ -89,7 +89,7 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
 k_solver0 = lbs.PowerIterationKEigenSMM.Create({
-  lbs_solver = phys,
+  lbs_problem = phys,
   accel_pi_verbose = true,
   k_tol = 1.0e-8,
   accel_pi_k_tol = 1.0e-8,

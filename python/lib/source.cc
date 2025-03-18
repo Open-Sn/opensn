@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include <memory>
 
 namespace opensn

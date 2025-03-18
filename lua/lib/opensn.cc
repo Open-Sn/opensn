@@ -54,7 +54,7 @@
 #include "modules/diffusion/dfem_diffusion_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
@@ -559,12 +559,12 @@ static bool reg = opensnlua::Console::Bind(
 
     luabridge::getGlobalNamespace(L)
       .beginNamespace("lbs")
-      .deriveClass<LBSSolver, Solver>("LBSSolver")
-      .addFunction("SetOptions", &LBSSolver::SetOptions)
-      .addFunction("GetPowerFieldFunction", &LBSSolver::GetPowerFieldFunction)
+      .deriveClass<LBSProblem, Solver>("LBSProblem")
+      .addFunction("SetOptions", &LBSProblem::SetOptions)
+      .addFunction("GetPowerFieldFunction", &LBSProblem::GetPowerFieldFunction)
       .endClass()
       //
-      .deriveClass<DiscreteOrdinatesSolver, LBSSolver>("DiscreteOrdinatesSolver")
+      .deriveClass<DiscreteOrdinatesSolver, LBSProblem>("DiscreteOrdinatesSolver")
       .addStaticFunction("Create", &DiscreteOrdinatesSolver::Create)
       .addFunction("ComputeBalance", &DiscreteOrdinatesSolver::ComputeBalance)
       .endClass()
@@ -609,7 +609,7 @@ static bool reg = opensnlua::Console::Bind(
       .beginClass<std::shared_ptr<PowerIterationKEigenSMM>>("PowerIterationKEigenSMMPtr")
       .endClass()
       //
-      .deriveClass<DiffusionDFEMSolver, LBSSolver>("DiffusionDFEMSolver")
+      .deriveClass<DiffusionDFEMSolver, LBSProblem>("DiffusionDFEMSolver")
       .addStaticFunction("Create", &DiffusionDFEMSolver::Create)
       .endClass()
       .beginClass<std::shared_ptr<DiffusionDFEMSolver>>("DiffusionDFEMSolverPtr")

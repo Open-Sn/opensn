@@ -41,8 +41,8 @@ WrapResEval(py::module& response)
 
     Parameters
     ----------
-    lbs_solver: pyopensn.solver.Solver
-        A handle to an existing LBS solver.
+    lbs_problem: pyopensn.solver.Solver
+        A handle to an existing LBS problem.
     options: Dict
         The specification of adjoint buffers and forward to use.
     )"

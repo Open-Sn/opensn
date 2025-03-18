@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/iterative_methods/ags_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -11,7 +11,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <iomanip>
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "sys/stat.h"
 
 namespace opensn
@@ -26,8 +26,8 @@ PowerIterationKEigen::GetInputParameters()
 
   params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.SetDocGroup("LBSExecutors");
-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigen");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver", "An existing lbs solver");
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
+  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
   params.AddOptionalParameter(
@@ -46,17 +46,17 @@ PowerIterationKEigen::Create(const ParameterBlock& params)
 
 PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
   : opensn::Solver(params),
-    lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver"))),
+    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
+      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
     F_prev_(1.0),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
-    q_moments_local_(lbs_solver_->GetQMomentsLocal()),
-    phi_old_local_(lbs_solver_->GetPhiOldLocal()),
-    phi_new_local_(lbs_solver_->GetPhiNewLocal()),
-    groupsets_(lbs_solver_->GetGroupsets()),
+    q_moments_local_(lbs_problem_->GetQMomentsLocal()),
+    phi_old_local_(lbs_problem_->GetPhiOldLocal()),
+    phi_new_local_(lbs_problem_->GetPhiNewLocal()),
+    groupsets_(lbs_problem_->GetGroupsets()),
     front_gs_(groupsets_.front())
 {
 }
@@ -64,13 +64,13 @@ PowerIterationKEigen::PowerIterationKEigen(const InputParameters& params)
 void
 PowerIterationKEigen::Initialize()
 {
-  lbs_solver_->Initialize();
+  lbs_problem_->Initialize();
 
-  auto& options = lbs_solver_->GetOptions();
-  active_set_source_function_ = lbs_solver_->GetActiveSetSourceFunction();
-  ags_solver_ = lbs_solver_->GetAGSSolver();
+  auto& options = lbs_problem_->GetOptions();
+  active_set_source_function_ = lbs_problem_->GetActiveSetSourceFunction();
+  ags_solver_ = lbs_problem_->GetAGSSolver();
 
-  for (auto& wgs_solver : lbs_solver_->GetWGSSolvers())
+  for (auto& wgs_solver : lbs_problem_->GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
@@ -83,7 +83,7 @@ PowerIterationKEigen::Initialize()
 
   ags_solver_->SetVerbosity(options.verbose_ags_iterations);
 
-  front_wgs_solver_ = lbs_solver_->GetWGSSolvers().at(front_gs_.id);
+  front_wgs_solver_ = lbs_problem_->GetWGSSolvers().at(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
@@ -93,13 +93,13 @@ PowerIterationKEigen::Initialize()
     restart_successful = ReadRestartData();
 
   if (reset_phi0_ and not restart_successful)
-    LBSVecOps::SetPhiVectorScalarValues(*lbs_solver_, PhiSTLOption::PHI_OLD, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
 }
 
 void
 PowerIterationKEigen::Execute()
 {
-  auto& options = lbs_solver_->GetOptions();
+  auto& options = lbs_problem_->GetOptions();
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
@@ -116,7 +116,7 @@ PowerIterationKEigen::Execute()
     ags_solver_->Solve();
 
     // Recompute k-eigenvalue
-    double F_new = lbs_solver_->ComputeFissionProduction(phi_new_local_);
+    double F_new = lbs_problem_->ComputeFissionProduction(phi_new_local_);
     k_eff_ = F_new / F_prev_ * k_eff_;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
@@ -143,7 +143,7 @@ PowerIterationKEigen::Execute()
       log.Log() << k_iter_info.str();
     }
 
-    if (options.restart_writes_enabled and lbs_solver_->TriggerRestartDump())
+    if (options.restart_writes_enabled and lbs_problem_->TriggerRestartDump())
       WriteRestartData();
 
     if (converged)
@@ -157,7 +157,7 @@ PowerIterationKEigen::Execute()
 
   // Print summary
   int total_num_sweeps = 0;
-  for (auto& wgs_solver : lbs_solver_->GetWGSSolvers())
+  for (auto& wgs_solver : lbs_problem_->GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
@@ -172,11 +172,11 @@ PowerIterationKEigen::Execute()
 
   if (options.use_precursors)
   {
-    lbs_solver_->ComputePrecursors();
-    Scale(lbs_solver_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
+    lbs_problem_->ComputePrecursors();
+    Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 
-  lbs_solver_->UpdateFieldFunctions();
+  lbs_problem_->UpdateFieldFunctions();
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
@@ -215,9 +215,9 @@ PowerIterationKEigen::SetLBSScatterSource(const std::vector<double>& input,
 bool
 PowerIterationKEigen::ReadRestartData()
 {
-  auto& fname = lbs_solver_->GetOptions().read_restart_path;
-  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
-  auto& groupsets = lbs_solver_->GetGroupsets();
+  auto& fname = lbs_problem_->GetOptions().read_restart_path;
+  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
+  auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -261,10 +261,10 @@ PowerIterationKEigen::ReadRestartData()
 bool
 PowerIterationKEigen::WriteRestartData()
 {
-  auto& options = lbs_solver_->GetOptions();
+  auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;
-  auto& phi_old_local = lbs_solver_->GetPhiOldLocal();
-  auto& groupsets = lbs_solver_->GetGroupsets();
+  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
+  auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -277,7 +277,7 @@ PowerIterationKEigen::WriteRestartData()
     if (options.write_delayed_psi_to_restart)
     {
       int gs_id = 0;
-      for (auto gs : lbs_solver_->GetGroupsets())
+      for (auto gs : lbs_problem_->GetGroupsets())
       {
         if (gs.angle_agg)
         {
@@ -300,7 +300,7 @@ PowerIterationKEigen::WriteRestartData()
 
   if (success)
   {
-    lbs_solver_->UpdateRestartWriteTime();
+    lbs_problem_->UpdateRestartWriteTime();
     log.Log() << "Successfully wrote restart data." << std::endl;
   }
   else

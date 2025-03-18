@@ -90,7 +90,7 @@ if __name__ == "__main__":
     phys1 = DiscreteOrdinatesSolver(**solver_dict)
 
     # Initialize and execute solver
-    ss_solver = SteadyStateSolver(lbs_solver=phys1)
+    ss_solver = SteadyStateSolver(lbs_problem=phys1)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     phys1.WriteAngularFluxes("angular_io")
 
     phys2 = DiscreteOrdinatesSolver(**solver_dict)
-    ss_solver_2 = SteadyStateSolver(lbs_solver=phys2)
+    ss_solver_2 = SteadyStateSolver(lbs_problem=phys2)
     ss_solver_2.Initialize()
     phys2.ReadAngularFluxes("angular_io")
 

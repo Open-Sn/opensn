@@ -29,7 +29,7 @@ grid = mesh.MeshGenerator.Execute(meshgen1)
 xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")
 
 num_groups = 2
--- Initialize the LBSSolver
+-- Initialize the LBSProblem
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,
@@ -68,7 +68,7 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
 k_solver = lbs.PowerIterationKEigen.Create({
-  lbs_solver = phys,
+  lbs_problem = phys,
   k_tol = 1e-6,
 })
 k_solver:Initialize()

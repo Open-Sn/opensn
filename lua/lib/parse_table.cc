@@ -16,8 +16,8 @@
 #include "framework/physics/solver.h"
 #include "framework/math/vector3.h"
 #include "framework/runtime.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "lua/lib/types.h"
 #include "LuaBridge/LuaBridge.h"
@@ -101,7 +101,7 @@ SetBlockParam(lua_State* L,
   //
   else if (cls_name == "PRKSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "LBSSolver")
+  else if (cls_name == "LBSProblem")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "DiscreteOrdinatesSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));

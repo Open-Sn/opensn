@@ -57,7 +57,7 @@ if __name__ == "__main__":
         },
     )
     k_solver = PowerIterationKEigenSCDSA(
-        lbs_solver=phys,
+        lbs_problem=phys,
         diff_accel_sdm="pwld",
         accel_pi_verbose=False,
         k_tol=1.0e-8,

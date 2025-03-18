@@ -4,8 +4,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/groupset/lbs_groupset.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include <functional>
 
 namespace opensn

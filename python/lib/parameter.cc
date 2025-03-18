@@ -15,8 +15,8 @@
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/physics/solver.h"
 #include "framework/post_processors/post_processor.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include <memory>
 #include <stdexcept>

@@ -53,7 +53,7 @@ phys1 = DiscreteOrdinatesSolver(
         "field_function_prefix": solver_name,
     },
 )
-ss_solver = SteadyStateSolver(lbs_solver=phys1)
+ss_solver = SteadyStateSolver(lbs_problem=phys1)
 ss_solver.Initialize()
 ss_solver.Execute()
 

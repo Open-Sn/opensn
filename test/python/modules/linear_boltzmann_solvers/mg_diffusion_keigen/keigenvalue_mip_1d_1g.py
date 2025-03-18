@@ -91,7 +91,7 @@ if __name__ == "__main__":
         },
     )
     k_solver = NonLinearKEigen(
-        lbs_solver=phys,
+        lbs_problem=phys,
         nl_max_its=kes_max_iterations,
         nl_abs_tol=kes_tolerance,
     )
