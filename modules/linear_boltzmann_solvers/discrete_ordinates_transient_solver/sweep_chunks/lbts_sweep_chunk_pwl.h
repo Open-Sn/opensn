@@ -8,7 +8,7 @@
 
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep/sweep_chunk_base.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_chunk_base.h"
 
 #include "Ca_DO_SteadyState/lbs_DO_steady_state.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"

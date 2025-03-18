@@ -73,7 +73,7 @@ lbs_block = {
   },
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 -- Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys1 })
@@ -86,7 +86,7 @@ leakage_right_1 = lbs.ComputeLeakage(phys1, { "zmax" })["zmax"][1]
 
 lbs.WriteAngularFluxes(phys1, "angular_io")
 
-phys2 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys2 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 ss_solver_2 = lbs.SteadyStateSolver.Create({ lbs_problem = phys2 })
 

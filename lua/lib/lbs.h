@@ -5,7 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 
 namespace opensnlua
 {
@@ -14,7 +14,7 @@ std::vector<std::shared_ptr<opensn::FieldFunctionGridBased>>
 LBSGetScalarFieldFunctionList(std::shared_ptr<opensn::LBSProblem> lbs_problem);
 
 std::map<std::string, std::vector<double>>
-LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesSolver> solver,
+LBSComputeLeakage(std::shared_ptr<opensn::DiscreteOrdinatesProblem> solver,
                   const std::vector<std::string>& bnd_names);
 
 void LBSWriteFluxMoments(std::shared_ptr<opensn::LBSProblem> lbs_problem,

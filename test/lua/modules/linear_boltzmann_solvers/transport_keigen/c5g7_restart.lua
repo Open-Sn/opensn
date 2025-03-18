@@ -40,7 +40,7 @@ end
 pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
 -- Solver
-phys1 = lbs.DiscreteOrdinatesSolver.Create({
+phys1 = lbs.DiscreteOrdinatesProblem.Create({
   mesh = grid,
   num_groups = num_groups,
   groupsets = {

@@ -13,7 +13,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigen
     from pyopensn.solver import PowerIterationKEigenSCDSA, PowerIterationKEigenSMM, NonLinearKEigen
 
 if __name__ == "__main__":
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         inner_linear_method = "petsc_gmres"
         l_max_its = 5
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[

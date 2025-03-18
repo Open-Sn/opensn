@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 
 namespace opensn
 {
@@ -14,7 +14,7 @@ namespace opensn
  * A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
  * coordinates.
  */
-class DiscreteOrdinatesCurvilinearSolver : public DiscreteOrdinatesSolver
+class DiscreteOrdinatesCurvilinearSolver : public DiscreteOrdinatesProblem
 {
 private:
   /// Coordinate system type.

@@ -92,7 +92,7 @@ if reflecting then
   table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" })
 end
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 -- Initialize and Execute Solver

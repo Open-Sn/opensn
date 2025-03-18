@@ -7,7 +7,7 @@
 #include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
 #include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
 #include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
@@ -388,24 +388,24 @@ WrapLBS(py::module& slv)
   );
 
   // discrete ordinate solver
-  auto do_solver = py::class_<DiscreteOrdinatesSolver, std::shared_ptr<DiscreteOrdinatesSolver>,
-                              LBSProblem>(
+  auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,
+                               LBSProblem>(
     slv,
-    "DiscreteOrdinatesSolver",
+    "DiscreteOrdinatesProblem",
     R"(
     Base class for discrete ordinates solvers.
 
     This class mostly establishes utilities related to sweeping. From here, steady-state, transient,
     adjoint, and k-eigenvalue solver can be derived.
 
-    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesSolver`.
+    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesProblem`.
     )"
   );
-  do_solver.def(
+  do_problem.def(
     py::init(
       [](py::kwargs& params)
       {
-        return DiscreteOrdinatesSolver::Create(kwargs_to_param_block(params));
+        return DiscreteOrdinatesProblem::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -416,16 +416,16 @@ WrapLBS(py::module& slv)
     ???
     )"
   );
-  do_solver.def(
+  do_problem.def(
     "ComputeBalance",
-    &DiscreteOrdinatesSolver::ComputeBalance,
+    &DiscreteOrdinatesProblem::ComputeBalance,
     R"(
     ???
     )"
   );
-  do_solver.def(
+  do_problem.def(
     "ComputeLeakage",
-    [](DiscreteOrdinatesSolver& self, py::list bnd_names)
+    [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
       // get the supported boundaries
       std::map<std::string, std::uint64_t> allowed_bd_names = LBSProblem::supported_boundary_names;
@@ -471,7 +471,7 @@ WrapLBS(py::module& slv)
   // discrete ordinate curvilinear solver
   auto do_curvilinear_solver = py::class_<DiscreteOrdinatesCurvilinearSolver,
                                           std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>,
-                                          DiscreteOrdinatesSolver>(
+                                          DiscreteOrdinatesProblem>(
     slv,
     "DiscreteOrdinatesCurvilinearSolver",
     R"(

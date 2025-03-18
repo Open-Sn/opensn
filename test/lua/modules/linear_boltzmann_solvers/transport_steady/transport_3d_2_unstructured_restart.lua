@@ -89,7 +89,7 @@ lbs_options = {
   read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 --Initialize and execute solver
