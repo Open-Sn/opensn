@@ -13,7 +13,7 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
-    runs-on: [self-hosted]
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up miniconda
         uses: conda-incubator/setup-miniconda@v3
@@ -43,7 +43,7 @@ jobs:
         run: |
           cmake -S . -B ${{ github.workspace }}/build \
             -DOPENSN_WITH_DOCS=ON -DOPENSN_WITH_PYTHON_MODULE=ON
-          make -j -C ${{ github.workspace }}/build __init__ doc
+          make -j2 -C ${{ github.workspace }}/build __init__ doc
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
