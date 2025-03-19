@@ -631,6 +631,8 @@ static bool reg = opensnlua::Console::Bind(
       .beginClass<ResponseEvaluator>("ResponseEvaluator")
       .addStaticFunction("Create", &ResponseEvaluator::Create)
       .addFunction("EvaluateResponse", &ResponseEvaluator::EvaluateResponse)
+      .addFunction("ClearForwardSources", &ResponseEvaluator::ClearForwardSources)
+      .addFunction("AddResponseBuffers", &ResponseEvaluator::AddResponseBuffers)
       .endClass()
       .beginClass<std::shared_ptr<ResponseEvaluator>>("ResponseEvaluatorPtr")
       .endClass()
