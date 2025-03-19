@@ -76,7 +76,7 @@ WrapVolumetricSource(py::module& src)
         An array of block IDs the volumetric source is present within.
     logical_volume: pyopensn.logvol.LogicalVolume
         Logical volume that the volumetric source is defined within.
-    group_strength: List[double]
+    group_strength: List[float]
         An array of multi-group source strength values. Note that this is only used when a function
         is not provided.
     func: pyopensn.math.VectorSpatialFunction

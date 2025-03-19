@@ -63,7 +63,6 @@ class CMakeBuilder(build_ext):
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
             f"-DCMAKE_BUILD_TYPE={cfg}",
             "-DOPENSN_WITH_LUA=OFF",
-            "-DOPENSN_WITH_PYTHON=ON",
             "-DOPENSN_WITH_PYTHON_MODULE=ON"
         ]
         if sys.platform.startswith("win"):
@@ -98,6 +97,13 @@ class CMakeBuilder(build_ext):
                 build_args += [f"-j{self.parallel}"]
             else:
                 build_args += [f"-j{os.cpu_count()}"]
+        # get extra CMake arguments
+        if "BUILD_ARGS" in os.environ:
+            build_args += [
+                extra_args
+                for extra_args in os.environ["BUILD_ARGS"].split(" ")
+                if extra_args
+            ]
 
         # create temporary build directory
         build_temp = Path(self.build_temp) / ext.name

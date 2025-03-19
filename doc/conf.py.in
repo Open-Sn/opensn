@@ -1,8 +1,10 @@
 import os
 import sys
 import subprocess
+from pathlib import Path
 
 sys.path.append('@PROJECT_SOURCE_DIR@')
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 project = 'OpenSn'
 copyright = '2023-present, OpenSn team'

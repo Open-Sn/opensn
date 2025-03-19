@@ -227,7 +227,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
 
     Parameters
     ----------
-    point: List[float]
+    point: pyopensn.math.Vector3
         Coordinates of the initial point.
     )",
     py::arg("point")
@@ -240,7 +240,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
 
     Parameters
     ----------
-    point: List[float]
+    point: pyopensn.math.Vector3
         Coordinates of the final point.
     )",
     py::arg("point")
