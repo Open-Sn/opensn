@@ -36,6 +36,7 @@ jobs:
             vtk \
             lua \
             caliper \
+            pybind11 \
             boost
           sudo pip install -r doc/requirements.txt
 
