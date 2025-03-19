@@ -205,8 +205,8 @@ public:
   /// Gets the local handle of a flux-moment based field function.
   size_t MapPhiFieldFunction(size_t g, size_t m) const;
 
-  /// Returns the local handle to the power generation field function, if enabled.
-  size_t GetHandleToPowerGenFieldFunc() const;
+  /// Returns the power generation field function, if enabled.
+  std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
 
   void Initialize() override;
 

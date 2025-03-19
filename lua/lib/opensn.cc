@@ -563,6 +563,7 @@ static bool reg = opensnlua::Console::Bind(
       .beginNamespace("lbs")
       .deriveClass<LBSSolver, Solver>("LBSSolver")
       .addFunction("SetOptions", &LBSSolver::SetOptions)
+      .addFunction("GetPowerFieldFunction", &LBSSolver::GetPowerFieldFunction)
       .endClass()
       //
       .deriveClass<DiscreteOrdinatesSolver, LBSSolver>("DiscreteOrdinatesSolver")
