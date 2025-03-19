@@ -8,19 +8,23 @@ Copyright (c) 2025 quocdang1998
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
-    sys.path.append(os.path.abspath("../../../"))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
-    from pyopensn.mat import AddMaterial
-    from pyopensn.xs import LoadFromOpenSn
+    from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionGridBased
+    from pyopensn.settings import EnableCaliper
+
+use_caliper = True
 
 if __name__ == "__main__":
+
+    if "opensn_console" not in globals() and use_caliper:
+        EnableCaliper()
 
     # compute node coordinates
     nodes = []
@@ -44,15 +48,11 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # set material
-    grid.SetUniformMaterialID(0)
-
-    # add material
-    materials = []
-    materials.append(AddMaterial("Material_A"))
+    grid.SetUniformBlockID(0)
 
     # load cross sections
-    xs_matA = LoadFromOpenSn("xs_1g_MatA.xs")
-    materials[0].SetTransportXSections(xs_matA)
+    xs_matA = MultiGroupXS()
+    xs_matA.LoadFromOpenSn("xs_1g_MatA.xs")
 
     # create volumetric source
     num_groups = 1
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # initialize quadrature
     nazimu = 4
-    npolar = 4 
+    npolar = 2
     pquad = GLCProductQuadrature2DXY(npolar, nazimu)
 
     # create linear Boltzmann solver (LBS)
@@ -83,7 +83,13 @@ if __name__ == "__main__":
         ],
         options={
             "volumetric_sources": [mg_src],
-        }
+        },
+        xs_map=[
+            {
+                "block_ids": [0],
+                "xs": xs_matA
+            }
+        ]
     )
 
     # initialize steady state solver and execute
@@ -98,4 +104,3 @@ if __name__ == "__main__":
         [fflist[0][0]],  # export only the flux of group 0 (first []), moment 0 (second [])
         vtk_basename
     )
-

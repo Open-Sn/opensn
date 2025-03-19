@@ -21,7 +21,7 @@ end
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../assets/mesh/Sphere.case",
+      filename = "../../../../assets/mesh/Sphere.case",
     }),
   },
   partitioner = mesh.KBAGraphPartitioner.Create({

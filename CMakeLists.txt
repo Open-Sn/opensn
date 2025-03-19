@@ -228,7 +228,6 @@ set_target_properties(
 if(OPENSN_WITH_LUA)
     add_subdirectory(lua)
     add_subdirectory(test)
-    add_subdirectory(test/lua)
 
     add_custom_target(test
       COMMAND

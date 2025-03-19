@@ -1,0 +1,50 @@
+[
+  {
+    "file": "keigenvalue_transport_1d_1g.py",
+    "comment": "1D KSolver LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.99954,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock.py",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    21",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5969127,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_openmcxs_U235.py",
+    "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with OpenMC MGXS library",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 2.2800213,
+        "abs_tol": 1e-05
+      }
+    ]
+  }
+]

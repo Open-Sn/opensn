@@ -1,6 +1,6 @@
 [
   {
-    "file": "first_example.lua",
+    "file": "first_example.py",
     "num_procs": 4,
     "checks": [
       {

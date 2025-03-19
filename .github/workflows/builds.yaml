@@ -33,12 +33,12 @@ jobs:
         shell: bash
         run: |
           module load opensn/${{ matrix.compiler }}
-          test/run_tests -d test/ -j 32 -v 1 -w 3
+          test/run_tests -d test/lua -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
           module load opensn/${{ matrix.compiler }}
-          test/run_tests -d tutorials -j 32 -v 1 -w 3
+          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3
       - name: test unit
         shell: bash
         run: |
@@ -60,13 +60,13 @@ jobs:
         run: |
           module load opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d test/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
+          test/run_tests -d test/lua -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
       - name: test tutorials
         shell: bash
         run: |
           module load opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d tutorials/ -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
+          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/opensn-test
 
   coverage:
     runs-on: [self-hosted]
@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           module load opensn/gcc/14
-          test/run_tests -d test/ -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
+          test/run_tests -d test/lua -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
       - name: unit tests
         shell: bash
         run: |
@@ -92,7 +92,7 @@ jobs:
         shell: bash
         run: |
           module load opensn/gcc/14
-          test/run_tests -d tutorials/ -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
+          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3 --exe build-coverage/test/opensn-test
       - name: coveralls
         shell: bash
         run: |

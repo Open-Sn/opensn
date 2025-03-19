@@ -24,6 +24,7 @@ target_link_libraries(opensn-unit
     gtest_main
 )
 if(OPENSN_WITH_LUA)
+    add_subdirectory(lua)
     target_link_libraries(opensn-unit PRIVATE libopensnlua)
     target_link_libraries(opensn-unit PRIVATE ${LUA_LIBRARIES})
     target_compile_definitions(opensn-unit PRIVATE OPENSN_WITH_LUA)
