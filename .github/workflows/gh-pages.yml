@@ -25,6 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Python3-dev
+        uses: sudo apt-get install -y python3-dev
+
       - name: Install dependencies
         run: |
           conda install \
