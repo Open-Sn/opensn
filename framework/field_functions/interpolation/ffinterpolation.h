@@ -62,6 +62,8 @@ public:
   {
   }
 
+  virtual ~FieldFunctionInterpolation() {}
+
   std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
   {
     return field_functions_;
