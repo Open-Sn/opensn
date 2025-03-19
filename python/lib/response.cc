@@ -88,7 +88,7 @@ WrapResEval(py::module& response)
     "SetBufferOptions",
     [](ResponseEvaluator& self, py::kwargs& params)
     {
-      InputParameters input = ResponseEvaluator::BufferOptionsBlock();
+      InputParameters input = ResponseEvaluator::GetBufferOptionsBlock();
       input.AssignParameters(kwargs_to_param_block(params));
       self.SetBufferOptions(input);
     },
@@ -101,7 +101,7 @@ WrapResEval(py::module& response)
     [](ResponseEvaluator& self, py::kwargs& params)
     {
       InputParameters input = ResponseEvaluator::GetSourceOptionsBlock();
-      input.AssignParameters(params);
+      input.AssignParameters(kwargs_to_param_block(params));
       self.SetSourceOptions(input);
     },
     R"(
