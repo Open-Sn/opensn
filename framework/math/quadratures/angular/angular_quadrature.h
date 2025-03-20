@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/math/vector3.h"
-#include <memory>
+#include "framework/object.h"
 #include <vector>
 
 namespace opensn
@@ -25,7 +25,7 @@ struct QuadraturePointPhiTheta
   QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
 };
 
-class AngularQuadrature : public std::enable_shared_from_this<AngularQuadrature>
+class AngularQuadrature : public Object
 {
 public:
   struct HarmonicIndices
