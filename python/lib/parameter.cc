@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/graphs/graph_partitioner.h"
+#include "framework/math/functions/function.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
@@ -93,9 +93,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   TO_PARAMBLOCK(VolumetricSource);
 
   // function binder (temporary)
-  TO_PARAMBLOCK(PySMFunction);
-  TO_PARAMBLOCK(PySSMFunction);
-  TO_PARAMBLOCK(PyVSFunction);
+  TO_PARAMBLOCK(Function);
 
   // throw and return
   throw std::invalid_argument("Unsupported argument type.");

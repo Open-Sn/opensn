@@ -7,12 +7,18 @@ Python API
 Math
 ----
 
+Spherical harmonics
+^^^^^^^^^^^^^^^^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
    math.Ylm
+
+Point
+^^^^^
 
 .. autosummary::
    :toctree: generated
@@ -21,11 +27,19 @@ Math
 
    math.Vector3
 
+Function wrappers
+^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   This API is temporary. It will no longer required once ``ParameterBlock`` is removed.
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: function.rst
 
+   math.Function
    math.ScalarMaterialFunction
    math.ScalarSpatialMaterialFunction
    math.VectorSpatialFunction
@@ -34,38 +48,85 @@ Math
 Angular quadrature
 ------------------
 
+Base class
+^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   aquad.AngularQuadrature
+
+Product quadratures
+^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   aquad.ProductQuadrature
+   aquad.CurvilinearQuadrature
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   aquad.AngularQuadrature
-   aquad.ProductQuadrature
    aquad.GLProductQuadrature1DSlab
    aquad.GLCProductQuadrature2DXY
    aquad.GLCProductQuadrature3DXYZ
-   aquad.CurvilinearQuadrature
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    aquad.GLCProductQuadrature2DRZ
+
+Simplified LDFES quadrature
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    aquad.SLDFESQuadrature
 
 
 Field functions
 ---------------
 
+Base class
+^^^^^^^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: noinit.rst
 
    fieldfunc.FieldFunction
+
+Grid-based
+^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
    fieldfunc.FieldFunctionGridBased
+
+Interpolation
+^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   fieldfunc.FieldFunctionInterpolation
    fieldfunc.FieldFunctionInterpolationPoint
    fieldfunc.FieldFunctionInterpolationLine
    fieldfunc.FieldFunctionInterpolationVolume
@@ -74,32 +135,62 @@ Field functions
 Mesh
 ----
 
+Mesh
+^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: noinit.rst
 
    mesh.MeshContinuum
-   mesh.SurfaceMesh
+
+Surface mesh
+^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
+   mesh.SurfaceMesh
+
+Mesh generator
+^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
    mesh.MeshGenerator
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    mesh.ExtruderMeshGenerator
    mesh.OrthogonalMeshGenerator
    mesh.FromFileMeshGenerator
    mesh.SplitFileMeshGenerator
    mesh.DistributedMeshGenerator
 
+Graph partitioner
+^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   mesh.GraphPartitioner
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   mesh.GraphPartitioner
    mesh.KBAGraphPartitioner
    mesh.LinearGraphPartitioner
    mesh.PETScGraphPartitioner
@@ -111,9 +202,15 @@ Logical volume
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: noinit.rst
 
    logvol.LogicalVolume
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    logvol.BooleanLogicalVolume
    logvol.RCCLogicalVolume
    logvol.RPPLogicalVolume
@@ -158,29 +255,92 @@ Cross section
 Solver
 ------
 
+Base class
+^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   solver.Solver
+
+Linear Boltzmann solver
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   solver.LBSSolver
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   solver.Solver
-   solver.LBSSolver
    solver.DiscreteOrdinatesSolver
    solver.DiscreteOrdinatesCurvilinearSolver
    solver.DiffusionDFEMSolver
-   solver.SteadyStateSolver
-   solver.NonLinearKEigen
-   solver.PowerIterationKEigen
-   solver.PowerIterationKEigenSCDSA
-   solver.PowerIterationKEigenSMM
-   solver.PRKSolver
+
+Steady state solver
+^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
+   solver.SteadyStateSolver
+
+Non-linear k-eigen
+^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   solver.NonLinearKEigen
+
+Power iteration solver
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   solver.PowerIterationKEigen
+   solver.PowerIterationKEigenSCDSA
+   solver.PowerIterationKEigenSMM
+
+Point kinetic trnasient solver
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   solver.PRKSolver
+
+Diffusion solver
+^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
    diffusion.DiffusionSolverBase
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    diffusion.CFEMDiffusionSolver
    diffusion.DFEMDiffusionSolver
 
@@ -188,15 +348,30 @@ Solver
 Post-processors
 ---------------
 
+Base class
+^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   post.PostProcessor
+
+Post-processor
+^^^^^^^^^^^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   post.PostProcessor
    post.SolverInfoPostProcessor
    post.AggregateNodalValuePostProcessor
    post.CellVolumeIntegralPostProcessor
+
+Printer
+^^^^^^^
 
 .. autosummary::
    :toctree: generated
@@ -210,14 +385,26 @@ Post-processors
 Settings
 --------
 
+Logs
+^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: noinit.rst
 
    settings.SetVerbosityLevel
    settings.UseColor
    settings.EnablePETScErrorHandler
+
+Caliper configuration
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
    settings.SetCaliperConfig
    settings.EnableCaliper
 

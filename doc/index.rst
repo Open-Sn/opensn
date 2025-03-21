@@ -54,5 +54,5 @@ most prominent features of OpenSn include:
    getting_started
    theory/index
    tutorials/index
-   devguide/index
    pyapi/index
+   devguide/index
