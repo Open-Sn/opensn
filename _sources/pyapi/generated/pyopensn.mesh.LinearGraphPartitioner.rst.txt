@@ -1,0 +1,9 @@
+﻿pyopensn.mesh.LinearGraphPartitioner
+====================================
+
+.. currentmodule:: pyopensn.mesh
+
+.. autoclass:: LinearGraphPartitioner
+   :special-members: __init__
+   :members:
+   :inherited-members:

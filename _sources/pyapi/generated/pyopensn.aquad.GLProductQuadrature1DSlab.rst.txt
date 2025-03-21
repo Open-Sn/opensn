@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.GLProductQuadrature1DSlab
+========================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: GLProductQuadrature1DSlab
+   :special-members: __init__
+   :members:
+   :inherited-members:

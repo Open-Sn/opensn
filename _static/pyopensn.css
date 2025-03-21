@@ -1,0 +1,101 @@
+/* FiraCode fontface */
+@font-face {
+  font-family: 'FiraCode';
+  src: url("./FiraCode-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: auto;
+  font-variant-ligatures: none;
+}
+@font-face {
+  font-family: 'FiraCode';
+  src: url("./FiraCode-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: auto;
+  font-variant-ligatures: none;
+}
+
+/* literal text */
+.rst-content code.literal, .rst-content tt.literal {
+  color: var(--literal);
+  white-space: normal;
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* item description content */
+.sig.sig-object {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px !important;
+  font-variant-ligatures: none;
+}
+
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple) .descclassname {
+  font-family: 'Fira Code', monospace !important;
+  font-size: 12px !important;
+  font-variant-ligatures: none;
+}
+
+/* type of each argument */
+.field-list.simple em {
+  font-style: normal !important;
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--type);
+}
+
+/* item argument in description box */
+.sig.sig-object.py .n {
+  font-style: normal !important;
+}
+
+/* Python keywords (class, etc) */
+.sig.sig-object.py .property {
+  font-style: normal !important;
+}
+
+/* Python operator (':', '=', etc) */
+.sig.sig-object.py .p, .sig.sig-object.py .o {
+  font-style: normal !important;
+}
+
+/* Python default value */
+.sig.sig-object.py .default_value {
+  font-style: normal !important;
+}
+
+/* type of each argument */
+.field-list.simple em {
+  font-style: normal !important;
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--type);
+}
+
+/* property */
+dl.py.property {
+  display: block !important;
+}
+
+/* pybind11 overloaded function */
+.py .method > dd > ol.arabic > li > p {
+  width: fit-content;
+  padding: 6px;
+  border-left: solid 3px #ccc;
+  line-height: normal;
+  font-style: normal !important;
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* attribute type */
+.attributetype p {
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  font-size: 12px !important;
+}

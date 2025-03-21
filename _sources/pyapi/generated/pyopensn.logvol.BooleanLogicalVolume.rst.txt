@@ -1,0 +1,9 @@
+﻿pyopensn.logvol.BooleanLogicalVolume
+====================================
+
+.. currentmodule:: pyopensn.logvol
+
+.. autoclass:: BooleanLogicalVolume
+   :special-members: __init__
+   :members:
+   :inherited-members:

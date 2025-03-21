@@ -1,0 +1,9 @@
+﻿pyopensn.post.CellVolumeIntegralPostProcessor
+=============================================
+
+.. currentmodule:: pyopensn.post
+
+.. autoclass:: CellVolumeIntegralPostProcessor
+   :special-members: __init__
+   :members:
+   :inherited-members:

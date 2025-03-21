@@ -1,0 +1,9 @@
+﻿pyopensn.post.SolverInfoPostProcessor
+=====================================
+
+.. currentmodule:: pyopensn.post
+
+.. autoclass:: SolverInfoPostProcessor
+   :special-members: __init__
+   :members:
+   :inherited-members:

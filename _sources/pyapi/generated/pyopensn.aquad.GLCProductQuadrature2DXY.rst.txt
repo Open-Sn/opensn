@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.GLCProductQuadrature2DXY
+=======================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: GLCProductQuadrature2DXY
+   :special-members: __init__
+   :members:
+   :inherited-members:

@@ -1,0 +1,8 @@
+﻿pyopensn.logvol.LogicalVolume
+=============================
+
+.. currentmodule:: pyopensn.logvol
+
+.. autoclass:: LogicalVolume
+   :members:
+   :inherited-members:

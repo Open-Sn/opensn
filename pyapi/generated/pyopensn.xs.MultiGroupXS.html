@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyopensn.xs.MultiGroupXS &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyopensn.solver.Solver" href="pyopensn.solver.Solver.html" />
+    <link rel="prev" title="pyopensn.source.VolumetricSource" href="pyopensn.source.VolumetricSource.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#cross-section">Cross section</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">pyopensn.xs.MultiGroupXS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS"><code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#solver">Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#post-processors">Post-processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
+      <li class="breadcrumb-item active">pyopensn.xs.MultiGroupXS</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyopensn-xs-multigroupxs">
+<h1>pyopensn.xs.MultiGroupXS<a class="headerlink" href="#pyopensn-xs-multigroupxs" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.xs.</span></span><span class="sig-name descname"><span class="pre">MultiGroupXS</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS" title="Link to this definition"></a></dt>
+<dd><p>Multi-group cross section.</p>
+<p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::MultiGroupXS</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup">
+<span class="sig-name descname"><span class="pre">CreateSimpleOneGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="Link to this definition"></a></dt>
+<dd><p>Create a one-group cross section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_t</strong> (<em>float</em>) – Total cross sections.</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Scattering ratio.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenMC">
+<span class="sig-name descname"><span class="pre">LoadFromOpenMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="Link to this definition"></a></dt>
+<dd><p>Load multi-group cross sections from an OpenMC cross-section file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenSn">
+<span class="sig-name descname"><span class="pre">LoadFromOpenSn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="Link to this definition"></a></dt>
+<dd><p>Load multi-group cross sections from an OpenSn cross section input file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.SetScalingFactor">
+<span class="sig-name descname"><span class="pre">SetScalingFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.SetScalingFactor" title="Link to this definition"></a></dt>
+<dd><p>Scale the cross sections by the specified factor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.__init__" title="Link to this definition"></a></dt>
+<dd><p>Create an empty multi-group cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.chi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chi</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.chi" title="Link to this definition"></a></dt>
+<dd><p>Get neutron fission spectrum.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.inv_velocity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inv_velocity</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.inv_velocity" title="Link to this definition"></a></dt>
+<dd><p>Get inverse velocity.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.is_fissionable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fissionable</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.is_fissionable" title="Link to this definition"></a></dt>
+<dd><p>Check if the material is fissile.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_delayed_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_delayed_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_delayed_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get delayed neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_prompt_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_prompt_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_prompt_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get prompt neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.num_groups">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_groups</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.num_groups" title="Link to this definition"></a></dt>
+<dd><p>Get number of energy groups.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.num_precursors">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_precursors</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.num_precursors" title="Link to this definition"></a></dt>
+<dd><p>Get number of precursors.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.scaling_factor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scaling_factor</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.scaling_factor" title="Link to this definition"></a></dt>
+<dd><p>Get the arbitrary scaling factor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.scattering_order">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scattering_order</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.scattering_order" title="Link to this definition"></a></dt>
+<dd><p>Get Legendre scattering order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_a">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_a</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_a" title="Link to this definition"></a></dt>
+<dd><p>Get absorption cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get fission cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_t">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_t</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_t" title="Link to this definition"></a></dt>
+<dd><p>Get total cross section.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyopensn.source.VolumetricSource.html" class="btn btn-neutral float-left" title="pyopensn.source.VolumetricSource" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.solver.Solver.html" class="btn btn-neutral float-right" title="pyopensn.solver.Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

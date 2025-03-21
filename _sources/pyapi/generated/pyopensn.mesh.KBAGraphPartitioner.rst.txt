@@ -1,0 +1,9 @@
+﻿pyopensn.mesh.KBAGraphPartitioner
+=================================
+
+.. currentmodule:: pyopensn.mesh
+
+.. autoclass:: KBAGraphPartitioner
+   :special-members: __init__
+   :members:
+   :inherited-members:

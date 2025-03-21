@@ -1,0 +1,9 @@
+﻿pyopensn.solver.PowerIterationKEigenSCDSA
+=========================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: PowerIterationKEigenSCDSA
+   :special-members: __init__
+   :members:
+   :inherited-members:

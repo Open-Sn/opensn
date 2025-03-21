@@ -1,0 +1,8 @@
+﻿pyopensn.aquad.AngularQuadrature
+================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: AngularQuadrature
+   :members:
+   :inherited-members:

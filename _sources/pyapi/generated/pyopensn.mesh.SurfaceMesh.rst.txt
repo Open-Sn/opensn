@@ -1,0 +1,9 @@
+﻿pyopensn.mesh.SurfaceMesh
+=========================
+
+.. currentmodule:: pyopensn.mesh
+
+.. autoclass:: SurfaceMesh
+   :special-members: __init__
+   :members:
+   :inherited-members:

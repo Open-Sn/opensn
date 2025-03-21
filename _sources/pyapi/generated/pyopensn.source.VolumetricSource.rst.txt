@@ -1,0 +1,9 @@
+﻿pyopensn.source.VolumetricSource
+================================
+
+.. currentmodule:: pyopensn.source
+
+.. autoclass:: VolumetricSource
+   :special-members: __init__
+   :members:
+   :inherited-members:

@@ -1,0 +1,9 @@
+﻿pyopensn.logvol.RCCLogicalVolume
+================================
+
+.. currentmodule:: pyopensn.logvol
+
+.. autoclass:: RCCLogicalVolume
+   :special-members: __init__
+   :members:
+   :inherited-members:

@@ -1,0 +1,9 @@
+﻿pyopensn.mesh.SplitFileMeshGenerator
+====================================
+
+.. currentmodule:: pyopensn.mesh
+
+.. autoclass:: SplitFileMeshGenerator
+   :special-members: __init__
+   :members:
+   :inherited-members:

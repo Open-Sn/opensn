@@ -1,0 +1,9 @@
+﻿pyopensn.post.AggregateNodalValuePostProcessor
+==============================================
+
+.. currentmodule:: pyopensn.post
+
+.. autoclass:: AggregateNodalValuePostProcessor
+   :special-members: __init__
+   :members:
+   :inherited-members:

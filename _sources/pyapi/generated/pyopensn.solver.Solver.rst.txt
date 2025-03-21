@@ -1,0 +1,8 @@
+﻿pyopensn.solver.Solver
+======================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: Solver
+   :members:
+   :inherited-members:

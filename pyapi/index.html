@@ -1,0 +1,744 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python API &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyopensn.math.Ylm" href="generated/pyopensn.math.Ylm.html" />
+    <link rel="prev" title="3.1. A First Example" href="../tutorials/lbs/first/first_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#math">Math</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spherical-harmonics">Spherical harmonics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.Ylm.html">pyopensn.math.Ylm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#point">Point</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.Vector3.html">pyopensn.math.Vector3</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#function-wrappers">Function wrappers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.Function.html">pyopensn.math.Function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.ScalarMaterialFunction.html">pyopensn.math.ScalarMaterialFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.ScalarSpatialMaterialFunction.html">pyopensn.math.ScalarSpatialMaterialFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.VectorSpatialFunction.html">pyopensn.math.VectorSpatialFunction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#angular-quadrature">Angular quadrature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.AngularQuadrature.html">pyopensn.aquad.AngularQuadrature</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#product-quadratures">Product quadratures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.ProductQuadrature.html">pyopensn.aquad.ProductQuadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.CurvilinearQuadrature.html">pyopensn.aquad.CurvilinearQuadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLProductQuadrature1DSlab.html">pyopensn.aquad.GLProductQuadrature1DSlab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DXY.html">pyopensn.aquad.GLCProductQuadrature2DXY</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature3DXYZ.html">pyopensn.aquad.GLCProductQuadrature3DXYZ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html">pyopensn.aquad.GLCProductQuadrature2DRZ</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#simplified-ldfes-quadrature">Simplified LDFES quadrature</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.SLDFESQuadrature.html">pyopensn.aquad.SLDFESQuadrature</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#field-functions">Field functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunction.html">pyopensn.fieldfunc.FieldFunction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#grid-based">Grid-based</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionGridBased.html">pyopensn.fieldfunc.FieldFunctionGridBased</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#interpolation">Interpolation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html">pyopensn.fieldfunc.FieldFunctionInterpolationLine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mesh">Mesh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Mesh</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.MeshContinuum.html">pyopensn.mesh.MeshContinuum</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#surface-mesh">Surface mesh</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.SurfaceMesh.html">pyopensn.mesh.SurfaceMesh</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mesh-generator">Mesh generator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.MeshGenerator.html">pyopensn.mesh.MeshGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.ExtruderMeshGenerator.html">pyopensn.mesh.ExtruderMeshGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.OrthogonalMeshGenerator.html">pyopensn.mesh.OrthogonalMeshGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.FromFileMeshGenerator.html">pyopensn.mesh.FromFileMeshGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.SplitFileMeshGenerator.html">pyopensn.mesh.SplitFileMeshGenerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.DistributedMeshGenerator.html">pyopensn.mesh.DistributedMeshGenerator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#graph-partitioner">Graph partitioner</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.GraphPartitioner.html">pyopensn.mesh.GraphPartitioner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.KBAGraphPartitioner.html">pyopensn.mesh.KBAGraphPartitioner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.LinearGraphPartitioner.html">pyopensn.mesh.LinearGraphPartitioner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.mesh.PETScGraphPartitioner.html">pyopensn.mesh.PETScGraphPartitioner</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logical-volume">Logical volume</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.LogicalVolume.html">pyopensn.logvol.LogicalVolume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.BooleanLogicalVolume.html">pyopensn.logvol.BooleanLogicalVolume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.RCCLogicalVolume.html">pyopensn.logvol.RCCLogicalVolume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.RPPLogicalVolume.html">pyopensn.logvol.RPPLogicalVolume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.SphereLogicalVolume.html">pyopensn.logvol.SphereLogicalVolume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.logvol.SurfaceMeshLogicalVolume.html">pyopensn.logvol.SurfaceMeshLogicalVolume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#response-evaluator">Response evaluator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.response.ResponseEvaluator.html">pyopensn.response.ResponseEvaluator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#source">Source</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.source.PointSource.html">pyopensn.source.PointSource</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.source.VolumetricSource.html">pyopensn.source.VolumetricSource</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cross-section">Cross section</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.xs.MultiGroupXS.html">pyopensn.xs.MultiGroupXS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#solver">Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.Solver.html">pyopensn.solver.Solver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#linear-boltzmann-solver">Linear Boltzmann solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.LBSSolver.html">pyopensn.solver.LBSSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesSolver.html">pyopensn.solver.DiscreteOrdinatesSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesCurvilinearSolver.html">pyopensn.solver.DiscreteOrdinatesCurvilinearSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.DiffusionDFEMSolver.html">pyopensn.solver.DiffusionDFEMSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#steady-state-solver">Steady state solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.SteadyStateSolver.html">pyopensn.solver.SteadyStateSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#non-linear-k-eigen">Non-linear k-eigen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.NonLinearKEigen.html">pyopensn.solver.NonLinearKEigen</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#power-iteration-solver">Power iteration solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigen.html">pyopensn.solver.PowerIterationKEigen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSCDSA.html">pyopensn.solver.PowerIterationKEigenSCDSA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSMM.html">pyopensn.solver.PowerIterationKEigenSMM</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#point-kinetic-trnasient-solver">Point kinetic trnasient solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PRKSolver.html">pyopensn.solver.PRKSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#diffusion-solver">Diffusion solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.diffusion.DiffusionSolverBase.html">pyopensn.diffusion.DiffusionSolverBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.diffusion.CFEMDiffusionSolver.html">pyopensn.diffusion.CFEMDiffusionSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.diffusion.DFEMDiffusionSolver.html">pyopensn.diffusion.DFEMDiffusionSolver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processors">Post-processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.PostProcessor.html">pyopensn.post.PostProcessor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#post-processor">Post-processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.SolverInfoPostProcessor.html">pyopensn.post.SolverInfoPostProcessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.AggregateNodalValuePostProcessor.html">pyopensn.post.AggregateNodalValuePostProcessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.CellVolumeIntegralPostProcessor.html">pyopensn.post.CellVolumeIntegralPostProcessor</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#printer">Printer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.Print.html">pyopensn.post.Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.post.SetPrinterOptions.html">pyopensn.post.SetPrinterOptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#logs">Logs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.SetVerbosityLevel.html">pyopensn.settings.SetVerbosityLevel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.UseColor.html">pyopensn.settings.UseColor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.EnablePETScErrorHandler.html">pyopensn.settings.EnablePETScErrorHandler</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#caliper-configuration">Caliper configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.SetCaliperConfig.html">pyopensn.settings.SetCaliperConfig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.EnableCaliper.html">pyopensn.settings.EnableCaliper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python API</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-api">
+<h1>Python API<a class="headerlink" href="#python-api" title="Link to this heading"></a></h1>
+<section id="math">
+<h2>Math<a class="headerlink" href="#math" title="Link to this heading"></a></h2>
+<section id="spherical-harmonics">
+<h3>Spherical harmonics<a class="headerlink" href="#spherical-harmonics" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.Ylm.html#pyopensn.math.Ylm" title="pyopensn.math.Ylm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.Ylm</span></code></a></p></td>
+<td><p>Compute the tesseral spherical harmonics.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="point">
+<h3>Point<a class="headerlink" href="#point" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.Vector3</span></code></a></p></td>
+<td><p>General 3-element vector structure.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="function-wrappers">
+<h3>Function wrappers<a class="headerlink" href="#function-wrappers" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This API is temporary. It will no longer required once <code class="docutils literal notranslate"><span class="pre">ParameterBlock</span></code> is removed.</p>
+</div>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.Function.html#pyopensn.math.Function" title="pyopensn.math.Function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.Function</span></code></a></p></td>
+<td><p>Function base class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.math.ScalarMaterialFunction.html#pyopensn.math.ScalarMaterialFunction" title="pyopensn.math.ScalarMaterialFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.ScalarMaterialFunction</span></code></a></p></td>
+<td><p>Scalar material function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.ScalarSpatialMaterialFunction</span></code></a></p></td>
+<td><p>Scalar spatial material function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.VectorSpatialFunction</span></code></a></p></td>
+<td><p>Vector spatial function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="angular-quadrature">
+<h2>Angular quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
+<section id="base-class">
+<h3>Base class<a class="headerlink" href="#base-class" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature" title="pyopensn.aquad.AngularQuadrature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.AngularQuadrature</span></code></a></p></td>
+<td><p>Angular quadrature.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="product-quadratures">
+<h3>Product quadratures<a class="headerlink" href="#product-quadratures" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.ProductQuadrature.html#pyopensn.aquad.ProductQuadrature" title="pyopensn.aquad.ProductQuadrature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.ProductQuadrature</span></code></a></p></td>
+<td><p>Product quadrature.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.aquad.CurvilinearQuadrature.html#pyopensn.aquad.CurvilinearQuadrature" title="pyopensn.aquad.CurvilinearQuadrature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.CurvilinearQuadrature</span></code></a></p></td>
+<td><p>Curvilinear quadrature.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.GLProductQuadrature1DSlab.html#pyopensn.aquad.GLProductQuadrature1DSlab" title="pyopensn.aquad.GLProductQuadrature1DSlab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.GLProductQuadrature1DSlab</span></code></a></p></td>
+<td><p>Gauss-Legendre product quadrature for 1D, slab geometry.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DXY.html#pyopensn.aquad.GLCProductQuadrature2DXY" title="pyopensn.aquad.GLCProductQuadrature2DXY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.GLCProductQuadrature2DXY</span></code></a></p></td>
+<td><p>Gauss-Legendre-Chebyshev product quadrature for 2D, XY geometry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature3DXYZ.html#pyopensn.aquad.GLCProductQuadrature3DXYZ" title="pyopensn.aquad.GLCProductQuadrature3DXYZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.GLCProductQuadrature3DXYZ</span></code></a></p></td>
+<td><p>Gauss-Legendre-Chebyshev product quadrature for 3D, XYZ geometry.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.GLCProductQuadrature2DRZ</span></code></a></p></td>
+<td><p>Gauss-Legendre-Chebyshev product quadrature for 2D, RZ geometry.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="simplified-ldfes-quadrature">
+<h3>Simplified LDFES quadrature<a class="headerlink" href="#simplified-ldfes-quadrature" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.SLDFESQuadrature.html#pyopensn.aquad.SLDFESQuadrature" title="pyopensn.aquad.SLDFESQuadrature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.SLDFESQuadrature</span></code></a></p></td>
+<td><p>Piecewise-linear finite element quadrature using quadrilaterals.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="field-functions">
+<h2>Field functions<a class="headerlink" href="#field-functions" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Base class<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunction</span></code></a></p></td>
+<td><p>Field function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="grid-based">
+<h3>Grid-based<a class="headerlink" href="#grid-based" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionGridBased</span></code></a></p></td>
+<td><p>Field function grid based.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interpolation">
+<h3>Interpolation<a class="headerlink" href="#interpolation" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationPoint</span></code></a></p></td>
+<td><p>Line based interpolation function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationLine</span></code></a></p></td>
+<td><p>Line based interpolation function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationVolume</span></code></a></p></td>
+<td><p>A line based interpolation function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="mesh">
+<h2>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Mesh<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.MeshContinuum</span></code></a></p></td>
+<td><p>Mesh continuum.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="surface-mesh">
+<h3>Surface mesh<a class="headerlink" href="#surface-mesh" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.SurfaceMesh.html#pyopensn.mesh.SurfaceMesh" title="pyopensn.mesh.SurfaceMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.SurfaceMesh</span></code></a></p></td>
+<td><p>Surface mesh.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mesh-generator">
+<h3>Mesh generator<a class="headerlink" href="#mesh-generator" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.MeshGenerator</span></code></a></p></td>
+<td><p>Generic mesh generator.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.ExtruderMeshGenerator.html#pyopensn.mesh.ExtruderMeshGenerator" title="pyopensn.mesh.ExtruderMeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.ExtruderMeshGenerator</span></code></a></p></td>
+<td><p>Extruded mesh generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.mesh.OrthogonalMeshGenerator.html#pyopensn.mesh.OrthogonalMeshGenerator" title="pyopensn.mesh.OrthogonalMeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.OrthogonalMeshGenerator</span></code></a></p></td>
+<td><p>Orthogonal mesh generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.FromFileMeshGenerator.html#pyopensn.mesh.FromFileMeshGenerator" title="pyopensn.mesh.FromFileMeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.FromFileMeshGenerator</span></code></a></p></td>
+<td><p>From file mesh generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.mesh.SplitFileMeshGenerator.html#pyopensn.mesh.SplitFileMeshGenerator" title="pyopensn.mesh.SplitFileMeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.SplitFileMeshGenerator</span></code></a></p></td>
+<td><p>Split file mesh generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.DistributedMeshGenerator.html#pyopensn.mesh.DistributedMeshGenerator" title="pyopensn.mesh.DistributedMeshGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.DistributedMeshGenerator</span></code></a></p></td>
+<td><p>Distributed mesh generator.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="graph-partitioner">
+<h3>Graph partitioner<a class="headerlink" href="#graph-partitioner" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.GraphPartitioner</span></code></a></p></td>
+<td><p>Generic graph partitioner.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.KBAGraphPartitioner.html#pyopensn.mesh.KBAGraphPartitioner" title="pyopensn.mesh.KBAGraphPartitioner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.KBAGraphPartitioner</span></code></a></p></td>
+<td><p>KBA graph partitioner.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.mesh.LinearGraphPartitioner.html#pyopensn.mesh.LinearGraphPartitioner" title="pyopensn.mesh.LinearGraphPartitioner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.LinearGraphPartitioner</span></code></a></p></td>
+<td><p>Linear graph partitioner.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.mesh.PETScGraphPartitioner.html#pyopensn.mesh.PETScGraphPartitioner" title="pyopensn.mesh.PETScGraphPartitioner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh.PETScGraphPartitioner</span></code></a></p></td>
+<td><p>PETSc graph partitioner.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="logical-volume">
+<h2>Logical volume<a class="headerlink" href="#logical-volume" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.LogicalVolume</span></code></a></p></td>
+<td><p>Generic logical volume.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.logvol.BooleanLogicalVolume.html#pyopensn.logvol.BooleanLogicalVolume" title="pyopensn.logvol.BooleanLogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.BooleanLogicalVolume</span></code></a></p></td>
+<td><p>Boolean logical volume.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.logvol.RCCLogicalVolume.html#pyopensn.logvol.RCCLogicalVolume" title="pyopensn.logvol.RCCLogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.RCCLogicalVolume</span></code></a></p></td>
+<td><p>Right circular cylinder logical volume.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.logvol.RPPLogicalVolume.html#pyopensn.logvol.RPPLogicalVolume" title="pyopensn.logvol.RPPLogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.RPPLogicalVolume</span></code></a></p></td>
+<td><p>Rectangular parallel piped logical volume.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.logvol.SphereLogicalVolume.html#pyopensn.logvol.SphereLogicalVolume" title="pyopensn.logvol.SphereLogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.SphereLogicalVolume</span></code></a></p></td>
+<td><p>Spherical logical volume.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.logvol.SurfaceMeshLogicalVolume.html#pyopensn.logvol.SurfaceMeshLogicalVolume" title="pyopensn.logvol.SurfaceMeshLogicalVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logvol.SurfaceMeshLogicalVolume</span></code></a></p></td>
+<td><p>Surface mesh logical volume.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="response-evaluator">
+<h2>Response evaluator<a class="headerlink" href="#response-evaluator" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">response.ResponseEvaluator</span></code></a></p></td>
+<td><p>Response evaluator by folding sources against adjoint solutions.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="source">
+<h2>Source<a class="headerlink" href="#source" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source.PointSource</span></code></a></p></td>
+<td><p>Point sources, defined by its location and a group-wise strength vector.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source.VolumetricSource</span></code></a></p></td>
+<td><p>Multi-group isotropic volumetric sources.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="cross-section">
+<h2>Cross section<a class="headerlink" href="#cross-section" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xs.MultiGroupXS</span></code></a></p></td>
+<td><p>Multi-group cross section.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="solver">
+<h2>Solver<a class="headerlink" href="#solver" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>Base class<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.Solver</span></code></a></p></td>
+<td><p>Base class for all solvers.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="linear-boltzmann-solver">
+<h3>Linear Boltzmann solver<a class="headerlink" href="#linear-boltzmann-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.LBSSolver.html#pyopensn.solver.LBSSolver" title="pyopensn.solver.LBSSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.LBSSolver</span></code></a></p></td>
+<td><p>Base class for all Linear Boltzmann solvers.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesSolver.html#pyopensn.solver.DiscreteOrdinatesSolver" title="pyopensn.solver.DiscreteOrdinatesSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesSolver</span></code></a></p></td>
+<td><p>Base class for discrete ordinates solvers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesCurvilinearSolver.html#pyopensn.solver.DiscreteOrdinatesCurvilinearSolver" title="pyopensn.solver.DiscreteOrdinatesCurvilinearSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesCurvilinearSolver</span></code></a></p></td>
+<td><p>A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiffusionDFEMSolver.html#pyopensn.solver.DiffusionDFEMSolver" title="pyopensn.solver.DiffusionDFEMSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiffusionDFEMSolver</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="steady-state-solver">
+<h3>Steady state solver<a class="headerlink" href="#steady-state-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.SteadyStateSolver.html#pyopensn.solver.SteadyStateSolver" title="pyopensn.solver.SteadyStateSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.SteadyStateSolver</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="non-linear-k-eigen">
+<h3>Non-linear k-eigen<a class="headerlink" href="#non-linear-k-eigen" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.NonLinearKEigen.html#pyopensn.solver.NonLinearKEigen" title="pyopensn.solver.NonLinearKEigen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.NonLinearKEigen</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="power-iteration-solver">
+<h3>Power iteration solver<a class="headerlink" href="#power-iteration-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigen.html#pyopensn.solver.PowerIterationKEigen" title="pyopensn.solver.PowerIterationKEigen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigen</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSCDSA.html#pyopensn.solver.PowerIterationKEigenSCDSA" title="pyopensn.solver.PowerIterationKEigenSCDSA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigenSCDSA</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSMM.html#pyopensn.solver.PowerIterationKEigenSMM" title="pyopensn.solver.PowerIterationKEigenSMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigenSMM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="point-kinetic-trnasient-solver">
+<h3>Point kinetic trnasient solver<a class="headerlink" href="#point-kinetic-trnasient-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PRKSolver.html#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PRKSolver</span></code></a></p></td>
+<td><p>General transient solver for point kinetics.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="diffusion-solver">
+<h3>Diffusion solver<a class="headerlink" href="#diffusion-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.diffusion.DiffusionSolverBase.html#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diffusion.DiffusionSolverBase</span></code></a></p></td>
+<td><p>Base class for diffusion solvers.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.diffusion.CFEMDiffusionSolver.html#pyopensn.diffusion.CFEMDiffusionSolver" title="pyopensn.diffusion.CFEMDiffusionSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diffusion.CFEMDiffusionSolver</span></code></a></p></td>
+<td><p>CFEM diffusion solver.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.diffusion.DFEMDiffusionSolver.html#pyopensn.diffusion.DFEMDiffusionSolver" title="pyopensn.diffusion.DFEMDiffusionSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diffusion.DFEMDiffusionSolver</span></code></a></p></td>
+<td><p>DFEM diffusion solver.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="post-processors">
+<h2>Post-processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>Base class<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.post.PostProcessor.html#pyopensn.post.PostProcessor" title="pyopensn.post.PostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.PostProcessor</span></code></a></p></td>
+<td><p>Base class for all post-processors.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="post-processor">
+<h3>Post-processor<a class="headerlink" href="#post-processor" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.post.SolverInfoPostProcessor.html#pyopensn.post.SolverInfoPostProcessor" title="pyopensn.post.SolverInfoPostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.SolverInfoPostProcessor</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.post.AggregateNodalValuePostProcessor.html#pyopensn.post.AggregateNodalValuePostProcessor" title="pyopensn.post.AggregateNodalValuePostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.AggregateNodalValuePostProcessor</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.post.CellVolumeIntegralPostProcessor.html#pyopensn.post.CellVolumeIntegralPostProcessor" title="pyopensn.post.CellVolumeIntegralPostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.CellVolumeIntegralPostProcessor</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="printer">
+<h3>Printer<a class="headerlink" href="#printer" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.post.Print.html#pyopensn.post.Print" title="pyopensn.post.Print"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.Print</span></code></a></p></td>
+<td><p>Print a list of post-processors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.post.SetPrinterOptions.html#pyopensn.post.SetPrinterOptions" title="pyopensn.post.SetPrinterOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.SetPrinterOptions</span></code></a></p></td>
+<td><p>Set printer options.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h2>
+<section id="logs">
+<h3>Logs<a class="headerlink" href="#logs" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.SetVerbosityLevel.html#pyopensn.settings.SetVerbosityLevel" title="pyopensn.settings.SetVerbosityLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.SetVerbosityLevel</span></code></a></p></td>
+<td><p>Set verbosity level (0 to 3).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.settings.UseColor.html#pyopensn.settings.UseColor" title="pyopensn.settings.UseColor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.UseColor</span></code></a></p></td>
+<td><p>Enable/disable color output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.EnablePETScErrorHandler.html#pyopensn.settings.EnablePETScErrorHandler" title="pyopensn.settings.EnablePETScErrorHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.EnablePETScErrorHandler</span></code></a></p></td>
+<td><p>Allow PETSc error handler.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="caliper-configuration">
+<h3>Caliper configuration<a class="headerlink" href="#caliper-configuration" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.SetCaliperConfig.html#pyopensn.settings.SetCaliperConfig" title="pyopensn.settings.SetCaliperConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.SetCaliperConfig</span></code></a></p></td>
+<td><p>Set configuration to the Caliper manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.settings.EnableCaliper.html#pyopensn.settings.EnableCaliper" title="pyopensn.settings.EnableCaliper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.EnableCaliper</span></code></a></p></td>
+<td><p>Start the Caliper manager and mark the program begin.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials/lbs/first/first_example.html" class="btn btn-neutral float-left" title="3.1. A First Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/pyopensn.math.Ylm.html" class="btn btn-neutral float-right" title="pyopensn.math.Ylm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿pyopensn.settings.EnableCaliper
+===============================
+
+.. currentmodule:: pyopensn.settings
+
+.. autofunction:: EnableCaliper

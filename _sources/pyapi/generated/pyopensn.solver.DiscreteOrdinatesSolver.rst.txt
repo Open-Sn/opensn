@@ -1,0 +1,9 @@
+﻿pyopensn.solver.DiscreteOrdinatesSolver
+=======================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: DiscreteOrdinatesSolver
+   :special-members: __init__
+   :members:
+   :inherited-members:

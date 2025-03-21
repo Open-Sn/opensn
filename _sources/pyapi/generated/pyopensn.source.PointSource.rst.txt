@@ -1,0 +1,9 @@
+﻿pyopensn.source.PointSource
+===========================
+
+.. currentmodule:: pyopensn.source
+
+.. autoclass:: PointSource
+   :special-members: __init__
+   :members:
+   :inherited-members:
