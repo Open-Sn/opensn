@@ -98,7 +98,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # retrieve the flux (field function)
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
     vtk_basename = "first_example"
     FieldFunctionGridBased.ExportMultipleToVTK(
         [fflist[0][0]],  # export only the flux of group 0 (first []), moment 0 (second [])
