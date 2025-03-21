@@ -1,27 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1.4. Reading a 2D .obj file &mdash; OpenSn  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
+  <title>Reading a 2D .obj file &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="1.5. Reading a 2D .msh file" href="read_2D_msh.html" />
-    <link rel="prev" title="1.3. 3D Orthogonal Grid" href="ortho_3D.html" /> 
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,42 +30,23 @@
 
           
           
-          <a href="../../index.html" class="icon icon-home">
+          <a href="../../../index.html" class="icon icon-home">
             OpenSn
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">1. Meshing and Partitioning</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="introduction.html">1.1. Introduction to meshing and partitioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ortho_2D.html">1.2. 2D Orthogonal Grid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ortho_3D.html">1.3. 3D Orthogonal Grid</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">1.4. Reading a 2D .obj file</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#create-an-unstructured-mesh">1.4.1. Create an Unstructured Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#read-the-mesh">1.4.2. Read the Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#the-complete-input-is-below">1.4.3. The complete input is below:</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="read_2D_msh.html">1.5. Reading a 2D .msh file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="extrusion.html">1.6. Reading a 2D .obj file and extrude it</a></li>
-<li class="toctree-l3"><a class="reference internal" href="read_3D_vtu.html">1.7. Reading a 3D .vtu file</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../material/index.html">2. Material and Source Definitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">3. Linear Boltzmann Solver</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
 </ul>
 
         </div>
@@ -76,17 +55,15 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">OpenSn</a>
+          <a href="../../../index.html">OpenSn</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">1. </span>Meshing and Partitioning</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">1.4. </span>Reading a 2D .obj file</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reading a 2D .obj file</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -96,27 +73,27 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="reading-a-2d-obj-file">
-<h1><span class="section-number">1.4. </span>Reading a 2D .obj file<a class="headerlink" href="#reading-a-2d-obj-file" title="Link to this heading"></a></h1>
+<h1>Reading a 2D .obj file<a class="headerlink" href="#reading-a-2d-obj-file" title="Link to this heading"></a></h1>
 <p>Reading a 2D .obj file with material IDs and boundary IDs.</p>
 <p>Click here for more information on <a class="reference external" href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">WaveFront objects, aka obj</a></p>
 <section id="create-an-unstructured-mesh">
-<h2><span class="section-number">1.4.1. </span>Create an Unstructured Mesh<a class="headerlink" href="#create-an-unstructured-mesh" title="Link to this heading"></a></h2>
+<h2>Create an Unstructured Mesh<a class="headerlink" href="#create-an-unstructured-mesh" title="Link to this heading"></a></h2>
 <p>We have created an unstructured triangular mesh with the
 <a class="reference external" href="http://www.cs.cmu.edu/~quake/triangle.html">Triangle Mesh Generator</a>.
 Triangle is also accessible via <a class="reference external" href="https://documen.tician.de/meshpy/">Meshpy</a> in python. Then, one needs to
 convert the data generated by Triangle into the Wavefront (obj) format.</p>
 </section>
 <section id="read-the-mesh">
-<h2><span class="section-number">1.4.2. </span>Read the Mesh<a class="headerlink" href="#read-the-mesh" title="Link to this heading"></a></h2>
+<h2>Read the Mesh<a class="headerlink" href="#read-the-mesh" title="Link to this heading"></a></h2>
 <p>We use the <code class="docutils literal notranslate"><span class="pre">FromFileMeshGenerator</span></code> and pass the path to the obj file.
 We also partition the 2D mesh into 2x2 subdomains using <code class="docutils literal notranslate"><span class="pre">Parmetis</span></code>.
 Finally, we export the mesh to a VTU file.</p>
 <p>The resulting mesh and material layout is shown below:</p>
-<p><img alt="Mesh_Material" src="../../_images/Triangle_1542_mesh_material.png" /></p>
+<p><img alt="Mesh_Material" src="../../../_images/Triangle_1542_mesh_material.png" /></p>
 <p>When using the Parmetis partitioner, we obtain:</p>
-<p><img alt="Mesh_Partition" src="../../_images/Triangle_1542_partition_Parmetis.png" /></p>
+<p><img alt="Mesh_Partition" src="../../../_images/Triangle_1542_partition_Parmetis.png" /></p>
 <p>FYI, had we chosen the KBA partitioner, the partition would have been:</p>
-<p><img alt="Mesh_Partition" src="../../_images/Triangle_1542_partition_KBA.png" /></p>
+<p><img alt="Mesh_Partition" src="../../../_images/Triangle_1542_partition_KBA.png" /></p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
 <span class="nv">meshgen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span>
 <span class="w">  </span><span class="nv">inputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
@@ -133,8 +110,8 @@ Finally, we export the mesh to a VTU file.</p>
 </section>
 <hr class="docutils" />
 <section id="the-complete-input-is-below">
-<h2><span class="section-number">1.4.3. </span>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
-<p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/meshing/read_2D_obj.lua</span></code>:</p>
+<h2>The complete input is below:<a class="headerlink" href="#the-complete-input-is-below" title="Link to this heading"></a></h2>
+<p>You can copy/paste the text below or look in the file named <code class="docutils literal notranslate"><span class="pre">tutorials/lua/meshing/read_2D_obj.lua</span></code>:</p>
 <div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- Setup the mesh</span>
 <span class="nv">meshgen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">mesh</span><span class="p">.</span><span class="py">MeshGenerator</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span>
 <span class="w">  </span><span class="nv">inputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
@@ -155,10 +132,7 @@ Finally, we export the mesh to a VTU file.</p>
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ortho_3D.html" class="btn btn-neutral float-left" title="1.3. 3D Orthogonal Grid" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="read_2D_msh.html" class="btn btn-neutral float-right" title="1.5. Reading a 2D .msh file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

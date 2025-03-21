@@ -22,7 +22,7 @@ When using the Parmetis partitioner, we obtain:
 meshgen = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../test/modules/linear_boltzmann_solvers/transport_keigen/c5g7/mesh/2D_c5g7_coarse.msh",
+      filename = "../../../test/lua/modules/linear_boltzmann_solvers/transport_keigen/c5g7/mesh/2D_c5g7_coarse.msh",
     }),
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
@@ -33,14 +33,14 @@ mesh.ExportToPVTU(grid, "c5g7_mesh_only")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/meshing/read_2D_msh.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/meshing/read_2D_msh.lua```:
 ```lua
 
 -- Setup the mesh
 meshgen = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../test/modules/linear_boltzmann_solvers/transport_keigen/c5g7/mesh/2D_c5g7_coarse.msh",
+      filename = "../../../test/lua/modules/linear_boltzmann_solvers/transport_keigen/c5g7/mesh/2D_c5g7_coarse.msh",
     }),
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),

@@ -10,7 +10,7 @@ We start by reading a 3D vtu file. The resulting mesh and partition is shown bel
 meshgen = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../test/assets/mesh/GMSH_AllTets.vtu",
+      filename = "../../../test/assets/mesh/GMSH_AllTets.vtu",
     }),
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),
@@ -21,14 +21,14 @@ mesh.ExportToPVTU(grid, "Read_3D_mesh_only")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/meshing/read_3D_vtu.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/meshing/read_3D_vtu.lua```:
 ```lua
 
 -- Setup the mesh
 meshgen = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../test/assets/mesh/GMSH_AllTets.vtu",
+      filename = "../../../test/assets/mesh/GMSH_AllTets.vtu",
     }),
   },
   partitioner = mesh.PETScGraphPartitioner.Create({ type = "parmetis" }),

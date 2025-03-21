@@ -46,7 +46,7 @@ xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/material/mg_xs.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/material/mg_xs.lua```:
 ```lua
 
 xs_matA = xs.LoadFromOpenSn("xs_1g_MatA.xs")

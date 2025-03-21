@@ -67,7 +67,7 @@ mesh.ExportToPVTU(grid, "ortho_3D_Parmetis")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/meshing/ortho_3D.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/meshing/ortho_3D.lua```:
 ```lua
 
 -- Setup the mesh

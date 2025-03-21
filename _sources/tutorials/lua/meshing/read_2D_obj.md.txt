@@ -43,7 +43,7 @@ mesh.ExportToPVTU(grid, "Triangle_1542_mesh_only")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/meshing/read_2D_obj.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/meshing/read_2D_obj.lua```:
 ```lua
 
 -- Setup the mesh

@@ -194,7 +194,7 @@ fieldfunc.ExportToVTK(fflist[1], vtk_basename)
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/lbs/first/first_example.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/lbs/first/first_example.lua```:
 ```lua
 
 -- Check num_procs

@@ -31,7 +31,7 @@ mesh.ExportToPVTU(grid, "Extruded_mesh_only")
 
 ___
 ## The complete input is below:
-You can copy/paste the text below or look in the file named ```tutorials/meshing/extrusion.lua```:
+You can copy/paste the text below or look in the file named ```tutorials/lua/meshing/extrusion.lua```:
 ```lua
 
 -- Setup the mesh
