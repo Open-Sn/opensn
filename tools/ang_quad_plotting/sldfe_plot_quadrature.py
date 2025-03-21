@@ -5,12 +5,12 @@ import numpy as np
 import math
 
 # Declare File Base to read
-fileBase = "TestQuad1_"
+fileBase = "TestQuad2"
 
 currentDirect = Path(__file__).parent
-vertPath = currentDirect / (fileBase + "verts.csv")
-cellPath = currentDirect / (fileBase + "cells.csv")
-pointPath = currentDirect / (fileBase + "points.csv")
+vertPath = currentDirect / (fileBase + "_verts.csv")
+cellPath = currentDirect / (fileBase + "_cells.csv")
+pointPath = currentDirect / (fileBase + "_points.csv")
 
 # Read vertices
 verts = []
