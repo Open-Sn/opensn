@@ -1,0 +1,42 @@
+[
+  {
+    "file": "acceleration_diffusion_dfem.lua",
+    "comment": "MIP Diffusion solver tests",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Solution-norm",
+        "wordnum": 2,
+        "gold": 20.3757,
+        "abs_tol": 1e-14
+      },
+      {
+        "type": "StrCompare",
+        "key": "Convergence Reason:",
+        "wordnum": 3,
+        "gold": "KSP_CONVERGED_RTOL"
+      }
+    ]
+  },
+  {
+    "file": "acceleration_diffusion_cfem.lua",
+    "comment": "MIP Diffusion solver tests",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Solution-norm",
+        "wordnum": 2,
+        "gold": 12.5145,
+        "abs_tol": 1e-14
+      },
+      {
+        "type": "StrCompare",
+        "key": "Convergence Reason:",
+        "wordnum": 3,
+        "gold": "KSP_CONVERGED_RTOL"
+      }
+    ]
+  }
+]

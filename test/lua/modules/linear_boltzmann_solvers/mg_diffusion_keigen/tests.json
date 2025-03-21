@@ -1,0 +1,57 @@
+[
+  {
+    "file": "keigenvalue_mip_1d_1g.lua",
+    "comment": "1D KSolver LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.9995301,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_mip_2d_1a_qblock.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Iteration    22",
+        "wordnum": 11,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5219942,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_mip_2d_1b_qblock.lua",
+    "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Iteration     4",
+        "wordnum": 8,
+        "gold": 0.5220271,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.5220271,
+        "abs_tol": 1e-07
+      }
+    ]
+  }
+]

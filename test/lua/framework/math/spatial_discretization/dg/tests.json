@@ -1,0 +1,86 @@
+[
+  {
+    "file" : "sdm_test_02a_pwld_1d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.500684, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02b_pwld_2d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.295603, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02c_pwld_3d_ortho.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.225199, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02d_pwld_2d_tri.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.296448, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02e_pwld_3d_prism.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.189989, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02f_pwld_3d_hex.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.220627, "abs_tol": 1e-05
+    }
+  ]
+  },
+  {
+    "file" : "sdm_test_02g_pwld_3d_tets.lua", "num_procs" : 4, "checks" :
+  [
+    { "type" :  "ErrorCode", "error_code" :  0},
+    {
+      "type" : "StrCompare", "key" : "Converged"
+    },
+    {
+      "type": "FloatCompare", "key": "[0]  Nodal max =", "wordnum": 5, "gold": 0.226529, "abs_tol": 1e-05
+    }
+  ]
+  }
+]

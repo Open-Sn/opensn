@@ -1,0 +1,10 @@
+[
+  {
+    "file" : "data_types_test_00.lua", "num_procs" : 2, "checks" :
+    [
+      {
+        "type" : "GoldFile", "scope_keyword" : "GOLD"
+      }
+    ]
+  }
+]

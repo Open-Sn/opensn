@@ -1,0 +1,113 @@
+[
+  {
+    "file": "response_2d_1.py",
+    "comment": "2D transport response evaluation test with material source",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value=",
+        "goldvalue": 1.38397e-05,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Inner Product=",
+        "goldvalue": 1.38405e-05,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "response_2d_2.py",
+    "comment": "2D transport response evaluation test with point source",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value=",
+        "goldvalue": 2.90386e-05,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Inner Product=",
+        "goldvalue": 2.90543e-05,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "response_2d_3.py",
+    "comment": "2D transport response evaluation test with multigroup point source",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[0]=",
+        "goldvalue": 1.12687e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[1]=",
+        "goldvalue": 2.95934e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[2]=",
+        "goldvalue": 3.92975e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[3]=",
+        "goldvalue": 4.18473e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[4]=",
+        "goldvalue": 3.89644e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[5]=",
+        "goldvalue": 3.30482e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[6]=",
+        "goldvalue": 1.54510e-06,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[7]=",
+        "goldvalue": 6.74758e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[8]=",
+        "goldvalue": 3.05980e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "QoI Value[9]=",
+        "goldvalue": 2.07087e-07,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Inner Product=",
+        "goldvalue": 3.30497e-06,
+        "abs_tol": 1e-09
+      }
+    ]
+  }
+]

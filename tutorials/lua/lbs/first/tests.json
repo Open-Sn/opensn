@@ -1,0 +1,12 @@
+[
+  {
+    "file": "first_example.lua",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  }
+]

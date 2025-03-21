@@ -242,9 +242,21 @@ endif()
 
 if(OPENSN_WITH_PYTHON)
     add_subdirectory(python)
+    add_subdirectory(test)
+
     if(OPENSN_WITH_PYTHON_MODULE)
         add_subdirectory(pyopensn)
     endif()
+
+    add_custom_target(test
+      COMMAND
+      ${CMAKE_BINARY_DIR}/test/opensn-unit &&
+              ${CMAKE_SOURCE_DIR}/test/run_tests
+              -d ${CMAKE_SOURCE_DIR}/test
+              --exe ${CMAKE_BINARY_DIR}/test/opensn-test
+              -w3
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
 endif()
 
 configure_file(config.h.in config.h)
