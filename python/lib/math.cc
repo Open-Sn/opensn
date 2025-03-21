@@ -213,8 +213,27 @@ void
 WrapFunctors(py::module& math)
 {
   // clang-format off
+  // function
+  auto function = py::class_<Function, std::shared_ptr<Function>>(
+    math,
+    "Function",
+    R"(
+    Function base class.
+    )"
+  );
+  function.def(
+    py::init(
+      []()
+      {
+        return std::make_shared<Function>();
+      }
+    ),
+    R"(
+    Empty constructor.
+    )"
+  );
   // scalar material function
-  auto scalar_material_function = py::class_<PySMFunction, std::shared_ptr<PySMFunction>>(
+  auto scalar_material_function = py::class_<PySMFunction, std::shared_ptr<PySMFunction>, Function>(
     math,
     "ScalarMaterialFunction",
     R"(
@@ -276,7 +295,9 @@ WrapFunctors(py::module& math)
   );
 
   // scalar spatial material function
-  auto scalar_spatial_material_function = py::class_<PySSMFunction, std::shared_ptr<PySSMFunction>>(
+  auto scalar_spatial_material_function = py::class_<PySSMFunction,
+                                                     std::shared_ptr<PySSMFunction>,
+                                                     Function>(
     math,
     "ScalarSpatialMaterialFunction",
     R"(
@@ -338,7 +359,7 @@ WrapFunctors(py::module& math)
   );
 
   // vector spatial function
-  auto vector_spatial_function = py::class_<PyVSFunction, std::shared_ptr<PyVSFunction>>(
+  auto vector_spatial_function = py::class_<PyVSFunction, std::shared_ptr<PyVSFunction>, Function>(
     math,
     "VectorSpatialFunction",
     R"(

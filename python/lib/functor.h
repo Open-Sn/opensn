@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "framework/math/functions/function.h"
 #include "framework/math/functions/scalar_material_function.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/math/functions/vector_spatial_function.h"

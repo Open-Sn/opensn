@@ -17,8 +17,9 @@ source_suffix = ['.rst', '.md']
 exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
-html_static_path = []
+html_static_path = ['src/_static']
 html_show_sourcelink = False
+html_css_files = ['pyopensn.css']
 
 extensions = [
     'breathe',

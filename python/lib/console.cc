@@ -74,7 +74,7 @@ Console::FlushConsole()
 void
 Console::RunConsoleLoop() const
 {
-  assert(PyIsInitialized());
+  assert(Py_IsInitialized());
 
   if (opensn::mpi_comm.rank() == 0)
     std::cout << "Console loop started. Type \"exit\" to quit.\n" << std::endl;

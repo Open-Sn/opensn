@@ -5,7 +5,6 @@
 
 {%+ if objtype == 'class' -%}
 .. autoclass:: {{ objname }}
-   :special-members: __init__
    :members:
    :inherited-members:
 {% endif %}
