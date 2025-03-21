@@ -71,10 +71,10 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(_templates/function.rst src/_templates/function.rst)
     configure_file(_templates/noinit.rst src/_templates/noinit.rst)
     configure_file(_templates/python.rst src/_templates/python.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/index.rst src/tutorials/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/index.rst src/tutorials/lbs/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/meshing/index.rst src/tutorials/meshing/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/material/index.rst src/tutorials/material/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/index.rst src/tutorials/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/lbs/index.rst src/tutorials/lbs/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/meshing/index.rst src/tutorials/meshing/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/material/index.rst src/tutorials/material/index.rst)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
@@ -89,10 +89,10 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         ${PROJECT_SOURCE_DIR}/modules/*.h
     )
 
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/meshing)
-    copy_files("md" ${CMAKE_SOURCE_DIR}/tutorials/meshing ${CMAKE_BINARY_DIR}/doc/src/tutorials/meshing)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/material)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/first)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/meshing)
+    copy_files("md" ${CMAKE_SOURCE_DIR}/tutorials/lua/meshing ${CMAKE_BINARY_DIR}/doc/src/tutorials/meshing)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/material)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/lbs/first)
 
     add_custom_command(
         OUTPUT
