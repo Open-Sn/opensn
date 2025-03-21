@@ -96,6 +96,6 @@ jobs:
       - name: coveralls
         shell: bash
         run: |
-          module load opensn/gcc/14
+          module load opensn/gcc/14 python3/3.12.3
           gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|lua|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
