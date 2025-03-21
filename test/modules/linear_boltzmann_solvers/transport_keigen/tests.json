@@ -175,7 +175,7 @@
   },
   {
     "file": "keigenvalue_transport_3d_openmcxs_U235_smm.lua",
-    "comment": "3D 172G KEigenvalue::Solver test using Power Iteration + SMM with OpenMC MGXS library",
+    "comment": "3D 76G KEigenvalue::Solver test using Power Iteration + SMM with OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
       {
