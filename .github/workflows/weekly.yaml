@@ -9,19 +9,19 @@ jobs:
   test:
     runs-on: [self-hosted]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build
         shell: bash
         run: |
-          module load opensn/gcc/12
+          module load opensn/gcc/14
           mkdir build && cd build && cmake .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
-          module load opensn/gcc/12
+          module load opensn/gcc/14
           test/run_tests -d test/lua -j 32 -v 1 -w 4
       - name: test unit
         shell: bash
         run: |
-          module load opensn/gcc/12
+          module load opensn/gcc/14
           build/test/opensn-unit

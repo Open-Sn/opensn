@@ -23,7 +23,7 @@ jobs:
           - clang/17
           - intel/oneapi
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build
         shell: bash
         run: |
@@ -48,7 +48,7 @@ jobs:
   sanitize:
     runs-on: [self-hosted]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build
         shell: bash
         run: |
@@ -71,7 +71,7 @@ jobs:
   coverage:
     runs-on: [self-hosted]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build
         shell: bash
         run: |
@@ -99,3 +99,35 @@ jobs:
           module load opensn/gcc/14 python3/3.12.3
           gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|lua|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
+
+  python:
+    name: "${{ matrix.compiler }}"
+    runs-on: [self-hosted]
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc/14
+          - clang/17
+          - intel/oneapi
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        shell: bash
+        run: |
+          module load opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON=True .. && make -j && cd ..
+      - name: test
+        shell: bash
+        run: |
+          module load opensn/${{ matrix.compiler }}
+          test/run_tests -d test/python -j 32 -v 1 -w 3
+      - name: test tutorials
+        shell: bash
+        run: |
+          module load opensn/${{ matrix.compiler }}
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
+      - name: test unit
+        shell: bash
+        run: |
+          module load opensn/${{ matrix.compiler }}
