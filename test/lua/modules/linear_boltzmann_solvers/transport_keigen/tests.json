@@ -175,14 +175,14 @@
   },
   {
     "file": "keigenvalue_transport_3d_openmcxs_U235_smm.lua",
-    "comment": "3D 76G KEigenvalue::Solver test using Power Iteration + SMM with OpenMC MGXS library",
+    "comment": "3D 84G keigenvalue test using OpenMC MGXS cross-sections and power iteration with SMM",
     "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "Final k-eigenvalue",
         "wordnum": 4,
-        "gold": 2.2800213,
+        "gold": 2.280431,
         "abs_tol": 1e-05
       }
     ]

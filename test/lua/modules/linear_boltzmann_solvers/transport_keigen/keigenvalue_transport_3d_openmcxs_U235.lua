@@ -45,7 +45,7 @@ grid = meshgen1:Execute()
 
 grid:SetUniformBlockID(0)
 
-xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
+xs_u235 = xs.LoadFromOpenMC("u235_172g.h5", "u235", 294.0)
 
 --
 -- Solver

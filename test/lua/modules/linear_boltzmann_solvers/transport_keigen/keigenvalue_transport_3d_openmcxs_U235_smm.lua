@@ -1,11 +1,6 @@
--- 3D 76G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
+-- 3D 84G keigenvalue test using OpenMC MGXS cross-sections and power iteration with SMM
 --
--- Note that while this test uses the OpenMC MGXS 172G library, we only use data
--- for the first 76 groups. This is because sigma_t for the remainder of the groups
--- is zero. While this is fine for transport, it can cause problems with diffusion
--- methods.
---
--- Test: Final k-eigenvalue: 2.2800213
+-- Test: Final k-eigenvalue: 2.280431
 num_procs = 4
 
 --
@@ -51,13 +46,13 @@ grid = meshgen1:Execute()
 
 grid:SetUniformBlockID(0)
 
-xs_u235 = xs.LoadFromOpenMC("u235.h5", "u235", 294.0)
+xs_u235 = xs.LoadFromOpenMC("u235_84g.h5", "set1", 294.0)
 
 --
 -- Solver
 --
 
-num_groups = 76
+num_groups = 84
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,

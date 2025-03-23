@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-3D 172G KEigenvalue Solver test using power iteration and OpenMC MGXS library
-Test: Final k-eigenvalue: 2.2800213
+3D 84G keigenvalue test using OpenMC MGXS cross-sections, power iteration, and SMM
+Test: Final k-eigenvalue: 2.280431
 """
 
 import os
@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesSolver, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigenSMM
     from pyopensn.logvol import RPPLogicalVolume
 
 
@@ -51,9 +51,9 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     # Load cross section data using the OpenMC MGXS library
-    num_groups = 172
+    num_groups = 84
     xs_u235 = MultiGroupXS()
-    xs_u235.LoadFromOpenMC("u235_172g.h5", "u235", 294.0)
+    xs_u235.LoadFromOpenMC("u235_84g.h5", "set1", 294.0)
 
     # Solver Setup
     phys = DiscreteOrdinatesSolver(
@@ -63,8 +63,8 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": GLCProductQuadrature3DXYZ(2, 4),
-                "inner_linear_method": "petsc_gmres",
-                "l_max_its": 500,
+                "inner_linear_method": "classic_richardson",
+                "l_max_its": 2,
                 "l_abs_tol": 1.0e-12,
             },
         ],
@@ -86,10 +86,13 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = NonLinearKEigen(
+    k_solver = PowerIterationKEigenSMM(
         lbs_solver=phys,
-        nl_max_its=500,
-        nl_abs_tol=1.0e-8,
+        accel_pi_verbose=True,
+        k_tol=1.0e-8,
+        accel_pi_k_tol=1.0e-8,
+        accel_pi_max_its=30,
+        diff_sdm="pwld",
     )
     k_solver.Initialize()
     k_solver.Execute()
