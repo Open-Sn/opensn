@@ -53,7 +53,7 @@
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/lbs_curvilinear_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/lbs_steady_state.h"
