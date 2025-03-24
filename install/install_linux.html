@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install on Linux Machines &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Easy Install on Linux Machines" href="install_linux_easy.html" />
+    <link rel="prev" title="Quick Install Guide" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Quick Install Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Install on Linux Machines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-install-petsc">Step 2 - Install PETSc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-install-the-visualization-tool-kit-vtk">Step 3 - Install the Visualization Tool Kit (VTK)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-install-lua">Step 4 - Install Lua</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-install-caliper">Step 5 - Install Caliper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-configure-environment">Step 6 - Configure Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-clone-opensn">Step 7 - Clone OpenSn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8-build-opensn">Step 8 - Build OpenSn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lua-interface">Lua interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-console-interface">Python console/interface</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#step-9-run-regression-tests">Step 9 - Run Regression Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-10-build-the-opensn-documentation">Step 10 - Build the OpenSn Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_macos.html">Install on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_macos_easy.html">Easy Install on macOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Quick Install Guide</a></li>
+      <li class="breadcrumb-item active">Install on Linux Machines</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="install-on-linux-machines">
+<h1>Install on Linux Machines<a class="headerlink" href="#install-on-linux-machines" title="Link to this heading"></a></h1>
+<p>The following instructions were tested on Ubuntu 22.04.4 LTS. Other Linux
+distributions might require some minor tweaking.</p>
+<p>Some portions of these instructions require the use of <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. If you do not
+have administrative privileges, have your system administrator assist you with
+these steps.</p>
+<p>Note that these instructions assume you are using the <code class="docutils literal notranslate"><span class="pre">bash</span></code> shell and may
+differ slightly for other shells.</p>
+<section id="step-1-install-development-tools">
+<h2>Step 1 - Install Development Tools<a class="headerlink" href="#step-1-install-development-tools" title="Link to this heading"></a></h2>
+<p>The following packages are required for <strong>OpenSn</strong> installation and development:</p>
+<ol class="arabic simple">
+<li><p>A recent version of clang++/g++ that supports C++17</p></li>
+<li><p>gfortran (required by the BLAS component of PETSc)</p></li>
+<li><p>flex and bison (required by the PTSCOTCH component of PETSc)</p></li>
+<li><p>Python 3 v3.9+ and pip (required by PETSc and OpenSn)</p></li>
+<li><p>ncurses v5 (required by Lua)</p></li>
+<li><p>Git version control system</p></li>
+<li><p>CMake v3.12+</p></li>
+<li><p>MPI (OpenMPI, MPICH, and MVAPICH have been tested)</p></li>
+<li><p>Doxygen and Sphinx (required for generating the OpenSn documentation)</p></li>
+</ol>
+<p>Most of these packages can be installed using the package manager available with
+your Linux distribution (e.g., <code class="docutils literal notranslate"><span class="pre">apt</span></code>, <code class="docutils literal notranslate"><span class="pre">yum</span></code>, etc.). For example, on Ubuntu,
+you can use the following command to install all of these packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran<span class="w"> </span>python3-dev<span class="w"> </span><span class="se">\</span>
+git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>bison<span class="w"> </span><span class="se">\</span>
+libncurses5-dev<span class="w"> </span>python3-pip<span class="w"> </span>doxygen<span class="w"> </span>sphinx
+</pre></div>
+</div>
+<p>To ensure that all third-party packages use the required MPI compiler wrappers,
+the following environment variables must be set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span>mpicc
+<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>mpicxx
+<span class="nb">export</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span>mpifort
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>We recommend creating a separate directory for building the <strong>OpenSn</strong>
+dependencies.</p>
+</div>
+<p>The following steps assume that you have created a directory named
+<code class="docutils literal notranslate"><span class="pre">dependencies</span></code> to be used for compiling and installing the required
+third-party libraries.</p>
+</section>
+<section id="step-2-install-petsc">
+<h2>Step 2 - Install PETSc<a class="headerlink" href="#step-2-install-petsc" title="Link to this heading"></a></h2>
+<p>The current supported version is <a class="reference external" href="https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz">PETSc version 3.17.0+</a>.</p>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>PETSc</strong> using the following
+commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.17.0.tar.gz
+tar<span class="w"> </span>-zxf<span class="w"> </span>petsc-3.17.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>petsc-3.17.0
+</pre></div>
+</div>
+<p>To configure <strong>PETSc</strong> with the required build options, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./configure<span class="w">  </span><span class="se">\</span>
+--prefix<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
+--download-hypre<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--with-ssl<span class="o">=</span><span class="m">0</span><span class="w">  </span><span class="se">\</span>
+--with-debugging<span class="o">=</span><span class="m">0</span><span class="w">  </span><span class="se">\</span>
+--with-pic<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--with-shared-libraries<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--download-fblaslapack<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--download-metis<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--download-parmetis<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--download-superlu_dist<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--download-ptscotch<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
+--with-cxx-dialect<span class="o">=</span>C++11<span class="w">  </span><span class="se">\</span>
+--with-64-bit-indices<span class="w"> </span><span class="se">\</span>
+<span class="nv">CC</span><span class="o">=</span><span class="nv">$CC</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span><span class="nv">$CXX</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span><span class="nv">$FC</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">CFLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">CXXFLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">FFLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">FCFLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">F90FLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">F77FLAGS</span><span class="o">=</span><span class="s1">&#39;-fPIC -fopenmp&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">COPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">CXXOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">FOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
+<span class="nv">PETSC_DIR</span><span class="o">=</span><span class="nv">$PWD</span>
+</pre></div>
+</div>
+<p>If the configuration fails, consult <strong>PETSc</strong>’s user documentation.</p>
+<p>Follow the <strong>PETSc</strong> build prompts to complete the <strong>PETSc</strong> installation.</p>
+</section>
+<section id="step-3-install-the-visualization-tool-kit-vtk">
+<h2>Step 3 - Install the Visualization Tool Kit (VTK)<a class="headerlink" href="#step-3-install-the-visualization-tool-kit-vtk" title="Link to this heading"></a></h2>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>VTK</strong> using the following
+commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>VTK
+<span class="nb">cd</span><span class="w"> </span>VTK
+wget<span class="w"> </span>https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz
+tar<span class="w"> </span>-zxf<span class="w"> </span>VTK-9.3.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>VTK-9.3.0
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DBUILD_SHARED_LIBS:BOOL<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_Group_MPI:BOOL<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_GROUP_ENABLE_Qt<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_GROUP_ENABLE_Rendering<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_GROUP_ENABLE_Imaging<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_GROUP_ENABLE_StandAlone<span class="o">=</span>WANT<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_GROUP_ENABLE_Web<span class="o">=</span>NO<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DVTK_BUILD_TESTING:BOOL<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DCMAKE_CXX_FLAGS<span class="o">=</span>-std<span class="o">=</span>c++11<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>../
+</pre></div>
+</div>
+<p>After <code class="docutils literal notranslate"><span class="pre">cmake</span></code> has completed configuring the build, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>to install <strong>VTK</strong>.</p>
+</section>
+<section id="step-4-install-lua">
+<h2>Step 4 - Install Lua<a class="headerlink" href="#step-4-install-lua" title="Link to this heading"></a></h2>
+<p>Download and extract <strong>Lua</strong> version 5.3.6+ from <a class="reference external" href="https://www.lua.org">https://www.lua.org</a> to your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory. Install <strong>Lua</strong> as
+follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>linux<span class="w"> </span><span class="nv">MYCFLAGS</span><span class="o">=</span>-fPIC<span class="w"> </span>-j
+make<span class="w"> </span>install<span class="w"> </span><span class="nv">INSTALL_TOP</span><span class="o">=</span>/path/to/dependencies/directory
+</pre></div>
+</div>
+<p>If the install complains about missing <strong>readline</strong> includes or libraries, it
+may be necessary to install <strong>readline</strong> and <strong>ncurses</strong>.</p>
+</section>
+<section id="step-5-install-caliper">
+<h2>Step 5 - Install Caliper<a class="headerlink" href="#step-5-install-caliper" title="Link to this heading"></a></h2>
+<p>In your <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> directory, install <strong>Caliper</strong> using the following
+commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>caliper
+<span class="nb">cd</span><span class="w"> </span>caliper
+wget<span class="w"> </span>https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz
+tar<span class="w"> </span>-zxf<span class="w"> </span>v2.10.0.tar.gz
+<span class="nb">cd</span><span class="w"> </span>Caliper-2.10.0
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DWITH_MPI<span class="o">=</span>ON<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>-DWITH_KOKKOS<span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>../
+</pre></div>
+</div>
+<p>After <code class="docutils literal notranslate"><span class="pre">cmake</span></code> has completed configuring the build, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>to install <strong>Caliper</strong>.</p>
+</section>
+<section id="step-6-configure-environment">
+<h2>Step 6 - Configure Environment<a class="headerlink" href="#step-6-configure-environment" title="Link to this heading"></a></h2>
+<p>Before compiling <strong>OpenSn</strong>, you must add the location of the third-party
+libraries to your <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> environment variable. This can be
+accomplished with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies<span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It may be a good idea to add the <code class="docutils literal notranslate"><span class="pre">CMAKE_PREFIX_PATH</span></code> variable to your
+<code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file so that you don’t need to specify the path every time you
+need to re-run <code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
+</div>
+</section>
+<section id="step-7-clone-opensn">
+<h2>Step 7 - Clone OpenSn<a class="headerlink" href="#step-7-clone-opensn" title="Link to this heading"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you want to contribute to <strong>OpenSn</strong>, it is strongly recommended that you
+first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
+</div>
+<p>To clone the <strong>OpenSn</strong> repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git
+</pre></div>
+</div>
+<p>To clone your fork of <strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git
+</pre></div>
+</div>
+</section>
+<section id="step-8-build-opensn">
+<h2>Step 8 - Build OpenSn<a class="headerlink" href="#step-8-build-opensn" title="Link to this heading"></a></h2>
+<section id="lua-interface">
+<h3>Lua interface<a class="headerlink" href="#lua-interface" title="Link to this heading"></a></h3>
+<p>To build <strong>OpenSn</strong>, create a build directory in the top-level <strong>OpenSn</strong>
+directory and run <code class="docutils literal notranslate"><span class="pre">cmake</span></code> to generate the build files and <code class="docutils literal notranslate"><span class="pre">make</span></code> to compile
+<strong>OpenSn</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..
+make<span class="w"> </span>-j&lt;N&gt;
+</pre></div>
+</div>
+<p>To configure <strong>OpenSn</strong> for building the documentation, in addition to the
+<strong>OpenSn</strong> application, add the <code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_DOCS</span></code> option to <code class="docutils literal notranslate"><span class="pre">cmake</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
+make<span class="w"> </span>-j&lt;N&gt;
+</pre></div>
+</div>
+<p>For more information on building the documentation, see <strong>Step 10</strong> below.</p>
+</section>
+<section id="python-console-interface">
+<h3>Python console/interface<a class="headerlink" href="#python-console-interface" title="Link to this heading"></a></h3>
+<p><strong>OpenSn</strong> also provides a Python interface. It is available in two formats: a
+console application <code class="docutils literal notranslate"><span class="pre">opensn</span></code> and a Python module <code class="docutils literal notranslate"><span class="pre">pyopensn</span></code>.</p>
+<p>Classes and functions in the Python interface are detailed in <a class="reference internal" href="../pyapi/index.html#pyapi"><span class="std std-ref">Python API</span></a>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The console and the module are <strong>not compatible</strong> with each other. Attempting
+to import the module within the console will result in an import error. Users
+should select one approach and maintain consistent coding style throughout.</p>
+</div>
+<p>To compile the console application:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DOPENSN_WITH_PYTHON<span class="o">=</span>ON<span class="w"> </span>..
+make<span class="w"> </span>-j&lt;N&gt;
+</pre></div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>In the console application, all classes and functions are implicitly imported
+into the <code class="docutils literal notranslate"><span class="pre">__main__</span></code> module at startup. Therefore, omit submodule prefixes
+when referring to class or function names. Additionally, avoid redefining any
+<strong>OpenSn</strong> class or function names to prevent naming conflicts.</p>
+</div>
+<p>To compile the module and install in the Python <code class="docutils literal notranslate"><span class="pre">site-packages</span></code> path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Unlike the console, the Python interface is fully compatible with <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>.
+Both <strong>OpenSn</strong> and <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code> share the same MPI communicator. Therefore,
+the Python module can be used in scripts that incorporate other tasks using
+<code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="step-9-run-regression-tests">
+<h2>Step 9 - Run Regression Tests<a class="headerlink" href="#step-9-run-regression-tests" title="Link to this heading"></a></h2>
+<p>To run the regression tests, simply run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> from the build directory.
+This will run all of the regression tests in the <code class="docutils literal notranslate"><span class="pre">opensn/test</span></code> directory.</p>
+</section>
+<section id="step-10-build-the-opensn-documentation">
+<h2>Step 10 - Build the OpenSn Documentation<a class="headerlink" href="#step-10-build-the-opensn-documentation" title="Link to this heading"></a></h2>
+<p>If you configured the <strong>OpenSn</strong> build environment with support for building the
+documentation (see <strong>Step 8</strong>), these instructions will help you install the
+necessary tools and build the documentation.</p>
+<p>To generate the documentation from your local working copy of <strong>OpenSn</strong>, you
+need to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install the required <strong>Python</strong> packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>breathe<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
+</pre></div>
+</div>
+<p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, you can run the command <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to
+generate the documentation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
+make<span class="w"> </span>doc
+</pre></div>
+</div>
+<p>Once the build process has completed, you can view the generated documentation
+by opening <code class="docutils literal notranslate"><span class="pre">opensn/build/doc/index.html</span></code> in your favorite web browser.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Quick Install Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install_linux_easy.html" class="btn btn-neutral float-right" title="Easy Install on Linux Machines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

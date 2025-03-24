@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binding C++ classes to Python &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Binding C++ classes to Lua" href="lua_bindings.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Developer Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lua_bindings.html">Binding C++ classes to Lua</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binding C++ classes to Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#namespaces">Namespaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compilation-for-developers">Compilation for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pure-python-plug-ins-future-development">Pure Python plug-ins (future development)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer’s Guide</a></li>
+      <li class="breadcrumb-item active">Binding C++ classes to Python</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="binding-c-classes-to-python">
+<h1>Binding C++ classes to Python<a class="headerlink" href="#binding-c-classes-to-python" title="Link to this heading"></a></h1>
+<p>The <strong>OpenSn</strong> package provides a set of Python bindings for its C++ classes.
+The bindings are generated using the <a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a>
+library. Additional packages such as <a class="reference external" href="https://numpy.org">NumPy</a> are also
+required to build the bindings.</p>
+<p>Currently, there are two ways to access the Python bindings: either through a
+<strong>console</strong> or through a <strong>module</strong>.</p>
+<p>All binding code is located in the <code class="docutils literal notranslate"><span class="pre">python/lib</span></code> directory.</p>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<p>In addition to the global namespace, <strong>OpenSn</strong> defines several internal
+namespaces to organize related functionality:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">aquad</span></code> — for angular quadrature</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">diffusion</span></code> — for diffusion solver</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fieldfunc</span></code> — for field functions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logvol</span></code> — for logical volumes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code> — for mesh-related functionality</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">math</span></code> — for math-related functionality</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post</span></code> — for post-processing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">response</span></code> — for response evaluator</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">settings</span></code> — for changing program parameters (accessible only through the module)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solver</span></code> — for solvers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code> — for neutron point source and volumetric source</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs</span></code> — for cross sections</p></li>
+</ul>
+<p>These namespaces should not be modified unless explicitly instructed by the
+development team.</p>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<p>Example of a binding of <code class="docutils literal notranslate"><span class="pre">opensn::MyClass</span></code> to the <code class="docutils literal notranslate"><span class="pre">aquad</span></code> namespace:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">WrapMyClass</span><span class="p">(</span><span class="n">py</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="w"> </span><span class="n">aquad</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// clang-format off</span>
+<span class="w">  </span><span class="c1">// my class</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">my_class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">py</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">BaseClassIfBinded</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">aquad</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;MyClass&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span>
+<span class="s">    Short description...</span>
+
+<span class="s">    Long description of MyClass...</span>
+
+<span class="s">    Wrapper of :cpp:class:`opensn::MyClass`.</span>
+<span class="s">    </span><span class="dl">)</span><span class="s">&quot;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="n">my_class</span><span class="p">.</span><span class="n">def</span><span class="p">(</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">init</span><span class="p">(</span>
+<span class="w">      </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span>
+<span class="s">    Constructor documentation...</span>
+
+<span class="s">    Parameters</span>
+<span class="s">    ----------</span>
+<span class="s">    a: int</span>
+<span class="s">        ...</span>
+<span class="s">    b: int</span>
+<span class="s">        ...</span>
+<span class="s">    c: str</span>
+<span class="s">        ...</span>
+<span class="s">    </span><span class="dl">)</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;c&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="n">my_class</span><span class="p">.</span><span class="n">def</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;MyMethod1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">MyClass</span><span class="o">::</span><span class="n">MyMethod1</span><span class="p">,</span>
+<span class="w">    </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span>
+<span class="s">    Docstrings...</span>
+
+<span class="s">    Parameters</span>
+<span class="s">    ----------</span>
+<span class="s">    a: str</span>
+<span class="s">        String ...</span>
+<span class="s">    b: int, default=1</span>
+<span class="s">        Number of...</span>
+<span class="s">    </span><span class="dl">)</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="n">my_class</span><span class="p">.</span><span class="n">def_static</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;MyClassMethod&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">MyClass</span><span class="o">::</span><span class="n">MyClassMethod</span><span class="p">,</span>
+<span class="w">    </span><span class="sa">R</span><span class="s">&quot;</span><span class="dl">(</span>
+<span class="s">    ...</span>
+<span class="s">    </span><span class="dl">)</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// clang-format on</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">py_aquad</span><span class="p">(</span><span class="n">py</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pyopensn</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">py</span><span class="o">::</span><span class="k">module</span><span class="w"> </span><span class="n">aquad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pyopensn</span><span class="p">.</span><span class="n">def_submodule</span><span class="p">(</span><span class="s">&quot;aquad&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Angular quadrature module.&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">WrapMyClass</span><span class="p">(</span><span class="n">aquad</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Docstrings must follow <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html">Numpy docstring format</a>.
+All non-empty lines in a docstring paragraph must have <strong>the same indent level</strong>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Math equations and figures can be added through the <code class="docutils literal notranslate"><span class="pre">:math:</span></code> and
+<code class="docutils literal notranslate"><span class="pre">:img:</span></code> directives.</p>
+</div>
+</section>
+<section id="compilation-for-developers">
+<h2>Compilation for developers<a class="headerlink" href="#compilation-for-developers" title="Link to this heading"></a></h2>
+<p>While the Python module can be compiled and install using <code class="docutils literal notranslate"><span class="pre">pip</span></code>, it is
+recommended for developers to compile and install the module and the console
+application inplace (i.e. in the source directory of <strong>OpenSn</strong>). This approach
+will print all the CMake logs to the terminal, thus facilitating the debugging
+process.</p>
+<p>The compilation command for building the Python interface inplace is:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>-i
+</pre></div>
+</div>
+<p>Extra arguments can be appended to the build command, including:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-h</span></code>, <code class="docutils literal notranslate"><span class="pre">--help</span></code>: print the help message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span></code>, <code class="docutils literal notranslate"><span class="pre">--inplace</span></code>: ignore build-lib and put compiled extensions into the source directory alongside your pure Python modules.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-g</span></code>, <code class="docutils literal notranslate"><span class="pre">--debug</span></code>: compile in debug mode and turn off all optimizations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-f</span></code>, <code class="docutils literal notranslate"><span class="pre">--force</span></code>: forcibly build everything (ignore file timestamps).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-j&lt;n&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">--parallel=&lt;n&gt;</span></code>: number of parallel build jobs. By default, it uses all threads of the builder processor.</p></li>
+</ul>
+<p>Environment variables are used to set arguments for <code class="docutils literal notranslate"><span class="pre">cmake</span></code> builder:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CMAKE_ARGS</span></code>: extra arguments to pass to CMake during configure step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BUILD_ARGS</span></code>: extra arguments to pass to CMake during build step.</p></li>
+</ul>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">CMAKE_ARGS</span><span class="o">=</span><span class="s1">&#39;-DOPENSN_WITH_DOCS=ON&#39;</span><span class="w"> </span><span class="nv">BUILD_ARGS</span><span class="o">=</span><span class="s1">&#39;--target __init__ --target doc&#39;</span><span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace
+</pre></div>
+</div>
+</section>
+<section id="pure-python-plug-ins-future-development">
+<h2>Pure Python plug-ins (future development)<a class="headerlink" href="#pure-python-plug-ins-future-development" title="Link to this heading"></a></h2>
+<p>Pure Python plug-ins, such as submodule for plot utilities, can be added to the
+<code class="docutils literal notranslate"><span class="pre">pyopensn</span></code> folder. This feature enables seamless communication between the C++
+API for intensive numerical computation and the Python API for flexibility and
+data visualization.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This feature is only available through the module approach.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lua_bindings.html" class="btn btn-neutral float-left" title="Binding C++ classes to Lua" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,3 +1,5 @@
+.. _pyapi:
+
 Python API
 ==========
 
@@ -199,12 +201,18 @@ Graph partitioner
 Logical volume
 --------------
 
+Base class
+^^^^^^^^^^
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: noinit.rst
 
    logvol.LogicalVolume
+
+Logical volume types
+^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated

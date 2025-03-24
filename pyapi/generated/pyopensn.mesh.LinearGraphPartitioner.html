@@ -44,7 +44,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
@@ -105,12 +105,22 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyopensn.mesh.LinearGraphPartitioner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.mesh.</span></span><span class="sig-name descname"><span class="pre">LinearGraphPartitioner</span></span><a class="headerlink" href="#pyopensn.mesh.LinearGraphPartitioner" title="Link to this definition"></a></dt>
-<dd><p>Linear graph partitioner.</p>
+<dd><p>Basic linear partitioning.</p>
+<p>This type of partitioner works basically only for testing.</p>
+<p>Orthogonal meshes can produce decent partitioning but for unstructured grids it can be pretty
+bad. It partitions cells based on their linear index <code class="docutils literal notranslate"><span class="pre">global_id</span></code> instead of actually
+working with the graph.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::LinearGraphPartitioner</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.mesh.LinearGraphPartitioner.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.LinearGraphPartitioner" title="pyopensn.mesh.LinearGraphPartitioner"><span class="pre">pyopensn.mesh.LinearGraphPartitioner</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.LinearGraphPartitioner.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a linear graph partitioner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>all_to_rank</strong> (<em>int</em><em>, </em><em>default=-1</em>) – Rank to which all cells are restricted if non-zero. Otherwise, the partitioner is equivalent
+to a single-rank partitioner.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

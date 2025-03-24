@@ -51,7 +51,7 @@ most prominent features of OpenSn include:
 .. toctree::
    :maxdepth: 2
 
-   getting_started
+   install/index
    theory/index
    tutorials/index
    pyapi/index

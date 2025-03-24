@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Easy Install on macOS &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Theory Manual" href="../theory/index.html" />
+    <link rel="prev" title="Install on macOS" href="install_macos.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Quick Install Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install_linux.html">Install on Linux Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_linux_easy.html">Easy Install on Linux Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install_macos.html">Install on macOS</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Easy Install on macOS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-install-development-tools">Step 1 - Install Development Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-install-mpich">Step 2 - Install MPICH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-clone-opensn">Step 3 - Clone OpenSn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-set-up-the-environment">Step 4 - Set Up the Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-configure-and-build-opensn">Step 5 - Configure and Build OpenSn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lua-interface">Lua interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-console-interface">Python console/interface</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-run-regression-tests">Step 6 - Run Regression Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-opensn-documentation">Step 7 - OpenSn Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Quick Install Guide</a></li>
+      <li class="breadcrumb-item active">Easy Install on macOS</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="easy-install-on-macos">
+<h1>Easy Install on macOS<a class="headerlink" href="#easy-install-on-macos" title="Link to this heading"></a></h1>
+<p>The following instructions were tested on macOS Sonoma (version 14).</p>
+<section id="step-1-install-development-tools">
+<h2>Step 1 - Install Development Tools<a class="headerlink" href="#step-1-install-development-tools" title="Link to this heading"></a></h2>
+<p>The following packages should be installed via <a class="reference external" href="https://brew.sh">Homebrew</a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmake</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gcc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">curl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bison</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m4</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doxygen</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sphinx</span></code></p></li>
+</ul>
+<p>To install any missing packages, use the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>&lt;package<span class="w"> </span>name&gt;
+</pre></div>
+</div>
+<p>Pay close attention to the output of <code class="docutils literal notranslate"><span class="pre">brew</span></code>. It may be necessary to add
+locations to your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable in order to use the newly
+installed utilities.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> package may not be available via <code class="docutils literal notranslate"><span class="pre">Homebrew</span></code>. It is only
+required if you intend to build the OpenSn documentation.</p>
+</div>
+</section>
+<section id="step-2-install-mpich">
+<h2>Step 2 - Install MPICH<a class="headerlink" href="#step-2-install-mpich" title="Link to this heading"></a></h2>
+<p>Download a suitable version of <a class="reference external" href="https://www.mpich.org/static/downloads">MPICH 4+</a>.
+Versions above 4.0 are recommended.</p>
+<p>Unpack the source into <code class="docutils literal notranslate"><span class="pre">/path/to/mpich</span></code>. Assuming MPICH will be built in
+<code class="docutils literal notranslate"><span class="pre">/path/to/mpich/build</span></code> and installed in <code class="docutils literal notranslate"><span class="pre">/path/to/mpich/install</span></code>, execute
+the following commands to configure, build, and install MPICH:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/mpich/build
+<span class="nb">cd</span><span class="w"> </span>/path/to/mpich/build
+
+/path/to/mpich/configure<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--prefix<span class="o">=</span>/path/to/mpich/install<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span><span class="nv">CC</span><span class="o">=</span>gcc-13<span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>g++-13<span class="w"> </span><span class="nv">FC</span><span class="o">=</span>gfortran-13<span class="w"> </span><span class="nv">F77</span><span class="o">=</span>gfortran-13<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span><span class="nv">FCFLAGS</span><span class="o">=</span>-fallow-argument-mismatch<span class="w"> </span><span class="nv">FFLAGS</span><span class="o">=</span>-fallow-argument-mismatch
+
+make<span class="w"> </span>-j&lt;N&gt;
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>MPICH recommends that the build and install directories be placed outside the
+source tree (<code class="docutils literal notranslate"><span class="pre">/path/to/mpich</span></code>).</p>
+<p>To check the installation, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/path/to/mpich/install/bin/mpicc<span class="w"> </span>--version
+</pre></div>
+</div>
+<p>If the installation was successful, a message similar to the following should
+appear:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>gcc-13 (Homebrew GCC 13.2.0) 13.2.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+</pre></div>
+</div>
+<p>Ensure that the message shows the desired compilers.</p>
+<p>If the installation is successful, set the following environment variables in
+your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> script:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">MPI_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/mpich/install&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MPI_DIR</span><span class="si">}</span><span class="s2">/bin:</span><span class="si">${</span><span class="nv">PATH</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">CC</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MPI_DIR</span><span class="si">}</span><span class="s2">/mpicc&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CXX</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MPI_DIR</span><span class="si">}</span><span class="s2">/mpicxx&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">FC</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MPI_DIR</span><span class="si">}</span><span class="s2">/mpifort&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">F77</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MPI_DIR</span><span class="si">}</span><span class="s2">/mpif77&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-clone-opensn">
+<h2>Step 3 - Clone OpenSn<a class="headerlink" href="#step-3-clone-opensn" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to contribute to <strong>OpenSn</strong>, it is strongly recommended to first
+fork the OpenSn repository into your own Git account and then clone your
+fork.</p>
+</div>
+<p>Clone the OpenSn repository or your fork:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Open-Sn/opensn.git<span class="w"> </span>/path/to/opensn
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git<span class="w"> </span>/path/to/opensn
+</pre></div>
+</div>
+</section>
+<section id="step-4-set-up-the-environment">
+<h2>Step 4 - Set Up the Environment<a class="headerlink" href="#step-4-set-up-the-environment" title="Link to this heading"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Xcode 15’s linker introduces changes that may cause issues. It may be
+necessary to modify <code class="docutils literal notranslate"><span class="pre">configure_dependencies.py</span></code> to use PETSc 3.20.x. You
+may also need to add the following line to OpenSn’s <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">link_libraries</span><span class="p">(</span><span class="s2">&quot;-ld_classic&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next, run the script to compile the necessary dependencies:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/dependencies
+<span class="nb">cd</span><span class="w"> </span>/path/to/opensn
+python3<span class="w"> </span>tools/configure_dependencies.py<span class="w"> </span>-d<span class="w"> </span>/path/to/dependencies
+</pre></div>
+</div>
+<p>It is recommended that <code class="docutils literal notranslate"><span class="pre">/path/to/dependencies</span></code> be located outside the OpenSn
+source tree.</p>
+<p>Set the environment variable for building OpenSn:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span>/path/to/dependencies<span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-configure-and-build-opensn">
+<h2>Step 5 - Configure and Build OpenSn<a class="headerlink" href="#step-5-configure-and-build-opensn" title="Link to this heading"></a></h2>
+<section id="lua-interface">
+<h3>Lua interface<a class="headerlink" href="#lua-interface" title="Link to this heading"></a></h3>
+<p>OpenSn is configured within a build directory:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..
+</pre></div>
+</div>
+<p>To configure with support for building the documentation, use:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DOPENSN_WITH_DOCS<span class="o">=</span>ON<span class="w"> </span>..
+</pre></div>
+</div>
+<p>In general, the build directory will be located within the source tree.</p>
+<p>Once configuration is complete, the Lua interface of OpenSn can be built within
+the build directory using:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j&lt;N&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenSn may need to be reconfigured when dependencies change or new files are
+added. If this occurs, clear the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory and repeat the
+configuration process.</p>
+</div>
+</section>
+<section id="python-console-interface">
+<h3>Python console/interface<a class="headerlink" href="#python-console-interface" title="Link to this heading"></a></h3>
+<p><strong>OpenSn</strong> also provides a Python interface. It is available in two formats: a
+console application <code class="docutils literal notranslate"><span class="pre">opensn</span></code> and a Python module <code class="docutils literal notranslate"><span class="pre">pyopensn</span></code>.</p>
+<p>Classes and functions in the Python interface are detailed in <a class="reference internal" href="../pyapi/index.html#pyapi"><span class="std std-ref">Python API</span></a>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The console and the module are <strong>not compatible</strong> with each other. Attempting
+to import the module within the console will result in an import error. Users
+should select one approach and maintain consistent coding style throughout.</p>
+</div>
+<p>To compile the console application:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DOPENSN_WITH_PYTHON<span class="o">=</span>ON<span class="w"> </span>..
+make<span class="w"> </span>-j&lt;N&gt;
+</pre></div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>In the console application, all classes and functions are implicitly imported
+into the <code class="docutils literal notranslate"><span class="pre">__main__</span></code> module at startup. Therefore, omit submodule prefixes
+when referring to class or function names. Additionally, avoid redefining any
+<strong>OpenSn</strong> class or function names to prevent naming conflicts.</p>
+</div>
+<p>To compile the module and install in the Python <code class="docutils literal notranslate"><span class="pre">site-packages</span></code> path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Unlike the console, the Python interface is fully compatible with <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>.
+Both <strong>OpenSn</strong> and <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code> share the same MPI communicator. Therefore,
+the Python module can be used in scripts that incorporate other tasks using
+<code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="step-6-run-regression-tests">
+<h2>Step 6 - Run Regression Tests<a class="headerlink" href="#step-6-run-regression-tests" title="Link to this heading"></a></h2>
+<p>To check if the code compiled correctly, execute the test scripts:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
+test/run_tests<span class="w"> </span>-j&lt;N&gt;
+build/test/opensn-unit
+</pre></div>
+</div>
+</section>
+<section id="step-7-opensn-documentation">
+<h2>Step 7 - OpenSn Documentation<a class="headerlink" href="#step-7-opensn-documentation" title="Link to this heading"></a></h2>
+<p>If you configured the OpenSn build environment with support for building the
+documentation (see <strong>Step 5</strong>), follow these steps to install the necessary
+tools and generate the documentation.</p>
+<p>First, install the required Python packages using <code class="docutils literal notranslate"><span class="pre">pip3</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>breathe<span class="w"> </span>myst-parser<span class="w"> </span>sphinx_rtd_theme
+</pre></div>
+</div>
+<p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, run the following command to generate the
+documentation:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
+make<span class="w"> </span>doc
+</pre></div>
+</div>
+<p>Once the build process has completed, you can view the generated documentation
+by opening <code class="docutils literal notranslate"><span class="pre">opensn/build/doc/index.html</span></code> in your favorite web browser.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install_macos.html" class="btn btn-neutral float-left" title="Install on macOS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../theory/index.html" class="btn btn-neutral float-right" title="Theory Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

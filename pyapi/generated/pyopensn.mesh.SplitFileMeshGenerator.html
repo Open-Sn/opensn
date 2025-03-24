@@ -44,7 +44,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
@@ -126,7 +126,7 @@ broadcasting the mesh to other locations it creates binary mesh files for each l
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scale</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Uniform scale to apply to the mesh after reading.</p></li>
 <li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><em>pyopensn.mesh.MeshGenerator</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of MeshGenerator objects.</p></li>
-<li><p><strong>partitioner</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
+<li><p><strong>partitioner</strong> (<a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>, </em><em>default=None</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
 PETScGraphPartitioner with a “parmetis” setting.</p></li>
 <li><p><strong>replicated_mesh</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when set, makes the mesh appear in full fidelity on each process.</p></li>
 <li><p><strong>num_partitions</strong> (<em>int</em><em>, </em><em>default=0</em>) – The number of partitions to generate. If zero, it will default to the number of MPI
