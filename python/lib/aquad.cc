@@ -54,7 +54,7 @@ WrapProductQuadrature(py::module& aquad)
     aquad,
     "GLProductQuadrature1DSlab",
     R"(
-    Gauss-Legendre product quadrature for 1D, slab geometry.
+    Gauss-Legendre quadrature for 1D, slab geometry.
 
     Wrapper of :cpp:class:`opensn::GLProductQuadrature1DSlab`.
     )"
@@ -87,7 +87,7 @@ WrapProductQuadrature(py::module& aquad)
     aquad,
     "GLCProductQuadrature2DXY",
     R"(
-    Gauss-Legendre-Chebyshev product quadrature for 2D, XY geometry.
+    Gauss-Legendre-Chebyshev quadrature for 2D, XY geometry.
 
     Wrapper of :cpp:class:`opensn::GLCProductQuadrature2DXY`.
     )"
@@ -123,7 +123,7 @@ WrapProductQuadrature(py::module& aquad)
     aquad,
     "GLCProductQuadrature3DXYZ",
     R"(
-    Gauss-Legendre-Chebyshev product quadrature for 3D, XYZ geometry.
+    Gauss-Legendre-Chebyshev quadrature for 3D, XYZ geometry.
 
     Wrapper of :cpp:class:`opensn::GLCProductQuadrature3DXYZ`.
     )"
@@ -176,7 +176,7 @@ WrapCurvilinearQuadrature(py::module& aquad)
     aquad,
     "GLCProductQuadrature2DRZ",
     R"(
-    Gauss-Legendre-Chebyshev product quadrature for 2D, RZ geometry.
+    Gauss-Legendre-Chebyshev quadrature for 2D, RZ geometry.
 
     Wrapper of :cpp:class:`opensn::GLCProductQuadrature2DRZ`.
     )"
@@ -189,17 +189,17 @@ WrapCurvilinearQuadrature(py::module& aquad)
       }
     ),
     R"(
-        Construct a 2D RZ Gauss-Legendre Chebyshev product quadrature.
+    Construct a Gauss-Legendre Chebyshev product quadrature for 2D, RZ geometry.
 
-        Parameters
-        ----------
-        n_polar: int
-            Number of polar angles.
-        n_azimuthal: int
-            Number of azimuthal angles.
-        verbose: bool, default=False
-            Verbosity.
-        )",
+    Parameters
+    ----------
+    n_polar: int
+        Number of polar angles.
+    n_azimuthal: int
+        Number of azimuthal angles.
+    verbose: bool, default=False
+        Verbosity.
+    )",
     py::arg("n_polar"),
     py::arg("n_azimuthal"),
     py::arg("verbose") = false

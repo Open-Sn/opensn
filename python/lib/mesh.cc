@@ -65,7 +65,7 @@ WrapMesh(py::module& mesh)
     ----------
     log_vol: pyopensn.logvol.LogicalVolume
         Logical volume that determines which mesh cells will be selected.
-    mat_id: int
+    block_id: int
         Block ID that will be assigned.
     inside: bool
         If true, the selected mesh cells are the ones whose centroids are inside the logival volume.
@@ -73,7 +73,7 @@ WrapMesh(py::module& mesh)
         volume.
     )",
     py::arg("log_vol"),
-    py::arg("mat_id"),
+    py::arg("block_id"),
     py::arg("inside")
   );
   mesh_continuum.def(
@@ -130,10 +130,10 @@ WrapMesh(py::module& mesh)
       // change local cells
       for (Cell& cell : self.local_cells)
       {
-        int new_matid = func(cell.centroid, cell.block_id);
-        if (cell.block_id != new_matid)
+        int new_block_id = func(cell.centroid, cell.block_id);
+        if (cell.block_id != new_block_id)
         {
-          cell.block_id = new_matid;
+          cell.block_id = new_block_id;
           ++local_num_cells_modified;
         }
       }
@@ -142,10 +142,10 @@ WrapMesh(py::module& mesh)
       for (std::uint64_t ghost_id : ghost_ids)
       {
         Cell& cell = self.cells[ghost_id];
-        int new_matid = func(cell.centroid, cell.block_id);
-        if (cell.block_id != new_matid)
+        int new_block_id = func(cell.centroid, cell.block_id);
+        if (cell.block_id != new_block_id)
         {
-          cell.block_id = new_matid;
+          cell.block_id = new_block_id;
           ++local_num_cells_modified;
         }
       }
@@ -389,7 +389,7 @@ WrapMeshGenerator(py::module& mesh)
         Uniform scale to apply to the mesh after reading.
     inputs: List[pyopensn.mesh.MeshGenerator], default=[]
         A list of MeshGenerator objects.
-    partitioner: List[pyopensn.mesh.GraphPartitioner], default=[]
+    partitioner: pyopensn.mesh.GraphPartitioner, default=None
         Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
@@ -437,7 +437,7 @@ WrapMeshGenerator(py::module& mesh)
         Uniform scale to apply to the mesh after reading.
     inputs: List[pyopensn.mesh.MeshGenerator], default=[]
         A list of MeshGenerator objects.
-    partitioner: List[pyopensn.mesh.GraphPartitioner], default=[]
+    partitioner: pyopensn.mesh.GraphPartitioner, default=None
         Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
@@ -474,7 +474,7 @@ WrapMeshGenerator(py::module& mesh)
         Uniform scale to apply to the mesh after reading.
     inputs: List[pyopensn.mesh.MeshGenerator], default=[]
         A list of MeshGenerator objects.
-    partitioner: List[pyopensn.mesh.GraphPartitioner], default=[]
+    partitioner: pyopensn.mesh.GraphPartitioner, default=None
         Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
@@ -520,7 +520,7 @@ WrapMeshGenerator(py::module& mesh)
         Uniform scale to apply to the mesh after reading.
     inputs: List[pyopensn.mesh.MeshGenerator], default=[]
         A list of MeshGenerator objects.
-    partitioner: List[pyopensn.mesh.GraphPartitioner], default=[]
+    partitioner: pyopensn.mesh.GraphPartitioner, default=None
         Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
@@ -573,7 +573,7 @@ WrapMeshGenerator(py::module& mesh)
         Uniform scale to apply to the mesh after reading.
     inputs: List[pyopensn.mesh.MeshGenerator], default=[]
         A list of MeshGenerator objects.
-    partitioner: List[pyopensn.mesh.GraphPartitioner], default=[]
+    partitioner: pyopensn.mesh.GraphPartitioner, default=None
         Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
@@ -604,7 +604,9 @@ WrapGraphPartitioner(py::module& mesh)
     mesh,
     "KBAGraphPartitioner",
     R"(
-    KBA graph partitioner.
+    Koch, Baker and Alcouffe based partitioning.
+
+    This is an overlayed ortho-grid based partitioner.
 
     Wrapper of :cpp:class:`opensn::KBAGraphPartitioner`.
     )"
@@ -616,7 +618,24 @@ WrapGraphPartitioner(py::module& mesh)
         return KBAGraphPartitioner::Create(kwargs_to_param_block(params));
       }
     ),
-    "Construct a KBA graph partitioner."
+    R"(
+    Construct a KBA graph partitioner.
+
+    Parameters
+    ----------
+    nx: int, default=1
+        Number of partitions in x.
+    ny: int, default=1
+        Number of partitions in y.
+    nz: int, default=1
+        Number of partitions in z.
+    xcuts: List[float], default=[]
+        Location of the internal x-cuts. Requires ``nx - 1`` entries.
+    ycuts: List[float], default=[]
+        Location of the internal y-cuts. Requires ``ny - 1`` entries.
+    zcuts: List[float], default=[]
+        Location of the internal z-cuts. Requires ``nz - 1`` entries.
+    )"
   );
 
   // linear graph partitioner
@@ -626,7 +645,13 @@ WrapGraphPartitioner(py::module& mesh)
     mesh,
     "LinearGraphPartitioner",
     R"(
-    Linear graph partitioner.
+    Basic linear partitioning.
+
+    This type of partitioner works basically only for testing.
+
+    Orthogonal meshes can produce decent partitioning but for unstructured grids it can be pretty
+    bad. It partitions cells based on their linear index ``global_id`` instead of actually
+    working with the graph.
 
     Wrapper of :cpp:class:`opensn::LinearGraphPartitioner`.
     )"
@@ -640,6 +665,12 @@ WrapGraphPartitioner(py::module& mesh)
     ),
     R"(
     Construct a linear graph partitioner.
+
+    Parameters
+    ----------
+    all_to_rank: int, default=-1
+        Rank to which all cells are restricted if non-zero. Otherwise, the partitioner is equivalent
+        to a single-rank partitioner.
     )"
   );
 
@@ -650,7 +681,7 @@ WrapGraphPartitioner(py::module& mesh)
     mesh,
     "PETScGraphPartitioner",
     R"(
-    PETSc graph partitioner.
+    PETSc based partitioning.
 
     Wrapper of :cpp:class:`opensn::PETScGraphPartitioner`.
     )"
@@ -662,7 +693,12 @@ WrapGraphPartitioner(py::module& mesh)
       }
     ),
     R"(
-    Construct a linear graph partitioner.
+    Construct a PETSc based graph partitioner.
+
+    Parameters
+    ----------
+    type: str, default='parmetis'
+        Type of PETSc partitioner.
     )"
   );
   // clang-format on

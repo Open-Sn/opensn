@@ -108,7 +108,12 @@ WrapDiffusion(py::module& diffusion)
 
     Parameters
     ----------
-    ???
+    mesh: pyopensn.mesh.MeshContinuum
+        Input mesh.
+    residual_tolerance: float, default=1.0e-2
+        Solver relative tolerance.
+    max_iters: int, default=500
+        Solver relative tolerance.
     )"
   );
 
@@ -137,7 +142,12 @@ WrapDiffusion(py::module& diffusion)
 
     Parameters
     ----------
-    ???
+    mesh: pyopensn.mesh.MeshContinuum
+        Input mesh.
+    residual_tolerance: float, default=1.0e-2
+        Solver relative tolerance.
+    max_iters: int, default=500
+        Solver relative tolerance.
     )"
   );
   // clang-format on
