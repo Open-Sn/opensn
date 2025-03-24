@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
 
