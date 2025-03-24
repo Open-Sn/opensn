@@ -20,7 +20,7 @@ end
 my_xs = {}
 
 my_xs["fuel"] = xs.LoadFromOpenMC(
-  "../../modules/linear_boltzmann_solvers/transport_keigen/u235.h5",
+  "../../modules/linear_boltzmann_solvers/transport_keigen/u235_172g.h5",
   "u235",
   294.0
 )
