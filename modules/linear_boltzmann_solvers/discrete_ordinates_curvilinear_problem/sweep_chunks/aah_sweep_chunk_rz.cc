@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-SweepChunkPwlrz::SweepChunkPwlrz(const std::shared_ptr<MeshContinuum> grid,
+AahSweepChunkRZ::AahSweepChunkRZ(const std::shared_ptr<MeshContinuum> grid,
                                  const SpatialDiscretization& discretization_primary,
                                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
                                  const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,
@@ -69,7 +69,7 @@ SweepChunkPwlrz::SweepChunkPwlrz(const std::shared_ptr<MeshContinuum> grid,
 }
 
 void
-SweepChunkPwlrz::Sweep(AngleSet& angle_set)
+AahSweepChunkRZ::Sweep(AngleSet& angle_set)
 {
   auto gs_size = groupset_.groups.size();
   auto gs_gi = groupset_.groups.front().id;
