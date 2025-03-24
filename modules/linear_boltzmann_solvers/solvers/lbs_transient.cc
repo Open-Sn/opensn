@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/executors/lbs_transient.h"
+#include "modules/linear_boltzmann_solvers/solvers/lbs_transient.h"
 #include "framework/object_factory.h"
 #include "framework/math/time_integrations/time_integration.h"
 
