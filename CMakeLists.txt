@@ -233,8 +233,8 @@ if(OPENSN_WITH_LUA)
       COMMAND
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
-              -d ${CMAKE_SOURCE_DIR}/test
-              --exe ${CMAKE_BINARY_DIR}/test/opensn-test
+              -d ${CMAKE_SOURCE_DIR}/test/lua
+              --exe ${CMAKE_BINARY_DIR}/test/lua/opensn-test
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
@@ -252,8 +252,8 @@ if(OPENSN_WITH_PYTHON)
       COMMAND
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
-              -d ${CMAKE_SOURCE_DIR}/test
-              --exe ${CMAKE_BINARY_DIR}/test/opensn-test
+              -d ${CMAKE_SOURCE_DIR}/test/python
+              --exe ${CMAKE_BINARY_DIR}/python/opensn
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
