@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/lbs_curvilinear_sweep_chunk_pwl.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -386,7 +386,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<SweepChunkPwlrz>(grid_ptr_,
+  auto sweep_chunk = std::make_shared<AahSweepChunkRZ>(grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        secondary_unit_cell_matrices_,
