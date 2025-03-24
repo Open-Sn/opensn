@@ -1,6 +1,6 @@
 breathe
 myst-parser
 sphinx<8
-sphinx-design
+sphinx_design
 sphinx-rtd-theme
 sphinxcontrib-bibtex

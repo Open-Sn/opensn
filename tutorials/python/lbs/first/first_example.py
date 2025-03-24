@@ -10,7 +10,7 @@ import os
 import sys
 
 if "opensn_console" not in globals():
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
     from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource

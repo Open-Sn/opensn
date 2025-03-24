@@ -79,7 +79,8 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def(
     "SetScalingFactor",
     &MultiGroupXS::SetScalingFactor,
-    "Scale the cross sections by the specified factor."
+    "Scale the cross sections by the specified factor.",
+    py::arg("factor")
   );
   multigroup_xs.def_property_readonly(
     "num_groups",
