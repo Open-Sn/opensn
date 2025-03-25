@@ -31,7 +31,7 @@ if __name__ == "__main__":
     dx = L / N
     for i in range(N+1):
       nodes.append(xmin + i * dx)
-    meshgen = OrthogonalMeshGenerator.Create({
+    meshgen = OrthogonalMeshGenerator({
       node_sets = { nodes, nodes, nodes },
     })
 grid = meshgen.Execute()

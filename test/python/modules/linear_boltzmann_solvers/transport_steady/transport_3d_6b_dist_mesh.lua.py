@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     meshgen = DistributedMeshGenerator.Create({
       inputs = {
-        mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh } }),
+        mesh.OrthogonalMeshGenerator({ node_sets = { xmesh, ymesh } }),
         mesh.ExtruderMeshGenerator.Create({
           layers = { { z = Lz, n = Nz } },
         }),

@@ -33,7 +33,7 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+    meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
 grid = meshgen.Execute()
 
     # Setting left, right, top and bottom boundaries

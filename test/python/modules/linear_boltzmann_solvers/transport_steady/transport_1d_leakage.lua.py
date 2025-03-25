@@ -40,7 +40,7 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes[i] = (i - 1) * L / N
 
-    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
 grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 

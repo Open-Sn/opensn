@@ -43,7 +43,7 @@ if __name__ == "__main__":
     for k in range(0, 8+1):
       nodesz[k + 1] = 0.0 + k * dz
 
-    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
+    meshgen = OrthogonalMeshGenerator({ node_sets = { nodesxy, nodesxy, nodesz } })
 grid = meshgen.Execute()
 
     # Set block IDs

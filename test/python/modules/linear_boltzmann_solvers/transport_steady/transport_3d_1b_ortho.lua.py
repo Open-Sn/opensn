@@ -47,9 +47,9 @@ if __name__ == "__main__":
       znodes.append(xmin + i * dx)
 
     if reflecting then
-      meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
+      meshgen = OrthogonalMeshGenerator({ node_sets = { nodes, nodes, znodes } })
     else
-      meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+      meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
 grid = meshgen.Execute()
 
     # Set block IDs

@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.OrthogonalMeshGenerator.Create({
+        mesh.OrthogonalMeshGenerator({
           node_sets = { nodesxy, nodesxy, nodesz },
         }),
       },

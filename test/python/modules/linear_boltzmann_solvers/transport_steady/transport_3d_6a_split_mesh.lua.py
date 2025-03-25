@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     meshgen = SplitFileMeshGenerator.Create({
       inputs = {
-        mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } }),
+        mesh.OrthogonalMeshGenerator({ node_sets = { xmesh, ymesh, zmesh } }),
       },
     })
 
