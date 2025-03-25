@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     num_groups = 2
     # Initialize the LBSSolver
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -73,7 +73,7 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_fuel_g2 },
       ],
-    }
+    ]
 
     lbs_options = [
       boundary_conditions = {

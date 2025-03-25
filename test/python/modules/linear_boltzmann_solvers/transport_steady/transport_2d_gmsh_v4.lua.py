@@ -63,7 +63,7 @@ grid = meshgen.Execute()
 
     # Set up solver
     gs1 = { 0, Ng - 1 }
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = Ng,
       groupsets = {
@@ -80,7 +80,7 @@ grid = meshgen.Execute()
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_diag },
       ],
-    }
+    ]
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
     ss_solver = SteadyStateSolver( lbs_solver = phys )

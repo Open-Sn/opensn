@@ -77,7 +77,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(4, 8)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -109,7 +109,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         { "block_ids": [ 0 ], "xs": xs_graphite },
         { "block_ids": [ 1 ], "xs": xs_air },
       ],
-    }
+    ]
 
     lbs_options = [
       scattering_order = 1,

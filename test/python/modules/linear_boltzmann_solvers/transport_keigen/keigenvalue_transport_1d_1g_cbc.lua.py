@@ -89,7 +89,7 @@ grid = meshgen.Execute()
 
     # Setup Physics
     num_groups = 1
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -114,7 +114,7 @@ grid = meshgen.Execute()
         save_angular_flux = True,
       },
       sweep_type = "CBC",
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 

@@ -106,7 +106,7 @@ grid.SetupOrthogonalBoundaries()
     # Setup Physics
     solver_name = "LBS"
     pquad = GLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
-    lbs_block = {
+    lbs_block = [
       name = solver_name,
       mesh = grid,
       num_groups = num_groups,
@@ -127,7 +127,7 @@ grid.SetupOrthogonalBoundaries()
         point_sources = { pt_src },
         field_function_prefix = solver_name,
       },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 

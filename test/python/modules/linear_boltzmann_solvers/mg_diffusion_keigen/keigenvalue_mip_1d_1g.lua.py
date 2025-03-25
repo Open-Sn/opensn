@@ -89,7 +89,7 @@ grid = meshgen.Execute()
 
     # Setup Physics
     num_groups = 1
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -104,7 +104,7 @@ grid = meshgen.Execute()
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_simple_fissile },
       ],
-    }
+    ]
 
     lbs_options = [
       scattering_order = scat_order,

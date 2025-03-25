@@ -54,7 +54,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     fac = 1
     pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -80,7 +80,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_3_170 },
       ],
-    }
+    ]
     bsrc = []
     for g in range(1, num_groups+1):
       bsrc[g] = 0.0

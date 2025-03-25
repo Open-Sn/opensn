@@ -68,7 +68,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -86,7 +86,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_graphite },
       ],
-    }
+    ]
     bsrc = []
     for g in range(1, num_groups+1):
       bsrc[g] = 0.0

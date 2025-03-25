@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xss["0"] },
         { "block_ids": [ 1 ], "xs": xss["1"] },
       ],
-    }
+    ]
 
     lbs_options = [
       boundary_conditions = {

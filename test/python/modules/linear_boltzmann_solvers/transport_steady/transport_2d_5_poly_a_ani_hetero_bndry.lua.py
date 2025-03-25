@@ -60,7 +60,7 @@ grid = meshgen.Execute()
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(4, 48)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -77,7 +77,7 @@ grid = meshgen.Execute()
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_air },
       ],
-    }
+    ]
 
     #int cell_global_id
     #int material_id

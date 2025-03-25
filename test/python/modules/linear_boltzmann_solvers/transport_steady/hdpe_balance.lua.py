@@ -55,7 +55,7 @@ grid = meshgen.Execute()
     pquad = GLCProductQuadrature3DXYZ(4, 8)
 
     # LBS block option
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -85,7 +85,7 @@ grid = meshgen.Execute()
         },
         volumetric_sources = { mg_src },
       },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 

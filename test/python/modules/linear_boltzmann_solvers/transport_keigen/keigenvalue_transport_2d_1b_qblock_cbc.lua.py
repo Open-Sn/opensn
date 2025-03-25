@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         save_angular_flux = True,
       },
       sweep_type = "CBC",
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 

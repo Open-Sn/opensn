@@ -71,7 +71,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
 
     # LBS block option
     num_groups = 1
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -91,7 +91,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
         boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
         volumetric_sources = { src0, src1 },
       },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 

@@ -75,7 +75,7 @@ grid = meshgen.Execute()
     #
 
     num_groups = 172
-    lbs_block = {
+    lbs_block = [
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -90,7 +90,7 @@ grid = meshgen.Execute()
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_uo2 },
       ],
-    }
+    ]
 
     lbs_options = [
       boundary_conditions = {
