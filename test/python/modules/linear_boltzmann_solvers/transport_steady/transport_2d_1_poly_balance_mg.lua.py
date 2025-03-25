@@ -22,26 +22,10 @@ if "opensn_console" not in globals():
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 
+# Check number of processors
 num_procs = 4
-
-# Check num_procs
-# if (check_num_procs==None and number_of_processes ~= num_procs) then
-#     log.Log(LOG_0ERROR,"Incorrect amount of processors. " +
-#                       "Expected "+tostring(num_procs)+
-#                       ". Pass check_num_procs=False to override if possible.")
-#     os.exit(False)
-# end
-
-# Setup mesh
-nodes = {}
-N = 20
-L = 5.0
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
+if size != num_procs:
+    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()

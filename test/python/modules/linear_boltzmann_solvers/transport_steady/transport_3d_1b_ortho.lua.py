@@ -29,17 +29,8 @@ if reflecting == None then
   reflecting = True
 end
 
-# Check num_procs
-if check_num_procs == None and number_of_processes ~= num_procs then
-  log.Log(
-    LOG_0ERROR,
-    "Incorrect amount of processors. "
-      + "Expected "
-      + tostring(num_procs)
-      + ". Pass check_num_procs=False to override if possible."
-  )
-  os.exit(False)
-end
+if size != num_procs:
+    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
 # Setup mesh
 nodes = {}
