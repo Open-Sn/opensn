@@ -120,8 +120,8 @@ fflist = phys.GetFieldFunctions()
 
     # Line plot
     cline = fieldfunc.FieldFunctionInterpolationLine.Create()
-cline.SetInitialPoint({ x = -L / 2 )
-cline.SetFinalPoint({ x = L / 2 )
+cline.SetInitialPoint( x = -L / 2 )
+cline.SetFinalPoint( x = L / 2 )
 cline.SetNumberOfPoints(50)
 cline.AddFieldFunction(fflist[1])
 
