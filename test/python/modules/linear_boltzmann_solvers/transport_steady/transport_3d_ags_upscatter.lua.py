@@ -102,7 +102,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       "scattering_order": 0,
       verbose_ags_iterations = True,
       "max_ags_iterations": 30,
-      "ags_tolerance ": 1.0e-6,
+      "ags_tolerance": 1.0e-6,
       volumetric_sources = { mg_src },
     ]
 
