@@ -21,8 +21,10 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-meshgen1 = mesh.FromFileMeshGenerator.Create({
-  filename = "+/+/+/+/+/assets/mesh/GMSH_AllTets.vtu",
-})
-grid = meshgen1:Execute()
+
+    meshgen1 = mesh.FromFileMeshGenerator.Create({
+      filename = "+/+/+/+/+/assets/mesh/GMSH_AllTets.vtu",
+    })
+    grid = meshgen1:Execute()

@@ -23,154 +23,156 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-num_procs = 4
-if reflecting == None then
-  reflecting = True
-end
 
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+    num_procs = 4
+    if reflecting == None then
+      reflecting = True
+    end
 
-# Setup mesh
-nodes = {}
-N = 10
-L = 5
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
-znodes = {}
-for i = 1, (N / 2 + 1) do
-  k = i - 1
-  znodes[i] = xmin + k * dx
-end
-if reflecting then
-  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
-else
-  meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-end
-grid = meshgen1:Execute()
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-# Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-grid:SetUniformBlockID(0)
+    # Setup mesh
+    nodes = {}
+    N = 10
+    L = 5
+    xmin = -L / 2
+    dx = L / N
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = xmin + k * dx
+    end
+    znodes = {}
+    for i = 1, (N / 2 + 1) do
+      k = i - 1
+      znodes[i] = xmin + k * dx
+    end
+    if reflecting then
+      meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
+    else
+      meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+    end
+    grid = meshgen1:Execute()
 
-num_groups = 21
-xs_graphite = xs.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
+    # Set block IDs
+    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    grid:SetUniformBlockID(0)
 
-strength = {}
-for g = 1, num_groups do
-  strength[g] = 0.0
-end
-strength[1] = 1.0
-mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
+    num_groups = 21
+    xs_graphite = xs.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
 
-# Setup Physics
-pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    strength = {}
+    for g = 1, num_groups do
+      strength[g] = 0.0
+    end
+    strength[1] = 1.0
+    mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
-lbs_block = {
-  mesh = grid,
-  num_groups = num_groups,
-  groupsets = {
-    {
-      groups_from_to = { 0, 20 },
-      angular_quadrature = pquad0,
-      angle_aggregation_type = "single",
-      angle_aggregation_num_subsets = 1,
-      inner_linear_method = "petsc_gmres",
-      l_abs_tol = 1.0e-6,
-      l_max_its = 300,
-      gmres_restart_interval = 100,
-    },
-  },
-  xs_map = {
-    { block_ids = { 0 }, xs = xs_graphite },
-  },
-}
+    # Setup Physics
+    pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
-lbs_options = {
-  scattering_order = 1,
-  volumetric_sources = { mg_src },
-}
-if reflecting then
-  lbs_options.boundary_conditions = { { name = "zmax", type = "reflecting" } }
-end
+    lbs_block = {
+      mesh = grid,
+      num_groups = num_groups,
+      groupsets = {
+        {
+          groups_from_to = { 0, 20 },
+          angular_quadrature = pquad0,
+          angle_aggregation_type = "single",
+          angle_aggregation_num_subsets = 1,
+          inner_linear_method = "petsc_gmres",
+          l_abs_tol = 1.0e-6,
+          l_max_its = 300,
+          gmres_restart_interval = 100,
+        },
+      },
+      xs_map = {
+        { block_ids = { 0 }, xs = xs_graphite },
+      },
+    }
 
-phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
-phys1:SetOptions(lbs_options)
+    lbs_options = {
+      scattering_order = 1,
+      volumetric_sources = { mg_src },
+    }
+    if reflecting then
+      lbs_options.boundary_conditions = { { name = "zmax", type = "reflecting" } }
+    end
 
-# Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
+    phys1:SetOptions(lbs_options)
 
-ss_solver:Initialize()
-ss_solver:Execute()
+    # Initialize and Execute Solver
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
-# Get field functions
-fflist = lbs.GetScalarFieldFunctionList(phys1)
+    ss_solver:Initialize()
+    ss_solver:Execute()
 
-# Slice plot
-#slices = {}
-#for k=1,count do
-#    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
-#    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
-#    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
-#    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
-#    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
-#    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
-#    fieldfunc.Initialize(slices[k])
-#    fieldfunc.Execute(slices[k])
-#    fieldfunc.ExportToPython(slices[k])
-#end
+    # Get field functions
+    fflist = lbs.GetScalarFieldFunctionList(phys1)
 
-# Volume integrations
-ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
-curffi = ffi1
-curffi:SetOperationType(OP_MAX)
-curffi:SetLogicalVolume(vol0)
-curffi:AddFieldFunction(fflist[1])
+    # Slice plot
+    #slices = {}
+    #for k=1,count do
+    #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
+    #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
+    #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
+    #    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
+    #    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
+    #    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
+    #    fieldfunc.Initialize(slices[k])
+    #    fieldfunc.Execute(slices[k])
+    #    fieldfunc.ExportToPython(slices[k])
+    #end
 
-curffi:Initialize()
-curffi:Execute()
-maxval = curffi:GetValue()
+    # Volume integrations
+    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    curffi = ffi1
+    curffi:SetOperationType(OP_MAX)
+    curffi:SetLogicalVolume(vol0)
+    curffi:AddFieldFunction(fflist[1])
 
-log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
+    curffi:Initialize()
+    curffi:Execute()
+    maxval = curffi:GetValue()
 
-ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
-curffi = ffi1
-curffi:SetOperationType(OP_MAX)
-curffi:SetLogicalVolume(vol0)
-curffi:AddFieldFunction(fflist[20])
+    log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
 
-curffi:Initialize()
-curffi:Execute()
-maxval = curffi:GetValue()
+    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    curffi = ffi1
+    curffi:SetOperationType(OP_MAX)
+    curffi:SetLogicalVolume(vol0)
+    curffi:AddFieldFunction(fflist[20])
 
-log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
+    curffi:Initialize()
+    curffi:Execute()
+    maxval = curffi:GetValue()
 
-# Exports
-if master_export == None then
-  if reflecting then
-    fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DReflected")
-  else
-    fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-  end
-end
+    log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
-# Plots
-if location_id == 0 and master_export == None then
-  #os.execute("python ZPFFI00.py")
-  #--os.execute("python ZPFFI11.py")
-  #local handle = io.popen("python ZPFFI00.py")
-  print("Execution completed")
-end
+    # Exports
+    if master_export == None then
+      if reflecting then
+        fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DReflected")
+      else
+        fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
+      end
+    end
 
-# DO
-#[0]  Max-value1=2.52092e+00
-#[0]  Max-value2=5.79100e-03
+    # Plots
+    if location_id == 0 and master_export == None then
+      #os.execute("python ZPFFI00.py")
+      #--os.execute("python ZPFFI11.py")
+      #local handle = io.popen("python ZPFFI00.py")
+      print("Execution completed")
+    end
 
-# MGDiffusion
-#[0]  Max-value1=2.74873e-01
-#[0]  Max-value2=9.47508e-05
+    # DO
+    #[0]  Max-value1=2.52092e+00
+    #[0]  Max-value2=5.79100e-03
+
+    # MGDiffusion
+    #[0]  Max-value1=2.74873e-01
+    #[0]  Max-value2=9.47508e-05

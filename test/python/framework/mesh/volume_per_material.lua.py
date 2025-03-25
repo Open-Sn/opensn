@@ -21,30 +21,32 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-num_procs = 3
 
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+    num_procs = 3
 
-# ############################################### Setup mesh
-nodes = {}
-N = 20
-L = 5.
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-grid = meshgen1:Execute()
+    # ############################################### Setup mesh
+    nodes = {}
+    N = 20
+    L = 5.
+    xmin = -L / 2
+    dx = L / N
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = xmin + k * dx
+    end
 
-# ############################################### Set Material IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
-vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = True, infz = True })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+    grid = meshgen1:Execute()
 
-grid:ComputeVolumePerBlockID()
+    # ############################################### Set Material IDs
+    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+    vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = True, infz = True })
+    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+
+    grid:ComputeVolumePerBlockID()

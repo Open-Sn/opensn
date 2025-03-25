@@ -21,16 +21,18 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-xss = {}
-xss["0"] = xs.LoadFromOpenSn("xs_water_g2.xs")
-xss["1"] = xs.LoadFromOpenSn("xs_fuel_g2.xs")
 
-num_groups = xss["0"].num_groups
+    xss = {}
+    xss["0"] = xs.LoadFromOpenSn("xs_water_g2.xs")
+    xss["1"] = xs.LoadFromOpenSn("xs_fuel_g2.xs")
 
-# Create materials
-xs_map = {}
-for m = 0, 1 do
-  key = tostring(m)
-  xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
-end
+    num_groups = xss["0"].num_groups
+
+    # Create materials
+    xs_map = {}
+    for m = 0, 1 do
+      key = tostring(m)
+      xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
+    end

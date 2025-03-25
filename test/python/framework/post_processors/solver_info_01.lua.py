@@ -24,32 +24,34 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
-pp0 = post.SolverInfoPostProcessor.Create({
-  name = "neutron_population",
-  solver = phys0,
-  info = { name = "neutron_population" },
-  print_on = { "ProgramExecuted" },
-})
+    phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
-post.SetPrinterOptions({
-  csv_filename = "solver_info_01.csv",
-})
+    pp0 = post.SolverInfoPostProcessor.Create({
+      name = "neutron_population",
+      solver = phys0,
+      info = { name = "neutron_population" },
+      print_on = { "ProgramExecuted" },
+    })
 
-solver.Initialize(phys0)
+    post.SetPrinterOptions({
+      csv_filename = "solver_info_01.csv",
+    })
 
-for t = 1, 20 do
-  solver.Step(phys0)
-  time = phys0:TimeNew()
-  print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
+    solver.Initialize(phys0)
 
-  solver.Advance(phys0)
-  if time > 0.1 then
-    phys0:SetRho(0.8)
-  end
-end
+    for t = 1, 20 do
+      solver.Step(phys0)
+      time = phys0:TimeNew()
+      print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
 
-print("Manually printing Post-Processor:")
-post.Print({ pp0 })
+      solver.Advance(phys0)
+      if time > 0.1 then
+        phys0:SetRho(0.8)
+      end
+    end
+
+    print("Manually printing Post-Processor:")
+    post.Print({ pp0 })

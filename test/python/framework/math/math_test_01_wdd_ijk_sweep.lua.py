@@ -20,5 +20,7 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-unit_tests.math_Test01_WDD_IJK_Sweep()
+
+    unit_tests.math_Test01_WDD_IJK_Sweep()

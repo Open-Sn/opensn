@@ -21,125 +21,127 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-# Check number of processors
-num_procs = 4
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-grid = meshgen1:Execute()
+    # Check number of processors
+    num_procs = 4
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-# Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
-vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = True, infz = True })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+    grid = meshgen1:Execute()
 
-num_groups = 168
-xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
+    # Set block IDs
+    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+    vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = True, infz = True })
+    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
 
-strength = {}
-for g = 1, num_groups do
-  strength[g] = 0.0
-end
-mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
-strength[1] = 1.0
-mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
+    num_groups = 168
+    xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
 
-# Setup Physics
-fac = 1
-pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
+    strength = {}
+    for g = 1, num_groups do
+      strength[g] = 0.0
+    end
+    mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
+    strength[1] = 1.0
+    mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
-lbs_block = {
-  mesh = grid,
-  num_groups = num_groups,
-  groupsets = {
-    {
-      groups_from_to = { 0, 62 },
-      angular_quadrature = pquad,
-      angle_aggregation_num_subsets = 1,
-      inner_linear_method = "petsc_gmres",
-      l_abs_tol = 1.0e-4,
-      l_max_its = 300,
-      gmres_restart_interval = 100,
-    },
-    {
-      groups_from_to = { 63, num_groups - 1 },
-      angular_quadrature = pquad,
-      angle_aggregation_num_subsets = 1,
-      inner_linear_method = "petsc_gmres",
-      l_abs_tol = 1.0e-4,
-      l_max_its = 300,
-      gmres_restart_interval = 100,
-    },
-  },
-  xs_map = {
-    { block_ids = { 0, 1 }, xs = xs_3_170 },
-  },
-}
-bsrc = {}
-for g = 1, num_groups do
-  bsrc[g] = 0.0
-end
-bsrc[1] = 1.0 / 4.0 / math.pi
+    # Setup Physics
+    fac = 1
+    pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
-lbs_options = {
-  boundary_conditions = {
-    {
-      name = "xmin",
-      type = "isotropic",
-      group_strength = bsrc,
-    },
-  },
-  scattering_order = 0,
-  verbose_ags_iterations = True,
-  max_ags_iterations = 100,
-  ags_tolerance = 1.0e-6,
-  volumetric_sources = { mg_src0, mg_src1 },
-}
+    lbs_block = {
+      mesh = grid,
+      num_groups = num_groups,
+      groupsets = {
+        {
+          groups_from_to = { 0, 62 },
+          angular_quadrature = pquad,
+          angle_aggregation_num_subsets = 1,
+          inner_linear_method = "petsc_gmres",
+          l_abs_tol = 1.0e-4,
+          l_max_its = 300,
+          gmres_restart_interval = 100,
+        },
+        {
+          groups_from_to = { 63, num_groups - 1 },
+          angular_quadrature = pquad,
+          angle_aggregation_num_subsets = 1,
+          inner_linear_method = "petsc_gmres",
+          l_abs_tol = 1.0e-4,
+          l_max_its = 300,
+          gmres_restart_interval = 100,
+        },
+      },
+      xs_map = {
+        { block_ids = { 0, 1 }, xs = xs_3_170 },
+      },
+    }
+    bsrc = {}
+    for g = 1, num_groups do
+      bsrc[g] = 0.0
+    end
+    bsrc[1] = 1.0 / 4.0 / math.pi
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-phys1:SetOptions(lbs_options)
+    lbs_options = {
+      boundary_conditions = {
+        {
+          name = "xmin",
+          type = "isotropic",
+          group_strength = bsrc,
+        },
+      },
+      scattering_order = 0,
+      verbose_ags_iterations = True,
+      max_ags_iterations = 100,
+      ags_tolerance = 1.0e-6,
+      volumetric_sources = { mg_src0, mg_src1 },
+    }
 
-# Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys1:SetOptions(lbs_options)
 
-ss_solver:Initialize()
-ss_solver:Execute()
+    # Initialize and Execute Solver
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
-phys1:ComputeBalance()
+    ss_solver:Initialize()
+    ss_solver:Execute()
 
-# Get field functions
-fflist = lbs.GetScalarFieldFunctionList(phys1)
+    phys1:ComputeBalance()
 
-# Volume integrations
-ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
-curffi = ffi1
-curffi:SetOperationType(OP_MAX)
-curffi:SetLogicalVolume(vol0)
-curffi:AddFieldFunction(fflist[1])
+    # Get field functions
+    fflist = lbs.GetScalarFieldFunctionList(phys1)
 
-curffi:Initialize(curffi)
-curffi:Execute()
-maxval = curffi:GetValue()
+    # Volume integrations
+    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    curffi = ffi1
+    curffi:SetOperationType(OP_MAX)
+    curffi:SetLogicalVolume(vol0)
+    curffi:AddFieldFunction(fflist[1])
 
-log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
+    curffi:Initialize(curffi)
+    curffi:Execute()
+    maxval = curffi:GetValue()
 
-# Volume integrations
-ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
-curffi = ffi1
-curffi:SetOperationType(OP_MAX)
-curffi:SetLogicalVolume(vol0)
-curffi:AddFieldFunction(fflist[160])
+    log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
-curffi:Initialize()
-curffi:Execute()
-maxval = curffi:GetValue()
+    # Volume integrations
+    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    curffi = ffi1
+    curffi:SetOperationType(OP_MAX)
+    curffi:SetLogicalVolume(vol0)
+    curffi:AddFieldFunction(fflist[160])
 
-log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
+    curffi:Initialize()
+    curffi:Execute()
+    maxval = curffi:GetValue()
 
-# Exports
-if master_export == None then
-  fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
-end
+    log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
+
+    # Exports
+    if master_export == None then
+      fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
+    end

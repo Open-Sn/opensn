@@ -25,41 +25,43 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
-pp = {}
-for k = 1, 20 do
-  pp[k] = post.SolverInfoPostProcessor.Create({
-    name = "neutron_population" + tostring(k),
-    solver = phys0,
-    info = { name = "neutron_population" },
-    print_on = { "" },
-  })
-end
-pp21 = post.SolverInfoPostProcessor.Create({
-  name = "neutron_population" + tostring(21),
-  solver = phys0,
-  info = { name = "neutron_population" },
-  print_on = { "" },
-})
+    phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
-post.SetPrinterOptions({
-  time_history_limit = 5,
-})
+    pp = {}
+    for k = 1, 20 do
+      pp[k] = post.SolverInfoPostProcessor.Create({
+        name = "neutron_population" + tostring(k),
+        solver = phys0,
+        info = { name = "neutron_population" },
+        print_on = { "" },
+      })
+    end
+    pp21 = post.SolverInfoPostProcessor.Create({
+      name = "neutron_population" + tostring(21),
+      solver = phys0,
+      info = { name = "neutron_population" },
+      print_on = { "" },
+    })
 
-solver.Initialize(phys0)
+    post.SetPrinterOptions({
+      time_history_limit = 5,
+    })
 
-for t = 1, 20 do
-  solver.Step(phys0)
-  time = phys0:TimeNew()
-  print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
+    solver.Initialize(phys0)
 
-  solver.Advance(phys0)
-  if time > 0.1 then
-    phys0:SetRho(0.8)
-  end
-end
+    for t = 1, 20 do
+      solver.Step(phys0)
+      time = phys0:TimeNew()
+      print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
 
-print("Manual neutron_population1=", string.format("%.5f", pp[1]:GetValue()))
-print("Manual neutron_population1=", string.format("%.5f", pp21:GetValue()))
+      solver.Advance(phys0)
+      if time > 0.1 then
+        phys0:SetRho(0.8)
+      end
+    end
+
+    print("Manual neutron_population1=", string.format("%.5f", pp[1]:GetValue()))
+    print("Manual neutron_population1=", string.format("%.5f", pp21:GetValue()))

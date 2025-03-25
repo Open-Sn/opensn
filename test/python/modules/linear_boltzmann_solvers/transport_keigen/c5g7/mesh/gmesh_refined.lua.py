@@ -21,12 +21,14 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-meshgen1 = mesh.MeshGenerator.Create({
-  inputs = {
-    mesh.FromFileMeshGenerator.Create({
-      filename = "mesh/2D_c5g7_refined.msh",
-    }),
-  },
-})
-grid = meshgen1:Execute()
+
+    meshgen1 = mesh.MeshGenerator.Create({
+      inputs = {
+        mesh.FromFileMeshGenerator.Create({
+          filename = "mesh/2D_c5g7_refined.msh",
+        }),
+      },
+    })
+    grid = meshgen1:Execute()

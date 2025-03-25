@@ -23,23 +23,25 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-num_procs = 4
-#Unstructured mesh
 
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+    num_procs = 4
+    #Unstructured mesh
 
-# Setup mesh
-meshgen1 = mesh.MeshGenerator.Create({
-  inputs = {
-    mesh.FromFileMeshGenerator.Create({
-      filename = "reactor_pin_mesh.obj",
-    }),
-  },
-})
-grid = meshgen1:Execute()
-# Exports
-if master_export == None then
-  mesh.ExportToPVTU("ZObjMesh")
-end
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+
+    # Setup mesh
+    meshgen1 = mesh.MeshGenerator.Create({
+      inputs = {
+        mesh.FromFileMeshGenerator.Create({
+          filename = "reactor_pin_mesh.obj",
+        }),
+      },
+    })
+    grid = meshgen1:Execute()
+    # Exports
+    if master_export == None then
+      mesh.ExportToPVTU("ZObjMesh")
+    end

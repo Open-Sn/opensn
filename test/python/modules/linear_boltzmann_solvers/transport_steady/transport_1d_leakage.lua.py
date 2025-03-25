@@ -24,81 +24,83 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-# Check number of processors
-num_procs = 3
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-# Setup mesh
-N = 100
-L = 1.0
-nodes = {}
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = (i - 1) * L / N
-end
+    # Check number of processors
+    num_procs = 3
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-grid = meshgen:Execute()
-grid:SetUniformBlockID(0)
+    # Setup mesh
+    N = 100
+    L = 1.0
+    nodes = {}
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = (i - 1) * L / N
+    end
 
-# Add materials
-num_groups = 1
-sigma_t = 1.0
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    grid = meshgen:Execute()
+    grid:SetUniformBlockID(0)
 
-xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
+    # Add materials
+    num_groups = 1
+    sigma_t = 1.0
 
-# Setup Physics
-pquad = aquad.CreateGLProductQuadrature1DSlab(256)
-lbs_block = {
-  mesh = grid,
-  num_groups = num_groups,
-  groupsets = {
-    {
-      groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature = pquad,
-      angle_aggregation_num_subsets = 1,
-      inner_linear_method = "petsc_gmres",
-      l_abs_tol = 1.0e-6,
-      l_max_its = 300,
-      gmres_restart_interval = 100,
-    },
-  },
-  xs_map = {
-    { block_ids = { 0 }, xs = xs1g },
-  },
-}
+    xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
 
-bsrc = {}
-for g = 1, num_groups do
-  bsrc[g] = 0.0
-end
-bsrc[1] = 1.0
+    # Setup Physics
+    pquad = aquad.CreateGLProductQuadrature1DSlab(256)
+    lbs_block = {
+      mesh = grid,
+      num_groups = num_groups,
+      groupsets = {
+        {
+          groups_from_to = { 0, num_groups - 1 },
+          angular_quadrature = pquad,
+          angle_aggregation_num_subsets = 1,
+          inner_linear_method = "petsc_gmres",
+          l_abs_tol = 1.0e-6,
+          l_max_its = 300,
+          gmres_restart_interval = 100,
+        },
+      },
+      xs_map = {
+        { block_ids = { 0 }, xs = xs1g },
+      },
+    }
 
-lbs_options = {
-  boundary_conditions = {
-    {
-      name = "zmin",
-      type = "isotropic",
-      group_strength = bsrc,
-    },
-  },
-  scattering_order = 0,
-  save_angular_flux = True,
-}
+    bsrc = {}
+    for g = 1, num_groups do
+      bsrc[g] = 0.0
+    end
+    bsrc[1] = 1.0
 
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-phys:SetOptions(lbs_options)
+    lbs_options = {
+      boundary_conditions = {
+        {
+          name = "zmin",
+          type = "isotropic",
+          group_strength = bsrc,
+        },
+      },
+      scattering_order = 0,
+      save_angular_flux = True,
+    }
 
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys:SetOptions(lbs_options)
 
-# Solve the problem
-ss_solver:Initialize()
-ss_solver:Execute()
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-# Compute the leakage
-leakage = lbs.ComputeLeakage(phys, {})
-for k, v in pairs(leakage) do
-  log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
-end
+    # Solve the problem
+    ss_solver:Initialize()
+    ss_solver:Execute()
+
+    # Compute the leakage
+    leakage = lbs.ComputeLeakage(phys, {})
+    for k, v in pairs(leakage) do
+      log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
+    end

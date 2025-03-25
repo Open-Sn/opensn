@@ -22,54 +22,56 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-dofile("utils/qblock_mesh.lua")
-dofile("utils/qblock_materials.lua") #num_groups assigned here
 
-# Setup Physics
-pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
+    dofile("utils/qblock_mesh.lua")
+    dofile("utils/qblock_materials.lua") #num_groups assigned here
 
-lbs_block = {
-  mesh = grid,
-  num_groups = num_groups,
-  groupsets = {
-    {
-      groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature = pquad,
-      inner_linear_method = "petsc_gmres",
-      l_max_its = 50,
-      gmres_restart_interval = 50,
-      l_abs_tol = 1.0e-10,
-    },
-  },
-  xs_map = {
-    { block_ids = { 0 }, xs = xss["0"] },
-    { block_ids = { 1 }, xs = xss["1"] },
-  },
-}
+    # Setup Physics
+    pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
 
-lbs_options = {
-  boundary_conditions = {
-    { name = "xmin", type = "reflecting" },
-    { name = "ymin", type = "reflecting" },
-  },
-  scattering_order = 2,
+    lbs_block = {
+      mesh = grid,
+      num_groups = num_groups,
+      groupsets = {
+        {
+          groups_from_to = { 0, num_groups - 1 },
+          angular_quadrature = pquad,
+          inner_linear_method = "petsc_gmres",
+          l_max_its = 50,
+          gmres_restart_interval = 50,
+          l_abs_tol = 1.0e-10,
+        },
+      },
+      xs_map = {
+        { block_ids = { 0 }, xs = xss["0"] },
+        { block_ids = { 1 }, xs = xss["1"] },
+      },
+    }
 
-  use_precursors = False,
+    lbs_options = {
+      boundary_conditions = {
+        { name = "xmin", type = "reflecting" },
+        { name = "ymin", type = "reflecting" },
+      },
+      scattering_order = 2,
 
-  verbose_inner_iterations = False,
-  verbose_outer_iterations = True,
-}
+      use_precursors = False,
 
-phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
-phys1:SetOptions(lbs_options)
+      verbose_inner_iterations = False,
+      verbose_outer_iterations = True,
+    }
 
-k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver = phys1 })
-k_solver0:Initialize()
-k_solver0:Execute()
+    phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
+    phys1:SetOptions(lbs_options)
 
-fflist = lbs.GetScalarFieldFunctionList(phys1)
+    k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver = phys1 })
+    k_solver0:Initialize()
+    k_solver0:Execute()
 
-#fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
+    fflist = lbs.GetScalarFieldFunctionList(phys1)
 
-# Reference value k_eff = 0.5969127
+    #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
+
+    # Reference value k_eff = 0.5969127

@@ -23,197 +23,199 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-num_procs = 2
 
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+    num_procs = 2
 
-# Setup mesh
-nodes = {}
-N = 2000
-L = 100.0
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-grid = meshgen1:Execute()
+    # Setup mesh
+    nodes = {}
+    N = 2000
+    L = 100.0
+    xmin = -L / 2
+    dx = L / N
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = xmin + k * dx
+    end
 
-# Set block IDs
-grid:SetUniformBlockID(0)
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    grid = meshgen1:Execute()
 
-vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = -L / 4, zmax = L / 4 })
-grid:SetBlockIDFromLogicalVolume(vol0, 1, True)
+    # Set block IDs
+    grid:SetUniformBlockID(0)
 
-# Add materials
-materials = {}
-materials[1] = mat.AddMaterial("Strong fuel")
-materials[2] = mat.AddMaterial("Weak fuel")
+    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = -L / 4, zmax = L / 4 })
+    grid:SetBlockIDFromLogicalVolume(vol0, 1, True)
 
-# Define microscopic cross sections
-xs_strong_fuel_micro = xs.Create()
-xs.Set(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.xs")
-xs_weak_fuelA_micro = xs.Create()
-xs.Set(xs_weak_fuelA_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
-xs_weak_fuelB_micro = xs.Create()
-xs.Set(xs_weak_fuelB_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_weak_1g.xs")
+    # Add materials
+    materials = {}
+    materials[1] = mat.AddMaterial("Strong fuel")
+    materials[2] = mat.AddMaterial("Weak fuel")
 
-atom_density = 0.056559
-xs_strong_fuel = xs.MakeScaled(xs_strong_fuel_micro, atom_density) #critical
-xs_weak_fuelA = xs.MakeScaled(xs_weak_fuelA_micro, atom_density) #critical
-xs_weak_fuelB = xs.MakeScaled(xs_weak_fuelB_micro, atom_density) #critical
+    # Define microscopic cross sections
+    xs_strong_fuel_micro = xs.Create()
+    xs.Set(xs_strong_fuel_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_k1_6_1g.xs")
+    xs_weak_fuelA_micro = xs.Create()
+    xs.Set(xs_weak_fuelA_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_critical_1g.xs")
+    xs_weak_fuelB_micro = xs.Create()
+    xs.Set(xs_weak_fuelB_micro, OPENSN_XSFILE, "tests/transport_transient/xs_inf_weak_1g.xs")
 
-num_groups = 1
-mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
-mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs_weak_fuelA)
+    atom_density = 0.056559
+    xs_strong_fuel = xs.MakeScaled(xs_strong_fuel_micro, atom_density) #critical
+    xs_weak_fuelA = xs.MakeScaled(xs_weak_fuelA_micro, atom_density) #critical
+    xs_weak_fuelB = xs.MakeScaled(xs_weak_fuelB_micro, atom_density) #critical
 
-mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
-mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
+    num_groups = 1
+    mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
+    mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs_weak_fuelA)
 
-function SwapXS(solver_handle, new_xs)
-  mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)
-  lbs.InitializeMaterials(solver_handle)
-end
+    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
+    mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
 
-# Setup Physics
-phys1 = LBSCreateTransientSolver()
+    function SwapXS(solver_handle, new_xs)
+      mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)
+      lbs.InitializeMaterials(solver_handle)
+    end
 
-#========== Groups
-grp = {}
-for g = 1, num_groups do
-  grp[g] = LBSCreateGroup(phys1)
-end
+    # Setup Physics
+    phys1 = LBSCreateTransientSolver()
 
-#========== ProdQuad
-pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 16)
+    #========== Groups
+    grp = {}
+    for g = 1, num_groups do
+      grp[g] = LBSCreateGroup(phys1)
+    end
 
-#========== Groupset def
-gs0 = LBSCreateGroupset(phys1)
-cur_gs = gs0
-LBSGroupsetAddGroups(phys1, cur_gs, 0, num_groups - 1)
-LBSGroupsetSetQuadrature(phys1, cur_gs, pquad)
-LBSGroupsetSetAngleAggDiv(phys1, cur_gs, 1)
-LBSGroupsetSetGroupSubsets(phys1, cur_gs, 8)
-LBSGroupsetSetIterativeMethod(phys1, cur_gs, KRYLOV_GMRES)
-#LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
-LBSGroupsetSetResidualTolerance(phys1, cur_gs, 1.0e-6)
-LBSGroupsetSetMaxIterations(phys1, cur_gs, 1000)
-LBSGroupsetSetGMRESRestartIntvl(phys1, cur_gs, 100)
-#LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,False," ")
-#LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,False," ")
+    #========== ProdQuad
+    pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 16)
 
-#
-#-- Set boundary conditions
-#bsrc={}
-#for g=1,num_groups do
-#    bsrc[g] = 0.0
-#end
-#bsrc[1] = 1.0/2
-#LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMIN,LBSBoundaryTypes.REFLECTING);
-#LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMAX,LBSBoundaryTypes.REFLECTING);
-#
-LBSSetProperty(phys1, DISCRETIZATION_METHOD, PWLD)
-LBSSetProperty(phys1, SCATTERING_ORDER, 1)
+    #========== Groupset def
+    gs0 = LBSCreateGroupset(phys1)
+    cur_gs = gs0
+    LBSGroupsetAddGroups(phys1, cur_gs, 0, num_groups - 1)
+    LBSGroupsetSetQuadrature(phys1, cur_gs, pquad)
+    LBSGroupsetSetAngleAggDiv(phys1, cur_gs, 1)
+    LBSGroupsetSetGroupSubsets(phys1, cur_gs, 8)
+    LBSGroupsetSetIterativeMethod(phys1, cur_gs, KRYLOV_GMRES)
+    #LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
+    LBSGroupsetSetResidualTolerance(phys1, cur_gs, 1.0e-6)
+    LBSGroupsetSetMaxIterations(phys1, cur_gs, 1000)
+    LBSGroupsetSetGMRESRestartIntvl(phys1, cur_gs, 100)
+    #LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,False," ")
+    #LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,False," ")
 
-LBKESSetProperty(phys1, "MAX_ITERATIONS", 1000)
-LBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
+    #
+    #-- Set boundary conditions
+    #bsrc={}
+    #for g=1,num_groups do
+    #    bsrc[g] = 0.0
+    #end
+    #bsrc[1] = 1.0/2
+    #LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMIN,LBSBoundaryTypes.REFLECTING);
+    #LBSSetProperty(phys1,BOUNDARY_CONDITION,ZMAX,LBSBoundaryTypes.REFLECTING);
+    #
+    LBSSetProperty(phys1, DISCRETIZATION_METHOD, PWLD)
+    LBSSetProperty(phys1, SCATTERING_ORDER, 1)
 
-LBSSetProperty(phys1, USE_PRECURSORS, True)
+    LBKESSetProperty(phys1, "MAX_ITERATIONS", 1000)
+    LBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
 
-#LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
-LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
-LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, True)
+    LBSSetProperty(phys1, USE_PRECURSORS, True)
 
-# Initialize and Execute Solver
-solver.Initialize(phys1)
+    #LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
+    LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
+    LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, True)
 
-LBTSSetProperty(phys1, "TIMESTEP", 1e-3 * 100)
-LBTSSetProperty(phys1, "TIMESTOP", 1.0 * 100)
-LBTSSetProperty(phys1, "MAX_TIMESTEPS", -1)
-LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
-LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
+    # Initialize and Execute Solver
+    solver.Initialize(phys1)
 
-phys1name = solver.GetName(phys1)
-initial_FR = lbs.ComputeFissionRate(phys1, "OLD")
+    LBTSSetProperty(phys1, "TIMESTEP", 1e-3 * 100)
+    LBTSSetProperty(phys1, "TIMESTOP", 1.0 * 100)
+    LBTSSetProperty(phys1, "MAX_TIMESTEPS", -1)
+    LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
+    LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-#time = 0.0
-#psi_t = psi_0
-#for k=1,10 do
-#    solver.Step(phys1)
-#
-#    FRf = lbs.ComputeFissionRate(phys1,"NEW") --time+dt
-#    FRi = lbs.ComputeFissionRate(phys1,"OLD") --time
-#    dt = LBTSGetProperty(phys1, "TIMESTEP")
-#    time = LBTSGetProperty(phys1, "TIME")
-#    new_time = time+dt
-#
-#    period = dt/math.log(FRf/FRi)
-#    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-#            phys1name,k,time,dt,period,FRf/initial_FR))
-#
-#    if (not timestep_rejected) then
-#        LBTSAdvanceTimeValues()
-#    end
-#    LBTSAdvanceTimeData(phys1)
-#end
+    phys1name = solver.GetName(phys1)
+    initial_FR = lbs.ComputeFissionRate(phys1, "OLD")
 
-#time = 0.0
-#time_stop = 1.0*100
-#k=0
-#swapped = False
-#timestep_rejected = False
-#
-#tolA = 10.0
-#while (time < time_stop) do
-#    solver.Step(phys1)
-#    FRf = lbs.ComputeFissionRate(phys1,"NEW")
-#    FRi = lbs.ComputeFissionRate(phys1,"OLD")
-#    dt = LBTSGetProperty(phys1, "TIMESTEP")
-#    time = LBTSGetProperty(phys1, "TIME")
-#    period = dt/math.log(FRf/FRi)
-#
-#    if (time >= 0.2 and not swapped) then
-#        SwapXS(phys1, xs_weak_fuelB)
-#        swapped = True
-#    end
-#
-#    if (not timestep_rejected) then
-#        LBTSAdvanceTimeData(phys1)
-#        k = k + 1
-#        log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-#                phys1name,k,time,dt,period,FRf/initial_FR))
-#    else
-#        timestep_rejected = False
-#    end
-#end
-swapped = False
-function MyCallBack()
-  FRf = lbs.ComputeFissionRate(phys1, "NEW")
-  FRi = lbs.ComputeFissionRate(phys1, "OLD")
-  dt = LBTSGetProperty(phys1, "TIMESTEP")
-  time = LBTSGetProperty(phys1, "TIME")
-  period = dt / math.log(FRf / FRi)
+    #time = 0.0
+    #psi_t = psi_0
+    #for k=1,10 do
+    #    solver.Step(phys1)
+    #
+    #    FRf = lbs.ComputeFissionRate(phys1,"NEW") --time+dt
+    #    FRi = lbs.ComputeFissionRate(phys1,"OLD") --time
+    #    dt = LBTSGetProperty(phys1, "TIMESTEP")
+    #    time = LBTSGetProperty(phys1, "TIME")
+    #    new_time = time+dt
+    #
+    #    period = dt/math.log(FRf/FRi)
+    #    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+    #            phys1name,k,time,dt,period,FRf/initial_FR))
+    #
+    #    if (not timestep_rejected) then
+    #        LBTSAdvanceTimeValues()
+    #    end
+    #    LBTSAdvanceTimeData(phys1)
+    #end
 
-  if time >= 0.2 and not swapped then
-    SwapXS(phys1, xs_weak_fuelB)
-    swapped = True
-  end
-  log.Log(
-    LOG_0,
-    string.format(
-      "%s time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-      phys1name,
-      time,
-      dt,
-      period,
-      FRf / initial_FR
-    )
-  )
-end
+    #time = 0.0
+    #time_stop = 1.0*100
+    #k=0
+    #swapped = False
+    #timestep_rejected = False
+    #
+    #tolA = 10.0
+    #while (time < time_stop) do
+    #    solver.Step(phys1)
+    #    FRf = lbs.ComputeFissionRate(phys1,"NEW")
+    #    FRi = lbs.ComputeFissionRate(phys1,"OLD")
+    #    dt = LBTSGetProperty(phys1, "TIMESTEP")
+    #    time = LBTSGetProperty(phys1, "TIME")
+    #    period = dt/math.log(FRf/FRi)
+    #
+    #    if (time >= 0.2 and not swapped) then
+    #        SwapXS(phys1, xs_weak_fuelB)
+    #        swapped = True
+    #    end
+    #
+    #    if (not timestep_rejected) then
+    #        LBTSAdvanceTimeData(phys1)
+    #        k = k + 1
+    #        log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+    #                phys1name,k,time,dt,period,FRf/initial_FR))
+    #    else
+    #        timestep_rejected = False
+    #    end
+    #end
+    swapped = False
+    function MyCallBack()
+      FRf = lbs.ComputeFissionRate(phys1, "NEW")
+      FRi = lbs.ComputeFissionRate(phys1, "OLD")
+      dt = LBTSGetProperty(phys1, "TIMESTEP")
+      time = LBTSGetProperty(phys1, "TIME")
+      period = dt / math.log(FRf / FRi)
 
-LBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
-solver.Execute(phys1)
+      if time >= 0.2 and not swapped then
+        SwapXS(phys1, xs_weak_fuelB)
+        swapped = True
+      end
+      log.Log(
+        LOG_0,
+        string.format(
+          "%s time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
+          phys1name,
+          time,
+          dt,
+          period,
+          FRf / initial_FR
+        )
+      )
+    end
+
+    LBTSSetProperty(phys1, "CALLBACK", "MyCallBack")
+    solver.Execute(phys1)

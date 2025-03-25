@@ -21,10 +21,12 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-xss = {}
 
-xss["0"] = xs.LoadFromOpenSn("+/transport_keigen/xs_water_g2.xs")
-xss["1"] = xs.LoadFromOpenSn("+/transport_keigen/xs_fuel_g2.xs")
+    xss = {}
 
-num_groups = xss["0"].num_groups
+    xss["0"] = xs.LoadFromOpenSn("+/transport_keigen/xs_water_g2.xs")
+    xss["1"] = xs.LoadFromOpenSn("+/transport_keigen/xs_fuel_g2.xs")
+
+    num_groups = xss["0"].num_groups

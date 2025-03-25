@@ -20,10 +20,12 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-dofile("mesh_2d_tri.lua")
 
-unit_tests.math_SDM_Test01_Continuous({
-  mesh = grid,
-  sdm_type = "PWLC",
-})
+    dofile("mesh_2d_tri.lua")
+
+    unit_tests.math_SDM_Test01_Continuous({
+      mesh = grid,
+      sdm_type = "PWLC",
+    })

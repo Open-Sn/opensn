@@ -22,118 +22,120 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-num_procs = 4
 
-# NOTE: For command line inputs, specify as:
-#       variable=[[argument]]
+    num_procs = 4
 
-if size != num_procs:
-    sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
+    # NOTE: For command line inputs, specify as:
+    #       variable=[[argument]]
 
-MPIBarrier()
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
-# ##################################################
-# ##### Parameters #####
-# ##################################################
+    MPIBarrier()
 
-# Mesh variables
-if L == None then
-  L = 100.0
-end
-if n_cells == None then
-  n_cells = 50
-end
+    # ##################################################
+    # ##### Parameters #####
+    # ##################################################
 
-# Transport angle information
-if n_angles == None then
-  n_angles = 32
-end
-if scat_order == None then
-  scat_order = 0
-end
+    # Mesh variables
+    if L == None then
+      L = 100.0
+    end
+    if n_cells == None then
+      n_cells = 50
+    end
 
-# k-eigenvalue iteration parameters
-if kes_max_iterations == None then
-  kes_max_iterations = 5000
-end
-if kes_tolerance == None then
-  kes_tolerance = 1e-8
-end
+    # Transport angle information
+    if n_angles == None then
+      n_angles = 32
+    end
+    if scat_order == None then
+      scat_order = 0
+    end
 
-# Source iteration parameters
-if si_max_iterations == None then
-  si_max_iterations = 500
-end
-if si_tolerance == None then
-  si_tolerance = 1e-8
-end
+    # k-eigenvalue iteration parameters
+    if kes_max_iterations == None then
+      kes_max_iterations = 5000
+    end
+    if kes_tolerance == None then
+      kes_tolerance = 1e-8
+    end
 
-# Delayed neutrons
-if use_precursors == None then
-  use_precursors = True
-end
+    # Source iteration parameters
+    if si_max_iterations == None then
+      si_max_iterations = 500
+    end
+    if si_tolerance == None then
+      si_tolerance = 1e-8
+    end
 
-# ##################################################
-# ##### Run problem #####
-# ##################################################
+    # Delayed neutrons
+    if use_precursors == None then
+      use_precursors = True
+    end
 
-# Setup mesh
-nodes = {}
-dx = L / n_cells
-for i = 0, n_cells do
-  nodes[i + 1] = i * dx
-end
+    # ##################################################
+    # ##### Run problem #####
+    # ##################################################
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-grid = meshgen1:Execute()
+    # Setup mesh
+    nodes = {}
+    dx = L / n_cells
+    for i = 0, n_cells do
+      nodes[i + 1] = i * dx
+    end
 
-# Set block IDs
-grid:SetUniformBlockID(0)
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    grid = meshgen1:Execute()
 
-xs_simple_fissile = xs.LoadFromOpenSn("simple_fissile.xs")
+    # Set block IDs
+    grid:SetUniformBlockID(0)
 
-# Setup Physics
-num_groups = 1
-lbs_block = {
-  mesh = grid,
-  num_groups = num_groups,
-  groupsets = {
-    {
-      groups_from_to = { 0, num_groups - 1 },
-      angular_quadrature = aquad.CreateGLProductQuadrature1DSlab(n_angles),
-      inner_linear_method = "petsc_gmres",
-      l_max_its = si_max_iterations,
-      l_abs_tol = si_tolerance,
-    },
-  },
-  xs_map = {
-    { block_ids = { 0 }, xs = xs_simple_fissile },
-  },
-  options = {
-    scattering_order = scat_order,
+    xs_simple_fissile = xs.LoadFromOpenSn("simple_fissile.xs")
 
-    use_precursors = use_precursors,
+    # Setup Physics
+    num_groups = 1
+    lbs_block = {
+      mesh = grid,
+      num_groups = num_groups,
+      groupsets = {
+        {
+          groups_from_to = { 0, num_groups - 1 },
+          angular_quadrature = aquad.CreateGLProductQuadrature1DSlab(n_angles),
+          inner_linear_method = "petsc_gmres",
+          l_max_its = si_max_iterations,
+          l_abs_tol = si_tolerance,
+        },
+      },
+      xs_map = {
+        { block_ids = { 0 }, xs = xs_simple_fissile },
+      },
+      options = {
+        scattering_order = scat_order,
 
-    verbose_inner_iterations = False,
-    verbose_outer_iterations = True,
-    save_angular_flux = True,
-  },
-  sweep_type = "CBC",
-}
+        use_precursors = use_precursors,
 
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+        verbose_inner_iterations = False,
+        verbose_outer_iterations = True,
+        save_angular_flux = True,
+      },
+      sweep_type = "CBC",
+    }
 
-k_solver0 = lbs.NonLinearKEigen.Create({
-  lbs_solver = phys,
-  nl_max_its = kes_max_iterations,
-  nl_abs_tol = kes_tolerance,
-})
-k_solver0:Initialize()
-k_solver0:Execute()
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
-# Get field functions
-# Line plot
-# Volume integrations
-# Exports
-# Plots
+    k_solver0 = lbs.NonLinearKEigen.Create({
+      lbs_solver = phys,
+      nl_max_its = kes_max_iterations,
+      nl_abs_tol = kes_tolerance,
+    })
+    k_solver0:Initialize()
+    k_solver0:Execute()
+
+    # Get field functions
+    # Line plot
+    # Volume integrations
+    # Exports
+    # Plots

@@ -21,28 +21,30 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-nodes = {}
-N = 10
-L = 5
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-grid = meshgen1:Execute()
+    nodes = {}
+    N = 10
+    L = 5
+    xmin = -L / 2
+    dx = L / N
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = xmin + k * dx
+    end
 
-#Sets a middle square to material 1
-function mat_id(pt, cur_id)
-  if math.abs(pt.x) < L / 10 and math.abs(pt.y) < L / 10 then
-    return 1
-  end
-  return cur_id
-end
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+    grid = meshgen1:Execute()
 
-mesh.SetBlockIDFromFunction(grid, "mat_id")
+    #Sets a middle square to material 1
+    function mat_id(pt, cur_id)
+      if math.abs(pt.x) < L / 10 and math.abs(pt.y) < L / 10 then
+        return 1
+      end
+      return cur_id
+    end
 
-mesh.ExportToPVTU(grid, "new_mat_ids")
+    mesh.SetBlockIDFromFunction(grid, "mat_id")
+
+    mesh.ExportToPVTU(grid, "new_mat_ids")

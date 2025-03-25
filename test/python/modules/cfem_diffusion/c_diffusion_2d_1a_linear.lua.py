@@ -21,126 +21,128 @@ if "opensn_console" not in globals():
     from pyopensn.settings import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+if __name__ == "__main__":
 
-nodes = {}
-N = 10
-L = 2
-xmin = -L / 2
-dx = L / N
-for i = 1, (N + 1) do
-  k = i - 1
-  nodes[i] = xmin + k * dx
-end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-grid = meshgen1:Execute()
+    nodes = {}
+    N = 10
+    L = 2
+    xmin = -L / 2
+    dx = L / N
+    for i = 1, (N + 1) do
+      k = i - 1
+      nodes[i] = xmin + k * dx
+    end
 
-# Set block IDs
-grid:SetUniformBlockID(0)
+    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+    grid = meshgen1:Execute()
 
-D = { 1.0 }
-Q = { 0.0 }
-XSa = { 0.0 }
-function D_coef(i, pt)
-  return D[i + 1]
-end
+    # Set block IDs
+    grid:SetUniformBlockID(0)
 
-function Q_ext(i, pt)
-  return Q[i + 1]
-end
+    D = { 1.0 }
+    Q = { 0.0 }
+    XSa = { 0.0 }
+    function D_coef(i, pt)
+      return D[i + 1]
+    end
 
-function Sigma_a(i, pt)
-  return XSa[i + 1]
-end
+    function Q_ext(i, pt)
+      return Q[i + 1]
+    end
 
-# Setboundary IDs
-# xmin,xmax,ymin,ymax,zmin,zmax
-e_vol = logvol.RPPLogicalVolume.Create({ xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
-w_vol =
-  logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
-n_vol = logvol.RPPLogicalVolume.Create({ ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
-s_vol =
-  logvol.RPPLogicalVolume.Create({ ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
+    function Sigma_a(i, pt)
+      return XSa[i + 1]
+    end
 
-e_bndry = "0"
-w_bndry = "1"
-n_bndry = "2"
-s_bndry = "3"
+    # Setboundary IDs
+    # xmin,xmax,ymin,ymax,zmin,zmax
+    e_vol = logvol.RPPLogicalVolume.Create({ xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
+    w_vol =
+      logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
+    n_vol = logvol.RPPLogicalVolume.Create({ ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
+    s_vol =
+      logvol.RPPLogicalVolume.Create({ ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
 
-grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
-grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
-grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
-grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
+    e_bndry = "0"
+    w_bndry = "1"
+    n_bndry = "2"
+    s_bndry = "3"
 
-diff_options = {
-  boundary_conditions = {
-    {
-      boundary = e_bndry,
-      type = "robin",
-      coeffs = { 0.25, 0.5, 0.0 },
-    },
-    {
-      boundary = n_bndry,
-      type = "reflecting",
-    },
-    {
-      boundary = s_bndry,
-      type = "reflecting",
-    },
-    {
-      boundary = w_bndry,
-      type = "robin",
-      coeffs = { 0.25, 0.5, 1.0 },
-    },
-  },
-}
+    grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
+    grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
+    grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
+    grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
-d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
-Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
-Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
+    diff_options = {
+      boundary_conditions = {
+        {
+          boundary = e_bndry,
+          type = "robin",
+          coeffs = { 0.25, 0.5, 0.0 },
+        },
+        {
+          boundary = n_bndry,
+          type = "reflecting",
+        },
+        {
+          boundary = s_bndry,
+          type = "reflecting",
+        },
+        {
+          boundary = w_bndry,
+          type = "robin",
+          coeffs = { 0.25, 0.5, 1.0 },
+        },
+      },
+    }
 
-# CFEM solver
-phys1 = diffusion.CFEMDiffusionSolver.Create({
-  name = "CFEMDiffusionSolver",
-  mesh = grid,
-  residual_tolerance = 1e-8,
-})
-phys1:SetOptions(diff_options)
-phys1:SetDCoefFunction(d_coef_fn)
-phys1:SetQExtFunction(Q_ext_fn)
-phys1:SetSigmaAFunction(Sigma_a_fn)
+    d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
+    Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
+    Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
 
-phys1:Initialize()
-phys1:Execute()
+    # CFEM solver
+    phys1 = diffusion.CFEMDiffusionSolver.Create({
+      name = "CFEMDiffusionSolver",
+      mesh = grid,
+      residual_tolerance = 1e-8,
+    })
+    phys1:SetOptions(diff_options)
+    phys1:SetDCoefFunction(d_coef_fn)
+    phys1:SetQExtFunction(Q_ext_fn)
+    phys1:SetSigmaAFunction(Sigma_a_fn)
 
-# Get field functions
-fflist = phys1:GetFieldFunctions()
+    phys1:Initialize()
+    phys1:Execute()
 
-# Export VTU
-if master_export == None then
-  fieldfunc.ExportToVTK(fflist[1], "CFEMDiff2D_linear")
-end
+    # Get field functions
+    fflist = phys1:GetFieldFunctions()
 
-# Line plot
-cline = fieldfunc.FieldFunctionInterpolationLine.Create()
-cline:SetInitialPoint({ x = -L / 2 })
-cline:SetFinalPoint({ x = L / 2 })
-cline:SetNumberOfPoints(50)
-cline:AddFieldFunction(fflist[1])
+    # Export VTU
+    if master_export == None then
+      fieldfunc.ExportToVTK(fflist[1], "CFEMDiff2D_linear")
+    end
 
-cline:Initialize()
-cline:Execute()
+    # Line plot
+    cline = fieldfunc.FieldFunctionInterpolationLine.Create()
+    cline:SetInitialPoint({ x = -L / 2 })
+    cline:SetFinalPoint({ x = L / 2 })
+    cline:SetNumberOfPoints(50)
+    cline:AddFieldFunction(fflist[1])
 
-if master_export == None then
-  fieldfunc.ExportToCSV(cline)
-end
+    cline:Initialize()
+    cline:Execute()
 
-# Volume integrations
+    if master_export == None then
+      fieldfunc.ExportToCSV(cline)
+    end
 
-# PostProcessors
-maxval = post.AggregateNodalValuePostProcessor.Create({
-  name = "maxval",
-  field_function = fflist[1],
-  operation = "max",
-})
-post.Execute({ maxval })
+    # Volume integrations
+
+    # PostProcessors
+    maxval = post.AggregateNodalValuePostProcessor.Create({
+      name = "maxval",
+      field_function = fflist[1],
+      operation = "max",
+    })
+    post.Execute({ maxval })
