@@ -117,7 +117,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         { name = "ymin", type = "reflecting" },
       },
       "scattering_order": 1,
-      max_ags_iterations = 1,
+      "max_ags_iterations": 1,
       volumetric_sources = { mg_src0, mg_src1 },
     ]
 
