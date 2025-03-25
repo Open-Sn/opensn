@@ -77,7 +77,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)
-      lbs.InitializeMaterials(solver_handle)
+      InitializeMaterials(solver_handle)
 
     # Setup Physics
     phys = LBSCreateTransientSolver()
@@ -137,15 +137,15 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     LBTSSetProperty(phys, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
     physname = solver.GetName(phys)
-    initial_FR = lbs.ComputeFissionRate(phys, "OLD")
+    initial_FR = ComputeFissionRate(phys, "OLD")
 
     #time = 0.0
     #psi_t = psi_0
     #for k in range(1, 10+1):
     #    solver.Step(phys)
     #
-    #    FRf = lbs.ComputeFissionRate(phys,"NEW") --time+dt
-    #    FRi = lbs.ComputeFissionRate(phys,"OLD") --time
+    #    FRf = ComputeFissionRate(phys,"NEW") --time+dt
+    #    FRi = ComputeFissionRate(phys,"OLD") --time
     #    dt = LBTSGetProperty(phys, "TIMESTEP")
     #    time = LBTSGetProperty(phys, "TIME")
     #    new_time = time+dt
@@ -169,8 +169,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     #tolA = 10.0
     #while (time < time_stop) do
     #    solver.Step(phys)
-    #    FRf = lbs.ComputeFissionRate(phys,"NEW")
-    #    FRi = lbs.ComputeFissionRate(phys,"OLD")
+    #    FRf = ComputeFissionRate(phys,"NEW")
+    #    FRi = ComputeFissionRate(phys,"OLD")
     #    dt = LBTSGetProperty(phys, "TIMESTEP")
     #    time = LBTSGetProperty(phys, "TIME")
     #    period = dt/math.log(FRf/FRi)
@@ -191,8 +191,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     #end
     swapped = False
     function MyCallBack()
-      FRf = lbs.ComputeFissionRate(phys, "NEW")
-      FRi = lbs.ComputeFissionRate(phys, "OLD")
+      FRf = ComputeFissionRate(phys, "NEW")
+      FRi = ComputeFissionRate(phys, "OLD")
       dt = LBTSGetProperty(phys, "TIMESTEP")
       time = LBTSGetProperty(phys, "TIME")
       period = dt / math.log(FRf / FRi)

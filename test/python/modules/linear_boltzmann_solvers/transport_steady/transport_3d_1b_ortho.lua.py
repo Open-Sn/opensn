@@ -63,7 +63,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
@@ -101,7 +101,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     if reflecting then
       table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" )
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
@@ -111,7 +111,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     # Slice plot
     #slices = []

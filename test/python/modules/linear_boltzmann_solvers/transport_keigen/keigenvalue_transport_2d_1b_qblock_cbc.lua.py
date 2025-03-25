@@ -62,13 +62,13 @@ if __name__ == "__main__":
       sweep_type = "CBC",
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
-    k_solver0 = lbs.NonLinearKEigen( lbs_solver = phys )
+    k_solver0 = NonLinearKEigen( lbs_solver = phys )
 k_solver0.Initialize()
 k_solver0.Execute()
 
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 

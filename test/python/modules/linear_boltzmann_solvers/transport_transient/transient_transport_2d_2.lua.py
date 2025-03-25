@@ -64,7 +64,7 @@ grid = meshgen.Execute()
 
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, new_xs)
-      lbs.InitializeMaterials(solver_handle)
+      InitializeMaterials(solver_handle)
 
     # Setup Physics
     phys = LBSCreateTransientSolver()
@@ -125,14 +125,14 @@ grid = meshgen.Execute()
     LBTSSetProperty(phys, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
     physname = solver.GetName(phys)
-    initial_FR = lbs.ComputeFissionRate(phys, "OLD")
+    initial_FR = ComputeFissionRate(phys, "OLD")
 
     #time = 0.0
     #for k in range(1, 2+1):
     #    --LBTSSetProperty(phys, "INHIBIT_ADVANCE", True)
     #    solver.Step(phys)
-    #    FRf = lbs.ComputeFissionRate(phys,"NEW")
-    #    FRi = lbs.ComputeFissionRate(phys,"OLD")
+    #    FRf = ComputeFissionRate(phys,"NEW")
+    #    FRi = ComputeFissionRate(phys,"OLD")
     #    dt = LBTSGetProperty(phys, "TIMESTEP")
     #    time = LBTSGetProperty(phys, "TIME")
     #    period = dt/math.log(FRf/FRi)
@@ -147,8 +147,8 @@ grid = meshgen.Execute()
     while time < time_stop do
       k = k + 1
       solver.Step(phys)
-      FRf = lbs.ComputeFissionRate(phys, "NEW")
-      FRi = lbs.ComputeFissionRate(phys, "OLD")
+      FRf = ComputeFissionRate(phys, "NEW")
+      FRi = ComputeFissionRate(phys, "OLD")
       dt = LBTSGetProperty(phys, "TIMESTEP")
       time = LBTSGetProperty(phys, "TIME")
       period = dt / math.log(FRf / FRi)

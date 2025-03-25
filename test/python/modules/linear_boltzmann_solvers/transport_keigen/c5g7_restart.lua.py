@@ -63,7 +63,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
     pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    phys = lbs.DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -100,7 +100,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
     )
 
     # Execute Solver
-    k_solver = lbs.PowerIterationKEigen(
+    k_solver = PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1.0e-8,
     )
@@ -108,5 +108,5 @@ k_solver.Initialize()
 k_solver.Execute()
 
     if master_export == None then
-      fflist = lbs.GetScalarFieldFunctionList(phys)
+      fflist = GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")

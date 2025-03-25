@@ -116,9 +116,9 @@ grid = meshgen.Execute()
       sweep_type = "CBC",
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
-    k_solver0 = lbs.NonLinearKEigen(
+    k_solver0 = NonLinearKEigen(
       lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,

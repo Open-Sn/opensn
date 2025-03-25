@@ -71,8 +71,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.5
-    mg_src1 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
-    mg_src2 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src1 = VolumetricSource( block_ids = { 0 }, group_strength = strength )
+    mg_src2 = VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     #Setup physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
@@ -112,7 +112,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     #Initialize and execute solver
@@ -122,7 +122,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     #Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()

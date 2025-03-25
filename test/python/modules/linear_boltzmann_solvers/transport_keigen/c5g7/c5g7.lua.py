@@ -41,7 +41,7 @@ if __name__ == "__main__":
       inner_linear_method = "petsc_gmres"
       l_max_its = 5
 
-    phys = lbs.DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -74,12 +74,12 @@ if __name__ == "__main__":
 
     # Execute Solver
     if k_method == "pi" then
-      k_solver = lbs.PowerIterationKEigen(
+      k_solver = PowerIterationKEigen(
         lbs_solver = phys,
         k_tol = 1.0e-8,
       )
     elseif k_method == "pi_scdsa" then
-      k_solver = lbs.PowerIterationKEigenSCDSA(
+      k_solver = PowerIterationKEigenSCDSA(
         lbs_solver = phys,
         diff_accel_sdm = "pwld",
         accel_pi_verbose = True,
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         accel_pi_max_its = 50,
       )
     elseif k_method == "pi_scdsa_pwlc" then
-      k_solver = lbs.PowerIterationKEigenSCDSA(
+      k_solver = PowerIterationKEigenSCDSA(
         lbs_solver = phys,
         diff_accel_sdm = "pwlc",
         accel_pi_verbose = True,
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         accel_pi_max_its = 50,
       )
     elseif k_method == "pi_smm" then
-      k_solver = lbs.PowerIterationKEigenSMM(
+      k_solver = PowerIterationKEigenSMM(
         lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         diff_sdm = "pwlc",
       )
     elseif k_method == "pi_smm_pwld" then
-      k_solver = lbs.PowerIterationKEigenSMM(
+      k_solver = PowerIterationKEigenSMM(
         lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -115,7 +115,7 @@ if __name__ == "__main__":
         diff_sdm = "pwld",
       )
     elseif k_method == "jfnk" then
-      k_solver = lbs.NonLinearKEigen(
+      k_solver = NonLinearKEigen(
         lbs_solver = phys,
         nl_max_its = 50,
         nl_abs_tol = 1.0e-10,
@@ -136,5 +136,5 @@ k_solver.Initialize()
 k_solver.Execute()
 
     if master_export == None then
-      fflist = lbs.GetScalarFieldFunctionList(phys)
+      fflist = GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")

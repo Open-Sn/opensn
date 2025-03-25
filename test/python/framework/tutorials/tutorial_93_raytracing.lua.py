@@ -98,7 +98,7 @@ grid.SetupOrthogonalBoundaries()
     for g in range(1, num_groups+1):
       src[g] = 0.0
     src[1] = 1.0
-    pt_src = lbs.PointSource(
+    pt_src = PointSource(
       location = { 0.0, 0.0, 0.0 },
       strength = src,
     )
@@ -129,7 +129,7 @@ grid.SetupOrthogonalBoundaries()
       },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
@@ -137,7 +137,7 @@ grid.SetupOrthogonalBoundaries()
 ss_solver.Initialize()
 ss_solver.Execute()
 
-    ff_m0 = lbs.GetScalarFieldFunctionList(phys)
+    ff_m0 = GetScalarFieldFunctionList(phys)
 
     fieldfunc.ExportToVTKMulti({ ff_m0[1] }, "SimTest_93_LBS_" + solver_name)
     MPIBarrier()

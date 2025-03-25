@@ -79,7 +79,7 @@ grid = meshgen.Execute()
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(8, 8)
@@ -117,7 +117,7 @@ grid = meshgen.Execute()
       volumetric_sources = { mg_src },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
@@ -127,7 +127,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     pp1 = post.CellVolumeIntegralPostProcessor(
       name = "max-grp0",

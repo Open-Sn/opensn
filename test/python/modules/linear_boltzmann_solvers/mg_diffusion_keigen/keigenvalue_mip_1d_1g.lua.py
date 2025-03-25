@@ -115,10 +115,10 @@ grid = meshgen.Execute()
       verbose_outer_iterations = True,
     }
 
-    phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
+    phys = DiffusionDFEMSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    k_solver0 = lbs.NonLinearKEigen(
+    k_solver0 = NonLinearKEigen(
       lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,

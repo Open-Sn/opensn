@@ -64,8 +64,8 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       }
 
     # Create sources in 1st and 4th materials
-    src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = { 50. } )
-    src1 = lbs.VolumetricSource( block_ids = { 3 }, group_strength = { 1. } )
+    src0 = VolumetricSource( block_ids = { 0 }, group_strength = { 50. } )
+    src1 = VolumetricSource( block_ids = { 3 }, group_strength = { 1. } )
 
     # Angular Quadrature
     gl_quad = GLProductQuadrature1DSlab(128)
@@ -95,7 +95,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
@@ -103,21 +103,21 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
 ss_solver.Initialize()
 ss_solver.Execute()
 
-    leakage_left_1 = lbs.ComputeLeakage(phys, { "zmin" )["zmin"][1]
-    leakage_right_1 = lbs.ComputeLeakage(phys, { "zmax" )["zmax"][1]
+    leakage_left_1 = ComputeLeakage(phys, { "zmin" )["zmin"][1]
+    leakage_right_1 = ComputeLeakage(phys, { "zmax" )["zmax"][1]
 
-    lbs.WriteAngularFluxes(phys, "angular_io")
+    WriteAngularFluxes(phys, "angular_io")
 
-    phys2 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys2 = DiscreteOrdinatesSolver.Create(lbs_block)
 
     ss_solver_2 = SteadyStateSolver( lbs_solver = phys2 )
 
 ss_solver_2.Initialize()
 
-    lbs.ReadAngularFluxes(phys2, "angular_io")
+    ReadAngularFluxes(phys2, "angular_io")
 
-    leakage_left_2 = lbs.ComputeLeakage(phys2, { "zmin" )["zmin"][1]
-    leakage_right_2 = lbs.ComputeLeakage(phys2, { "zmax" )["zmax"][1]
+    leakage_left_2 = ComputeLeakage(phys2, { "zmin" )["zmin"][1]
+    leakage_right_2 = ComputeLeakage(phys2, { "zmax" )["zmax"][1]
 
     leakage_left_diff = leakage_left_1 - leakage_left_2
     leakage_right_diff = leakage_right_1 - leakage_right_2

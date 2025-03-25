@@ -49,7 +49,7 @@ grid = meshgen.Execute()
     for g in range(1, num_groups+1):
       strength[g] = 0.0
     strength[1] = 1.0
-    mg_src = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = { 0 }, group_strength = strength )
 
     # Angular Quadrature
     pquad = GLCProductQuadrature3DXYZ(4, 8)
@@ -87,7 +87,7 @@ grid = meshgen.Execute()
       },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

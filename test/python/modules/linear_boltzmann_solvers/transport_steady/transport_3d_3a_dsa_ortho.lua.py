@@ -71,9 +71,9 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     for g in range(1, num_groups+1):
       strength[g] = 0.0
     strength[1] = 1.0
-    mg_src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
+    mg_src0 = VolumetricSource( block_ids = { 0 }, group_strength = strength )
     strength[1] = 0.0
-    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src1 = VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
@@ -118,7 +118,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       volumetric_sources = { mg_src0, mg_src1 },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
@@ -128,7 +128,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     # Exports
     if master_export == None then

@@ -107,10 +107,10 @@ grid = meshgen.Execute()
       verbose_outer_iterations = True,
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    k_solver0 = lbs.NonLinearKEigen(
+    k_solver0 = NonLinearKEigen(
       lbs_solver = phys,
       nl_max_its = 500,
       nl_abs_tol = 1.0e-8,

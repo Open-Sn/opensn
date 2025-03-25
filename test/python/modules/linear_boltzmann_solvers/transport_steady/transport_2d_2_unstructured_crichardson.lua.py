@@ -60,8 +60,8 @@ grid = meshgen.Execute()
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
-    mg_src2 = lbs.VolumetricSource( block_ids = { 2 }, group_strength = strength )
+    mg_src1 = VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src2 = VolumetricSource( block_ids = { 2 }, group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 32)
@@ -108,7 +108,7 @@ grid = meshgen.Execute()
       volumetric_sources = { mg_src1, mg_src2 },
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
@@ -118,7 +118,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys)
+    fflist = GetScalarFieldFunctionList(phys)
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()

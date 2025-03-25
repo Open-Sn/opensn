@@ -90,10 +90,10 @@ if __name__ == "__main__":
       verbose_outer_iterations = True,
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    k_solver = lbs.PowerIterationKEigen(
+    k_solver = PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1e-6,
     )

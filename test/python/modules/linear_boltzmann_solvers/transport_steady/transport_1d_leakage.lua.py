@@ -88,7 +88,7 @@ grid = meshgen.Execute()
       save_angular_flux = True,
     }
 
-    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
@@ -98,6 +98,6 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Compute the leakage
-    leakage = lbs.ComputeLeakage(phys, [])
+    leakage = ComputeLeakage(phys, [])
     for k, v in pairs(leakage) do
       log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
