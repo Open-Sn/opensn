@@ -117,7 +117,7 @@ grid = meshgen.Execute()
       },
       "scattering_order": 1,
       "save_angular_flux": True,
-      volumetric_sources = { mg_src },
+      "volumetric_sources": [ mg_src ],
     ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

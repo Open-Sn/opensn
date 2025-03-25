@@ -83,7 +83,7 @@ grid = meshgen.Execute()
           { name = "zmin", type = "reflecting" },
           { name = "zmax", type = "reflecting" },
         },
-        volumetric_sources = { mg_src },
+        "volumetric_sources": [ mg_src ],
       },
     ]
 

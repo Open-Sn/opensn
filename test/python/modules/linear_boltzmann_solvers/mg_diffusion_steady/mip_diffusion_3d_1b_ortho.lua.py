@@ -90,7 +90,7 @@ grid = meshgen.Execute()
 
     lbs_options = [
       "scattering_order": 1,
-      volumetric_sources = { mg_src },
+      "volumetric_sources": [ mg_src ],
     ]
     if reflecting then
       lbs_options.boundary_conditions = { { name = "zmax", type = "reflecting" } }

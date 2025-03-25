@@ -88,7 +88,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
         "scattering_order": 0,
         "spatial_discretization": "pwld",
         boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
-        volumetric_sources = { mg_src0, mg_src1 },
+        "volumetric_sources": [ mg_src0, mg_src1 ],
       },
     ]
 

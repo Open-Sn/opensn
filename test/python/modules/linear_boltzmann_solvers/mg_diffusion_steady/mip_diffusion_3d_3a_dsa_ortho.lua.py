@@ -116,7 +116,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     lbs_options = [
       "scattering_order": 1,
-      volumetric_sources = { mg_src0, mg_src1 },
+      "volumetric_sources": [ mg_src0, mg_src1 ],
     ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)

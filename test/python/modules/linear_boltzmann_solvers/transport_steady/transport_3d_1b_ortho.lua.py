@@ -96,7 +96,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
         { name = "xmin", type = "isotropic", group_strength = bsrc },
       },
       "scattering_order": 1,
-      volumetric_sources = { mg_src },
+      "volumetric_sources": [ mg_src ],
     ]
     if reflecting then
       table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" )

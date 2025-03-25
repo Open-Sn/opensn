@@ -98,7 +98,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       },
       "scattering_order": 1,
       "save_angular_flux": True,
-      volumetric_sources = { mg_src1, mg_src2 },
+      "volumetric_sources": [ mg_src1, mg_src2 ],
     ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

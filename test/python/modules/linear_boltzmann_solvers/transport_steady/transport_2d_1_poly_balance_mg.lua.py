@@ -98,7 +98,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       "verbose_ags_iterations": True,
       "max_ags_iterations": 100,
       "ags_tolerance": 1.0e-6,
-      volumetric_sources = { mg_src0, mg_src1 },
+      "volumetric_sources": [ mg_src0, mg_src1 ],
     ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

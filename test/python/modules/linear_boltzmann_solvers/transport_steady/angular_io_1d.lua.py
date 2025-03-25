@@ -90,7 +90,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
         "spatial_discretization": "pwld",
         boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
         "save_angular_flux": True,
-        volumetric_sources = { src0, src1 },
+        "volumetric_sources": [ src0, src1 ],
       },
     ]
 
