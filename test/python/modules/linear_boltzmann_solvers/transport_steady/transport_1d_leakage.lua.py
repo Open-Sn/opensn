@@ -85,7 +85,7 @@ grid = meshgen.Execute()
         },
       },
       "scattering_order": 0,
-      save_angular_flux = True,
+      "save_angular_flux": True,
     ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

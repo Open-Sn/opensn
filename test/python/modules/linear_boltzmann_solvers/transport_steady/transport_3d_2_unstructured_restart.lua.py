@@ -105,7 +105,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       },
       "scattering_order": 1,
       volumetric_sources = { mg_src1, mg_src2 },
-      save_angular_flux = True,
+      "save_angular_flux": True,
       #restart_writes_enabled = True,
       #write_delayed_psi_to_restart = True,
       #write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",

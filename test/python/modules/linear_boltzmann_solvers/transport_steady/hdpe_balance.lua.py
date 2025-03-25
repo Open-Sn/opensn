@@ -74,7 +74,7 @@ grid = meshgen.Execute()
       options = {
         "scattering_order": 0,
         spatial_discretization = "pwld",
-        save_angular_flux = True,
+        "save_angular_flux": True,
         boundary_conditions = {
           { name = "xmin", type = "reflecting" },
           { name = "xmax", type = "reflecting" },

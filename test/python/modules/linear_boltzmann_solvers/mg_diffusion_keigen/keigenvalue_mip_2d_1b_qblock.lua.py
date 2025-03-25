@@ -58,10 +58,10 @@ if __name__ == "__main__":
       },
       "scattering_order": 2,
 
-      use_precursors = False,
+      "use_precursors": False,
 
-      verbose_inner_iterations = False,
-      verbose_outer_iterations = True,
+      "verbose_inner_iterations": False,
+      "verbose_outer_iterations": True,
     ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)

@@ -95,9 +95,9 @@ grid = meshgen.Execute()
         { name = "zmax", type = "reflecting" },
       },
       "scattering_order": 1,
-      use_precursors = False,
-      verbose_inner_iterations = False,
-      verbose_outer_iterations = True,
+      "use_precursors": False,
+      "verbose_inner_iterations": False,
+      "verbose_outer_iterations": True,
     ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

@@ -116,7 +116,7 @@ grid = meshgen.Execute()
         { name = "xmin", type = "isotropic", group_strength = bsrc },
       },
       "scattering_order": 1,
-      save_angular_flux = True,
+      "save_angular_flux": True,
       volumetric_sources = { mg_src },
     ]
 

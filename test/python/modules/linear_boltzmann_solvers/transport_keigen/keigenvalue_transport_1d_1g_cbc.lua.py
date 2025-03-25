@@ -107,11 +107,11 @@ grid = meshgen.Execute()
       options = {
         scattering_order = scat_order,
 
-        use_precursors = use_precursors,
+        "use_precursors": use_precursors,
 
-        verbose_inner_iterations = False,
-        verbose_outer_iterations = True,
-        save_angular_flux = True,
+        "verbose_inner_iterations": False,
+        "verbose_outer_iterations": True,
+        "save_angular_flux": True,
       },
       sweep_type = "CBC",
     ]
