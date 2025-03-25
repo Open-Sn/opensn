@@ -24,14 +24,14 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen = mesh.ExtruderMeshGenerator.Create({
+    meshgen = ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "triangle_mesh_2x2.obj",
         }),
       },
       layers = { { z = 1.1, n = 2 }, { z = 2.1, n = 3 } },
-      partitioner = mesh.KBAGraphPartitioner.Create({
+      partitioner = KBAGraphPartitioner.Create({
         nx = 2,
         ny = 2,
         nz = 2,

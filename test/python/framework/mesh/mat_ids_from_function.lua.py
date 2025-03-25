@@ -33,7 +33,7 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen.Execute()
 
     #Sets a middle square to material 1

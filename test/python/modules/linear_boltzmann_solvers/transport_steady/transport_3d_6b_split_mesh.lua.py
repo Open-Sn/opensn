@@ -62,7 +62,7 @@ if __name__ == "__main__":
     for i in range(1, (Nz + 1)+1):
       zmesh[i] = zmin + k * dz
 
-    meshgen = mesh.SplitFileMeshGenerator.Create({
+    meshgen = SplitFileMeshGenerator.Create({
       inputs = {
         mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh } }),
         mesh.ExtruderMeshGenerator.Create({

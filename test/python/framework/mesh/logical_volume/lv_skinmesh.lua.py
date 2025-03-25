@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    meshgen = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, nodes },
     })
 grid = meshgen.Execute()
@@ -55,7 +55,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
     # assign mat ID 11 to lv of RPP
 grid.SetBlockIDFromLogicalVolume(vol1, 11, True)
     # create a logical volume as the interior of a skin mesh
-    surfmesh = mesh.SurfaceMesh.Create([])
+    surfmesh = SurfaceMesh.Create([])
 surfmesh.ImportFromOBJFile("./cube_with_normals.obj", False, Vector3(0, 0, 0))
     lv_skinmesh = logvol.SurfaceMeshLogicalVolume.Create({ surface_mesh = surfmesh })
     # assign mat ID 15 to lv of skin mesh

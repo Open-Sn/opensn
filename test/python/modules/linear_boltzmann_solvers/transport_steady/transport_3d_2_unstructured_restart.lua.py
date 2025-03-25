@@ -41,14 +41,14 @@ if __name__ == "__main__":
       os.exit(False)
 
     # Setup mesh
-    meshgen = mesh.ExtruderMeshGenerator.Create({
+    meshgen = ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
         }),
       },
       layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, # layers
-      partitioner = mesh.KBAGraphPartitioner.Create({
+      partitioner = KBAGraphPartitioner.Create({
         nx = 2,
         ny = 2,
         xcuts = { 0.0 },

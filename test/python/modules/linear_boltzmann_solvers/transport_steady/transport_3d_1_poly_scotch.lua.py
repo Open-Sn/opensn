@@ -43,13 +43,13 @@ if __name__ == "__main__":
     for k in range(0, 8+1):
       nodesz[k + 1] = 0.0 + k * dz
 
-    meshgen = mesh.MeshGenerator.Create({
+    meshgen = MeshGenerator.Create({
       inputs = {
         mesh.OrthogonalMeshGenerator.Create({
           node_sets = { nodesxy, nodesxy, nodesz },
         }),
       },
-      partitioner = mesh.PETScGraphPartitioner.Create({ type = "ptscotch" }),
+      partitioner = PETScGraphPartitioner.Create({ type = "ptscotch" }),
     })
 grid = meshgen.Execute()
 

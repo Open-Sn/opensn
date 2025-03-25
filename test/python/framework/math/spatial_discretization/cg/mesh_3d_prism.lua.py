@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen = mesh.ExtruderMeshGenerator.Create({
+    meshgen = ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/+/assets/mesh/TriangleMesh2x2.obj",

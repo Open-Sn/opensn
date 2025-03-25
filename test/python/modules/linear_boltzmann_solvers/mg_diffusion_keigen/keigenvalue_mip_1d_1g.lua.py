@@ -78,7 +78,7 @@ if __name__ == "__main__":
     for i in range(0, n_cells+1):
       nodes[i + 1] = i * dx
 
-    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute()
 
     # Set block IDs

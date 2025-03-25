@@ -41,14 +41,14 @@ if __name__ == "__main__":
       os.exit(False)
 
     # Setup mesh
-    meshgen = mesh.MeshGenerator.Create({
+    meshgen = MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/fuel_wedge.e",
         }),
       },
     })
-    grid = mesh.MeshGenerator.Execute(meshgen)
+    grid = MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
     xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")

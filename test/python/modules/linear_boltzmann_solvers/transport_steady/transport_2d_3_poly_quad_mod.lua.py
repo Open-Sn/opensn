@@ -33,13 +33,13 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    meshgen = mesh.MeshGenerator.Create({
+    meshgen = MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/SquareMesh2x2QuadsBlock.obj",
         }),
       },
-      partitioner = mesh.KBAGraphPartitioner.Create({
+      partitioner = KBAGraphPartitioner.Create({
         nx = 2,
         ny = 2,
         nz = 1,

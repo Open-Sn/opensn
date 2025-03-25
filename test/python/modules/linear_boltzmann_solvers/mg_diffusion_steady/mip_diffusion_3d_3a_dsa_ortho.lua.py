@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 
-    meshgen = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, znodes },
     })
 grid = meshgen.Execute()

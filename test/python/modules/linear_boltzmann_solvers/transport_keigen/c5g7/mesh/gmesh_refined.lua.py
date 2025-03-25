@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen = mesh.MeshGenerator.Create({
+    meshgen = MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "mesh/2D_c5g7_refined.msh",

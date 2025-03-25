@@ -40,7 +40,7 @@ if __name__ == "__main__":
         counter = counter + 1
         nodes[counter] = nodes[counter - 1] + dx
 
-    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+    meshgen = OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute(meshgen)
 
     # Set Material IDs

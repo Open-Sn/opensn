@@ -30,7 +30,7 @@ if __name__ == "__main__":
     Npolar = 4
     Nazimuthal = 16
 
-    meshgen = mesh.MeshGenerator.Create({
+    meshgen = MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/Rectangular2D2MatGmshV4.msh",
