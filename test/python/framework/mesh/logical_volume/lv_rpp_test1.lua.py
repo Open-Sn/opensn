@@ -26,9 +26,9 @@ if __name__ == "__main__":
 
     lv1 = logvol.RPPLogicalVolume( xmin = -12.0, xmax = 12.0 )
 
-print("lv1 test 1.", lv1.Inside({ x = -13.0, y = 0.1, z = 0.1 ))
-print("lv1 test 2.", lv1.Inside({ x = -11.0, y = 0.1, z = 0.1 ))
-print("lv1 test 3.", lv1.Inside({ x = -11.0, y = -1.0, z = -1.0 ))
+print("lv1 test 1.", lv1.Inside( x = -13.0, y = 0.1, z = 0.1 ))
+print("lv1 test 2.", lv1.Inside( x = -11.0, y = 0.1, z = 0.1 ))
+print("lv1 test 3.", lv1.Inside( x = -11.0, y = -1.0, z = -1.0 ))
 
     lv2 = logvol.RPPLogicalVolume( xmin = -12.0, xmax = 12.0, infy = True, infz = True )
     print()
