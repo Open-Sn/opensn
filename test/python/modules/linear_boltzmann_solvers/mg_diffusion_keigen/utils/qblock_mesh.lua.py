@@ -35,8 +35,8 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     grid:SetUniformBlockID(0)
 
@@ -47,4 +47,4 @@ if __name__ == "__main__":
       ymax = 10.0,
       infz = True,
     })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)

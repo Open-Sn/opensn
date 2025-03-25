@@ -88,8 +88,8 @@ if __name__ == "__main__":
       nodes[i + 1] = i * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -132,8 +132,8 @@ if __name__ == "__main__":
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
     })
-    k_solver0:Initialize()
-    k_solver0:Execute()
+k_solver0.Initialize()
+k_solver0.Execute()
 
     # Get field functions
     # Line plot

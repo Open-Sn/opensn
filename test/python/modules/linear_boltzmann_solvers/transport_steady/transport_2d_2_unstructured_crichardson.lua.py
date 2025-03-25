@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Unstructured mesh
-    meshgen1 = mesh.MeshGenerator.Create({
+    meshgen = mesh.MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         ycuts = { 0.0 },
       }),
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
@@ -109,40 +109,40 @@ if __name__ == "__main__":
       volumetric_sources = { mg_src1, mg_src2 },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[1])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[1])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[10])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[10])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))

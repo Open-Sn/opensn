@@ -35,16 +35,16 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
       logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     D = { 1.0, 0.01 }
     Q = { 1.0, 10.0 }
@@ -75,10 +75,10 @@ if __name__ == "__main__":
     n_bndry = "2"
     s_bndry = "3"
 
-    grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
     diff_options = {
       boundary_conditions = {
@@ -110,21 +110,21 @@ if __name__ == "__main__":
     Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
 
     # CFEM solver
-    phys1 = diffusion.CFEMDiffusionSolver.Create({
+    phys = diffusion.CFEMDiffusionSolver.Create({
       name = "CFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-8,
     })
-    phys1:SetOptions(diff_options)
-    phys1:SetDCoefFunction(d_coef_fn)
-    phys1:SetQExtFunction(Q_ext_fn)
-    phys1:SetSigmaAFunction(Sigma_a_fn)
+    phys:SetOptions(diff_options)
+phys.SetDCoefFunction(d_coef_fn)
+phys.SetQExtFunction(Q_ext_fn)
+phys.SetSigmaAFunction(Sigma_a_fn)
 
-    phys1:Initialize()
-    phys1:Execute()
+phys.Initialize()
+phys.Execute()
 
     # Get field functions
-    fflist = phys1:GetFieldFunctions()
+fflist = phys.GetFieldFunctions()
 
     # Export VTU
     if master_export == None then

@@ -66,8 +66,8 @@ if __name__ == "__main__":
       zmesh[i] = zmin + k * dz
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
+grid = meshgen.Execute()
 
     #
     # Materials
@@ -114,12 +114,12 @@ if __name__ == "__main__":
     }
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys:SetOptions(lbs_options)
+phys.SetOptions(lbs_options)
 
     k_solver0 = lbs.NonLinearKEigen.Create({
       lbs_solver = phys,
       nl_max_its = 500,
       nl_abs_tol = 1.0e-8,
     })
-    k_solver0:Initialize()
-    k_solver0:Execute()
+k_solver0.Initialize()
+k_solver0.Execute()

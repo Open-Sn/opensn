@@ -39,11 +39,11 @@ if __name__ == "__main__":
     meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, nodes },
     })
-    grid = meshgen:Execute()
+grid = meshgen.Execute()
 
     # assign mat ID 10 to whole domain
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 10, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     #Sets lua function describing a sphere (material 11)
     function MatIDFunction1(pt, cur_id)

@@ -35,8 +35,8 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -77,10 +77,10 @@ if __name__ == "__main__":
     n_bndry = 2
     s_bndry = 3
 
-    grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry)
-    grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
-    grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
-    grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
+grid.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry)
+grid.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry)
+grid.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry)
+grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
 
     # Call Lua Sim Test
     SimTest_IP_MMS_L2error() #simtest_IP_MMS_L2_handle becomes available here

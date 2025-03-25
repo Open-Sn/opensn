@@ -35,8 +35,8 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -70,10 +70,10 @@ if __name__ == "__main__":
     n_bndry = "2"
     s_bndry = "3"
 
-    grid:SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
-    grid:SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(e_vol, e_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(w_vol, w_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
+grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
     diff_options = {
       boundary_conditions = {
@@ -103,21 +103,21 @@ if __name__ == "__main__":
     Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
 
     # CFEM solver
-    phys1 = diffusion.CFEMDiffusionSolver.Create({
+    phys = diffusion.CFEMDiffusionSolver.Create({
       name = "CFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-8,
     })
-    phys1:SetOptions(diff_options)
-    phys1:SetDCoefFunction(d_coef_fn)
-    phys1:SetQExtFunction(Q_ext_fn)
-    phys1:SetSigmaAFunction(Sigma_a_fn)
+    phys:SetOptions(diff_options)
+phys.SetDCoefFunction(d_coef_fn)
+phys.SetQExtFunction(Q_ext_fn)
+phys.SetSigmaAFunction(Sigma_a_fn)
 
-    phys1:Initialize()
-    phys1:Execute()
+phys.Initialize()
+phys.Execute()
 
     # Get field functions
-    fflist = phys1:GetFieldFunctions()
+fflist = phys.GetFieldFunctions()
 
     # Export VTU
     if master_export == None then
@@ -126,13 +126,13 @@ if __name__ == "__main__":
 
     # Line plot
     cline = fieldfunc.FieldFunctionInterpolationLine.Create()
-    cline:SetInitialPoint({ x = -L / 2 })
-    cline:SetFinalPoint({ x = L / 2 })
-    cline:SetNumberOfPoints(50)
-    cline:AddFieldFunction(fflist[1])
+cline.SetInitialPoint({ x = -L / 2 })
+cline.SetFinalPoint({ x = L / 2 })
+cline.SetNumberOfPoints(50)
+cline.AddFieldFunction(fflist[1])
 
-    cline:Initialize()
-    cline:Execute()
+cline.Initialize()
+cline.Execute()
 
     if master_export == None then
       fieldfunc.ExportToCSV(cline)

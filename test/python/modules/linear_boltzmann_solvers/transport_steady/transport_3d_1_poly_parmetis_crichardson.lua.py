@@ -45,16 +45,16 @@ if __name__ == "__main__":
       nodesz[k + 1] = 0.0 + k * dz
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
       logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -100,40 +100,40 @@ if __name__ == "__main__":
       volumetric_sources = { mg_src0, mg_src1 },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[1])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[1])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
 
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[20])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[20])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 

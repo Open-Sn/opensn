@@ -40,13 +40,13 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    grid:SetupOrthogonalBoundaries()
+grid.SetupOrthogonalBoundaries()
 
     function MMS_phi(pt)
       return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     unit_sim_tests.acceleration_Diffusion_DFEM({ mesh = grid })
     MPIBarrier()
     if location_id == 0 then
-      os.execute("rm SimTest_92*")
+os.system("rm SimTest_92*")
     end
 
     #[0]  Iteration     0   1.000e+00

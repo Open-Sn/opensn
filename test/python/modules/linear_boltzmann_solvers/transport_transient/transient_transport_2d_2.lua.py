@@ -43,8 +43,8 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -70,12 +70,12 @@ if __name__ == "__main__":
     end
 
     # Setup Physics
-    phys1 = LBSCreateTransientSolver()
+    phys = LBSCreateTransientSolver()
 
     #========== Groups
     grp = {}
     for g = 1, num_groups do
-      grp[g] = LBSCreateGroup(phys1)
+      grp[g] = LBSCreateGroup(phys)
     end
 
     #========== ProdQuad
@@ -84,18 +84,18 @@ if __name__ == "__main__":
     aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
     #========== Groupset def
-    gs0 = LBSCreateGroupset(phys1)
+    gs0 = LBSCreateGroupset(phys)
     cur_gs = gs0
-    LBSGroupsetAddGroups(phys1, cur_gs, 0, num_groups - 1)
-    LBSGroupsetSetQuadrature(phys1, cur_gs, pquad)
-    LBSGroupsetSetAngleAggDiv(phys1, cur_gs, 1)
-    LBSGroupsetSetGroupSubsets(phys1, cur_gs, 8)
-    LBSGroupsetSetIterativeMethod(phys1, cur_gs, KRYLOV_GMRES_CYCLES)
-    LBSGroupsetSetResidualTolerance(phys1, cur_gs, 1.0e-6)
-    LBSGroupsetSetMaxIterations(phys1, cur_gs, 1000)
-    LBSGroupsetSetGMRESRestartIntvl(phys1, cur_gs, 100)
-    #LBSGroupsetSetWGDSA(phys1,cur_gs,30,1.0e-4,False," ")
-    #LBSGroupsetSetTGDSA(phys1,cur_gs,30,1.0e-4,False," ")
+    LBSGroupsetAddGroups(phys, cur_gs, 0, num_groups - 1)
+    LBSGroupsetSetQuadrature(phys, cur_gs, pquad)
+    LBSGroupsetSetAngleAggDiv(phys, cur_gs, 1)
+    LBSGroupsetSetGroupSubsets(phys, cur_gs, 8)
+    LBSGroupsetSetIterativeMethod(phys, cur_gs, KRYLOV_GMRES_CYCLES)
+    LBSGroupsetSetResidualTolerance(phys, cur_gs, 1.0e-6)
+    LBSGroupsetSetMaxIterations(phys, cur_gs, 1000)
+    LBSGroupsetSetGMRESRestartIntvl(phys, cur_gs, 100)
+    #LBSGroupsetSetWGDSA(phys,cur_gs,30,1.0e-4,False," ")
+    #LBSGroupsetSetTGDSA(phys,cur_gs,30,1.0e-4,False," ")
 
     #
     #-- Set boundary conditions
@@ -104,44 +104,44 @@ if __name__ == "__main__":
     #    bsrc[g] = 0.0
     #end
     #bsrc[1] = 1.0/2
-    LBSSetProperty(phys1, BOUNDARY_CONDITION, XMIN, LBSBoundaryTypes.REFLECTING)
-    LBSSetProperty(phys1, BOUNDARY_CONDITION, XMAX, LBSBoundaryTypes.REFLECTING)
-    LBSSetProperty(phys1, BOUNDARY_CONDITION, YMIN, LBSBoundaryTypes.REFLECTING)
-    LBSSetProperty(phys1, BOUNDARY_CONDITION, YMAX, LBSBoundaryTypes.REFLECTING)
+    LBSSetProperty(phys, BOUNDARY_CONDITION, XMIN, LBSBoundaryTypes.REFLECTING)
+    LBSSetProperty(phys, BOUNDARY_CONDITION, XMAX, LBSBoundaryTypes.REFLECTING)
+    LBSSetProperty(phys, BOUNDARY_CONDITION, YMIN, LBSBoundaryTypes.REFLECTING)
+    LBSSetProperty(phys, BOUNDARY_CONDITION, YMAX, LBSBoundaryTypes.REFLECTING)
     #
-    LBSSetProperty(phys1, DISCRETIZATION_METHOD, PWLD)
-    LBSSetProperty(phys1, SCATTERING_ORDER, 1)
+    LBSSetProperty(phys, DISCRETIZATION_METHOD, PWLD)
+    LBSSetProperty(phys, SCATTERING_ORDER, 1)
 
-    LBKESSetProperty(phys1, "MAX_ITERATIONS", 100)
-    LBKESSetProperty(phys1, "TOLERANCE", 1.0e-8)
+    LBKESSetProperty(phys, "MAX_ITERATIONS", 100)
+    LBKESSetProperty(phys, "TOLERANCE", 1.0e-8)
 
-    LBSSetProperty(phys1, USE_PRECURSORS, True)
+    LBSSetProperty(phys, USE_PRECURSORS, True)
 
-    #LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
-    LBSSetProperty(phys1, VERBOSE_INNER_ITERATIONS, False)
-    LBSSetProperty(phys1, VERBOSE_OUTER_ITERATIONS, True)
+    #LBSSetProperty(phys, VERBOSE_INNER_ITERATIONS, False)
+    LBSSetProperty(phys, VERBOSE_INNER_ITERATIONS, False)
+    LBSSetProperty(phys, VERBOSE_OUTER_ITERATIONS, True)
 
     # Initialize and Execute Solver
-    solver.Initialize(phys1)
+    solver.Initialize(phys)
 
-    LBTSSetProperty(phys1, "TIMESTEP", 1e-3)
-    LBTSSetProperty(phys1, "VERBOSITY_LEVEL", 0)
-    LBTSSetProperty(phys1, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
+    LBTSSetProperty(phys, "TIMESTEP", 1e-3)
+    LBTSSetProperty(phys, "VERBOSITY_LEVEL", 0)
+    LBTSSetProperty(phys, "TIMESTEP_METHOD", "CRANK_NICHOLSON")
 
-    phys1name = solver.GetName(phys1)
-    initial_FR = lbs.ComputeFissionRate(phys1, "OLD")
+    physname = solver.GetName(phys)
+    initial_FR = lbs.ComputeFissionRate(phys, "OLD")
 
     #time = 0.0
     #for k=1,2 do
-    #    --LBTSSetProperty(phys1, "INHIBIT_ADVANCE", True)
-    #    solver.Step(phys1)
-    #    FRf = lbs.ComputeFissionRate(phys1,"NEW")
-    #    FRi = lbs.ComputeFissionRate(phys1,"OLD")
-    #    dt = LBTSGetProperty(phys1, "TIMESTEP")
-    #    time = LBTSGetProperty(phys1, "TIME")
+    #    --LBTSSetProperty(phys, "INHIBIT_ADVANCE", True)
+    #    solver.Step(phys)
+    #    FRf = lbs.ComputeFissionRate(phys,"NEW")
+    #    FRi = lbs.ComputeFissionRate(phys,"OLD")
+    #    dt = LBTSGetProperty(phys, "TIMESTEP")
+    #    time = LBTSGetProperty(phys, "TIME")
     #    period = dt/math.log(FRf/FRi)
     #    log.Log(LOG_0, string.format("%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-    #            phys1name,k,time,dt,period,FRf/initial_FR))
+    #            physname,k,time,dt,period,FRf/initial_FR))
     #end
 
     time = 0.0
@@ -150,17 +150,17 @@ if __name__ == "__main__":
     swapped = False
     while time < time_stop do
       k = k + 1
-      solver.Step(phys1)
-      FRf = lbs.ComputeFissionRate(phys1, "NEW")
-      FRi = lbs.ComputeFissionRate(phys1, "OLD")
-      dt = LBTSGetProperty(phys1, "TIMESTEP")
-      time = LBTSGetProperty(phys1, "TIME")
+      solver.Step(phys)
+      FRf = lbs.ComputeFissionRate(phys, "NEW")
+      FRi = lbs.ComputeFissionRate(phys, "OLD")
+      dt = LBTSGetProperty(phys, "TIMESTEP")
+      time = LBTSGetProperty(phys, "TIME")
       period = dt / math.log(FRf / FRi)
       log.Log(
         LOG_0,
         string.format(
           "%s %4d time=%10.3g dt=%10.4g period=%10.3g FR=%10.3e",
-          phys1name,
+          physname,
           k,
           time,
           dt,
@@ -169,9 +169,9 @@ if __name__ == "__main__":
         )
       )
       if time >= 0.2 and not swapped then
-        SwapXS(phys1, xs_21cent)
+        SwapXS(phys, xs_21cent)
         swapped = True
       end
 
-      LBTSAdvanceTimeData(phys1)
+      LBTSAdvanceTimeData(phys)
     end

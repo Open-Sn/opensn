@@ -42,7 +42,7 @@ if __name__ == "__main__":
     end
 
     # Setup mesh
-    meshgen1 = mesh.ExtruderMeshGenerator.Create({
+    meshgen = mesh.ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
@@ -56,15 +56,15 @@ if __name__ == "__main__":
         ycuts = { 0.0 },
       }),
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
       logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 1
     xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
@@ -115,28 +115,28 @@ if __name__ == "__main__":
       read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     #Initialize and execute solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     #Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[1])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[1])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
 

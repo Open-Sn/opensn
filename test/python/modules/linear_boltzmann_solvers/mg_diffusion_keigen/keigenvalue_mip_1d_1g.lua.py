@@ -88,8 +88,8 @@ if __name__ == "__main__":
       nodes[i + 1] = i * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -125,15 +125,15 @@ if __name__ == "__main__":
     }
 
     phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
-    phys:SetOptions(lbs_options)
+phys.SetOptions(lbs_options)
 
     k_solver0 = lbs.NonLinearKEigen.Create({
       lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
     })
-    k_solver0:Initialize()
-    k_solver0:Execute()
+k_solver0.Initialize()
+k_solver0.Execute()
 
     # Get field functions
     # Line plot

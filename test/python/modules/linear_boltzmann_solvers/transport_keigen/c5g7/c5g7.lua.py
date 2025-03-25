@@ -42,7 +42,7 @@ if __name__ == "__main__":
       l_max_its = 5
     end
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create({
+    phys = lbs.DiscreteOrdinatesSolver.Create({
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -76,12 +76,12 @@ if __name__ == "__main__":
     # Execute Solver
     if k_method == "pi" then
       k_solver = lbs.PowerIterationKEigen.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         k_tol = 1.0e-8,
       })
     elseif k_method == "pi_scdsa" then
       k_solver = lbs.PowerIterationKEigenSCDSA.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         diff_accel_sdm = "pwld",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -90,7 +90,7 @@ if __name__ == "__main__":
       })
     elseif k_method == "pi_scdsa_pwlc" then
       k_solver = lbs.PowerIterationKEigenSCDSA.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         diff_accel_sdm = "pwlc",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -99,7 +99,7 @@ if __name__ == "__main__":
       })
     elseif k_method == "pi_smm" then
       k_solver = lbs.PowerIterationKEigenSMM.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
@@ -108,7 +108,7 @@ if __name__ == "__main__":
       })
     elseif k_method == "pi_smm_pwld" then
       k_solver = lbs.PowerIterationKEigenSMM.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
@@ -117,7 +117,7 @@ if __name__ == "__main__":
       })
     elseif k_method == "jfnk" then
       k_solver = lbs.NonLinearKEigen.Create({
-        lbs_solver = phys1,
+        lbs_solver = phys,
         nl_max_its = 50,
         nl_abs_tol = 1.0e-10,
         nl_rel_tol = 1.0e-10,
@@ -134,10 +134,10 @@ if __name__ == "__main__":
       return
     end
 
-    k_solver:Initialize()
-    k_solver:Execute()
+k_solver.Initialize()
+k_solver.Execute()
 
     if master_export == None then
-      fflist = lbs.GetScalarFieldFunctionList(phys1)
+      fflist = lbs.GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
     end

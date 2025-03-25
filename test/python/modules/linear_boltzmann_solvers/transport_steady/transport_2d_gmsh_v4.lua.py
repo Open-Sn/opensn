@@ -30,14 +30,14 @@ if __name__ == "__main__":
     Npolar = 4
     Nazimuthal = 16
 
-    meshgen1 = mesh.MeshGenerator.Create({
+    meshgen = mesh.MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/Rectangular2D2MatGmshV4.msh",
         }),
       },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Material
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
@@ -82,20 +82,20 @@ if __name__ == "__main__":
       },
     }
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys:SetOptions(lbs_options)
+phys.SetOptions(lbs_options)
     ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
     # Solve
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     fflist = lbs.GetScalarFieldFunctionList(phys)
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[1])
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[1])
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
     log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))

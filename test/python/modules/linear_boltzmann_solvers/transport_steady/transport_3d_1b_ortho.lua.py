@@ -52,15 +52,15 @@ if __name__ == "__main__":
     end
 
     if reflecting then
-      meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
+      meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
     else
-      meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
+      meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
     end
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -109,17 +109,17 @@ if __name__ == "__main__":
       table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" })
     end
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Slice plot
     #slices = {}
@@ -138,25 +138,25 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[1])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[1])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
 
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
-    curffi:SetOperationType(OP_MAX)
-    curffi:SetLogicalVolume(vol0)
-    curffi:AddFieldFunction(fflist[20])
+curffi.SetOperationType(OP_MAX)
+curffi.SetLogicalVolume(vol0)
+curffi.AddFieldFunction(fflist[20])
 
-    curffi:Initialize()
-    curffi:Execute()
-    maxval = curffi:GetValue()
+curffi.Initialize()
+curffi.Execute()
+maxval = curffi.GetValue()
 
     log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
@@ -171,8 +171,8 @@ if __name__ == "__main__":
 
     # Plots
     if location_id == 0 and master_export == None then
-      #os.execute("python ZPFFI00.py")
-      #--os.execute("python ZPFFI11.py")
+#os.system("python ZPFFI00.py")
+#--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
     end

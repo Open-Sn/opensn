@@ -33,13 +33,13 @@ if __name__ == "__main__":
       k = i - 1
       nodes[i] = xmin + k * dx
     end
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, nodes },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     lv1 = logvol.RCCLogicalVolume.Create({ r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 })
-    grid:SetBlockIDFromLogicalVolume(lv1, 1, True)
+grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
 
     lv2 = logvol.RCCLogicalVolume.Create({
       r = 1.3,
@@ -50,6 +50,6 @@ if __name__ == "__main__":
       vy = 1.0,
       vz = 3.0,
     })
-    grid:SetBlockIDFromLogicalVolume(lv2, 2, True)
+grid.SetBlockIDFromLogicalVolume(lv2, 2, True)
 
     mesh.ExportToPVTU(grid, "lv_rcc_test1")

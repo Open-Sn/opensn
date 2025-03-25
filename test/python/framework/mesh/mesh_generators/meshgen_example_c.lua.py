@@ -24,7 +24,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen1 = mesh.ExtruderMeshGenerator.Create({
+    meshgen = mesh.ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "triangle_mesh_2x2.obj",
@@ -32,4 +32,4 @@ if __name__ == "__main__":
       },
       layers = { { z = 1.1, n = 2 }, { z = 2.1, n = 3 } },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()

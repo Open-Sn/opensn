@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
     znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, znodes },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
@@ -62,7 +62,7 @@ if __name__ == "__main__":
       ymax = 10.0,
       infz = True,
     })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168
     xs_graphite = xs.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
@@ -120,17 +120,17 @@ if __name__ == "__main__":
       volumetric_sources = { mg_src0, mg_src1 },
     }
 
-    phys1 = lbs.DiffusionDFEMSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Exports
     if master_export == None then

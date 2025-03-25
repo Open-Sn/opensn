@@ -26,25 +26,25 @@ if __name__ == "__main__":
 
     local function split_string(input, separator)
       local result = {}
-      for value in input:gmatch("[^" + separator + "]+") do
+for value in input.gmatch("[^" + separator + "]+") do
         table.insert(result, value)
       end
       return result
     end
 
     local function getWeightSum(quad_points)
-      log.Log(LOG_0, string.format("\nReading : %s", quad_points))
+log.Log(LOG_0, string.format("\nReading . %s", quad_points))
       local weight_sum = 0.0
       local file = io.open(quad_points, "r")
       if file then
-        for line in file:lines() do
+for line in file.lines() do
           local values = split_string(line, " ")
           local float_values = {}
           weight_sum = weight_sum + tonumber(values[4])
         end
-        file:close()
+file.close()
       else
-        log.Log(LOG_0ERROR, string.format("Error: Could not open file %s", quad_points))
+log.Log(LOG_0ERROR, string.format("Error. Could not open file %s", quad_points))
       end
       return weight_sum
     end
@@ -62,4 +62,4 @@ if __name__ == "__main__":
     local quad2_sum = getWeightSum("TestQuad2_points.txt")
     log.Log(LOG_0, string.format("Weight-Sum-2=%.3e", quad2_sum / (4 * math.pi)))
 
-    os.execute("rm TestQuad1* TestQuad2*")
+os.system("rm TestQuad1* TestQuad2*")

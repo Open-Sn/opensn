@@ -42,14 +42,14 @@ if __name__ == "__main__":
     end
 
     # Setup mesh
-    meshgen1 = mesh.MeshGenerator.Create({
+    meshgen = mesh.MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/fuel_hex.e",
         }),
       },
     })
-    grid = mesh.MeshGenerator.Execute(meshgen1)
+    grid = mesh.MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
     xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")
@@ -91,11 +91,11 @@ if __name__ == "__main__":
     }
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys:SetOptions(lbs_options)
+phys.SetOptions(lbs_options)
 
     k_solver = lbs.PowerIterationKEigen.Create({
       lbs_solver = phys,
       k_tol = 1e-6,
     })
-    k_solver:Initialize()
-    k_solver:Execute()
+k_solver.Initialize()
+k_solver.Execute()

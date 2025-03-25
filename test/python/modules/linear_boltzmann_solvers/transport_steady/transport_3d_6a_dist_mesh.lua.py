@@ -68,13 +68,13 @@ if __name__ == "__main__":
       zmesh[i] = zmin + k * dz
     end
 
-    meshgen1 = mesh.DistributedMeshGenerator.Create({
+    meshgen = mesh.DistributedMeshGenerator.Create({
       inputs = {
         mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } }),
       },
     })
 
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     grid:SetUniformBlockID(0)
 
@@ -124,17 +124,17 @@ if __name__ == "__main__":
       volumetric_sources = { mg_src },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     pp1 = post.CellVolumeIntegralPostProcessor.Create({
       name = "max-grp0",

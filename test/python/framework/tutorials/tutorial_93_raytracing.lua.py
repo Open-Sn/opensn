@@ -39,13 +39,13 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    grid:SetupOrthogonalBoundaries()
+grid.SetupOrthogonalBoundaries()
 
     unit_sim_tests.SimTest93_RayTracing({ mesh = grid })
 
@@ -54,12 +54,12 @@ if __name__ == "__main__":
 
     #-- Setup Physics
     #solver_name = "LBS"
-    #phys1 = LBSCreateSolver(solver_name)
+    #phys = LBSCreateSolver(solver_name)
     #
     #--========== Groups
     #grp = {}
     #for g=1,num_groups do
-    #    grp[g] = LBSCreateGroup(phys1)
+    #    grp[g] = LBSCreateGroup(phys)
     #end
     #
     #--========== ProdQuad
@@ -67,16 +67,16 @@ if __name__ == "__main__":
     #aquad.OptimizeForPolarSymmetry(pquad, 4.0*math.pi)
     #
     #--========== Groupset def
-    #gs0 = LBSCreateGroupset(phys1)
+    #gs0 = LBSCreateGroupset(phys)
     #cur_gs = gs0
-    #LBSGroupsetAddGroups(phys1,cur_gs,0,num_groups-1)
-    #LBSGroupsetSetQuadrature(phys1,cur_gs,pquad)
-    #LBSGroupsetSetAngleAggDiv(phys1,cur_gs,1)
-    #LBSGroupsetSetGroupSubsets(phys1,cur_gs,1)
-    #LBSGroupsetSetIterativeMethod(phys1,cur_gs,KRYLOV_RICHARDSON)
-    #LBSGroupsetSetResidualTolerance(phys1,cur_gs,1.0e-6)
-    #LBSGroupsetSetMaxIterations(phys1,cur_gs,0)
-    #LBSGroupsetSetGMRESRestartIntvl(phys1,cur_gs,100)
+    #LBSGroupsetAddGroups(phys,cur_gs,0,num_groups-1)
+    #LBSGroupsetSetQuadrature(phys,cur_gs,pquad)
+    #LBSGroupsetSetAngleAggDiv(phys,cur_gs,1)
+    #LBSGroupsetSetGroupSubsets(phys,cur_gs,1)
+    #LBSGroupsetSetIterativeMethod(phys,cur_gs,KRYLOV_RICHARDSON)
+    #LBSGroupsetSetResidualTolerance(phys,cur_gs,1.0e-6)
+    #LBSGroupsetSetMaxIterations(phys,cur_gs,0)
+    #LBSGroupsetSetGMRESRestartIntvl(phys,cur_gs,100)
     #
     #-- Set boundary conditions
     #
@@ -86,15 +86,15 @@ if __name__ == "__main__":
     #    src[g] = 0.0
     #end
     #src[1] = 1.0
-    #LBSAddPointSource(phys1, 0.0, 0.0, 0.0, src)
+    #LBSAddPointSource(phys, 0.0, 0.0, 0.0, src)
     #
     #-- Set solver properties
-    #LBSSetProperty(phys1,DISCRETIZATION_METHOD,PWLD)
-    #LBSSetProperty(phys1,SCATTERING_ORDER,0)
+    #LBSSetProperty(phys,DISCRETIZATION_METHOD,PWLD)
+    #LBSSetProperty(phys,SCATTERING_ORDER,0)
     #
     #-- Initialize and Execute Solver
-    #solver.Initialize(phys1)
-    #solver.Execute(phys1)
+    #solver.Initialize(phys)
+    #solver.Execute(phys)
 
     # Add point source
     src = {}
@@ -133,18 +133,18 @@ if __name__ == "__main__":
       },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
-    ff_m0 = lbs.GetScalarFieldFunctionList(phys1)
+    ff_m0 = lbs.GetScalarFieldFunctionList(phys)
 
     fieldfunc.ExportToVTKMulti({ ff_m0[1] }, "SimTest_93_LBS_" + solver_name)
     MPIBarrier()
     if location_id == 0 then
-      os.execute("rm SimTest_93*")
+os.system("rm SimTest_93*")
     end

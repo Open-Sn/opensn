@@ -39,8 +39,8 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
-    grid = meshgen1:Execute()
+    meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -56,5 +56,5 @@ if __name__ == "__main__":
     unit_tests.SimTest04_PWLC({ mesh = grid })
     MPIBarrier()
     if location_id == 0 then
-      os.execute("rm CodeTut4_PWLC*")
+os.system("rm CodeTut4_PWLC*")
     end

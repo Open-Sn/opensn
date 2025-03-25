@@ -27,14 +27,14 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen1 = mesh.MeshGenerator.Create({
+    meshgen = mesh.MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "c5g7/mesh/2D_c5g7_coarse.msh",
         }),
       },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Create cross sections
     xss = {}
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     xss["6"] = xs.LoadFromOpenSn("c5g7/materials/XS_fission_chamber.xs")
 
     num_groups = xss["0"].num_groups
-    log.Log(LOG_0, "Num groups: " + tostring(num_groups))
+log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     # Create materials
     xs_map = {}
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    phys1 = lbs.DiscreteOrdinatesSolver.Create({
+    phys = lbs.DiscreteOrdinatesSolver.Create({
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -103,13 +103,13 @@ if __name__ == "__main__":
 
     # Execute Solver
     k_solver = lbs.PowerIterationKEigen.Create({
-      lbs_solver = phys1,
+      lbs_solver = phys,
       k_tol = 1.0e-8,
     })
-    k_solver:Initialize()
-    k_solver:Execute()
+k_solver.Initialize()
+k_solver.Execute()
 
     if master_export == None then
-      fflist = lbs.GetScalarFieldFunctionList(phys1)
+      fflist = lbs.GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
     end

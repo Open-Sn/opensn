@@ -34,14 +34,14 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    meshgen1 = mesh.MeshGenerator.Create({
+    meshgen = mesh.MeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "reactor_pin_mesh.obj",
         }),
       },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
     # Exports
     if master_export == None then
       mesh.ExportToPVTU("ZObjMesh")

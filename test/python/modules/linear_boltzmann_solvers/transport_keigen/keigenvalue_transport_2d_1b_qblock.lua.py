@@ -61,14 +61,14 @@ if __name__ == "__main__":
       verbose_outer_iterations = True,
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
-    k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver = phys1 })
-    k_solver0:Initialize()
-    k_solver0:Execute()
+    k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver = phys })
+k_solver0.Initialize()
+k_solver0.Execute()
 
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 

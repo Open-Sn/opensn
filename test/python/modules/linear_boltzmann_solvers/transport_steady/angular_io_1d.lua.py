@@ -43,7 +43,7 @@ if __name__ == "__main__":
     end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-    grid = meshgen:Execute(meshgen)
+grid = meshgen.Execute(meshgen)
 
     # Set Material IDs
     z_min = 0.0
@@ -52,7 +52,7 @@ if __name__ == "__main__":
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
       lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
-      grid:SetBlockIDFromLogicalVolume(lv, imat - 1, True)
+grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
     end
 
@@ -99,24 +99,24 @@ if __name__ == "__main__":
       },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
-    leakage_left_1 = lbs.ComputeLeakage(phys1, { "zmin" })["zmin"][1]
-    leakage_right_1 = lbs.ComputeLeakage(phys1, { "zmax" })["zmax"][1]
+    leakage_left_1 = lbs.ComputeLeakage(phys, { "zmin" })["zmin"][1]
+    leakage_right_1 = lbs.ComputeLeakage(phys, { "zmax" })["zmax"][1]
 
-    lbs.WriteAngularFluxes(phys1, "angular_io")
+    lbs.WriteAngularFluxes(phys, "angular_io")
 
     phys2 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     ss_solver_2 = lbs.SteadyStateSolver.Create({ lbs_solver = phys2 })
 
-    ss_solver_2:Initialize()
+ss_solver_2.Initialize()
 
     lbs.ReadAngularFluxes(phys2, "angular_io")
 
@@ -129,4 +129,4 @@ if __name__ == "__main__":
     log.Log(LOG_0, string.format("Leakage-Diff1=%.5e", leakage_left_diff))
     log.Log(LOG_0, string.format("Leakage-Diff2=%.5e", leakage_right_diff))
 
-    os.execute("rm angular_io0.h5")
+os.system("rm angular_io0.h5")

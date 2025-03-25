@@ -40,7 +40,7 @@ if __name__ == "__main__":
     xss["6"] = xs.LoadFromOpenSn("materials/XS_fission_chamber.xs")
 
     num_groups = xss["0"].num_groups
-    log.Log(LOG_0, "Num groups: " + tostring(num_groups))
+log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     xs_map = {}
     for m = 0, 6 do

@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen1 = mesh.FromFileMeshGenerator.Create({
+    meshgen = mesh.FromFileMeshGenerator.Create({
       filename = "+/+/+/+/+/assets/mesh/TriangleMesh2x2.obj",
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()

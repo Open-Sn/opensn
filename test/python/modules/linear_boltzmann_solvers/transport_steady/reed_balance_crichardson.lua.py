@@ -43,7 +43,7 @@ if __name__ == "__main__":
     end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-    grid = meshgen:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     z_min = 0.0
@@ -52,7 +52,7 @@ if __name__ == "__main__":
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
       lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
-      grid:SetBlockIDFromLogicalVolume(lv, imat - 1, True)
+grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
     end
 
@@ -102,8 +102,8 @@ if __name__ == "__main__":
     # Initialize and execute solver
     ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # compute particle balance
-    phys:ComputeBalance()
+phys.ComputeBalance()

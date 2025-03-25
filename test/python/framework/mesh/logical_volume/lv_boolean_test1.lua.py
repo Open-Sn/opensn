@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    test for boolean operations on logical volumes:
+test for boolean operations on logical volumes.
       lv1 = sphere
       lv2 = right circular cylinder (rcc)
       lv3 = in rcc but not in sphere
@@ -41,14 +41,14 @@ if __name__ == "__main__":
       k = i - 1
       nodes[i] = xmin + k * dx
     end
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, nodes },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # assign block ID 10 to all cells
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 10, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     # create logical volume lv1 as an analytical sphere
     lv1 = logvol.SphereLogicalVolume.Create({ r = 1.3, x = 1.0, y = -1.0, z = 2.0 })
@@ -70,10 +70,10 @@ if __name__ == "__main__":
     })
 
     # assign block ID 1 to all cells in lv3 which is the part of lv2 that is not in lv1
-    grid:SetBlockIDFromLogicalVolume(lv3, 1, True)
+grid.SetBlockIDFromLogicalVolume(lv3, 1, True)
 
     # assign block ID 5 to all cells in lv1
-    grid:SetBlockIDFromLogicalVolume(lv1, 5, True)
+grid.SetBlockIDFromLogicalVolume(lv1, 5, True)
 
     # export to vtk
     mesh.ExportToPVTU(grid, "lv_boolean_test1")

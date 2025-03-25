@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 
     nodes = { -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0 }
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()

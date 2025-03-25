@@ -35,10 +35,10 @@ if __name__ == "__main__":
       nodes[i] = xmin + k * dx
     end
 
-    meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+    meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes },
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -46,5 +46,5 @@ if __name__ == "__main__":
     unit_sim_tests.SimTest02_FV({ mesh = grid })
     MPIBarrier()
     if location_id == 0 then
-      os.execute("rm CodeTut2_FV*")
+os.system("rm CodeTut2_FV*")
     end

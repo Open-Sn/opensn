@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    meshgen1 = mesh.ExtruderMeshGenerator.Create({
+    meshgen = mesh.ExtruderMeshGenerator.Create({
       inputs = {
         mesh.FromFileMeshGenerator.Create({
           filename = "+/+/+/+/assets/mesh/SquareMesh2x2Quads.obj",
@@ -47,11 +47,11 @@ if __name__ == "__main__":
         ycuts = { 0.0 },
       }),
     })
-    grid = meshgen1:Execute()
+grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
-    grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 = logvol.RPPLogicalVolume.Create({
       xmin = -0.5 / 8,
@@ -60,7 +60,7 @@ if __name__ == "__main__":
       ymax = 0.5 / 8,
       infz = True,
     })
-    grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -101,19 +101,19 @@ if __name__ == "__main__":
       volumetric_sources = { mg_src0, mg_src1 },
     }
 
-    phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys1:SetOptions(lbs_options)
+    phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
-    lbs.CreateAndWriteSourceMoments(phys1, "Qmoms")
+    lbs.CreateAndWriteSourceMoments(phys, "Qmoms")
 
     # Get field functions
-    fflist = lbs.GetScalarFieldFunctionList(phys1)
+    fflist = lbs.GetScalarFieldFunctionList(phys)
 
     ################################################ Exports
 
@@ -123,8 +123,8 @@ if __name__ == "__main__":
 
     # Plots
     if location_id == 0 and master_export == None then
-      #os.execute("python ZPFFI00.py")
-      #--os.execute("python ZPFFI11.py")
+#os.system("python ZPFFI00.py")
+#--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
     end

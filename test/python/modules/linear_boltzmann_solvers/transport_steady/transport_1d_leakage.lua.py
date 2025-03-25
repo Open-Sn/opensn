@@ -43,7 +43,7 @@ if __name__ == "__main__":
     end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
-    grid = meshgen:Execute()
+grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 
     # Add materials
@@ -92,13 +92,13 @@ if __name__ == "__main__":
     }
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
-    phys:SetOptions(lbs_options)
+phys.SetOptions(lbs_options)
 
     ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
     # Solve the problem
-    ss_solver:Initialize()
-    ss_solver:Execute()
+ss_solver.Initialize()
+ss_solver.Execute()
 
     # Compute the leakage
     leakage = lbs.ComputeLeakage(phys, {})

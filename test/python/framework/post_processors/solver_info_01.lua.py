@@ -45,14 +45,14 @@ if __name__ == "__main__":
 
     for t = 1, 20 do
       solver.Step(phys0)
-      time = phys0:TimeNew()
-      print(t, string.format("%.3f %.5f", time, phys0:PopulationNew()))
+time = phys0.TimeNew()
+print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
 
       solver.Advance(phys0)
       if time > 0.1 then
-        phys0:SetRho(0.8)
+phys0.SetRho(0.8)
       end
     end
 
-    print("Manually printing Post-Processor:")
+print("Manually printing Post-Processor.")
     post.Print({ pp0 })
