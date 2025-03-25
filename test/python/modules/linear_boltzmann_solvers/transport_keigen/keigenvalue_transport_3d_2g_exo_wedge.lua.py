@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     num_groups = 2
     # Initialize the LBSSolver
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

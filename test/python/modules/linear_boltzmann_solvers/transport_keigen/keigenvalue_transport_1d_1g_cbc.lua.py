@@ -89,7 +89,7 @@ grid = meshgen.Execute()
 
     # Setup Physics
     num_groups = 1
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

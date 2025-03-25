@@ -71,7 +71,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
 
     # LBS block option
     num_groups = 1
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

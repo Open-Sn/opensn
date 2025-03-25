@@ -54,7 +54,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     fac = 1
     pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

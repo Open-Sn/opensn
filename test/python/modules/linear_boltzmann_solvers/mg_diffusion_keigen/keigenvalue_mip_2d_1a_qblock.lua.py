@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

@@ -84,7 +84,7 @@ grid = meshgen.Execute()
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(8, 8)
 
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

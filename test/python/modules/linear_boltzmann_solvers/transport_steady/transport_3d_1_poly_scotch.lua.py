@@ -74,7 +74,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
 
-    lbs_block = [
+    phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
