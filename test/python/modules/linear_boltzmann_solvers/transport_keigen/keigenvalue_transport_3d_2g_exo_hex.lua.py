@@ -47,7 +47,7 @@ if __name__ == "__main__":
           filename = "+/+/+/+/assets/mesh/fuel_hex.e",
         ),
       },
-    })
+    )
     grid = MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
@@ -95,6 +95,6 @@ phys.SetOptions(lbs_options)
     k_solver = lbs.PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1e-6,
-    })
+    )
 k_solver.Initialize()
 k_solver.Execute()

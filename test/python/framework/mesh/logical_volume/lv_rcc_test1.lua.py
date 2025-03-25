@@ -31,12 +31,12 @@ if __name__ == "__main__":
     dx = L / N
     for i in range(N+1):
       nodes.append(xmin + i * dx)
-    meshgen = OrthogonalMeshGenerator({
+    meshgen = OrthogonalMeshGenerator(
       node_sets = [nodes, nodes, nodes],
-    })
+    )
 grid = meshgen.Execute()
 
-    lv1 = logvol.RCCLogicalVolume( r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 })
+    lv1 = logvol.RCCLogicalVolume( r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 )
 grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
 
     lv2 = logvol.RCCLogicalVolume(
@@ -47,7 +47,7 @@ grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
       vx = 1.0,
       vy = 1.0,
       vz = 3.0,
-    })
+    )
 grid.SetBlockIDFromLogicalVolume(lv2, 2, True)
 
     mesh.ExportToPVTU(grid, "lv_rcc_test1")

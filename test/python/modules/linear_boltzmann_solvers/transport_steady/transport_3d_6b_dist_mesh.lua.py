@@ -64,12 +64,12 @@ if __name__ == "__main__":
 
     meshgen = DistributedMeshGenerator(
       inputs = {
-        mesh.OrthogonalMeshGenerator({ node_sets = { xmesh, ymesh } ),
+        mesh.OrthogonalMeshGenerator( node_sets = { xmesh, ymesh } ),
         mesh.ExtruderMeshGenerator(
           layers = { { z = Lz, n = Nz } },
         ),
       },
-    })
+    )
 
 grid = meshgen.Execute()
 
@@ -81,7 +81,7 @@ grid = meshgen.Execute()
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
+    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(8, 8)
@@ -123,7 +123,7 @@ grid = meshgen.Execute()
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -136,14 +136,14 @@ ss_solver.Execute()
       field_function = fflist[1],
       compute_volume_average = True,
       print_numeric_format = "scientific",
-    })
+    )
     pp2 = post.CellVolumeIntegralPostProcessor(
       name = "max-grp19",
       field_function = fflist[20],
       compute_volume_average = True,
       print_numeric_format = "scientific",
-    })
-    post.Execute({ pp1, pp2 })
+    )
+    post.Execute({ pp1, pp2 )
 
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi")

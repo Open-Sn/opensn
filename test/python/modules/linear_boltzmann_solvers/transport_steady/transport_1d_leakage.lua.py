@@ -91,7 +91,7 @@ grid = meshgen.Execute()
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
     # Solve the problem
 ss_solver.Initialize()

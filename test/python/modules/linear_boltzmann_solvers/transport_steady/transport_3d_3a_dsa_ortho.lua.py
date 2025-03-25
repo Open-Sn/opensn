@@ -46,7 +46,7 @@ if __name__ == "__main__":
       nodes.append(xmin + i * dx)
     znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 
-    meshgen = OrthogonalMeshGenerator({ node_sets = { nodes, nodes, znodes } })
+    meshgen = OrthogonalMeshGenerator( node_sets = { nodes, nodes, znodes } )
 grid = meshgen.Execute()
 
     # Set block IDs
@@ -58,7 +58,7 @@ grid = meshgen.Execute()
       ymin = -10.0,
       ymax = 10.0,
       infz = True,
-    })
+    )
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168
@@ -69,9 +69,9 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     for g in range(1, num_groups+1):
       strength[g] = 0.0
     strength[1] = 1.0
-    mg_src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength })
+    mg_src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
     strength[1] = 0.0
-    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
+    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
@@ -120,7 +120,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()

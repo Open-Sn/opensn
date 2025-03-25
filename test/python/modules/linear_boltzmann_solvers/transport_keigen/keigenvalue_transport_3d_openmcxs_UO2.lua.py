@@ -60,7 +60,7 @@ if __name__ == "__main__":
     for i in range(1, (Nz + 1)+1):
       zmesh[i] = zmin + k * dz
 
-    meshgen = OrthogonalMeshGenerator({ node_sets = { xmesh, ymesh, zmesh } })
+    meshgen = OrthogonalMeshGenerator( node_sets = { xmesh, ymesh, zmesh } )
 grid = meshgen.Execute()
 
     #
@@ -114,6 +114,6 @@ phys.SetOptions(lbs_options)
       lbs_solver = phys,
       nl_max_its = 500,
       nl_abs_tol = 1.0e-8,
-    })
+    )
 k_solver0.Initialize()
 k_solver0.Execute()

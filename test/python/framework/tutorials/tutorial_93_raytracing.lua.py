@@ -44,7 +44,7 @@ grid = meshgen.Execute()
 
 grid.SetupOrthogonalBoundaries()
 
-    unit_sim_tests.SimTest93_RayTracing({ mesh = grid })
+    unit_sim_tests.SimTest93_RayTracing({ mesh = grid )
 
     num_groups = 1
     xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
@@ -101,7 +101,7 @@ grid.SetupOrthogonalBoundaries()
     pt_src = lbs.PointSource(
       location = { 0.0, 0.0, 0.0 },
       strength = src,
-    })
+    )
 
     # Setup Physics
     solver_name = "LBS"
@@ -132,7 +132,7 @@ grid.SetupOrthogonalBoundaries()
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()

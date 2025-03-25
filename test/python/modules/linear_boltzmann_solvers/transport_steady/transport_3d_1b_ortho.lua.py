@@ -47,13 +47,13 @@ if __name__ == "__main__":
       znodes.append(xmin + i * dx)
 
     if reflecting then
-      meshgen = OrthogonalMeshGenerator({ node_sets = { nodes, nodes, znodes } })
+      meshgen = OrthogonalMeshGenerator( node_sets = { nodes, nodes, znodes } )
     else
       meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     num_groups = 21
@@ -62,7 +62,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
+    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
@@ -98,13 +98,13 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       volumetric_sources = { mg_src },
     }
     if reflecting then
-      table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" })
+      table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" )
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -116,11 +116,11 @@ ss_solver.Execute()
     #slices = []
     #for k in range(1, count+1):
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
-    #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
+    #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001)
     #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
-    #    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
-    #    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
-    #    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
+    #    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0)
+    #    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0)
+    #    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0)
     #    fieldfunc.Initialize(slices[k])
     #    fieldfunc.Execute(slices[k])
     #    fieldfunc.ExportToPython(slices[k])

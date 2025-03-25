@@ -70,14 +70,14 @@ if __name__ == "__main__":
         save_angular_flux = True,
       },
       sweep_type = "AAH",
-    })
+    )
 
     # Execute Solver
     if k_method == "pi" then
       k_solver = lbs.PowerIterationKEigen(
         lbs_solver = phys,
         k_tol = 1.0e-8,
-      })
+      )
     elseif k_method == "pi_scdsa" then
       k_solver = lbs.PowerIterationKEigenSCDSA(
         lbs_solver = phys,
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
-      })
+      )
     elseif k_method == "pi_scdsa_pwlc" then
       k_solver = lbs.PowerIterationKEigenSCDSA(
         lbs_solver = phys,
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
-      })
+      )
     elseif k_method == "pi_smm" then
       k_solver = lbs.PowerIterationKEigenSMM(
         lbs_solver = phys,
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 30,
         diff_sdm = "pwlc",
-      })
+      )
     elseif k_method == "pi_smm_pwld" then
       k_solver = lbs.PowerIterationKEigenSMM(
         lbs_solver = phys,
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 30,
         diff_sdm = "pwld",
-      })
+      )
     elseif k_method == "jfnk" then
       k_solver = lbs.NonLinearKEigen(
         lbs_solver = phys,
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         nl_rel_tol = 1.0e-10,
         l_max_its = 20,
         num_initial_power_iterations = 2,
-      })
+      )
     else
       log.Log(
         LOG_0ERROR,

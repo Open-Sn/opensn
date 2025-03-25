@@ -121,7 +121,7 @@ grid = meshgen.Execute()
       lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
-    })
+    )
 k_solver0.Initialize()
 k_solver0.Execute()
 

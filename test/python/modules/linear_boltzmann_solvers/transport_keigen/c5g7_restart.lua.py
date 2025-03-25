@@ -33,7 +33,7 @@ if __name__ == "__main__":
           filename = "c5g7/mesh/2D_c5g7_coarse.msh",
         ),
       },
-    })
+    )
 grid = meshgen.Execute()
 
     # Create cross sections
@@ -97,13 +97,13 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
         read_restart_path = "c5g7_restart/c5g7",
       },
       sweep_type = "CBC",
-    })
+    )
 
     # Execute Solver
     k_solver = lbs.PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1.0e-8,
-    })
+    )
 k_solver.Initialize()
 k_solver.Execute()
 

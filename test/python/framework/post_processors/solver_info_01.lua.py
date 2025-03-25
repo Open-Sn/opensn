@@ -28,18 +28,18 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    phys0 = prk.PRKSolver( initial_source = 0.0 })
+    phys0 = prk.PRKSolver( initial_source = 0.0 )
 
     pp0 = post.SolverInfoPostProcessor(
       name = "neutron_population",
       solver = phys0,
       info = { name = "neutron_population" },
       print_on = { "ProgramExecuted" },
-    })
+    )
 
     post.SetPrinterOptions({
       csv_filename = "solver_info_01.csv",
-    })
+    )
 
     solver.Initialize(phys0)
 
@@ -53,4 +53,4 @@ print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
 phys0.SetRho(0.8)
 
 print("Manually printing Post-Processor.")
-    post.Print({ pp0 })
+    post.Print({ pp0 )

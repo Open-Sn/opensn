@@ -31,5 +31,5 @@ if __name__ == "__main__":
         ),
       },
       layers = { { z = 1.1, n = 2 }, { z = 2.1, n = 3 } },
-    })
+    )
 grid = meshgen.Execute()

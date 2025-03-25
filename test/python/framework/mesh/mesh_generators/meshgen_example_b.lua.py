@@ -26,5 +26,5 @@ if __name__ == "__main__":
 
     meshgen = FromFileMeshGenerator(
       filename = "triangle_mesh_2x2.obj",
-    })
+    )
 grid = meshgen.Execute()

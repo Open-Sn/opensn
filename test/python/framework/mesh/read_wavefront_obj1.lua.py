@@ -40,7 +40,7 @@ if __name__ == "__main__":
           filename = "reactor_pin_mesh.obj",
         ),
       },
-    })
+    )
 grid = meshgen.Execute()
     # Exports
     if master_export == None then

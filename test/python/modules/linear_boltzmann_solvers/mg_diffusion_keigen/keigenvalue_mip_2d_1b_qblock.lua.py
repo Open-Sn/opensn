@@ -67,7 +67,7 @@ if __name__ == "__main__":
     phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    k_solver0 = lbs.NonLinearKEigen( lbs_solver = phys })
+    k_solver0 = lbs.NonLinearKEigen( lbs_solver = phys )
 k_solver0.Initialize()
 k_solver0.Execute()
 

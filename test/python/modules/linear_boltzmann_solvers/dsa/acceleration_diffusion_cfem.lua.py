@@ -51,7 +51,7 @@ grid.SetupOrthogonalBoundaries()
     function MMS_q(pt)
       return math.pi * math.pi * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
 
-    unit_sim_tests.acceleration_Diffusion_CFEM({ mesh = grid })
+    unit_sim_tests.acceleration_Diffusion_CFEM({ mesh = grid )
     MPIBarrier()
     if location_id == 0 then
 #os.system("rm SimTest_92*")

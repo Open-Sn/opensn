@@ -34,7 +34,7 @@ if __name__ == "__main__":
       coupled_field = "T",
       sub_obj1 = sub_obj,
       limiter_type = 2,
-    })
+    )
 
     #Optional parameter "scheme". Should create a deprecation error.
     unit_testsB.TestObject(
@@ -42,4 +42,4 @@ if __name__ == "__main__":
       coupled_field = "T",
       sub_obj1 = sub_obj,
       scheme = "Snotty",
-    })
+    )

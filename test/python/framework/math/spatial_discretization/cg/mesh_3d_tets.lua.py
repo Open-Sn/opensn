@@ -27,5 +27,5 @@ if __name__ == "__main__":
 
     meshgen = FromFileMeshGenerator(
       filename = "+/+/+/+/+/assets/mesh/GMSH_AllTets.vtu",
-    })
+    )
 grid = meshgen.Execute()

@@ -48,13 +48,13 @@ grid = meshgen.Execute()
     function bnd_id(pt, normal, cur_bid)
       epsilon = 1.0e-6
       n = { normal.x, normal.y, normal.z }
-      if dot_product(n, { -1.0, 0.0, 0.0 }) > (1.0 - epsilon) then
+      if dot_product(n, { -1.0, 0.0, 0.0 ) > (1.0 - epsilon) then
         return 0
-      if dot_product(n, { 1.0, 0.0, 0.0 }) > (1.0 - epsilon) then
+      if dot_product(n, { 1.0, 0.0, 0.0 ) > (1.0 - epsilon) then
         return 1
-      if dot_product(n, { 0.0, -1.0, 0.0 }) > (1.0 - epsilon) then
+      if dot_product(n, { 0.0, -1.0, 0.0 ) > (1.0 - epsilon) then
         return 2
-      if dot_product(n, { 0.0, 1.0, 0.0 }) > (1.0 - epsilon) then
+      if dot_product(n, { 0.0, 1.0, 0.0 ) > (1.0 - epsilon) then
         return 3
 
       return cur_bid

@@ -47,7 +47,7 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = -L / 4, zmax = L / 4 })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = -L / 4, zmax = L / 4 )
 grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     # Add materials
@@ -72,8 +72,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
     mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs_weak_fuelA)
 
-    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
-    mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
+    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 )
+    mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 )
 
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)

@@ -60,7 +60,7 @@ grid = meshgen.Execute()
     num_groups = 1
     mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_critical)
 
-    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
+    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 )
 
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, new_xs)

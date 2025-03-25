@@ -39,7 +39,7 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    unit_sim_tests.SimTest03_PWLC({ mesh = grid })
+    unit_sim_tests.SimTest03_PWLC({ mesh = grid )
     MPIBarrier()
     if location_id == 0 then
 os.system("rm CodeTut3_PWLC*")

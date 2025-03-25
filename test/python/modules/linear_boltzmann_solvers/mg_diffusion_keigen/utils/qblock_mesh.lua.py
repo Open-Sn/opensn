@@ -44,5 +44,5 @@ grid = meshgen.Execute()
       ymin = -1000.0,
       ymax = 10.0,
       infz = True,
-    })
+    )
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)

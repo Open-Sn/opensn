@@ -42,7 +42,7 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    unit_sim_tests.SimTest06_WDD({ mesh = grid })
+    unit_sim_tests.SimTest06_WDD({ mesh = grid )
     MPIBarrier()
     if location_id == 0 then
 os.system("rm SimTest_06*")

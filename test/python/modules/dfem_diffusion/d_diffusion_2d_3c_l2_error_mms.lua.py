@@ -59,12 +59,12 @@ grid = meshgen.Execute()
 
     # Set boundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
-    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
+    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True )
     w_vol =
-      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
-    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
+      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True )
+    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True )
     s_vol =
-      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
+      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True )
 
     e_bndry = 0
     w_bndry = 1
@@ -84,7 +84,7 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
       fieldfunc.ExportToVTK(simtest_IP_MMS_L2_handle, "DFEMDiff2D_MMS", "flux")
 
     #-- Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
     #
     ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
     fieldfunc.SetProperty(ffvol, OPERATION, OP_MAX)

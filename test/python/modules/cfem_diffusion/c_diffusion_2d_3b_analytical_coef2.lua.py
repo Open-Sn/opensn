@@ -57,12 +57,12 @@ grid = meshgen.Execute()
 
     # Setboundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
-    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
+    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True )
     w_vol =
-      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
-    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
+      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True )
+    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True )
     s_vol =
-      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
+      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True )
 
     e_bndry = "0"
     w_bndry = "1"
@@ -99,16 +99,16 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
       },
     }
 
-    d_coef_fn = LuaScalarSpatialMaterialFunction( function_name = "D_coef" })
-    Q_ext_fn = LuaScalarSpatialMaterialFunction( function_name = "Q_ext" })
-    Sigma_a_fn = LuaScalarSpatialMaterialFunction( function_name = "Sigma_a" })
+    d_coef_fn = LuaScalarSpatialMaterialFunction( function_name = "D_coef" )
+    Q_ext_fn = LuaScalarSpatialMaterialFunction( function_name = "Q_ext" )
+    Sigma_a_fn = LuaScalarSpatialMaterialFunction( function_name = "Sigma_a" )
 
     # CFEM solver
     phys = diffusion.CFEMDiffusionSolver(
       name = "CFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-8,
-    })
+    )
     phys:SetOptions(diff_options)
 phys.SetDCoefFunction(d_coef_fn)
 phys.SetQExtFunction(Q_ext_fn)
@@ -131,5 +131,5 @@ fflist = phys.GetFieldFunctions()
       name = "maxval",
       field_function = fflist[1],
       operation = "max",
-    })
-    post.Execute({ maxval })
+    )
+    post.Execute({ maxval )

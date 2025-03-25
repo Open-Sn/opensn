@@ -46,7 +46,7 @@ if __name__ == "__main__":
         xcuts = { 0.0 },
         ycuts = { 0.0 },
       ),
-    })
+    )
 grid = meshgen.Execute()
 
     # Set block IDs
@@ -59,8 +59,8 @@ grid = meshgen.Execute()
     for g in range(1, num_groups+1):
       strength[g] = 0.0
     #src[1] = 1.0
-    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
-    mg_src2 = lbs.VolumetricSource( block_ids = { 2 }, group_strength = strength })
+    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src2 = lbs.VolumetricSource( block_ids = { 2 }, group_strength = strength )
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature2DXY(2, 8)
@@ -114,7 +114,7 @@ grid = meshgen.Execute()
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -123,7 +123,7 @@ ss_solver.Execute()
     fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1

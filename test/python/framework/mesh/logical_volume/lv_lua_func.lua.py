@@ -34,13 +34,13 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    meshgen = OrthogonalMeshGenerator({
+    meshgen = OrthogonalMeshGenerator(
       node_sets = [nodes, nodes, nodes],
-    })
+    )
 grid = meshgen.Execute()
 
     # assign mat ID 10 to whole domain
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     #Sets lua function describing a sphere (material 11)

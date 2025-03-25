@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     dofile("mesh_3d_ortho.lua")
 
-    unit_tests.math_SDM_Test02_DisContinuous({
+    unit_tests.math_SDM_Test02_DisContinuous(
       mesh = grid,
       sdm_type = "PWLD",
-    })
+    )

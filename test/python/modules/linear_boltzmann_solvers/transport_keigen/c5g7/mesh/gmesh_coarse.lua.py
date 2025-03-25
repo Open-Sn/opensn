@@ -31,5 +31,5 @@ if __name__ == "__main__":
           filename = "mesh/2D_c5g7_coarse.msh",
         ),
       },
-    })
+    )
 grid = meshgen.Execute()

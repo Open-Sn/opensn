@@ -54,7 +54,7 @@ grid = meshgen.Execute()
       ymax = L / 16,
       zmin = -L / 16,
       zmax = L / 16,
-    })
+    )
 grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     mesh.ExportToPVTU("TheMesh")
@@ -81,8 +81,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, xs_strong_fuel)
     mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, xs_weak_fuelA)
 
-    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
-    mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 })
+    mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 )
+    mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, { 0.0 )
 
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, new_xs)

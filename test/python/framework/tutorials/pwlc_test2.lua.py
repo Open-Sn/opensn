@@ -48,7 +48,7 @@ grid = meshgen.Execute()
     function MMS_q(pt)
       return math.pi * math.pi * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
 
-    unit_tests.SimTest04_PWLC({ mesh = grid })
+    unit_tests.SimTest04_PWLC({ mesh = grid )
     MPIBarrier()
     if location_id == 0 then
 os.system("rm CodeTut4_PWLC*")

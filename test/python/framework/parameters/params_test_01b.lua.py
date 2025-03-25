@@ -33,7 +33,7 @@ if __name__ == "__main__":
       coupled_field = "T",
       sub_obj1 = sub_obj,
       num_sub_groups = 3,
-    })
+    )
 
     #Required parameter "format". Should create a deprecation error.
     unit_testsB.TestObject(
@@ -41,4 +41,4 @@ if __name__ == "__main__":
       coupled_field = "T",
       sub_obj1 = sub_obj,
       format = True,
-    })
+    )

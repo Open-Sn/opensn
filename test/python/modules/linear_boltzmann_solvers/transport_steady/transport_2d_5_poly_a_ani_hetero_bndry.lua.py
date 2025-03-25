@@ -54,7 +54,7 @@ grid = meshgen.Execute()
     for g in range(1, num_groups+1):
       strength[g] = 0.0
     #src[1] = 1.0
-    mg_src0 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
+    mg_src0 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 48)
@@ -137,7 +137,7 @@ grid = meshgen.Execute()
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -147,14 +147,14 @@ ss_solver.Execute()
 
     # Slice plot
     slice2 = fieldfunc.FFInterpolationCreate(SLICE)
-    fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 })
+    fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 )
     fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
 
     fieldfunc.Initialize(slice2)
     fieldfunc.Execute(slice2)
 
     #-- Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)

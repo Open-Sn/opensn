@@ -34,13 +34,13 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    meshgen = OrthogonalMeshGenerator({
+    meshgen = OrthogonalMeshGenerator(
       node_sets = [nodes, nodes, nodes],
-    })
+    )
 grid = meshgen.Execute()
 
     # assign mat ID 10 to whole domain
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     # create a logical volume as an analytical RPP
@@ -51,13 +51,13 @@ grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
       ymax = 1.5,
       zmin = -1.5,
       zmax = 0.5,
-    })
+    )
     # assign mat ID 11 to lv of RPP
 grid.SetBlockIDFromLogicalVolume(vol1, 11, True)
     # create a logical volume as the interior of a skin mesh
     surfmesh = SurfaceMesh.Create([])
 surfmesh.ImportFromOBJFile("./cube_with_normals.obj", False, Vector3(0, 0, 0))
-    lv_skinmesh = logvol.SurfaceMeshLogicalVolume( surface_mesh = surfmesh })
+    lv_skinmesh = logvol.SurfaceMeshLogicalVolume( surface_mesh = surfmesh )
     # assign mat ID 15 to lv of skin mesh
 grid.SetBlockIDFromLogicalVolume(lv_skinmesh, 15, True)
 
