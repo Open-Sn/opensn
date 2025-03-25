@@ -51,7 +51,8 @@ if __name__ == "__main__":
     grid = MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
-    xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")
+    xs_fuel_g2 =  MultiGroupXS()
+    xs_fuel_g2.LoadFromOpenSn("xs_fuel_g2.xs")
 
     num_groups = 2
     # Initialize the LBSSolver

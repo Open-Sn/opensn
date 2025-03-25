@@ -84,7 +84,8 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    xs_simple_fissile = xs.LoadFromOpenSn("simple_fissile.xs")
+    xs_simple_fissile =  MultiGroupXS()
+    xs_simple_fissile.LoadFromOpenSn("simple_fissile.xs")
 
     # Setup Physics
     num_groups = 1

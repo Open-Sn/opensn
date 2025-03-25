@@ -53,7 +53,8 @@ grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 
     num_groups = 168
-    xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
+    xs_3_170 =  MultiGroupXS()
+    xs_3_170.LoadFromOpenSn("xs_3_170.xs")
 
     strength = []
     for g in range(1, num_groups+1):

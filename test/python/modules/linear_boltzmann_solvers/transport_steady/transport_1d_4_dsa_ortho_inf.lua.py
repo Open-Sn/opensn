@@ -52,8 +52,10 @@ grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 
     num_groups = 168
-    xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
-    xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
+    xs_graphite =  MultiGroupXS()
+    xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
+    xs_air =  MultiGroupXS()
+    xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
     strength = []
     for g in range(1, num_groups+1):

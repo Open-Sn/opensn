@@ -41,7 +41,8 @@ grid = meshgen.Execute()
 
     # Material
     vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
-    xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
+    xs_diag =  MultiGroupXS()
+    xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
     strength = []
     for g in range(1, Ng+1):
       strength[g] = 0.0

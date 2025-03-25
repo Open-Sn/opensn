@@ -53,7 +53,8 @@ grid = meshgen.Execute()
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     num_groups = 3
-    xs_upscatter = xs.LoadFromOpenSn("simple_upscatter.xs")
+    xs_upscatter =  MultiGroupXS()
+    xs_upscatter.LoadFromOpenSn("simple_upscatter.xs")
 
     strength = []
     for g in range(1, num_groups+1):
