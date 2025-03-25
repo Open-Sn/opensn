@@ -38,7 +38,6 @@ if __name__ == "__main__":
     L = 1.0
     nodes = []
     for i = 1, (N + 1) do
-      k = i - 1
       nodes[i] = (i - 1) * L / N
     end
 

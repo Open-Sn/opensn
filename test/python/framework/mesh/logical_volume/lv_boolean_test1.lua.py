@@ -38,7 +38,6 @@ test for boolean operations on logical volumes.
     xmin = -L / 2
     dx = L / N
     for i = 1, (N + 1) do
-      k = i - 1
       nodes.append(xmin + i * dx)
     end
     meshgen = mesh.OrthogonalMeshGenerator.Create({
