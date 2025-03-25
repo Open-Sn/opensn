@@ -132,4 +132,4 @@ fflist = phys.GetFieldFunctions()
       field_function = fflist[1],
       operation = "max",
     )
-    post.Execute({ maxval )
+    post.Execute( maxval )

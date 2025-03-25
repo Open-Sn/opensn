@@ -140,7 +140,7 @@ ss_solver.Execute()
       compute_volume_average = True,
       print_numeric_format = "scientific",
     )
-    post.Execute({ pp1, pp2 )
+    post.Execute( pp1, pp2 )
 
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi")

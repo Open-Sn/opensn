@@ -131,4 +131,4 @@ fflist = phys.GetFieldFunctions()
       field_function = fflist[1],
       compute_volume_average = True,
     )
-    post.Execute({ avgval )
+    post.Execute( avgval )
