@@ -40,7 +40,7 @@ test for boolean operations on logical volumes.
     for i in range(N+1):
       nodes.append(xmin + i * dx)
     meshgen = OrthogonalMeshGenerator({
-      node_sets = { nodes, nodes, nodes },
+      node_sets = [nodes, nodes, nodes],
     })
 grid = meshgen.Execute()
 
