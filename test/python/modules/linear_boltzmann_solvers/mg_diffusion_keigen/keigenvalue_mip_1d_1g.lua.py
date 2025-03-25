@@ -102,7 +102,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_simple_fissile },
+        { "block_ids": [ 0 ], "xs": xs_simple_fissile },
       },
     }
 

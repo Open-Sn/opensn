@@ -35,4 +35,4 @@ if __name__ == "__main__":
     xs_map = []
     for m in range(0, 1+1):
       key = tostring(m)
-      xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
+      xs_map[m + 1] = { "block_ids": [ m ], "xs": xss[key] }

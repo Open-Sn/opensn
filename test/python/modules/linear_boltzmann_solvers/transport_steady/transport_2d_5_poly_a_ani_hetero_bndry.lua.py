@@ -75,7 +75,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_air },
+        { "block_ids": [ 0 ], "xs": xs_air },
       },
     }
 

@@ -71,7 +71,7 @@ if __name__ == "__main__":
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_fuel_g2 },
+        { "block_ids": [ 0 ], "xs": xs_fuel_g2 },
       },
     }
 

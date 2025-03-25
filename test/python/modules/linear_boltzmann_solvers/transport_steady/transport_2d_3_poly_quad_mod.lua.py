@@ -90,7 +90,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_3_170 },
+        { "block_ids": [ 0 ], "xs": xs_3_170 },
       },
     }
     bsrc = []

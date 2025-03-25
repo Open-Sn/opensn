@@ -66,7 +66,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs1g },
+        { "block_ids": [ 0 ], "xs": xs1g },
       },
       options = {
         boundary_conditions = {

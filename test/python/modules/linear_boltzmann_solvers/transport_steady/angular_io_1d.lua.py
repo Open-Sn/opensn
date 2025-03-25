@@ -59,8 +59,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     xs_map = []
     for imat in range(1, Nmat+1):
       xs_map[imat] = {
-        block_ids = { imat - 1 },
-        xs = xs.CreateSimpleOneGroup(total[imat], c[imat]),
+        "block_ids": [ imat - 1 ], "xs": xs.CreateSimpleOneGroup(total[imat], c[imat]),
       }
 
     # Create sources in 1st and 4th materials

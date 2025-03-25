@@ -94,7 +94,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_upscatter },
+        { "block_ids": [ 0 ], "xs": xs_upscatter },
       },
     }
 

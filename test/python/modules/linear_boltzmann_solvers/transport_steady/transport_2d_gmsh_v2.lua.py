@@ -78,7 +78,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0, 1 }, xs = xs_diag },
+        { "block_ids": [ 0, 1 ], "xs": xs_diag },
       },
     }
     phys = DiscreteOrdinatesSolver.Create(lbs_block)

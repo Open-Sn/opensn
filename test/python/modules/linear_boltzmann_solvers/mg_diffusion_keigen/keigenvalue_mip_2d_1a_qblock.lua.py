@@ -46,8 +46,8 @@ if __name__ == "__main__":
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xss["0"] },
-        { block_ids = { 1 }, xs = xss["1"] },
+        { "block_ids": [ 0 ], "xs": xss["0"] },
+        { "block_ids": [ 1 ], "xs": xss["1"] },
       },
     }
 

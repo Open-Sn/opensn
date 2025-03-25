@@ -92,7 +92,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         },
       },
       xs_map = {
-        { block_ids = { 0, 1 }, xs = xs_1g },
+        { "block_ids": [ 0, 1 ], "xs": xs_1g },
       },
     }
     bsrc = []

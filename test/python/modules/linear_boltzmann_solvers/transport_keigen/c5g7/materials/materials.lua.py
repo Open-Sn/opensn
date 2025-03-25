@@ -43,4 +43,4 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     xs_map = []
     for m in range(0, 6+1):
-      xs_map[m + 1] = { block_ids = { m }, xs = xss[tostring(m)] }
+      xs_map[m + 1] = { "block_ids": [ m ], "xs": xss[tostring(m)] }

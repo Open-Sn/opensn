@@ -100,7 +100,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_graphite },
+        { "block_ids": [ 0 ], "xs": xs_graphite },
       },
       sweep_type = "CBC",
     }

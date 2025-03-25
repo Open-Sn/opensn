@@ -69,7 +69,7 @@ grid = meshgen.Execute()
         },
       },
       xs_map = {
-        { block_ids = { 0 }, xs = xs_hdpe },
+        { "block_ids": [ 0 ], "xs": xs_hdpe },
       },
       options = {
         scattering_order = 0,
