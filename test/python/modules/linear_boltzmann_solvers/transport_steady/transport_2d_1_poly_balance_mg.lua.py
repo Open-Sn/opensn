@@ -91,7 +91,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         {
           "name": "xmin",
           "type": "isotropic",
-          group_strength = bsrc,
+          "group_strength": bsrc,
         },
       },
       "scattering_order": 0,

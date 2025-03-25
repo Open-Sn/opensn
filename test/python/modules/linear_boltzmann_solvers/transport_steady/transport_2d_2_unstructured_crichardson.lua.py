@@ -101,7 +101,7 @@ grid = meshgen.Execute()
         {
           "name": "xmin",
           "type": "isotropic",
-          group_strength = bsrc,
+          "group_strength": bsrc,
         },
       },
       "scattering_order": 1,
