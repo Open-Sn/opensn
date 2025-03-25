@@ -45,14 +45,14 @@ test for boolean operations on logical volumes.
 grid = meshgen.Execute()
 
     # assign block ID 10 to all cells
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     # create logical volume lv1 as an analytical sphere
-    lv1 = logvol.SphereLogicalVolume( r = 1.3, x = 1.0, y = -1.0, z = 2.0 )
+    lv1 = SphereLogicalVolume( r = 1.3, x = 1.0, y = -1.0, z = 2.0 )
 
     # create logical volume lv2 as an analytical rcc
-    lv2 = logvol.RCCLogicalVolume(
+    lv2 = RCCLogicalVolume(
       r = 1.3,
       x0 = -0.8,
       y0 = -0.8,
@@ -63,7 +63,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
     )
 
     # create logical volume lv3 as boolean: True if cell is in lv2 and False if in lv1
-    lv3 = logvol.BooleanLogicalVolume(
+    lv3 = BooleanLogicalVolume(
       parts = { { op = True, lv = lv2 }, { op = False, lv = lv1 } },
     )
 

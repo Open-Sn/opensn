@@ -36,10 +36,10 @@ if __name__ == "__main__":
     )
 grid = meshgen.Execute()
 
-    lv1 = logvol.RCCLogicalVolume( r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 )
+    lv1 = RCCLogicalVolume( r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 )
 grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
 
-    lv2 = logvol.RCCLogicalVolume(
+    lv2 = RCCLogicalVolume(
       r = 1.3,
       x0 = -0.8,
       y0 = -0.8,

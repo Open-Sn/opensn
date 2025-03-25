@@ -50,10 +50,10 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     grid:SetUniformBlockID(0)
 
-    vol1 = logvol.RPPLogicalVolume(
+    vol1 = RPPLogicalVolume(
       xmin = -10.0,
       xmax = 10.0,
       ymin = -10.0,

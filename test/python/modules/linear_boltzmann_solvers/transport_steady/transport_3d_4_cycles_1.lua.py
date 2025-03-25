@@ -51,11 +51,11 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
-      logvol.RPPLogicalVolume( xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True )
+      RPPLogicalVolume( xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 21

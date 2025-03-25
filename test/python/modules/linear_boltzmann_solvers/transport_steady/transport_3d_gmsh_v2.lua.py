@@ -40,7 +40,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Material
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     xs_diag =  MultiGroupXS()
     xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
     strength = []

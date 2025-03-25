@@ -40,7 +40,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # assign mat ID 10 to whole domain
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
 
     #Sets lua function describing a sphere (material 11)

@@ -49,7 +49,7 @@ grid = meshgen.Execute(meshgen)
     for imat in range(1, Nmat+1):
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
-      lv = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
+      lv = RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
 grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
 

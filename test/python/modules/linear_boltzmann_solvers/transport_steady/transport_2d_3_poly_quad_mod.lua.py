@@ -124,7 +124,7 @@ ss_solver.Execute()
     fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1

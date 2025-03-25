@@ -51,7 +51,7 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    vol1 = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = -10.0, zmax = 10.0 )
+    vol1 = RPPLogicalVolume( infx = True, infy = True, zmin = -10.0, zmax = 10.0 )
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168

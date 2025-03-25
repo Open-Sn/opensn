@@ -155,7 +155,7 @@ ss_solver.Execute()
     fieldfunc.Execute(slice2)
 
     #-- Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)

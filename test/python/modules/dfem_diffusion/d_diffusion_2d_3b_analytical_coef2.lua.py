@@ -56,12 +56,12 @@ grid = meshgen.Execute()
 
     # Set boundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
-    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True )
+    e_vol = RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True )
     w_vol =
-      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True )
-    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True )
+      RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True )
+    n_vol = RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True )
     s_vol =
-      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True )
+      RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True )
 
     e_bndry = "0"
     w_bndry = "1"
@@ -124,7 +124,7 @@ fflist = phys.GetFieldFunctions()
       fieldfunc.ExportToVTK(fflist[1], "DFEMDiff2D_analytic_coef2", "flux")
 
     # Volume integrations
-    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True )
+    vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffvol = fieldfunc.FieldFunctionInterpolationVolume.Create()
 ffvol.SetOperationType(OP_MAX)
