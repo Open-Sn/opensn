@@ -11,10 +11,10 @@ namespace opensn
 class LBSGroupset;
 
 /// A sweep-chunk in point-symmetric and axial-symmetric curvilinear coordinates.
-class AahSweepChunkRZ : public SweepChunk
+class AAHSweepChunkRZ : public SweepChunk
 {
 public:
-  AahSweepChunkRZ(const std::shared_ptr<MeshContinuum> grid,
+  AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum> grid,
                   const SpatialDiscretization& discretization_primary,
                   const std::vector<UnitCellMatrices>& unit_cell_matrices,
                   const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,

@@ -10,10 +10,10 @@ namespace opensn
 {
 class CellMapping;
 
-class CbcSweepChunk : public SweepChunk
+class CBCSweepChunk : public SweepChunk
 {
 public:
-  CbcSweepChunk(std::vector<double>& destination_phi,
+  CBCSweepChunk(std::vector<double>& destination_phi,
                 std::vector<double>& destination_psi,
                 const std::shared_ptr<MeshContinuum> grid,
                 const SpatialDiscretization& discretization,

@@ -1071,7 +1071,7 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 
   if (sweep_type_ == "AAH")
   {
-    auto sweep_chunk = std::make_shared<AahSweepChunk>(grid_ptr_,
+    auto sweep_chunk = std::make_shared<AAHSweepChunk>(grid_ptr_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        cell_transport_views_,
@@ -1088,7 +1088,7 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   }
   else if (sweep_type_ == "CBC")
   {
-    auto sweep_chunk = std::make_shared<CbcSweepChunk>(phi_new_local_,
+    auto sweep_chunk = std::make_shared<CBCSweepChunk>(phi_new_local_,
                                                        psi_new_local_[groupset.id],
                                                        grid_ptr_,
                                                        *discretization_,
