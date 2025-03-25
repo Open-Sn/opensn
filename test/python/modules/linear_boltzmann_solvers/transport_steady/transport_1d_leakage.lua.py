@@ -80,7 +80,7 @@ grid = meshgen.Execute()
       boundary_conditions = {
         {
           "name": "zmin",
-          type = "isotropic",
+          "type": "isotropic",
           group_strength = bsrc,
         },
       },

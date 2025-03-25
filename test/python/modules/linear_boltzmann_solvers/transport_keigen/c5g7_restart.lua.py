@@ -80,8 +80,8 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
       xs_map = xs_map,
       options = {
         boundary_conditions = {
-          { "name": "xmin", type = "reflecting" },
-          { "name": "ymin", type = "reflecting" },
+          { "name": "xmin", "type": "reflecting" },
+          { "name": "ymin", "type": "reflecting" },
         },
         "scattering_order": 1,
         "verbose_outer_iterations": True,

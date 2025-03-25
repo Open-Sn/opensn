@@ -79,22 +79,22 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
       boundary_conditions = {
         {
           boundary = e_bndry,
-          type = "dirichlet",
+          "type": "dirichlet",
           coeffs = { 0.0 },
         },
         {
           boundary = n_bndry,
-          type = "dirichlet",
+          "type": "dirichlet",
           coeffs = { 0.0 },
         },
         {
           boundary = s_bndry,
-          type = "dirichlet",
+          "type": "dirichlet",
           coeffs = { 0.0 },
         },
         {
           boundary = w_bndry,
-          type = "dirichlet",
+          "type": "dirichlet",
           coeffs = { 0.0 },
         },
       },

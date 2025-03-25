@@ -97,13 +97,13 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = [
       boundary_conditions = {
-        { "name": "zmax", type = "isotropic", group_strength = bsrc },
+        { "name": "zmax", "type": "isotropic", group_strength = bsrc },
       },
       "scattering_order": 1,
       "volumetric_sources": [ mg_src1, mg_src2 ],
     ]
     if reflecting then
-      table.insert(lbs_options.boundary_conditions, { "name": "zmax", type = "reflecting" )
+      table.insert(lbs_options.boundary_conditions, { "name": "zmax", "type": "reflecting" )
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

@@ -126,7 +126,7 @@ grid = meshgen.Execute()
       boundary_conditions = {
         {
           "name": "xmin",
-          type = "incident_anisotropic_heterogeneous",
+          "type": "incident_anisotropic_heterogeneous",
           function_name = "luaBoundaryFunctionA",
         },
       },

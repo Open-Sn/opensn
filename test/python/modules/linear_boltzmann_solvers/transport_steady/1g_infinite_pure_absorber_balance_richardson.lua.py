@@ -70,12 +70,12 @@ grid = meshgen.Execute()
       ],
       options = {
         boundary_conditions = {
-          { "name": "xmin", type = "reflecting" },
-          { "name": "xmax", type = "reflecting" },
-          { "name": "ymin", type = "reflecting" },
-          { "name": "ymax", type = "reflecting" },
-          { "name": "zmin", type = "reflecting" },
-          { "name": "zmax", type = "reflecting" },
+          { "name": "xmin", "type": "reflecting" },
+          { "name": "xmax", "type": "reflecting" },
+          { "name": "ymin", "type": "reflecting" },
+          { "name": "ymax", "type": "reflecting" },
+          { "name": "zmin", "type": "reflecting" },
+          { "name": "zmax", "type": "reflecting" },
         },
         "volumetric_sources": [ mg_src ],
       },

@@ -113,8 +113,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     lbs_options = [
       boundary_conditions = {
-        { "name": "xmin", type = "reflecting" },
-        { "name": "ymin", type = "reflecting" },
+        { "name": "xmin", "type": "reflecting" },
+        { "name": "ymin", "type": "reflecting" },
       },
       "scattering_order": 1,
       "max_ags_iterations": 1,

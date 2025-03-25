@@ -79,20 +79,20 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
       boundary_conditions = {
         {
           boundary = e_bndry,
-          type = "robin",
+          "type": "robin",
           coeffs = { 0.25, 0.5, 0.0 },
         },
         {
           boundary = n_bndry,
-          type = "reflecting",
+          "type": "reflecting",
         },
         {
           boundary = s_bndry,
-          type = "reflecting",
+          "type": "reflecting",
         },
         {
           boundary = w_bndry,
-          type = "robin",
+          "type": "robin",
           coeffs = { 0.25, 0.5, 0.1 },
         },
       },
