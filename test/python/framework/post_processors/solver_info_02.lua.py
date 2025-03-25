@@ -1,8 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # Post-Processor test with lots of post-processors
 # Testing table wrapping and getting the value of a post-processor by both
 # handle and name
 
 # Example Point-Reactor Kinetics solver
+
+import os
+import sys
+import math
+
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.source import VolumetricSource
+    from pyopensn.aquad import GLProductQuadrature1DSlab
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.fieldfunc import FieldFunctionGridBased
+    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
+    from pyopensn.settings import EnableCaliper
+    from pyopensn.math import Vector3
+    from pyopensn.logvol import RPPLogicalVolume
+
 phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
 pp = {}

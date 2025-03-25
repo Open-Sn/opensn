@@ -1,9 +1,32 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # 1D Transport leakage test
 # Unit angular flux left boundary condition in a pure absorber with unit
 # length and a unit absorption cross section. The analytic solution is:
 # j^+ = \int_{0}^{1} \mu e^{-1/\mu} d\mu = 0.10969
 
 # Check num_procs
+
+import os
+import sys
+import math
+
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.source import VolumetricSource
+    from pyopensn.aquad import GLProductQuadrature1DSlab
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.fieldfunc import FieldFunctionGridBased
+    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
+    from pyopensn.settings import EnableCaliper
+    from pyopensn.math import Vector3
+    from pyopensn.logvol import RPPLogicalVolume
+
 num_procs = 3
 if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(

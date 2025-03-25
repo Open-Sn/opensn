@@ -1,7 +1,30 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # 2D LinearBSolver Same as 4a but with reflective BCs. DSA and TG
 # SDM: PWLD
 # Test: WGS groups [0-62] Iteration    54 Residual 5.00021e-07 CONVERGED
 # and   WGS groups [63-167] Iteration    56 Residual 9.73954e-07 CONVERGED
+
+import os
+import sys
+import math
+
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.source import VolumetricSource
+    from pyopensn.aquad import GLProductQuadrature1DSlab
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.fieldfunc import FieldFunctionGridBased
+    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
+    from pyopensn.settings import EnableCaliper
+    from pyopensn.math import Vector3
+    from pyopensn.logvol import RPPLogicalVolume
+
 num_procs = 4
 
 # Check num_procs
