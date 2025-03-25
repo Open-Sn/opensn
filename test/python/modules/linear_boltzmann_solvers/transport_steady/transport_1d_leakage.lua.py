@@ -37,7 +37,7 @@ if __name__ == "__main__":
     N = 100
     L = 1.0
     nodes = []
-    for i in range(1, (N + 1)+1):
+    for i in range(N+1):
       nodes[i] = (i - 1) * L / N
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })

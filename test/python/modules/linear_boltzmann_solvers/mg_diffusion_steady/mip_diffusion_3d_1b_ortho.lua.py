@@ -40,7 +40,7 @@ if __name__ == "__main__":
     L = 5
     xmin = -L / 2
     dx = L / N
-    for i in range(1, (N + 1)+1):
+    for i in range(N+1):
       nodes.append(xmin + i * dx)
     znodes = []
     for i in range(1, (N / 2 + 1)+1):
