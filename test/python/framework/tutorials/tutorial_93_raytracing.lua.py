@@ -98,7 +98,7 @@ grid.SetupOrthogonalBoundaries()
     for g in range(1, num_groups+1):
       src[g] = 0.0
     src[1] = 1.0
-    pt_src = lbs.PointSource.Create({
+    pt_src = lbs.PointSource(
       location = { 0.0, 0.0, 0.0 },
       strength = src,
     })
@@ -132,7 +132,7 @@ grid.SetupOrthogonalBoundaries()
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 
 ss_solver.Initialize()
 ss_solver.Execute()

@@ -28,7 +28,7 @@ if __name__ == "__main__":
       num_groups = 2,
     }
 
-    unit_testsB.ChildTestObject.Create({
+    unit_testsB.ChildTestObject(
       solver_type = "C",
       coupled_field = "T",
       sub_obj1 = sub_obj,
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     })
 
     #Required parameter "format". Should create a deprecation error.
-    unit_testsB.TestObject.Create({
+    unit_testsB.TestObject(
       solver_type = "B",
       coupled_field = "T",
       sub_obj1 = sub_obj,

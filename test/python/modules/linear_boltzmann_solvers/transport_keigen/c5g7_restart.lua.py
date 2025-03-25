@@ -27,11 +27,11 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    meshgen = MeshGenerator.Create({
+    meshgen = MeshGenerator(
       inputs = {
         FromFileMeshGenerator(
           filename = "c5g7/mesh/2D_c5g7_coarse.msh",
-        }),
+        ),
       },
     })
 grid = meshgen.Execute()
@@ -63,7 +63,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
     pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    phys = lbs.DiscreteOrdinatesSolver.Create({
+    phys = lbs.DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = {
@@ -100,7 +100,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
     })
 
     # Execute Solver
-    k_solver = lbs.PowerIterationKEigen.Create({
+    k_solver = lbs.PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1.0e-8,
     })

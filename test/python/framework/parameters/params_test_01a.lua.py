@@ -29,7 +29,7 @@ if __name__ == "__main__":
     }
 
     #Optional parameter "limiter_type". Should create a deprecation warning
-    unit_testsB.TestObject.Create({
+    unit_testsB.TestObject(
       solver_type = "B",
       coupled_field = "T",
       sub_obj1 = sub_obj,
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     })
 
     #Optional parameter "scheme". Should create a deprecation error.
-    unit_testsB.TestObject.Create({
+    unit_testsB.TestObject(
       solver_type = "B",
       coupled_field = "T",
       sub_obj1 = sub_obj,

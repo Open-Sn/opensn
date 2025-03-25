@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     #Required parameter "use_ragusas_stuff". Should create an error with
     #                                        renaming message
-    unit_testsB.TestObject.Create({
+    unit_testsB.TestObject(
       solver_type = "B",
       coupled_field = "T",
       sub_obj1 = sub_obj,

@@ -30,23 +30,23 @@ if __name__ == "__main__":
     Npolar = 4
     Nazimuthal = 16
 
-    meshgen = MeshGenerator.Create({
+    meshgen = MeshGenerator(
       inputs = {
         FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/InclusionsGmshV2.msh",
-        }),
+        ),
       },
     })
 grid = meshgen.Execute()
 
     # Material
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
     xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
     strength = []
     for g in range(1, Ng+1):
       strength[g] = 0.0
     strength[1] = 100.0
-    mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
+    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
 
     lbs_options = {
       boundary_conditions = {
@@ -82,7 +82,7 @@ grid = meshgen.Execute()
     }
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 
     # Solve
 ss_solver.Initialize()

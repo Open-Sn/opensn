@@ -76,8 +76,8 @@ if __name__ == "__main__":
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
     #phys:SetOptions(lbs_options)
 
-    #k_solver0 = lbs.PowerIterationKEigen.Create({ lbs_solver = phys, })
-    k_solver0 = lbs.PowerIterationKEigenSCDSA.Create({
+    #k_solver0 = lbs.PowerIterationKEigen( lbs_solver = phys, })
+    k_solver0 = lbs.PowerIterationKEigenSCDSA(
       lbs_solver = phys,
       diff_accel_sdm = "pwld",
       accel_pi_verbose = False,

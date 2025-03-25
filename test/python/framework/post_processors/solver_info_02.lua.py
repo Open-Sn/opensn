@@ -29,17 +29,17 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
+    phys0 = prk.PRKSolver( initial_source = 0.0 })
 
     pp = []
     for k in range(1, 20+1):
-      pp[k] = post.SolverInfoPostProcessor.Create({
+      pp[k] = post.SolverInfoPostProcessor(
         name = "neutron_population" + tostring(k),
         solver = phys0,
         info = { name = "neutron_population" },
         print_on = { "" },
       })
-    pp21 = post.SolverInfoPostProcessor.Create({
+    pp21 = post.SolverInfoPostProcessor(
       name = "neutron_population" + tostring(21),
       solver = phys0,
       info = { name = "neutron_population" },

@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
-    k_solver0 = lbs.NonLinearKEigen.Create({ lbs_solver = phys })
+    k_solver0 = lbs.NonLinearKEigen( lbs_solver = phys })
 k_solver0.Initialize()
 k_solver0.Execute()
 

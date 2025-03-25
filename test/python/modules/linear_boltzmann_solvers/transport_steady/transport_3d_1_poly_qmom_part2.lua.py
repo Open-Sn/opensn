@@ -33,27 +33,27 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    meshgen = ExtruderMeshGenerator.Create({
+    meshgen = ExtruderMeshGenerator(
       inputs = {
         FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/SquareMesh2x2Quads.obj",
-        }),
+        ),
       },
       layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, # layers
-      partitioner = KBAGraphPartitioner.Create({
+      partitioner = KBAGraphPartitioner(
         nx = 2,
         ny = 2,
         xcuts = { 0.0 },
         ycuts = { 0.0 },
-      }),
+      ),
     })
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
-    vol1 = logvol.RPPLogicalVolume.Create({
+    vol1 = logvol.RPPLogicalVolume(
       xmin = -0.5 / 8,
       xmax = 0.5 / 8,
       ymin = -0.5 / 8,
@@ -68,9 +68,9 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
+    mg_src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength })
     strength[1] = 1.0
-    mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
+    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
@@ -105,7 +105,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 ss_solver.Initialize()
     lbs.ReadSourceMoments(phys, "Qmoms", False)
 

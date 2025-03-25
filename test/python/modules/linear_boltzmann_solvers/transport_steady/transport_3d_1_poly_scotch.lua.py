@@ -43,22 +43,22 @@ if __name__ == "__main__":
     for k in range(0, 8+1):
       nodesz[k + 1] = 0.0 + k * dz
 
-    meshgen = MeshGenerator.Create({
+    meshgen = MeshGenerator(
       inputs = {
         mesh.OrthogonalMeshGenerator({
           node_sets = { nodesxy, nodesxy, nodesz },
-        }),
+        ),
       },
-      partitioner = PETScGraphPartitioner.Create({ type = "ptscotch" }),
+      partitioner = PETScGraphPartitioner( type = "ptscotch" ),
     })
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
-      logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
+      logvol.RPPLogicalVolume( xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 21
@@ -67,8 +67,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
-    mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = strength })
+    mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
+    mg_src2 = lbs.VolumetricSource( block_ids = { 2 }, group_strength = strength })
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
@@ -108,7 +108,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 
 ss_solver.Initialize()
 ss_solver.Execute()

@@ -37,11 +37,11 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 =
-      logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
+      logvol.RPPLogicalVolume( xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     D = { 1.0, 0.01 }
@@ -58,12 +58,12 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     # Setboundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
-    e_vol = logvol.RPPLogicalVolume.Create({ xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
+    e_vol = logvol.RPPLogicalVolume( xmin = 0.99999, xmax = 1000.0, infy = True, infz = True })
     w_vol =
-      logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
-    n_vol = logvol.RPPLogicalVolume.Create({ ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
+      logvol.RPPLogicalVolume( xmin = -1000.0, xmax = -0.99999, infy = True, infz = True })
+    n_vol = logvol.RPPLogicalVolume( ymin = 0.99999, ymax = 1000.0, infx = True, infz = True })
     s_vol =
-      logvol.RPPLogicalVolume.Create({ ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
+      logvol.RPPLogicalVolume( ymin = -1000.0, ymax = -0.99999, infx = True, infz = True })
 
     e_bndry = "0"
     w_bndry = "1"
@@ -100,12 +100,12 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
       },
     }
 
-    d_coef_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "D_coef" })
-    Q_ext_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Q_ext" })
-    Sigma_a_fn = LuaScalarSpatialMaterialFunction.Create({ function_name = "Sigma_a" })
+    d_coef_fn = LuaScalarSpatialMaterialFunction( function_name = "D_coef" })
+    Q_ext_fn = LuaScalarSpatialMaterialFunction( function_name = "Q_ext" })
+    Sigma_a_fn = LuaScalarSpatialMaterialFunction( function_name = "Sigma_a" })
 
     # DFEM solver
-    phys = diffusion.DFEMDiffusionSolver.Create({
+    phys = diffusion.DFEMDiffusionSolver(
       name = "DFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-8,
@@ -126,7 +126,7 @@ fflist = phys.GetFieldFunctions()
       fieldfunc.ExportToVTK(fflist[1], "DFEMDiff2D_Dirichlet", "flux")
 
     # Volume integrations
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 
     ffvol = fieldfunc.FieldFunctionInterpolationVolume.Create()
 ffvol.SetOperationType(OP_AVG)

@@ -43,9 +43,9 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # ############################################### Set Material IDs
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
-    vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = L / N, infy = True, infz = True })
+    vol1 = logvol.RPPLogicalVolume( xmin = -1000.0, xmax = L / N, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
 grid.ComputeVolumePerBlockID()

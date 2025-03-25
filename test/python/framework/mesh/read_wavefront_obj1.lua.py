@@ -34,11 +34,11 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    meshgen = MeshGenerator.Create({
+    meshgen = MeshGenerator(
       inputs = {
         FromFileMeshGenerator(
           filename = "reactor_pin_mesh.obj",
-        }),
+        ),
       },
     })
 grid = meshgen.Execute()

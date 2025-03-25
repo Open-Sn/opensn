@@ -53,7 +53,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, infz = True })
 grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     num_groups = 21
@@ -62,7 +62,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
+    mg_src = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength })
 
     # Setup Physics
     pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
@@ -104,7 +104,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 
 ss_solver.Initialize()
 ss_solver.Execute()

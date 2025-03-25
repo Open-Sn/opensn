@@ -28,9 +28,9 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
+    phys0 = prk.PRKSolver( initial_source = 0.0 })
 
-    pp0 = post.SolverInfoPostProcessor.Create({
+    pp0 = post.SolverInfoPostProcessor(
       name = "neutron_population",
       solver = phys0,
       info = { name = "neutron_population" },

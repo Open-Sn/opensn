@@ -47,7 +47,7 @@ grid = meshgen.Execute()
     # Set block IDs
     grid:SetUniformBlockID(0)
 
-    vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = -L / 4, zmax = L / 4 })
+    vol0 = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = -L / 4, zmax = L / 4 })
 grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     # Add materials

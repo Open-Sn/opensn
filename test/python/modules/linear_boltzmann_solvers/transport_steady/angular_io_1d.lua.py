@@ -49,7 +49,7 @@ grid = meshgen.Execute(meshgen)
     for imat in range(1, Nmat+1):
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
-      lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
+      lv = logvol.RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max })
 grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
 
@@ -64,8 +64,8 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       }
 
     # Create sources in 1st and 4th materials
-    src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50. } })
-    src1 = lbs.VolumetricSource.Create({ block_ids = { 3 }, group_strength = { 1. } })
+    src0 = lbs.VolumetricSource( block_ids = { 0 }, group_strength = { 50. } })
+    src1 = lbs.VolumetricSource( block_ids = { 3 }, group_strength = { 1. } })
 
     # Angular Quadrature
     gl_quad = aquad.CreateGLProductQuadrature1DSlab(128)
@@ -98,7 +98,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
-    ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys })
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -110,7 +110,7 @@ ss_solver.Execute()
 
     phys2 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
-    ss_solver_2 = lbs.SteadyStateSolver.Create({ lbs_solver = phys2 })
+    ss_solver_2 = lbs.SteadyStateSolver( lbs_solver = phys2 })
 
 ss_solver_2.Initialize()
 

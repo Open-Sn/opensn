@@ -41,11 +41,11 @@ if __name__ == "__main__":
       os.exit(False)
 
     # Setup mesh
-    meshgen = MeshGenerator.Create({
+    meshgen = MeshGenerator(
       inputs = {
         FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/fuel_hex.e",
-        }),
+        ),
       },
     })
     grid = MeshGenerator.Execute(meshgen)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
 
-    k_solver = lbs.PowerIterationKEigen.Create({
+    k_solver = lbs.PowerIterationKEigen(
       lbs_solver = phys,
       k_tol = 1e-6,
     })
