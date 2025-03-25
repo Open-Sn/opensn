@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Setup mesh
     meshgen = ExtruderMeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/resources/TestMeshes/TriangleMesh2x2Cuts.obj",
         }),
       },

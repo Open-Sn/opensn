@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # Setup mesh
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "reactor_pin_mesh.obj",
         }),
       },

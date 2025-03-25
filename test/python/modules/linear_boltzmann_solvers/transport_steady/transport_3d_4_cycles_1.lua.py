@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Setup mesh
     meshgen = ExtruderMeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/Square2x2_partition_cyclic3.obj",
         }),
       },

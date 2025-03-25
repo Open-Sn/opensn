@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "triangle_mesh_2x2.obj",
         }),
         mesh.ExtruderMeshGenerator.Create({

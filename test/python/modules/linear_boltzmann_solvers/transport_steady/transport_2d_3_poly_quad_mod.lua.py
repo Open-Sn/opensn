@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Setup mesh
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/SquareMesh2x2QuadsBlock.obj",
         }),
       },

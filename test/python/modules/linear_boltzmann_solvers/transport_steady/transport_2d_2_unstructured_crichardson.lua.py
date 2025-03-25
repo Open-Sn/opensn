@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Unstructured mesh
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
         }),
       },

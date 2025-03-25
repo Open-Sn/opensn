@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/assets/mesh/InclusionsGmshV2.msh",
         }),
       },

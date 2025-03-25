@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     meshgen = MeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "mesh/2D_c5g7_refined.msh",
         }),
       },

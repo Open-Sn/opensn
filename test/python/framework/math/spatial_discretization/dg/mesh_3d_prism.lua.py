@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     meshgen = ExtruderMeshGenerator.Create({
       inputs = {
-        mesh.FromFileMeshGenerator.Create({
+        FromFileMeshGenerator(
           filename = "+/+/+/+/+/assets/mesh/TriangleMesh2x2.obj",
         }),
       },
