@@ -66,7 +66,7 @@ grid = meshgen.Execute()
     mg_src = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
 
     # Setup Physics
-    pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
     lbs_block = {
       mesh = grid,
@@ -74,7 +74,7 @@ grid = meshgen.Execute()
       groupsets = {
         {
           groups_from_to = { 0, 20 },
-          angular_quadrature = pquad0,
+          angular_quadrature = pquad,
           angle_aggregation_type = "single",
           angle_aggregation_num_subsets = 1,
           inner_linear_method = "petsc_gmres",

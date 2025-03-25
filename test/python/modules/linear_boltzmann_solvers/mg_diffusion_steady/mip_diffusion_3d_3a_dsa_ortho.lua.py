@@ -78,7 +78,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
-    pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
     lbs_block = {
       mesh = grid,
@@ -86,7 +86,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       groupsets = {
         {
           groups_from_to = { 0, 62 },
-          angular_quadrature = pquad0,
+          angular_quadrature = pquad,
           angle_aggregation_num_subsets = 1,
           inner_linear_method = "petsc_gmres",
           l_abs_tol = 1.0e-6,
@@ -97,7 +97,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         },
         {
           groups_from_to = { 63, num_groups - 1 },
-          angular_quadrature = pquad0,
+          angular_quadrature = pquad,
           angle_aggregation_num_subsets = 1,
           inner_linear_method = "petsc_gmres",
           l_abs_tol = 1.0e-6,

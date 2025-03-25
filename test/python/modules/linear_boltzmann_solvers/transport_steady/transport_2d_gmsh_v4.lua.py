@@ -59,7 +59,7 @@ grid = meshgen.Execute()
     }
 
     # Quadrature
-    pquad0 = aquad.CreateGLCProductQuadrature2DXY(Npolar, Nazimuthal)
+    pquad = aquad.CreateGLCProductQuadrature2DXY(Npolar, Nazimuthal)
 
     # Set up solver
     gs1 = { 0, Ng - 1 }
@@ -69,7 +69,7 @@ grid = meshgen.Execute()
       groupsets = {
         {
           groups_from_to = gs1,
-          angular_quadrature = pquad0,
+          angular_quadrature = pquad,
           angle_aggregation_type = "single",
           angle_aggregation_num_subsets = 1,
           inner_linear_method = "petsc_gmres",
