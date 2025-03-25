@@ -76,7 +76,7 @@ grid = meshgen.Execute()
 
     #========== ProdQuad
     fac = 1
-    pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
+    pquad = ProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 4 * fac, 3 * fac)
     aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
     #========== Groupset def

@@ -60,7 +60,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
       xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
 
     # Angular quadrature
-    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
     phys = lbs.DiscreteOrdinatesSolver(

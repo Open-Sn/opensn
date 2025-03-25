@@ -30,7 +30,7 @@ if __name__ == "__main__":
     dofile("utils/qblock_materials.lua") #num_groups assigned here
 
     # Setup Physics
-    pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
+    pquad = GLCProductQuadrature2DXY(8, 16)
 
     lbs_block = {
       mesh = grid,

@@ -98,7 +98,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     #========== ProdQuad
     fac = 3
-    pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2 * fac, 2 * fac)
+    pquad = ProductQuadrature(GAUSS_LEGENDRE_CHEBYSHEV, 2 * fac, 2 * fac)
     aquad.OptimizeForPolarSymmetry(pquad, 4.0 * math.pi)
 
     #========== Groupset def

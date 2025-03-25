@@ -58,7 +58,7 @@ grid = meshgen.Execute()
     mg_src0 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
-    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 48)
+    pquad = GLCProductQuadrature2DXY(4, 48)
 
     lbs_block = {
       mesh = grid,

@@ -78,7 +78,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     mg_src1 = lbs.VolumetricSource( block_ids = { 1 }, group_strength = strength )
 
     # Setup Physics
-    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(4, 8)
 
     lbs_block = {
       mesh = grid,

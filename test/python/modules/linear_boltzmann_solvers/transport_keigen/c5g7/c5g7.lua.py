@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # Setup Physics
 
     # Angular quadrature
-    pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
     if string.find(k_method, "scdsa") or string.find(k_method, "smm") then

@@ -52,7 +52,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     # Setup Physics
     fac = 1
-    pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
+    pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
     lbs_block = {
       mesh = grid,

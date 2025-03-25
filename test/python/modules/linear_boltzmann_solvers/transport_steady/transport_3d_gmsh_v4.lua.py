@@ -59,7 +59,7 @@ grid = meshgen.Execute()
     }
 
     # Quadrature
-    pquad = aquad.CreateGLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
+    pquad = GLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
 
     # Set up solver
     gs1 = { 0, Ng - 1 }

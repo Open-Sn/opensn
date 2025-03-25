@@ -81,7 +81,7 @@ grid = meshgen.Execute()
       grp[g] = LBSCreateGroup(phys)
 
     #========== ProdQuad
-    pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 16)
+    pquad = ProductQuadrature(GAUSS_LEGENDRE, 16)
 
     #========== Groupset def
     gs0 = LBSCreateGroupset(phys)

@@ -68,7 +68,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     src1 = lbs.VolumetricSource( block_ids = { 3 }, group_strength = { 1. } )
 
     # Angular Quadrature
-    gl_quad = aquad.CreateGLProductQuadrature1DSlab(128)
+    gl_quad = GLProductQuadrature1DSlab(128)
 
     # LBS block option
     num_groups = 1

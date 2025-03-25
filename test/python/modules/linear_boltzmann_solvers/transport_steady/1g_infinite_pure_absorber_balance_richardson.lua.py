@@ -50,7 +50,7 @@ grid = meshgen.Execute()
     mg_src = lbs.VolumetricSource( block_ids = { 0 }, group_strength = strength )
 
     # Angular Quadrature
-    pquad = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
+    pquad = GLCProductQuadrature3DXYZ(4, 8)
 
     # LBS block option
     lbs_block = {

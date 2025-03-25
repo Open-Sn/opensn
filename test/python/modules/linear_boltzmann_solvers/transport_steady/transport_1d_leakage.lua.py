@@ -51,7 +51,7 @@ grid = meshgen.Execute()
     xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
 
     # Setup Physics
-    pquad = aquad.CreateGLProductQuadrature1DSlab(256)
+    pquad = GLProductQuadrature1DSlab(256)
     lbs_block = {
       mesh = grid,
       num_groups = num_groups,
