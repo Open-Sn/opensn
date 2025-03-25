@@ -56,9 +56,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     xs_upscatter = xs.LoadFromOpenSn("simple_upscatter.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 1.0
-    end
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
     # Setup Physics

@@ -38,9 +38,8 @@ if __name__ == "__main__":
     L = 100.0
     xmin = 0.0
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -66,16 +65,14 @@ grid = meshgen.Execute()
     function SwapXS(solver_handle, new_xs)
       mat.SetProperty(materials[1], TRANSPORT_XSECTIONS, EXISTING, new_xs)
       lbs.InitializeMaterials(solver_handle)
-    end
 
     # Setup Physics
     phys = LBSCreateTransientSolver()
 
     #========== Groups
     grp = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       grp[g] = LBSCreateGroup(phys)
-    end
 
     #========== ProdQuad
     fac = 1
@@ -99,7 +96,7 @@ grid = meshgen.Execute()
     #
     #-- Set boundary conditions
     #bsrc=[]
-    #for g=1,num_groups do
+    #for g in range(1, num_groups+1):
     #    bsrc[g] = 0.0
     #end
     #bsrc[1] = 1.0/2
@@ -131,7 +128,7 @@ grid = meshgen.Execute()
     initial_FR = lbs.ComputeFissionRate(phys, "OLD")
 
     #time = 0.0
-    #for k=1,2 do
+    #for k in range(1, 2+1):
     #    --LBTSSetProperty(phys, "INHIBIT_ADVANCE", True)
     #    solver.Step(phys)
     #    FRf = lbs.ComputeFissionRate(phys,"NEW")
@@ -170,7 +167,5 @@ grid = meshgen.Execute()
       if time >= 0.2 and not swapped then
         SwapXS(phys, xs_21cent)
         swapped = True
-      end
 
       LBTSAdvanceTimeData(phys)
-    end

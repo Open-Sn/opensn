@@ -27,16 +27,14 @@ if __name__ == "__main__":
 
     if nmesh == None then
       nmesh = 10
-    end
 
     nodes = []
     N = nmesh
     L = 2.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -48,4 +46,3 @@ grid = meshgen.Execute()
     MPIBarrier()
     if location_id == 0 then
 os.system("rm SimTest_06*")
-    end

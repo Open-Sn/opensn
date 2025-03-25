@@ -43,39 +43,30 @@ if __name__ == "__main__":
     # Mesh variables
     if L == None then
       L = 100.0
-    end
     if n_cells == None then
       n_cells = 50
-    end
 
     # Transport angle information
     if n_angles == None then
       n_angles = 32
-    end
     if scat_order == None then
       scat_order = 0
-    end
 
     # k-eigenvalue iteration parameters
     if kes_max_iterations == None then
       kes_max_iterations = 5000
-    end
     if kes_tolerance == None then
       kes_tolerance = 1e-8
-    end
 
     # Source iteration parameters
     if si_max_iterations == None then
       si_max_iterations = 500
-    end
     if si_tolerance == None then
       si_tolerance = 1e-8
-    end
 
     # Delayed neutrons
     if use_precursors == None then
       use_precursors = True
-    end
 
     # ##################################################
     # ##### Run problem #####
@@ -84,9 +75,8 @@ if __name__ == "__main__":
     # Setup mesh
     nodes = []
     dx = L / n_cells
-    for i = 0, n_cells do
+    for i in range(0, n_cells+1):
       nodes[i + 1] = i * dx
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute()

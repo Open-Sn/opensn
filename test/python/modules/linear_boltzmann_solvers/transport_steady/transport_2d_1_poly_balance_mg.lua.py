@@ -43,9 +43,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     strength[1] = 1.0
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
@@ -82,9 +81,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       },
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
 
     lbs_options = {
@@ -145,4 +143,3 @@ maxval = curffi.GetValue()
     # Exports
     if master_export == None then
       fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
-    end

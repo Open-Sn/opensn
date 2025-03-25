@@ -42,23 +42,20 @@ if __name__ == "__main__":
     xmesh = []
     xmin = 0.0
     dx = Lx / Nx
-    for i = 1, (Nx + 1) do
+    for i in range(1, (Nx + 1)+1):
       xmesh[i] = xmin + k * dx
-    end
 
     ymesh = []
     ymin = 0.0
     dy = Ly / Ny
-    for i = 1, (Ny + 1) do
+    for i in range(1, (Ny + 1)+1):
       ymesh[i] = ymin + k * dy
-    end
 
     zmesh = []
     zmin = 0.0
     dz = Lz / Nz
-    for i = 1, (Nz + 1) do
+    for i in range(1, (Nz + 1)+1):
       zmesh[i] = zmin + k * dz
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 grid = meshgen.Execute()

@@ -33,7 +33,6 @@ if __name__ == "__main__":
 
     # Create materials
     xs_map = []
-    for m = 0, 1 do
+    for m in range(0, 1+1):
       key = tostring(m)
       xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
-    end

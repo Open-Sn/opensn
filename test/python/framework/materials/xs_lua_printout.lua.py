@@ -33,14 +33,10 @@ if __name__ == "__main__":
         for k, v in pairs(o) do
           if type(k) ~= "number" then
             k = '"' + k + '"'
-          end
           s = s + "[" + k + "] = " + dump(v) + ","
-        end
         return s + "} "
       else
         return tostring(o)
-      end
-    end
 
     # Create cross sections
     my_xs = []

@@ -34,13 +34,11 @@ if __name__ == "__main__":
     nodes = []
     counter = 1
     nodes[counter] = 0.
-    for imat = 1, Nmat do
+    for imat in range(1, Nmat+1):
       dx = widths[imat] / nrefs[imat]
-      for i = 1, nrefs[imat] do
+      for i in range(1, nrefs[imat]+1):
         counter = counter + 1
         nodes[counter] = nodes[counter - 1] + dx
-      end
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute()
@@ -48,24 +46,22 @@ grid = meshgen.Execute()
     # Set block IDs
     z_min = 0.0
     z_max = widths[1]
-    for imat = 1, Nmat do
+    for imat in range(1, Nmat+1):
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
       lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
 grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
-    end
 
     # Add cross sections to materials
     total = { 50., 5., 0., 1., 1. }
     c = { 0., 0., 0., 0.9, 0.9 }
     xs_map = []
-    for imat = 1, Nmat do
+    for imat in range(1, Nmat+1):
       xs_map[imat] = {
         block_ids = { imat - 1 },
         xs = xs.CreateSimpleOneGroup(total[imat], c[imat]),
       }
-    end
 
     # Create sources in 1st and 4th materials
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50. } })

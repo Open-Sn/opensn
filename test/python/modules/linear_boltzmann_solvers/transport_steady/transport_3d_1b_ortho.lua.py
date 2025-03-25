@@ -30,7 +30,6 @@ if __name__ == "__main__":
     num_procs = 4
     if reflecting == None then
       reflecting = True
-    end
 
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
@@ -41,19 +40,16 @@ if __name__ == "__main__":
     L = 5.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
     znodes = []
-    for i = 1, (N / 2 + 1) do
+    for i in range(1, (N / 2 + 1)+1):
       znodes.append(xmin + i * dx)
-    end
 
     if reflecting then
       meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
     else
       meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
-    end
 grid = meshgen.Execute()
 
     # Set block IDs
@@ -64,9 +60,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
     # Setup Physics
@@ -92,9 +87,8 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       },
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = {
       boundary_conditions = {
@@ -105,7 +99,6 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     }
     if reflecting then
       table.insert(lbs_options.boundary_conditions, { name = "zmin", type = "reflecting" })
-    end
 
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
@@ -121,7 +114,7 @@ ss_solver.Execute()
 
     # Slice plot
     #slices = []
-    #for k=1,count do
+    #for k in range(1, count+1):
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
     #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
     #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
@@ -164,8 +157,6 @@ maxval = curffi.GetValue()
         fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DReflected")
       else
         fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-      end
-    end
 
     # Plots
     if location_id == 0 and master_export == None then
@@ -173,4 +164,3 @@ maxval = curffi.GetValue()
 #--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
-    end

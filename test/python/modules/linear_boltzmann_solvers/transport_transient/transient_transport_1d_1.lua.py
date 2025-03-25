@@ -38,9 +38,8 @@ if __name__ == "__main__":
     L = 100.0
     xmin = 0.0
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute()
@@ -67,9 +66,8 @@ grid = meshgen.Execute()
     mat.SetProperty(materials[2], TRANSPORT_XSECTIONS, EXISTING, macro_xs)
 
     src = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       src[g] = 0.0
-    end
     #src[1] = 1.0
     mat.SetProperty(materials[1], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
     mat.SetProperty(materials[2], ISOTROPIC_MG_SOURCE, FROM_ARRAY, src)
@@ -79,9 +77,8 @@ grid = meshgen.Execute()
 
     #========== Groups
     grp = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       grp[g] = LBSCreateGroup(phys)
-    end
 
     #========== ProdQuad
     pquad = aquad.CreateProductQuadrature(GAUSS_LEGENDRE, 16)
@@ -103,7 +100,7 @@ grid = meshgen.Execute()
     #
     #-- Set boundary conditions
     #bsrc=[]
-    #for g=1,num_groups do
+    #for g in range(1, num_groups+1):
     #    bsrc[g] = 0.0
     #end
     #bsrc[1] = 1.0/2
@@ -130,7 +127,7 @@ grid = meshgen.Execute()
 
     physname = solver.GetName(phys)
 
-    #for k=1,2 do
+    #for k in range(1, 2+1):
     #    --LBTSSetProperty(phys, "INHIBIT_ADVANCE", True)
     #    solver.Step(phys)
     #    FRf = lbs.ComputeFissionRate(phys,"NEW")
@@ -164,4 +161,3 @@ grid = meshgen.Execute()
           FRf
         )
       )
-    end

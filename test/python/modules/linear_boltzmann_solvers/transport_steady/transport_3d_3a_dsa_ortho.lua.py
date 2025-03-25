@@ -42,9 +42,8 @@ if __name__ == "__main__":
     xmin = -L / 2
     #xmin = 0.0
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
     znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, znodes } })
@@ -67,9 +66,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     strength[1] = 1.0
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     strength[1] = 0.0
@@ -133,6 +131,5 @@ ss_solver.Execute()
     # Exports
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
-    end
 
     # Plots

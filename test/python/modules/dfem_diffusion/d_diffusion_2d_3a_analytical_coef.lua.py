@@ -30,9 +30,8 @@ if __name__ == "__main__":
     L = 2
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -42,15 +41,12 @@ grid = meshgen.Execute()
 
     function D_coef(i, pt)
       return 3.0 + pt.x + pt.y
-    end
 
     function Q_ext(i, pt)
       return pt.x * pt.x
-    end
 
     function Sigma_a(i, pt)
       return pt.x * pt.y * pt.y
-    end
 
     # Setboundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
@@ -120,7 +116,6 @@ fflist = phys.GetFieldFunctions()
     # Export VTU
     if master_export == None then
       fieldfunc.ExportToVTK(fflist[1], "CFEMDiff2D_analytic_coef", "flux")
-    end
 
     # Volume integrations
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })

@@ -43,9 +43,8 @@ grid = meshgen.Execute()
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
     xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
     strength = []
-    for g = 1, Ng do
+    for g in range(1, Ng+1):
       strength[g] = 0.0
-    end
     strength[1] = 100.0
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 

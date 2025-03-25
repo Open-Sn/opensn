@@ -37,13 +37,11 @@ if __name__ == "__main__":
     nodesxy = []
     dxy = 2 / Nxy
     dz = 1.6 / 8
-    for i = 0, Nxy do
+    for i in range(0, Nxy+1):
       nodesxy[i + 1] = -1.0 + i * dxy
-    end
     nodesz = []
-    for k = 0, 8 do
+    for k in range(0, 8+1):
       nodesz[k + 1] = 0.0 + k * dz
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodesxy, nodesxy, nodesz } })
 grid = meshgen.Execute()
@@ -60,9 +58,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = strength })
 
@@ -89,9 +86,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       },
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = {
       boundary_conditions = {
@@ -115,7 +111,7 @@ ss_solver.Execute()
 
     # Slice plot
     #slices = []
-    #for k=1,count do
+    #for k in range(1, count+1):
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
     #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
     #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
@@ -155,7 +151,6 @@ maxval = curffi.GetValue()
     # Exports
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-    end
 
     # Plots
     if location_id == 0 and master_export == None then
@@ -163,4 +158,3 @@ maxval = curffi.GetValue()
 #--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
-    end

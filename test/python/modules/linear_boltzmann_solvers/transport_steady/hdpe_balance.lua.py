@@ -31,9 +31,8 @@ if __name__ == "__main__":
     L = 10
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen.Execute()
@@ -47,9 +46,8 @@ grid = meshgen.Execute()
     xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     strength[1] = 1.0
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 

@@ -31,9 +31,8 @@ if __name__ == "__main__":
     L = 5.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({
       node_sets = { nodes, nodes, nodes },
@@ -48,9 +47,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
     function MatIDFunction1(pt, cur_id)
       if pt.x * pt.x + pt.y * pt.y + pt.z * pt.z < 1.0 then
         return 11
-      end
       return cur_id
-    end
 
     # assign block ID 11 to lv using lua function
     mesh.SetBlockIDFromFunction(grid, "MatIDFunction1")

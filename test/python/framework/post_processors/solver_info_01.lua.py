@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     solver.Initialize(phys0)
 
-    for t = 1, 20 do
+    for t in range(1, 20+1):
       solver.Step(phys0)
 time = phys0.TimeNew()
 print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
@@ -51,8 +51,6 @@ print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
       solver.Advance(phys0)
       if time > 0.1 then
 phys0.SetRho(0.8)
-      end
-    end
 
 print("Manually printing Post-Processor.")
     post.Print({ pp0 })

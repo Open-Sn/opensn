@@ -30,9 +30,8 @@ if __name__ == "__main__":
     L = 2
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -45,15 +44,12 @@ grid = meshgen.Execute()
     XSa = { 0.0 }
     function D_coef(i, pt)
       return D[i + 1]
-    end
 
     function Q_ext(i, pt)
       return Q[i + 1]
-    end
 
     function Sigma_a(i, pt)
       return XSa[i + 1]
-    end
 
     # Setboundary IDs
     # xmin,xmax,ymin,ymax,zmin,zmax
@@ -121,7 +117,6 @@ fflist = phys.GetFieldFunctions()
     # Export VTU
     if master_export == None then
       fieldfunc.ExportToVTK(fflist[1], "DFEMDiff2D_linear")
-    end
 
     # Line plot
     cline = fieldfunc.FieldFunctionInterpolationLine.Create()
@@ -135,7 +130,6 @@ cline.Execute()
 
     if master_export == None then
       fieldfunc.ExportToCSV(cline)
-    end
 
     # Volume integrations
     vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })

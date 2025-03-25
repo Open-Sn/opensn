@@ -39,7 +39,6 @@ if __name__ == "__main__":
           + ". Pass check_num_procs=False to override if possible."
       )
       os.exit(False)
-    end
 
     # Setup mesh
     meshgen = mesh.MeshGenerator.Create({

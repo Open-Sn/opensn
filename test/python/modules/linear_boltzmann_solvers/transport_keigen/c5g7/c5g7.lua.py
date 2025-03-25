@@ -40,7 +40,6 @@ if __name__ == "__main__":
     else
       inner_linear_method = "petsc_gmres"
       l_max_its = 5
-    end
 
     phys = lbs.DiscreteOrdinatesSolver.Create({
       mesh = grid,
@@ -132,7 +131,6 @@ if __name__ == "__main__":
           + 'or "jfnk"'
       )
       return
-    end
 
 k_solver.Initialize()
 k_solver.Execute()
@@ -140,4 +138,3 @@ k_solver.Execute()
     if master_export == None then
       fflist = lbs.GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
-    end

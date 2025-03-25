@@ -36,9 +36,8 @@ if __name__ == "__main__":
     L = 5
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -53,9 +52,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     strength[1] = 1.0
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
@@ -130,4 +128,3 @@ maxval = curffi.GetValue()
     # Exports
     if master_export == None then
       fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
-    end

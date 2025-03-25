@@ -37,9 +37,8 @@ if __name__ == "__main__":
     N = 100
     L = 1.0
     nodes = []
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes[i] = (i - 1) * L / N
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen.Execute()
@@ -73,9 +72,8 @@ grid = meshgen.Execute()
     }
 
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0
 
     lbs_options = {
@@ -103,4 +101,3 @@ ss_solver.Execute()
     leakage = lbs.ComputeLeakage(phys, [])
     for k, v in pairs(leakage) do
       log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
-    end

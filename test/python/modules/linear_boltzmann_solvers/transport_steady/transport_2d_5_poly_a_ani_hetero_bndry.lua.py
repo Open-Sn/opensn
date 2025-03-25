@@ -38,9 +38,8 @@ if __name__ == "__main__":
     L = 10.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -52,9 +51,8 @@ grid = meshgen.Execute()
     xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     #src[1] = 1.0
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
@@ -108,24 +106,20 @@ grid = meshgen.Execute()
       psi = []
       dof_count = 0
 
-      for ni = 1, num_angles do
+      for ni in range(1, num_angles+1):
         omega = quadrature_angle_vectors[ni]
         phi_theta = quadrature_phi_theta_angles[ni]
-        for gi = 1, num_groups do
+        for gi in range(1, num_groups+1):
           g = group_indices[gi]
 
           value = 1.0
           if location.y < 0.0 or omega.y < 0.0 then
             value = 0.0
-          end
 
           dof_count = dof_count + 1
           psi[dof_count] = value
-        end
-      end
 
       return psi
-    end
 
     lbs_options = {
       boundary_conditions = {
@@ -189,9 +183,7 @@ maxval = curffi.GetValue()
     # Exports
     if master_export == None then
       fieldfunc.ExportToPython(slice2)
-    end
 
     # Plots
     if location_id == 0 and master_export == None then
       local handle = io.popen("python ZPFFI00.py")
-    end

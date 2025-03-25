@@ -39,7 +39,6 @@ if __name__ == "__main__":
           + ". Pass check_num_procs=False to override if possible."
       )
       os.exit(False)
-    end
 
     # Setup mesh
     meshgen = mesh.ExtruderMeshGenerator.Create({
@@ -70,9 +69,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.5
-    end
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
@@ -98,9 +96,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       },
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = {
       boundary_conditions = {

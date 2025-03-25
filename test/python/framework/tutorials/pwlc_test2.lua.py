@@ -27,16 +27,14 @@ if __name__ == "__main__":
 
     if nmesh == None then
       nmesh = 10
-    end
 
     nodes = []
     N = nmesh
     L = 2.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -46,14 +44,11 @@ grid = meshgen.Execute()
 
     function MMS_phi(pt)
       return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
-    end
 
     function MMS_q(pt)
       return math.pi * math.pi * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
-    end
 
     unit_tests.SimTest04_PWLC({ mesh = grid })
     MPIBarrier()
     if location_id == 0 then
 os.system("rm CodeTut4_PWLC*")
-    end

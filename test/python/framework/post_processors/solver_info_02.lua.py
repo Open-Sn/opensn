@@ -32,14 +32,13 @@ if __name__ == "__main__":
     phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
     pp = []
-    for k = 1, 20 do
+    for k in range(1, 20+1):
       pp[k] = post.SolverInfoPostProcessor.Create({
         name = "neutron_population" + tostring(k),
         solver = phys0,
         info = { name = "neutron_population" },
         print_on = { "" },
       })
-    end
     pp21 = post.SolverInfoPostProcessor.Create({
       name = "neutron_population" + tostring(21),
       solver = phys0,
@@ -53,7 +52,7 @@ if __name__ == "__main__":
 
     solver.Initialize(phys0)
 
-    for t = 1, 20 do
+    for t in range(1, 20+1):
       solver.Step(phys0)
 time = phys0.TimeNew()
 print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
@@ -61,8 +60,6 @@ print(t, string.format("%.3f %.5f", time, phys0.PopulationNew()))
       solver.Advance(phys0)
       if time > 0.1 then
 phys0.SetRho(0.8)
-      end
-    end
 
 print("Manual neutron_population1=", string.format("%.5f", pp[1].GetValue()))
 print("Manual neutron_population1=", string.format("%.5f", pp21.GetValue()))

@@ -47,23 +47,20 @@ if __name__ == "__main__":
     xmesh = []
     xmin = 0.0
     dx = Lx / Nx
-    for i = 1, (Nx + 1) do
+    for i in range(1, (Nx + 1)+1):
       xmesh[i] = xmin + k * dx
-    end
 
     ymesh = []
     ymin = 0.0
     dy = Ly / Ny
-    for i = 1, (Ny + 1) do
+    for i in range(1, (Ny + 1)+1):
       ymesh[i] = ymin + k * dy
-    end
 
     zmesh = []
     zmin = 0.0
     dz = Lz / Nz
-    for i = 1, (Nz + 1) do
+    for i in range(1, (Nz + 1)+1):
       zmesh[i] = zmin + k * dz
-    end
 
     meshgen = mesh.SplitFileMeshGenerator.Create({
       inputs = {
@@ -79,9 +76,8 @@ grid = meshgen.Execute()
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
     # Setup Physics
@@ -108,9 +104,8 @@ grid = meshgen.Execute()
       sweep_type = "CBC",
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = {
       boundary_conditions = {
@@ -149,4 +144,3 @@ ss_solver.Execute()
 
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
-    end

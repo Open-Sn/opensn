@@ -66,9 +66,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     strength[1] = 1.0
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
@@ -119,7 +118,6 @@ ss_solver.Execute()
 
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-    end
 
     # Plots
     if location_id == 0 and master_export == None then
@@ -127,4 +125,3 @@ ss_solver.Execute()
 #--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
-    end

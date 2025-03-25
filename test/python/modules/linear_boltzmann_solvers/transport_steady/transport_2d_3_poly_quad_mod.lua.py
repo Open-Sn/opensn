@@ -56,9 +56,8 @@ grid = meshgen.Execute()
     xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     #src[1] = 1.0
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
     mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = strength })
@@ -94,9 +93,8 @@ grid = meshgen.Execute()
       },
     }
     bsrc = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       bsrc[g] = 0.0
-    end
     bsrc[1] = 1.0 / 4.0 / math.pi
 
     lbs_options = {

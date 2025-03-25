@@ -66,9 +66,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       strength[g] = 0.0
-    end
     mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
     strength[1] = 1.0
     mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
@@ -117,7 +116,7 @@ ss_solver.Execute()
 
     # Slice plot
     #slices = []
-    #for k=1,count do
+    #for k in range(1, count+1):
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
     #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
     #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
@@ -157,7 +156,6 @@ maxval = curffi.GetValue()
     # Exports
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DColl")
-    end
 
     # Plots
     if location_id == 0 and master_export == None then
@@ -165,8 +163,6 @@ maxval = curffi.GetValue()
 #--os.system("python ZPFFI11.py")
       #local handle = io.popen("python ZPFFI00.py")
       print("Execution completed")
-    end
     MPIBarrier()
     if location_id == 0 then
 os.system("rm Qmoms*")
-    end

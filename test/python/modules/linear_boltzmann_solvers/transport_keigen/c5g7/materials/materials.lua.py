@@ -27,9 +27,8 @@ if __name__ == "__main__":
 
     xss = []
 
-    for m = 0, 6 do
+    for m in range(0, 6+1):
       xss[tostring(m)] = xs.Create()
-    end
 
     xss["0"] = xs.LoadFromOpenSn("materials/XS_water.xs")
     xss["1"] = xs.LoadFromOpenSn("materials/XS_UO2.xs")
@@ -43,6 +42,5 @@ if __name__ == "__main__":
 log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     xs_map = []
-    for m = 0, 6 do
+    for m in range(0, 6+1):
       xs_map[m + 1] = { block_ids = { m }, xs = xss[tostring(m)] }
-    end

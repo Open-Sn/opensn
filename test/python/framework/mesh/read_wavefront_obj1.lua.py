@@ -45,4 +45,3 @@ grid = meshgen.Execute()
     # Exports
     if master_export == None then
       mesh.ExportToPVTU("ZObjMesh")
-    end

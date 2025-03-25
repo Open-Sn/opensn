@@ -39,9 +39,8 @@ grid = meshgen.Execute()
     # Create cross sections
     xss = []
 
-    for m = 0, 6 do
+    for m in range(0, 6+1):
       xss[tostring(m)] = xs.Create()
-    end
 
     xss["0"] = xs.LoadFromOpenSn("c5g7/materials/XS_water.xs")
     xss["1"] = xs.LoadFromOpenSn("c5g7/materials/XS_UO2.xs")
@@ -56,10 +55,9 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     # Create materials
     xs_map = []
-    for m = 0, 6 do
+    for m in range(0, 6+1):
       key = tostring(m)
       xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
-    end
 
     # Angular quadrature
     pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
@@ -112,4 +110,3 @@ k_solver.Execute()
     if master_export == None then
       fflist = lbs.GetScalarFieldFunctionList(phys)
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
-    end

@@ -27,16 +27,14 @@ if __name__ == "__main__":
 
     if nmesh == None then
       nmesh = 11
-    end
 
     nodes = []
     N = nmesh
     L = 11.0
     xmin = -L / 2
     dx = L / N
-    for i = 1, (N + 1) do
+    for i in range(1, (N + 1)+1):
       nodes.append(xmin + i * dx)
-    end
 
     meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen.Execute()
@@ -57,7 +55,7 @@ grid.SetupOrthogonalBoundaries()
     #
     #--========== Groups
     #grp = []
-    #for g=1,num_groups do
+    #for g in range(1, num_groups+1):
     #    grp[g] = LBSCreateGroup(phys)
     #end
     #
@@ -81,7 +79,7 @@ grid.SetupOrthogonalBoundaries()
     #
     #-- Add point source
     #src=[]
-    #for g=1,num_groups do
+    #for g in range(1, num_groups+1):
     #    src[g] = 0.0
     #end
     #src[1] = 1.0
@@ -97,9 +95,8 @@ grid.SetupOrthogonalBoundaries()
 
     # Add point source
     src = []
-    for g = 1, num_groups do
+    for g in range(1, num_groups+1):
       src[g] = 0.0
-    end
     src[1] = 1.0
     pt_src = lbs.PointSource.Create({
       location = { 0.0, 0.0, 0.0 },
@@ -146,4 +143,3 @@ ss_solver.Execute()
     MPIBarrier()
     if location_id == 0 then
 os.system("rm SimTest_93*")
-    end
