@@ -95,7 +95,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       boundary_conditions = {
         { name = "xmin", type = "isotropic", group_strength = bsrc },
       },
-      scattering_order = 1,
+      "scattering_order": 1,
       volumetric_sources = { mg_src },
     ]
     if reflecting then

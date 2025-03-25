@@ -99,7 +99,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     ]
 
     lbs_options = [
-      scattering_order = 0,
+      "scattering_order": 0,
       verbose_ags_iterations = True,
       max_ags_iterations = 30,
       ags_tolerance = 1.0e-6,

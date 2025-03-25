@@ -83,7 +83,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
           { name = "xmin", type = "reflecting" },
           { name = "ymin", type = "reflecting" },
         },
-        scattering_order = 1,
+        "scattering_order": 1,
         verbose_outer_iterations = True,
         verbose_inner_iterations = True,
         power_field_function_on = True,

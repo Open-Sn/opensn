@@ -72,7 +72,7 @@ grid = meshgen.Execute()
         { "block_ids": [ 0 ], "xs": xs_hdpe },
       ],
       options = {
-        scattering_order = 0,
+        "scattering_order": 0,
         spatial_discretization = "pwld",
         save_angular_flux = True,
         boundary_conditions = {

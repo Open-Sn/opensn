@@ -51,7 +51,7 @@ if __name__ == "__main__":
           { name = "xmin", type = "reflecting" },
           { name = "ymin", type = "reflecting" },
         },
-        scattering_order = 2,
+        "scattering_order": 2,
 
         use_precursors = False,
 

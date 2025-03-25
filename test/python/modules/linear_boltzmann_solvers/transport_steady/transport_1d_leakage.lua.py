@@ -84,7 +84,7 @@ grid = meshgen.Execute()
           group_strength = bsrc,
         },
       },
-      scattering_order = 0,
+      "scattering_order": 0,
       save_angular_flux = True,
     ]
 

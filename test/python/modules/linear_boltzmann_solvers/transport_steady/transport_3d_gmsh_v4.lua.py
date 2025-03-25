@@ -54,7 +54,7 @@ grid = meshgen.Execute()
         { name = "xmin", type = "reflecting" },
         { name = "ymin", type = "reflecting" },
       },
-      scattering_order = 0,
+      "scattering_order": 0,
       volumetric_sources = { mg_src },
     ]
 

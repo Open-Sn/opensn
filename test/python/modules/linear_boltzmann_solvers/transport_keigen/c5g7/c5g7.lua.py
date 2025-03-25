@@ -61,7 +61,7 @@ if __name__ == "__main__":
           { name = "xmin", type = "reflecting" },
           { name = "ymin", type = "reflecting" },
         },
-        scattering_order = 1,
+        "scattering_order": 1,
         verbose_outer_iterations = True,
         verbose_inner_iterations = True,
         power_field_function_on = True,

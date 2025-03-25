@@ -123,7 +123,7 @@ grid.SetupOrthogonalBoundaries()
         { "block_ids": [ 0 ], "xs": xs1g },
       ],
       options = {
-        scattering_order = 0,
+        "scattering_order": 0,
         point_sources = { pt_src },
         field_function_prefix = solver_name,
       },

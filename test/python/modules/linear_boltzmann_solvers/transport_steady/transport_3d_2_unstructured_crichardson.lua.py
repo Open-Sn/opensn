@@ -96,7 +96,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       boundary_conditions = {
         { name = "zmin", type = "isotropic", group_strength = bsrc },
       },
-      scattering_order = 1,
+      "scattering_order": 1,
       save_angular_flux = True,
       volumetric_sources = { mg_src1, mg_src2 },
     ]

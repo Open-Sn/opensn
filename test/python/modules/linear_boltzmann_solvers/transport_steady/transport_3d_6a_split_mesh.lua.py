@@ -112,7 +112,7 @@ grid = meshgen.Execute()
       boundary_conditions = {
         { name = "xmin", type = "isotropic", group_strength = bsrc },
       },
-      scattering_order = 1,
+      "scattering_order": 1,
       save_angular_flux = True,
       volumetric_sources = { mg_src },
     ]

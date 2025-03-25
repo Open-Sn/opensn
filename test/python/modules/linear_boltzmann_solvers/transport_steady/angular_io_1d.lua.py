@@ -86,7 +86,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       },
       xs_map = xs_map,
       options = {
-        scattering_order = 0,
+        "scattering_order": 0,
         spatial_discretization = "pwld",
         boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
         save_angular_flux = True,

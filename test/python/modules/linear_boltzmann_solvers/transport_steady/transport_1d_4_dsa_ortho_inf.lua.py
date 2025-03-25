@@ -101,7 +101,7 @@ grid = meshgen.Execute()
     ]
 
     lbs_options = [
-      scattering_order = 1,
+      "scattering_order": 1,
       volumetric_sources = { mg_src },
     ]
 
