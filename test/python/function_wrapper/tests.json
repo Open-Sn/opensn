@@ -1,0 +1,17 @@
+[
+  {
+    "comment": "Test C function wrapping",
+    "file": "function_wrapper.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Hello from a C function"
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  }
+]

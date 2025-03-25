@@ -1,0 +1,37 @@
+[
+  {
+    "file" : "params_test_00.lua", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "GoldFile", "scope_keyword" : "GOLD"
+      }
+    ]
+  },
+  {
+    "file" : "params_test_01a.lua", "num_procs" : 1, "checks" :
+    [
+      { "type" : "StrCompare", "key" : "**WARNING** Parameter \"limiter_type\"" },
+      { "type" : "StrCompare", "key" : "**!**ERROR**!** Parameter \"scheme\" has been deprecated." }
+    ]
+  },
+  {
+    "file" : "params_test_01b.lua", "num_procs" : 1, "checks" :
+    [
+      { "type" : "StrCompare", "key" : "TestSubObject created num_groups=99" },
+      { "type" : "StrCompare", "key" : "**!**ERROR**!** Parameter \"format\" has been deprecated." }
+    ]
+  },
+  {
+    "file" : "params_test_01c.lua", "num_procs" : 1, "checks" :
+    [
+      { "type" : "StrCompare", "key" : "**!**ERROR**!** Invalid param \"use_my_stuff\" supplied." },
+      { "type" : "StrCompare", "key" : "The parameter has been renamed. Renamed to \"use_zaks_stuff\"." }
+    ]
+  },
+  {
+    "file" : "params_test_01d.lua", "num_procs" : 1, "checks" :
+    [
+      { "type" : "StrCompare", "key" : "**!**ERROR**!** Invalid param \"use_ragusas_stuff\" supplied. The parameter has been renamed. Renamed to \"use_complicated_stuff\"." }
+    ]
+  }
+]
