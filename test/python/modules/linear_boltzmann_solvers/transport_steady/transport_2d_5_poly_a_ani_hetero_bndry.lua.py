@@ -156,7 +156,7 @@ ss_solver.Execute()
 
     #-- Volume integrations
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)
@@ -170,7 +170,7 @@ maxval = curffi.GetValue()
     print(f"Max-value1={maxval:.5f}")
 
     #-- Volume integrations
-    #ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    #ffi1 = FieldFunctionInterpolationVolume()
     #curffi = ffi1
     #fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
     #fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)

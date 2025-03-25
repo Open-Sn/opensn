@@ -90,7 +90,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     fflist = GetScalarFieldFunctionList(phys)
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)

@@ -132,7 +132,7 @@ ss_solver.Execute()
     #end
 
     # Volume integrations
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)
@@ -145,7 +145,7 @@ maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value1={maxval:.5e}")
 
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)

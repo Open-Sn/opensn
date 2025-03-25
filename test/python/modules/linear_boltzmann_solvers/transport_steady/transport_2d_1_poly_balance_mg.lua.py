@@ -116,7 +116,7 @@ phys.ComputeBalance()
     fflist = GetScalarFieldFunctionList(phys)
 
     # Volume integrations
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)
@@ -130,7 +130,7 @@ maxval = curffi.GetValue()
     print(f"Max-value1={maxval:.5f}")
 
     # Volume integrations
-    ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+    ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
 curffi.SetOperationType(OP_MAX)
 curffi.SetLogicalVolume(vol0)
