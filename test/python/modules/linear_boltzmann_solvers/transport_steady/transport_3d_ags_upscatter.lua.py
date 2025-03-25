@@ -42,8 +42,8 @@ if __name__ == "__main__":
       partitioner = KBAGraphPartitioner(
         nx = 2,
         ny = 2,
-        xcuts = { 0.0 },
-        ycuts = { 0.0 },
+        xcuts = [ 0.0 ],
+        ycuts = [ 0.0 ],
       ),
     )
 grid = meshgen.Execute()

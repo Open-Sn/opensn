@@ -43,8 +43,8 @@ if __name__ == "__main__":
         nx = 2,
         ny = 2,
         nz = 1,
-        xcuts = { 0.0 },
-        ycuts = { 0.0 },
+        xcuts = [ 0.0 ],
+        ycuts = [ 0.0 ],
       ),
     )
 grid = meshgen.Execute()
