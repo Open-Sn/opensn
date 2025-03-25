@@ -98,7 +98,7 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
     # DFEM solver
     phys = diffusion.DFEMDiffusionSolver(
-      name = "DFEMDiffusionSolver",
+      "name": "DFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-8,
     )

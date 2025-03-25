@@ -89,7 +89,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     lbs_options = [
       boundary_conditions = {
         {
-          name = "xmin",
+          "name": "xmin",
           type = "isotropic",
           group_strength = bsrc,
         },

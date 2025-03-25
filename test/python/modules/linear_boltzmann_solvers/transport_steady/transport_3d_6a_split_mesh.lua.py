@@ -110,7 +110,7 @@ grid = meshgen.Execute()
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = [
       boundary_conditions = {
-        { name = "xmin", type = "isotropic", group_strength = bsrc },
+        { "name": "xmin", type = "isotropic", group_strength = bsrc },
       },
       "scattering_order": 1,
       "save_angular_flux": True,
@@ -130,13 +130,13 @@ ss_solver.Execute()
     fflist = GetScalarFieldFunctionList(phys)
 
     pp1 = post.CellVolumeIntegralPostProcessor(
-      name = "max-grp0",
+      "name": "max-grp0",
       field_function = fflist[1],
       compute_volume_average = True,
       print_numeric_format = "scientific",
     )
     pp2 = post.CellVolumeIntegralPostProcessor(
-      name = "max-grp19",
+      "name": "max-grp19",
       field_function = fflist[20],
       compute_volume_average = True,
       print_numeric_format = "scientific",

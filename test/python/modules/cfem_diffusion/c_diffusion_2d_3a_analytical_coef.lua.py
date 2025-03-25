@@ -98,7 +98,7 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
     # CFEM solver
     phys = diffusion.CFEMDiffusionSolver(
-      name = "CFEMDiffusionSolver",
+      "name": "CFEMDiffusionSolver",
       mesh = grid,
       residual_tolerance = 1e-6,
     )
@@ -121,7 +121,7 @@ fflist = phys.GetFieldFunctions()
 
     # PostProcessors
     maxval = post.AggregateNodalValuePostProcessor(
-      name = "maxval",
+      "name": "maxval",
       field_function = fflist[1],
       operation = "max",
     )

@@ -107,7 +107,7 @@ grid.SetupOrthogonalBoundaries()
     solver_name = "LBS"
     pquad = GLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
     lbs_block = [
-      name = solver_name,
+      "name": solver_name,
       mesh = grid,
       num_groups = num_groups,
       groupsets = {

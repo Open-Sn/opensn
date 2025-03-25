@@ -53,8 +53,8 @@ if __name__ == "__main__":
 
     lbs_options = [
       boundary_conditions = {
-        { name = "xmin", type = "reflecting" },
-        { name = "ymin", type = "reflecting" },
+        { "name": "xmin", type = "reflecting" },
+        { "name": "ymin", type = "reflecting" },
       },
       "scattering_order": 2,
 

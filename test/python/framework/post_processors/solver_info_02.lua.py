@@ -34,15 +34,15 @@ if __name__ == "__main__":
     pp = []
     for k in range(1, 20+1):
       pp[k] = post.SolverInfoPostProcessor(
-        name = "neutron_population" + tostring(k),
+        "name": "neutron_population" + tostring(k),
         solver = phys0,
-        info = { name = "neutron_population" },
+        info = { "name": "neutron_population" },
         print_on = { "" },
       )
     pp21 = post.SolverInfoPostProcessor(
-      name = "neutron_population" + tostring(21),
+      "name": "neutron_population" + tostring(21),
       solver = phys0,
-      info = { name = "neutron_population" },
+      info = { "name": "neutron_population" },
       print_on = { "" },
     )
 
