@@ -82,7 +82,7 @@ grid = meshgen.Execute()
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src = VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(8, 8)

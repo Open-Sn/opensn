@@ -47,7 +47,7 @@ grid = meshgen.Execute()
 
     strength = []
     strength[1] = 1.0
-    mg_src = VolumetricSource( block_ids = { 0 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
 
     # Angular Quadrature
     pquad = GLCProductQuadrature3DXYZ(4, 8)

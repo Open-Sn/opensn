@@ -47,7 +47,7 @@ grid = meshgen.Execute()
     for g in range(1, Ng+1):
       strength[g] = 0.0
     strength[1] = 100.0
-    mg_src = VolumetricSource( block_ids = { 1 }, group_strength = strength )
+    mg_src = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     lbs_options = [
       boundary_conditions = {

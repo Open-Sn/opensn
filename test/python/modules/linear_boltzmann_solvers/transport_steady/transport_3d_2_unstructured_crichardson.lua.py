@@ -64,8 +64,8 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     strength = []
     for g in range(1, num_groups+1):
       strength[g] = 0.0
-    mg_src1 = VolumetricSource( block_ids = { 1 }, group_strength = strength )
-    mg_src2 = VolumetricSource( block_ids = { 2 }, group_strength = strength )
+    mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
+    mg_src2 = VolumetricSource( block_ids = [ 2 ], group_strength = strength )
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)

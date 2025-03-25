@@ -63,8 +63,8 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       }
 
     # Create sources in 1st and 4th materials
-    mg_src0 = VolumetricSource( block_ids = { 0 }, group_strength = { 50. } )
-    mg_src1 = VolumetricSource( block_ids = { 3 }, group_strength = { 1. } )
+    mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = { 50. } )
+    mg_src1 = VolumetricSource( block_ids = [ 3 ], group_strength = { 1. } )
 
     # Angular Quadrature
     gl_quad = GLProductQuadrature1DSlab(128)
