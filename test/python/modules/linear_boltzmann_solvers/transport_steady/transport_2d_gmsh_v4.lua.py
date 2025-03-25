@@ -98,4 +98,5 @@ curffi.AddFieldFunction(fflist[1])
 curffi.Initialize()
 curffi.Execute()
 maxval = curffi.GetValue()
-    log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
+    if rank == 0:
+    print(f"Max-value1={maxval:.5f}")

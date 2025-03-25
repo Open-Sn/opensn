@@ -143,4 +143,5 @@ ffvol.Initialize(ffvol)
 ffvol.Execute(ffvol)
 maxval = ffvol.GetValue()
 
-    log.Log(LOG_0, string.format("Max-value=%.6f", maxval))
+    if rank == 0:
+    print(f"Max-value={maxval:.6f}")

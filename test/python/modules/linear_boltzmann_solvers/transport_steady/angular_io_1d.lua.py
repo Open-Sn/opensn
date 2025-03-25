@@ -121,7 +121,9 @@ ss_solver_2.Initialize()
     leakage_left_diff = leakage_left_1 - leakage_left_2
     leakage_right_diff = leakage_right_1 - leakage_right_2
 
-    log.Log(LOG_0, string.format("Leakage-Diff1=%.5e", leakage_left_diff))
-    log.Log(LOG_0, string.format("Leakage-Diff2=%.5e", leakage_right_diff))
+    if rank == 0:
+    print(f"Leakage-Diff1={leakage_left_diff:.5e}")
+    if rank == 0:
+    print(f"Leakage-Diff2={leakage_right_diff:.5e}")
 
 os.system("rm angular_io0.h5")

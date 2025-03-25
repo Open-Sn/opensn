@@ -128,7 +128,8 @@ curffi.Initialize()
 curffi.Execute()
 maxval = curffi.GetValue()
 
-    log.Log(LOG_0, string.format("Max-value1=%.5e", maxval))
+    if rank == 0:
+    print(f"Max-value1={maxval:.5e}")
 
     ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
     curffi = ffi1
@@ -140,4 +141,5 @@ curffi.Initialize()
 curffi.Execute()
 maxval = curffi.GetValue()
 
-    log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
+    if rank == 0:
+    print(f"Max-value2={maxval:.5e}")

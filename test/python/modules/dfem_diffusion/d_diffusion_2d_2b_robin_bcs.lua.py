@@ -135,4 +135,5 @@ ffvol.Initialize(ffvol)
 ffvol.Execute(ffvol)
 avgval = ffvol.GetValue()
 
-    log.Log(LOG_0, string.format("Avg-value=%.6f", avgval))
+    if rank == 0:
+    print(f"Avg-value={avgval:.6f}")

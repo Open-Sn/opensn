@@ -95,4 +95,5 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
     fieldfunc.Execute(ffvol)
     maxval = fieldfunc.GetValue(ffvol)
 
-    log.Log(LOG_0, string.format("Max-value=%.6f", maxval))
+    if rank == 0:
+    print(f"Max-value={maxval:.6f}")
