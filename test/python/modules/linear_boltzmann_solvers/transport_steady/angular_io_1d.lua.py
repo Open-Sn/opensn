@@ -98,7 +98,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
+    ss_solver = SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
@@ -110,7 +110,7 @@ ss_solver.Execute()
 
     phys2 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
-    ss_solver_2 = lbs.SteadyStateSolver( lbs_solver = phys2 )
+    ss_solver_2 = SteadyStateSolver( lbs_solver = phys2 )
 
 ss_solver_2.Initialize()
 

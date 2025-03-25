@@ -124,7 +124,7 @@ grid = meshgen.Execute()
 phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
-    ss_solver = lbs.SteadyStateSolver( lbs_solver = phys )
+    ss_solver = SteadyStateSolver( lbs_solver = phys )
 
 ss_solver.Initialize()
 ss_solver.Execute()
