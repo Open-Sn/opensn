@@ -55,7 +55,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     num_groups = 3
     xs_upscatter = xs.LoadFromOpenSn("simple_upscatter.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 1.0
     end

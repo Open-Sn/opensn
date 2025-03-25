@@ -65,7 +65,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -116,7 +116,7 @@ ss_solver.Execute()
     fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Slice plot
-    #slices = {}
+    #slices = []
     #for k=1,count do
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
     #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})

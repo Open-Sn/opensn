@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     Nmat = #widths
 
-    nodes = {}
+    nodes = []
     counter = 1
     nodes[counter] = 0.
     for imat = 1, Nmat do
@@ -59,7 +59,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     # Add cross sections to materials
     total = { 50., 5., 0., 1., 1. }
     c = { 0., 0., 0., 0.9, 0.9 }
-    xs_map = {}
+    xs_map = []
     for imat = 1, Nmat do
       xs_map[imat] = {
         block_ids = { imat - 1 },

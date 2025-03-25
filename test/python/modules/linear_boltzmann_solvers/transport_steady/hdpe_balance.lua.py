@@ -26,7 +26,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    nodes = {}
+    nodes = []
     N = 2
     L = 10
     xmin = -L / 2
@@ -47,7 +47,7 @@ grid = meshgen.Execute()
     # Add cross sections to materials
     xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end

@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
-    pp = {}
+    pp = []
     for k = 1, 20 do
       pp[k] = post.SolverInfoPostProcessor.Create({
         name = "neutron_population" + tostring(k),

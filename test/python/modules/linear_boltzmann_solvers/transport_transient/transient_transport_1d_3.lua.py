@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 2000
     L = 100.0
     xmin = -L / 2
@@ -53,7 +53,7 @@ grid = meshgen.Execute()
 grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     # Add materials
-    materials = {}
+    materials = []
     materials[1] = mat.AddMaterial("Strong fuel")
     materials[2] = mat.AddMaterial("Weak fuel")
 
@@ -86,7 +86,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
     phys = LBSCreateTransientSolver()
 
     #========== Groups
-    grp = {}
+    grp = []
     for g = 1, num_groups do
       grp[g] = LBSCreateGroup(phys)
     end
@@ -111,7 +111,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
 
     #
     #-- Set boundary conditions
-    #bsrc={}
+    #bsrc=[]
     #for g=1,num_groups do
     #    bsrc[g] = 0.0
     #end

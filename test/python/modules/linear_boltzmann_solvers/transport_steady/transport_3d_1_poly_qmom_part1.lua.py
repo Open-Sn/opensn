@@ -65,7 +65,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end

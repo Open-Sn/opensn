@@ -69,7 +69,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     num_groups = 1
     xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.5
     end
@@ -97,7 +97,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         { block_ids = { 0, 1 }, xs = xs_1g },
       },
     }
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end

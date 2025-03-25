@@ -56,7 +56,7 @@ grid = meshgen.Execute()
     num_groups = 168
     xs_3_170 = xs.LoadFromOpenSn("xs_3_170.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -91,7 +91,7 @@ grid = meshgen.Execute()
         { block_ids = { 0 }, xs = xs_3_170 },
       },
     }
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end

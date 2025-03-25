@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # ##################################################
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     dx = L / n_cells
     for i = 0, n_cells do
       nodes[i + 1] = i * dx

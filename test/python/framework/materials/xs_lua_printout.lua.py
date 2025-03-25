@@ -43,7 +43,7 @@ if __name__ == "__main__":
     end
 
     # Create cross sections
-    my_xs = {}
+    my_xs = []
 
     my_xs["fuel"] = xs.LoadFromOpenMC(
       "+/+/modules/linear_boltzmann_solvers/transport_keigen/u235_172g.h5",

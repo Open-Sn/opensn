@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    nodes = {}
+    nodes = []
     N = 100
     L = 2.0
     xmin = -L / 2

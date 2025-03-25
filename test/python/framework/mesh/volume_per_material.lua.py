@@ -31,7 +31,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # ############################################### Setup mesh
-    nodes = {}
+    nodes = []
     N = 20
     L = 5.
     xmin = -L / 2

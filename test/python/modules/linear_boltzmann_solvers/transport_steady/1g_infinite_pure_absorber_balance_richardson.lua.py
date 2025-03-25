@@ -26,7 +26,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    nodes = {}
+    nodes = []
     N = 2
     L = 10
     xmin = -L / 2
@@ -47,7 +47,7 @@ grid = meshgen.Execute()
     # Add cross sections to materials
     xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
 
-    strength = {}
+    strength = []
     strength[1] = 1.0
     mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 

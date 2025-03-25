@@ -31,7 +31,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 20
     L = 5
     xmin = -L / 2
@@ -53,7 +53,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     num_groups = 1
     xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end

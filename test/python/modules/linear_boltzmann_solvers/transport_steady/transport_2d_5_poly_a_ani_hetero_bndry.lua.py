@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 40
     L = 10.0
     xmin = -L / 2
@@ -52,7 +52,7 @@ grid = meshgen.Execute()
     num_groups = 1
     xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -106,7 +106,7 @@ grid = meshgen.Execute()
     )
       num_angles = rawlen(quadrature_angle_vectors)
       num_groups = rawlen(group_indices)
-      psi = {}
+      psi = []
       dof_count = 0
 
       for ni = 1, num_angles do

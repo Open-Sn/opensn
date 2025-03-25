@@ -44,7 +44,7 @@ if __name__ == "__main__":
     Ly = 10.0
     Lz = 10.0
 
-    xmesh = {}
+    xmesh = []
     xmin = 0.0
     dx = Lx / Nx
     for i = 1, (Nx + 1) do
@@ -52,7 +52,7 @@ if __name__ == "__main__":
       xmesh[i] = xmin + k * dx
     end
 
-    ymesh = {}
+    ymesh = []
     ymin = 0.0
     dy = Ly / Ny
     for i = 1, (Ny + 1) do
@@ -60,7 +60,7 @@ if __name__ == "__main__":
       ymesh[i] = ymin + k * dy
     end
 
-    zmesh = {}
+    zmesh = []
     zmin = 0.0
     dz = Lz / Nz
     for i = 1, (Nz + 1) do
@@ -81,7 +81,7 @@ grid = meshgen.Execute()
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -110,7 +110,7 @@ grid = meshgen.Execute()
       },
       sweep_type = "CBC",
     }
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end

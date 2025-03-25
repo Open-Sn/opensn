@@ -37,7 +37,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Create cross sections
-    xss = {}
+    xss = []
 
     for m = 0, 6 do
       xss[tostring(m)] = xs.Create()
@@ -55,7 +55,7 @@ grid = meshgen.Execute()
 log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     # Create materials
-    xs_map = {}
+    xs_map = []
     for m = 0, 6 do
       key = tostring(m)
       xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }

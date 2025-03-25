@@ -32,7 +32,7 @@ test for boolean operations on logical volumes.
     #]]
 
     # set up orthogonal 3D geometry
-    nodes = {}
+    nodes = []
     N = 40
     L = 5
     xmin = -L / 2

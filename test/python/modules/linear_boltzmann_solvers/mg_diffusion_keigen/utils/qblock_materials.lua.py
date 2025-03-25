@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    xss = {}
+    xss = []
 
     xss["0"] = xs.LoadFromOpenSn("+/transport_keigen/xs_water_g2.xs")
     xss["1"] = xs.LoadFromOpenSn("+/transport_keigen/xs_fuel_g2.xs")

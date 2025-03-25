@@ -34,13 +34,13 @@ if __name__ == "__main__":
 
     # Setup mesh
     Nxy = 32
-    nodesxy = {}
+    nodesxy = []
     dxy = 2 / Nxy
     dz = 1.6 / 8
     for i = 0, Nxy do
       nodesxy[i + 1] = -1.0 + i * dxy
     end
-    nodesz = {}
+    nodesz = []
     for k = 0, 8 do
       nodesz[k + 1] = 0.0 + k * dz
     end
@@ -66,7 +66,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -95,7 +95,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
         { block_ids = { 0, 1 }, xs = xs_graphite },
       },
     }
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end

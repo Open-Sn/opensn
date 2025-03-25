@@ -36,7 +36,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 10
     L = 5.0
     xmin = -L / 2
@@ -45,7 +45,7 @@ if __name__ == "__main__":
       k = i - 1
       nodes[i] = xmin + k * dx
     end
-    znodes = {}
+    znodes = []
     for i = 1, (N / 2 + 1) do
       k = i - 1
       znodes[i] = xmin + k * dx
@@ -65,7 +65,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     num_groups = 21
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end
@@ -93,7 +93,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
         { block_ids = { 0, 1 }, xs = xs_graphite },
       },
     }
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end
@@ -122,7 +122,7 @@ ss_solver.Execute()
     fflist = lbs.GetScalarFieldFunctionList(phys)
 
     # Slice plot
-    #slices = {}
+    #slices = []
     #for k=1,count do
     #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
     #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})

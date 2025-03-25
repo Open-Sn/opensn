@@ -29,7 +29,7 @@ if __name__ == "__main__":
       nmesh = 10
     end
 
-    nodes = {}
+    nodes = []
     N = nmesh
     L = 2.0
     xmin = -L / 2

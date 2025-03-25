@@ -29,7 +29,7 @@ if __name__ == "__main__":
       nmesh = 11
     end
 
-    nodes = {}
+    nodes = []
     N = nmesh
     L = 11.0
     xmin = -L / 2
@@ -57,7 +57,7 @@ grid.SetupOrthogonalBoundaries()
     #phys = LBSCreateSolver(solver_name)
     #
     #--========== Groups
-    #grp = {}
+    #grp = []
     #for g=1,num_groups do
     #    grp[g] = LBSCreateGroup(phys)
     #end
@@ -81,7 +81,7 @@ grid.SetupOrthogonalBoundaries()
     #-- Set boundary conditions
     #
     #-- Add point source
-    #src={}
+    #src=[]
     #for g=1,num_groups do
     #    src[g] = 0.0
     #end
@@ -97,7 +97,7 @@ grid.SetupOrthogonalBoundaries()
     #solver.Execute(phys)
 
     # Add point source
-    src = {}
+    src = []
     for g = 1, num_groups do
       src[g] = 0.0
     end

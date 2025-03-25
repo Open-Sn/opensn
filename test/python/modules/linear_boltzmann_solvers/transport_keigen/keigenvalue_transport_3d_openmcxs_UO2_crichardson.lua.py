@@ -39,7 +39,7 @@ if __name__ == "__main__":
     Lz = 2.0
 
     # Mesh
-    xmesh = {}
+    xmesh = []
     xmin = 0.0
     dx = Lx / Nx
     for i = 1, (Nx + 1) do
@@ -47,7 +47,7 @@ if __name__ == "__main__":
       xmesh[i] = xmin + k * dx
     end
 
-    ymesh = {}
+    ymesh = []
     ymin = 0.0
     dy = Ly / Ny
     for i = 1, (Ny + 1) do
@@ -55,7 +55,7 @@ if __name__ == "__main__":
       ymesh[i] = ymin + k * dy
     end
 
-    zmesh = {}
+    zmesh = []
     zmin = 0.0
     dz = Lz / Nz
     for i = 1, (Nz + 1) do

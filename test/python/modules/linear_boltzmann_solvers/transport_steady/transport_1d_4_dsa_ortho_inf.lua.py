@@ -34,7 +34,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 1
     L = 1e6
     #N=10
@@ -57,7 +57,7 @@ grid = meshgen.Execute()
     xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
     xs_air = xs.LoadFromOpenSn("xs_air50RH.xs")
 
-    strength = {}
+    strength = []
     for g = 1, num_groups do
       strength[g] = 0.0
     end

@@ -25,7 +25,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    xss = {}
+    xss = []
 
     for m = 0, 6 do
       xss[tostring(m)] = xs.Create()
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     num_groups = xss["0"].num_groups
 log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
-    xs_map = {}
+    xs_map = []
     for m = 0, 6 do
       xs_map[m + 1] = { block_ids = { m }, xs = xss[tostring(m)] }
     end

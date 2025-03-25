@@ -26,7 +26,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
 
-    nodes = {}
+    nodes = []
     N = 50
     L = 5.0
     xmin = -L / 2
@@ -57,7 +57,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 10, True)
     # assign mat ID 11 to lv of RPP
 grid.SetBlockIDFromLogicalVolume(vol1, 11, True)
     # create a logical volume as the interior of a skin mesh
-    surfmesh = mesh.SurfaceMesh.Create({})
+    surfmesh = mesh.SurfaceMesh.Create([])
 surfmesh.ImportFromOBJFile("./cube_with_normals.obj", False, Vector3(0, 0, 0))
     lv_skinmesh = logvol.SurfaceMeshLogicalVolume.Create({ surface_mesh = surfmesh })
     # assign mat ID 15 to lv of skin mesh

@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
 
     local function split_string(input, separator)
-      local result = {}
+      local result = []
 for value in input.gmatch("[^" + separator + "]+") do
         table.insert(result, value)
       end
@@ -39,7 +39,7 @@ log.Log(LOG_0, string.format("\nReading . %s", quad_points))
       if file then
 for line in file.lines() do
           local values = split_string(line, " ")
-          local float_values = {}
+          local float_values = []
           weight_sum = weight_sum + tonumber(values[4])
         end
 file.close()

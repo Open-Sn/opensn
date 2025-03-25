@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # Setup mesh
     N = 100
     L = 1.0
-    nodes = {}
+    nodes = []
     for i = 1, (N + 1) do
       k = i - 1
       nodes[i] = (i - 1) * L / N
@@ -73,7 +73,7 @@ grid = meshgen.Execute()
       },
     }
 
-    bsrc = {}
+    bsrc = []
     for g = 1, num_groups do
       bsrc[g] = 0.0
     end
@@ -101,7 +101,7 @@ ss_solver.Initialize()
 ss_solver.Execute()
 
     # Compute the leakage
-    leakage = lbs.ComputeLeakage(phys, {})
+    leakage = lbs.ComputeLeakage(phys, [])
     for k, v in pairs(leakage) do
       log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
     end

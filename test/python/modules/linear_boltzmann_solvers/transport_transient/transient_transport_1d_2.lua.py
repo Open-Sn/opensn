@@ -33,7 +33,7 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Setup mesh
-    nodes = {}
+    nodes = []
     N = 4
     L = 100.0
     xmin = 0.0
@@ -50,7 +50,7 @@ grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 
     # Add materials
-    materials = {}
+    materials = []
     materials[1] = mat.AddMaterial("Test Material")
 
     # Define microscopic cross sections
@@ -73,7 +73,7 @@ grid = meshgen.Execute()
     phys = LBSCreateTransientSolver()
 
     #========== Groups
-    grp = {}
+    grp = []
     for g = 1, num_groups do
       grp[g] = LBSCreateGroup(phys)
     end
@@ -97,7 +97,7 @@ grid = meshgen.Execute()
 
     #
     #-- Set boundary conditions
-    #bsrc={}
+    #bsrc=[]
     #for g=1,num_groups do
     #    bsrc[g] = 0.0
     #end
