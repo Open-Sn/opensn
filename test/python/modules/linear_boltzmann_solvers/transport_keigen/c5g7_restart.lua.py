@@ -1,6 +1,6 @@
---- Final k-eigenvalue    :         1.1925596 (265)
+#- Final k-eigenvalue    :         1.1925596 (265)
 
--- Setup mesh
+# Setup mesh
 
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
@@ -11,7 +11,7 @@ meshgen1 = mesh.MeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Create cross sections
+# Create cross sections
 xss = {}
 
 for m = 0, 6 do
@@ -27,19 +27,19 @@ xss["5"] = xs.LoadFromOpenSn("c5g7/materials/XS_8_7pMOX.xs")
 xss["6"] = xs.LoadFromOpenSn("c5g7/materials/XS_fission_chamber.xs")
 
 num_groups = xss["0"].num_groups
-log.Log(LOG_0, "Num groups: " .. tostring(num_groups))
+log.Log(LOG_0, "Num groups: " + tostring(num_groups))
 
--- Create materials
+# Create materials
 xs_map = {}
 for m = 0, 6 do
   key = tostring(m)
   xs_map[m + 1] = { block_ids = { m }, xs = xss[key] }
 end
 
--- Angular quadrature
+# Angular quadrature
 pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
--- Solver
+# Solver
 phys1 = lbs.DiscreteOrdinatesSolver.Create({
   mesh = grid,
   num_groups = num_groups,
@@ -61,22 +61,22 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
       { name = "ymin", type = "reflecting" },
     },
     scattering_order = 1,
-    verbose_outer_iterations = true,
-    verbose_inner_iterations = true,
-    power_field_function_on = true,
+    verbose_outer_iterations = True,
+    verbose_inner_iterations = True,
+    power_field_function_on = True,
     power_default_kappa = 1.0,
     power_normalization = 1.0,
-    save_angular_flux = true,
-    --restart_writes_enabled = true,
-    --write_delayed_psi_to_restart = true,
-    --write_restart_time_interval = 60,
-    --write_restart_path = "c5g7_restart/c5g7",
+    save_angular_flux = True,
+    #restart_writes_enabled = True,
+    #write_delayed_psi_to_restart = True,
+    #write_restart_time_interval = 60,
+    #write_restart_path = "c5g7_restart/c5g7",
     read_restart_path = "c5g7_restart/c5g7",
   },
   sweep_type = "CBC",
 })
 
--- Execute Solver
+# Execute Solver
 k_solver = lbs.PowerIterationKEigen.Create({
   lbs_solver = phys1,
   k_tol = 1.0e-8,
@@ -84,7 +84,7 @@ k_solver = lbs.PowerIterationKEigen.Create({
 k_solver:Initialize()
 k_solver:Execute()
 
-if master_export == nil then
+if master_export == None then
   fflist = lbs.GetScalarFieldFunctionList(phys1)
   fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
 end

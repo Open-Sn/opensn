@@ -1,21 +1,21 @@
--- Post-Processor test with lots of post-processors
--- Testing table wrapping and getting the value of a post-processor by both
--- handle and name
+# Post-Processor test with lots of post-processors
+# Testing table wrapping and getting the value of a post-processor by both
+# handle and name
 
--- Example Point-Reactor Kinetics solver
+# Example Point-Reactor Kinetics solver
 phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
 pp = {}
 for k = 1, 20 do
   pp[k] = post.SolverInfoPostProcessor.Create({
-    name = "neutron_population" .. tostring(k),
+    name = "neutron_population" + tostring(k),
     solver = phys0,
     info = { name = "neutron_population" },
     print_on = { "" },
   })
 end
 pp21 = post.SolverInfoPostProcessor.Create({
-  name = "neutron_population" .. tostring(21),
+  name = "neutron_population" + tostring(21),
   solver = phys0,
   info = { name = "neutron_population" },
   print_on = { "" },

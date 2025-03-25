@@ -1,5 +1,5 @@
--- Setup mesh
-if nmesh == nil then
+# Setup mesh
+if nmesh == None then
   nmesh = 10
 end
 
@@ -16,7 +16,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 unit_sim_tests.SimTest06_WDD({ mesh = grid })

@@ -1,4 +1,4 @@
--- SDM: PWLD
+# SDM: PWLD
 
 Ng = 64
 
@@ -8,14 +8,14 @@ Nazimuthal = 16
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../assets/mesh/InclusionsGmshV2.msh",
+      filename = "+/+/+/+/assets/mesh/InclusionsGmshV2.msh",
     }),
   },
 })
 grid = meshgen1:Execute()
 
--- Material
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
+# Material
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
 xs_diag = xs.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
 strength = {}
 for g = 1, Ng do
@@ -33,10 +33,10 @@ lbs_options = {
   volumetric_sources = { mg_src },
 }
 
--- Quadrature
+# Quadrature
 pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
 
--- Set up solver
+# Set up solver
 gs1 = { 0, Ng - 1 }
 lbs_block = {
   mesh = grid,
@@ -60,7 +60,7 @@ phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
--- Solve
+# Solve
 ss_solver:Initialize()
 ss_solver:Execute()
 

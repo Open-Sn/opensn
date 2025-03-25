@@ -1,10 +1,10 @@
--- 2D 2G KEigenvalue::Solver test using Power Iteration
--- Test: Final k-eigenvalue: 0.5969127
+# 2D 2G KEigenvalue::Solver test using Power Iteration
+# Test: Final k-eigenvalue: 0.5969127
 
 dofile("utils/qblock_mesh.lua")
-dofile("utils/qblock_materials.lua") --num_groups assigned here
+dofile("utils/qblock_materials.lua") #num_groups assigned here
 
--- Setup Physics
+# Setup Physics
 pquad = aquad.CreateGLCProductQuadrature2DXY(8, 16)
 
 lbs_block = {
@@ -28,29 +28,29 @@ lbs_block = {
     },
     scattering_order = 2,
 
-    use_precursors = false,
+    use_precursors = False,
 
-    verbose_inner_iterations = false,
-    verbose_outer_iterations = true,
-    save_angular_flux = true,
+    verbose_inner_iterations = False,
+    verbose_outer_iterations = True,
+    save_angular_flux = True,
   },
   sweep_type = "CBC",
 }
 
---lbs_options =
---{
---  boundary_conditions = { { name = "xmin", type = "reflecting"},
---                          { name = "ymin", type = "reflecting"} },
---  scattering_order = 2,
---
---  use_precursors = false,
---
---  verbose_inner_iterations = false,
---  verbose_outer_iterations = true,
---}
+#lbs_options =
+#{
+#  boundary_conditions = { { name = "xmin", type = "reflecting"},
+#                          { name = "ymin", type = "reflecting"} },
+#  scattering_order = 2,
+#
+#  use_precursors = False,
+#
+#  verbose_inner_iterations = False,
+#  verbose_outer_iterations = True,
+#}
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
---phys1:SetOptions(lbs_options)
+#phys1:SetOptions(lbs_options)
 
 k_solver0 = lbs.PowerIterationKEigen.Create({ lbs_solver = phys1 })
 k_solver0:Initialize()
@@ -58,6 +58,6 @@ k_solver0:Execute()
 
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
---fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
+#fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 
--- Reference value k_eff = 0.5969127
+# Reference value k_eff = 0.5969127

@@ -1,5 +1,5 @@
 block = {
-  enabled = true,
+  enabled = True,
   it_method = "gmres",
   nl_abs_tol = 1.0e-12,
   nl_max_its = 33,

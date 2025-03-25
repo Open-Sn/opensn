@@ -1,18 +1,18 @@
--- 3D 172G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
--- Test: Final k-eigenvalue: 1.5029618
+# 3D 172G KEigenvalue::Solver test using power iteration and OpenMC MGXS library
+# Test: Final k-eigenvalue: 1.5029618
 num_procs = 4
 
--- Cells
+# Cells
 Nx = 5
 Ny = 5
 Nz = 5
 
--- Dimensions
+# Dimensions
 Lx = 2.0
 Ly = 2.0
 Lz = 2.0
 
--- Mesh
+# Mesh
 xmesh = {}
 xmin = 0.0
 dx = Lx / Nx
@@ -40,12 +40,12 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { xmesh, ymesh, zmesh } })
 grid = meshgen1:Execute()
 
--- Materials
+# Materials
 
 xs_uo2 = xs.LoadFromOpenMC("uo2.h5", "set1", 294.0)
 grid:SetUniformBlockID(0)
 
--- Solver
+# Solver
 
 num_groups = 172
 lbs_block = {
@@ -75,9 +75,9 @@ lbs_options = {
     { name = "zmax", type = "reflecting" },
   },
   scattering_order = 1,
-  use_precursors = false,
-  verbose_inner_iterations = false,
-  verbose_outer_iterations = true,
+  use_precursors = False,
+  verbose_inner_iterations = False,
+  verbose_outer_iterations = True,
 }
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

@@ -1,29 +1,29 @@
--- 3D Transport test with split-mesh + 2D ortho mesh + extruded mesh.
--- SDM: PWLD
--- Test: Max-value1=6.55387e+00
---       Max-value2=1.02940e+00
+# 3D Transport test with split-mesh + 2D ortho mesh + extruded mesh.
+# SDM: PWLD
+# Test: Max-value1=6.55387e+00
+#       Max-value2=1.02940e+00
 
 num_procs = 4
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Cells
+# Cells
 div = 8
 Nx = math.floor(128 / div)
 Ny = math.floor(128 / div)
 Nz = math.floor(256 / div)
 
--- Dimensions
+# Dimensions
 Lx = 10.0
 Ly = 10.0
 Lz = 10.0
@@ -74,7 +74,7 @@ for g = 1, num_groups do
 end
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(8, 8)
 
 lbs_block = {
@@ -107,36 +107,36 @@ lbs_options = {
     { name = "xmin", type = "isotropic", group_strength = bsrc },
   },
   scattering_order = 1,
-  save_angular_flux = true,
+  save_angular_flux = True,
   volumetric_sources = { mg_src },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
 pp1 = post.CellVolumeIntegralPostProcessor.Create({
   name = "max-grp0",
   field_function = fflist[1],
-  compute_volume_average = true,
+  compute_volume_average = True,
   print_numeric_format = "scientific",
 })
 pp2 = post.CellVolumeIntegralPostProcessor.Create({
   name = "max-grp19",
   field_function = fflist[20],
-  compute_volume_average = true,
+  compute_volume_average = True,
   print_numeric_format = "scientific",
 })
 post.Execute({ pp1, pp2 })
 
-if master_export == nil then
+if master_export == None then
   fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
 end

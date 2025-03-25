@@ -9,10 +9,10 @@ unit_testsB.ChildTestObject.Create({
   num_sub_groups = 3,
 })
 
---Required parameter "format". Should create a deprecation error.
+#Required parameter "format". Should create a deprecation error.
 unit_testsB.TestObject.Create({
   solver_type = "B",
   coupled_field = "T",
   sub_obj1 = sub_obj,
-  format = true,
+  format = True,
 })

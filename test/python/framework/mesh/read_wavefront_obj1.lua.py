@@ -1,22 +1,22 @@
--- 2D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value=0.51187 and 1.42458e-03
+# 2D Transport test with Vacuum and Incident-isotropic BC.
+# SDM: PWLD
+# Test: Max-value=0.51187 and 1.42458e-03
 num_procs = 4
---Unstructured mesh
+#Unstructured mesh
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
@@ -25,7 +25,7 @@ meshgen1 = mesh.MeshGenerator.Create({
   },
 })
 grid = meshgen1:Execute()
--- Exports
-if master_export == nil then
+# Exports
+if master_export == None then
   mesh.ExportToPVTU("ZObjMesh")
 end

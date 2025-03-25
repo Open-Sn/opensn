@@ -1,35 +1,35 @@
--- 3D 2G Infinite Medium Hex import test. Imports EXODUSII.
--- Uses KEigenvalue::Solver with Power Iteration
--- Test: Final k-eigenvalue: 0.9293377
+# 3D 2G Infinite Medium Hex import test. Imports EXODUSII.
+# Uses KEigenvalue::Solver with Power Iteration
+# Test: Final k-eigenvalue: 0.9293377
 
--- Set and check number of processors
+# Set and check number of processors
 num_procs = 1
-if check_num_procs == nil and number_of_processes ~= num_procs then
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../assets/mesh/fuel_hex.e",
+      filename = "+/+/+/+/assets/mesh/fuel_hex.e",
     }),
   },
 })
 grid = mesh.MeshGenerator.Execute(meshgen1)
 
--- Set Materials (Fuel)
+# Set Materials (Fuel)
 xs_fuel_g2 = xs.LoadFromOpenSn("xs_fuel_g2.xs")
 
 num_groups = 2
--- Initialize the LBSSolver
+# Initialize the LBSSolver
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,
@@ -59,9 +59,9 @@ lbs_options = {
     { name = "zmax", type = "reflecting" },
   },
   scattering_order = 1,
-  use_precursors = false,
-  verbose_inner_iterations = false,
-  verbose_outer_iterations = true,
+  use_precursors = False,
+  verbose_inner_iterations = False,
+  verbose_outer_iterations = True,
 }
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)

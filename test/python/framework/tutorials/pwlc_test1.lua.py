@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 100
 L = 2.0
@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 unit_sim_tests.SimTest03_PWLC({ mesh = grid })

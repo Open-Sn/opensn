@@ -1,5 +1,5 @@
--- Standard Reed 1D 1-group problem
--- Create Mesh
+# Standard Reed 1D 1-group problem
+# Create Mesh
 widths = { 2., 1., 2., 1., 2. }
 nrefs = { 200, 200, 200, 200, 200 }
 
@@ -19,18 +19,18 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen:Execute(meshgen)
 
--- Set Material IDs
+# Set Material IDs
 z_min = 0.0
 z_max = widths[1]
 for imat = 1, Nmat do
   z_max = z_min + widths[imat]
-  log.Log(LOG_0, "imat=" .. imat .. ", zmin=" .. z_min .. ", zmax=" .. z_max)
-  lv = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = z_min, zmax = z_max })
-  grid:SetBlockIDFromLogicalVolume(lv, imat - 1, true)
+  log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
+  lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
+  grid:SetBlockIDFromLogicalVolume(lv, imat - 1, True)
   z_min = z_max
 end
 
--- Add cross sections to materials
+# Add cross sections to materials
 total = { 50., 5., 0., 1., 1. }
 c = { 0., 0., 0., 0.9, 0.9 }
 xs_map = {}
@@ -41,14 +41,14 @@ for imat = 1, Nmat do
   }
 end
 
--- Create sources in 1st and 4th materials
+# Create sources in 1st and 4th materials
 src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50. } })
 src1 = lbs.VolumetricSource.Create({ block_ids = { 3 }, group_strength = { 1. } })
 
--- Angular Quadrature
+# Angular Quadrature
 gl_quad = aquad.CreateGLProductQuadrature1DSlab(128)
 
--- LBS block option
+# LBS block option
 num_groups = 1
 lbs_block = {
   mesh = grid,
@@ -68,14 +68,14 @@ lbs_block = {
     scattering_order = 0,
     spatial_discretization = "pwld",
     boundary_conditions = { { name = "zmin", type = "vacuum" }, { name = "zmax", type = "vacuum" } },
-    save_angular_flux = true,
+    save_angular_flux = True,
     volumetric_sources = { src0, src1 },
   },
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
--- Initialize and execute solver
+# Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()

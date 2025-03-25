@@ -1,14 +1,14 @@
---- Final k-eigenvalue    :         1.1925596 (265)
+#- Final k-eigenvalue    :         1.1925596 (265)
 
 dofile("mesh/gmesh_coarse.lua")
 dofile("materials/materials.lua")
 
--- Setup Physics
+# Setup Physics
 
--- Angular quadrature
+# Angular quadrature
 pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
--- Solver
+# Solver
 if string.find(k_method, "scdsa") or string.find(k_method, "smm") then
   inner_linear_method = "classic_richardson"
   l_max_its = 2
@@ -38,17 +38,17 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
       { name = "ymin", type = "reflecting" },
     },
     scattering_order = 1,
-    verbose_outer_iterations = true,
-    verbose_inner_iterations = true,
-    power_field_function_on = true,
+    verbose_outer_iterations = True,
+    verbose_inner_iterations = True,
+    power_field_function_on = True,
     power_default_kappa = 1.0,
     power_normalization = 1.0,
-    save_angular_flux = true,
+    save_angular_flux = True,
   },
   sweep_type = "AAH",
 })
 
--- Execute Solver
+# Execute Solver
 if k_method == "pi" then
   k_solver = lbs.PowerIterationKEigen.Create({
     lbs_solver = phys1,
@@ -58,7 +58,7 @@ elseif k_method == "pi_scdsa" then
   k_solver = lbs.PowerIterationKEigenSCDSA.Create({
     lbs_solver = phys1,
     diff_accel_sdm = "pwld",
-    accel_pi_verbose = true,
+    accel_pi_verbose = True,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
     accel_pi_max_its = 50,
@@ -67,7 +67,7 @@ elseif k_method == "pi_scdsa_pwlc" then
   k_solver = lbs.PowerIterationKEigenSCDSA.Create({
     lbs_solver = phys1,
     diff_accel_sdm = "pwlc",
-    accel_pi_verbose = true,
+    accel_pi_verbose = True,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
     accel_pi_max_its = 50,
@@ -75,7 +75,7 @@ elseif k_method == "pi_scdsa_pwlc" then
 elseif k_method == "pi_smm" then
   k_solver = lbs.PowerIterationKEigenSMM.Create({
     lbs_solver = phys1,
-    accel_pi_verbose = true,
+    accel_pi_verbose = True,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
     accel_pi_max_its = 30,
@@ -84,7 +84,7 @@ elseif k_method == "pi_smm" then
 elseif k_method == "pi_smm_pwld" then
   k_solver = lbs.PowerIterationKEigenSMM.Create({
     lbs_solver = phys1,
-    accel_pi_verbose = true,
+    accel_pi_verbose = True,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
     accel_pi_max_its = 30,
@@ -103,8 +103,8 @@ else
   log.Log(
     LOG_0ERROR,
     'k_method must be specified. "pi", '
-      .. '"pi_scdsa", "pi_scdsa_pwlc", "pi_smm", "pi_smm_pwld", '
-      .. 'or "jfnk"'
+      + '"pi_scdsa", "pi_scdsa_pwlc", "pi_smm", "pi_smm_pwld", '
+      + 'or "jfnk"'
   )
   return
 end
@@ -112,7 +112,7 @@ end
 k_solver:Initialize()
 k_solver:Execute()
 
-if master_export == nil then
+if master_export == None then
   fflist = lbs.GetScalarFieldFunctionList(phys1)
   fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
 end

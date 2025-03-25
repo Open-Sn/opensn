@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 100
 L = 2.0

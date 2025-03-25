@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 40
 L = 14.0
@@ -19,6 +19,6 @@ vol1 = logvol.RPPLogicalVolume.Create({
   xmax = 10.0,
   ymin = -1000.0,
   ymax = 10.0,
-  infz = true,
+  infz = True,
 })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
+grid:SetBlockIDFromLogicalVolume(vol1, 1, True)

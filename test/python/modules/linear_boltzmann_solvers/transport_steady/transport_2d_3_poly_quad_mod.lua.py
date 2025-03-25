@@ -1,25 +1,25 @@
--- 2D Transport test with Vacuum and Incident-isotropic BC. Quadrature optimized for polar symmetry.
--- SDM: PWLD
--- Test: Max-value=0.50758 and 2.52527e-04
+# 2D Transport test with Vacuum and Incident-isotropic BC. Quadrature optimized for polar symmetry.
+# SDM: PWLD
+# Test: Max-value=0.50758 and 2.52527e-04
 num_procs = 4
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 meshgen1 = mesh.MeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../assets/mesh/SquareMesh2x2QuadsBlock.obj",
+      filename = "+/+/+/+/assets/mesh/SquareMesh2x2QuadsBlock.obj",
     }),
   },
   partitioner = mesh.KBAGraphPartitioner.Create({
@@ -32,7 +32,7 @@ meshgen1 = mesh.MeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 num_groups = 168
@@ -42,11 +42,11 @@ strength = {}
 for g = 1, num_groups do
   strength[g] = 0.0
 end
---src[1] = 1.0
+#src[1] = 1.0
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLCProductQuadrature2DXY(2, 8)
 
 lbs_block = {
@@ -98,17 +98,17 @@ lbs_options = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Volume integrations
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
+# Volume integrations
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
 
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
@@ -122,7 +122,7 @@ maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)

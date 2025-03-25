@@ -1,70 +1,70 @@
--- 1D 1G KEigenvalue::Solver test using power iteration
--- Test: Final k-eigenvalue: 0.9995433
+# 1D 1G KEigenvalue::Solver test using power iteration
+# Test: Final k-eigenvalue: 0.9995433
 num_procs = 4
 
--- NOTE: For command line inputs, specify as:
---       variable=[[argument]]
+# NOTE: For command line inputs, specify as:
+#       variable=[[argument]]
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
 MPIBarrier()
 
--- ##################################################
--- ##### Parameters #####
--- ##################################################
+# ##################################################
+# ##### Parameters #####
+# ##################################################
 
--- Mesh variables
-if L == nil then
+# Mesh variables
+if L == None then
   L = 100.0
 end
-if n_cells == nil then
+if n_cells == None then
   n_cells = 50
 end
 
--- Transport angle information
-if n_angles == nil then
+# Transport angle information
+if n_angles == None then
   n_angles = 32
 end
-if scat_order == nil then
+if scat_order == None then
   scat_order = 0
 end
 
--- k-eigenvalue iteration parameters
-if kes_max_iterations == nil then
+# k-eigenvalue iteration parameters
+if kes_max_iterations == None then
   kes_max_iterations = 5000
 end
-if kes_tolerance == nil then
+if kes_tolerance == None then
   kes_tolerance = 1e-8
 end
 
--- Source iteration parameters
-if si_max_iterations == nil then
+# Source iteration parameters
+if si_max_iterations == None then
   si_max_iterations = 500
 end
-if si_tolerance == nil then
+if si_tolerance == None then
   si_tolerance = 1e-8
 end
 
--- Delayed neutrons
-if use_precursors == nil then
-  use_precursors = true
+# Delayed neutrons
+if use_precursors == None then
+  use_precursors = True
 end
 
--- ##################################################
--- ##### Run problem #####
--- ##################################################
+# ##################################################
+# ##### Run problem #####
+# ##################################################
 
--- Setup mesh
+# Setup mesh
 nodes = {}
 dx = L / n_cells
 for i = 0, n_cells do
@@ -74,12 +74,12 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
-xs_simple_fissile = xs.LoadFromOpenSn("../transport_keigen/simple_fissile.xs")
+xs_simple_fissile = xs.LoadFromOpenSn("+/transport_keigen/simple_fissile.xs")
 
--- Setup Physics
+# Setup Physics
 num_groups = 1
 lbs_block = {
   mesh = grid,
@@ -103,8 +103,8 @@ lbs_options = {
 
   use_precursors = use_precursors,
 
-  verbose_inner_iterations = false,
-  verbose_outer_iterations = true,
+  verbose_inner_iterations = False,
+  verbose_outer_iterations = True,
 }
 
 phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
@@ -118,8 +118,8 @@ k_solver0 = lbs.NonLinearKEigen.Create({
 k_solver0:Initialize()
 k_solver0:Execute()
 
--- Get field functions
--- Line plot
--- Volume integrations
--- Exports
--- Plots
+# Get field functions
+# Line plot
+# Volume integrations
+# Exports
+# Plots

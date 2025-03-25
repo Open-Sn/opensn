@@ -1,21 +1,21 @@
--- 2D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value1=3.18785
+# 2D Transport test with Vacuum and Incident-isotropic BC.
+# SDM: PWLD
+# Test: Max-value1=3.18785
 num_procs = 4
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 40
 L = 10.0
@@ -29,7 +29,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 num_groups = 1
@@ -39,10 +39,10 @@ strength = {}
 for g = 1, num_groups do
   strength[g] = 0.0
 end
---src[1] = 1.0
+#src[1] = 1.0
 mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLCProductQuadrature2DXY(4, 48)
 
 lbs_block = {
@@ -64,18 +64,18 @@ lbs_block = {
   },
 }
 
---int cell_global_id
---int material_id
+#int cell_global_id
+#int material_id
 
---VecXYZ location (.x .y and .z)
---VecXYZ normal
+#VecXYZ location (.x .y and .z)
+#VecXYZ normal
 
---array<int>      quadrature_angle_indices
---array<VecXYZ>   quadrature_angle_vectors
---array<PhiTheta> quadrature_phi_theta_angles (PhiTheta.phi and PhiTheta.theta)
---array<int>      group_indices
+#array<int>      quadrature_angle_indices
+#array<VecXYZ>   quadrature_angle_vectors
+#array<PhiTheta> quadrature_phi_theta_angles (PhiTheta.phi and PhiTheta.theta)
+#array<int>      group_indices
 
---double          evaluation_time
+#double          evaluation_time
 function luaBoundaryFunctionA(
   cell_global_id,
   material_id,
@@ -126,16 +126,16 @@ lbs_options = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Slice plot
+# Slice plot
 slice2 = fieldfunc.FFInterpolationCreate(SLICE)
 fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 })
 fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
@@ -143,8 +143,8 @@ fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
 fieldfunc.Initialize(slice2)
 fieldfunc.Execute(slice2)
 
----- Volume integrations
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
+#-- Volume integrations
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)
@@ -157,25 +157,25 @@ maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
----- Volume integrations
---ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
---curffi = ffi1
---fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
---fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
---fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
---
---curffi:Initialize()
---curffi:Execute()
---maxval = curffi:GetValue()
---
---log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
+#-- Volume integrations
+#ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
+#curffi = ffi1
+#fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+#fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
+#fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
+#
+#curffi:Initialize()
+#curffi:Execute()
+#maxval = curffi:GetValue()
+#
+#log.Log(LOG_0,string.format("Max-value2=%.5e", maxval))
 
--- Exports
-if master_export == nil then
+# Exports
+if master_export == None then
   fieldfunc.ExportToPython(slice2)
 end
 
--- Plots
-if location_id == 0 and master_export == nil then
+# Plots
+if location_id == 0 and master_export == None then
   local handle = io.popen("python ZPFFI00.py")
 end

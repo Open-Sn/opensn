@@ -1,21 +1,21 @@
--- 3D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value=0.49903 and 7.18243e-4
+# 3D Transport test with Vacuum and Incident-isotropic BC.
+# SDM: PWLD
+# Test: Max-value=0.49903 and 7.18243e-4
 num_procs = 4
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 Nxy = 32
 nodesxy = {}
 dxy = 2 / Nxy
@@ -38,13 +38,13 @@ meshgen = mesh.MeshGenerator.Create({
 })
 grid = meshgen:Execute()
 
--- Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
+# Set block IDs
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
 
 vol1 =
-  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
+  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
 
 num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -56,7 +56,7 @@ end
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 2 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
 lbs_block = {
@@ -94,16 +94,16 @@ lbs_options = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)

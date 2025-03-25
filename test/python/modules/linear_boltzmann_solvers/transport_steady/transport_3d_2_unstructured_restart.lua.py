@@ -1,28 +1,28 @@
--- 3D transport restart test with vacuum and incident-isotropic boundary condtions
--- SDM: PWLD
--- Test: Max-value=5.88996
+# 3D transport restart test with vacuum and incident-isotropic boundary condtions
+# SDM: PWLD
+# Test: Max-value=5.88996
 
--- Set and check number of processors
+# Set and check number of processors
 num_procs = 4
-if check_num_procs == nil and number_of_processes ~= num_procs then
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 meshgen1 = mesh.ExtruderMeshGenerator.Create({
   inputs = {
     mesh.FromFileMeshGenerator.Create({
-      filename = "../../../../assets/mesh/TriangleMesh2x2Cuts.obj",
+      filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
     }),
   },
-  layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, -- layers
+  layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, # layers
   partitioner = mesh.KBAGraphPartitioner.Create({
     nx = 2,
     ny = 2,
@@ -32,13 +32,13 @@ meshgen1 = mesh.ExtruderMeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
+# Set block IDs
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
 
 vol1 =
-  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
+  logvol.RPPLogicalVolume.Create({ xmin = -0.5, xmax = 0.5, ymin = -0.5, ymax = 0.5, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
 
 num_groups = 1
 xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
@@ -50,7 +50,7 @@ end
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 mg_src2 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
---Setup physics
+#Setup physics
 pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
 lbs_block = {
@@ -82,26 +82,26 @@ lbs_options = {
   },
   scattering_order = 1,
   volumetric_sources = { mg_src1, mg_src2 },
-  save_angular_flux = true,
-  --restart_writes_enabled = true,
-  --write_delayed_psi_to_restart = true,
-  --write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
+  save_angular_flux = True,
+  #restart_writes_enabled = True,
+  #write_delayed_psi_to_restart = True,
+  #write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
   read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
 }
 
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
---Initialize and execute solver
+#Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
---Get field functions
+#Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)

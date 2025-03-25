@@ -1,24 +1,24 @@
--- 3D Transport test with Vacuum and Incident-isotropic BC.
--- SDM: PWLD
--- Test: Max-value=5.28310e-01 and 8.04576e-04
+# 3D Transport test with Vacuum and Incident-isotropic BC.
+# SDM: PWLD
+# Test: Max-value=5.28310e-01 and 8.04576e-04
 num_procs = 4
-if reflecting == nil then
-  reflecting = true
+if reflecting == None then
+  reflecting = True
 end
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 10
 L = 5.0
@@ -41,9 +41,9 @@ else
 end
 grid = meshgen1:Execute()
 
--- Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
+# Set block IDs
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
 
 num_groups = 21
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -54,7 +54,7 @@ for g = 1, num_groups do
 end
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
 lbs_block = {
@@ -95,30 +95,30 @@ end
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Slice plot
---slices = {}
---for k=1,count do
---    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
---    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
---    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
---    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
---    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
---    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
---    fieldfunc.Initialize(slices[k])
---    fieldfunc.Execute(slices[k])
---    fieldfunc.ExportToPython(slices[k])
---end
+# Slice plot
+#slices = {}
+#for k=1,count do
+#    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
+#    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001})
+#    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
+#    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0})
+#    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0})
+#    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0})
+#    fieldfunc.Initialize(slices[k])
+#    fieldfunc.Execute(slices[k])
+#    fieldfunc.ExportToPython(slices[k])
+#end
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)
@@ -143,8 +143,8 @@ maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
--- Exports
-if master_export == nil then
+# Exports
+if master_export == None then
   if reflecting then
     fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DReflected")
   else
@@ -152,10 +152,10 @@ if master_export == nil then
   end
 end
 
--- Plots
-if location_id == 0 and master_export == nil then
-  --os.execute("python ZPFFI00.py")
-  ----os.execute("python ZPFFI11.py")
-  --local handle = io.popen("python ZPFFI00.py")
+# Plots
+if location_id == 0 and master_export == None then
+  #os.execute("python ZPFFI00.py")
+  #--os.execute("python ZPFFI11.py")
+  #local handle = io.popen("python ZPFFI00.py")
   print("Execution completed")
 end

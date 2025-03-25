@@ -1,4 +1,4 @@
--- Create cross sections
+# Create cross sections
 xss = {}
 
 for m = 0, 6 do
@@ -14,7 +14,7 @@ xss["5"] = xs.LoadFromOpenSn("materials/XS_8_7pMOX.xs")
 xss["6"] = xs.LoadFromOpenSn("materials/XS_fission_chamber.xs")
 
 num_groups = xss["0"].num_groups
-log.Log(LOG_0, "Num groups: " .. tostring(num_groups))
+log.Log(LOG_0, "Num groups: " + tostring(num_groups))
 
 xs_map = {}
 for m = 0, 6 do

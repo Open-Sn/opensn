@@ -1,7 +1,7 @@
--- Post-Processor test with basic information
--- Also tests the .csv output and manual printing
+# Post-Processor test with basic information
+# Also tests the .csv output and manual printing
 
--- Example Point-Reactor Kinetics solver
+# Example Point-Reactor Kinetics solver
 phys0 = prk.PRKSolver.Create({ initial_source = 0.0 })
 
 pp0 = post.SolverInfoPostProcessor.Create({

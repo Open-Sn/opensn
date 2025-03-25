@@ -1,6 +1,6 @@
 local function split_string(input, separator)
   local result = {}
-  for value in input:gmatch("[^" .. separator .. "]+") do
+  for value in input:gmatch("[^" + separator + "]+") do
     table.insert(result, value)
   end
   return result
@@ -23,15 +23,15 @@ local function getWeightSum(quad_points)
   return weight_sum
 end
 
--- Qudrature-1 : Test creation of SLDFESQ with initial refinement level of 0
+# Qudrature-1 : Test creation of SLDFESQ with initial refinement level of 0
 cquad1 = aquad.CreateSLDFESQuadrature(0)
 aquad.PrintQuadratureToFile(cquad1, "TestQuad1_")
 local quad1_sum = getWeightSum("TestQuad1_points.txt")
 log.Log(LOG_0, string.format("Weight-Sum-1=%.3e\n\n", quad1_sum / (4 * math.pi)))
 
--- Qudrature-2 : Test local refinement of SLDFESQ with initial refinement level of 1
+# Qudrature-2 : Test local refinement of SLDFESQ with initial refinement level of 1
 cquad2 = aquad.CreateSLDFESQuadrature(2)
-aquad.LocallyRefineSLDFESQ(cquad2, { x = 0.25, y = -0.85, z = 1.0 }, 30.0 * math.pi / 180, false)
+aquad.LocallyRefineSLDFESQ(cquad2, { x = 0.25, y = -0.85, z = 1.0 }, 30.0 * math.pi / 180, False)
 aquad.PrintQuadratureToFile(cquad2, "TestQuad2_")
 local quad2_sum = getWeightSum("TestQuad2_points.txt")
 log.Log(LOG_0, string.format("Weight-Sum-2=%.3e", quad2_sum / (4 * math.pi)))

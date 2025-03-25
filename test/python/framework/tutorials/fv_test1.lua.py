@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 100
 L = 2.0
@@ -14,7 +14,7 @@ meshgen1 = mesh.OrthogonalMeshGenerator.Create({
 })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 unit_sim_tests.SimTest01_FV({ mesh = grid })

@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 10
 L = 5
@@ -12,7 +12,7 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen1:Execute()
 
---Sets a middle square to material 1
+#Sets a middle square to material 1
 function mat_id(pt, cur_id)
   if math.abs(pt.x) < L / 10 and math.abs(pt.y) < L / 10 then
     return 1

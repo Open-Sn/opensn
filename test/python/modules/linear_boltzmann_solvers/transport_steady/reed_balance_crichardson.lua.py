@@ -1,5 +1,5 @@
--- Standard Reed 1D 1-group problem
--- Create Mesh
+# Standard Reed 1D 1-group problem
+# Create Mesh
 widths = { 2., 1., 2., 1., 2. }
 nrefs = { 200, 200, 200, 200, 200 }
 
@@ -19,18 +19,18 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen:Execute()
 
--- Set block IDs
+# Set block IDs
 z_min = 0.0
 z_max = widths[1]
 for imat = 1, Nmat do
   z_max = z_min + widths[imat]
-  log.Log(LOG_0, "imat=" .. imat .. ", zmin=" .. z_min .. ", zmax=" .. z_max)
-  lv = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = z_min, zmax = z_max })
-  grid:SetBlockIDFromLogicalVolume(lv, imat - 1, true)
+  log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
+  lv = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = z_min, zmax = z_max })
+  grid:SetBlockIDFromLogicalVolume(lv, imat - 1, True)
   z_min = z_max
 end
 
--- Add cross sections to materials
+# Add cross sections to materials
 total = { 50., 5., 0., 1., 1. }
 c = { 0., 0., 0., 0.9, 0.9 }
 xs_map = {}
@@ -41,14 +41,14 @@ for imat = 1, Nmat do
   }
 end
 
--- Create sources in 1st and 4th materials
+# Create sources in 1st and 4th materials
 mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = { 50. } })
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 3 }, group_strength = { 1. } })
 
--- Angular Quadrature
+# Angular Quadrature
 gl_quad = aquad.CreateGLProductQuadrature1DSlab(128)
 
--- LBS block option
+# LBS block option
 num_groups = 1
 lbs_block = {
   mesh = grid,
@@ -73,11 +73,11 @@ lbs_block = {
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
--- Initialize and execute solver
+# Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- compute particle balance
+# compute particle balance
 phys:ComputeBalance()

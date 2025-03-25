@@ -1,5 +1,5 @@
--- Infinite 172-group problem
--- Create Mesh
+# Infinite 172-group problem
+# Create Mesh
 nodes = {}
 N = 2
 L = 10
@@ -13,12 +13,12 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 num_groups = 172
 
--- Add cross sections to materials
+# Add cross sections to materials
 xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
 
 strength = {}
@@ -28,10 +28,10 @@ end
 strength[1] = 1.0
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
--- Angular Quadrature
+# Angular Quadrature
 pquad = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
--- LBS block option
+# LBS block option
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,
@@ -51,7 +51,7 @@ lbs_block = {
   options = {
     scattering_order = 0,
     spatial_discretization = "pwld",
-    save_angular_flux = true,
+    save_angular_flux = True,
     boundary_conditions = {
       { name = "xmin", type = "reflecting" },
       { name = "xmax", type = "reflecting" },
@@ -66,11 +66,11 @@ lbs_block = {
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
--- Initialize and execute solver
+# Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- compute particle balance
+# compute particle balance
 phys:ComputeBalance()

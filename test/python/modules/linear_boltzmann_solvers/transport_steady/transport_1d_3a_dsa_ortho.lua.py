@@ -1,29 +1,29 @@
--- 1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG
--- SDM: PWLD
--- Test: WGS groups [0-62] Iteration    28 Residual 6.74299e-07 CONVERGED
--- and   WGS groups [63-167] Iteration    39 Residual 8.73816e-07 CONVERGED
+# 1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG
+# SDM: PWLD
+# Test: WGS groups [0-62] Iteration    28 Residual 6.74299e-07 CONVERGED
+# and   WGS groups [63-167] Iteration    39 Residual 8.73816e-07 CONVERGED
 num_procs = 4
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 1000
 L = 100
---N=10
---L=200e6
+#N=10
+#L=200e6
 xmin = -L / 2
---xmin = 0.0
+#xmin = 0.0
 dx = L / N
 for i = 1, (N + 1) do
   k = i - 1
@@ -33,11 +33,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
-vol1 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, zmin = -10.0, zmax = 10.0 })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
+vol1 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, zmin = -10.0, zmax = 10.0 })
+grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
 
 num_groups = 168
 xs_graphite = xs.LoadFromOpenSn("xs_graphite_pure.xs")
@@ -50,7 +50,7 @@ end
 strength[1] = 1.0
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 pquad0 = aquad.CreateGLProductQuadrature1DSlab(4)
 
 lbs_block = {
@@ -65,7 +65,7 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 1000,
       gmres_restart_interval = 30,
-      apply_wgdsa = true,
+      apply_wgdsa = True,
       wgdsa_l_abs_tol = 1.0e-2,
     },
     {
@@ -76,8 +76,8 @@ lbs_block = {
       l_abs_tol = 1.0e-6,
       l_max_its = 1000,
       gmres_restart_interval = 30,
-      apply_wgdsa = true,
-      apply_tgdsa = true,
+      apply_wgdsa = True,
+      apply_tgdsa = True,
       wgdsa_l_abs_tol = 1.0e-2,
     },
   },
@@ -96,18 +96,18 @@ lbs_options = {
 phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
--- Initialize and Execute Solver
+# Initialize and Execute Solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Exports
-if master_export == nil then
+# Exports
+if master_export == None then
   fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
 end
 
--- Plots
+# Plots

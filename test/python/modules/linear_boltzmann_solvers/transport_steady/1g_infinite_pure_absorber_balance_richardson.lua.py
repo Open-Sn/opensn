@@ -1,5 +1,5 @@
--- Infinite, 1-group, pure absorber with balance
--- Create Mesh
+# Infinite, 1-group, pure absorber with balance
+# Create Mesh
 nodes = {}
 N = 2
 L = 10
@@ -13,22 +13,22 @@ end
 meshgen = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen:Execute()
 
--- Set block IDs
+# Set block IDs
 grid:SetUniformBlockID(0)
 
 num_groups = 1
 
--- Add cross sections to materials
+# Add cross sections to materials
 xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
 
 strength = {}
 strength[1] = 1.0
 mg_src = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = strength })
 
--- Angular Quadrature
+# Angular Quadrature
 pquad = aquad.CreateGLCProductQuadrature3DXYZ(4, 8)
 
--- LBS block option
+# LBS block option
 lbs_block = {
   mesh = grid,
   num_groups = num_groups,
@@ -59,11 +59,11 @@ lbs_block = {
 
 phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
 
--- Initialize and execute solver
+# Initialize and execute solver
 ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
 
 ss_solver:Initialize()
 ss_solver:Execute()
 
--- compute particle balance
+# compute particle balance
 phys:ComputeBalance()

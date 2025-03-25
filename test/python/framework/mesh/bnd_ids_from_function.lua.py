@@ -1,4 +1,4 @@
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 10
 L = 5
@@ -12,11 +12,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Setting left, right, top and bottom boundaries
--- left = 0
--- right = 1
--- bottom = 2
--- top = 3
+# Setting left, right, top and bottom boundaries
+# left = 0
+# right = 1
+# bottom = 2
+# top = 3
 function dot_product(v1, v2)
   result = v1[1] * v2[1] + v1[2] * v2[2] + v1[3] * v2[3]
   return result

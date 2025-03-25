@@ -1,19 +1,19 @@
--- 2D Transport test. Pure scatterer. Balance
+# 2D Transport test. Pure scatterer. Balance
 num_procs = 1
 
--- Check num_procs
-if check_num_procs == nil and number_of_processes ~= num_procs then
+# Check num_procs
+if check_num_procs == None and number_of_processes ~= num_procs then
   log.Log(
     LOG_0ERROR,
     "Incorrect amount of processors. "
-      .. "Expected "
-      .. tostring(num_procs)
-      .. ". Pass check_num_procs=false to override if possible."
+      + "Expected "
+      + tostring(num_procs)
+      + ". Pass check_num_procs=False to override if possible."
   )
-  os.exit(false)
+  os.exit(False)
 end
 
--- Setup mesh
+# Setup mesh
 nodes = {}
 N = 20
 L = 5
@@ -27,11 +27,11 @@ end
 meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes, nodes } })
 grid = meshgen1:Execute()
 
--- Set block IDs
-vol0 = logvol.RPPLogicalVolume.Create({ infx = true, infy = true, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol0, 0, true)
-vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = true, infz = true })
-grid:SetBlockIDFromLogicalVolume(vol1, 1, true)
+# Set block IDs
+vol0 = logvol.RPPLogicalVolume.Create({ infx = True, infy = True, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol0, 0, True)
+vol1 = logvol.RPPLogicalVolume.Create({ xmin = -1000.0, xmax = 0.0, infy = True, infz = True })
+grid:SetBlockIDFromLogicalVolume(vol1, 1, True)
 
 num_groups = 1
 xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)
@@ -44,7 +44,7 @@ mg_src0 = lbs.VolumetricSource.Create({ block_ids = { 0 }, group_strength = stre
 strength[1] = 1.0
 mg_src1 = lbs.VolumetricSource.Create({ block_ids = { 1 }, group_strength = strength })
 
--- Setup Physics
+# Setup Physics
 fac = 1
 pquad = aquad.CreateGLCProductQuadrature2DXY(6 * fac, 16 * fac)
 
@@ -82,10 +82,10 @@ ss_solver:Execute()
 
 phys1:ComputeBalance()
 
--- Get field functions
+# Get field functions
 fflist = lbs.GetScalarFieldFunctionList(phys1)
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)
@@ -98,7 +98,7 @@ maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value1=%.5f", maxval))
 
--- Volume integrations
+# Volume integrations
 ffi1 = fieldfunc.FieldFunctionInterpolationVolume.Create()
 curffi = ffi1
 curffi:SetOperationType(OP_MAX)
@@ -111,7 +111,7 @@ maxval = curffi:GetValue()
 
 log.Log(LOG_0, string.format("Max-value2=%.5e", maxval))
 
--- Exports
-if master_export == nil then
+# Exports
+if master_export == None then
   fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")
 end
