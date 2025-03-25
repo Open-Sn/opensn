@@ -98,7 +98,7 @@ grid = meshgen.Execute()
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
 
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         {
           name = "xmin",
@@ -109,7 +109,7 @@ grid = meshgen.Execute()
       scattering_order = 1,
       max_ags_iterations = 1,
       volumetric_sources = { mg_src1, mg_src2 },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

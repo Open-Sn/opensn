@@ -92,7 +92,7 @@ grid = meshgen.Execute()
       ],
     }
 
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         { name = "xmin", type = "reflecting" },
         { name = "xmax", type = "reflecting" },
@@ -105,7 +105,7 @@ grid = meshgen.Execute()
       use_precursors = False,
       verbose_inner_iterations = False,
       verbose_outer_iterations = True,
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

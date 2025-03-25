@@ -103,11 +103,11 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       ],
     }
 
-    lbs_options = {
+    lbs_options = [
       scattering_order = 1,
       max_ags_iterations = 1,
       volumetric_sources = { mg_src },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

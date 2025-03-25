@@ -86,7 +86,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
 
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         {
           name = "xmin",
@@ -99,7 +99,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       max_ags_iterations = 100,
       ags_tolerance = 1.0e-6,
       volumetric_sources = { mg_src0, mg_src1 },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

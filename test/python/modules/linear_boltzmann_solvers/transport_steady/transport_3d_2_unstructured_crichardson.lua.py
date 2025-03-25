@@ -92,14 +92,14 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     for g in range(1, num_groups+1):
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         { name = "zmin", type = "isotropic", group_strength = bsrc },
       },
       scattering_order = 1,
       save_angular_flux = True,
       volumetric_sources = { mg_src1, mg_src2 },
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

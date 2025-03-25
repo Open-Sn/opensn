@@ -75,7 +75,7 @@ if __name__ == "__main__":
       ],
     }
 
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         { name = "xmin", type = "reflecting" },
         { name = "xmax", type = "reflecting" },
@@ -88,7 +88,7 @@ if __name__ == "__main__":
       use_precursors = False,
       verbose_inner_iterations = False,
       verbose_outer_iterations = True,
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

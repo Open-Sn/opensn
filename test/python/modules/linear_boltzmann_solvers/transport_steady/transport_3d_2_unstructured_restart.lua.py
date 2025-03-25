@@ -99,7 +99,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     for g in range(1, num_groups+1):
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         { name = "zmax", type = "isotropic", group_strength = bsrc },
       },
@@ -110,7 +110,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       #write_delayed_psi_to_restart = True,
       #write_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
       read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

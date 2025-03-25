@@ -76,7 +76,7 @@ grid = meshgen.Execute()
       bsrc[g] = 0.0
     bsrc[1] = 1.0
 
-    lbs_options = {
+    lbs_options = [
       boundary_conditions = {
         {
           name = "zmin",
@@ -86,7 +86,7 @@ grid = meshgen.Execute()
       },
       scattering_order = 0,
       save_angular_flux = True,
-    }
+    ]
 
     phys = DiscreteOrdinatesSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

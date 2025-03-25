@@ -106,14 +106,14 @@ grid = meshgen.Execute()
       ],
     }
 
-    lbs_options = {
+    lbs_options = [
       scattering_order = scat_order,
 
       use_precursors = use_precursors,
 
       verbose_inner_iterations = False,
       verbose_outer_iterations = True,
-    }
+    ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)
