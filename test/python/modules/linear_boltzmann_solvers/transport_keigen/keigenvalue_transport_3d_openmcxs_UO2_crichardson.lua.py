@@ -80,9 +80,9 @@ grid = meshgen.Execute()
           l_abs_tol = 1.0e-12,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_uo2 },
-      },
+      ],
     }
 
     lbs_options = {

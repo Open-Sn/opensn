@@ -99,9 +99,9 @@ grid = meshgen.Execute()
           gmres_restart_interval = 100,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_graphite },
-      },
+      ],
       sweep_type = "CBC",
     }
     bsrc = []

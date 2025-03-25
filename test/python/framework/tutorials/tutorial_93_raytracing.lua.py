@@ -119,9 +119,9 @@ grid.SetupOrthogonalBoundaries()
           l_max_its = 0,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs1g },
-      },
+      ],
       options = {
         scattering_order = 0,
         point_sources = { pt_src },

@@ -93,9 +93,9 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
           gmres_restart_interval = 30,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_upscatter },
-      },
+      ],
     }
 
     lbs_options = {

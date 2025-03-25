@@ -77,9 +77,9 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
           gmres_restart_interval = 100,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_3_170 },
-      },
+      ],
     }
     bsrc = []
     for g in range(1, num_groups+1):

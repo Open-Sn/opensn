@@ -87,9 +87,9 @@ grid = meshgen.Execute()
           l_max_its = 1000,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_3_170 },
-      },
+      ],
     }
     bsrc = []
     for g in range(1, num_groups+1):

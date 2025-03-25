@@ -84,9 +84,9 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
           l_max_its = 1000,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0, 1, 2 ], "xs": xs_graphite },
-      },
+      ],
     }
     bsrc = []
     for g in range(1, num_groups+1):

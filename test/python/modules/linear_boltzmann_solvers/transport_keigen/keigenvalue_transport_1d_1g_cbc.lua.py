@@ -101,9 +101,9 @@ grid = meshgen.Execute()
           l_abs_tol = si_tolerance,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_simple_fissile },
-      },
+      ],
       options = {
         scattering_order = scat_order,
 

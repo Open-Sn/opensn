@@ -70,9 +70,9 @@ if __name__ == "__main__":
           gmres_restart_interval = 30,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs_fuel_g2 },
-      },
+      ],
     }
 
     lbs_options = {

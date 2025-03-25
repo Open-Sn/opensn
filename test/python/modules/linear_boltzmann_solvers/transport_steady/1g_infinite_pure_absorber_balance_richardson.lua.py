@@ -65,9 +65,9 @@ grid = meshgen.Execute()
           l_max_its = 300,
         },
       },
-      xs_map = {
+      xs_map = [
         { "block_ids": [ 0 ], "xs": xs1g },
-      },
+      ],
       options = {
         boundary_conditions = {
           { name = "xmin", type = "reflecting" },
