@@ -45,6 +45,6 @@ A description of the files or subdirectory is given in the table below.
 
 | File or Directory | Description |
 | ----------------- | ----------- |
-| `plot_quadrature.py` | Python script for plotting angular discretization (see [ANG_QUAD_PLOT README](./ang_quad_plotting/ANG_QUAD_PLOTTING_README.md)) | 
+| `sldfe_plot_quadrature.py` | Python script for plotting angular discretization (see [SLDFE Plotting README](./ang_quad_plotting/README.md)) | 
 
 [Return to OpenSn](../README.md)

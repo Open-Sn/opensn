@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 The OpenSn Authors
-// <https://open-sn.github.io/opensn/> SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/> 
+// SPDX-License-Identifier: MIT
 
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/logging/log.h"
