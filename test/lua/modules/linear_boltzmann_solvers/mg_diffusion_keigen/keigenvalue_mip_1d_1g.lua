@@ -110,8 +110,8 @@ lbs_options = {
 phys = lbs.DiffusionDFEMSolver.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
-k_solver0 = lbs.NonLinearKEigen.Create({
-  lbs_solver = phys,
+k_solver0 = lbs.NonLinearKEigenSolver.Create({
+  lbs_problem = phys,
   nl_max_its = kes_max_iterations,
   nl_abs_tol = kes_tolerance,
 })

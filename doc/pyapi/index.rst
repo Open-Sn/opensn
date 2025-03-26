@@ -281,15 +281,15 @@ Linear Boltzmann solver
    :nosignatures:
    :template: noinit.rst
 
-   solver.LBSSolver
+   solver.LBSProblem
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   solver.DiscreteOrdinatesSolver
-   solver.DiscreteOrdinatesCurvilinearSolver
+   solver.DiscreteOrdinatesProblem
+   solver.DiscreteOrdinatesCurvilinearProblem
    solver.DiffusionDFEMSolver
 
 Steady state solver
@@ -310,7 +310,7 @@ Non-linear k-eigen
    :nosignatures:
    :template: python.rst
 
-   solver.NonLinearKEigen
+   solver.NonLinearKEigenSolver
 
 Power iteration solver
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -320,9 +320,9 @@ Power iteration solver
    :nosignatures:
    :template: python.rst
 
-   solver.PowerIterationKEigen
-   solver.PowerIterationKEigenSCDSA
-   solver.PowerIterationKEigenSMM
+   solver.PowerIterationKEigenSolver
+   solver.PowerIterationKEigenSCDSASolver
+   solver.PowerIterationKEigenSMMSolver
 
 Point kinetic trnasient solver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -415,4 +415,3 @@ Caliper configuration
 
    settings.SetCaliperConfig
    settings.EnableCaliper
-

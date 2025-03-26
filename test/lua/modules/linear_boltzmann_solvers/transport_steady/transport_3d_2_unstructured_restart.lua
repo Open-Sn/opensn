@@ -89,11 +89,11 @@ lbs_options = {
   read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
 }
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 --Initialize and execute solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()
