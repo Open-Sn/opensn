@@ -135,7 +135,7 @@ fflist = phys.GetFieldFunctions()
 
     ffvol.Initialize(ffvol)
     ffvol.Execute(ffvol)
-avgval = ffvol.GetValue()
+    avgval = ffvol.GetValue()
 
     if rank == 0:
     print(f"Avg-value={avgval:.6f}")
