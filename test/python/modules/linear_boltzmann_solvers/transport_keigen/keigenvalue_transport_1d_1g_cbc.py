@@ -116,7 +116,6 @@ if __name__ == "__main__":
       sweep_type = "CBC",
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     k_solver0 = NonLinearKEigen(
       lbs_solver = phys,

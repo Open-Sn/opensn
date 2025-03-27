@@ -73,7 +73,6 @@ if __name__ == "__main__":
     #  "verbose_outer_iterations": True,
     #}
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
     #phys:SetOptions(lbs_options)
 
     #k_solver0 = PowerIterationKEigen( lbs_solver = phys, )

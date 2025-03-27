@@ -96,7 +96,6 @@ if __name__ == "__main__":
       lbs_options."boundary_conditions": [ { "name": "zmax", "type": "reflecting" } ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

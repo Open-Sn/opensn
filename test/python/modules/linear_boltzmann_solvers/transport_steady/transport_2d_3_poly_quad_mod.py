@@ -111,8 +111,6 @@ if __name__ == "__main__":
       "volumetric_sources": [ mg_src1, mg_src2 ],
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

@@ -120,7 +120,6 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

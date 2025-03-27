@@ -109,8 +109,6 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       "volumetric_sources": [ mg_src ],
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

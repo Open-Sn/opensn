@@ -81,7 +81,6 @@ if __name__ == "__main__":
       },
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

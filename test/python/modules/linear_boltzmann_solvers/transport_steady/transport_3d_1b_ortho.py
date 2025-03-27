@@ -101,8 +101,6 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     if reflecting then
       table.insert(lbs_options.boundary_conditions, { "name": "zmin", "type": "reflecting" )
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

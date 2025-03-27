@@ -116,7 +116,6 @@ if __name__ == "__main__":
     ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     k_solver0 = NonLinearKEigen(
       lbs_solver = phys,

@@ -92,7 +92,6 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       },
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

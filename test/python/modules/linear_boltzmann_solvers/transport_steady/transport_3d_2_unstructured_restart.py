@@ -112,8 +112,6 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
       read_restart_path = "transport_3d_2_unstructured_restart/transport_3d_2_unstructured",
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     #Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

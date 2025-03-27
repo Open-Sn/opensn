@@ -88,8 +88,6 @@ if __name__ == "__main__":
       "save_angular_flux": True,
     ]
 
-    phys = DiscreteOrdinatesSolver.Create(lbs_block)
-phys.SetOptions(lbs_options)
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
