@@ -123,13 +123,13 @@ grid = meshgen.Execute()
       return psi
 
     lbs_options = [
-      boundary_conditions = {
+      "boundary_conditions": [
         {
           "name": "xmin",
           "type": "incident_anisotropic_heterogeneous",
           function_name = "luaBoundaryFunctionA",
         },
-      },
+      ],
       "scattering_order": 1,
       "volumetric_sources": [ mg_src0 ],
     ]

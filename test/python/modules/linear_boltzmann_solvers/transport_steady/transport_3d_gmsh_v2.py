@@ -50,10 +50,10 @@ grid = meshgen.Execute()
     mg_src = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     lbs_options = [
-      boundary_conditions = {
+      "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
-      },
+      ],
       "scattering_order": 0,
       "volumetric_sources": [ mg_src ],
     ]

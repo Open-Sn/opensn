@@ -87,13 +87,13 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     bsrc[1] = 1.0 / 4.0 / math.pi
 
     lbs_options = [
-      boundary_conditions = {
+      "boundary_conditions": [
         {
           "name": "xmin",
           "type": "isotropic",
           "group_strength": bsrc,
         },
-      },
+      ],
       "scattering_order": 0,
       "verbose_ags_iterations": True,
       "max_ags_iterations": 100,

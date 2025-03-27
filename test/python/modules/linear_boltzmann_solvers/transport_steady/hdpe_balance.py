@@ -75,14 +75,14 @@ grid = meshgen.Execute()
         "scattering_order": 0,
         "spatial_discretization": "pwld",
         "save_angular_flux": True,
-        boundary_conditions = {
+        "boundary_conditions": [
           { "name": "xmin", "type": "reflecting" },
           { "name": "xmax", "type": "reflecting" },
           { "name": "ymin", "type": "reflecting" },
           { "name": "ymax", "type": "reflecting" },
           { "name": "zmin", "type": "reflecting" },
           { "name": "zmax", "type": "reflecting" },
-        },
+        ],
         "volumetric_sources": [ mg_src ],
       },
     ]

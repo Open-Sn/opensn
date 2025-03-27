@@ -93,7 +93,7 @@ grid = meshgen.Execute()
       "volumetric_sources": [ mg_src ],
     ]
     if reflecting then
-      lbs_options.boundary_conditions = { { "name": "zmax", "type": "reflecting" } }
+      lbs_options."boundary_conditions": [ { "name": "zmax", "type": "reflecting" } ]
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
 phys.SetOptions(lbs_options)

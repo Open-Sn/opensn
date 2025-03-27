@@ -71,7 +71,7 @@ grid.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
 grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
     diff_options = {
-      boundary_conditions = {
+      "boundary_conditions": [
         {
           boundary = e_bndry,
           "type": "robin",
@@ -90,7 +90,7 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
           "type": "robin",
           coeffs = { 0.25, 0.5, 1.0 },
         },
-      },
+      ],
     }
 
     d_coef_fn = LuaScalarSpatialMaterialFunction( function_name = "D_coef" )

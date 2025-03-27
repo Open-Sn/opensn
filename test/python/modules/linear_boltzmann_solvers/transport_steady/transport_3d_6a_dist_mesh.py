@@ -109,9 +109,9 @@ grid = meshgen.Execute()
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
     lbs_options = [
-      boundary_conditions = {
+      "boundary_conditions": [
         { "name": "xmin", "type": "isotropic", "group_strength": bsrc },
-      },
+      ],
       "scattering_order": 1,
       "save_angular_flux": True,
       "volumetric_sources": [ mg_src ],

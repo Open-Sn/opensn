@@ -93,14 +93,14 @@ grid = meshgen.Execute()
     ]
 
     lbs_options = [
-      boundary_conditions = {
+      "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "xmax", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
         { "name": "ymax", "type": "reflecting" },
         { "name": "zmin", "type": "reflecting" },
         { "name": "zmax", "type": "reflecting" },
-      },
+      ],
       "scattering_order": 1,
       "use_precursors": False,
       "verbose_inner_iterations": False,
