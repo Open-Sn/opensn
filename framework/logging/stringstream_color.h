@@ -4,11 +4,12 @@
 #pragma once
 
 #include <string>
+#include <unistd.h>
 
 namespace opensn
 {
 
-enum StringSteamColorCode
+enum StringStreamColorCode
 {
   RESET = 0,
   FG_BOLD = 1,
@@ -25,6 +26,6 @@ enum StringSteamColorCode
   FG_DEFAULT = 39,
 };
 
-std::string StringStreamColor(StringSteamColorCode code);
+std::string StringStreamColor(StringStreamColorCode code);
 
 } // namespace opensn

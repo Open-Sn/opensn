@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <sstream>
+#include "stringstream_color.h"
 
 namespace opensn
 {
@@ -15,22 +16,33 @@ class LogStream : public std::stringstream
 private:
   std::ostream* log_stream_;
   std::string log_header_;
-  const bool dummy_ = false;
+  const bool dummy_;
 
 public:
-  /// Creates a string stream.
   LogStream(std::ostream* output_stream, std::string header, bool dummy_flag = false)
     : log_stream_(output_stream), log_header_(std::move(header)), dummy_(dummy_flag)
   {
   }
+  LogStream(const LogStream&) = delete;
+  LogStream& operator=(const LogStream&) = delete;
 
-  /// Flushes stream.
-  virtual ~LogStream();
-
-  LogStream(const LogStream& other)
+  ~LogStream()
   {
-    log_stream_ = other.log_stream_;
-    log_header_ = other.log_header_;
+    if (dummy_)
+      return;
+
+    std::string content = this->str();
+    if (content.empty())
+      return;
+
+    std::istringstream iss(content);
+    std::string line;
+    std::string oline;
+    while (std::getline(iss, line))
+      oline += log_header_ + line + StringStreamColor(StringStreamColorCode::RESET) + "\n";
+
+    if (!oline.empty())
+      *log_stream_ << oline << std::flush;
   }
 };
 
@@ -42,7 +54,6 @@ struct DummyStream : public std::ostream
   } buffer;
 
   DummyStream() : std::ostream(&buffer) {}
-
   ~DummyStream() {}
 };
 
