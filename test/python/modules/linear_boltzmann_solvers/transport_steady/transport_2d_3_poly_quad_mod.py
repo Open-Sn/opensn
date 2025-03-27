@@ -71,7 +71,7 @@ grid = meshgen.Execute()
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, 62 },
+          groups_from_to = [0, 62],
           angular_quadrature = pquad,
           angle_aggregation_num_subsets = 1,
           inner_linear_method = "petsc_gmres",

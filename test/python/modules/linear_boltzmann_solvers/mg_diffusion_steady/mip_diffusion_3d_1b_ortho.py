@@ -73,7 +73,7 @@ grid = meshgen.Execute()
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, 20 },
+          groups_from_to = [0, 20],
           angular_quadrature = pquad,
           angle_aggregation_type = "single",
           angle_aggregation_num_subsets = 1,

@@ -61,7 +61,7 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, 1 },
+          groups_from_to = [0, 1],
           angular_quadrature = GLCProductQuadrature3DXYZ(8, 16),
           angle_aggregation_type = "single",
           inner_linear_method = "petsc_gmres",

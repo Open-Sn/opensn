@@ -69,7 +69,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, 0 },
+          groups_from_to = [0, 0],
           angular_quadrature = pquad,
           inner_linear_method = "petsc_gmres",
           l_abs_tol = 1.0e-6,
@@ -77,7 +77,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
           gmres_restart_interval = 30,
         },
         {
-          groups_from_to = { 1, 1 },
+          groups_from_to = [1, 1],
           angular_quadrature = pquad,
           inner_linear_method = "petsc_gmres",
           l_abs_tol = 1.0e-6,
@@ -85,7 +85,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
           gmres_restart_interval = 30,
         },
         {
-          groups_from_to = { 2, 2 },
+          groups_from_to = [2, 2],
           angular_quadrature = pquad,
           inner_linear_method = "petsc_gmres",
           l_abs_tol = 1.0e-6,
