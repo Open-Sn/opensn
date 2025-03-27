@@ -135,12 +135,12 @@ cline.Execute()
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffvol = FieldFunctionInterpolationVolume()
-ffvol.SetOperationType(OP_MAX)
-ffvol.SetLogicalVolume(vol0)
-ffvol.AddFieldFunction(fflist[1])
+    ffvol.SetOperationType(OP_MAX)
+    ffvol.SetLogicalVolume(vol0)
+    ffvol.AddFieldFunction(fflist[1])
 
-ffvol.Initialize(ffvol)
-ffvol.Execute(ffvol)
+    ffvol.Initialize(ffvol)
+    ffvol.Execute(ffvol)
     maxval = ffvol.GetValue()
 
     if rank == 0:
