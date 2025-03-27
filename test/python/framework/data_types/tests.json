@@ -1,6 +1,6 @@
 [
   {
-    "file": "data_types_test_00.lua",
+    "file": "data_types_test_00.py",
     "num_procs": 2,
     "checks": [
       {

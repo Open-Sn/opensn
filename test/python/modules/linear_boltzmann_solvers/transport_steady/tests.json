@@ -175,7 +175,7 @@
     ]
   },
   {
-    "file": "transport_1d_leakage.lua",
+    "file": "transport_1d_leakage.py",
     "comment": "1D LinearBSolver Test - Leakage",
     "num_procs": 3,
     "checks": [
@@ -188,7 +188,7 @@
     ]
   },
   {
-    "file": "transport_1d_3a_dsa_ortho.lua",
+    "file": "transport_1d_3a_dsa_ortho.py",
     "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
     "checks": [
@@ -221,7 +221,7 @@
     ]
   },
   {
-    "file": "transport_2d_gmsh_v2.lua",
+    "file": "transport_2d_gmsh_v2.py",
     "comment": "2D LinearBSolver Test Unstructured Gmsh V2 grid - PWLD",
     "num_procs": 4,
     "checks": [
@@ -234,7 +234,7 @@
     ]
   },
   {
-    "file": "transport_2d_gmsh_v4.lua",
+    "file": "transport_2d_gmsh_v4.py",
     "comment": "2D LinearBSolver Test Unstructured Gmsh V4 grid - PWLD",
     "num_procs": 4,
     "checks": [
@@ -247,7 +247,7 @@
     ]
   },
   {
-    "file": "transport_3d_gmsh_v2.lua",
+    "file": "transport_3d_gmsh_v2.py",
     "comment": "3D LinearBSolver Test Unstructured Gmsh V2 grid - PWLD",
     "num_procs": 4,
     "checks": [
@@ -260,7 +260,7 @@
     ]
   },
   {
-    "file": "transport_3d_gmsh_v4.lua",
+    "file": "transport_3d_gmsh_v4.py",
     "comment": "3D LinearBSolver Test Unstructured Gmsh V4 grid - PWLD",
     "num_procs": 4,
     "checks": [
@@ -273,7 +273,7 @@
     ]
   },
   {
-    "file": "transport_2d_2_unstructured_crichardson.lua",
+    "file": "transport_2d_2_unstructured_crichardson.py",
     "comment": "2D LinearBSolver Test Unstructured grid with Classic Richardson - PWLD",
     "num_procs": 4,
     "checks": [
@@ -292,7 +292,7 @@
     ]
   },
   {
-    "file": "transport_2d_3_poly_quad_mod.lua",
+    "file": "transport_2d_3_poly_quad_mod.py",
     "comment": "2D LinearBSolver Test Polar-Optimized quadrature - PWLD",
     "num_procs": 4,
     "checks": [
@@ -311,7 +311,7 @@
     ]
   },
   {
-    "file": "transport_2d_4a_dsa_ortho.lua",
+    "file": "transport_2d_4a_dsa_ortho.py",
     "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
     "checks": [
@@ -344,7 +344,7 @@
     ]
   },
   {
-    "file": "transport_2d_4b_dsa_ortho.lua",
+    "file": "transport_2d_4b_dsa_ortho.py",
     "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
     "checks": [
@@ -377,7 +377,7 @@
     ]
   },
   {
-    "file": "transport_3d_1a_extruder.lua",
+    "file": "transport_3d_1a_extruder.py",
     "comment": "3D LinearBSolver Test - PWLD",
     "num_procs": 4,
     "checks": [
@@ -396,7 +396,7 @@
     ]
   },
   {
-    "file": "transport_3d_1b_ortho.lua",
+    "file": "transport_3d_1b_ortho.py",
     "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
     "num_procs": 4,
     "checks": [
@@ -415,7 +415,7 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_parmetis.lua",
+    "file": "transport_3d_1_poly_parmetis.py",
     "comment": "3D LinearBSolver Test Ortho Grid Parmetis - PWLD",
     "num_procs": 4,
     "checks": [
@@ -434,7 +434,7 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_parmetis_crichardson.lua",
+    "file": "transport_3d_1_poly_parmetis_crichardson.py",
     "comment": "3D LinearBSolver Test Ortho Grid Parmetis with Classic Richardson- PWLD",
     "num_procs": 4,
     "checks": [
@@ -453,7 +453,7 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_scotch.lua",
+    "file": "transport_3d_1_poly_scotch.py",
     "comment": "3D LinearBSolver Test Ortho Grid Scotch - PWLD",
     "num_procs": 4,
     "checks": [
@@ -472,7 +472,7 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_qmom_part1.lua",
+    "file": "transport_3d_1_poly_qmom_part1.py",
     "comment": "3D LinearBSolver Test Source moment writing - PWLD",
     "num_procs": 4,
     "checks": [
@@ -483,8 +483,8 @@
     ]
   },
   {
-    "file": "transport_3d_1_poly_qmom_part2.lua",
-    "dependency": "transport_3d_1_poly_qmom_part1.lua",
+    "file": "transport_3d_1_poly_qmom_part2.py",
+    "dependency": "transport_3d_1_poly_qmom_part1.py",
     "comment": "3D LinearBSolver Test Source moment reading - PWLD",
     "num_procs": 4,
     "checks": [
@@ -503,7 +503,7 @@
     ]
   },
   {
-    "file": "transport_3d_ags_upscatter.lua",
+    "file": "transport_3d_ags_upscatter.py",
     "comment": "3D, multiple groupsets, groupset-to-groupset upscattering",
     "num_procs": 4,
     "checks": [
@@ -528,7 +528,7 @@
     ]
   },
   {
-    "file": "transport_3d_3a_dsa_ortho.lua",
+    "file": "transport_3d_3a_dsa_ortho.py",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -562,7 +562,7 @@
     ]
   },
   {
-    "file": "transport_3d_4_cycles_1.lua",
+    "file": "transport_3d_4_cycles_1.py",
     "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
     "num_procs": 4,
     "checks": [
@@ -581,7 +581,7 @@
     ]
   },
   {
-    "file": "transport_3d_6a_split_mesh.lua",
+    "file": "transport_3d_6a_split_mesh.py",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -603,7 +603,7 @@
     ]
   },
   {
-    "file": "transport_3d_6b_split_mesh.lua",
+    "file": "transport_3d_6b_split_mesh.py",
     "comment": "3D LinearBSolver Test Split mesh configuration B",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -625,7 +625,7 @@
     ]
   },
   {
-    "file": "transport_3d_6a_dist_mesh.lua",
+    "file": "transport_3d_6a_dist_mesh.py",
     "comment": "3D LinearBSolver test distributed mesh configuration A",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -647,7 +647,7 @@
     ]
   },
   {
-    "file": "transport_3d_6b_dist_mesh.lua",
+    "file": "transport_3d_6b_dist_mesh.py",
     "comment": "3D LinearBSolver test distributed mesh configuration B",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -669,7 +669,7 @@
     ]
   },
   {
-    "file": "reed_balance.lua",
+    "file": "reed_balance.py",
     "comment": "1D LinearBSolver Reed problem with balance printout",
     "num_procs": 1,
     "weight_class": "intermediate",
@@ -689,7 +689,7 @@
     ]
   },
   {
-    "file": "reed_balance_crichardson.lua",
+    "file": "reed_balance_crichardson.py",
     "comment": "1D LinearBSolver Reed problem with Classic Richardson and balance printout",
     "num_procs": 1,
     "weight_class": "intermediate",
@@ -709,7 +709,7 @@
     ]
   },
   {
-    "file": "transport_3d_2_unstructured_restart.lua",
+    "file": "transport_3d_2_unstructured_restart.py",
     "comment": "3D Unstructured problem with restart",
     "num_procs": 4,
     "checks": [
@@ -722,7 +722,7 @@
     ]
   },
   {
-    "file": "hdpe_balance.lua",
+    "file": "hdpe_balance.py",
     "comment": "1D 172-group infinite with balance",
     "num_procs": 3,
     "checks": [
@@ -753,7 +753,7 @@
     ]
   },
   {
-    "file": "1g_infinite_pure_absorber_balance_richardson.lua",
+    "file": "1g_infinite_pure_absorber_balance_richardson.py",
     "comment": "Infinite, 1g, pure absorber, with balance using Richardson",
     "num_procs": 3,
     "checks": [
@@ -772,7 +772,7 @@
     ]
   },
   {
-    "file": "transport_1d_4_dsa_ortho_inf.lua",
+    "file": "transport_1d_4_dsa_ortho_inf.py",
     "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
     "num_procs": 1,
     "checks": [
@@ -805,7 +805,7 @@
     ]
   },
   {
-    "file": "transport_2d_1_poly_balance.lua",
+    "file": "transport_2d_1_poly_balance.py",
     "comment": "2D Transport test. Pure scatterer. Balance.",
     "num_procs": 1,
     "weight_class": "intermediate",
@@ -825,7 +825,7 @@
     ]
   },
   {
-    "file": "transport_2d_1_poly_balance_mg.lua",
+    "file": "transport_2d_1_poly_balance_mg.py",
     "comment": "2D Transport test. Vacuum and Isotropic BC. Balance.\n",
     "num_procs": 4,
     "weight_class": "intermediate",
@@ -845,7 +845,7 @@
     ]
   },
   {
-    "file": "angular_io_1d.lua",
+    "file": "angular_io_1d.py",
     "comment": "1D AngularFlux IO Test",
     "num_procs": 4,
     "checks": [

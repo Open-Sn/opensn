@@ -1,6 +1,6 @@
 [
   {
-    "file": "lv_rpp_test1.lua",
+    "file": "lv_rpp_test1.py",
     "num_procs": 1,
     "checks": [
       {
@@ -42,7 +42,7 @@
     ]
   },
   {
-    "file": "lv_sphere_test1.lua",
+    "file": "lv_sphere_test1.py",
     "num_procs": 1,
     "checks": [
       {
@@ -66,7 +66,7 @@
     ]
   },
   {
-    "file": "lv_rcc_test1.lua",
+    "file": "lv_rcc_test1.py",
     "num_procs": 1,
     "args": [
       "-v 1"
@@ -83,7 +83,7 @@
     ]
   },
   {
-    "file": "lv_boolean_test1.lua",
+    "file": "lv_boolean_test1.py",
     "num_procs": 1,
     "args": [
       "-v 1"
@@ -96,7 +96,7 @@
     ]
   },
   {
-    "file": "lv_skinmesh.lua",
+    "file": "lv_skinmesh.py",
     "num_procs": 1,
     "args": [
       "-v 1"
@@ -109,7 +109,7 @@
     ]
   },
   {
-    "file": "lv_lua_func.lua",
+    "file": "lv_lua_func.py",
     "num_procs": 1,
     "args": [
       "-v 1"

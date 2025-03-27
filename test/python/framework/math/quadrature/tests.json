@@ -1,6 +1,6 @@
 [
   {
-    "file": "sldfesq_test.lua",
+    "file": "sldfesq_test.py",
     "comment": "SLDFESQ Test",
     "num_procs": 1,
     "checks": [

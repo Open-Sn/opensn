@@ -1,6 +1,6 @@
 [
   {
-    "file": "keigenvalue_mip_1d_1g.lua",
+    "file": "keigenvalue_mip_1d_1g.py",
     "comment": "1D KSolver LinearBSolver Test - PWLD",
     "num_procs": 4,
     "checks": [
@@ -14,7 +14,7 @@
     ]
   },
   {
-    "file": "keigenvalue_mip_2d_1a_qblock.lua",
+    "file": "keigenvalue_mip_2d_1a_qblock.py",
     "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
     "num_procs": 4,
     "checks": [
@@ -34,7 +34,7 @@
     ]
   },
   {
-    "file": "keigenvalue_mip_2d_1b_qblock.lua",
+    "file": "keigenvalue_mip_2d_1b_qblock.py",
     "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
     "num_procs": 4,
     "checks": [

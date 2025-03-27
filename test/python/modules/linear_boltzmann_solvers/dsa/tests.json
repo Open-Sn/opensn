@@ -1,6 +1,6 @@
 [
   {
-    "file": "acceleration_diffusion_dfem.lua",
+    "file": "acceleration_diffusion_dfem.py",
     "comment": "MIP Diffusion solver tests",
     "num_procs": 1,
     "checks": [
@@ -20,7 +20,7 @@
     ]
   },
   {
-    "file": "acceleration_diffusion_cfem.lua",
+    "file": "acceleration_diffusion_cfem.py",
     "comment": "MIP Diffusion solver tests",
     "num_procs": 1,
     "checks": [

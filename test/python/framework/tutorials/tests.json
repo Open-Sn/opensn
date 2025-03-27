@@ -1,6 +1,6 @@
 [
   {
-    "file": "fv_test1.lua",
+    "file": "fv_test1.py",
     "num_procs": 1,
     "checks": [
       {
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "file": "fv_test2.lua",
+    "file": "fv_test2.py",
     "num_procs": 1,
     "checks": [
       {
@@ -20,7 +20,7 @@
     ]
   },
   {
-    "file": "pwlc_test1.lua",
+    "file": "pwlc_test1.py",
     "num_procs": 4,
     "checks": [
       {
@@ -30,7 +30,7 @@
     ]
   },
   {
-    "file": "pwlc_test2.lua",
+    "file": "pwlc_test2.py",
     "num_procs": 4,
     "checks": [
       {
@@ -47,7 +47,7 @@
     ]
   },
   {
-    "file": "tutorial_06_wdd.lua",
+    "file": "tutorial_06_wdd.py",
     "num_procs": 1,
     "checks": [
       {
@@ -60,7 +60,7 @@
     ]
   },
   {
-    "file": "tutorial_91a_pwld.lua",
+    "file": "tutorial_91a_pwld.py",
     "num_procs": 1,
     "checks": [
       {
@@ -73,7 +73,7 @@
     ]
   },
   {
-    "file": "tutorial_93_raytracing.lua",
+    "file": "tutorial_93_raytracing.py",
     "num_procs": 1,
     "checks": [
       {

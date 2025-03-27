@@ -1,6 +1,6 @@
 [
   {
-    "file": "solver_info_01.lua",
+    "file": "solver_info_01.py",
     "num_procs": 1,
     "checks": [
       {
@@ -15,7 +15,7 @@
     ]
   },
   {
-    "file": "solver_info_02.lua",
+    "file": "solver_info_02.py",
     "num_procs": 1,
     "checks": [
       {

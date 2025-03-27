@@ -1,6 +1,6 @@
 [
   {
-    "file": "xs_lua_printout.lua",
+    "file": "xs_lua_printout.py",
     "comment": "create, modify, and print xs",
     "num_procs": 1,
     "checks": [

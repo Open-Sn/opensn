@@ -1,6 +1,6 @@
 [
   {
-    "file": "params_test_00.lua",
+    "file": "params_test_00.py",
     "num_procs": 1,
     "checks": [
       {
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "file": "params_test_01a.lua",
+    "file": "params_test_01a.py",
     "num_procs": 1,
     "checks": [
       {
@@ -24,7 +24,7 @@
     ]
   },
   {
-    "file": "params_test_01b.lua",
+    "file": "params_test_01b.py",
     "num_procs": 1,
     "checks": [
       {
@@ -38,7 +38,7 @@
     ]
   },
   {
-    "file": "params_test_01c.lua",
+    "file": "params_test_01c.py",
     "num_procs": 1,
     "checks": [
       {
@@ -52,7 +52,7 @@
     ]
   },
   {
-    "file": "params_test_01d.lua",
+    "file": "params_test_01d.py",
     "num_procs": 1,
     "checks": [
       {

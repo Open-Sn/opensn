@@ -1,6 +1,6 @@
 [
   {
-    "file": "math_test_02.lua",
+    "file": "math_test_02.py",
     "num_procs": 2,
     "checks": [
       {

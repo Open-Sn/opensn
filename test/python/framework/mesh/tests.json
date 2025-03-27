@@ -1,6 +1,6 @@
 [
   {
-    "file": "read_wavefront_obj1.lua",
+    "file": "read_wavefront_obj1.py",
     "num_procs": 4,
     "checks": [
       {
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "file": "mat_ids_from_function.lua",
+    "file": "mat_ids_from_function.py",
     "num_procs": 1,
     "checks": [
       {
@@ -20,7 +20,7 @@
     ]
   },
   {
-    "file": "bnd_ids_from_function.lua",
+    "file": "bnd_ids_from_function.py",
     "num_procs": 1,
     "checks": [
       {
@@ -30,7 +30,7 @@
     ]
   },
   {
-    "file": "volume_per_material.lua",
+    "file": "volume_per_material.py",
     "comment": "2D test to compute and display volume per block ID.",
     "num_procs": 3,
     "checks": [

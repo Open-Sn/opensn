@@ -1,6 +1,6 @@
 [
   {
-    "file": "mip_diffusion_3d_1b_ortho.lua",
+    "file": "mip_diffusion_3d_1b_ortho.py",
     "comment": "3D LBS MIP Test - PWLD Reflecting BC",
     "num_procs": 4,
     "checks": [
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "file": "mip_diffusion_3d_3a_dsa_ortho.lua",
+    "file": "mip_diffusion_3d_3a_dsa_ortho.py",
     "comment": "3D LBS MIP test of a block of graphite with an air cavity. TG",
     "num_procs": 4,
     "weight_class": "intermediate",

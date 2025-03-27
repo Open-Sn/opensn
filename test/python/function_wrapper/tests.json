@@ -1,7 +1,7 @@
 [
   {
     "comment": "Test C function wrapping",
-    "file": "function_wrapper.lua",
+    "file": "function_wrapper.py",
     "num_procs": 1,
     "checks": [
       {

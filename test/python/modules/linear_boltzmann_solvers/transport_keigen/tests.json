@@ -62,7 +62,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_2d_1b_qblock.lua",
+    "file": "keigenvalue_transport_2d_1b_qblock.py",
     "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
     "num_procs": 4,
     "checks": [
@@ -83,7 +83,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_2d_1c_qblock.lua",
+    "file": "keigenvalue_transport_2d_1c_qblock.py",
     "comment": "2D 2G KEigenvalue::Solver test using Power Iteration with SCDSA",
     "num_procs": 4,
     "checks": [
@@ -97,7 +97,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_1d_1g_cbc.lua",
+    "file": "keigenvalue_transport_1d_1g_cbc.py",
     "comment": "1D KSolver LinearBSolver Test - PWLD",
     "num_procs": 4,
     "checks": [
@@ -111,7 +111,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_2d_1a_qblock_cbc.lua",
+    "file": "keigenvalue_transport_2d_1a_qblock_cbc.py",
     "comment": "2D 2G KEigenvalue::Solver test using Power Iteration",
     "num_procs": 4,
     "checks": [
@@ -131,7 +131,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_2d_1b_qblock_cbc.lua",
+    "file": "keigenvalue_transport_2d_1b_qblock_cbc.py",
     "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
     "num_procs": 4,
     "checks": [
@@ -145,7 +145,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_2d_1c_qblock_cbc.lua",
+    "file": "keigenvalue_transport_2d_1c_qblock_cbc.py",
     "comment": "2D 2G KEigenvalue::Solver test using Power Iteration with SCDSA",
     "num_procs": 4,
     "checks": [
@@ -159,7 +159,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_openmcxs_UO2.lua",
+    "file": "keigenvalue_transport_3d_openmcxs_UO2.py",
     "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
@@ -173,7 +173,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_openmcxs_UO2_crichardson.lua",
+    "file": "keigenvalue_transport_3d_openmcxs_UO2_crichardson.py",
     "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with Classic Richardson and OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
@@ -187,7 +187,7 @@
     ]
   },
   {
-    "file": "c5g7_restart.lua",
+    "file": "c5g7_restart.py",
     "outfileprefix": "c5g7_restart",
     "comment": "2D C5G7 with PI and restarts",
     "num_procs": 4,
@@ -202,7 +202,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_2g_exo_wedge.lua",
+    "file": "keigenvalue_transport_3d_2g_exo_wedge.py",
     "comment": "3D_2G Infinite medium testing wedge elements of EXODUSII; should agree with the hex model",
     "num_procs": 1,
     "checks": [
@@ -216,7 +216,7 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_3d_2g_exo_hex.lua",
+    "file": "keigenvalue_transport_3d_2g_exo_hex.py",
     "comment": "3D_2G Infinite medium testing hex elements of EXODUSII; should agree with the wedge model",
     "num_procs": 1,
     "checks": [

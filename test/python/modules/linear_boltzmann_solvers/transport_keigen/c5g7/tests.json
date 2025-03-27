@@ -1,6 +1,6 @@
 [
   {
-    "file": "c5g7.lua",
+    "file": "c5g7.py",
     "outfileprefix": "c5g7_pi",
     "comment": "2D C5G7 with PI",
     "num_procs": 32,
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "file": "c5g7.lua",
+    "file": "c5g7.py",
     "outfileprefix": "c5g7_pi_scdsa",
     "comment": "2D C5G7 with PI and SCDSA acceleration",
     "num_procs": 32,
@@ -38,7 +38,7 @@
     ]
   },
   {
-    "file": "c5g7.lua",
+    "file": "c5g7.py",
     "outfileprefix": "c5g7_pi_smm",
     "comment": "2D C5G7 with PI and SMM acceleration",
     "num_procs": 32,
@@ -57,7 +57,7 @@
     ]
   },
   {
-    "file": "c5g7.lua",
+    "file": "c5g7.py",
     "outfileprefix": "c5g7_jfnk",
     "comment": "2D C5G7 with JFNK",
     "num_procs": 32,

@@ -1,6 +1,6 @@
 [
   {
-    "file": "meshgen_example_a.lua",
+    "file": "meshgen_example_a.py",
     "num_procs": 4,
     "checks": [
       {
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "file": "meshgen_example_b.lua",
+    "file": "meshgen_example_b.py",
     "num_procs": 4,
     "checks": [
       {
@@ -20,7 +20,7 @@
     ]
   },
   {
-    "file": "meshgen_example_c.lua",
+    "file": "meshgen_example_c.py",
     "num_procs": 4,
     "checks": [
       {
@@ -30,7 +30,7 @@
     ]
   },
   {
-    "file": "meshgen_example_d.lua",
+    "file": "meshgen_example_d.py",
     "num_procs": 4,
     "checks": [
       {
@@ -40,7 +40,7 @@
     ]
   },
   {
-    "file": "meshgen_extruder_kba.lua",
+    "file": "meshgen_extruder_kba.py",
     "num_procs": 4,
     "checks": [
       {

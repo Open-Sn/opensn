@@ -1,6 +1,6 @@
 [
   {
-    "file": "sdm_test_01a_pwlc_1d_ortho.lua",
+    "file": "sdm_test_01a_pwlc_1d_ortho.py",
     "num_procs": 4,
     "checks": [
       {
@@ -21,7 +21,7 @@
     ]
   },
   {
-    "file": "sdm_test_01b_pwlc_2d_ortho.lua",
+    "file": "sdm_test_01b_pwlc_2d_ortho.py",
     "num_procs": 4,
     "checks": [
       {
@@ -42,7 +42,7 @@
     ]
   },
   {
-    "file": "sdm_test_01c_pwlc_3d_ortho.lua",
+    "file": "sdm_test_01c_pwlc_3d_ortho.py",
     "num_procs": 4,
     "checks": [
       {
@@ -63,7 +63,7 @@
     ]
   },
   {
-    "file": "sdm_test_01d_pwlc_2d_tri.lua",
+    "file": "sdm_test_01d_pwlc_2d_tri.py",
     "num_procs": 4,
     "checks": [
       {
@@ -84,7 +84,7 @@
     ]
   },
   {
-    "file": "sdm_test_01e_pwlc_3d_prism.lua",
+    "file": "sdm_test_01e_pwlc_3d_prism.py",
     "num_procs": 4,
     "checks": [
       {
@@ -105,7 +105,7 @@
     ]
   },
   {
-    "file": "sdm_test_01f_pwlc_3d_hex.lua",
+    "file": "sdm_test_01f_pwlc_3d_hex.py",
     "num_procs": 4,
     "checks": [
       {
@@ -126,7 +126,7 @@
     ]
   },
   {
-    "file": "sdm_test_01g_pwlc_3d_tets.lua",
+    "file": "sdm_test_01g_pwlc_3d_tets.py",
     "num_procs": 4,
     "checks": [
       {
