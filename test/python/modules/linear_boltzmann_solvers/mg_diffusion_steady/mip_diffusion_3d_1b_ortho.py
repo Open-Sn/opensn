@@ -132,7 +132,7 @@ if __name__ == "__main__":
     maxval = curffi.GetValue()
 
     if rank == 0:
-    print(f"Max-value1={maxval:.5e}")
+        print(f"Max-value1={maxval:.5e}")
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     maxval = curffi.GetValue()
 
     if rank == 0:
-    print(f"Max-value2={maxval:.5e}")
+        print(f"Max-value2={maxval:.5e}")
 
     # Exports
     if master_export == None then

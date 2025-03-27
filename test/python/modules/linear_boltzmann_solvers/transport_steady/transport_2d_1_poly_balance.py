@@ -109,7 +109,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     maxval = curffi.GetValue()
 
     if rank == 0:
-    print(f"Max-value1={maxval:.5f}")
+        print(f"Max-value1={maxval:.5f}")
 
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
@@ -123,7 +123,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
     maxval = curffi.GetValue()
 
     if rank == 0:
-    print(f"Max-value2={maxval:.5e}")
+        print(f"Max-value2={maxval:.5e}")
 
     # Exports
     if master_export == None then

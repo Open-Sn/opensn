@@ -165,7 +165,7 @@ if __name__ == "__main__":
     maxval = curffi.GetValue()
 
     if rank == 0:
-    print(f"Max-value1={maxval:.5f}")
+        print(f"Max-value1={maxval:.5f}")
 
     #-- Volume integrations
     #ffi1 = FieldFunctionInterpolationVolume()
