@@ -90,11 +90,11 @@ if __name__ == "__main__":
     fflist = GetScalarFieldFunctionList(phys)
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-curffi.SetOperationType(OP_MAX)
-curffi.SetLogicalVolume(vol0)
-curffi.AddFieldFunction(fflist[1])
-curffi.Initialize()
-curffi.Execute()
+    curffi.SetOperationType(OP_MAX)
+    curffi.SetLogicalVolume(vol0)
+    curffi.AddFieldFunction(fflist[1])
+    curffi.Initialize()
+    curffi.Execute()
 maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value1={maxval:.5f}")

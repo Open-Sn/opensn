@@ -123,12 +123,12 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-curffi.SetOperationType(OP_MAX)
-curffi.SetLogicalVolume(vol0)
-curffi.AddFieldFunction(fflist[1])
+    curffi.SetOperationType(OP_MAX)
+    curffi.SetLogicalVolume(vol0)
+    curffi.AddFieldFunction(fflist[1])
 
-curffi.Initialize()
-curffi.Execute()
+    curffi.Initialize()
+    curffi.Execute()
 maxval = curffi.GetValue()
 
     if rank == 0:
@@ -136,12 +136,12 @@ maxval = curffi.GetValue()
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-curffi.SetOperationType(OP_MAX)
-curffi.SetLogicalVolume(vol0)
-curffi.AddFieldFunction(fflist[20])
+    curffi.SetOperationType(OP_MAX)
+    curffi.SetLogicalVolume(vol0)
+    curffi.AddFieldFunction(fflist[20])
 
-curffi.Initialize()
-curffi.Execute()
+    curffi.Initialize()
+    curffi.Execute()
 maxval = curffi.GetValue()
 
     if rank == 0:

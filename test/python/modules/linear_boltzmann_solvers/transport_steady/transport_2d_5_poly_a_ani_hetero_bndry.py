@@ -156,12 +156,12 @@ if __name__ == "__main__":
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-curffi.SetOperationType(OP_MAX)
-curffi.SetLogicalVolume(vol0)
-curffi.AddFieldFunction(fflist[1])
+    curffi.SetOperationType(OP_MAX)
+    curffi.SetLogicalVolume(vol0)
+    curffi.AddFieldFunction(fflist[1])
 
-curffi.Initialize()
-curffi.Execute()
+    curffi.Initialize()
+    curffi.Execute()
 maxval = curffi.GetValue()
 
     if rank == 0:
