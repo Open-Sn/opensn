@@ -44,9 +44,9 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     vol1 = RPPLogicalVolume( xmin = -1000.0, xmax = 0.0, infy = True, infz = True )
-grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 1
     xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)

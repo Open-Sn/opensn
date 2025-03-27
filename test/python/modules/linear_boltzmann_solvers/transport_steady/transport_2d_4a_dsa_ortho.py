@@ -58,7 +58,7 @@ if __name__ == "__main__":
       ymax = 10.0,
       infz = True,
     )
-grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168
     xs_graphite =  MultiGroupXS()

@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     num_groups = 21
     xs_graphite =  MultiGroupXS()

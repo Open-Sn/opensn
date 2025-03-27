@@ -52,7 +52,7 @@ if __name__ == "__main__":
     grid:SetUniformBlockID(0)
 
     vol1 = RPPLogicalVolume( infx = True, infy = True, zmin = -10.0, zmax = 10.0 )
-grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168
     xs_graphite =  MultiGroupXS()
