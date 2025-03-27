@@ -1,63 +1,84 @@
 [
   {
-    "file" : "fv_test1.lua", "num_procs" : 1, "checks" :
-    [
+    "file": "fv_test1.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "StrCompare", "key" : "Converged"
+        "type": "StrCompare",
+        "key": "Converged"
       }
     ]
   },
   {
-    "file" : "fv_test2.lua", "num_procs" : 1, "checks" :
-    [
+    "file": "fv_test2.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "StrCompare", "key" : "Converged"
+        "type": "StrCompare",
+        "key": "Converged"
       }
     ]
   },
   {
-    "file" : "pwlc_test1.lua", "num_procs" : 4, "checks" :
-    [
+    "file": "pwlc_test1.lua",
+    "num_procs": 4,
+    "checks": [
       {
-        "type" : "StrCompare", "key" : "Converged"
+        "type": "StrCompare",
+        "key": "Converged"
       }
     ]
   },
   {
-    "file" : "pwlc_test2.lua", "num_procs" : 4, "checks" :
-    [
+    "file": "pwlc_test2.lua",
+    "num_procs": 4,
+    "checks": [
       {
-        "type" : "StrCompare", "key" : "Converged"
+        "type": "StrCompare",
+        "key": "Converged"
       },
       {
-        "type" : "FloatCompare", "key" : "Error:", "wordnum" : 2,
-        "gold" : 7.032369e-02, "abs_tol" : 1.0e-7
+        "type": "FloatCompare",
+        "key": "Error:",
+        "wordnum": 2,
+        "gold": 0.07032369,
+        "abs_tol": 1e-07
       }
     ]
   },
   {
-    "file" : "tutorial_06_wdd.lua", "num_procs" : 1, "checks" :
-    [
+    "file": "tutorial_06_wdd.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
-        "gold" : 5.483e-07, "abs_tol" : 1.0e-10
+        "type": "FloatCompare",
+        "key": "Iteration     8",
+        "wordnum": 3,
+        "gold": 5.483e-07,
+        "abs_tol": 1e-10
       }
     ]
   },
   {
-    "file" : "tutorial_91a_pwld.lua", "num_procs" : 1, "checks" :
-    [
+    "file": "tutorial_91a_pwld.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
-        "gold" : 5.872e-07, "abs_tol" : 1.0e-10
+        "type": "FloatCompare",
+        "key": "Iteration     8",
+        "wordnum": 3,
+        "gold": 5.872e-07,
+        "abs_tol": 1e-10
       }
     ]
   },
   {
-    "file" : "tutorial_93_raytracing.lua", "num_procs" : 1, "checks" :
-    [
+    "file": "tutorial_93_raytracing.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "ErrorCode", "error_code" : 0
+        "type": "ErrorCode",
+        "error_code": 0
       }
     ]
   }

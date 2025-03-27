@@ -22,7 +22,7 @@
     "file": "mip_diffusion_3d_3a_dsa_ortho.lua",
     "comment": "3D LBS MIP test of a block of graphite with an air cavity. TG",
     "num_procs": 4,
-    "weight_class" : "intermediate",
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "StrCompare",

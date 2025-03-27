@@ -1,30 +1,31 @@
 [
   {
-    "file" : "read_wavefront_obj1.lua", "num_procs" : 4, "checks" :
-    [
+    "file": "read_wavefront_obj1.lua",
+    "num_procs": 4,
+    "checks": [
       {
-        "type" : "StrCompare",
-        "key" : "Global cell count             : 3242"
+        "type": "StrCompare",
+        "key": "Global cell count             : 3242"
       }
     ]
   },
   {
-    "file" : "mat_ids_from_function.lua",
-    "num_procs" : 1,
-    "checks" : [
+    "file": "mat_ids_from_function.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "StrCompare",
-        "key" : "Exporting mesh to VTK files with base new_mat_ids"
+        "type": "StrCompare",
+        "key": "Exporting mesh to VTK files with base new_mat_ids"
       }
     ]
   },
   {
-    "file" : "bnd_ids_from_function.lua",
-    "num_procs" : 1,
-    "checks" : [
+    "file": "bnd_ids_from_function.lua",
+    "num_procs": 1,
+    "checks": [
       {
-        "type" : "StrCompare",
-        "key" : "Exporting mesh to VTK files with base new_bnd_ids"
+        "type": "StrCompare",
+        "key": "Exporting mesh to VTK files with base new_bnd_ids"
       }
     ]
   },
@@ -37,13 +38,13 @@
         "type": "KeyValuePair",
         "key": "[0]  Block ID: 0 Volume:",
         "goldvalue": 11.25,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  Block ID: 1 Volume:",
         "goldvalue": 13.75,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       }
     ]
   }

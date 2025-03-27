@@ -8,25 +8,25 @@
         "type": "KeyValuePair",
         "key": "[0]  chi[1] before:",
         "goldvalue": 5.1745279852251e-06,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  chi[1] after :",
         "goldvalue": 5.1745279852251e-06,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  sigt[1] before:",
         "goldvalue": 6.1351201118512,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "[0]  sigt[1] after :",
         "goldvalue": 12.270240223702,
-        "abs_tol": 1.0e-6
+        "abs_tol": 1e-06
       }
     ]
   }
