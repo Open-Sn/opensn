@@ -131,7 +131,7 @@ grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     curffi.Initialize()
     curffi.Execute()
-maxval = curffi.GetValue()
+    maxval = curffi.GetValue()
 
     if rank == 0:
     print(f"Max-value1={maxval:.5e}")

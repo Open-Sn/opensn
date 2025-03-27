@@ -123,7 +123,7 @@ grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     curffi.AddFieldFunction(fflist[1])
     curffi.Initialize()
     curffi.Execute()
-maxval = curffi.GetValue()
+    maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value1={maxval:.5e}")
 
@@ -134,7 +134,7 @@ maxval = curffi.GetValue()
     curffi.AddFieldFunction(fflist[2])
     curffi.Initialize()
     curffi.Execute()
-maxval = curffi.GetValue()
+    maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value2={maxval:.5e}")
 
@@ -145,6 +145,6 @@ maxval = curffi.GetValue()
     curffi.AddFieldFunction(fflist[3])
     curffi.Initialize()
     curffi.Execute()
-maxval = curffi.GetValue()
+    maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value3={maxval:.5e}")

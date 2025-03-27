@@ -133,7 +133,7 @@ ffvol.AddFieldFunction(fflist[1])
 
 ffvol.Initialize(ffvol)
 ffvol.Execute(ffvol)
-maxval = ffvol.GetValue()
+    maxval = ffvol.GetValue()
 
     if rank == 0:
     print(f"Max-value={maxval:.6f}")

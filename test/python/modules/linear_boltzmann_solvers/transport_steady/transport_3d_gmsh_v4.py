@@ -95,6 +95,6 @@ if __name__ == "__main__":
     curffi.AddFieldFunction(fflist[1])
     curffi.Initialize()
     curffi.Execute()
-maxval = curffi.GetValue()
+    maxval = curffi.GetValue()
     if rank == 0:
     print(f"Max-value1={maxval:.5f}")
