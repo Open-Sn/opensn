@@ -41,7 +41,7 @@ if __name__ == "__main__":
         nodes[counter] = nodes[counter - 1] + dx
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
-grid = meshgen.Execute(meshgen)
+    grid = meshgen.Execute(meshgen)
 
     # Set Material IDs
     z_min = 0.0
@@ -99,8 +99,8 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     leakage_left_1 = ComputeLeakage(phys, { "zmin" )["zmin"][1]
     leakage_right_1 = ComputeLeakage(phys, { "zmax" )["zmax"][1]

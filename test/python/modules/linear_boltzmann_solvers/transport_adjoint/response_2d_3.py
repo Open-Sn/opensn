@@ -52,7 +52,7 @@ if __name__ == "__main__":
     ds = L / N
     nodes = [i * ds for i in range(N + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Set block IDs using logical volumes
@@ -112,8 +112,8 @@ if __name__ == "__main__":
 
     # Forward solve
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-    ss_solver.Initialize()
-    ss_solver.Execute()
+        ss_solver.Initialize()
+        ss_solver.Execute()
 
     # Define QoI region
     qoi_vol = RPPLogicalVolume(xmin=0.5, xmax=0.8333, ymin=4.16666, ymax=4.33333, infz=True)
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     )
 
     # Adjoint solve and write flux moments
-    ss_solver.Execute()
+        ss_solver.Execute()
     phys.WriteFluxMoments("adjoint_2d_3")
 
     # Create response evaluator and evaluate response

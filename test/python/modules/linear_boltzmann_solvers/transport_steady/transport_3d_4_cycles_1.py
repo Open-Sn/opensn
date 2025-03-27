@@ -48,7 +48,7 @@ if __name__ == "__main__":
         ycuts = [ 0.0 ],
       ),
     )
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
@@ -111,8 +111,8 @@ phys.SetOptions(lbs_options)
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Get field functions
     fflist = GetScalarFieldFunctionList(phys)

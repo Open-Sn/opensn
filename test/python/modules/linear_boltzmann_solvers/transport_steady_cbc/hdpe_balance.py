@@ -27,7 +27,7 @@ if __name__ == "__main__":
     dx = L / N
     nodes = [xmin + k * dx for k in range(N + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
 
     # Set uniform block IDs
     grid.SetUniformBlockID(0)
@@ -81,8 +81,8 @@ if __name__ == "__main__":
         sweep_type="CBC"
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-    ss_solver.Initialize()
-    ss_solver.Execute()
+        ss_solver.Initialize()
+        ss_solver.Execute()
 
     # Compute particle balance
-    phys.ComputeBalance()
+        phys.ComputeBalance()

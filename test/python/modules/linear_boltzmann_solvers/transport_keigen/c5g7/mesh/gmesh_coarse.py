@@ -32,4 +32,4 @@ if __name__ == "__main__":
         ),
       },
     )
-grid = meshgen.Execute()
+    grid = meshgen.Execute()

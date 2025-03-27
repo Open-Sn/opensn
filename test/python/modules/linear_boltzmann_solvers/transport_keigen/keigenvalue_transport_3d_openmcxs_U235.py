@@ -47,7 +47,7 @@ if __name__ == "__main__":
     zmesh = [zmin + k * dz for k in range(Nz + 1)]
 
     meshgen = OrthogonalMeshGenerator(node_sets=[xmesh, ymesh, zmesh])
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Load cross section data using the OpenMC MGXS library

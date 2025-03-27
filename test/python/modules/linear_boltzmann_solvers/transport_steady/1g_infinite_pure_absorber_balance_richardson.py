@@ -35,7 +35,7 @@ if __name__ == "__main__":
       nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -86,8 +86,8 @@ grid = meshgen.Execute()
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # compute particle balance
-phys.ComputeBalance()
+    phys.ComputeBalance()

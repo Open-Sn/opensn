@@ -37,7 +37,7 @@ if __name__ == "__main__":
         ),
       },
     )
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Material
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
@@ -86,8 +86,8 @@ phys.SetOptions(lbs_options)
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
     # Solve
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     fflist = GetScalarFieldFunctionList(phys)
     ffi1 = FieldFunctionInterpolationVolume()

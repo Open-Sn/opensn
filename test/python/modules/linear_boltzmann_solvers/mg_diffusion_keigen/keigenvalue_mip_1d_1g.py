@@ -79,7 +79,7 @@ if __name__ == "__main__":
       nodes[i + 1] = i * dx
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)

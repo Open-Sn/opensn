@@ -42,7 +42,7 @@ if __name__ == "__main__":
     for i in range(N + 1):
         nodes.append(xmin + i * dx)
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes])
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
 
     # Cross-section data
     num_groups = 168
@@ -105,8 +105,8 @@ if __name__ == "__main__":
         }
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-    ss_solver.Initialize()
-    ss_solver.Execute()
+        ss_solver.Initialize()
+        ss_solver.Execute()
 
     # Field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)

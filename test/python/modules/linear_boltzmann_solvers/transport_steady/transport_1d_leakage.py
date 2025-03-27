@@ -41,7 +41,7 @@ if __name__ == "__main__":
       nodes[i] = (i - 1) * L / N
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
     grid:SetUniformBlockID(0)
 
     # Add materials
@@ -94,8 +94,8 @@ phys.SetOptions(lbs_options)
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
     # Solve the problem
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Compute the leakage
     leakage = ComputeLeakage(phys, [])

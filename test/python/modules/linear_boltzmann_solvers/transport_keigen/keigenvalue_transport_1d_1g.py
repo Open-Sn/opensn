@@ -33,7 +33,7 @@ if __name__ == "__main__":
     dx = L / n_cells
     nodes = [i * dx for i in range(n_cells + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes])
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Load cross-section data for a 1-group fissile material

@@ -34,7 +34,7 @@ if __name__ == "__main__":
       nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     grid:SetUniformBlockID(0)
 

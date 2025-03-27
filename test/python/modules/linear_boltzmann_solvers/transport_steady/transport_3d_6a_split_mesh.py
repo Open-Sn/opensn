@@ -68,7 +68,7 @@ if __name__ == "__main__":
       },
     )
 
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     grid:SetUniformBlockID(0)
 
@@ -123,8 +123,8 @@ phys.SetOptions(lbs_options)
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Get field functions
     fflist = GetScalarFieldFunctionList(phys)

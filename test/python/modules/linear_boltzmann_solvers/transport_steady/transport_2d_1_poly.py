@@ -42,7 +42,7 @@ if __name__ == "__main__":
             ycuts=[0.0],
         )
     )
-    grid = meshgen.Execute()
+        grid = meshgen.Execute()
 
     # Cross-section data
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
@@ -107,8 +107,8 @@ if __name__ == "__main__":
         }
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-    ss_solver.Initialize()
-    ss_solver.Execute()
+        ss_solver.Initialize()
+        ss_solver.Execute()
 
     # Field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)

@@ -40,7 +40,7 @@ if __name__ == "__main__":
       nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
@@ -91,10 +91,10 @@ phys.SetOptions(lbs_options)
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
-phys.ComputeBalance()
+    phys.ComputeBalance()
 
     # Get field functions
     fflist = GetScalarFieldFunctionList(phys)

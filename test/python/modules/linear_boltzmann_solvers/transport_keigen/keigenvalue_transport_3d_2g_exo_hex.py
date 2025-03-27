@@ -48,7 +48,7 @@ if __name__ == "__main__":
         ),
       },
     )
-    grid = MeshGenerator.Execute(meshgen)
+        grid = MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
     xs_fuel_g2 =  MultiGroupXS()

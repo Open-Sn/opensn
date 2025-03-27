@@ -46,7 +46,7 @@ if __name__ == "__main__":
       nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     grid:SetUniformBlockID(0)
@@ -123,8 +123,8 @@ phys.SetOptions(lbs_options)
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Get field functions
     fflist = GetScalarFieldFunctionList(phys)

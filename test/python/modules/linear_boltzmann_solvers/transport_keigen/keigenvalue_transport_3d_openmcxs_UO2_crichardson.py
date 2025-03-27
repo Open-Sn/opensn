@@ -58,7 +58,7 @@ if __name__ == "__main__":
       zmesh[i] = zmin + k * dz
 
     meshgen = OrthogonalMeshGenerator( node_sets = { xmesh, ymesh, zmesh } )
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Materials
 
