@@ -12,15 +12,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
-    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.xs import CreateSimpleOneGroup
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.solver import SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -29,37 +25,37 @@ if __name__ == "__main__":
     widths = { 2., 1., 2., 1., 2. }
     nrefs = { 200, 200, 200, 200, 200 }
 
-    Nmat = #widths
+    Nmat = len(widths)
 
     nodes = []
-    counter = 1
+    counter = 0
     nodes[counter] = 0.
-    for imat in range(1, Nmat+1):
+    for imat in range(Nmat):
       dx = widths[imat] / nrefs[imat]
-      for i in range(1, nrefs[imat]+1):
-        counter = counter + 1
+      for i in range(nrefs[imat]):
         nodes[counter] = nodes[counter - 1] + dx
+        counter += counter
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
-grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs
     z_min = 0.0
     z_max = widths[1]
-    for imat in range(1, Nmat+1):
+    for imat in range(Nmat):
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
       lv = RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
-grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
+      grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
 
     # Add cross sections to materials
     total = { 50., 5., 0., 1., 1. }
     c = { 0., 0., 0., 0.9, 0.9 }
     xs_map = []
-    for imat in range(1, Nmat+1):
+    for imat in range(Nmat):
       xs_map[imat] = {
-        "block_ids": [ imat - 1 ], "xs": xs.CreateSimpleOneGroup(total[imat], c[imat]),
+        "block_ids": [ imat ], "xs": xs.CreateSimpleOneGroup(total[imat], c[imat]),
       }
 
     # Create sources in 1st and 4th materials
@@ -74,7 +70,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           groups_from_to = { 0, num_groups - 1 },
           angular_quadrature = gl_quad,
@@ -98,8 +94,8 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
 
-ss_solver.Initialize()
-ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # compute particle balance
-phys.ComputeBalance(phys)
+    phys.ComputeBalance(phys)
