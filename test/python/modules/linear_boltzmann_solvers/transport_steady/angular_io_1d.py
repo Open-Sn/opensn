@@ -50,7 +50,7 @@ if __name__ == "__main__":
       z_max = z_min + widths[imat]
       log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
       lv = RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
-grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
+      grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
       z_min = z_max
 
     # Add cross sections to materials
@@ -110,7 +110,7 @@ grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
 
     ss_solver_2 = SteadyStateSolver( lbs_solver = phys2 )
 
-ss_solver_2.Initialize()
+    ss_solver_2.Initialize()
 
     ReadAngularFluxes(phys2, "angular_io")
 
@@ -125,4 +125,4 @@ ss_solver_2.Initialize()
     if rank == 0:
     print(f"Leakage-Diff2={leakage_right_diff:.5e}")
 
-os.system("rm angular_io0.h5")
+    os.system("rm angular_io0.h5")
