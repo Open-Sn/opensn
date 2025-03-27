@@ -18,17 +18,22 @@ namespace opensnpy
 class Console
 {
 public:
-  static Console& GetInstance() noexcept;
+  static Console& GetInstance() noexcept
+  {
+    static Console singleton;
+    return singleton;
+  }
+
   std::vector<std::string>& GetCommandBuffer() { return command_buffer_; }
-  void FlushConsole();
-  void RunConsoleLoop() const;
-  int ExecuteFile(const std::string& fileName) const;
+  void InitConsole();
+  void ExecuteFile(const std::string& input_filename) const;
   void BindModule(std::function<void(py::module&)> bind_function);
   void BindBarrier(const mpi::Communicator& comm);
 
 private:
   Console() noexcept = default;
-  void ExecutePythonCommand(const std::string& command) const;
+  Console(const Console&) = delete;
+  Console& operator=(const Console&) = delete;
 
   std::vector<std::string> command_buffer_;
 };

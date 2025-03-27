@@ -20,12 +20,9 @@ public:
   int Run(int argc, char** argv);
 
 private:
-  int InitPetSc(int argc, char** argv);
-  int ProcessArguments(int argc, char** argv);
-  int RunInteractive();
-  int RunBatch();
+  int InitPETSc(int argc, char** argv);
+  bool ProcessArguments(int argc, char** argv);
 
-  bool sim_option_interactive_;
   bool allow_petsc_error_handler_;
 };
 
