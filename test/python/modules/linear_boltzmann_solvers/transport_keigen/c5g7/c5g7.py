@@ -44,7 +44,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": ( 0, num_groups - 1 ),
           "angular_quadrature": pquad,
@@ -54,7 +54,7 @@ if __name__ == "__main__":
           "angle_aggregation_type": "polar",
           "angle_aggregation_num_subsets": 1,
         },
-      },
+      ],
       xs_map = xs_map,
       options = {
         "boundary_conditions": [

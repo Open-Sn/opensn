@@ -73,7 +73,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": [0, 20],
           "angular_quadrature": pquad,
@@ -83,7 +83,7 @@ if __name__ == "__main__":
           "l_abs_tol": 1.0e-6,
           "l_max_its": 1000,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0, 1, 2 ], "xs": xs_graphite },
       ],

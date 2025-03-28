@@ -35,7 +35,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": ( 0, num_groups - 1 ),
           "angular_quadrature": pquad,
@@ -44,7 +44,7 @@ if __name__ == "__main__":
           "gmres_restart_interval": 50,
           "l_abs_tol": 1.0e-10,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0 ], "xs": xss["0"] },
         { "block_ids": [ 1 ], "xs": xss["1"] },

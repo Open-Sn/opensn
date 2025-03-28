@@ -92,7 +92,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": ( 0, num_groups - 1 ),
           "angular_quadrature": GLProductQuadrature1DSlab(n_angles),
@@ -100,7 +100,7 @@ if __name__ == "__main__":
           "l_max_its": si_max_iterations,
           "l_abs_tol": si_tolerance,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_simple_fissile },
       ],

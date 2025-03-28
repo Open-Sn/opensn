@@ -111,7 +111,7 @@ grid = meshgen.Execute()
       "name": solver_name,
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": ( 0, num_groups - 1 ),
           "angular_quadrature": pquad,
@@ -119,7 +119,7 @@ grid = meshgen.Execute()
           "l_abs_tol": 1.0e-6,
           "l_max_its": 0,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs1g },
       ],

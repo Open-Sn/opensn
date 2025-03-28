@@ -78,7 +78,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
           "groups_from_to": ( 0, num_groups - 1 ),
           "angular_quadrature": GLCProductQuadrature3DXYZ(2, 4),
@@ -86,7 +86,7 @@ if __name__ == "__main__":
           "l_max_its": 500,
           "l_abs_tol": 1.0e-12,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_uo2 },
       ],
