@@ -20,8 +20,8 @@ target_link_libraries(opensn-unit
     ${HDF5_LIBRARIES}
     caliper
     MPI::MPI_CXX
-    gmock_main
-    gtest_main
+    GTest::gmock_main
+    GTest::gtest_main
 )
 if(OPENSN_WITH_LUA)
     add_subdirectory(lua)

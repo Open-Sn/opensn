@@ -125,12 +125,16 @@ if(caliper_FOUND)
 endif()
 
 # google test
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.15.2
-)
-FetchContent_MakeAvailable(googletest)
+find_package(GTest QUIET)
+if(NOT TARGET GTest::gtest_main)
+    message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.15.2
+    )
+    FetchContent_MakeAvailable(googletest)
+endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
