@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # Set block IDs
     grid.SetUniformBlockID(0)
 
-grid.SetupOrthogonalBoundaries()
+    grid.SetupOrthogonalBoundaries()
 
     function MMS_phi(pt)
       return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
