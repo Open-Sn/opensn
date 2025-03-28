@@ -86,9 +86,8 @@ if __name__ == "__main__":
       ],
     ]
     bsrc = []
-    for g in range(1, num_groups+1):
-      bsrc[g] = 0.0
-    bsrc[1] = 1.0 / 4.0 / math.pi
+    bsrc = [0.0 for _ in range(num_groups)]
+    bsrc[0] = 1.0 / 4.0 / math.pi
     options = {
       "boundary_conditions": [
         { "name": "zmin", "type": "isotropic", "group_strength": bsrc },
