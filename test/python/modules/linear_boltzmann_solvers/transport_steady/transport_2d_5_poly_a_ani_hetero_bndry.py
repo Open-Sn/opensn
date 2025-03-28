@@ -45,7 +45,7 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     num_groups = 1
     xs_air =  MultiGroupXS()

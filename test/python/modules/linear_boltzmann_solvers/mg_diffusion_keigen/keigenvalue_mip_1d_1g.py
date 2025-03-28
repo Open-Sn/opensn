@@ -82,7 +82,7 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     xs_simple_fissile =  MultiGroupXS()
     xs_simple_fissile.LoadFromOpenSn("+/transport_keigen/simple_fissile.xs")

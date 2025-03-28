@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # Materials
 
     xs_uo2 = xs.LoadFromOpenMC("uo2.h5", "set1", 294.0)
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     # Solver
 

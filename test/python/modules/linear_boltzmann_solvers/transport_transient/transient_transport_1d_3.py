@@ -45,7 +45,7 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     vol0 = RPPLogicalVolume( infx = True, infy = True, zmin = -L / 4, zmax = L / 4 )
     grid.SetBlockIDFromLogicalVolume(vol0, 1, True)

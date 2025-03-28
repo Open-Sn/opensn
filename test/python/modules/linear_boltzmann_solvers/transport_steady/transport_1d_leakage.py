@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
     grid = meshgen.Execute()
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     # Add materials
     num_groups = 1

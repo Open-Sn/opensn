@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     vol1 = RPPLogicalVolume(
       xmin = -10.0,

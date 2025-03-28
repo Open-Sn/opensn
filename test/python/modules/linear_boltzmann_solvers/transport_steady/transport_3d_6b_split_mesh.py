@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     grid = meshgen.Execute()
 
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     num_groups = 21
     xs_graphite =  MultiGroupXS()

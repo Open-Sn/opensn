@@ -37,7 +37,7 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     # governing law: -(u_xx + u_yy) = q, on domain [0,1]x[0,1]
     # when the exact solution is chosen u(x,y) = sin(pi.x) * sin(pi.y)

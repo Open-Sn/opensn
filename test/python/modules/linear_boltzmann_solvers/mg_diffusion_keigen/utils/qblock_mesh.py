@@ -36,7 +36,7 @@ if __name__ == "__main__":
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
     grid = meshgen.Execute()
 
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     vol1 = RPPLogicalVolume(
       xmin = -1000.0,

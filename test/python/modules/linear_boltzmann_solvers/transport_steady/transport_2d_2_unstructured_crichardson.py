@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     num_groups = 168
     xs_3_170 =  MultiGroupXS()

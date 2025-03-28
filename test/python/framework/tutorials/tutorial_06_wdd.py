@@ -40,7 +40,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     unit_sim_tests.SimTest06_WDD({ mesh = grid )
     MPIBarrier()

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     function D_coef(i, pt)
       return 3.0 + pt.x + pt.y

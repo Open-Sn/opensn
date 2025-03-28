@@ -40,7 +40,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
+    grid.SetUniformBlockID(0)
 
     function MMS_phi(pt)
       return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
