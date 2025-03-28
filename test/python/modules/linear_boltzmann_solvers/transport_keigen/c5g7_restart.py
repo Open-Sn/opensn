@@ -68,13 +68,13 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = pquad,
-          inner_linear_method = "petsc_gmres",
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": pquad,
+          "inner_linear_method": "petsc_gmres",
           l_max_its = 5,
-          l_abs_tol = 1.0e-10,
-          angle_aggregation_type = "polar",
-          angle_aggregation_num_subsets = 1,
+          "l_abs_tol": 1.0e-10,
+          "angle_aggregation_type": "polar",
+          "angle_aggregation_num_subsets": 1,
         },
       },
       xs_map = xs_map,
@@ -101,7 +101,7 @@ log.Log(LOG_0, "Num groups. " + tostring(num_groups))
 
     # Execute Solver
     k_solver = PowerIterationKEigen(
-      lbs_solver = phys,
+      "lbs_solver": phys,
       k_tol = 1.0e-8,
     )
 k_solver.Initialize()

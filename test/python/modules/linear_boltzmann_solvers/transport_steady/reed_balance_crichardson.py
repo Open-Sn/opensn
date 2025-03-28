@@ -70,11 +70,11 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = gl_quad,
-          inner_linear_method = "classic_richardson",
-          l_abs_tol = 1.0e-9,
-          l_max_its = 1000,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": gl_quad,
+          "inner_linear_method": "classic_richardson",
+          "l_abs_tol": 1.0e-9,
+          "l_max_its": 1000,
         },
       },
       xs_map = xs_map,

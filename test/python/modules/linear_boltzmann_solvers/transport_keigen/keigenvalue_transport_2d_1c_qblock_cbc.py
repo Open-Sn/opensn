@@ -37,12 +37,12 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = pquad,
-          inner_linear_method = "petsc_richardson",
-          l_max_its = 1,
-          gmres_restart_interval = 50,
-          l_abs_tol = 1.0e-10,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": pquad,
+          "inner_linear_method": "petsc_richardson",
+          "l_max_its": 1,
+          "gmres_restart_interval": 50,
+          "l_abs_tol": 1.0e-10,
         },
       },
       xs_map = xs_map,
@@ -76,9 +76,9 @@ if __name__ == "__main__":
 
     #phys:SetOptions(lbs_options)
 
-    #k_solver0 = PowerIterationKEigen( lbs_solver = phys, )
+    #k_solver0 = PowerIterationKEigen( "lbs_solver": phys, )
     k_solver0 = PowerIterationKEigenSCDSA(
-      lbs_solver = phys,
+      "lbs_solver": phys,
       diff_accel_sdm = "pwld",
       accel_pi_verbose = False,
       k_tol = 1.0e-8,

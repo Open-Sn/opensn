@@ -94,11 +94,11 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = GLProductQuadrature1DSlab(n_angles),
-          inner_linear_method = "petsc_gmres",
-          l_max_its = si_max_iterations,
-          l_abs_tol = si_tolerance,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": GLProductQuadrature1DSlab(n_angles),
+          "inner_linear_method": "petsc_gmres",
+          "l_max_its": si_max_iterations,
+          "l_abs_tol": si_tolerance,
         },
       },
       xs_map = [
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     phys = DiffusionDFEMSolver.Create(lbs_block)
 
     k_solver0 = NonLinearKEigen(
-      lbs_solver = phys,
+      "lbs_solver": phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
     )

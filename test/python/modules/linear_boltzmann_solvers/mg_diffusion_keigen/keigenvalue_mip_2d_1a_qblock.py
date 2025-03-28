@@ -37,12 +37,12 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = pquad,
-          inner_linear_method = "petsc_gmres",
-          l_max_its = 50,
-          gmres_restart_interval = 50,
-          l_abs_tol = 1.0e-10,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": pquad,
+          "inner_linear_method": "petsc_gmres",
+          "l_max_its": 50,
+          "gmres_restart_interval": 50,
+          "l_abs_tol": 1.0e-10,
         },
       },
       xs_map = [

@@ -80,11 +80,11 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = GLCProductQuadrature3DXYZ(2, 4),
-          inner_linear_method = "petsc_gmres",
-          l_max_its = 500,
-          l_abs_tol = 1.0e-12,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": GLCProductQuadrature3DXYZ(2, 4),
+          "inner_linear_method": "petsc_gmres",
+          "l_max_its": 500,
+          "l_abs_tol": 1.0e-12,
         },
       },
       xs_map = [
@@ -109,8 +109,8 @@ if __name__ == "__main__":
 
 
     k_solver0 = NonLinearKEigen(
-      lbs_solver = phys,
-      nl_max_its = 500,
+      "lbs_solver": phys,
+      "nl_max_its": 500,
       nl_abs_tol = 1.0e-8,
     )
 k_solver0.Initialize()

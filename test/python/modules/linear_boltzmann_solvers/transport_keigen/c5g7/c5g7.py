@@ -38,7 +38,7 @@ if __name__ == "__main__":
       inner_linear_method = "classic_richardson"
       l_max_its = 2
     else
-      inner_linear_method = "petsc_gmres"
+      "inner_linear_method": "petsc_gmres"
       l_max_its = 5
 
     phys = DiscreteOrdinatesSolver(
@@ -46,13 +46,13 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = pquad,
-          inner_linear_method = inner_linear_method,
-          l_max_its = l_max_its,
-          l_abs_tol = 1.0e-10,
-          angle_aggregation_type = "polar",
-          angle_aggregation_num_subsets = 1,
+          "groups_from_to": ( 0, num_groups - 1 ),
+          "angular_quadrature": pquad,
+          "inner_linear_method": inner_linear_method,
+          "l_max_its": l_max_its,
+          "l_abs_tol": 1.0e-10,
+          "angle_aggregation_type": "polar",
+          "angle_aggregation_num_subsets": 1,
         },
       },
       xs_map = xs_map,
@@ -75,12 +75,12 @@ if __name__ == "__main__":
     # Execute Solver
     if k_method == "pi" then
       k_solver = PowerIterationKEigen(
-        lbs_solver = phys,
+        "lbs_solver": phys,
         k_tol = 1.0e-8,
       )
     elseif k_method == "pi_scdsa" then
       k_solver = PowerIterationKEigenSCDSA(
-        lbs_solver = phys,
+        "lbs_solver": phys,
         diff_accel_sdm = "pwld",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -89,7 +89,7 @@ if __name__ == "__main__":
       )
     elseif k_method == "pi_scdsa_pwlc" then
       k_solver = PowerIterationKEigenSCDSA(
-        lbs_solver = phys,
+        "lbs_solver": phys,
         diff_accel_sdm = "pwlc",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
@@ -98,7 +98,7 @@ if __name__ == "__main__":
       )
     elseif k_method == "pi_smm" then
       k_solver = PowerIterationKEigenSMM(
-        lbs_solver = phys,
+        "lbs_solver": phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
@@ -107,7 +107,7 @@ if __name__ == "__main__":
       )
     elseif k_method == "pi_smm_pwld" then
       k_solver = PowerIterationKEigenSMM(
-        lbs_solver = phys,
+        "lbs_solver": phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
@@ -116,8 +116,8 @@ if __name__ == "__main__":
       )
     elseif k_method == "jfnk" then
       k_solver = NonLinearKEigen(
-        lbs_solver = phys,
-        nl_max_its = 50,
+        "lbs_solver": phys,
+        n"l_max_its": 50,
         nl_abs_tol = 1.0e-10,
         nl_rel_tol = 1.0e-10,
         l_max_its = 20,

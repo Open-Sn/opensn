@@ -61,13 +61,13 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = {
         {
-          groups_from_to = [0, 1],
-          angular_quadrature = GLCProductQuadrature3DXYZ(8, 16),
-          angle_aggregation_type = "single",
-          inner_linear_method = "petsc_gmres",
-          l_abs_tol = 1.0e-6,
-          l_max_its = 300,
-          gmres_restart_interval = 30,
+          "groups_from_to": [0, 1],
+          "angular_quadrature": GLCProductQuadrature3DXYZ(8, 16),
+          "angle_aggregation_type": "single",
+          "inner_linear_method": "petsc_gmres",
+          "l_abs_tol": 1.0e-6,
+          "l_max_its": 300,
+          "gmres_restart_interval": 30,
         },
       },
       xs_map = [
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
 
     k_solver = PowerIterationKEigen(
-      lbs_solver = phys,
+      "lbs_solver": phys,
       k_tol = 1e-6,
     )
 k_solver.Initialize()
