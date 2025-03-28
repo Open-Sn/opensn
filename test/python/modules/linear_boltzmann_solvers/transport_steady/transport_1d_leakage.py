@@ -48,7 +48,7 @@ if __name__ == "__main__":
     num_groups = 1
     sigma_t = 1.0
 
-    xs_3_170 = MultiGroupXS()
+    xs1g = MultiGroupXS()
     xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
 
     # Setup Physics

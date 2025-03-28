@@ -47,6 +47,7 @@ grid = meshgen.Execute()
     unit_sim_tests.SimTest93_RayTracing({ mesh = grid )
 
     num_groups = 1
+    xs1g = MultiGroupXS()
     xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
 
     #-- Setup Physics

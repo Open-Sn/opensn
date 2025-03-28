@@ -66,6 +66,7 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 1
+    xs_1g = MultiGroupXS()
     xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
 
     strength = []
