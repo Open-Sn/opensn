@@ -48,7 +48,7 @@ if __name__ == "__main__":
       xs_map = xs_map,
     ]
 
-    lbs_options = [
+    options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
@@ -59,7 +59,8 @@ if __name__ == "__main__":
 
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    ]
+    },
+    )
 
 
     k_solver0 = NonLinearKEigen( lbs_solver = phys )

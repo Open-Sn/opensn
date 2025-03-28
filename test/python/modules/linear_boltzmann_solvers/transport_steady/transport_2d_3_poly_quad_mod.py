@@ -97,7 +97,7 @@ if __name__ == "__main__":
       bsrc[g] = 0.0
     bsrc[1] = 1.0 / 4.0 / math.pi
 
-    lbs_options = [
+    options = {
       "boundary_conditions": [
         {
           "name": "xmin",
@@ -108,7 +108,8 @@ if __name__ == "__main__":
       "scattering_order": 1,
       "max_ags_iterations": 1,
       "volumetric_sources": [ mg_src1, mg_src2 ],
-    ]
+    },
+    )
 
 
     # Initialize and Execute Solver

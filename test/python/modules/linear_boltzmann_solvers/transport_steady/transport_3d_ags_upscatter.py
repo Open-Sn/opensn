@@ -96,13 +96,14 @@ if __name__ == "__main__":
       ],
     ]
 
-    lbs_options = [
+    options = {
       "scattering_order": 0,
       "verbose_ags_iterations": True,
       "max_ags_iterations": 30,
       "ags_tolerance": 1.0e-6,
       "volumetric_sources": [ mg_src ],
-    ]
+    },
+    )
 
 
     # Initialize and Execute Solver

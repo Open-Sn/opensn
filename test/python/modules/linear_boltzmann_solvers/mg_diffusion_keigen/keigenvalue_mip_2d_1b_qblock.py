@@ -51,7 +51,7 @@ if __name__ == "__main__":
       ],
     ]
 
-    lbs_options = [
+    options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
@@ -62,7 +62,8 @@ if __name__ == "__main__":
 
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    ]
+    },
+    )
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
 

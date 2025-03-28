@@ -112,10 +112,11 @@ if __name__ == "__main__":
       ],
     ]
 
-    lbs_options = [
+    options = {
       "scattering_order": 1,
       "volumetric_sources": [ mg_src0, mg_src1 ],
-    ]
+    },
+    )
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
 

@@ -94,11 +94,12 @@ if __name__ == "__main__":
       ],
     ]
 
-    lbs_options = [
+    options = {
       "scattering_order": 1,
       "use_source_moments": True,
       "volumetric_sources": [ mg_src0, mg_src1 ],
-    ]
+    },
+    )
 
 
     # Initialize and Execute Solver

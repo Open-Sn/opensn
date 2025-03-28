@@ -106,14 +106,15 @@ if __name__ == "__main__":
       ],
     ]
 
-    lbs_options = [
+    options = {
       scattering_order = scat_order,
 
       "use_precursors": use_precursors,
 
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    ]
+    },
+    )
 
     phys = DiffusionDFEMSolver.Create(lbs_block)
 

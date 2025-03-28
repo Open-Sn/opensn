@@ -81,7 +81,7 @@ if __name__ == "__main__":
       ],
     )
 
-    lbs_options = [
+    options = {
       "boundary_conditions": [
         {
           "name": "xmin",
@@ -94,7 +94,8 @@ if __name__ == "__main__":
       "max_ags_iterations": 100,
       "ags_tolerance": 1.0e-6,
       "volumetric_sources": [ mg_src0, mg_src1 ],
-    ]
+    },
+    )
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
