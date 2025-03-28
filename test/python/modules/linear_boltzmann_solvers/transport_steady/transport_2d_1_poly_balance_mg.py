@@ -31,24 +31,27 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogical(vol0, 0, True)
     vol1 = RPPLogicalVolume( xmin = -1000.0, xmax = 0.0, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 168
     xs_3_170 =  MultiGroupXS()
     xs_3_170.LoadFromOpenSn("xs_3_170.xs")
 
     strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
+    for g in range(num_groups):
+        strength.append(0.)
     mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
-    strength[1] = 1.0
+    strength[0] = 1.0
     mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     # Setup Physics
     fac = 1
     pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
+
+    bsrc = [0.0 for _ in range(num_groups)]
+    bsrc[0] = 1.0 / 4.0 / math.pi
 
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -76,11 +79,7 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_3_170 },
       ],
-    ]
-    bsrc = []
-    for g in range(1, num_groups+1):
-      bsrc[g] = 0.0
-    bsrc[1] = 1.0 / 4.0 / math.pi
+    )
 
     lbs_options = [
       "boundary_conditions": [

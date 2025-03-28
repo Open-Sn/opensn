@@ -49,9 +49,14 @@ if __name__ == "__main__":
     sigma_t = 1.0
 
     xs1g = MultiGroupXS()
-    xs1g = xs.CreateSimpleOneGroup(sigma_t, 0.0)
+    xs1g.CreateSimpleOneGroup(sigma_t, 0.0)
 
-    # Setup Physics
+    bsrc = []
+    for g in range(num_groups):
+      bsrc.append(0.0)
+    bsrc[0] = 1.0
+
+   # Setup Physics
     pquad = GLProductQuadrature1DSlab(256)
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -70,33 +75,25 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs1g },
       ],
-    ]
-
-    bsrc = []
-    for g in range(1, num_groups+1):
-      bsrc[g] = 0.0
-    bsrc[1] = 1.0
-
-    lbs_options = [
-      "boundary_conditions": [
-        {
-          "name": "zmin",
-          "type": "isotropic",
-          "group_strength": bsrc,
+      options ={
+            "boundary_conditions": [
+                {
+                    "name": "zmin",
+                    "type": "isotropic",
+                    "group_strength": bsrc,
+                },
+            ],
+            "scattering_order": 0,
+            "save_angular_flux": True,
         },
-      ],
-      "scattering_order": 0,
-      "save_angular_flux": True,
-    ]
-
+    )
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     # Solve the problem
     ss_solver.Initialize()
     ss_solver.Execute()
 
     # Compute the leakage
     leakage = ComputeLeakage(phys, [])
-    for k, v in pairs(leakage) do
-      log.Log(LOG_0, string.format("%s=%.5e", k, v[1]))
+    for k, v in zip(leakage):
+      print(f"{k}={v[0]:%.5e")

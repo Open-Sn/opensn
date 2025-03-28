@@ -40,10 +40,9 @@ if __name__ == "__main__":
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     xs_diag =  MultiGroupXS()
     xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
-    strength = []
-    for g in range(1, Ng+1):
-      strength[g] = 0.0
-    strength[1] = 100.0
+
+    strength = [0.0 for _ in range(num_groups)]
+    strength[0] = 100.0
     mg_src = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     lbs_options = [

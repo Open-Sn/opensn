@@ -45,7 +45,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     vol1 = RPPLogicalVolume( infx = True, infy = True, zmin = -10.0, zmax = 10.0 )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 168
     xs_graphite = MultiGroupXS()
@@ -53,7 +53,9 @@ if __name__ == "__main__":
     xs_air =  MultiGroupXS()
     xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
-    strength = np.zeros(num_groups)
+    strength = []
+    for g in range(num_groups):
+      strength.append(0.)
     strength[0] = 1.0
     mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
 
@@ -65,7 +67,7 @@ if __name__ == "__main__":
       num_groups = num_groups,
       groupsets = [
         {
-          "groups_from_to": [0, 62],
+          "groups_from_to": (0, 62),
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "petsc_gmres",
@@ -76,7 +78,7 @@ if __name__ == "__main__":
           "wgdsa_l_abs_tol": 1.0e-2,
         },
         {
-          "groups_from_to": { 63, num_groups - 1 },
+          "groups_from_to": (63, num_groups - 1),
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "petsc_gmres",
@@ -92,23 +94,14 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xs_graphite },
         { "block_ids": [ 1 ], "xs": xs_air },
       ],
-    ]
-    lbs_options = [
-      "scattering_order": 1,
-      "max_ags_iterations": 1,
-      "volumetric_sources": [ mg_src ],
+      options =
+          { "scattering_order": 1,
+            "max_ags_iterations": 1,
+            "volumetric_sources": [ mg_src ]
+        },
     )
-
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
-
-    # Exports
-    if master_export == None then
-      fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
-

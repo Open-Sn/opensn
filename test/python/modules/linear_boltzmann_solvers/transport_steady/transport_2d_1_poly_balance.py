@@ -40,19 +40,19 @@ if __name__ == "__main__":
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogical(vol0, 0, True)
     vol1 = RPPLogicalVolume( xmin = -1000.0, xmax = 0.0, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 1
     xs_1g = MultiGroupXS()
-    xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)
+    xs_1g.CreateSimpleOneGroup(1.0, 1.0)
 
     strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
+    for g in range(num_groups):
+        strength.append(0.)
     mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
-    strength[1] = 1.0
+    strength[0] = 1.0
     mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 
     # Setup Physics
@@ -76,12 +76,13 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_1g },
       ],
-    ]
+        options = {
+            "scattering_order": 0,
+            "volumetric_sources": [ mg_src0, mg_src1 ],
+        },
+    )
 
-    lbs_options = [
-      "scattering_order": 0,
-      "volumetric_sources": [ mg_src0, mg_src1 ],
-    ]
+
 
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
@@ -120,7 +121,3 @@ if __name__ == "__main__":
 
     if rank == 0:
         print(f"Max-value2={maxval:.5e}")
-
-    # Exports
-    if master_export == None then
-      fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")

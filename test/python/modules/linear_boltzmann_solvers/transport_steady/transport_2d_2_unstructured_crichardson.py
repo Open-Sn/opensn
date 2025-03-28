@@ -18,10 +18,7 @@ if "opensn_console" not in globals():
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -58,8 +55,8 @@ if __name__ == "__main__":
     xs_3_170.LoadFromOpenSn("xs_3_170.xs")
 
     strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
+    for g in range(num_groups):
+        strength.append(0.)
     mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
     mg_src2 = VolumetricSource( block_ids = [ 2 ], group_strength = strength )
 

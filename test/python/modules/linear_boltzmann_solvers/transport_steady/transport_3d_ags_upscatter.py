@@ -56,9 +56,7 @@ if __name__ == "__main__":
     xs_upscatter =  MultiGroupXS()
     xs_upscatter.LoadFromOpenSn("simple_upscatter.xs")
 
-    strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 1.0
+    strength = [1.0 for _ in range(num_groups)]
     mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
 
     # Setup Physics

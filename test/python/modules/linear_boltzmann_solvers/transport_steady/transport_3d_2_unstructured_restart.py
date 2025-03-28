@@ -67,11 +67,9 @@ if __name__ == "__main__":
 
     num_groups = 1
     xs_1g = MultiGroupXS()
-    xs_1g = xs.CreateSimpleOneGroup(1000.0, 0.9999)
+    xs_1g.CreateSimpleOneGroup(1000.0, 0.9999)
 
-    strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.5
+    strength = [0.5 for _ in range(num_groups)]
     mg_src1 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
     mg_src2 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
 

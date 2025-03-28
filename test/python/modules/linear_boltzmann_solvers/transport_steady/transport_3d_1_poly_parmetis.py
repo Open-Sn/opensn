@@ -59,8 +59,8 @@ if __name__ == "__main__":
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
+    for g in range(num_groups):
+        strength.append(0.)
     mg_src0 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
     mg_src1 = VolumetricSource( block_ids = [ 2 ], group_strength = strength )
 

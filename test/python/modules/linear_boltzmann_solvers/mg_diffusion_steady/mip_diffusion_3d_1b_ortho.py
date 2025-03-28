@@ -59,10 +59,8 @@ if __name__ == "__main__":
     xs_graphite =  MultiGroupXS()
     xs_graphite.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
 
-    strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
-    strength[1] = 1.0
+    strength = [0.0 for _ in range(num_groups)]
+    strength[0] = 1.0
     mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
 
     # Setup Physics
