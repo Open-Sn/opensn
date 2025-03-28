@@ -48,9 +48,7 @@ if __name__ == "__main__":
     xs_1g = MultiGroupXS()
     xs_1g.CreateSimpleOneGroup(1.0, 1.0)
 
-    strength = []
-    for g in range(num_groups):
-        strength.append(0.)
+    strength = [0.0 for _ in range(num_groups)]
     mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
     strength[0] = 1.0
     mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )

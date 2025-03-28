@@ -66,9 +66,7 @@ if __name__ == "__main__":
     xs_air = MultiGroupXS()
     xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
-    strength = []
-    for g in range(num_groups):
-        strength.append(0.)
+    strength = [0.0 for _ in range(num_groups)]
     strength[0] = 1.0
     mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
     strength[0] = 0.0
