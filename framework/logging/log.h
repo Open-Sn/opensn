@@ -94,7 +94,7 @@ private:
   DummyStream dummy_stream_;
   int verbosity_{0};
 
-  Logger() noexcept = default;
+  Logger() = default;
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
