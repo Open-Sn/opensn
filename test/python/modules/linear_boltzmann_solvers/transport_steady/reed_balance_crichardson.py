@@ -12,7 +12,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         "boundary_conditions": [ { "name": "zmin", "type": "vacuum" }, { "name": "zmax", "type": "vacuum" } ],
         "volumetric_sources": [ mg_src0, mg_src1 ],
       },
-    ]
+    )
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )

@@ -12,7 +12,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         ],
         "volumetric_sources": [ mg_src ],
       },
-    ]
+    )
 
 
     # Initialize and execute solver

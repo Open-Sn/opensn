@@ -97,8 +97,8 @@ if __name__ == "__main__":
     ss_solver.Initialize()
     ss_solver.Execute()
 
-    leakage_left_1 = ComputeLeakage(phys, { "zmin" )["zmin"][1]
-    leakage_right_1 = ComputeLeakage(phys, { "zmax" )["zmax"][1]
+    leakage_left_1 = ComputeLeakage(phys, { "zmin" )["zmin"][1])
+    leakage_right_1 = ComputeLeakage(phys, { "zmax" )["zmax"][1])
 
     WriteAngularFluxes(phys, "angular_io")
 
@@ -110,8 +110,8 @@ if __name__ == "__main__":
 
     ReadAngularFluxes(phys2, "angular_io")
 
-    leakage_left_2 = ComputeLeakage(phys2, { "zmin" )["zmin"][1]
-    leakage_right_2 = ComputeLeakage(phys2, { "zmax" )["zmax"][1]
+    leakage_left_2 = ComputeLeakage(phys2, { "zmin" )["zmin"][1])
+    leakage_right_2 = ComputeLeakage(phys2, { "zmax" )["zmax"][1])
 
     leakage_left_diff = leakage_left_1 - leakage_left_2
     leakage_right_diff = leakage_right_1 - leakage_right_2

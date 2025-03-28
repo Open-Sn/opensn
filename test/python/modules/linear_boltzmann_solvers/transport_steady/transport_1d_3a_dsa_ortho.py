@@ -97,7 +97,7 @@ if __name__ == "__main__":
       "scattering_order": 1,
       "max_ags_iterations": 1,
       "volumetric_sources": [ mg_src ],
-    ]
+    )
 
 
     # Initialize and Execute Solver

@@ -5,7 +5,6 @@
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -36,7 +35,7 @@ if __name__ == "__main__":
 
     # Add cross sections to materials
     xs1g = MultiGroupXS()
-    xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
+    xs1g.CreateSimpleOneGroup(1.0, 0.0)
 
     mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = [1.0] )
 
