@@ -15,16 +15,10 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.solver import SteadyStateSolver
 
 if __name__ == "__main__":
-
 
     nodes = []
     N = 2
@@ -43,6 +37,7 @@ if __name__ == "__main__":
     num_groups = 172
 
     # Add cross sections to materials
+    xs_hdpe = MultiGroupXS()
     xs_hdpe = xs.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
 
     strength = []
@@ -90,7 +85,6 @@ if __name__ == "__main__":
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 

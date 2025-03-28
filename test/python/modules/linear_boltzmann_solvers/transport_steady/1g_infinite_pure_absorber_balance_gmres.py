@@ -32,7 +32,7 @@ if __name__ == "__main__":
     meshgen = OrthogonalMeshGenerator(
         node_sets=[nodes, nodes, nodes]
     )
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Cross-section data
     num_groups = 1
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         }
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
-        phys.ComputeBalance()
+    phys.ComputeBalance()

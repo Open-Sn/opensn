@@ -14,19 +14,15 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.solver import SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
+    import numpy as np
 
 if __name__ == "__main__":
-
 
     num_procs = 4
 
@@ -37,10 +33,7 @@ if __name__ == "__main__":
     nodes = []
     N = 1000
     L = 100
-    #N=10
-    #L=200e6
     xmin = -L / 2
-    #xmin = 0.0
     dx = L / N
     for i in range(N+1):
       nodes.append(xmin + i * dx)
@@ -55,15 +48,13 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 168
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
     xs_air =  MultiGroupXS()
     xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
-    strength = []
-    for g in range(1, num_groups+1):
-      strength[g] = 0.0
-    strength[1] = 1.0
+    strength = np.zeros(num_groups)
+    strength[0] = 1.0
     mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
 
     # Setup Physics
@@ -102,7 +93,6 @@ if __name__ == "__main__":
         { "block_ids": [ 1 ], "xs": xs_air },
       ],
     ]
-
     lbs_options = [
       "scattering_order": 1,
       "max_ags_iterations": 1,
@@ -112,7 +102,6 @@ if __name__ == "__main__":
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -123,4 +112,3 @@ if __name__ == "__main__":
     if master_export == None then
       fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
 
-    # Plots

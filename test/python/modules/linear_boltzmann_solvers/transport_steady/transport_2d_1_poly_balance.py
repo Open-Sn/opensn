@@ -11,19 +11,15 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.solver import SteadyStateSolver
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
-
 
     # Check number of processors
     num_procs = 1
@@ -49,6 +45,7 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     num_groups = 1
+    xs_1g = MultiGroupXS()
     xs_1g = xs.CreateSimpleOneGroup(1.0, 1.0)
 
     strength = []
@@ -88,7 +85,6 @@ if __name__ == "__main__":
 
 
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 

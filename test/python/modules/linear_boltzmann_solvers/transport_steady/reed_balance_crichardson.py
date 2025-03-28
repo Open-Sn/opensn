@@ -16,29 +16,21 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.solver import SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
 
+    widths = [ 2., 1., 2., 1., 2. ]
+    nrefs = [ 200, 200, 200, 200, 200 ]
 
-    widths = { 2., 1., 2., 1., 2. }
-    nrefs = { 200, 200, 200, 200, 200 }
+    Nmat = len(widths)
 
-    Nmat = #widths
-
-    nodes = []
-    counter = 1
-    nodes[counter] = 0.
-    for imat in range(1, Nmat+1):
-      dx = widths[imat] / nrefs[imat]
-      for i in range(1, nrefs[imat]+1):
-        counter = counter + 1
-        nodes[counter] = nodes[counter - 1] + dx
+    nodes = [0.]
+    for imat in range(Nmat):
+        dx = widths[imat] / nrefs[imat]
+        for i in range(nrefs[imat]):
+            nodes.append( nodes[-1] + dx )
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
     grid = meshgen.Execute()
@@ -46,25 +38,27 @@ if __name__ == "__main__":
     # Set block IDs
     z_min = 0.0
     z_max = widths[1]
-    for imat in range(1, Nmat+1):
-      z_max = z_min + widths[imat]
-      log.Log(LOG_0, "imat=" + imat + ", zmin=" + z_min + ", zmax=" + z_max)
-      lv = RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
-    grid.SetBlockIDFromLogicalVolume(lv, imat - 1, True)
-      z_min = z_max
+    for imat in range(Nmat):
+        z_max = z_min + widths[imat]
+        print("imat=",imat,", zmin=",z_min,", zmax=",z_max)
+        lv = RPPLogicalVolume( infx = True, infy = True, zmin = z_min, zmax = z_max )
+        grid.SetBlockIDFromLogical(lv, imat, True)
+        z_min = z_max
 
     # Add cross sections to materials
-    total = { 50., 5., 0., 1., 1. }
-    c = { 0., 0., 0., 0.9, 0.9 }
-    xs_map = []
-    for imat in range(1, Nmat+1):
-      xs_map[imat] = {
-        "block_ids": [ imat - 1 ], "xs": xs.CreateSimpleOneGroup(total[imat], c[imat]),
-      }
+    total = [ 50., 5., 0., 1., 1. ]
+    c = [ 0., 0., 0., 0.9, 0.9 ]
+    xs_map = len(total)*[None]
+    for imat in range(Nmat):
+        xs_ = MultiGroupXS()
+        xs_.CreateSimpleOneGroup(total[imat], c[imat])
+        xs_map[imat] = {
+            "block_ids": [ imat ], "xs": xs_,
+        }
 
     # Create sources in 1st and 4th materials
-    mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = { 50. } )
-    mg_src1 = VolumetricSource( block_ids = [ 3 ], group_strength = { 1. } )
+    src0 = VolumetricSource( block_ids = [ 0 ], group_strength = [ 50. ] )
+    src1 = VolumetricSource( block_ids = [ 3 ], group_strength = [  1. ] )
 
     # Angular Quadrature
     gl_quad = GLProductQuadrature1DSlab(128)
@@ -92,10 +86,8 @@ if __name__ == "__main__":
       },
     ]
 
-
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 

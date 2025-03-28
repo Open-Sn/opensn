@@ -12,19 +12,13 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.solver import SteadyStateSolver
 
 if __name__ == "__main__":
-
 
     nodes = []
     N = 2
@@ -38,33 +32,31 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
 
     # Set block IDs
-    grid:SetUniformBlockID(0)
-
-    num_groups = 1
+    grid.SetUniformBlockID(0)
 
     # Add cross sections to materials
+    xs1g = MultiGroupXS()
     xs1g = xs.CreateSimpleOneGroup(1.0, 0.0)
 
-    strength = []
-    strength[1] = 1.0
-    mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
+    mg_src = VolumetricSource( block_ids = [ 0 ], group_strength = [1.0] )
 
     # Angular Quadrature
     pquad = GLCProductQuadrature3DXYZ(4, 8)
 
     # LBS block option
+    num_groups = 1
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
       num_groups = num_groups,
-      groupsets = {
+      groupsets = [
         {
-          groups_from_to = { 0, num_groups - 1 },
-          angular_quadrature = pquad,
-          inner_linear_method = "petsc_richardson",
-          l_abs_tol = 1.0e-9,
-          l_max_its = 300,
+            "groups_from_to": (0, num_groups - 1),
+            "angular_quadrature":  pquad,
+            "inner_linear_method": "petsc_richardson",
+            "l_abs_tol":1.0e-9,
+            "l_max_its": 300,
         },
-      },
+      ],
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs1g },
       ],
@@ -79,12 +71,10 @@ if __name__ == "__main__":
         ],
         "volumetric_sources": [ mg_src ],
       },
-    ]
-
+    )
 
     # Initialize and execute solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
