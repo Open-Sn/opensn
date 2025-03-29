@@ -42,7 +42,7 @@ if __name__ == "__main__":
     ds = L / N
     nodes = [i * ds for i in range(N + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Define logical volumes and assign block IDs
@@ -98,8 +98,8 @@ if __name__ == "__main__":
 
     # Forward solve
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Get field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     phys.SetOptions(adjoint=True, volumetric_sources=[adj_src])
 
     # Adjoint solve and write flux moments
-        ss_solver.Execute()
+    ss_solver.Execute()
     phys.WriteFluxMoments("adjoint_2d_2")
 
     # Create response evaluator and evaluate response

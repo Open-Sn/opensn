@@ -17,13 +17,12 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.Get_rank()
     barrier = MPI.COMM_WORLD.Barrier
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
     from pyopensn.response import ResponseEvaluator
-    from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 else:
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     for i in range(N + 1):
         nodes.append(i * ds)
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Define a logical volume that spans in x (infinite) and in y from 0 to 0.8*L.
@@ -119,8 +118,8 @@ if __name__ == "__main__":
 
     # Forward solve
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
@@ -147,7 +146,7 @@ if __name__ == "__main__":
     )
 
     # Adjoint solve and write flux moments
-        ss_solver.Execute()
+    ss_solver.Execute()
     phys.WriteFluxMoments("adjoint_2d_1")
 
     # Create response evaluator and evaluate response
