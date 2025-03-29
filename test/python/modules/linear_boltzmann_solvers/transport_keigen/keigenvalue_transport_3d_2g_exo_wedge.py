@@ -15,40 +15,23 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import FromFileMeshGenerator
     from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
 
 if __name__ == "__main__":
 
 
     num_procs = 1
-    if check_num_procs == None and number_of_processes ~= num_procs then
-      log.Log(
-        LOG_0ERROR,
-        "Incorrect amount of processors. "
-          + "Expected "
-          + tostring(num_procs)
-          + ". Pass check_num_procs=False to override if possible."
-      )
-      os.exit(False)
+    if size != num_procs:
+        sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
 
     # Setup mesh
-    meshgen = MeshGenerator(
-      inputs = {
-        FromFileMeshGenerator(
-          filename = "../../../../assets/mesh/fuel_wedge.e",
-        ),
-      },
+    meshgen = FromFileMeshGenerator(
+        filename = "../../../../assets/mesh/fuel_wedge.e",
     )
-        grid = MeshGenerator.Execute(meshgen)
+    grid = meshgen.Execute()
 
     # Set Materials (Fuel)
     xs_fuel_g2 = MultiGroupXS()
@@ -73,9 +56,7 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_fuel_g2 },
       ],
-    ]
-
-    options = {
+      options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "xmax", "type": "reflecting" },
@@ -88,13 +69,12 @@ if __name__ == "__main__":
       "use_precursors": False,
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    },
+      },
     )
-
 
     k_solver = PowerIterationKEigen(
-      "lbs_solver": phys,
+      lbs_solver = phys,
       k_tol = 1e-6,
     )
-k_solver.Initialize()
-k_solver.Execute()
+    k_solver.Initialize()
+    k_solver.Execute()

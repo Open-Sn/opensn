@@ -18,7 +18,6 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigenSMM
-    from pyopensn.logvol import RPPLogicalVolume
 
 
 if __name__ == "__main__":
@@ -47,7 +46,7 @@ if __name__ == "__main__":
     zmesh = [zmin + k * dz for k in range(Nz + 1)]
 
     meshgen = OrthogonalMeshGenerator(node_sets=[xmesh, ymesh, zmesh])
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     # Load cross section data using the OpenMC MGXS library

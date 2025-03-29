@@ -30,7 +30,7 @@ if __name__ == "__main__":
     dx = L / N
     nodes = [xmin + k * dx for k in range(N + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
     vol1 = RPPLogicalVolume(
         xmin=-1000.0,

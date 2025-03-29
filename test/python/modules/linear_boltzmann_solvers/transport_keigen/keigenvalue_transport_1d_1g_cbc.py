@@ -12,71 +12,48 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.aqud import GLProductQuadrature1DSlab
     from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.solver import DiscreteOrdinatesSolver, NonLinearKEigen
 
 if __name__ == "__main__":
 
-
     num_procs = 4
-
-    # NOTE: For command line inputs, specify as:
-    #       variable=[[argument]]
-
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
-
-    MPIBarrier()
 
     # ##################################################
     # ##### Parameters #####
     # ##################################################
 
     # Mesh variables
-    if L == None then
-      L = 100.0
-    if n_cells == None then
-      n_cells = 50
+    L = 100.0
+    n_cells = 50
 
     # Transport angle information
-    if n_angles == None then
-      n_angles = 32
-    if scat_order == None then
-      scat_order = 0
+    n_angles = 32
+    scat_order = 0
 
     # k-eigenvalue iteration parameters
-    if kes_max_iterations == None then
-      kes_max_iterations = 5000
-    if kes_tolerance == None then
-      kes_tolerance = 1e-8
+    kes_max_iterations = 5000
+    kes_tolerance = 1e-8
 
     # Source iteration parameters
-    if si_max_iterations == None then
-      si_max_iterations = 500
-    if si_tolerance == None then
-      si_tolerance = 1e-8
+    si_max_iterations = 500
+    si_tolerance = 1e-8
 
     # Delayed neutrons
-    if use_precursors == None then
-      use_precursors = True
+    use_precursors = True
 
     # ##################################################
     # ##### Run problem #####
     # ##################################################
 
     # Setup mesh
-    nodes = []
     dx = L / n_cells
-    for i in range(0, n_cells+1):
-      nodes[i + 1] = i * dx
+    nodes = [i * dx for i in range(n_cells + 1)]
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
     grid = meshgen.Execute()
@@ -105,28 +82,20 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xs_simple_fissile },
       ],
       options = {
-        scattering_order = scat_order,
-
+        "scattering_order": scat_order,
         "use_precursors": use_precursors,
-
         "verbose_inner_iterations": False,
         "verbose_outer_iterations": True,
         "save_angular_flux": True,
       },
       sweep_type = "CBC",
-    ]
+    )
 
-
-    k_solver0 = NonLinearKEigen(
-      "lbs_solver": phys,
+    k_solver = NonLinearKEigen(
+      lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
     )
-k_solver0.Initialize()
-k_solver0.Execute()
+    k_solver.Initialize()
+    k_solver.Execute()
 
-    # Get field functions
-    # Line plot
-    # Volume integrations
-    # Exports
-    # Plots

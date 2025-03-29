@@ -11,22 +11,15 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
-    from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen, PowerIterationKEigenSCDSA, PowerIterationKEigenSMM, NonLinearKEigen
 
 if __name__ == "__main__":
 
-
-    dofile("mesh/gmesh_coarse.lua")
-    dofile("materials/materials.lua")
+    with open("utils/qblock_mesh.py") as f:
+        exec(f.read(), globals())
+    with open("utils/qblock_materials.py") as f:
+        exec(f.read(), globals())
 
     # Setup Physics
 
@@ -34,7 +27,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    if string.find(k_method, "scdsa") or string.find(k_method, "smm") then
+    if string.find(k_method, "scdsa") or string.find(k_method, "smm"):
       inner_linear_method = "classic_richardson"
       l_max_its = 2
     else
@@ -73,51 +66,51 @@ if __name__ == "__main__":
     )
 
     # Execute Solver
-    if k_method == "pi" then
+    if k_method == "pi":
       k_solver = PowerIterationKEigen(
-        "lbs_solver": phys,
+        lbs_solver = phys,
         k_tol = 1.0e-8,
       )
-    elseif k_method == "pi_scdsa" then
+    elif k_method == "pi_scdsa":
       k_solver = PowerIterationKEigenSCDSA(
-        "lbs_solver": phys,
+        lbs_solver = phys,
         diff_accel_sdm = "pwld",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
       )
-    elseif k_method == "pi_scdsa_pwlc" then
+    elif k_method == "pi_scdsa_pwlc":
       k_solver = PowerIterationKEigenSCDSA(
-        "lbs_solver": phys,
+        lbs_solver = phys,
         diff_accel_sdm = "pwlc",
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 50,
       )
-    elseif k_method == "pi_smm" then
+    elif k_method == "pi_smm":
       k_solver = PowerIterationKEigenSMM(
-        "lbs_solver": phys,
+        lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 30,
         diff_sdm = "pwlc",
       )
-    elseif k_method == "pi_smm_pwld" then
+    elif k_method == "pi_smm_pwld":
       k_solver = PowerIterationKEigenSMM(
-        "lbs_solver": phys,
+        lbs_solver = phys,
         accel_pi_verbose = True,
         k_tol = 1.0e-8,
         accel_pi_k_tol = 1.0e-8,
         accel_pi_max_its = 30,
         diff_sdm = "pwld",
       )
-    elseif k_method == "jfnk" then
+    elif k_method == "jfnk":
       k_solver = NonLinearKEigen(
-        "lbs_solver": phys,
-        n"l_max_its": 50,
+        lbs_solver = phys,
+        nl_max_its = 50,
         nl_abs_tol = 1.0e-10,
         nl_rel_tol = 1.0e-10,
         l_max_its = 20,
@@ -132,9 +125,5 @@ if __name__ == "__main__":
       )
       return
 
-k_solver.Initialize()
-k_solver.Execute()
-
-    if master_export == None then
-      fflist = phys.GetScalarFieldFunctionList()
-      fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")
+    k_solver.Initialize()
+    k_solver.Execute()
