@@ -49,7 +49,7 @@ if __name__ == "__main__":
             ycuts=[0.0],
         )
     )
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Set block IDs using logical volumes
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
@@ -103,8 +103,8 @@ if __name__ == "__main__":
         }
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Retrieve the scalar field function list.
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:
-        print(f"Max-value1={maxval:.5e}")
+      print(f"Max-value1={maxval:.5e}")
 
     # Volume integration for the twentieth field function
     ffi1 = FieldFunctionInterpolationVolume()
@@ -131,4 +131,4 @@ if __name__ == "__main__":
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:
-        print(f"Max-value2={maxval:.5e}")
+      print(f"Max-value2={maxval:.5e}")

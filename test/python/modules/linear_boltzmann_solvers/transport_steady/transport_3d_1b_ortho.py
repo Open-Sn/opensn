@@ -26,10 +26,7 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
 
-
     num_procs = 4
-    if reflecting == None then
-      reflecting = True
 
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
@@ -42,22 +39,16 @@ if __name__ == "__main__":
     dx = L / N
     for i in range(N+1):
       nodes.append(xmin + i * dx)
-    znodes = []
-    for i in range(1, (N / 2 + 1)+1):
-      znodes.append(xmin + i * dx)
 
-    if reflecting then
-      meshgen = OrthogonalMeshGenerator( node_sets = { nodes, nodes, znodes } )
-    else
-      meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
+    meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
     grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogical(vol0, 0, True)
 
     num_groups = 21
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -65,6 +56,9 @@ if __name__ == "__main__":
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(4, 8)
+
+    bsrc = [0.0 for _ in range(num_groups)]
+    bsrc[0] = 1.0 / 4.0 / math.pi
 
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -84,51 +78,31 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_graphite },
       ],
-    ]
-    bsrc = []
-    bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
     options = {
       "boundary_conditions": [
-        { "name": "xmin", "type": "isotropic", "group_strength": bsrc },
+        { "name": "xmin",
+          "type": "isotropic",
+          "group_strength": bsrc },
       ],
       "scattering_order": 1,
       "volumetric_sources": [ mg_src ],
     },
     )
-    if reflecting then
-      table.insert(lbs_options.boundary_conditions, { "name": "zmin", "type": "reflecting" )
-
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
-
-    # Slice plot
-    #slices = []
-    #for k in range(1, count+1):
-    #    slices[k] = fieldfunc.FFInterpolationCreate(SLICE)
-    #    fieldfunc.SetProperty(slices[k],SLICE_POINT,{x = 0.0, y = 0.0, z = 0.8001)
-    #    fieldfunc.SetProperty(slices[k],ADD_FIELDFUNCTION,fflist[k])
-    #    --fieldfunc.SetProperty(slices[k],SLICE_TANGENT,{x = 0.393, y = 1.0-0.393, z = 0)
-    #    --fieldfunc.SetProperty(slices[k],SLICE_NORMAL,{x = -(1.0-0.393), y = -0.393, z = 0.0)
-    #    --fieldfunc.SetProperty(slices[k],SLICE_BINORM,{x = 0.0, y = 0.0, z = 1.0)
-    #    fieldfunc.Initialize(slices[k])
-    #    fieldfunc.Execute(slices[k])
-    #    fieldfunc.ExportToPython(slices[k])
-    #end
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()
@@ -139,9 +113,9 @@ if __name__ == "__main__":
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[20])
+    curffi.AddFieldFunction(fflist[19])
 
     curffi.Initialize()
     curffi.Execute()
@@ -149,17 +123,3 @@ if __name__ == "__main__":
 
     if rank == 0:
         print(f"Max-value2={maxval:.5e}")
-
-    # Exports
-    if master_export == None then
-      if reflecting then
-        fieldfunc.ExportToVTKMulti(fflist, "ZPhi3DReflected")
-      else
-        fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-
-    # Plots
-    if location_id == 0 and master_export == None then
-#os.system("python ZPFFI00.py")
-#--os.system("python ZPFFI11.py")
-      #local handle = io.popen("python ZPFFI00.py")
-      print("Execution completed")

@@ -48,7 +48,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     num_groups = 1
-    xs_air =  MultiGroupXS()
+    xs_air = MultiGroupXS()
     xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -140,12 +140,12 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Slice plot
     slice2 = fieldfunc.FFInterpolationCreate(SLICE)
     fieldfunc.SetProperty(slice2, SLICE_POINT, { x = 0.0, y = 0.0, z = 0.025 )
-    fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[1])
+    fieldfunc.SetProperty(slice2, ADD_FIELDFUNCTION, fflist[0])
 
     fieldfunc.Initialize(slice2)
     fieldfunc.Execute(slice2)
@@ -154,9 +154,9 @@ if __name__ == "__main__":
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()
@@ -168,7 +168,8 @@ if __name__ == "__main__":
     #-- Volume integrations
     #ffi1 = FieldFunctionInterpolationVolume()
     #curffi = ffi1
-    #fieldfunc.SetProperty(curffi,OPERATION,OP_MAX)
+    #fieldfunc.SetProperty(curffi,OPERATION,"max"
+)
     #fieldfunc.SetProperty(curffi,LOGICAL_VOLUME,vol0)
     #fieldfunc.SetProperty(curffi,ADD_FIELDFUNCTION,fflist[160])
     #

@@ -44,8 +44,8 @@ grid = meshgen.Execute()
 
     # ############################################### Set Material IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+grid.SetBlockIDFromLogical(vol0, 0, True)
     vol1 = RPPLogicalVolume( xmin = -1000.0, xmax = L / N, infy = True, infz = True )
-grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+grid.SetBlockIDFromLogical(vol1, 1, True)
 
 grid.ComputeVolumePerBlockID()

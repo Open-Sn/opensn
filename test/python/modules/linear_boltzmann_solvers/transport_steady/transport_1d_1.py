@@ -46,7 +46,7 @@ if __name__ == "__main__":
     num_groups = 168
     grid.SetUniformBlockID(0)
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_3_170.xs")
+    xs_3_170.LoadFromOpenSn("xs_168g.xs")
 
     # Volumetric sources
     strength = []

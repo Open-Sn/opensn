@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # Set block IDs
     grid.SetUniformBlockID(0)
 
-    xs_simple_fissile =  MultiGroupXS()
+    xs_simple_fissile = MultiGroupXS()
     xs_simple_fissile.LoadFromOpenSn("+/transport_keigen/simple_fissile.xs")
 
     # Setup Physics

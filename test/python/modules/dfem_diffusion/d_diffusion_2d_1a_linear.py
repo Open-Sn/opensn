@@ -123,7 +123,7 @@ fflist = phys.GetFieldFunctions()
 cline.SetInitialPoint( x = -L / 2 )
 cline.SetFinalPoint( x = L / 2 )
 cline.SetNumberOfPoints(50)
-cline.AddFieldFunction(fflist[1])
+cline.AddFieldFunction(fflist[0])
 
 cline.Initialize()
 cline.Execute()
@@ -135,9 +135,10 @@ cline.Execute()
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffvol = FieldFunctionInterpolationVolume()
-    ffvol.SetOperationType(OP_MAX)
+    ffvol.SetOperationType("max"
+)
     ffvol.SetLogicalVolume(vol0)
-    ffvol.AddFieldFunction(fflist[1])
+    ffvol.AddFieldFunction(fflist[0])
 
     ffvol.Initialize(ffvol)
     ffvol.Execute(ffvol)

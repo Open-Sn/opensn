@@ -44,14 +44,14 @@ if __name__ == "__main__":
     meshgen = MeshGenerator(
       inputs = {
         FromFileMeshGenerator(
-          filename = "+/+/+/+/assets/mesh/fuel_hex.e",
+          filename = "../../../../assets/mesh/fuel_hex.e",
         ),
       },
     )
         grid = MeshGenerator.Execute(meshgen)
 
     # Set Materials (Fuel)
-    xs_fuel_g2 =  MultiGroupXS()
+    xs_fuel_g2 = MultiGroupXS()
     xs_fuel_g2.LoadFromOpenSn("xs_fuel_g2.xs")
 
     num_groups = 2

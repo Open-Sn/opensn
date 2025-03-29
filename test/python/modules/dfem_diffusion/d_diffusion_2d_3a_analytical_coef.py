@@ -121,9 +121,10 @@ fflist = phys.GetFieldFunctions()
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
 
     ffvol = FieldFunctionInterpolationVolume()
-    ffvol.SetOperationType(OP_MAX)
+    ffvol.SetOperationType("max"
+)
     ffvol.SetLogicalVolume(vol0)
-    ffvol.AddFieldFunction(fflist[1])
+    ffvol.AddFieldFunction(fflist[0])
 
     ffvol.Initialize(ffvol)
     ffvol.Execute(ffvol)

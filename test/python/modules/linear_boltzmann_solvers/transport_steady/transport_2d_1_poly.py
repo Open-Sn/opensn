@@ -40,14 +40,14 @@ if __name__ == "__main__":
             ycuts=[0.0],
         )
     )
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Cross-section data
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
     grid.SetBlockIDFromLogical(vol0, 0, True)
     num_groups = 168
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_3_170.xs")
+    xs_3_170.LoadFromOpenSn("xs_168g.xs")
 
     # Volumetric sources
     strength = []

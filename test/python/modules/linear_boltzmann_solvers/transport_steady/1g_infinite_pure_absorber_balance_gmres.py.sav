@@ -27,7 +27,7 @@ if __name__ == "__main__":
     xmin = -L / 2
     dx = L / N
     for i in range(N + 1):
-        nodes.append(xmin + (i - 1) * dx)
+        nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(
         node_sets=[nodes, nodes, nodes]

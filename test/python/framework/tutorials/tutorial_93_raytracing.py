@@ -138,7 +138,7 @@ grid = meshgen.Execute()
 ss_solver.Initialize()
 ss_solver.Execute()
 
-    ff_m0 = GetScalarFieldFunctionList(phys)
+    ff_m0 = phys.GetScalarFieldFunctionList()
 
     fieldfunc.ExportToVTKMulti({ ff_m0[1] }, "SimTest_93_LBS_" + solver_name)
     MPIBarrier()

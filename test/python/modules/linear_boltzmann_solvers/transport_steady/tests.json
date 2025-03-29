@@ -6,13 +6,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   In-flow rate                =",
+        "key": " In-flow rate                =",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       }
@@ -181,7 +181,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  zmax=",
+        "key": "zmax=",
         "goldvalue": 0.109692,
         "abs_tol": 0.0001
       }
@@ -227,7 +227,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 1083.08571,
         "abs_tol": 0.0001
       }
@@ -240,7 +240,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 1083.08571,
         "abs_tol": 0.0001
       }
@@ -253,7 +253,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 41.58445,
         "abs_tol": 0.0001
       }
@@ -266,7 +266,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 41.58445,
         "abs_tol": 0.0001
       }
@@ -279,13 +279,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.51187,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.00142458,
         "abs_tol": 0.0001
       }
@@ -298,13 +298,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.50758,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000252527,
         "abs_tol": 0.0001
       }
@@ -383,13 +383,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.52745,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000376339,
         "abs_tol": 0.0001
       }
@@ -402,13 +402,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.52831,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000804576,
         "abs_tol": 0.0001
       }
@@ -421,13 +421,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.52745,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000376339,
         "abs_tol": 0.0001
       }
@@ -440,13 +440,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.52745,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000376339,
         "abs_tol": 0.0001
       }
@@ -459,13 +459,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.52745,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000376339,
         "abs_tol": 0.0001
       }
@@ -490,13 +490,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.000102348,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 9.28438e-06,
         "abs_tol": 1e-06
       }
@@ -509,19 +509,19 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 1.4745,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 1.4745,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value3=",
+        "key": "Max-value3=",
         "goldvalue": 1.4745,
         "abs_tol": 1e-05
       }
@@ -568,13 +568,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 0.555349,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value2=",
+        "key": "Max-value2=",
         "goldvalue": 0.000374343,
         "abs_tol": 0.0001
       }
@@ -676,13 +676,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Absorption rate             =",
+        "key": " Absorption rate             =",
         "goldvalue": 100.6178,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 0.3821562,
         "abs_tol": 1e-06
       }
@@ -696,13 +696,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Absorption rate             =",
+        "key": " Absorption rate             =",
         "goldvalue": 100.6178,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 0.3821562,
         "abs_tol": 1e-06
       }
@@ -715,7 +715,7 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Max-value1=",
+        "key": "Max-value1=",
         "goldvalue": 5.88996,
         "abs_tol": 0.0001
       }
@@ -728,25 +728,25 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Absorption rate             =",
+        "key": " Absorption rate             =",
         "goldvalue": 999.9999,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Production rate             =",
+        "key": " Production rate             =",
         "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   In-flow rate                =",
+        "key": " In-flow rate                =",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       }
@@ -759,13 +759,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   In-flow rate                =",
+        "key": " In-flow rate                =",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       }
@@ -812,13 +812,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Production rate             =",
+        "key": " Production rate             =",
         "goldvalue": 12.5,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 12.5,
         "abs_tol": 1e-06
       }
@@ -832,13 +832,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Absorption rate             =",
+        "key": " Absorption rate             =",
         "goldvalue": 0.324502,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": " Out-flow rate               =",
         "goldvalue": 13.43586,
         "abs_tol": 1e-06
       }
@@ -851,13 +851,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Leakage-Diff1=",
+        "key": "Leakage-Diff1=",
         "goldvalue": 0.0,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Leakage-Diff2=",
+        "key": "Leakage-Diff2=",
         "goldvalue": 0.0,
         "abs_tol": 0.0001
       }

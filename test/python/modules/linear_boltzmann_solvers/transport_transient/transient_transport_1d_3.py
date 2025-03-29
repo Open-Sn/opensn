@@ -48,7 +48,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     vol0 = RPPLogicalVolume( infx = True, infy = True, zmin = -L / 4, zmax = L / 4 )
-    grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
+    grid.SetBlockIDFromLogical(vol0, 1, True)
 
     # Add materials
     materials = []

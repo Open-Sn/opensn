@@ -7,27 +7,18 @@
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
-
-
     # Check number of processors
     num_procs = 3
     if size != num_procs:
@@ -38,7 +29,7 @@ if __name__ == "__main__":
     L = 1.0
     nodes = []
     for i in range(N+1):
-      nodes[i] = (i - 1) * L / N
+      nodes.append(i * L / N)
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
     grid = meshgen.Execute()
@@ -51,12 +42,10 @@ if __name__ == "__main__":
     xs1g = MultiGroupXS()
     xs1g.CreateSimpleOneGroup(sigma_t, 0.0)
 
-    bsrc = []
-    for g in range(num_groups):
-      bsrc.append(0.0)
+    bsrc = [0.0 for _ in range(num_groups)]
     bsrc[0] = 1.0
 
-   # Setup Physics
+    # Setup Physics
     pquad = GLProductQuadrature1DSlab(256)
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -94,6 +83,6 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Compute the leakage
-    leakage = ComputeLeakage(phys, [])
-    for k, v in zip(leakage):
-      print(f"{k}={v[0]:%.5e")
+    leakage = phys.ComputeLeakage([])
+    for k, v in leakage.items():
+      print(f"{k}={v[0]:.5e}")

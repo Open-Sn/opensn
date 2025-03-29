@@ -87,7 +87,8 @@ grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry)
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
     #
     ffvol = fieldfunc.FFInterpolationCreate(VOLUME)
-    fieldfunc.SetProperty(ffvol, OPERATION, OP_MAX)
+    fieldfunc.SetProperty(ffvol, OPERATION, "max"
+)
     fieldfunc.SetProperty(ffvol, LOGICAL_VOLUME, vol0)
     fieldfunc.SetProperty(ffvol, ADD_FIELDFUNCTION, simtest_IP_MMS_L2_handle)
     #

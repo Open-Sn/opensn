@@ -14,22 +14,16 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import SplitFileMeshGenerator, OrthogonalMeshGenerator, ExtruderMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.post import CellVolumeIntegralPostProcessor
 
 if __name__ == "__main__":
 
-
     num_procs = 4
-
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
@@ -47,28 +41,28 @@ if __name__ == "__main__":
     xmesh = []
     xmin = 0.0
     dx = Lx / Nx
-    for i in range(1, (Nx + 1)+1):
-      xmesh[i] = xmin + k * dx
+    for i in range(Nx + 1):
+      xmesh.append( xmin + i * dx )
 
     ymesh = []
     ymin = 0.0
     dy = Ly / Ny
-    for i in range(1, (Ny + 1)+1):
-      ymesh[i] = ymin + k * dy
+    for i in range(Ny + 1):
+      ymesh.append( ymin + i * dy )
 
     zmesh = []
     zmin = 0.0
     dz = Lz / Nz
-    for i in range(1, (Nz + 1)+1):
-      zmesh[i] = zmin + k * dz
+    for i in range(Nz + 1):
+      zmesh.append( zmin + i * dz )
 
     meshgen = SplitFileMeshGenerator(
-      inputs = {
-        mesh.OrthogonalMeshGenerator( node_sets = [xmesh, ymesh] ),
-        mesh.ExtruderMeshGenerator(
-          layers = { { z = Lz, n = Nz } },
+      inputs = [
+        OrthogonalMeshGenerator( node_sets = [xmesh, ymesh] ),
+        ExtruderMeshGenerator(
+            layers = [ { "z": Lz, "n": Nz } ], # layers
         ),
-      },
+      ],
     )
 
     grid = meshgen.Execute()
@@ -76,7 +70,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     num_groups = 21
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -84,6 +78,9 @@ if __name__ == "__main__":
 
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(8, 8)
+
+    bsrc = [0.0 for _ in range(num_groups)]
+    bsrc[0] = 1.0 / 4.0 / math.pi
 
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -104,43 +101,37 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xs_graphite },
       ],
       sweep_type = "CBC",
-    ]
-    bsrc = []
-    bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
-    options = {
+      options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "isotropic", "group_strength": bsrc },
       ],
       "scattering_order": 1,
       "save_angular_flux": True,
       "volumetric_sources": [ mg_src ],
-    },
+      },
     )
-
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
-    pp1 = post.CellVolumeIntegralPostProcessor(
-      "name": "max-grp0",
-      field_function = fflist[1],
-      compute_volume_average = True,
-      print_numeric_format = "scientific",
+    pp1 = CellVolumeIntegralPostProcessor(
+        name = "max-grp0",
+        field_function = fflist[0],
+        compute_volume_average =  True,
+        print_numeric_format =  "scientific"
     )
-    pp2 = post.CellVolumeIntegralPostProcessor(
-      "name": "max-grp19",
-      field_function = fflist[20],
-      compute_volume_average = True,
-      print_numeric_format = "scientific",
-    )
-    post.Execute( pp1, pp2 )
 
-    if master_export == None then
-      fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
+    pp2 = CellVolumeIntegralPostProcessor(
+        name = "max-grp19",
+        field_function = fflist[19],
+        compute_volume_average =  True,
+        print_numeric_format =  "scientific"
+    )
+
+    pp1.Execute()
+    pp2.Execute()

@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
 
 if __name__ == "__main__":
 

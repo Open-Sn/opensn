@@ -26,6 +26,6 @@ if __name__ == "__main__":
 
 
     meshgen = FromFileMeshGenerator(
-      filename = "+/+/+/+/+/assets/mesh/TriangleMesh2x2.obj",
+      filename = "+/../../../../assets/mesh/TriangleMesh2x2.obj",
     )
 grid = meshgen.Execute()

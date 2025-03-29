@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -90,14 +90,14 @@ if __name__ == "__main__":
     phys.ComputeBalance()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()
@@ -109,9 +109,9 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()

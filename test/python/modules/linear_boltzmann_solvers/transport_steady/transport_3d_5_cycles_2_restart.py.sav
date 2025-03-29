@@ -8,7 +8,6 @@ Test: Max-value1=6.55387e+00 Max-value2=1.02940e+00
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI

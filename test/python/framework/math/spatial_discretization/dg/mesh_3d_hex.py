@@ -26,6 +26,6 @@ if __name__ == "__main__":
 
 
     meshgen = FromFileMeshGenerator(
-      filename = "+/+/+/+/+/assets/mesh/GMSH_AllHexes.vtu",
+      filename = "+/../../../../assets/mesh/GMSH_AllHexes.vtu",
     )
 grid = meshgen.Execute()

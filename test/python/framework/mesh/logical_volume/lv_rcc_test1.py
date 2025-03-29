@@ -37,7 +37,7 @@ if __name__ == "__main__":
 grid = meshgen.Execute()
 
     lv1 = RCCLogicalVolume( r = 1.3, x0 = L / 2, y0 = L / 2, z0 = -1.0, vz = 2.0 )
-grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
+grid.SetBlockIDFromLogical(lv1, 1, True)
 
     lv2 = RCCLogicalVolume(
       r = 1.3,
@@ -48,6 +48,6 @@ grid.SetBlockIDFromLogicalVolume(lv1, 1, True)
       vy = 1.0,
       vz = 3.0,
     )
-grid.SetBlockIDFromLogicalVolume(lv2, 2, True)
+grid.SetBlockIDFromLogical(lv2, 2, True)
 
     mesh.ExportToPVTU(grid, "lv_rcc_test1")

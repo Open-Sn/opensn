@@ -6,22 +6,17 @@
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -34,24 +29,27 @@ if __name__ == "__main__":
 
     # Setup mesh
     meshgen = ExtruderMeshGenerator(
-      inputs = {
-        FromFileMeshGenerator(
-          filename = "+/+/+/+/assets/mesh/SquareMesh2x2Quads.obj",
-        ),
-      },
-      layers = { { z = 0.4, n = 2 }, { z = 0.8, n = 2 }, { z = 1.2, n = 2 }, { z = 1.6, n = 2 } }, # layers
-      partitioner = KBAGraphPartitioner(
-        nx = 2,
-        ny = 2,
-        xcuts = [ 0.0 ],
-        ycuts = [ 0.0 ],
-      ),
+        inputs = [
+            FromFileMeshGenerator(
+                filename = "../../../../assets/mesh/SquareMesh2x2Quads.obj"
+            )
+        ],
+        layers = [ { "z": 0.4, "n": 2 },
+                   { "z": 0.8, "n": 2 },
+                   { "z": 1.2, "n": 2 },
+                   { "z": 1.6, "n": 2 },
+                   ], # layers
+        partitioner = KBAGraphPartitioner(
+                    nx = 2,
+                    ny = 2,
+                    xcuts = [ 0.0 ],
+                    ycuts = [ 0.0 ], ),
     )
     grid = meshgen.Execute()
 
     # Set block IDs
     vol0 = RPPLogicalVolume( infx = True, infy = True, infz = True )
-    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
+    grid.SetBlockIDFromLogical(vol0, 0, True)
 
     vol1 = RPPLogicalVolume(
       xmin = -0.5 / 8,
@@ -60,10 +58,10 @@ if __name__ == "__main__":
       ymax = 0.5 / 8,
       infz = True,
     )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 21
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -92,34 +90,15 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_graphite },
       ],
-    ]
-
-    options = {
-      "scattering_order": 1,
-      "volumetric_sources": [ mg_src0, mg_src1 ],
-    },
+      options = {
+        "scattering_order": 1,
+        "volumetric_sources": [ mg_src0, mg_src1 ],
+      },
     )
-
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
-    CreateAndWriteSourceMoments(phys, "Qmoms")
-
-    # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
-
-    ################################################ Exports
-
-    if master_export == None then
-      fieldfunc.ExportToVTKMulti(fflist, "ZPhi3D")
-
-    # Plots
-    if location_id == 0 and master_export == None then
-#os.system("python ZPFFI00.py")
-#--os.system("python ZPFFI11.py")
-      #local handle = io.popen("python ZPFFI00.py")
-      print("Execution completed")
+    phys.CreateAndWriteSourceMoments("Qmoms")

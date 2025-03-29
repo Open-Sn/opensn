@@ -46,7 +46,7 @@ if __name__ == "__main__":
     for i in range(1, (N / 2 + 1)+1):
       znodes.append(xmin + i * dx)
     if reflecting then
-      meshgen = OrthogonalMeshGenerator( node_sets = { nodes, nodes, znodes } )
+      meshgen = OrthogonalMeshGenerator( node_sets = [ nodes, nodes, znodes ] )
     else
       meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes, nodes])
     grid = meshgen.Execute()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     num_groups = 21
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Slice plot
     #slices = []
@@ -122,9 +122,9 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[20])
 

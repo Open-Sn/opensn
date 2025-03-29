@@ -15,9 +15,8 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
 
 if __name__ == "__main__":
 
@@ -26,6 +25,14 @@ if __name__ == "__main__":
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
+    # Setup mesh
+    nodes = []
+    N = 20
+    L = 5
+    xmin = -L / 2
+    dx = L / N
+    for i in range(N+1):
+        nodes.append(xmin + i * dx)
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
     grid = meshgen.Execute()
 
@@ -36,8 +43,8 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 168
-    xs_3_170 =  MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_3_170.xs")
+    xs_3_170 = MultiGroupXS()
+    xs_3_170.LoadFromOpenSn("xs_168g.xs")
 
     strength = [0.0 for _ in range(num_groups)]
     mg_src0 = VolumetricSource( block_ids = [ 0 ], group_strength = strength )
@@ -65,7 +72,7 @@ if __name__ == "__main__":
           "gmres_restart_interval": 100,
         },
         {
-          "groups_from_to": { 63, num_groups - 1 },
+          "groups_from_to": [ 63, num_groups - 1 ],
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "petsc_gmres",
@@ -77,9 +84,7 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0, 1 ], "xs": xs_3_170 },
       ],
-    )
-
-    options = {
+      options = {
       "boundary_conditions": [
         {
           "name": "xmin",
@@ -103,14 +108,14 @@ if __name__ == "__main__":
     phys.ComputeBalance()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize(curffi)
     curffi.Execute()
@@ -122,7 +127,7 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[160])
 
@@ -133,6 +138,3 @@ if __name__ == "__main__":
     if rank == 0:
         print(f"Max-value2={maxval:.5e}")
 
-    # Exports
-    if master_export == None then
-      fieldfunc.ExportToVTK(fflist[1], "ZPhi3D", "Phi")

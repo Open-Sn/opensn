@@ -64,21 +64,21 @@ if __name__ == "__main__":
 
     # LBS block option
     num_groups = 1
-    phys = DiscreteOrdinatesSolver(
-      mesh = grid,
-      num_groups = num_groups,
-      groupsets = [
+    solver_dict = {}
+    solver_dict["mesh"] = grid
+    solver_dict["num_groups"] = num_groups
+    solver_dict["groupsets"] =  [
         {
-          "groups_from_to": (0, num_groups - 1),
-          "angular_quadrature": gl_quad,
-          "inner_linear_method": "petsc_gmres",
-          "l_abs_tol": 1.0e-9,
-          "l_max_its": 300,
-          "gmres_restart_interval": 30,
+            "groups_from_to": (0, num_groups - 1),
+            "angular_quadrature": gl_quad,
+            "inner_linear_method": "petsc_gmres",
+            "l_abs_tol": 1.0e-9,
+            "l_max_its": 300,
+            "gmres_restart_interval": 30,
         },
-      ],
-      xs_map = xs_map,
-      options = {
+    ]
+    solver_dict["xs_map"] = xs_map
+    solver_dict["options"] = {
         "scattering_order": 0,
         "spatial_discretization": "pwld",
         "boundary_conditions": [
@@ -87,31 +87,26 @@ if __name__ == "__main__":
         ],
         "volumetric_sources": [ src0, src1 ],
         "save_angular_flux": True,
-      }
-    )
-    
+    }
+
+    phys1 = DiscreteOrdinatesSolver(**solver_dict)
 
     # Initialize and execute solver
-    ss_solver = SteadyStateSolver( lbs_solver = phys )
-
+    ss_solver = SteadyStateSolver( lbs_solver = phys1 )
     ss_solver.Initialize()
     ss_solver.Execute()
 
-    leakage_left_1 = ComputeLeakage(phys, { "zmin" )["zmin"][1])
-    leakage_right_1 = ComputeLeakage(phys, { "zmax" )["zmax"][1])
+    leakage_left_1 = phys1.ComputeLeakage(["zmin"])["zmin"][0]
+    leakage_right_1 = phys1.ComputeLeakage(["zmax"])["zmax"][0]
+    phys1.WriteAngularFluxes("angular_io")
 
-    WriteAngularFluxes(phys, "angular_io")
-
-    phys2 = DiscreteOrdinatesSolver.Create(lbs_block)
-
+    phys2 = DiscreteOrdinatesSolver(**solver_dict)
     ss_solver_2 = SteadyStateSolver( lbs_solver = phys2 )
-
     ss_solver_2.Initialize()
+    phys2.ReadAngularFluxes("angular_io")
 
-    ReadAngularFluxes(phys2, "angular_io")
-
-    leakage_left_2 = ComputeLeakage(phys2, { "zmin" )["zmin"][1])
-    leakage_right_2 = ComputeLeakage(phys2, { "zmax" )["zmax"][1])
+    leakage_left_2 = phys2.ComputeLeakage(["zmin"])["zmin"][0]
+    leakage_right_2 = phys2.ComputeLeakage(["zmax"])["zmax"][0]
 
     leakage_left_diff = leakage_left_1 - leakage_left_2
     leakage_right_diff = leakage_right_1 - leakage_right_2

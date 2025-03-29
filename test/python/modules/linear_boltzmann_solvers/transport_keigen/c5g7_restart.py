@@ -108,5 +108,5 @@ k_solver.Initialize()
 k_solver.Execute()
 
     if master_export == None then
-      fflist = GetScalarFieldFunctionList(phys)
+      fflist = phys.GetScalarFieldFunctionList()
       fieldfunc.ExportToVTKMulti(fflist, "solutions/ZPhi")

@@ -7,22 +7,17 @@
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -37,10 +32,7 @@ if __name__ == "__main__":
     nodes = []
     N = 20
     L = 100
-    #N=10
-    #L=200e6
     xmin = -L / 2
-    #xmin = 0.0
     dx = L / N
     for i in range(N+1):
       nodes.append(xmin + i * dx)
@@ -58,7 +50,7 @@ if __name__ == "__main__":
       ymax = 10.0,
       infz = True,
     )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 168
     xs_graphite = MultiGroupXS()
@@ -91,7 +83,7 @@ if __name__ == "__main__":
           "wgdsa_l_abs_tol": 1.0e-2,
         },
         {
-          "groups_from_to": { 63, num_groups - 1 },
+          "groups_from_to": [ 63, num_groups - 1 ],
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "petsc_gmres",
@@ -107,8 +99,6 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xs_graphite },
         { "block_ids": [ 1 ], "xs": xs_air },
       ],
-    ]
-
     options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
@@ -120,18 +110,7 @@ if __name__ == "__main__":
     },
     )
 
-
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
-
-    # Exports
-    if master_export == None then
-      fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
-
-    # Plots

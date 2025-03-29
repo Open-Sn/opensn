@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
 
 if __name__ == "__main__":
 
@@ -42,9 +42,9 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     num_groups = 168
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
-    xs_air =  MultiGroupXS()
+    xs_air = MultiGroupXS()
     xs_air.LoadFromOpenSn("xs_air50RH.xs")
 
     strength = [0.0 for _ in range(num_groups)]

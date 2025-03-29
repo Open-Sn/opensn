@@ -18,6 +18,7 @@ if "opensn_console" not in globals():
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.solver import SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
 
 if __name__ == "__main__":
 
@@ -82,7 +83,7 @@ if __name__ == "__main__":
         "scattering_order": 0,
         "spatial_discretization": "pwld",
         "boundary_conditions": [ { "name": "zmin", "type": "vacuum" }, { "name": "zmax", "type": "vacuum" } ],
-        "volumetric_sources": [ mg_src0, mg_src1 ],
+        "volumetric_sources": [ src0, src1 ],
       },
     )
 

@@ -13,16 +13,15 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
-
 
     num_procs = 4
 
@@ -30,12 +29,8 @@ if __name__ == "__main__":
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
     # Unstructured mesh
-    meshgen = MeshGenerator(
-      inputs = {
-        FromFileMeshGenerator(
-          filename = "+/+/+/+/assets/mesh/TriangleMesh2x2Cuts.obj",
-        ),
-      },
+    meshgen = FromFileMeshGenerator(
+          filename = "../../../../assets/mesh/TriangleMesh2x2Cuts.obj",
       partitioner = KBAGraphPartitioner(
         nx = 2,
         ny = 2,
@@ -51,8 +46,8 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     num_groups = 168
-    xs_3_170 =  MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_3_170.xs")
+    xs_3_170 = MultiGroupXS()
+    xs_3_170.LoadFromOpenSn("xs_168g.xs")
 
     strength = [0.0 for _ in range(num_groups)]
     mg_src1 = VolumetricSource( block_ids = [ 1 ], group_strength = strength )
@@ -60,6 +55,9 @@ if __name__ == "__main__":
 
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 32)
+
+    bsrc = [0.0 for _ in range(num_groups)]
+    bsrc[0] = 1.0 / 4.0 / math.pi
 
     phys = DiscreteOrdinatesSolver(
       mesh = grid,
@@ -74,7 +72,7 @@ if __name__ == "__main__":
           "l_max_its": 1000,
         },
         {
-          "groups_from_to": { 63, num_groups - 1 },
+          "groups_from_to": [ 63, num_groups - 1 ],
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "classic_richardson",
@@ -85,12 +83,7 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_3_170 },
       ],
-    ]
-    bsrc = []
-    bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
-
-    options = {
+      options = {
       "boundary_conditions": [
         {
           "name": "xmin",
@@ -100,25 +93,24 @@ if __name__ == "__main__":
       ],
       "scattering_order": 1,
       "volumetric_sources": [ mg_src1, mg_src2 ],
-    },
+      },
     )
 
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[1])
+    curffi.AddFieldFunction(fflist[0])
 
     curffi.Initialize()
     curffi.Execute()
@@ -130,9 +122,9 @@ if __name__ == "__main__":
     # Volume integrations
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1
-    curffi.SetOperationType(OP_MAX)
+    curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
-    curffi.AddFieldFunction(fflist[10])
+    curffi.AddFieldFunction(fflist[9])
 
     curffi.Initialize()
     curffi.Execute()

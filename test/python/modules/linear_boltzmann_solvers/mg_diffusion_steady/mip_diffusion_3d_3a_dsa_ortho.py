@@ -45,7 +45,7 @@ if __name__ == "__main__":
     znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
 
     meshgen = OrthogonalMeshGenerator(
-      node_sets = { nodes, nodes, znodes },
+      node_sets = [ nodes, nodes, znodes ],
     )
     grid = meshgen.Execute()
 
@@ -60,12 +60,12 @@ if __name__ == "__main__":
       ymax = 10.0,
       infz = True,
     )
-    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
+    grid.SetBlockIDFromLogical(vol1, 1, True)
 
     num_groups = 168
-    xs_graphite =  MultiGroupXS()
+    xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
-    xs_air =  MultiGroupXS()
+    xs_air = MultiGroupXS()
     xs_air.LoadFromOpenSn("+/transport_steady/xs_air50RH.xs")
 
     strength = [0.0 for _ in range(num_groups)]
@@ -94,7 +94,7 @@ if __name__ == "__main__":
           #"wgdsa_l_abs_tol": 1.0e-2,
         },
         {
-          "groups_from_to": { 63, num_groups - 1 },
+          "groups_from_to": [ 63, num_groups - 1 ],
           "angular_quadrature": pquad,
           "angle_aggregation_num_subsets": 1,
           "inner_linear_method": "petsc_gmres",
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     # Exports
     if master_export == None then

@@ -55,7 +55,7 @@ if __name__ == "__main__":
       zmin = -L / 16,
       zmax = L / 16,
     )
-    grid.SetBlockIDFromLogicalVolume(vol0, 1, True)
+    grid.SetBlockIDFromLogical(vol0, 1, True)
 
     mesh.ExportToPVTU("TheMesh")
 

@@ -123,7 +123,7 @@ fflist = phys.GetFieldFunctions()
 cline.SetInitialPoint( x = -L / 2 )
 cline.SetFinalPoint( x = L / 2 )
 cline.SetNumberOfPoints(50)
-cline.AddFieldFunction(fflist[1])
+cline.AddFieldFunction(fflist[0])
 
 cline.Initialize()
 cline.Execute()

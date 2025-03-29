@@ -67,7 +67,7 @@ if __name__ == "__main__":
 k_solver0.Initialize()
 k_solver0.Execute()
 
-    fflist = GetScalarFieldFunctionList(phys)
+    fflist = phys.GetScalarFieldFunctionList()
 
     #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
 

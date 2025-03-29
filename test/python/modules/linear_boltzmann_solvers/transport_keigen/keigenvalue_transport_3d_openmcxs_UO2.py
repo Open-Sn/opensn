@@ -45,22 +45,21 @@ if __name__ == "__main__":
     xmesh = []
     xmin = 0.0
     dx = Lx / Nx
-    for i in range(1, (Nx + 1)+1):
+    for i in range(Nx + 1):
       xmesh[i] = xmin + k * dx
 
     ymesh = []
     ymin = 0.0
     dy = Ly / Ny
-    for i in range(1, (Ny + 1)+1):
-      ymesh[i] = ymin + k * dy
+    for i in range(Ny + 1):
+      ymesh.append( ymin + i * dy)
 
     zmesh = []
     zmin = 0.0
     dz = Lz / Nz
-    for i in range(1, (Nz + 1)+1):
-      zmesh[i] = zmin + k * dz
-
-    meshgen = OrthogonalMeshGenerator( node_sets = { xmesh, ymesh, zmesh } )
+    for i in range(Nz + 1):
+      zmesh.append( zmin + i * dz )
+    meshgen = OrthogonalMeshGenerator( node_sets = [ xmesh, ymesh, zmesh ] )
     grid = meshgen.Execute()
 
     #
