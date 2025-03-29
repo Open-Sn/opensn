@@ -16,13 +16,12 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import MeshGenerator, FromFileMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -43,7 +42,7 @@ if __name__ == "__main__":
             ycuts=[0.0],
         )
     )
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Cross-section data
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
@@ -111,8 +110,8 @@ if __name__ == "__main__":
     )
 
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
