@@ -40,7 +40,7 @@ if __name__ == "__main__":
         node_set = [i * delta for i in range(ncells[d] + 1)]
         nodes.append(node_set)
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes[0], nodes[1]])
-        grid = meshgen.Execute()
+    grid = meshgen.Execute()
 
     # Define a logical volume covering the entire domain and set block IDs
     vol0 = RPPLogicalVolume(xmin=0.0, xmax=length[0], ymin=0.0, ymax=length[1], infz=True)
@@ -91,8 +91,8 @@ if __name__ == "__main__":
         }
     )
     ss_solver = SteadyStateSolver(lbs_solver=phys)
-        ss_solver.Initialize()
-        ss_solver.Execute()
+    ss_solver.Initialize()
+    ss_solver.Execute()
 
     # Field functions
     fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
