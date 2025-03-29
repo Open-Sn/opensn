@@ -20,8 +20,7 @@ namespace py = pybind11;
 namespace opensnpy
 {
 
-PyApp::PyApp(const mpi::Communicator& comm)
-  : sim_option_interactive_(true), allow_petsc_error_handler_(false)
+PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
 {
   opensn::mpi_comm = comm;
 
@@ -72,7 +71,7 @@ PyApp::PyApp(const mpi::Communicator& comm)
 }
 
 int
-PyApp::InitPetSc(int argc, char** argv)
+PyApp::InitPETSc(int argc, char** argv)
 {
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
   if (!allow_petsc_error_handler_)
@@ -93,20 +92,16 @@ PyApp::Run(int argc, char** argv)
               << std::endl;
   }
 
-  int error_code = ProcessArguments(argc, argv);
-  if (!error_code)
+  if (ProcessArguments(argc, argv))
   {
     PetscOptionsSetValue(NULL, "-options_left", "0");
-    InitPetSc(argc, argv);
+    InitPETSc(argc, argv);
+
     opensn::Initialize();
-    console.FlushConsole();
-
-    if (sim_option_interactive_)
-      error_code = RunInteractive();
-    else
-      error_code = RunBatch();
-
+    console.InitConsole();
+    console.ExecuteFile(opensn::input_path.string());
     opensn::Finalize();
+
     PetscFinalize();
 
     if (opensn::mpi_comm.rank() == 0)
@@ -116,17 +111,20 @@ PyApp::Run(int argc, char** argv)
                 << " finished execution." << std::endl;
     }
   }
+  else
+    return EXIT_FAILURE;
+
   cali_mgr.flush();
-  return error_code;
+  return EXIT_SUCCESS;
 }
 
-int
+bool
 PyApp::ProcessArguments(int argc, char** argv)
 {
+  cxxopts::Options options(LowerCase(opensn::program), "");
+
   try
   {
-    cxxopts::Options options(LowerCase(opensn::program), "");
-
     /* clang-format off */
     options.add_options("User")
     ("h,help",                      "Help message")
@@ -135,12 +133,8 @@ PyApp::ProcessArguments(int argc, char** argv)
     ("caliper",                     "Enable Caliper reporting",
       cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
     ("i,input",                     "Input file", cxxopts::value<std::string>())
-    ("p,py",                        "Python expression",
-      cxxopts::value<std::vector<std::string>>());
-
-    options.add_options("Dev")
-      ("help-dev",                  "Developer options help")
-      ("allow-petsc-error-handler", "Allow PETSc error handler");
+    ("allow-petsc-error-handler",   "Allow PETSc error handler")
+    ("p,py",                        "Python expression", cxxopts::value<std::vector<std::string>>());
     /* clang-format on */
 
     auto result = options.parse(argc, argv);
@@ -149,14 +143,7 @@ PyApp::ProcessArguments(int argc, char** argv)
     {
       if (opensn::mpi_comm.rank() == 0)
         std::cout << options.help({"User"}) << std::endl;
-      return 1;
-    }
-
-    if (result.count("help-dev"))
-    {
-      if (opensn::mpi_comm.rank() == 0)
-        std::cout << options.help({"Dev"}) << std::endl;
-      return 1;
+      return false;
     }
 
     if (result.count("verbose"))
@@ -177,46 +164,28 @@ PyApp::ProcessArguments(int argc, char** argv)
       opensn::cali_config = result["caliper"].as<std::string>();
     }
 
-    if (result.count("input"))
-    {
-      opensn::input_path = result["input"].as<std::string>();
-      sim_option_interactive_ = false;
-    }
-
     if (result.count("py"))
     {
       for (const auto& pyarg : result["py"].as<std::vector<std::string>>())
         console.GetCommandBuffer().push_back(pyarg);
     }
+
+    opensn::input_path = result["input"].as<std::string>();
+    if (not std::filesystem::exists(input_path) or not std::filesystem::is_regular_file(input_path))
+    {
+      if (opensn::mpi_comm.rank() == 0)
+        std::cerr << "Invalid input file: " << input_path.string() << "\n" << std::endl;
+      return false;
+    }
   }
   catch (const std::exception& e)
   {
     if (opensn::mpi_comm.rank() == 0)
-      std::cerr << e.what() << std::endl;
-    return 1;
+      std::cerr << e.what() << "\n" << options.help({"User"}) << std::endl;
+    return false;
   }
-  return 0;
-}
 
-int
-PyApp::RunInteractive()
-{
-  if (std::filesystem::exists(input_path))
-    console.ExecuteFile(opensn::input_path.string());
-  console.RunConsoleLoop();
-
-  return 0;
-}
-
-int
-PyApp::RunBatch()
-{
-  if (std::filesystem::exists(opensn::input_path))
-    return console.ExecuteFile(opensn::input_path.string());
-
-  if (opensn::mpi_comm.rank() == 0)
-    std::cerr << "Could not open file " << opensn::input_path.string() << "." << std::endl;
-  return EXIT_FAILURE;
+  return true;
 }
 
 } // namespace opensnpy
