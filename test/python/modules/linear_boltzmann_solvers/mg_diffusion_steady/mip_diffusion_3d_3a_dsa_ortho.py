@@ -7,22 +7,17 @@
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.solver import DiffusionDFEMSolver, SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -42,7 +37,7 @@ if __name__ == "__main__":
     for i in range(N+1):
       nodes.append(xmin + i * dx)
 
-    znodes = { 0.0, 10.0, 20.0, 30.0, 40.0 }
+    znodes = [ 0.0, 10.0, 20.0, 30.0, 40.0 ]
 
     meshgen = OrthogonalMeshGenerator(
       node_sets = [ nodes, nodes, znodes ],
@@ -64,9 +59,9 @@ if __name__ == "__main__":
 
     num_groups = 168
     xs_graphite = MultiGroupXS()
-    xs_graphite.LoadFromOpenSn("+/transport_steady/xs_graphite_pure.xs")
+    xs_graphite.LoadFromOpenSn("../transport_steady/xs_graphite_pure.xs")
     xs_air = MultiGroupXS()
-    xs_air.LoadFromOpenSn("+/transport_steady/xs_air50RH.xs")
+    xs_air.LoadFromOpenSn("../transport_steady/xs_air50RH.xs")
 
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 1.0
@@ -78,7 +73,7 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(4, 8)
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiffusionDFEMSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = [
@@ -110,27 +105,13 @@ if __name__ == "__main__":
         { "block_ids": [ 0 ], "xs": xs_graphite },
         { "block_ids": [ 1 ], "xs": xs_air },
       ],
-    ]
-
-    options = {
+      options = {
       "scattering_order": 1,
       "volumetric_sources": [ mg_src0, mg_src1 ],
-    },
+      },
     )
-
-    phys = DiffusionDFEMSolver.Create(lbs_block)
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSolver( lbs_solver = phys )
-
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    # Get field functions
-    fflist = phys.GetScalarFieldFunctionList()
-
-    # Exports
-    if master_export == None then
-      fieldfunc.ExportToVTKMulti(fflist, "ZPhi")
-
-    # Plots
