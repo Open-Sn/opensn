@@ -1,0 +1,17 @@
+[0]  Parsing argument 1 math_test_02.lua
+[0m[0]  Parsing argument 2 --suppress_color
+[0m[0]  Parsing argument 3 --supress_beg_end_timelog
+[0]  Parsing argument 4 master_export=false
+[0]  OpenSn number of arguments supplied: 4
+[0]  GOLD_BEGIN
+[0]  Testing opensn::ParallelVector
+[0]  [1 0 0 0 0]
+[1]  [2 0 0 0 0]
+[0]  Testing opensn::GhostedParallelVector
+[0]  Number of Ghosts: 1
+[1]  Number of Ghosts: 1
+[0]  [0 0 0 0 1 2]
+[1]  [2 0 0 0 0 1]
+[0]  GOLD_END
+
+

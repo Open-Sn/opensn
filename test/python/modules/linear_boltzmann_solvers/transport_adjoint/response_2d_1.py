@@ -17,13 +17,12 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.Get_rank()
     barrier = MPI.COMM_WORLD.Barrier
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
     from pyopensn.response import ResponseEvaluator
-    from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 else:

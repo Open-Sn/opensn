@@ -1,0 +1,75 @@
+[0]  00:00:00 Computing b
+[0]  00:00:00 WGS groups [0-62] Iteration     0 Residual         1
+[0]  00:00:00 WGS groups [0-62] Iteration     1 Residual  0.151678
+[0]  00:00:00 WGS groups [0-62] Iteration     2 Residual 0.0393848
+[0]  00:00:01 WGS groups [0-62] Iteration     3 Residual 0.0189244
+[0]  00:00:01 WGS groups [0-62] Iteration     4 Residual 0.00283858
+[0]  00:00:01 WGS groups [0-62] Iteration     5 Residual 0.00096778
+[0]  00:00:01 WGS groups [0-62] Iteration     6 Residual 0.000307796
+[0]  00:00:01 WGS groups [0-62] Iteration     7 Residual 0.000131083
+[0]  00:00:02 WGS groups [0-62] Iteration     8 Residual 5.56526e-05
+[0]  00:00:02 WGS groups [0-62] Iteration     9 Residual 2.62419e-05
+[0]  00:00:02 WGS groups [0-62] Iteration    10 Residual 1.12818e-05
+[0]  00:00:02 WGS groups [0-62] Iteration    11 Residual 4.97638e-06
+[0]  00:00:02 WGS groups [0-62] Iteration    12 Residual 2.21702e-06
+[0]  00:00:03 WGS groups [0-62] Iteration    13 Residual 1.01785e-06
+[0]  00:00:03 WGS groups [0-62] Iteration    14 Residual 5.0995e-07 CONVERGED
+[0]
+[0]
+[0]
+[0]          Set Src Time/sweep (s):        0.0388552
+[0]          Average sweep time (s):        0.136082
+[0]          Chunk-Overhead-Ratio  :        0.309951
+[0]          Sweep Time/Unknown (ns):       84.3762
+[0]          Number of unknowns per sweep:  12902400
+[0]
+[0]
+[0]
+[0]
+[0]  ********** Solving groupset 1 with KRYLOV_GMRES.
+[0]
+[0]  Quadrature number of angles: 32
+[0]  Groups 63 167
+[0]
+[0]  Total number of angular unknowns: 21504000
+[0]  Number of lagged angular unknowns: 152880(0.71%)
+[0]  00:00:03 Computing b
+[0]  00:00:03 WGS groups [63-167] Iteration     0 Residual         1
+[0]  00:00:04 WGS groups [63-167] Iteration     1 Residual  0.416501
+[0]  00:00:04 WGS groups [63-167] Iteration     2 Residual  0.194524
+[0]  00:00:04 WGS groups [63-167] Iteration     3 Residual 0.0905037
+[0]  00:00:05 WGS groups [63-167] Iteration     4 Residual 0.0432679
+[0]  00:00:05 WGS groups [63-167] Iteration     5 Residual 0.0207089
+[0]  00:00:05 WGS groups [63-167] Iteration     6 Residual 0.00939714
+[0]  00:00:06 WGS groups [63-167] Iteration     7 Residual 0.00400545
+[0]  00:00:06 WGS groups [63-167] Iteration     8 Residual 0.00181301
+[0]  00:00:06 WGS groups [63-167] Iteration     9 Residual 0.000831016
+[0]  00:00:07 WGS groups [63-167] Iteration    10 Residual 0.000344752
+[0]  00:00:07 WGS groups [63-167] Iteration    11 Residual 0.000148343
+[0]  00:00:07 WGS groups [63-167] Iteration    12 Residual 5.68159e-05
+[0]  00:00:08 WGS groups [63-167] Iteration    13 Residual 3.04749e-05
+[0]  00:00:08 WGS groups [63-167] Iteration    14 Residual 1.51187e-05
+[0]  00:00:09 WGS groups [63-167] Iteration    15 Residual 7.42582e-06
+[0]  00:00:09 WGS groups [63-167] Iteration    16 Residual 4.17696e-06
+[0]  00:00:09 WGS groups [63-167] Iteration    17 Residual 2.20091e-06
+[0]  00:00:10 WGS groups [63-167] Iteration    18 Residual 1.11034e-06
+[0]  00:00:10 WGS groups [63-167] Iteration    19 Residual 5.69884e-07 CONVERGED
+[0]
+[0]
+[0]
+[0]          Set Src Time/sweep (s):        0.0772868
+[0]          Average sweep time (s):        0.187524
+[0]          Chunk-Overhead-Ratio  :        0.244481
+[0]          Sweep Time/Unknown (ns):       69.7635
+[0]          Number of unknowns per sweep:  21504000
+[0]
+[0]
+[0]  Exporting field functions to VTK with file base "Transport2D_1"
+[0]  Done exporting field functions to VTK.
+[0]  Max-value1=2.38624
+[0]  Max-value2=1.76764e-17
+[0]
+[0]  Final program time 00:00:11
+[0]  2023-07-18 21:24:38 OpenSn finished execution of Transport2D_1.lua
+[0]  SPDS and FLUDS reset complete.            Process memory = 778 MB
+[0]
