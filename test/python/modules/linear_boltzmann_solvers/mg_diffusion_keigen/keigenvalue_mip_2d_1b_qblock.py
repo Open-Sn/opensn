@@ -12,27 +12,20 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
-    from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
-    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.solver import DiffusionDFEMSolver, NonLinearKEigen
 
 if __name__ == "__main__":
 
-
-    dofile("utils/qblock_mesh.lua")
-    dofile("utils/qblock_materials.lua") #num_groups assigned here
+    with open("utils/qblock_mesh.py") as f:
+        exec(f.read(), globals())
+    with open("utils/qblock_materials.py") as f:
+        exec(f.read(), globals())
 
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiffusionDFEMSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = [
@@ -46,33 +39,21 @@ if __name__ == "__main__":
         },
       ],
       xs_map = [
-        { "block_ids": [ 0 ], "xs": xss["0"] },
-        { "block_ids": [ 1 ], "xs": xss["1"] },
+        { "block_ids": [ 0 ], "xs": xss[0] },
+        { "block_ids": [ 1 ], "xs": xss[1] },
       ],
-    ]
-
-    options = {
+      options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
       ],
       "scattering_order": 2,
-
       "use_precursors": False,
-
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    },
+      },
     )
 
-    phys = DiffusionDFEMSolver.Create(lbs_block)
-
-    k_solver0 = NonLinearKEigen( lbs_solver = phys )
-k_solver0.Initialize()
-k_solver0.Execute()
-
-    fflist = phys.GetScalarFieldFunctionList()
-
-    #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
-
-    # Reference value k_eff = 0.5969127
+    k_solver = NonLinearKEigen( lbs_solver = phys )
+    k_solver.Initialize()
+    k_solver.Execute()

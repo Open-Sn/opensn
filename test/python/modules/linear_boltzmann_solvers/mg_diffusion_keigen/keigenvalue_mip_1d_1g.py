@@ -25,12 +25,7 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
 
-
     num_procs = 4
-
-    # NOTE: For command line inputs, specify as:
-    #       variable=[[argument]]
-
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
@@ -41,32 +36,23 @@ if __name__ == "__main__":
     # ##################################################
 
     # Mesh variables
-    if L == None then
-      L = 100.0
-    if n_cells == None then
-      n_cells = 50
+    L = 100.0
+    n_cells = 50
 
     # Transport angle information
-    if n_angles == None then
-      n_angles = 32
-    if scat_order == None then
-      scat_order = 0
+    n_angles = 32
+    scat_order = 0
 
     # k-eigenvalue iteration parameters
-    if kes_max_iterations == None then
-      kes_max_iterations = 5000
-    if kes_tolerance == None then
-      kes_tolerance = 1e-8
+    kes_max_iterations = 5000
+    kes_tolerance = 1e-8
 
     # Source iteration parameters
-    if si_max_iterations == None then
-      si_max_iterations = 500
-    if si_tolerance == None then
-      si_tolerance = 1e-8
+    si_max_iterations = 500
+    si_tolerance = 1e-8
 
     # Delayed neutrons
-    if use_precursors == None then
-      use_precursors = True
+    use_precursors = True
 
     # ##################################################
     # ##### Run problem #####
@@ -75,8 +61,8 @@ if __name__ == "__main__":
     # Setup mesh
     nodes = []
     dx = L / n_cells
-    for i in range(0, n_cells+1):
-      nodes[i + 1] = i * dx
+    for i in range(n_cells+1):
+      nodes.append( i * dx )
 
     meshgen = OrthogonalMeshGenerator(node_sets = [nodes])
     grid = meshgen.Execute()
@@ -85,11 +71,11 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_simple_fissile = MultiGroupXS()
-    xs_simple_fissile.LoadFromOpenSn("+/transport_keigen/simple_fissile.xs")
+    xs_simple_fissile.LoadFromOpenSn("../transport_keigen/simple_fissile.xs")
 
     # Setup Physics
     num_groups = 1
-    phys = DiscreteOrdinatesSolver(
+    phys = DiffusionDFEMSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = [
@@ -104,30 +90,19 @@ if __name__ == "__main__":
       xs_map = [
         { "block_ids": [ 0 ], "xs": xs_simple_fissile },
       ],
-    ]
-
-    options = {
-      scattering_order = scat_order,
-
+      options = {
+      "scattering_order": scat_order,
       "use_precursors": use_precursors,
-
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    },
+      },
     )
 
-    phys = DiffusionDFEMSolver.Create(lbs_block)
-
-    k_solver0 = NonLinearKEigen(
-      "lbs_solver": phys,
+    k_solver = NonLinearKEigen(
+      lbs_solver = phys,
       nl_max_its = kes_max_iterations,
       nl_abs_tol = kes_tolerance,
     )
-k_solver0.Initialize()
-k_solver0.Execute()
-
-    # Get field functions
-    # Line plot
-    # Volume integrations
-    # Exports
-    # Plots
+    
+    k_solver.Initialize()
+    k_solver.Execute()

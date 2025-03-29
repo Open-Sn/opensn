@@ -12,27 +12,47 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.solver import DiffusionDFEMSolver, PowerIterationKEigen
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
 
+    nodes = []
+    N = 40
+    L = 14.0
+    xmin = 0.0
+    dx = L / N
+    for i in range(N+1):
+        nodes.append(xmin + i * dx)
 
-    dofile("utils/qblock_mesh.lua")
-    dofile("utils/qblock_materials.lua") #num_groups assigned here
+    meshgen = OrthogonalMeshGenerator(node_sets = [nodes, nodes])
+    grid = meshgen.Execute()
+
+    grid.SetUniformBlockID(0)
+
+    vol1 = RPPLogicalVolume(
+        xmin = -1000.0,
+        xmax = 10.0,
+        ymin = -1000.0,
+        ymax = 10.0,
+        infz = True,
+    )
+    grid.SetBlockIDFromLogical(vol1, 1, True)
+
+    xss = []
+    xss.append( MultiGroupXS() )
+    xss[0].LoadFromOpenSn("../transport_keigen/xs_water_g2.xs")
+    xss.append( MultiGroupXS() )
+    xss[1].LoadFromOpenSn("../transport_keigen/xs_fuel_g2.xs")
+    num_groups = xss[0].num_groups
 
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiffusionDFEMSolver(
       mesh = grid,
       num_groups = num_groups,
       groupsets = [
@@ -46,12 +66,10 @@ if __name__ == "__main__":
         },
       ],
       xs_map = [
-        { "block_ids": [ 0 ], "xs": xss["0"] },
-        { "block_ids": [ 1 ], "xs": xss["1"] },
+        { "block_ids": [ 0 ], "xs": xss[0] },
+        { "block_ids": [ 1 ], "xs": xss[1] },
       ],
-    ]
-
-    options = {
+      options = {
       "boundary_conditions": [
         { "name": "xmin", "type": "reflecting" },
         { "name": "ymin", "type": "reflecting" },
@@ -62,17 +80,9 @@ if __name__ == "__main__":
 
       "verbose_inner_iterations": False,
       "verbose_outer_iterations": True,
-    },
+      },
     )
 
-    phys = DiffusionDFEMSolver.Create(lbs_block)
-
-    k_solver0 = PowerIterationKEigen( lbs_solver = phys )
-k_solver0.Initialize()
-k_solver0.Execute()
-
-    fflist = phys.GetScalarFieldFunctionList()
-
-    #fieldfunc.ExportToVTKMulti(fflist,"tests/BigTests/QBlock/solutions/Flux")
-
-    # Reference value k_eff = 0.5969127
+    k_solver = PowerIterationKEigen( lbs_solver = phys )
+    k_solver.Initialize()
+    k_solver.Execute()
