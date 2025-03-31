@@ -23,8 +23,7 @@ public:
   explicit DFEMDiffusionSolver(const InputParameters& params);
   ~DFEMDiffusionSolver() override;
 
-  void SetOptions(const InputParameters& params);
-  void SetBoundaryOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params) override;
 
   void Initialize() override;
   void Execute() override;
@@ -56,8 +55,6 @@ private:
 
 public:
   static InputParameters GetInputParameters();
-  static InputParameters GetOptionsBlock();
-  static InputParameters GetBoundaryOptionsBlock();
   static std::shared_ptr<DFEMDiffusionSolver> Create(const ParameterBlock& params);
 };
 

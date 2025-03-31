@@ -35,23 +35,6 @@ CFEMDiffusionSolver::Create(const ParameterBlock& params)
   return factory.Create<CFEMDiffusionSolver>("diffusion::CFEMDiffusionSolver", params);
 }
 
-InputParameters
-CFEMDiffusionSolver::GetOptionsBlock()
-{
-  InputParameters params;
-  params.AddOptionalParameterArray(
-    "boundary_conditions", {}, "An array contain tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions", "CFEMSolver::BoundaryOptionsBlock");
-  return params;
-}
-
-InputParameters
-CFEMDiffusionSolver::GetBoundaryOptionsBlock()
-{
-  InputParameters params = DiffusionSolverBase::GetBoundaryOptionsBlock();
-  return params;
-}
-
 CFEMDiffusionSolver::CFEMDiffusionSolver(const InputParameters& params)
   : DiffusionSolverBase(params)
 {
@@ -59,25 +42,6 @@ CFEMDiffusionSolver::CFEMDiffusionSolver(const InputParameters& params)
 
 CFEMDiffusionSolver::~CFEMDiffusionSolver()
 {
-}
-
-void
-CFEMDiffusionSolver::SetOptions(const InputParameters& params)
-{
-  for (size_t p = 0; p < params.GetNumParameters(); ++p)
-  {
-    const auto& spec = params.GetParam(p);
-    if (spec.GetName() == "boundary_conditions")
-    {
-      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
-      {
-        auto bndry_params = GetBoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
-        SetBoundaryOptions(bndry_params);
-      }
-    }
-  }
 }
 
 void

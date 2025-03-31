@@ -104,6 +104,25 @@ DiffusionSolverBase::SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunc
 }
 
 void
+DiffusionSolverBase::SetOptions(const InputParameters& params)
+{
+  for (size_t p = 0; p < params.GetNumParameters(); ++p)
+  {
+    const auto& spec = params.GetParam(p);
+    if (spec.GetName() == "boundary_conditions")
+    {
+      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
+      {
+        auto bndry_params = GetBoundaryOptionsBlock();
+        bndry_params.AssignParameters(spec.GetParam(b));
+        SetBoundaryOptions(bndry_params);
+      }
+    }
+  }
+}
+
+void
 DiffusionSolverBase::InitFieldFunctions()
 {
   if (field_functions_.empty())

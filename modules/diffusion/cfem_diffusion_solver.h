@@ -26,15 +26,12 @@ public:
   explicit CFEMDiffusionSolver(const InputParameters& params);
   ~CFEMDiffusionSolver() override;
 
-  void SetOptions(const InputParameters& params);
-  void SetBoundaryOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params) override;
 
   void Initialize() override;
   void Execute() override;
 
   static InputParameters GetInputParameters();
-  static InputParameters GetOptionsBlock();
-  static InputParameters GetBoundaryOptionsBlock();
   static std::shared_ptr<CFEMDiffusionSolver> Create(const ParameterBlock& params);
 };
 
