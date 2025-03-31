@@ -218,11 +218,13 @@ WrapPrinter(py::module& post)
       cpp_pp_list.reserve(pp_list.size());
       for (py::handle py_pp: pp_list)
       {
-        cpp_pp_list.push_back(py_pp.cast<const PostProcessor*>());
+        cpp_pp_list.push_back(py_pp.cast<PostProcessor*>());
+        auto back = py_pp.cast<SolverInfoPostProcessor*>();
+        std::cout << back->ConvertValueToString(back->GetValue()) << "\n";
       }
       // get printer
       PostProcessorPrinter& printer = PostProcessorPrinter::GetInstance();
-      const std::string output = printer.GetPrintedPostProcessors(cpp_pp_list);
+      std::string output = printer.GetPrintedPostProcessors(cpp_pp_list);
       log.Log() << output;
     },
     R"(

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
@@ -44,22 +45,34 @@ WrapSolver(py::module& slv)
   );
   solver.def(
     "Initialize",
-    &Solver::Initialize,
+    [](Solver & self)
+    {
+      PhysicsEventPublisher::GetInstance().SolverInitialize(self);
+    },
     "Initialize the solver."
   );
   solver.def(
     "Execute",
-    &Solver::Execute,
+    [](Solver & self)
+    {
+      PhysicsEventPublisher::GetInstance().SolverExecute(self);
+    },
     "Execute the solver."
   );
   solver.def(
     "Step",
-    &Solver::Step,
+    [](Solver & self)
+    {
+      PhysicsEventPublisher::GetInstance().SolverStep(self);
+    },
     "Step the solver."
   );
   solver.def(
     "Advance",
-    &Solver::Advance,
+    [](Solver & self)
+    {
+      PhysicsEventPublisher::GetInstance().SolverAdvance(self);
+    },
     "Advance time values function."
   );
   solver.def(
