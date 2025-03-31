@@ -39,14 +39,14 @@ std::map<uint64_t, std::string> LBSProblem::supported_boundary_ids = {
   {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
 LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr)
-  : Solver(name), grid_ptr_(grid_ptr)
+  : Problem(name), grid_ptr_(grid_ptr)
 {
 }
 
 InputParameters
 LBSProblem::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = Problem::GetInputParameters();
 
   params.ChangeExistingParamToOptional("name", "LBSDatablock");
 
@@ -70,7 +70,7 @@ LBSProblem::GetInputParameters()
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
-  : Solver(params), grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
+  : Problem(params), grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");

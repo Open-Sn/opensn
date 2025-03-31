@@ -102,11 +102,11 @@ SetBlockParam(lua_State* L,
   else if (cls_name == "PRKSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "LBSProblem")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
   else if (cls_name == "DiscreteOrdinatesProblem")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
   else if (cls_name == "DiscreteOrdinatesCurvilinearProblem")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
   else if (cls_name == "NonLinearKEigenSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "PowerIterationKEigenSolver")
@@ -118,7 +118,7 @@ SetBlockParam(lua_State* L,
   else if (cls_name == "SteadyStateSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "DiffusionDFEMSolver")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
   //
   else if (cls_name == "PointSource")
     block.AddParameter(key, CreateObjectPtr<opensn::PointSource>(L));

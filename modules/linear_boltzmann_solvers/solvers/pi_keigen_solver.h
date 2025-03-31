@@ -3,13 +3,17 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
 {
 
-class PowerIterationKEigenSolver : public opensn::Solver
+class LBSProblem;
+class AGSSolver;
+class LinearSolver;
+
+class PowerIterationKEigenSolver : public Solver
 {
 protected:
   std::shared_ptr<LBSProblem> lbs_problem_;

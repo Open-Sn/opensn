@@ -12,7 +12,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/linear_solver/linear_solver.h"
-#include "framework/physics/solver.h"
+#include "framework/physics/problem.h"
 #include <petscksp.h>
 #include <chrono>
 
@@ -27,7 +27,7 @@ class WGSLinearSolver;
 struct WGSContext;
 
 /// Base class for all Linear Boltzmann Solvers.
-class LBSProblem : public opensn::Solver
+class LBSProblem : public Problem
 {
 public:
   explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);

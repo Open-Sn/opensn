@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-class NonLinearKEigenSolver : public opensn::Solver
+class NonLinearKEigenSolver : public Solver
 {
 private:
   std::shared_ptr<LBSProblem> lbs_problem_;

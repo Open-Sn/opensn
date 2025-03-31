@@ -117,12 +117,6 @@ Solver::GetBasicOptions() const
   return basic_options_;
 }
 
-std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Solver::GetFieldFunctions()
-{
-  return field_functions_;
-}
-
 TimeStepper&
 Solver::GetTimeStepper()
 {
@@ -135,12 +129,6 @@ Solver::GetTimeStepper() const
 {
   OpenSnLogicalErrorIf(not timestepper_, "Bad trouble: Timestepper not assigned.");
   return *timestepper_;
-}
-
-const std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Solver::GetFieldFunctions() const
-{
-  return field_functions_;
 }
 
 void

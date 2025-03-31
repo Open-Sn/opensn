@@ -33,10 +33,6 @@ public:
   BasicOptions& GetBasicOptions();
   const BasicOptions& GetBasicOptions() const;
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions();
-
-  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
-
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
 
@@ -74,7 +70,6 @@ public:
 
 protected:
   BasicOptions basic_options_;
-  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:

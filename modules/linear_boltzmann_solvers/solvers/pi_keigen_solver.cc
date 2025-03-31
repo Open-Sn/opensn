@@ -22,12 +22,12 @@ OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
 InputParameters
 PowerIterationKEigenSolver::GetInputParameters()
 {
-  InputParameters params = opensn::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
   params.AddOptionalParameter(
@@ -45,9 +45,9 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 }
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),

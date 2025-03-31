@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "framework/physics/solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -26,8 +27,8 @@ ResponseEvaluator::GetInputParameters()
     "and arbitrary forward sources.");
   params.SetDocGroup("LBSUtilities");
 
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem",
-                                                       "A handle to an existing LBS problem.");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem",
+                                                        "A handle to an existing LBS problem.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
   params.LinkParameterToBlock("options", "response::OptionsBlock");
@@ -44,7 +45,7 @@ ResponseEvaluator::Create(const ParameterBlock& params)
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
   : lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem")))
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
 {
   if (params.IsParameterValid("options"))
   {

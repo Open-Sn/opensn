@@ -45,6 +45,7 @@
 #include "framework/field_functions/interpolation/ffinter_point.h"
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
+#include "framework/physics/problem.h"
 #include "framework/physics/solver.h"
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"
 #include "framework/post_processors/cell_volume_integral_post_processor.h"
@@ -506,12 +507,17 @@ static bool reg = opensnlua::Console::Bind(
       .endNamespace();
 
     luabridge::getGlobalNamespace(L)
+      .beginClass<Problem>("Problem")
+      .addFunction("GetFieldFunctions", luabridge::constOverload<>(&Problem::GetFieldFunctions))
+      .endClass()
+      .beginClass<std::shared_ptr<Problem>>("ProblemPtr")
+      .endClass()
+      //
       .beginClass<Solver>("Solver")
       .addFunction("Initialize", &Solver::Initialize)
       .addFunction("Execute", &Solver::Execute)
       .addFunction("Step", &Solver::Step)
       .addFunction("Advance", &Solver::Advance)
-      .addFunction("GetFieldFunctions", luabridge::constOverload<>(&Solver::GetFieldFunctions))
       .endClass()
       .beginClass<std::shared_ptr<Solver>>("SolverPtr")
       .endClass();
@@ -520,6 +526,8 @@ static bool reg = opensnlua::Console::Bind(
       .beginNamespace("diffusion")
       .deriveClass<DiffusionSolverBase, Solver>("DiffusionSolverBase")
       .addFunction("UpdateFieldFunctions", &DiffusionSolverBase::UpdateFieldFunctions)
+      .addFunction("GetFieldFunctions",
+                   luabridge::constOverload<>(&DiffusionSolverBase::GetFieldFunctions))
       .addFunction("SetDCoefFunction", &DiffusionSolverBase::SetDCoefFunction)
       .addFunction("SetQExtFunction", &DiffusionSolverBase::SetQExtFunction)
       .addFunction("SetSigmaAFunction", &DiffusionSolverBase::SetSigmaAFunction)
@@ -559,7 +567,7 @@ static bool reg = opensnlua::Console::Bind(
 
     luabridge::getGlobalNamespace(L)
       .beginNamespace("lbs")
-      .deriveClass<LBSProblem, Solver>("LBSProblem")
+      .deriveClass<LBSProblem, Problem>("LBSProblem")
       .addFunction("SetOptions", &LBSProblem::SetOptions)
       .addFunction("GetPowerFieldFunction", &LBSProblem::GetPowerFieldFunction)
       .endClass()
