@@ -43,6 +43,7 @@ Function wrappers
 
    math.Function
    math.ScalarMaterialFunction
+   math.ScalarSpatialFunction
    math.ScalarSpatialMaterialFunction
    math.VectorSpatialFunction
 
