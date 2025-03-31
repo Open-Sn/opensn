@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     # Define a logical volume covering the entire domain and set block IDs
     vol0 = RPPLogicalVolume(xmin=0.0, xmax=length[0], ymin=0.0, ymax=length[1], infz=True)
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     # Define material properties and the volumetric source for a two-group problem
     ngrp = 2

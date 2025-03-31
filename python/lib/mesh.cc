@@ -56,8 +56,8 @@ WrapMesh(py::module& mesh)
     py::arg("mat_id")
   );
   mesh_continuum.def(
-    "SetBlockIDFromLogical",
-    &MeshContinuum::SetBlockIDFromLogical,
+    "SetBlockIDFromLogicalVolume",
+    &MeshContinuum::SetBlockIDFromLogicalVolume,
     R"(
     Set block ID's using a logical volume.
 
@@ -77,8 +77,8 @@ WrapMesh(py::module& mesh)
     py::arg("inside")
   );
   mesh_continuum.def(
-    "SetBoundaryIDFromLogical",
-    &MeshContinuum::SetBoundaryIDFromLogical,
+    "SetBoundaryIDFromLogicalVolume",
+    &MeshContinuum::SetBoundaryIDFromLogicalVolume,
     R"(
     Set boundary ID's using a logical volume.
 
