@@ -12,7 +12,7 @@ namespace opensn
 
 PyEnv::PyEnv()
 {
-  // Check if environment is already initialized
+  // check if environment is already initialized
   if (PyEnv::p_default_env != nullptr)
   {
     return;
@@ -37,7 +37,7 @@ PyEnv::PyEnv()
 
 PyEnv::~PyEnv()
 {
-  // Finalize the run
+  // finalize the run
   Finalize();
   ::PetscFinalize();
   // Print execution time
@@ -47,7 +47,7 @@ PyEnv::~PyEnv()
     std::cout << "Elapsed execution time: " << program_timer.GetTimeString() << "\n";
     std::cout << Timer::GetLocalDateTimeString() << " " << program << " finished execution.\n";
   }
-  // Flush caliper
+  // flush caliper
   cali_mgr.flush();
 }
 
