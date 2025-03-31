@@ -53,10 +53,10 @@ if __name__ == "__main__":
 
     # Set block IDs using logical volumes
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     vol1 = RPPLogicalVolume(xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5, infz=True)
-    grid.SetBlockIDFromLogical(vol1, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
     # Energy groups and cross-section data.
     num_groups = 21

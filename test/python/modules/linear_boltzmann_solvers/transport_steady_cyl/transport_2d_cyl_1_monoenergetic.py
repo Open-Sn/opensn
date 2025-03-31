@@ -51,7 +51,7 @@ if __name__ == "__main__":
         ymax=length[1],
         infz=True,
     )
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     # Define materials and sources (one-group problem)
     ngrp = 1

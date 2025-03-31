@@ -58,15 +58,15 @@ if __name__ == "__main__":
     # Set block IDs using logical volumes
     # Volume for block 1: infinite in x; y from 0 to 0.8*L.
     vol1a = RPPLogicalVolume(infx=True, ymin=0.0, ymax=0.8 * L, infz=True)
-    grid.SetBlockIDFromLogical(vol1a, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1a, 1, True)
 
     # Volume for block 0: localized in x around 2.5.
     vol0 = RPPLogicalVolume(xmin=2.5 - 0.166666, xmax=2.5 + 0.166666, infy=True, infz=True)
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     # Volume for block 1 (second region): x centered about 2.5, y from 0.9*L to L.
     vol1b = RPPLogicalVolume(xmin=2.5 - 1, xmax=2.5 + 1, ymin=0.9 * L, ymax=L, infz=True)
-    grid.SetBlockIDFromLogical(vol1b, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1b, 1, True)
 
     # Add cross sections to materials
     num_groups = 10

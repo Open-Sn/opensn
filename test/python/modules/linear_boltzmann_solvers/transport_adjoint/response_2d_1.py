@@ -49,11 +49,11 @@ if __name__ == "__main__":
 
     # Define a logical volume that spans in x (infinite) and in y from 0 to 0.8*L.
     vol1a = RPPLogicalVolume(infx=True, ymin=0.0, ymax=0.8 * L, infz=True)
-    grid.SetBlockIDFromLogical(vol1a, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1a, 1, True)
 
     # Define a volume for block 0: localized in x around 2.5.
     vol0 = RPPLogicalVolume(xmin=2.5 - 0.166666, xmax=2.5 + 0.166666, infy=True, infz=True)
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
 
     # Define a volume for block 2: localized in x and in y from 0 to 2*0.166666.
     vol2 = RPPLogicalVolume(
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         ymax=2 * 0.166666,
         infz=True,
     )
-    grid.SetBlockIDFromLogical(vol2, 2, True)
+    grid.SetBlockIDFromLogicalVolume(vol2, 2, True)
 
     # Define a second volume for block 1: localized in x around 2.5 and in y from 0.9*L to L.
     vol1b = RPPLogicalVolume(
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         ymax=L,
         infz=True,
     )
-    grid.SetBlockIDFromLogical(vol1b, 1, True)
+    grid.SetBlockIDFromLogicalVolume(vol1b, 1, True)
 
     # Add cross sections to materials
     xs_1g1 = MultiGroupXS()

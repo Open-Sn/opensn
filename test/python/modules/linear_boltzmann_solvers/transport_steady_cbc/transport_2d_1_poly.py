@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # Cross-section data
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
-    grid.SetBlockIDFromLogical(vol0, 0, True)
+    grid.SetBlockIDFromLogicalVolume(vol0, 0, True)
     num_groups = 168
     xs_3_170 = MultiGroupXS()
     xs_3_170.LoadFromOpenSn("xs_3_170.xs")
