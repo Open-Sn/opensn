@@ -15,12 +15,12 @@ OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigenSolver);
 InputParameters
 NonLinearKEigenSolver::GetInputParameters()
 {
-  InputParameters params = opensn::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -52,9 +52,9 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 }
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),

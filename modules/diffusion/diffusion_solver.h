@@ -40,6 +40,8 @@ public:
    */
   void UpdateFieldFunctions();
 
+  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
+
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
@@ -70,6 +72,8 @@ protected:
   std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
   std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
+
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 
 public:
   static InputParameters GetInputParameters();

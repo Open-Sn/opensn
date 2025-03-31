@@ -28,6 +28,37 @@
 namespace opensn
 {
 
+// Wrap problem
+void
+WrapProblem(py::module& slv)
+{
+  // clang-format off
+  // problem base
+  auto problem = py::class_<Problem, std::shared_ptr<Problem>>(
+    slv,
+    "Problem",
+    R"(
+    Base class for all problem.
+
+    Wrapper of :cpp:class:`opensn::Problem`.
+    )"
+  );
+  problem.def(
+    "GetFieldFunctions",
+    [](Problem& self)
+    {
+      py::list ff_list;
+      std::vector<std::shared_ptr<FieldFunctionGridBased>>& cpp_ff_list = self.GetFieldFunctions();
+      for (std::shared_ptr<FieldFunctionGridBased>& ff : cpp_ff_list) {
+        ff_list.append(ff);
+      }
+      return ff_list;
+    },
+    "Get the list of field functions."
+  );
+  // clang-format on
+}
+
 // Wrap solver
 void
 WrapSolver(py::module& slv)
@@ -75,19 +106,6 @@ WrapSolver(py::module& slv)
     },
     "Advance time values function."
   );
-  solver.def(
-    "GetFieldFunctions",
-    [](Solver& self)
-    {
-      py::list ff_list;
-      std::vector<std::shared_ptr<FieldFunctionGridBased>>& cpp_ff_list = self.GetFieldFunctions();
-      for (std::shared_ptr<FieldFunctionGridBased>& ff : cpp_ff_list) {
-        ff_list.append(ff);
-      }
-      return ff_list;
-    },
-    "Get the list of field functions."
-  );
   // clang-format on
 }
 
@@ -97,7 +115,7 @@ WrapLBS(py::module& slv)
 {
   // clang-format off
   // LBS problem
-  auto lbs_problem = py::class_<LBSProblem, std::shared_ptr<LBSProblem>, Solver>(
+  auto lbs_problem = py::class_<LBSProblem, std::shared_ptr<LBSProblem>, Problem>(
     slv,
     "LBSProblem",
     R"(
@@ -786,6 +804,7 @@ void
 py_solver(py::module& pyopensn)
 {
   py::module slv = pyopensn.def_submodule("solver", "Solver module.");
+  WrapProblem(slv);
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);

@@ -53,8 +53,7 @@ DiffusionSolverBase::GetBoundaryOptionsBlock()
 
 DiffusionSolverBase::DiffusionSolverBase(const std::string& name,
                                          std::shared_ptr<MeshContinuum> grid_ptr)
-  : opensn::Solver(name,
-                   {{"max_iters", static_cast<int64_t>(500)}, {"residual_tolerance", 1.0e-2}}),
+  : Solver(name, {{"max_iters", static_cast<int64_t>(500)}, {"residual_tolerance", 1.0e-2}}),
     grid_ptr_(grid_ptr),
     num_local_dofs_(0),
     num_global_dofs_(0),
@@ -65,7 +64,7 @@ DiffusionSolverBase::DiffusionSolverBase(const std::string& name,
 }
 
 DiffusionSolverBase::DiffusionSolverBase(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
     num_local_dofs_(0),
     num_global_dofs_(0),
@@ -128,8 +127,8 @@ DiffusionSolverBase::InitFieldFunctions()
   if (field_functions_.empty())
   {
     std::string solver_name;
-    if (not GetName().empty())
-      solver_name = GetName() + "-";
+    if (not Solver::GetName().empty())
+      solver_name = Solver::GetName() + "-";
 
     std::string name = solver_name + "phi";
 
@@ -146,6 +145,12 @@ DiffusionSolverBase::UpdateFieldFunctions()
 {
   auto& ff = *field_functions_.front();
   ff.UpdateFieldVector(x_);
+}
+
+const std::vector<std::shared_ptr<FieldFunctionGridBased>>&
+DiffusionSolverBase::GetFieldFunctions() const
+{
+  return field_functions_;
 }
 
 } // namespace opensn

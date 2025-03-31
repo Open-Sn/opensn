@@ -88,6 +88,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   TO_PARAMBLOCK(PointSource);
   TO_PARAMBLOCK(PostProcessor);
   TO_PARAMBLOCK(ResponseEvaluator);
+  TO_PARAMBLOCK(Problem);
   TO_PARAMBLOCK(Solver);
   TO_PARAMBLOCK(SurfaceMesh);
   TO_PARAMBLOCK(VolumetricSource);

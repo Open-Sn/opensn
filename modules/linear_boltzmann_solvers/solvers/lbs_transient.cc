@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/solvers/lbs_transient.h"
 #include "framework/object_factory.h"
 #include "framework/math/time_integrations/time_integration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 
 namespace opensn
 {
@@ -13,7 +14,7 @@ OpenSnRegisterObjectInNamespace(lbs, TransientSolver);
 InputParameters
 TransientSolver::GetInputParameters()
 {
-  InputParameters params = opensn::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Generalized implementation of a transient solver. This solver calls"
                                " the Across-Groupset (AGS) solver for the lbs-data block.");
@@ -21,7 +22,7 @@ TransientSolver::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "TransientSolver");
 
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
 
   params.AddRequiredParameter<size_t>("time_integration",
                                       "Handle to a time integration scheme to use");
@@ -30,9 +31,9 @@ TransientSolver::GetInputParameters()
 }
 
 TransientSolver::TransientSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem"))),
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
     time_integration_(GetStackItemPtrAsType<TimeIntegration>(
       object_stack, params.GetParamValue<size_t>("time_integration")))
 {

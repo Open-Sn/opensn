@@ -67,13 +67,13 @@ MGKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*)
 
 MGDiffusionSolver::MGDiffusionSolver(const std::string& name,
                                      std::shared_ptr<MeshContinuum> grid_ptr)
-  : opensn::Solver(name,
-                   {{"max_inner_iters", int64_t(500)},
-                    {"residual_tolerance", 1.0e-2},
-                    {"verbose_level", int64_t(0)},
-                    {"thermal_flux_tolerance", 1.0e-2},
-                    {"max_thermal_iters", int64_t(500)},
-                    {"do_two_grid", false}}),
+  : Solver(name,
+           {{"max_inner_iters", int64_t(500)},
+            {"residual_tolerance", 1.0e-2},
+            {"verbose_level", int64_t(0)},
+            {"thermal_flux_tolerance", 1.0e-2},
+            {"max_thermal_iters", int64_t(500)},
+            {"do_two_grid", false}}),
     grid_ptr_(grid_ptr),
     num_groups_(0),
     last_fast_group_(0),
@@ -135,7 +135,7 @@ MGDiffusionSolver::GetXSMapEntryBlock()
 }
 
 MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
     num_groups_(0),
     last_fast_group_(0),
@@ -1144,6 +1144,12 @@ MGDiffusionSolver::UpdateFieldFunctions()
     auto& ff = field_functions_.at(g);
     ff->UpdateFieldVector(data_vector);
   } // for g
+}
+
+const std::vector<std::shared_ptr<FieldFunctionGridBased>>&
+MGDiffusionSolver::GetFieldFunctions() const
+{
+  return field_functions_;
 }
 
 } // namespace opensn

@@ -17,13 +17,13 @@ OpenSnRegisterObjectInNamespace(lbs, SteadyStateSolver);
 InputParameters
 SteadyStateSolver::GetInputParameters()
 {
-  InputParameters params = opensn::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
                                "across-groupset (AGS) solver.");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
 
   return params;
 }
@@ -36,9 +36,9 @@ SteadyStateSolver::Create(const ParameterBlock& params)
 }
 
 SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_problem")))
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
 {
 }
 

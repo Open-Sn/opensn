@@ -4,9 +4,11 @@
 #include "python/lib/py_wrappers.h"
 #include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/physics/solver.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
 #include "modules/diffusion/diffusion_solver.h"
+#include <pybind11/stl.h>
 #include <memory>
 
 namespace opensn
@@ -32,6 +34,13 @@ WrapDiffusion(py::module& diffusion)
     &DiffusionSolverBase::UpdateFieldFunctions,
     R"(
     Updates the field functions with the latest data.
+    )"
+  );
+  diff_base.def(
+    "GetFieldFunctions",
+    &DiffusionSolverBase::GetFieldFunctions,
+    R"(
+    Get the field functions associated with the solver.
     )"
   );
   diff_base.def(
