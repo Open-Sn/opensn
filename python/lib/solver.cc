@@ -456,7 +456,16 @@ WrapLBS(py::module& slv)
         result[allowed_bd_ids.at(bndry_id).data()] = np_vector;
       }
       return result;
-    }
+    },
+    R"(
+    ???
+
+    Parameters
+    ----------
+    bnd_names: List[str]
+        ???
+    )",
+    py::arg("bnd_names")
   );
 
   // discrete ordinate curvilinear solver
@@ -766,7 +775,8 @@ WrapPRK(py::module& slv)
     R"(
     Set the value of rho.
     ??? (what is rho?)
-    )"
+    )",
+    py::arg("rho")
   );
   // clang-format on
 }

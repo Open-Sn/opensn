@@ -82,6 +82,23 @@ WrapDiffusion(py::module& diffusion)
     )",
     py::arg("func")
   );
+  diff_base.def(
+    "SetOptions",
+    [](DiffusionSolverBase& self, py::kwargs& params)
+    {
+      InputParameters input = DiffusionSolverBase::GetOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetOptions(input);
+    },
+    R"(
+    ???
+
+    Parameters
+    ----------
+    boundary_conditions: List[Dict]
+        An array contain dictionaries for each boundary specification.
+    )"
+  );
 
   // CFEM diffusion solver
   auto cfem_diffusion = py::class_<CFEMDiffusionSolver, std::shared_ptr<CFEMDiffusionSolver>,

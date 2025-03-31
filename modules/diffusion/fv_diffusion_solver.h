@@ -24,15 +24,12 @@ public:
   explicit FVDiffusionSolver(const InputParameters& params);
   ~FVDiffusionSolver() override;
 
-  void SetOptions(const InputParameters& params);
-  void SetBoundaryOptions(const InputParameters& params);
+  void SetBoundaryOptions(const InputParameters& params) override;
 
   void Initialize() override;
   void Execute() override;
 
   static InputParameters GetInputParameters();
-  static InputParameters GetOptionsBlock();
-  static InputParameters GetBoundaryOptionsBlock();
 };
 
 } // namespace opensn
