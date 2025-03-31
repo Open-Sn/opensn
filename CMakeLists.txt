@@ -257,7 +257,7 @@ if(OPENSN_WITH_PYTHON)
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
               -d ${CMAKE_SOURCE_DIR}/test/python
-              --exe ${CMAKE_BINARY_DIR}/python/opensn
+              --exe ${CMAKE_BINARY_DIR}/test/python/opensn-test
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )

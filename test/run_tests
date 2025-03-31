@@ -104,7 +104,7 @@ else:
     if 'lua' in argv.directory:
         argv.exe = "build/test/lua/opensn-test"
     elif 'python' in argv.directory:
-        argv.exe = "build/python/opensn"
+        argv.exe = "build/test/python/opensn-test"
 
 # Ensure exe path is absolute
 argv.exe = os.path.abspath(argv.exe)

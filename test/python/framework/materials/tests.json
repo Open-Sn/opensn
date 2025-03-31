@@ -1,0 +1,33 @@
+[
+  {
+    "file": "xs_printout.py",
+    "comment": "create, modify, and print xs",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "chi[0] before: ",
+        "goldvalue": 5.1745279852251e-06,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "chi[0] after : ",
+        "goldvalue": 5.1745279852251e-06,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "sigt[0] before: ",
+        "goldvalue": 6.1351201118512,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "sigt[0] after : ",
+        "goldvalue": 12.270240223702,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  }
+]

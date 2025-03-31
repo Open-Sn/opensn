@@ -220,7 +220,6 @@ WrapPrinter(py::module& post)
       {
         cpp_pp_list.push_back(py_pp.cast<PostProcessor*>());
         auto back = py_pp.cast<SolverInfoPostProcessor*>();
-        std::cout << back->ConvertValueToString(back->GetValue()) << "\n";
       }
       // get printer
       PostProcessorPrinter& printer = PostProcessorPrinter::GetInstance();

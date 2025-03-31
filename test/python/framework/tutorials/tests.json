@@ -1,0 +1,64 @@
+[
+  {
+    "file" : "fv_test1.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare", "key" : "Converged"
+      }
+    ]
+  },
+  {
+    "file" : "fv_test2.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare", "key" : "Converged"
+      }
+    ]
+  },
+  {
+    "file" : "pwlc_test1.py", "num_procs" : 4, "checks" :
+    [
+      {
+        "type" : "StrCompare", "key" : "Converged"
+      }
+    ]
+  },
+  {
+    "file" : "pwlc_test2.py", "num_procs" : 4, "checks" :
+    [
+      {
+        "type" : "StrCompare", "key" : "Converged"
+      },
+      {
+        "type" : "FloatCompare", "key" : "Error:", "wordnum" : 2,
+        "gold" : 7.032369e-02, "abs_tol" : 1.0e-7
+      }
+    ]
+  },
+  {
+    "file" : "tutorial_06_wdd.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
+        "gold" : 5.483e-07, "abs_tol" : 1.0e-10
+      }
+    ]
+  },
+  {
+    "file" : "tutorial_91a_pwld.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "FloatCompare", "key" : "Iteration     8", "wordnum" : 3,
+        "gold" : 5.872e-07, "abs_tol" : 1.0e-10
+      }
+    ]
+  },
+  {
+    "file" : "tutorial_93_raytracing.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "ErrorCode", "error_code" : 0
+      }
+    ]
+  }
+]

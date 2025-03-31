@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/utils/utils.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <vector>
 #include <string>
@@ -27,8 +28,9 @@ public:
   std::vector<std::string>& GetCommandBuffer() { return command_buffer_; }
   void InitConsole();
   void ExecuteFile(const std::string& input_filename) const;
-  void BindModule(std::function<void(py::module&)> bind_function);
   void BindBarrier(const mpi::Communicator& comm);
+
+  static void BindModule(std::function<void(py::module&)> bind_function);
 
 private:
   Console() noexcept = default;

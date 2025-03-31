@@ -6,15 +6,15 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   In-flow rate                =",
-        "goldvalue": 1.553633e+02,
-        "abs_tol": 1.0e-6
+        "key": " In-flow rate                =",
+        "goldvalue": 155.3633,
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
-        "goldvalue": 1.553633e+02,
-        "abs_tol": 1.0e-6
+        "key": " Out-flow rate               =",
+        "goldvalue": 155.3633,
+        "abs_tol": 1e-06
       }
     ]
   },
@@ -74,7 +74,7 @@
         "abs_tol": 0.0001
       }
     ]
-  }, 
+  },
   {
     "file": "transport_3d_2_unstructured.py",
     "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
@@ -94,7 +94,7 @@
       }
     ]
   },
-    {
+  {
     "file": "transport_3d_5_cycles_2.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh - PWLD",
     "num_procs": 4,
@@ -170,6 +170,695 @@
         "type": "KeyValuePair",
         "key": "Max-value2=",
         "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_leakage.py",
+    "comment": "1D LinearBSolver Test - Leakage",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "zmax=",
+        "goldvalue": 0.109692,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_3a_dsa_ortho.py",
+    "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    28",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    39",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    28",
+        "wordnum": 8,
+        "gold": 6.74299e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    39",
+        "wordnum": 8,
+        "gold": 8.73816e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_gmsh_v2.py",
+    "comment": "2D LinearBSolver Test Unstructured Gmsh V2 grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 1083.08571,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_gmsh_v4.py",
+    "comment": "2D LinearBSolver Test Unstructured Gmsh V4 grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 1083.08571,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_gmsh_v2.py",
+    "comment": "3D LinearBSolver Test Unstructured Gmsh V2 grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 41.58445,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_gmsh_v4.py",
+    "comment": "3D LinearBSolver Test Unstructured Gmsh V4 grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 41.58445,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_2_unstructured_crichardson.py",
+    "comment": "2D LinearBSolver Test Unstructured grid with Classic Richardson - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.51187,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.00142458,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_3_poly_quad_mod.py",
+    "comment": "2D LinearBSolver Test Polar-Optimized quadrature - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.50758,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000252527,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_4a_dsa_ortho.py",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    53",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    53",
+        "wordnum": 8,
+        "gold": 5.96018e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 8,
+        "gold": 5.96296e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_4b_dsa_ortho.py",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    56",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 8,
+        "gold": 5.00021e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    56",
+        "wordnum": 8,
+        "gold": 9.73954e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1a_extruder.py",
+    "comment": "3D LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1b_ortho.py",
+    "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52831,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000804576,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_parmetis.py",
+    "comment": "3D LinearBSolver Test Ortho Grid Parmetis - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_parmetis_crichardson.py",
+    "comment": "3D LinearBSolver Test Ortho Grid Parmetis with Classic Richardson- PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_scotch.py",
+    "comment": "3D LinearBSolver Test Ortho Grid Scotch - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_qmom_part1.py",
+    "comment": "3D LinearBSolver Test Source moment writing - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1_poly_qmom_part2.py",
+    "dependency": "transport_3d_1_poly_qmom_part1.py",
+    "comment": "3D LinearBSolver Test Source moment reading - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.000102348,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 9.28438e-06,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_ags_upscatter.py",
+    "comment": "3D, multiple groupsets, groupset-to-groupset upscattering",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 1.4745,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.4745,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 1.4745,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_3a_dsa_ortho.py",
+    "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    54",
+        "wordnum": 8,
+        "gold": 7.24474e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 8,
+        "gold": 8.17903e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_4_cycles_1.py",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.555349,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000374343,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6a_split_mesh.py",
+    "comment": "3D LinearBSolver Test Split mesh configuration A",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 0.1131566,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 0.0007340585,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6b_split_mesh.py",
+    "comment": "3D LinearBSolver Test Split mesh configuration B",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 0.1131566,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 0.0007340585,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6a_dist_mesh.py",
+    "comment": "3D LinearBSolver test distributed mesh configuration A",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 0.1131566,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 0.0007340585,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_6b_dist_mesh.py",
+    "comment": "3D LinearBSolver test distributed mesh configuration B",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "max-grp0(latest)",
+        "wordnum": 4,
+        "gold": 0.1131566,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "FloatCompare",
+        "key": "max-grp19(latest)",
+        "wordnum": 4,
+        "gold": 0.0007340585,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "reed_balance.py",
+    "comment": "1D LinearBSolver Reed problem with balance printout",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " Absorption rate             =",
+        "goldvalue": 100.6178,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 0.3821562,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "reed_balance_crichardson.py",
+    "comment": "1D LinearBSolver Reed problem with Classic Richardson and balance printout",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " Absorption rate             =",
+        "goldvalue": 100.6178,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 0.3821562,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2_unstructured_restart.py",
+    "comment": "3D Unstructured problem with restart",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.88996,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "hdpe_balance.py",
+    "comment": "1D 172-group infinite with balance",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " Absorption rate             =",
+        "goldvalue": 999.9999,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Production rate             =",
+        "goldvalue": 1000.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " In-flow rate                =",
+        "goldvalue": 12365.98,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 12365.98,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "1g_infinite_pure_absorber_balance_richardson.py",
+    "comment": "Infinite, 1g, pure absorber, with balance using Richardson",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " In-flow rate                =",
+        "goldvalue": 155.3633,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 155.3633,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_4_dsa_ortho_inf.py",
+    "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] Iteration    22",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 9,
+        "gold": "CONVERGED"
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [0-62] Iteration    22",
+        "wordnum": 8,
+        "gold": 9.6079e-08,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "WGS groups [63-167] Iteration    59",
+        "wordnum": 8,
+        "gold": 4.73732e-07,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_1_poly_balance.py",
+    "comment": "2D Transport test. Pure scatterer. Balance.",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " Production rate             =",
+        "goldvalue": 12.5,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 12.5,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_1_poly_balance_mg.py",
+    "comment": "2D Transport test. Vacuum and Isotropic BC. Balance.\n",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": " Absorption rate             =",
+        "goldvalue": 0.324502,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": " Out-flow rate               =",
+        "goldvalue": 13.43586,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "angular_io_1d.py",
+    "comment": "1D AngularFlux IO Test",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage-Diff1=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage-Diff2=",
+        "goldvalue": 0.0,
         "abs_tol": 0.0001
       }
     ]

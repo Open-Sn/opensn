@@ -81,7 +81,7 @@
       {
         "type": "KeyValuePair",
         "key": "QoI Value[6]=",
-        "goldvalue": 1.54510e-06,
+        "goldvalue": 1.5451e-06,
         "abs_tol": 1e-09
       },
       {
@@ -93,14 +93,14 @@
       {
         "type": "KeyValuePair",
         "key": "QoI Value[8]=",
-        "goldvalue": 3.05980e-07,
+        "goldvalue": 3.0598e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[9]=",
         "goldvalue": 2.07087e-07,
-        "abs_tol": 1.0e-9
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",

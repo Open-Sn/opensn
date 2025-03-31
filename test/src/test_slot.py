@@ -42,9 +42,9 @@ class TestSlot:
                 if arg.find("\"") >= 0:
                     qarg = arg.replace('"', '\\"')
                     if sys.platform.startswith('darwin'):
-                        cmd += "--py " + "\\\"" + qarg + "\\\""
+                        cmd += "--py \"" + qarg + "\" "
                     else:
-                        cmd += "--py " + qarg
+                        cmd += "--py " + qarg + " "
                 else:
                     cmd += arg + " "
         elif extension == ".lua":
@@ -53,9 +53,9 @@ class TestSlot:
                 if arg.find("\"") >= 0:
                     qarg = arg.replace('"', '\\"')
                     if sys.platform.startswith('darwin'):
-                        cmd += "--lua " + "\\\"" + qarg + "\\\""
+                        cmd += "--lua " + "\\\"" + qarg + "\\\" "
                     else:
-                        cmd += "--lua " + qarg
+                        cmd += "--lua " + qarg + " "
                 else:
                     cmd += arg + " "
         self.command = cmd
