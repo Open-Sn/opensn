@@ -12,13 +12,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.settings import EnableCaliper
 
 if __name__ == "__main__":
 
@@ -29,7 +27,7 @@ if __name__ == "__main__":
     xmin = -L / 2
     dx = L / N
     for i in range(N + 1):
-        nodes.append(xmin + (i - 1) * dx)
+        nodes.append(xmin + i * dx)
 
     meshgen = OrthogonalMeshGenerator(
         node_sets=[nodes, nodes, nodes]

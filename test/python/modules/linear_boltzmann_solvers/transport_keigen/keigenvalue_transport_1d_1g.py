@@ -8,7 +8,6 @@ Test: Final k-eigenvalue: 0.9995433
 
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -19,7 +18,6 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.solver import DiscreteOrdinatesSolver, NonLinearKEigen
-
 
 if __name__ == "__main__":
 

@@ -18,8 +18,6 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigenSMM
-    from pyopensn.logvol import RPPLogicalVolume
-
 
 if __name__ == "__main__":
 
