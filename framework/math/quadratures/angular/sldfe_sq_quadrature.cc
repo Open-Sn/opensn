@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/> 
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
@@ -212,7 +212,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
 
       initial_octant_SQs_.push_back(sq);
     } // for j
-  } // for i
+  }   // for i
 }
 
 void
@@ -510,7 +510,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
                        legendre_qweights[j];
       }
     } // for j
-  } // for i
+  }   // for i
 
   return integral;
 }
@@ -701,7 +701,7 @@ SimplifiedLDFESQ::Quadrature::RiemannIntegral(BaseFunctor* F, int Ni)
 
       I_riemann += fval * sin(theta) * dtheta * dphi;
     } // for j
-  } // for i
+  }   // for i
 
   return I_riemann;
 }
