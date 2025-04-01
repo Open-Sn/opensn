@@ -381,7 +381,7 @@ def RunTests(tests: list, argv):
             if slot.Probe():
                 system_load += slot.test.num_procs
 
-        time.sleep(0.01)
+        time.sleep(1.0)
 
         if done:
             break

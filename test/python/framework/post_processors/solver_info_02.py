@@ -51,10 +51,10 @@ if __name__ == "__main__":
     for t in range(1, 21):
         phys0.Step()
         time = phys0.GetTimeNew()
-        print(t, "{:.3f} {:.5f}".format(time, phys0.GetPopulationNew()), sep="\t")
+        print(t, "{:.3f} {:.5f}".format(time, phys0.GetPopulationNew()), sep="\t", flush=True)
         phys0.Advance()
         if time > 0.1:
             phys0.SetRho(0.8)
 
-    print("Manual neutron_population1=", f"{pp[1].GetValue():.5f}", sep="\t")
-    print("Manual neutron_population1=", f"{pp21.GetValue():.5f}", sep="\t")
+    print("Manual neutron_population1=", f"{pp[1].GetValue():.5f}", sep="\t", flush=True)
+    print("Manual neutron_population1=", f"{pp21.GetValue():.5f}", sep="\t", flush=True)

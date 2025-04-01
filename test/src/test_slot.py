@@ -68,7 +68,7 @@ class TestSlot:
                                         cwd=test.file_dir,
                                         shell=True,
                                         stdout=self.stdout_file,
-                                        stderr=self.stdout_file,
+                                        stderr=self.stderr_file,
                                         universal_newlines=True)
 
     def Probe(self):

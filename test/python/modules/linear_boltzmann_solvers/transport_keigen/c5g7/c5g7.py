@@ -67,7 +67,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    if k_method == "scdsa" or k_method == "smm":
+    if "scdsa" in k_method or "smm" in k_method:
         inner_linear_method = "classic_richardson"
         l_max_its = 2
     else:
