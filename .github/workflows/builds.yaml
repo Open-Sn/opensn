@@ -1,4 +1,4 @@
-name: Nightly builds
+name: Nightly Builds
 
 on:
   schedule:
@@ -27,22 +27,22 @@ jobs:
       - name: build
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }}
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
           mkdir build && cd build && cmake .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }}
-          test/run_tests -d test/lua -j 32 -v 1 -w 3
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests -d test/python -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }}
-          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
       - name: test unit
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }}
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
           build/test/opensn-unit
 
   sanitize:
@@ -52,21 +52,21 @@ jobs:
       - name: build
         shell: bash
         run: |
-          module load opensn/clang/17
+          module load python3/3.12.3 opensn/clang/17
           cmake --preset clang+debug+sanitizer
           cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash
         run: |
-          module load opensn/clang/17
+          module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d test/lua -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/lua/opensn-test
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test
       - name: test tutorials
         shell: bash
         run: |
-          module load opensn/clang/17
+          module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/lua/opensn-test
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test
 
   coverage:
     runs-on: [self-hosted]
@@ -75,32 +75,32 @@ jobs:
       - name: build
         shell: bash
         run: |
-          module load opensn/gcc/14
+          module load python3/3.12.3 opensn/gcc/14
           cmake --preset coverage
           cmake --build --preset coverage -j64
       - name: test
         shell: bash
         run: |
-          module load opensn/gcc/14
-          test/run_tests -d test/lua -j 32 -v 1 -w 3 --exe build-coverage/test/lua/opensn-test
+          module load python3/3.12.3 opensn/gcc/14
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test
       - name: unit tests
         shell: bash
         run: |
-          module load opensn/gcc/14
+          module load python3/3.12.3 opensn/gcc/14
           ./build-coverage/test/opensn-unit
       - name: test tutorials
         shell: bash
         run: |
-          module load opensn/gcc/14
-          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3 --exe build-coverage/test/lua/opensn-test
+          module load python3/3.12.3 opensn/gcc/14
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test
       - name: coveralls
         shell: bash
         run: |
-          module load opensn/gcc/14 python3/3.12.3
-          gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|lua|modules)/' --coveralls coverage.json
+          module load python3/3.12.3 opensn/gcc/14
+          gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|python|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
 
-  python:
+  lua:
     name: "${{ matrix.compiler }}"
     runs-on: [self-hosted]
     strategy:
@@ -115,20 +115,20 @@ jobs:
       - name: build
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }} python3/3.12.3
-          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON=True .. && make -j && cd ..
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake -DOPENSN_WITH_LUA=True .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }} python3/3.12.3
-          test/run_tests -d test/python -j 32 -v 1 -w 3
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests -d test/lua -j 32 -v 1 -w 3
       - name: test tutorials
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }} python3/3.12.3
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3
       - name: test unit
         shell: bash
         run: |
-          module load opensn/${{ matrix.compiler }} python3/3.12.3
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
           build/test/opensn-unit
