@@ -15,7 +15,7 @@ jobs:
       - name: Build documentation
         shell: bash
         run: |
-          module load opensn/gcc/14 python3/3.12.3 doxygen/1.13.2
+          module load python3/3.12.3 opensn/gcc/14 doxygen/1.13.2
           mkdir build && cd build
           cmake -DOPENSN_WITH_DOCS=ON -DOPENSN_WITH_PYTHON_MODULE=ON ..
           make -j __init__ doc
