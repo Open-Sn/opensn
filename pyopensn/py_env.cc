@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "python/lib/py_api.h"
+#include "python/lib/py_env.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
 #include "mpi4py/mpi4py.h"
