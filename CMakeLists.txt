@@ -46,8 +46,9 @@ if(OPENSN_WITH_PYTHON_MODULE)
     set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
 endif()
 
-if(OPENSN_WITH_PYTHON)
-    set(OPENSN_WITH_LUA OFF CACHE BOOL "Python interface requested, disabling Lua" FORCE)
+if(OPENSN_WITH_LUA)
+    set(OPENSN_WITH_PYTHON OFF CACHE BOOL "Lua support requested, disabling Python interface" FORCE)
+    set(OPENSN_WITH_PYTHON_MODULE OFF CACHE BOOL "Lua support requested, disabling Python module" FORCE)
 endif()
 
 # dependencies
