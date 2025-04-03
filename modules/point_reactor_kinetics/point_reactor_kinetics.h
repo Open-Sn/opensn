@@ -12,7 +12,7 @@ namespace opensn
 {
 
 /// General transient solver for point kinetics.
-class PRKSolver : public opensn::Solver
+class PRKSolver : public Solver
 {
 private:
   std::vector<double> lambdas_;

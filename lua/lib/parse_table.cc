@@ -16,8 +16,8 @@
 #include "framework/physics/solver.h"
 #include "framework/math/vector3.h"
 #include "framework/runtime.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "lua/lib/types.h"
 #include "LuaBridge/LuaBridge.h"
@@ -101,24 +101,24 @@ SetBlockParam(lua_State* L,
   //
   else if (cls_name == "PRKSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "LBSSolver")
+  else if (cls_name == "LBSProblem")
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
+  else if (cls_name == "DiscreteOrdinatesProblem")
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
+  else if (cls_name == "DiscreteOrdinatesCurvilinearProblem")
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
+  else if (cls_name == "NonLinearKEigenSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "DiscreteOrdinatesSolver")
+  else if (cls_name == "PowerIterationKEigenSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "DiscreteOrdinatesCurvilinearSolver")
+  else if (cls_name == "PowerIterationKEigenSCDSASolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "NonLinearKEigen")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "PowerIterationKEigen")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "PowerIterationKEigenSCDSA")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
-  else if (cls_name == "PowerIterationKEigenSMM")
+  else if (cls_name == "PowerIterationKEigenSMMSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "SteadyStateSolver")
     block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
   else if (cls_name == "DiffusionDFEMSolver")
-    block.AddParameter(key, CreateObjectPtr<opensn::Solver>(L));
+    block.AddParameter(key, CreateObjectPtr<opensn::Problem>(L));
   //
   else if (cls_name == "PointSource")
     block.AddParameter(key, CreateObjectPtr<opensn::PointSource>(L));

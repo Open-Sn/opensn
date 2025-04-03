@@ -19,7 +19,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import FromFileMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
 
 if __name__ == "__main__":
 
@@ -38,8 +38,8 @@ if __name__ == "__main__":
     xs_fuel_g2 = MultiGroupXS()
     xs_fuel_g2.LoadFromOpenSn("xs_fuel_g2.xs")
 
-    # Initialize the LBSSolver
-    phys = DiscreteOrdinatesSolver(
+    # Initialize the LBSProblem
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -71,8 +71,8 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         },
     )
-    k_solver = PowerIterationKEigen(
-        lbs_solver=phys,
+    k_solver = PowerIterationKEigenSolver(
+        lbs_problem=phys,
         k_tol=1e-6,
     )
     k_solver.Initialize()

@@ -14,7 +14,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import FromFileMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
 
 if __name__ == "__main__":
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(4, 8)
 
     # Solver
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -84,8 +84,8 @@ if __name__ == "__main__":
         },
         sweep_type="CBC",
     )
-    k_solver = PowerIterationKEigen(
-        lbs_solver=phys,
+    k_solver = PowerIterationKEigenSolver(
+        lbs_problem=phys,
         k_tol=1.0e-8,
     )
     k_solver.Initialize()

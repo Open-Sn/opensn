@@ -16,7 +16,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiffusionDFEMSolver, NonLinearKEigen
+    from pyopensn.solver import DiffusionDFEMSolver, NonLinearKEigenSolver
 
 if __name__ == "__main__":
 
@@ -56,6 +56,6 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         },
     )
-    k_solver = NonLinearKEigen(lbs_solver=phys)
+    k_solver = NonLinearKEigenSolver(lbs_problem=phys)
     k_solver.Initialize()
     k_solver.Execute()

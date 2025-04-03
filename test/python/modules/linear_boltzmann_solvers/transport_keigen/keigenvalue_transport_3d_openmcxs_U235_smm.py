@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigenSMM
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSMMSolver
 
 if __name__ == "__main__":
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     xs_u235.LoadFromOpenMC("u235_84g.h5", "set1", 294.0)
 
     # Solver Setup
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -84,8 +84,8 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = PowerIterationKEigenSMM(
-        lbs_solver=phys,
+    k_solver = PowerIterationKEigenSMMSolver(
+        lbs_problem=phys,
         accel_pi_verbose=True,
         k_tol=1.0e-8,
         accel_pi_k_tol=1.0e-8,

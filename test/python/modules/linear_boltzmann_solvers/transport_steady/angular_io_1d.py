@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -87,10 +87,10 @@ if __name__ == "__main__":
         "save_angular_flux": True,
     }
 
-    phys1 = DiscreteOrdinatesSolver(**solver_dict)
+    phys1 = DiscreteOrdinatesProblem(**solver_dict)
 
     # Initialize and execute solver
-    ss_solver = SteadyStateSolver(lbs_solver=phys1)
+    ss_solver = SteadyStateSolver(lbs_problem=phys1)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -98,8 +98,8 @@ if __name__ == "__main__":
     leakage_right_1 = phys1.ComputeLeakage(["zmax"])["zmax"][0]
     phys1.WriteAngularFluxes("angular_io")
 
-    phys2 = DiscreteOrdinatesSolver(**solver_dict)
-    ss_solver_2 = SteadyStateSolver(lbs_solver=phys2)
+    phys2 = DiscreteOrdinatesProblem(**solver_dict)
+    ss_solver_2 = SteadyStateSolver(lbs_problem=phys2)
     ss_solver_2.Initialize()
     phys2.ReadAngularFluxes("angular_io")
 

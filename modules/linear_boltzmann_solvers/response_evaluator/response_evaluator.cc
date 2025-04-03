@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/point_source/point_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/volumetric_source/volumetric_source.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "framework/physics/solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -26,8 +27,8 @@ ResponseEvaluator::GetInputParameters()
     "and arbitrary forward sources.");
   params.SetDocGroup("LBSUtilities");
 
-  params.AddRequiredParameter<std::shared_ptr<Solver>>("lbs_solver",
-                                                       "A handle to an existing LBS solver.");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem",
+                                                        "A handle to an existing LBS problem.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
   params.LinkParameterToBlock("options", "response::OptionsBlock");
@@ -43,8 +44,8 @@ ResponseEvaluator::Create(const ParameterBlock& params)
 }
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
-  : lbs_solver_(std::dynamic_pointer_cast<LBSSolver>(
-      params.GetParamValue<std::shared_ptr<Solver>>("lbs_solver")))
+  : lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
+      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
 {
   if (params.IsParameterValid("options"))
   {
@@ -139,12 +140,12 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
   std::vector<double> phi;
   if (prefixes.Has("flux_moments"))
     LBSSolverIO::ReadFluxMoments(
-      *lbs_solver_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
+      *lbs_problem_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
 
   std::vector<std::vector<double>> psi;
   if (prefixes.Has("angular_fluxes"))
     LBSSolverIO::ReadAngularFluxes(
-      *lbs_solver_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
+      *lbs_problem_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
   adjoint_buffers_[name] = {phi, psi};
   log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";
@@ -202,7 +203,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     {
       point_sources_.push_back(
         user_psrc_params.GetParam(p).GetValue<std::shared_ptr<PointSource>>());
-      point_sources_.back()->Initialize(*lbs_solver_);
+      point_sources_.back()->Initialize(*lbs_problem_);
     }
   }
 
@@ -214,7 +215,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     {
       volumetric_sources_.push_back(
         user_dsrc_params.GetParam(p).GetValue<std::shared_ptr<VolumetricSource>>());
-      volumetric_sources_.back()->Initialize(*lbs_solver_);
+      volumetric_sources_.back()->Initialize(*lbs_problem_);
     }
   }
 
@@ -224,7 +225,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     const auto& user_bsrc_params = params.GetParam("boundary");
     for (int p = 0; p < user_bsrc_params.GetNumParameters(); ++p)
     {
-      auto bsrc_params = LBSSolver::GetBoundaryOptionsBlock();
+      auto bsrc_params = LBSProblem::GetBoundaryOptionsBlock();
       bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));
       SetBoundarySourceOptions(bsrc_params);
     }
@@ -254,11 +255,11 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                             " already exists.");
 
   const auto values = params.GetParamVectorValue<double>("strength");
-  OpenSnInvalidArgumentIf(values.size() != lbs_solver_->GetNumGroups(),
+  OpenSnInvalidArgumentIf(values.size() != lbs_problem_->GetNumGroups(),
                           "The number of material source values and groups "
                           "in the underlying solver do not match. "
                           "Expected " +
-                            std::to_string(lbs_solver_->GetNumGroups()) + " but got " +
+                            std::to_string(lbs_problem_->GetNumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
 
   material_sources_[blkid] = values;
@@ -271,7 +272,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
   const auto bndry_name = params.GetParamValue<std::string>("name");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  const auto bid = lbs_solver_->supported_boundary_names.at(bndry_name);
+  const auto bid = lbs_problem_->supported_boundary_names.at(bndry_name);
   if (bndry_type == "isotropic")
   {
     OpenSnInvalidArgumentIf(not params.Has("group_strength"),
@@ -335,11 +336,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = lbs_solver_->GetGrid();
-  const auto& discretization = lbs_solver_->GetSpatialDiscretization();
-  const auto& transport_views = lbs_solver_->GetCellTransportViews();
-  const auto& unit_cell_matrices = lbs_solver_->GetUnitCellMatrices();
-  const auto num_groups = lbs_solver_->GetNumGroups();
+  const auto& grid = lbs_problem_->GetGrid();
+  const auto& discretization = lbs_problem_->GetSpatialDiscretization();
+  const auto& transport_views = lbs_problem_->GetCellTransportViews();
+  const auto& unit_cell_matrices = lbs_problem_->GetUnitCellMatrices();
+  const auto num_groups = lbs_problem_->GetNumGroups();
 
   double local_response = 0.0;
 
@@ -371,7 +372,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   if (not boundary_sources_.empty())
   {
     size_t gs = 0;
-    for (const auto& groupset : lbs_solver_->GetGroupsets())
+    for (const auto& groupset : lbs_problem_->GetGroupsets())
     {
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;

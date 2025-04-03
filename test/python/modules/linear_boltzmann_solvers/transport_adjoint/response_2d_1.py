@@ -21,7 +21,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.response import ResponseEvaluator
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(12, 192)
 
     # Setup solver
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=1,
         groupsets=[
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     )
 
     # Forward solve
-    ss_solver = SteadyStateSolver(lbs_solver=phys)
+    ss_solver = SteadyStateSolver(lbs_problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     phys.WriteFluxMoments("adjoint_2d_1")
 
     # Create response evaluator and evaluate response
-    evaluator = ResponseEvaluator(lbs_solver=phys)
+    evaluator = ResponseEvaluator(lbs_problem=phys)
     evaluator.SetOptions(
         buffers=[{'name': 'buff', 'file_prefixes': {'flux_moments': 'adjoint_2d_1'}}],
         sources={'material': [{'block_id': 2, 'strength': [3.0]}]}

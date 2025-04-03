@@ -79,11 +79,11 @@ lbs_options = {
   scattering_order = 0,
   volumetric_sources = { mg_src },
 }
-phys1 = lbs.DiscreteOrdinatesCurvilinearSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesCurvilinearProblem.Create(lbs_block)
 phys1:SetOptions(lbs_options)
 
 -- Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys1 })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys1 })
 
 ss_solver:Initialize()
 ss_solver:Execute()

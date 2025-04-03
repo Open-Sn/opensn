@@ -19,7 +19,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(2, 8)
 
     # Create solver
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         },
         sweep_type="CBC"
     )
-    ss_solver = SteadyStateSolver(lbs_solver=phys)
+    ss_solver = SteadyStateSolver(lbs_problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 

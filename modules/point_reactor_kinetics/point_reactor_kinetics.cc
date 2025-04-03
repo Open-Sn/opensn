@@ -18,7 +18,7 @@ OpenSnRegisterObjectInNamespace(prk, PRKSolver);
 InputParameters
 PRKSolver::GetInputParameters()
 {
-  InputParameters params = opensn::Solver::GetInputParameters();
+  InputParameters params = Solver::GetInputParameters();
 
   params.SetDocGroup("prk");
 
@@ -61,7 +61,7 @@ PRKSolver::Create(const ParameterBlock& params)
 }
 
 PRKSolver::PRKSolver(const InputParameters& params)
-  : opensn::Solver(params),
+  : Solver(params),
     lambdas_(params.GetParamVectorValue<double>("precursor_lambdas")),
     betas_(params.GetParamVectorValue<double>("precursor_betas")),
     gen_time_(params.GetParamValue<double>("gen_time")),
@@ -296,7 +296,7 @@ PRKSolver::SetRho(double value)
 void
 PRKSolver::SetProperties(const ParameterBlock& params)
 {
-  opensn::Solver::SetProperties(params);
+  Solver::SetProperties(params);
 
   for (const auto& param : params)
   {
