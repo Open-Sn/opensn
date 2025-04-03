@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_app.h"
-#include "python/lib/py_api.h"
 #include "python/lib/console.h"
 #include "python/lib/py_wrappers.h"
 #include "framework/logging/log.h"

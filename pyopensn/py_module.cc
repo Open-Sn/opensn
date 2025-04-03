@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/py_api.h"
+#include "python/lib/py_env.h"
 #include "framework/runtime.h"
 #include "config.h"
 #include "petsc.h"
@@ -27,6 +27,7 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   }
 
   // Wrap libraries
+  py_context(pyopensn);
   py_settings(pyopensn);
   py_math(pyopensn);
   py_aquad(pyopensn);
