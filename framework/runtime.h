@@ -19,18 +19,11 @@ namespace opensn
 
 static const std::string program = "OpenSn";
 
-class MeshContinuum;
-class SurfaceMesh;
 class FieldFunctionInterpolation;
-class UnpartitionedMesh;
 class Solver;
-class Material;
 class MultiGroupXS;
 class FieldFunction;
-class Function;
-class AngularQuadrature;
 class SpatialDiscretization;
-class UnknownManager;
 class Timer;
 class Logger;
 class PostProcessor;
@@ -42,27 +35,16 @@ extern Timer program_timer;
 extern bool use_caliper;
 extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
+extern bool suppress_color;
+extern std::filesystem::path input_path;
 
 /// Global stack of handlers
-
-extern std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-extern std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
-
 extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
-
-extern std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
-
 extern std::vector<std::shared_ptr<Object>> object_stack;
 extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
-extern std::vector<std::shared_ptr<Function>> function_stack;
-
-const size_t SIZE_T_INVALID = ((size_t)-1);
-
-extern bool suppress_color;
-extern std::filesystem::path input_path;
 
 /// Customized exceptions.
 class RecoverableException : public std::runtime_error

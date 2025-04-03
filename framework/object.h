@@ -13,7 +13,7 @@ namespace opensn
 class Object : public std::enable_shared_from_this<Object>
 {
 private:
-  size_t stack_id_ = SIZE_T_INVALID;
+  size_t stack_id_;
 
 public:
   /// Returns the input parameters. For the base Object, there are now parameters loaded.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/object.h"
+#include <limits>
 
 namespace opensn
 {
@@ -12,11 +13,11 @@ Object::GetInputParameters()
   return {}; // Returns an empty block
 }
 
-Object::Object()
+Object::Object() : stack_id_(std::numeric_limits<std::size_t>::max())
 {
 }
 
-Object::Object(const InputParameters&)
+Object::Object(const InputParameters&) : stack_id_(std::numeric_limits<std::size_t>::max())
 {
 }
 
