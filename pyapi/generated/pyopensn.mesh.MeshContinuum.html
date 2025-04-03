@@ -167,7 +167,7 @@ volume.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>log_vol</strong> (<a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><em>pyopensn.logvol.LogicalVolume</em></a>) – Logical volume that determines which mesh cells will be selected.</p></li>
 <li><p><strong>boundary_name</strong> (<em>str</em>) – Name of the boundary.</p></li>
-<li><p><strong>inside</strong> (<em>bool</em>) – If true, the selected cell facess are the ones whose centroids are inside the logival
+<li><p><strong>inside</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, the selected cell facess are the ones whose centroids are inside the logival
 volume. Otherwise, the selected meshes are the ones whose centroids are outside of the
 logical volume.</p></li>
 </ul>
@@ -176,15 +176,15 @@ logical volume.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.MeshContinuum.SetUniformBlockID">
-<span class="sig-name descname"><span class="pre">SetUniformBlockID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.MeshContinuum.SetUniformBlockID" title="Link to this definition"></a></dt>
-<dd><p>Set block ID’s for all cells to the specified block ID.</p>
+<dt class="sig sig-object py" id="pyopensn.mesh.MeshContinuum.SetOrthogonalBoundaries">
+<span class="sig-name descname"><span class="pre">SetOrthogonalBoundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.MeshContinuum.SetOrthogonalBoundaries" title="Link to this definition"></a></dt>
+<dd><p>Set boundary IDs for xmin/xmax, ymin/ymax, zmin/zmax for a right parallelpiped domain.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.MeshContinuum.SetupOrthogonalBoundaries">
-<span class="sig-name descname"><span class="pre">SetupOrthogonalBoundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.MeshContinuum.SetupOrthogonalBoundaries" title="Link to this definition"></a></dt>
-<dd><p>Setup boundary IDs for xmin/xmax, ymin/ymax, zmin/zmax for a right parallelpiped domain.</p>
+<dt class="sig sig-object py" id="pyopensn.mesh.MeshContinuum.SetUniformBlockID">
+<span class="sig-name descname"><span class="pre">SetUniformBlockID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.MeshContinuum.SetUniformBlockID" title="Link to this definition"></a></dt>
+<dd><p>Set block ID’s for all cells to the specified block ID.</p>
 </dd></dl>
 
 <dl class="py property">

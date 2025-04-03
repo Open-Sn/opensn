@@ -109,8 +109,8 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.mesh.</span></span><span class="sig-name descname"><span class="pre">SplitFileMeshGenerator</span></span><a class="headerlink" href="#pyopensn.mesh.SplitFileMeshGenerator" title="Link to this definition"></a></dt>
 <dd><p>Split file mesh generator.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::SplitFileMeshGenerator</span></code>.</p>
-<p>Generates the mesh only on location 0, thereafter partitions the mesh but instead of
-broadcasting the mesh to other locations it creates binary mesh files for each location.</p>
+<p>Generates the mesh only on rank 0. After partitioning, the mesh is not broadcast
+to other ranks; instead, a binary mesh file for each is written .</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.mesh.SplitFileMeshGenerator.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><span class="pre">pyopensn.mesh.MeshGenerator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></span><a class="headerlink" href="#pyopensn.mesh.SplitFileMeshGenerator.Execute" title="Link to this definition"></a></dt>
