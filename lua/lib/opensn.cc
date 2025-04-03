@@ -299,7 +299,7 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("SetUniformBlockID", &MeshContinuum::SetUniformBlockID)
       .addFunction("SetBlockIDFromLogicalVolume", &MeshContinuum::SetBlockIDFromLogicalVolume)
       .addFunction("SetBoundaryIDFromLogicalVolume", &MeshContinuum::SetBoundaryIDFromLogicalVolume)
-      .addFunction("SetupOrthogonalBoundaries", &MeshContinuum::SetupOrthogonalBoundaries)
+      .addFunction("SetOrthogonalBoundaries", &MeshContinuum::SetOrthogonalBoundaries)
       .endClass()
       .beginClass<std::shared_ptr<MeshContinuum>>("MeshContinuumPtr")
       .endClass()

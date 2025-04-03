@@ -112,7 +112,7 @@ MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 }
 
 void
-MeshContinuum::SetupOrthogonalBoundaries()
+MeshContinuum::SetOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 

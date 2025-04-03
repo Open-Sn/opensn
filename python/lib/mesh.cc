@@ -88,7 +88,7 @@ WrapMesh(py::module& mesh)
         Logical volume that determines which mesh cells will be selected.
     boundary_name: str
         Name of the boundary.
-    inside: bool
+    inside: bool, default=True
         If true, the selected cell facess are the ones whose centroids are inside the logival
         volume. Otherwise, the selected meshes are the ones whose centroids are outside of the
         logical volume.
@@ -98,9 +98,9 @@ WrapMesh(py::module& mesh)
     py::arg("inside") = true
   );
   mesh_continuum.def(
-    "SetupOrthogonalBoundaries",
-    &MeshContinuum::SetupOrthogonalBoundaries,
-    "Setup boundary IDs for xmin/xmax, ymin/ymax, zmin/zmax for a right parallelpiped domain."
+    "SetOrthogonalBoundaries",
+    &MeshContinuum::SetOrthogonalBoundaries,
+    "Set boundary IDs for xmin/xmax, ymin/ymax, zmin/zmax for a right parallelpiped domain."
   );
   mesh_continuum.def(
     "ExportToPVTU",
@@ -500,8 +500,8 @@ WrapMeshGenerator(py::module& mesh)
 
     Wrapper of :cpp:class:`opensn::SplitFileMeshGenerator`.
 
-    Generates the mesh only on location 0, thereafter partitions the mesh but instead of
-    broadcasting the mesh to other locations it creates binary mesh files for each location.
+    Generates the mesh only on rank 0. After partitioning, the mesh is not broadcast
+    to other ranks; instead, a binary mesh file for each is written .
     )"
   );
   split_file_mesh_generator.def(
@@ -697,7 +697,7 @@ WrapGraphPartitioner(py::module& mesh)
 
     Parameters
     ----------
-    type: str, default='parmetis'
+    type: {'parmetis', 'ptscotch'}, default='parmetis'
         Type of PETSc partitioner.
     )"
   );

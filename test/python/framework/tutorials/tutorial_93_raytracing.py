@@ -7,7 +7,7 @@ nodes = [xmin + k * dx for k in range(N + 1)]
 meshgen1 = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
 grid = meshgen1.Execute()
 grid.SetUniformBlockID(0)
-grid.SetupOrthogonalBoundaries()
+grid.SetOrthogonalBoundaries()
 
 # Run a unit simulation test for ray tracing
 SimTest93_RayTracing(grid)

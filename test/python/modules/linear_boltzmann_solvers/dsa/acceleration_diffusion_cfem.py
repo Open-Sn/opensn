@@ -16,7 +16,7 @@ for i in range(N + 1):
 meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
 grid = meshgen.Execute()
 grid.SetUniformBlockID(0)
-grid.SetupOrthogonalBoundaries()
+grid.SetOrthogonalBoundaries()
 
 
 def MMS_phi(pt):
