@@ -12,6 +12,8 @@
 namespace opensn
 {
 
+class MeshContinuum;
+
 /**
  * Base class for diffusion solvers
  */

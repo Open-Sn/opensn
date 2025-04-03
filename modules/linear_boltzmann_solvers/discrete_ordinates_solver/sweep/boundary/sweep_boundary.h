@@ -9,6 +9,8 @@
 namespace opensn
 {
 
+class MeshContinuum;
+
 /// Base class for sweep related boundaries.
 class SweepBoundary
 {
