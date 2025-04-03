@@ -60,7 +60,7 @@ public:
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
   /// Defines the standard x/y/z min/max boundaries.
-  void SetupOrthogonalBoundaries();
+  void SetOrthogonalBoundaries();
 
   /**
    * Populates a face histogram.
