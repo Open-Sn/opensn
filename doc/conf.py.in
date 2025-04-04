@@ -26,7 +26,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinxcontrib.bibtex',
-    'myst_parser'
+    'myst_parser',
+    'nbsphinx'
 ]
 breathe_projects = {"opensn": "@PROJECT_BINARY_DIR@/doc/xml/"}
 breathe_default_project = "opensn"
@@ -40,3 +41,5 @@ myst_enable_extensions = [
     "html_admonition",
     "html_image",
 ]
+
+nbsphinx_execute = 'never'

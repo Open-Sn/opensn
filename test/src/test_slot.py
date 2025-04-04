@@ -31,33 +31,39 @@ class TestSlot:
         if test.skip != "":
             return
 
+        if self.argv.engine == "module":
+            cmd_exe = sys.executable
+        else:
+            cmd_exe = f"{self.argv.exe} -i"
+
         base_name, extension = os.path.splitext(test.filename)
         cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
-        cmd += self.argv.exe + " "
-        cmd += "-i " + test.filename + " "
-        cmd += "--suppress-color "
-        if extension == ".py":
-            cmd += "--py master_export=False "
-            for arg in test.args:
-                if arg.find("\"") >= 0:
-                    qarg = arg.replace('"', '\\"')
-                    if sys.platform.startswith('darwin'):
-                        cmd += "--py \"" + qarg + "\" "
+        cmd += cmd_exe + " "
+        cmd += test.filename + " "
+        if self.argv.engine != "module":
+            cmd += "--suppress-color "
+            if extension == ".py":
+                cmd += "--py master_export=False "
+                for arg in test.args:
+                    if arg.find("\"") >= 0:
+                        qarg = arg.replace('"', '\\"')
+                        if sys.platform.startswith('darwin'):
+                            cmd += "--py \"" + qarg + "\" "
+                        else:
+                            cmd += "--py " + qarg + " "
                     else:
-                        cmd += "--py " + qarg + " "
-                else:
-                    cmd += arg + " "
-        elif extension == ".lua":
-            cmd += "--lua master_export=false "
-            for arg in test.args:
-                if arg.find("\"") >= 0:
-                    qarg = arg.replace('"', '\\"')
-                    if sys.platform.startswith('darwin'):
-                        cmd += "--lua " + "\\\"" + qarg + "\\\" "
+                        cmd += arg + " "
+            elif extension == ".lua":
+                cmd += "--lua master_export=false "
+                for arg in test.args:
+                    if arg.find("\"") >= 0:
+                        qarg = arg.replace('"', '\\"')
+                        if sys.platform.startswith('darwin'):
+                            cmd += "--lua " + "\\\"" + qarg + "\\\" "
+                        else:
+                            cmd += "--lua " + qarg + " "
                     else:
-                        cmd += "--lua " + qarg + " "
-                else:
-                    cmd += arg + " "
+                        cmd += arg + " "
         self.command = cmd
 
         # Write command to output file

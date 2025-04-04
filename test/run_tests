@@ -74,6 +74,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--engine",
+    type=str,
+    choices=["console", "module", "jupyter"],
+    default="console",
+    help="Choose execution mode (console, jupyter)."
+)
+
+parser.add_argument(
     "-w", "--weights",
     type=int, required=False, default=3,
     help="Test weight. Single numeric value < 7. This number, when converted to binary, specifies "
@@ -105,6 +113,10 @@ else:
         argv.exe = "build/test/lua/opensn-test"
     elif 'python' in argv.directory:
         argv.exe = "build/test/python/opensn-test"
+
+# Check if Jupyter engine is associated to Python
+if argv.engine in ["jupyter", "module"] and 'lua' in argv.directory:
+    raise ValueError("Jupyter/Module engine is not compatible with Lua inputs.")
 
 # Ensure exe path is absolute
 argv.exe = os.path.abspath(argv.exe)

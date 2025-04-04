@@ -4,3 +4,4 @@ sphinx<8
 sphinx_design
 sphinx-rtd-theme
 sphinxcontrib-bibtex
+nbsphinx
