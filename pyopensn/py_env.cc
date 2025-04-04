@@ -32,6 +32,7 @@ PyEnv::PyEnv()
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
   ::PetscInitialize(nullptr, nullptr, nullptr, nullptr);
+  opensn::suppress_color = true;
   Initialize();
 }
 
