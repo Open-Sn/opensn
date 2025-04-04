@@ -19,7 +19,7 @@ grid = meshgen1:Execute()
 -- Set block IDs
 grid:SetUniformBlockID(0)
 
-grid:SetupOrthogonalBoundaries()
+grid:SetOrthogonalBoundaries()
 
 unit_sim_tests.SimTest93_RayTracing({ mesh = grid })
 

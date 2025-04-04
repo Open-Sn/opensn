@@ -28,6 +28,7 @@ class Timer;
 class Logger;
 class PostProcessor;
 class Object;
+class Function;
 
 extern mpi::Communicator mpi_comm;
 extern Logger& log;
@@ -45,6 +46,7 @@ extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 extern std::vector<std::shared_ptr<Object>> object_stack;
 extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
+extern std::vector<std::shared_ptr<Function>> function_stack;
 
 /// Customized exceptions.
 class RecoverableException : public std::runtime_error

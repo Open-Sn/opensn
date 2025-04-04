@@ -20,7 +20,7 @@ grid = meshgen1:Execute()
 -- Set block IDs
 grid:SetUniformBlockID(0)
 
-grid:SetupOrthogonalBoundaries()
+grid:SetOrthogonalBoundaries()
 
 function MMS_phi(pt)
   return math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y)
