@@ -2,4 +2,5 @@
 *.css linguist-generated
 *.html linguist-generated 
 *.xs linguist-detectable=false
+*.geo linguist-detectable=false
 external/** linguist-vendored
