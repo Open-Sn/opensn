@@ -69,6 +69,13 @@ Finalize()
   postprocessor_stack.clear();
   function_stack.clear();
 
+  // Flush standard streams
+  std::cout.flush();
+  std::cerr.flush();
+  std::clog.flush();
+
+  opensn::mpi_comm.barrier();
+
   CALI_MARK_END(opensn::program.c_str());
 }
 
