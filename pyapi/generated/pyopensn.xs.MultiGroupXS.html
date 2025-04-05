@@ -127,7 +127,9 @@
 <dd><p>Load multi-group cross sections from an OpenSn cross section input file.</p>
 <p>Format is as follows
 (for transfers, gprime denotes the departing group and g is the arrival group):</p>
-<p># Add comment lines, as needed
+<p>..code-block:: none</p>
+<blockquote>
+<div><p># Add comment lines, as needed
 NUM_GROUPS ng
 NUM_MOMENTS nmom</p>
 <p>SIGMA_T_BEGIN
@@ -149,6 +151,7 @@ M_GPRIME_G_VAL moment gprime g value
 .
 M_GPRIME_G_VAL nmom-1 ng-1 ng-1 value
 TRANSFER_MOMENTS_END</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
