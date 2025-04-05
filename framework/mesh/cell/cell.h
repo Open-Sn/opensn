@@ -13,6 +13,7 @@
 namespace opensn
 {
 
+class Cell;
 class MeshContinuum;
 
 enum class CellType
@@ -56,7 +57,7 @@ public:
   int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
 
   /// Computes the geometric info on the face.
-  void ComputeGeometricInfo(const MeshContinuum* grid, unsigned int f);
+  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -81,6 +82,7 @@ public:
 
   /// A list of the vertices
   std::vector<uint64_t> vertex_ids;
+  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, const unsigned int f);
 };
 
 /// Generic mesh cell object
