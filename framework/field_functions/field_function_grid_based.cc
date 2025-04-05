@@ -30,7 +30,7 @@ FieldFunctionGridBased::GetInputParameters()
 
   params.AddOptionalParameter("discretization", "FV", "The spatial discretization type to be used");
   params.AddOptionalParameter(
-    "coordinate_system", "cartesian", "Coordinate system to apply to element mappings");
+    "coord_sys", "cartesian", "Coordinate system to apply to element mappings");
   params.AddOptionalParameter("quadrature_order",
                               0,
                               "If supplied, will overwrite the default for the "
@@ -41,7 +41,7 @@ FieldFunctionGridBased::GetInputParameters()
 
   params.ConstrainParameterRange("discretization", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
   params.ConstrainParameterRange(
-    "coordinate_system", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
+    "coord_sys", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
   return params;
 }
@@ -333,8 +333,8 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
     return FiniteVolume::New(grid);
 
   std::string cs = "cartesian";
-  if (params.IsParameterValid("coordinate_system"))
-    cs = params.GetParamValue<std::string>("coordinate_system");
+  if (params.IsParameterValid("coord_sys"))
+    cs = params.GetParamValue<std::string>("coord_sys");
 
   QuadratureOrder q_order = QuadratureOrder::SECOND;
 
