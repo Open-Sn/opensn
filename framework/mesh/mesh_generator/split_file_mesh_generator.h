@@ -19,6 +19,7 @@ protected:
   struct SplitMeshInfo
   {
     unsigned int dimension;
+    CoordinateSystemType coord_sys;
     MeshType mesh_type;
     bool extruded;
     OrthoMeshAttributes ortho_attributes;
