@@ -65,36 +65,36 @@ WrapMultiGroupXS(py::module& xs)
     R"(
     Load multi-group cross sections from an OpenSn cross section input file.
 
-    Format is as follows
-    (for transfers, gprime denotes the departing group and g is the arrival group):
+    Format is as follows (for transfers, gprime denotes the departing group and g is the arrival
+    group).
 
-    ..code-block:: none
+    .. code-block:: none
 
-        # Add comment lines, as needed
-        NUM_GROUPS ng
-        NUM_MOMENTS nmom
+       # Add comment lines, as needed
+       NUM_GROUPS ng
+       NUM_MOMENTS nmom
 
-        SIGMA_T_BEGIN
-        0 value
-        .
-        .
-        ng-1 value
-        SIGMA_T_END
+       SIGMA_T_BEGIN
+       0 value
+       .
+       .
+       ng-1 value
+       SIGMA_T_END
 
-        SIGMA_A_BEGIN
-        0 value
-        .
-        .
-        ng-1 value
-        SIGMA_A_END
+       SIGMA_A_BEGIN
+       0 value
+       .
+       .
+       ng-1 value
+       SIGMA_A_END
 
-        TRANSFER_MOMENTS_BEGIN
-        M_GPRIME_G_VAL 0 0 0 value
-        .
-        M_GPRIME_G_VAL moment gprime g value
-        .
-        M_GPRIME_G_VAL nmom-1 ng-1 ng-1 value
-        TRANSFER_MOMENTS_END
+       TRANSFER_MOMENTS_BEGIN
+       M_GPRIME_G_VAL 0 0 0 value
+       .
+       M_GPRIME_G_VAL moment gprime g value
+       .
+       M_GPRIME_G_VAL nmom-1 ng-1 ng-1 value
+       TRANSFER_MOMENTS_END
     )"
   );
   multigroup_xs.def(
