@@ -30,7 +30,10 @@ for d = 1, dim do
   end
 end
 
-meshgen1 = mesh.OrthogonalMeshGenerator.Create({ node_sets = { nodes[1], nodes[2] } })
+meshgen1 = mesh.OrthogonalMeshGenerator.Create({
+  node_sets = { nodes[1], nodes[2] },
+  coord_sys = "cylindrical",
+})
 grid = meshgen1:Execute()
 
 -- Set block IDs
@@ -61,7 +64,6 @@ pquad0 = aquad.CreateGLCProductQuadrature2DRZ(4, 8)
 
 lbs_block = {
   mesh = grid,
-  coord_system = 2,
   num_groups = ngrp,
   groupsets = {
     {

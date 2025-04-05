@@ -155,6 +155,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   } // for raw_cell
 
   grid_ptr->SetDimension(input_umesh->GetDimension());
+  grid_ptr->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   grid_ptr->SetType(input_umesh->GetType());
   grid_ptr->SetExtruded(input_umesh->IsExtruded());
   grid_ptr->SetOrthoAttributes(input_umesh->GetOrthoAttributes());

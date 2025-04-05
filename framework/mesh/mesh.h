@@ -8,6 +8,14 @@
 namespace opensn
 {
 
+enum CoordinateSystemType : int
+{
+  UNDEFINED = 0,
+  CARTESIAN = 1,
+  CYLINDRICAL = 2,
+  SPHERICAL = 3,
+};
+
 enum MeshType : int
 {
   ORTHOGONAL,

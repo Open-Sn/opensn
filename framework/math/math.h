@@ -27,15 +27,6 @@ class SpatialDiscretization_PWLC;
 
 using MatVec3 = std::vector<std::vector<Vector3>>;
 
-/// Coordinate system type.
-enum class CoordinateSystemType
-{
-  UNDEFINED = 0,
-  CARTESIAN = 1,
-  CYLINDRICAL = 2,
-  SPHERICAL = 3,
-};
-
 /// Spatial discretization type.
 enum class SpatialDiscretizationType
 {
