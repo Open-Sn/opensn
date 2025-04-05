@@ -46,12 +46,6 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
       angset->SetMaxBufferMessages(global_max_num_messages);
 }
 
-SweepChunk&
-SweepScheduler::GetSweepChunk()
-{
-  return sweep_chunk_;
-}
-
 void
 SweepScheduler::InitializeAlgoDOG()
 {
@@ -101,11 +95,7 @@ SweepScheduler::InitializeAlgoDOG()
         rule_values_.push_back(new_rule_vals);
       }
       else
-      {
-        log.LogAllError() << "Location depth not found in Depth-Of-Graph algorithm.";
-        Exit(EXIT_FAILURE);
-      }
-
+        throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
     } // for anglesets
   }   // for quadrants/anglesetgroups
 
@@ -251,67 +241,14 @@ SweepScheduler::Sweep()
 }
 
 void
-SweepScheduler::SetDestinationPhi(std::vector<double>& destination_phi)
+SweepScheduler::PrepareForSweep(bool use_boundary_source, bool zero_incoming_delayed_psi)
 {
-  sweep_chunk_.SetDestinationPhi(destination_phi);
-}
-
-void
-SweepScheduler::ZeroDestinationPhi()
-{
-  sweep_chunk_.ZeroDestinationPhi();
-}
-
-std::vector<double>&
-SweepScheduler::GetDestinationPhi()
-{
-  return sweep_chunk_.GetDestinationPhi();
-}
-
-void
-SweepScheduler::SetDestinationPsi(std::vector<double>& destination_psi)
-{
-  sweep_chunk_.SetDestinationPsi(destination_psi);
-}
-
-void
-SweepScheduler::ZeroDestinationPsi()
-{
-  sweep_chunk_.ZeroDestinationPsi();
-}
-
-std::vector<double>&
-SweepScheduler::GetDestinationPsi()
-{
-  return sweep_chunk_.GetDestinationPsi();
-}
-
-void
-SweepScheduler::ZeroIncomingDelayedPsi()
-{
-  angle_agg_.ZeroIncomingDelayedPsi();
-}
-
-void
-SweepScheduler::ZeroOutgoingDelayedPsi()
-{
+  if (zero_incoming_delayed_psi)
+    angle_agg_.ZeroIncomingDelayedPsi();
   angle_agg_.ZeroOutgoingDelayedPsi();
-}
-
-void
-SweepScheduler::ZeroOutputFluxDataStructures()
-{
-  CALI_CXX_MARK_SCOPE("SweepScheduler::ZeroOutputFluxDataStructures");
-
-  ZeroDestinationPsi();
-  ZeroDestinationPhi();
-  ZeroOutgoingDelayedPsi();
-}
-
-void
-SweepScheduler::SetBoundarySourceActiveFlag(bool flag_value)
-{
-  sweep_chunk_.SetBoundarySourceActiveFlag(flag_value);
+  sweep_chunk_.ZeroDestinationPsi();
+  sweep_chunk_.ZeroDestinationPhi();
+  sweep_chunk_.SetBoundarySourceActiveFlag(use_boundary_source);
 }
 
 } // namespace opensn

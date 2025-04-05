@@ -29,7 +29,6 @@ namespace opensn
 class AngleAggregation
 {
 private:
-  bool is_setup_;
   size_t num_groups_;
   bool num_ang_unknowns_avail_;
   std::pair<size_t, size_t> number_angular_unknowns_;
@@ -44,8 +43,6 @@ public:
                    std::shared_ptr<MeshContinuum>& grid);
 
   std::vector<AngleSetGroup> angle_set_groups;
-
-  bool IsSetup() const { return is_setup_; }
 
   size_t GetNumberGroups() const { return num_groups_; }
 

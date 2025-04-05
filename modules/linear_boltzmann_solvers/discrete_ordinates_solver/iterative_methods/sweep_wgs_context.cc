@@ -15,6 +15,7 @@ namespace opensn
 {
 
 using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
+using namespace std::chrono;
 
 SweepWGSContext::SweepWGSContext(DiscreteOrdinatesSolver& lbs_solver,
                                  LBSGroupset& groupset,
@@ -105,25 +106,19 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
 
   ++counter_applications_of_inv_op;
-  const bool use_bndry_source_flag =
-    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.GetOptions().use_src_moments);
-
-  sweep_scheduler.SetBoundarySourceActiveFlag(use_bndry_source_flag);
-
-  if (scope & ZERO_INCOMING_DELAYED_PSI)
-    sweep_scheduler.ZeroIncomingDelayedPsi();
 
   // Sweep
+  const bool use_bndry_source_flag =
+    (scope & APPLY_FIXED_SOURCES) and (not lbs_solver.GetOptions().use_src_moments);
+  const bool zero_incoming_delayed_psi = (scope & ZERO_INCOMING_DELAYED_PSI);
   dynamic_cast<DiscreteOrdinatesSolver&>(lbs_solver).ZeroOutflowBalanceVars(groupset);
-  sweep_scheduler.ZeroOutputFluxDataStructures();
-  std::chrono::high_resolution_clock::time_point sweep_start =
-    std::chrono::high_resolution_clock::now();
+  sweep_scheduler.PrepareForSweep(use_bndry_source_flag, zero_incoming_delayed_psi);
+
+  high_resolution_clock::time_point sweep_start = high_resolution_clock::now();
   sweep_scheduler.Sweep();
-  std::chrono::high_resolution_clock::time_point sweep_end =
-    std::chrono::high_resolution_clock::now();
-  double sweep_time =
-    (std::chrono::duration_cast<std::chrono::nanoseconds>(sweep_end - sweep_start).count()) /
-    1.0e+9;
+  high_resolution_clock::time_point sweep_end = high_resolution_clock::now();
+
+  double sweep_time = (duration_cast<nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
   sweep_times.push_back(sweep_time);
 }
 
@@ -143,7 +138,6 @@ SweepWGSContext::PostSolveCallback()
     const auto scope = lhs_src_scope | rhs_src_scope;
     set_source_function(
       groupset, lbs_solver.GetQMomentsLocal(), lbs_solver.GetPhiOldLocal(), scope);
-    sweep_scheduler.SetDestinationPhi(lbs_solver.GetPhiNewLocal());
     ApplyInverseTransportOperator(scope);
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
       lbs_solver, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
