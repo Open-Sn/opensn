@@ -5,6 +5,8 @@ import os
 import warnings
 import shutil
 import time
+from nbconvert import PythonExporter
+import nbformat
 from . import checks
 from . import test_slot
 
@@ -254,6 +256,37 @@ def ListFilesInDir(folder: str, ext=None):
     return files
 
 
+def ConvertNbToScript(notebook_path: str) -> str:
+    """
+    Converts a Jupyter notebook (.ipynb) to a Python script (.py) in the same directory.
+
+    Parameters
+    ----------
+    notebook_path : str
+        Path to the input .ipynb file.
+
+    Returns
+    -------
+    str
+        Path to the generated .py file.
+    """
+    # Return old file name if it is not a notebook
+    if not notebook_path.endswith(".ipynb"):
+        return notebook_path
+    # Read notebook
+    nb_node = nbformat.read(notebook_path, as_version=4)
+    # Create exporter
+    exporter = PythonExporter()
+    source_code, _ = exporter.from_notebook_node(nb_node)
+    # Determine output .py path
+    base, _ = os.path.splitext(notebook_path)
+    output_py_path = base + ".py"
+    # Save the Python script
+    with open(output_py_path, "w") as f:
+        f.write(source_code)
+    return output_py_path
+
+
 def BuildSearchHierarchyForTests(argv):
     """Finds input files recursively and creates a map of directories to tests"""
     test_dir = argv.directory
@@ -264,6 +297,8 @@ def BuildSearchHierarchyForTests(argv):
     test_hierarchy = {}  # Map of directories to input files
     for dir_path, sub_dirs, files in os.walk(test_dir):
         for file_name in files:
+            if argv.engine == "jupyter":
+                file_name = ConvertNbToScript(os.path.join(dir_path, file_name))
             base_name, extension = os.path.splitext(file_name)
             if extension == ".lua" or extension == ".py":
                 abs_dir_path = os.path.abspath(dir_path) + "/"

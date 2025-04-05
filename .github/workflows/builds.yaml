@@ -66,7 +66,7 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test --engine=jupyter
 
   coverage:
     runs-on: [self-hosted]
@@ -92,7 +92,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter
       - name: coveralls
         shell: bash
         run: |

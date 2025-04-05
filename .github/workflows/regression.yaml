@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --engine=jupyter
       - name: test unit
         shell: bash
         run: |
