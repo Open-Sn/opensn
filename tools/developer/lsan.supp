@@ -7,4 +7,5 @@ leak:libmpi.so.*
 
 # Dependencies
 leak:libpetsc.so.*
-leak:_PyMem_RawMalloc
+leak:libpython3.*
+leak:cpython-*.so
