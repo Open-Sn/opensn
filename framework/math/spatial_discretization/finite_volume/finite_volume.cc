@@ -13,22 +13,21 @@
 namespace opensn
 {
 
-FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid, CoordinateSystemType cs_type)
-  : SpatialDiscretization(grid, cs_type, SpatialDiscretizationType::FINITE_VOLUME)
+FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid)
+  : SpatialDiscretization(grid, SpatialDiscretizationType::FINITE_VOLUME)
 {
   CreateCellMappings();
-
   OrderNodes();
 }
 
 std::shared_ptr<FiniteVolume>
-FiniteVolume::New(const std::shared_ptr<MeshContinuum> grid, CoordinateSystemType cs_type)
+FiniteVolume::New(const std::shared_ptr<MeshContinuum> grid)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.
   for (auto& sdm : sdm_stack)
     if (sdm->GetType() == SpatialDiscretizationType::FINITE_VOLUME and sdm->GetGrid() == grid and
-        sdm->GetCoordinateSystemType() == cs_type)
+        sdm->GetGrid()->GetCoordinateSystem() == grid->GetCoordinateSystem())
     {
       auto sdm_ptr = std::dynamic_pointer_cast<FiniteVolume>(sdm);
 
@@ -39,7 +38,7 @@ FiniteVolume::New(const std::shared_ptr<MeshContinuum> grid, CoordinateSystemTyp
 
   // If no existing discretization was found then go ahead and make a
   // new one
-  auto new_sdm = std::shared_ptr<FiniteVolume>(new FiniteVolume(grid, cs_type));
+  auto new_sdm = std::shared_ptr<FiniteVolume>(new FiniteVolume(grid));
 
   sdm_stack.push_back(new_sdm);
 
@@ -65,7 +64,7 @@ FiniteVolume::CreateCellMappings()
       case CellType::POLYHEDRON:
       {
         mapping = make_unique<FiniteVolumeMapping>(
-          ref_grid_, cell, cell.centroid, std::vector<std::vector<int>>(cell.faces.size(), {-1}));
+          grid_, cell, cell.centroid, std::vector<std::vector<int>>(cell.faces.size(), {-1}));
         break;
       }
       default:
@@ -75,13 +74,13 @@ FiniteVolume::CreateCellMappings()
     return mapping;
   };
 
-  for (const auto& cell : ref_grid_->local_cells)
+  for (const auto& cell : grid_->local_cells)
     cell_mappings_.push_back(MakeCellMapping(cell));
 
-  const auto ghost_ids = ref_grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto ghost_mapping = MakeCellMapping(ref_grid_->cells[ghost_id]);
+    auto ghost_mapping = MakeCellMapping(grid_->cells[ghost_id]);
     nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }
@@ -92,7 +91,7 @@ FiniteVolume::OrderNodes()
   static std::string mapping_error = "FiniteVolume::OrderNodes: Error mapping neighbor cells";
 
   // Communicate node counts
-  const uint64_t local_num_nodes = ref_grid_->local_cells.size();
+  const uint64_t local_num_nodes = grid_->local_cells.size();
   mpi_comm.all_gather(local_num_nodes, locJ_block_size_);
 
   // Build block addresses
@@ -110,11 +109,11 @@ FiniteVolume::OrderNodes()
   global_base_block_size_ = global_num_nodes;
 
   // Sort neigbor ids
-  const auto neighbor_gids = ref_grid_->cells.GetGhostGlobalIDs();
+  const auto neighbor_gids = grid_->cells.GetGhostGlobalIDs();
   std::map<uint64_t, std::vector<uint64_t>> sorted_nb_gids;
   for (uint64_t gid : neighbor_gids)
   {
-    const auto& cell = ref_grid_->cells[gid];
+    const auto& cell = grid_->cells[gid];
     sorted_nb_gids[cell.partition_id].push_back(gid);
   }
 
@@ -132,10 +131,10 @@ FiniteVolume::OrderNodes()
     local_ids.reserve(gids.size());
     for (uint64_t gid : gids)
     {
-      if (not ref_grid_->IsCellLocal(gid))
+      if (not grid_->IsCellLocal(gid))
         throw std::logic_error(mapping_error);
 
-      const auto& local_cell = ref_grid_->cells[gid];
+      const auto& local_cell = grid_->cells[gid];
       local_ids.push_back(local_cell.local_id);
     } // for gid
   }   // for pid_list_pair
@@ -165,8 +164,8 @@ FiniteVolume::OrderNodes()
     }
   } // for pid_list_pair
 
-  local_base_block_size_ = ref_grid_->local_cells.size();
-  global_base_block_size_ = ref_grid_->GetGlobalNumberOfCells();
+  local_base_block_size_ = grid_->local_cells.size();
+  global_base_block_size_ = grid_->GetGlobalNumberOfCells();
 }
 
 void
@@ -180,7 +179,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
 
-  const size_t num_local_cells = ref_grid_->local_cells.size();
+  const size_t num_local_cells = grid_->local_cells.size();
 
   nodal_nnz_in_diag.resize(num_local_cells * N, 0.0);
   nodal_nnz_off_diag.resize(num_local_cells * N, 0.0);
@@ -190,7 +189,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
     const unsigned int num_comps = unknown_manager.unknowns[uk].num_components;
     for (int comp = 0; comp < num_comps; ++comp)
     {
-      for (auto& cell : ref_grid_->local_cells)
+      for (auto& cell : grid_->local_cells)
       {
         const int64_t i = MapDOFLocal(cell, 0, unknown_manager, uk, comp);
 
@@ -201,7 +200,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
           if (not face.has_neighbor)
             continue;
 
-          if (face.IsNeighborLocal(ref_grid_.get()))
+          if (face.IsNeighborLocal(grid_.get()))
             nodal_nnz_in_diag[i] += 1;
           else
             nodal_nnz_off_diag[i] += 1;
@@ -222,7 +221,7 @@ FiniteVolume::MapDOF(const Cell& cell,
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
-  const size_t num_local_cells = ref_grid_->local_cells.size();
+  const size_t num_local_cells = grid_->local_cells.size();
 
   if (component >= num_unknowns)
     return -1;
@@ -263,7 +262,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
 
   const size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   const size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
-  const size_t num_local_cells = ref_grid_->local_cells.size();
+  const size_t num_local_cells = grid_->local_cells.size();
 
   if (component >= num_unknowns)
     return -1;
@@ -280,7 +279,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   {
     const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
     const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
-    const uint64_t ghost_local_id = ref_grid_->cells.GetGhostLocalID(cell.global_id);
+    const uint64_t ghost_local_id = grid_->cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
       address = static_cast<int64_t>(num_local_dofs) +
@@ -298,7 +297,7 @@ FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
 
-  return ref_grid_->cells.GhostCellCount() * N;
+  return grid_->cells.GhostCellCount() * N;
 }
 
 std::vector<int64_t>
@@ -307,13 +306,13 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
   std::vector<int64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
-  std::vector<uint64_t> ghost_cell_ids = ref_grid_->cells.GetGhostGlobalIDs();
+  std::vector<uint64_t> ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
 
   const size_t num_uks = unknown_manager.unknowns.size();
 
   for (const auto cell_id : ghost_cell_ids)
   {
-    const auto& cell = ref_grid_->cells[cell_id];
+    const auto& cell = grid_->cells[cell_id];
     for (size_t u = 0; u < num_uks; ++u)
     {
       const auto& unkn = unknown_manager.unknowns[u];

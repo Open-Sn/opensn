@@ -22,8 +22,7 @@ protected:
   /// Constructor
   explicit PieceWiseLinearBase(const std::shared_ptr<MeshContinuum> grid,
                                QuadratureOrder q_order,
-                               SpatialDiscretizationType sdm_type,
-                               CoordinateSystemType cs_type);
+                               SpatialDiscretizationType sdm_type);
 
   LineQuadrature line_quad_order_arbitrary_;
   TriangleQuadrature tri_quad_order_arbitrary_;

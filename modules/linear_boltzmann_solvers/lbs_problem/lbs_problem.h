@@ -30,7 +30,7 @@ struct WGSContext;
 class LBSProblem : public Problem
 {
 public:
-  explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr);
+  explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid);
 
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);
@@ -338,7 +338,7 @@ protected:
   std::vector<std::shared_ptr<PointSource>> point_sources_;
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
 
-  std::shared_ptr<MeshContinuum> grid_ptr_;
+  std::shared_ptr<MeshContinuum> grid_;
   std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;

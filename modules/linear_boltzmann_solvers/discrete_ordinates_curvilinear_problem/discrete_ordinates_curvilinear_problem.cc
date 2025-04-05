@@ -210,7 +210,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     Vector3(0.0, 1.0, 0.0),
     Vector3(0.0, 0.0, 1.0),
   };
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     for (const auto& face : cell.faces)
     {
@@ -229,7 +229,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           {
             for (const auto& v_id : face.vertex_ids)
             {
-              const auto& vertex = grid_ptr_->vertices[v_id];
+              const auto& vertex = grid_->vertices[v_id];
               if (std::abs(vertex[d]) > 1.0e-12)
               {
                 throw std::logic_error(
@@ -263,35 +263,29 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
   log.Log() << "Initializing spatial discretization_.\n";
 
   auto qorder = QuadratureOrder::INVALID_ORDER;
-  auto system = CoordinateSystemType::UNDEFINED;
 
-  //  primary discretisation
+  //  primary discretization
   switch (options_.geometry_type)
   {
     case GeometryType::ONED_SPHERICAL:
     {
       qorder = QuadratureOrder::FOURTH;
-      system = CoordinateSystemType::SPHERICAL;
       break;
     }
     case GeometryType::ONED_CYLINDRICAL:
     case GeometryType::TWOD_CYLINDRICAL:
     {
       qorder = QuadratureOrder::THIRD;
-      system = CoordinateSystemType::CYLINDRICAL;
       break;
     }
     default:
-    {
-      log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
-                           "InitializeSpatialDiscretization : "
-                        << "invalid geometry, static_cast<int>(type) = "
-                        << static_cast<int>(options_.geometry_type);
-      Exit(EXIT_FAILURE);
-    }
+      throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::"
+                             "InitializeSpatialDiscretization : invalid geometry, "
+                             "static_cast<int>(type) = " +
+                             std::to_string(static_cast<int>(options_.geometry_type)));
   }
 
-  discretization_ = PieceWiseLinearDiscontinuous::New(grid_ptr_, qorder, system);
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);
 
   ComputeUnitIntegrals();
 
@@ -304,18 +298,17 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
     case GeometryType::ONED_SPHERICAL:
     {
       qorder = QuadratureOrder::THIRD;
-      system = CoordinateSystemType::CYLINDRICAL;
       break;
     }
     case GeometryType::ONED_CYLINDRICAL:
     case GeometryType::TWOD_CYLINDRICAL:
     {
       qorder = QuadratureOrder::SECOND;
-      system = CoordinateSystemType::CARTESIAN;
       break;
     }
     default:
     {
+
       log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::"
                            "InitializeSpatialDiscretization : "
                         << "invalid geometry, static_cast<int>(type) = "
@@ -324,7 +317,7 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
     }
   }
 
-  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_ptr_, qorder, system);
+  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);
 
   ComputeSecondaryUnitIntegrals();
 }
@@ -373,10 +366,10 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                             {}};
   };
 
-  const size_t num_local_cells = grid_ptr_->local_cells.size();
+  const size_t num_local_cells = grid_->local_cells.size();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
     secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
 
   opensn::mpi_comm.barrier();
@@ -386,7 +379,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(grid_ptr_,
+  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(grid_,
                                                        *discretization_,
                                                        unit_cell_matrices_,
                                                        secondary_unit_cell_matrices_,

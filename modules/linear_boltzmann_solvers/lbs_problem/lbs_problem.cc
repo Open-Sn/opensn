@@ -38,8 +38,8 @@ std::map<std::string, uint64_t> LBSProblem::supported_boundary_names = {
 std::map<uint64_t, std::string> LBSProblem::supported_boundary_ids = {
   {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
-LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid_ptr)
-  : Problem(name), grid_ptr_(grid_ptr)
+LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid)
+  : Problem(name), grid_(grid)
 {
 }
 
@@ -70,7 +70,7 @@ LBSProblem::GetInputParameters()
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
-  : Problem(params), grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
+  : Problem(params), grid_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -232,7 +232,7 @@ LBSProblem::GetMatID2XSMap() const
 const std::shared_ptr<MeshContinuum>
 LBSProblem::GetGrid() const
 {
-  return grid_ptr_;
+  return grid_;
 }
 
 const SpatialDiscretization&
@@ -878,15 +878,15 @@ LBSProblem::PerformInputChecks()
     Exit(EXIT_FAILURE);
   }
 
-  if (grid_ptr_ == nullptr)
+  if (grid_ == nullptr)
   {
     log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No "
-                         "grid_ptr_ available from region.";
+                         "grid_ available from region.";
     Exit(EXIT_FAILURE);
   }
 
   // Determine geometry type
-  const auto dim = grid_ptr_->GetDimension();
+  const auto dim = grid_->GetDimension();
   if (dim == 1)
     options_.geometry_type = GeometryType::ONED_SLAB;
   else if (dim == 2)
@@ -897,7 +897,7 @@ LBSProblem::PerformInputChecks()
     OpenSnLogicalError("Cannot deduce geometry type from mesh.");
 
   // Assign placeholder unit densities
-  densities_local_.assign(grid_ptr_->local_cells.size(), 1.0);
+  densities_local_.assign(grid_->local_cells.size(), 1.0);
 }
 
 void
@@ -945,16 +945,16 @@ LBSProblem::InitializeMaterials()
   // Create set of material ids locally relevant
   int invalid_mat_cell_count = 0;
   std::set<int> unique_block_ids;
-  for (auto& cell : grid_ptr_->local_cells)
+  for (auto& cell : grid_->local_cells)
   {
     unique_block_ids.insert(cell.block_id);
     if (cell.block_id < 0)
       ++invalid_mat_cell_count;
   }
-  const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
+  const auto& ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
-    const auto& cell = grid_ptr_->cells[cell_id];
+    const auto& cell = grid_->cells[cell_id];
     unique_block_ids.insert(cell.block_id);
     if (cell.block_id < 0)
       ++invalid_mat_cell_count;
@@ -1012,8 +1012,8 @@ LBSProblem::InitializeMaterials()
   }
 
   // Update transport views if available
-  if (grid_ptr_->local_cells.size() == cell_transport_views_.size())
-    for (const auto& cell : grid_ptr_->local_cells)
+  if (grid_->local_cells.size() == cell_transport_views_.size())
+    for (const auto& cell : grid_->local_cells)
     {
       const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
       auto& transport_view = cell_transport_views_[cell.local_id];
@@ -1029,7 +1029,7 @@ LBSProblem::InitializeSpatialDiscretization()
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeSpatialDiscretization");
 
   log.Log() << "Initializing spatial discretization.\n";
-  discretization_ = PieceWiseLinearDiscontinuous::New(grid_ptr_);
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_);
 
   ComputeUnitIntegrals();
 }
@@ -1150,16 +1150,16 @@ LBSProblem::ComputeUnitIntegrals()
                             IntS_shapeI};
   };
 
-  const size_t num_local_cells = grid_ptr_->local_cells.size();
+  const size_t num_local_cells = grid_->local_cells.size();
   unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
     unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell, *swf_ptr);
 
-  const auto ghost_ids = grid_ptr_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
-      ComputeCellUnitIntegrals(grid_ptr_->cells[ghost_id], *swf_ptr);
+      ComputeCellUnitIntegrals(grid_->cells[ghost_id], *swf_ptr);
 
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),
@@ -1263,7 +1263,7 @@ LBSProblem::InitializeParrays()
   // Setup precursor vector
   if (options_.use_precursors)
   {
-    size_t num_precursor_dofs = grid_ptr_->local_cells.size() * max_precursors_per_material_;
+    size_t num_precursor_dofs = grid_->local_cells.size() * max_precursors_per_material_;
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
   }
 
@@ -1286,8 +1286,8 @@ LBSProblem::InitializeParrays()
 
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
-  cell_transport_views_.reserve(grid_ptr_->local_cells.size());
-  for (auto& cell : grid_ptr_->local_cells)
+  cell_transport_views_.reserve(grid_->local_cells.size());
+  for (auto& cell : grid_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
 
@@ -1334,10 +1334,10 @@ LBSProblem::InitializeParrays()
       } // if bndry
       else
       {
-        const int neighbor_partition = face.GetNeighborPartitionID(grid_ptr_.get());
+        const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_ptr_->cells[face.neighbor_id];
+        neighbor_cell_ptrs[f] = &grid_->cells[face.neighbor_id];
       }
 
       ++f;
@@ -1362,8 +1362,8 @@ LBSProblem::InitializeParrays()
   // Populate grid nodal mappings
   // This is used in the Flux Data Structures (FLUDS)
   grid_nodal_mappings_.clear();
-  grid_nodal_mappings_.reserve(grid_ptr_->local_cells.size());
-  for (auto& cell : grid_ptr_->local_cells)
+  grid_nodal_mappings_.reserve(grid_->local_cells.size());
+  for (auto& cell : grid_->local_cells)
   {
     CellFaceNodalMapping cell_nodal_mapping;
     cell_nodal_mapping.reserve(cell.faces.size());
@@ -1376,9 +1376,9 @@ LBSProblem::InitializeParrays()
 
       if (face.has_neighbor)
       {
-        grid_ptr_->FindAssociatedVertices(face, face_node_mapping);
-        grid_ptr_->FindAssociatedCellVertices(face, cell_node_mapping);
-        adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_ptr_.get());
+        grid_->FindAssociatedVertices(face, face_node_mapping);
+        grid_->FindAssociatedCellVertices(face, cell_node_mapping);
+        adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
       }
 
       cell_nodal_mapping.emplace_back(adj_face_idx, face_node_mapping, cell_node_mapping);
@@ -1388,10 +1388,10 @@ LBSProblem::InitializeParrays()
   } // for local cell
 
   // Get grid localized communicator set
-  grid_local_comm_set_ = grid_ptr_->MakeMPILocalCommunicatorSet();
+  grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
 
   // Make face histogram
-  grid_face_histogram_ = grid_ptr_->MakeGridFaceHistogram();
+  grid_face_histogram_ = grid_->MakeGridFaceHistogram();
 
   // Initialize Field Functions
   InitializeFieldFunctions();
@@ -1473,7 +1473,7 @@ LBSProblem::InitializeBoundaries()
   std::set<uint64_t> global_unique_bids_set;
   {
     std::set<uint64_t> local_unique_bids_set;
-    for (const auto& cell : grid_ptr_->local_cells)
+    for (const auto& cell : grid_->local_cells)
       for (const auto& face : cell.faces)
         if (not face.has_neighbor)
           local_unique_bids_set.insert(face.neighbor_id);
@@ -1516,7 +1516,7 @@ LBSProblem::InitializeBoundaries()
         // have the same normal
         const double EPSILON = 1.0e-12;
         std::unique_ptr<Vector3> n_ptr = nullptr;
-        for (const auto& cell : grid_ptr_->local_cells)
+        for (const auto& cell : grid_->local_cells)
           for (const auto& face : cell.faces)
             if (not face.has_neighbor and face.neighbor_id == bid)
             {
@@ -1658,7 +1658,7 @@ LBSProblem::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<doubl
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1695,7 +1695,7 @@ LBSProblem::GSProjectBackPhi0(const LBSGroupset& groupset,
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1731,7 +1731,7 @@ LBSProblem::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   delta_phi_local.clear();
   delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1767,7 +1767,7 @@ LBSProblem::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1875,7 +1875,7 @@ LBSProblem::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   delta_phi_local.clear();
   delta_phi_local.assign(local_node_count_, 0.0);
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1917,7 +1917,7 @@ LBSProblem::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1974,7 +1974,7 @@ LBSProblem::UpdateFieldFunctions()
 
     std::vector<double> data_vector_local(local_node_count_, 0.0);
 
-    for (const auto& cell : grid_ptr_->local_cells)
+    for (const auto& cell : grid_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -1998,7 +1998,7 @@ LBSProblem::UpdateFieldFunctions()
     std::vector<double> data_vector_local(local_node_count_, 0.0);
 
     double local_total_power = 0.0;
-    for (const auto& cell : grid_ptr_->local_cells)
+    for (const auto& cell : grid_->local_cells)
     {
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -2073,7 +2073,7 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
       const auto& ff_ptr = field_functions_.at(ff_index);
       const auto& ff_data = ff_ptr->GetLocalFieldVector();
 
-      for (const auto& cell : grid_ptr_->local_cells)
+      for (const auto& cell : grid_->local_cells)
       {
         const auto& cell_mapping = sdm.GetCellMapping(cell);
         const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -2103,7 +2103,7 @@ LBSProblem::ComputeFissionProduction(const std::vector<double>& phi)
 
   // Loop over local cells
   double local_production = 0.0;
-  for (auto& cell : grid_ptr_->local_cells)
+  for (auto& cell : grid_->local_cells)
   {
     const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
@@ -2154,7 +2154,7 @@ LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
 
   // Loop over local cells
   double local_fission_rate = 0.0;
-  for (auto& cell : grid_ptr_->local_cells)
+  for (auto& cell : grid_->local_cells)
   {
     const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
@@ -2197,7 +2197,7 @@ LBSProblem::ComputePrecursors()
   precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
 
   // Loop over cells
-  for (const auto& cell : grid_ptr_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& fe_values = unit_cell_matrices_[cell.local_id];
     const auto& transport_view = cell_transport_views_[cell.local_id];

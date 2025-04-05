@@ -10,12 +10,8 @@ namespace opensn
 {
 
 SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
-                                             CoordinateSystemType cs_type,
                                              SpatialDiscretizationType sdm_type)
-  : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}),
-    ref_grid_(grid),
-    coord_sys_type_(cs_type),
-    type_(sdm_type)
+  : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}), grid_(grid), type_(sdm_type)
 {
 }
 
@@ -46,13 +42,7 @@ SpatialDiscretization::GetType() const
 const std::shared_ptr<MeshContinuum>
 SpatialDiscretization::GetGrid() const
 {
-  return ref_grid_;
-}
-
-CoordinateSystemType
-SpatialDiscretization::GetCoordinateSystemType() const
-{
-  return coord_sys_type_;
+  return grid_;
 }
 
 size_t
@@ -133,7 +123,7 @@ std::vector<std::vector<std::vector<int>>>
 SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   std::vector<std::vector<std::vector<int>>> cell_adj_mapping;
-  for (const auto& cell : ref_grid_->local_cells)
+  for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = this->GetCellMapping(cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
@@ -148,7 +138,7 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)
       {
-        const auto& adj_cell = ref_grid_->cells[face.neighbor_id];
+        const auto& adj_cell = grid_->cells[face.neighbor_id];
         const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.GetNumNodes();
@@ -206,7 +196,7 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
 
     const size_t num_comps = ukA.num_components;
 
-    for (const auto& cell : ref_grid_->local_cells)
+    for (const auto& cell : grid_->local_cells)
     {
       const auto& cell_mapping = this->GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -273,7 +263,7 @@ SpatialDiscretization::Spherical1DSpatialWeightFunction(const Vector3& point)
 SpatialDiscretization::SpatialWeightFunction
 SpatialDiscretization::GetSpatialWeightingFunction() const
 {
-  switch (coord_sys_type_)
+  switch (grid_->GetCoordinateSystem())
   {
     case CoordinateSystemType::CARTESIAN:
       return CartesianSpatialWeightFunction;
