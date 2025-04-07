@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "framework/math/functions/function.h"
 #include "framework/math/functions/scalar_material_function.h"
+#include "framework/math/functions/scalar_spatial_function.h"
 #include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/math/functions/vector_spatial_function.h"
 #include <functional>
@@ -28,6 +30,21 @@ public:
 
 protected:
   std::function<double(double, int)> func_;
+};
+
+/// Bind class for scalar spatial function
+class PySSFunction : public ScalarSpatialFunction
+{
+public:
+  PySSFunction(const std::function<double(const Vector3&)>& func)
+    : ScalarSpatialFunction(), func_(func)
+  {
+  }
+
+  inline double Evaluate(const Vector3& xyz) const override { return this->func_(xyz); }
+
+protected:
+  std::function<double(const Vector3&)> func_;
 };
 
 /// Bind class for scalar spatial material function

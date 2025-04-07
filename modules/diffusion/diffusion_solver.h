@@ -12,6 +12,8 @@
 namespace opensn
 {
 
+class MeshContinuum;
+
 /**
  * Base class for diffusion solvers
  */
@@ -41,6 +43,9 @@ public:
   void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
   void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+
+  void SetOptions(const InputParameters& params);
+  virtual void SetBoundaryOptions(const InputParameters& params) = 0;
 
 protected:
   void InitFieldFunctions();

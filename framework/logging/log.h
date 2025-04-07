@@ -66,8 +66,8 @@ namespace opensn
  *
  * \verbatim
  * [0]  This is printed on location 0 only
- * [0]  **WARNING** This is a warning
- * [0]  **!**ERROR**!** This is an error
+ * [0]  **** WARNING **** This is a warning
+ * [0]  ****  ERROR  **** This is an error
  * \endverbatim
  */
 class Logger
@@ -92,41 +92,33 @@ public:
 
 private:
   DummyStream dummy_stream_;
-  int verbosity_;
+  int verbosity_{0};
 
-  Logger() noexcept;
+  Logger() = default;
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
 
 public:
-  static Logger& GetInstance() noexcept;
+  static Logger& GetInstance() noexcept
+  {
+    static Logger instance;
+    return instance;
+  }
 
+  void SetVerbosity(int level) { verbosity_ = std::min(level, 2); }
+  int GetVerbosity() const { return verbosity_; }
   LogStream Log(LOG_LVL level = LOG_0);
-
-  void SetVerbosity(int int_level);
-
-  int GetVerbosity() const;
-
   LogStream Log0() { return Log(LOG_0); }
-
   LogStream Log0Warning() { return Log(LOG_0WARNING); }
-
   LogStream Log0Error() { return Log(LOG_0ERROR); }
-
   LogStream Log0Verbose0() { return Log(LOG_0VERBOSE_0); }
-
   LogStream Log0Verbose1() { return Log(LOG_0VERBOSE_1); }
-
   LogStream Log0Verbose2() { return Log(LOG_0VERBOSE_2); }
-
   LogStream LogAll() { return Log(LOG_ALL); }
-
   LogStream LogAllWarning() { return Log(LOG_ALLWARNING); }
-
   LogStream LogAllError() { return Log(LOG_ALLERROR); }
-
   LogStream LogAllVerbose0() { return Log(LOG_ALLVERBOSE_0); }
-
   LogStream LogAllVerbose1() { return Log(LOG_ALLVERBOSE_1); }
-
   LogStream LogAllVerbose2() { return Log(LOG_ALLVERBOSE_2); }
 };
 

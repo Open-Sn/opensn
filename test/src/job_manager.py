@@ -255,17 +255,17 @@ def ListFilesInDir(folder: str, ext=None):
 
 
 def BuildSearchHierarchyForTests(argv):
-    """Finds lua files recursively and creates a map of directories to tests"""
+    """Finds input files recursively and creates a map of directories to tests"""
     test_dir = argv.directory
 
     if not os.path.isdir(test_dir):
         raise Exception('"' + test_dir + '" directory does not exist')
 
-    test_hierarchy = {}  # Map of directories to lua files
+    test_hierarchy = {}  # Map of directories to input files
     for dir_path, sub_dirs, files in os.walk(test_dir):
         for file_name in files:
             base_name, extension = os.path.splitext(file_name)
-            if extension == ".lua":
+            if extension == ".lua" or extension == ".py":
                 abs_dir_path = os.path.abspath(dir_path) + "/"
                 if abs_dir_path not in test_hierarchy:
                     test_hierarchy[abs_dir_path] = [file_name]
@@ -276,7 +276,7 @@ def BuildSearchHierarchyForTests(argv):
 
 
 def ConfigureTests(test_hierarchy: dict, argv):
-    """Search through a map of dirs-to-lua-file and looks for a .json file that will then be used
+    """Search through a map of dirs-to-input-file and looks for a .json file that will then be used
        to create a test object. Also preps the out and gold directories."""
 
     specific_test = argv.test
@@ -381,7 +381,7 @@ def RunTests(tests: list, argv):
             if slot.Probe():
                 system_load += slot.test.num_procs
 
-        time.sleep(0.01)
+        time.sleep(1.0)
 
         if done:
             break

@@ -7,3 +7,5 @@ leak:libmpi.so.*
 
 # Dependencies
 leak:libpetsc.so.*
+leak:libpython3.*
+leak:cpython-*.so

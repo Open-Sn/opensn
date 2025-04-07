@@ -8,11 +8,11 @@ namespace opensn
 {
 
 std::string
-StringStreamColor(StringSteamColorCode code)
+StringStreamColor(StringStreamColorCode code)
 {
   if (suppress_color)
     return {};
-  return std::string("\033[") + std::to_string(code) + "m";
+  return "\033[" + std::to_string(static_cast<int>(code)) + "m";
 }
 
 } // namespace opensn

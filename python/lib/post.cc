@@ -67,7 +67,15 @@ WrapPostProcessor(py::module& post)
     post,
     "SolverInfoPostProcessor",
     R"(
+    Post-processor for basic info of a Solver.
+
+    This solver's execution does not filter whether solver events are for the relevant solver. This
+    is done to avoid differing time-histories.
+
+    (really unclear, rephrasing is needed)
     ???
+
+    Wrapper of :cpp:class:`opensn::SolverInfoPostProcessor`.
     )"
   );
   solver_info_pp.def(
@@ -82,7 +90,26 @@ WrapPostProcessor(py::module& post)
 
     Parameters
     ----------
-    ???
+    name: str
+        Name of the post processor; used throughout the program.
+    execute_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor executes.
+    print_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor prints, ensuring these events are also set for the
+        post-processor printer.
+    initial_value: Dict, default={}
+        Dictionary of initial value.
+    print_numeric_format: {'fixed', 'floating_point', 'scientific', 'general'}, default='general'
+        Numeric format for printing.
+    print_precision: int, default=6
+        Number of digits displayed after the decimal point.
+    solvername_filter: str, default=''
+        Filter to control update events to execute only on calls from the specified solver.
+    solver: pyopensn.solver.Solver
+        Target solver.
+    info: Dict, default={}
+        Dictionary requiring at minimum the parameter ``name`` to pass to the solver. Each solver
+        may define additional custom parameters to retrieve various types of information.
     )"
   );
 
@@ -93,7 +120,11 @@ WrapPostProcessor(py::module& post)
     post,
     "AggregateNodalValuePostProcessor",
     R"(
-    ???
+    Aggregator for nodal values.
+
+    Gets the max/min/avg nodal value of a field function among nodal values.
+
+    Wrapper of :cpp:class:`opensn::AggregateNodalValuePostProcessor`.
     )"
   );
   agg_nodel_value_pp.def(
@@ -108,7 +139,23 @@ WrapPostProcessor(py::module& post)
 
     Parameters
     ----------
-    ???
+    name: str
+        Name of the post processor; used throughout the program.
+    execute_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor executes.
+    print_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor prints, ensuring these events are also set for the
+        post-processor printer.
+    initial_value: Dict, default={}
+        Dictionary of initial value.
+    print_numeric_format: {'fixed', 'floating_point', 'scientific', 'general'}, default='general'
+        Numeric format for printing.
+    print_precision: int, default=6
+        Number of digits displayed after the decimal point.
+    solvername_filter: str, default=''
+        Filter to control update events to execute only on calls from the specified solver.
+    operation: {'max', 'min', 'avg'}
+        The required operation to be performed.
     )"
   );
 
@@ -119,7 +166,7 @@ WrapPostProcessor(py::module& post)
     post,
     "CellVolumeIntegralPostProcessor",
     R"(
-    ???
+    Compute the volumetric integral of a field-function.
     )"
   );
   cell_volume_int_pp.def(
@@ -134,7 +181,23 @@ WrapPostProcessor(py::module& post)
 
     Parameters
     ----------
-    ???
+    name: str
+        Name of the post processor; used throughout the program.
+    execute_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor executes.
+    print_on: List[str], default=['SolverInitialized', 'SolverAdvanced', 'SolverExecuted', 'ProgramExecuted']
+        List of events at which the post-processor prints, ensuring these events are also set for the
+        post-processor printer.
+    initial_value: Dict, default={}
+        Dictionary of initial value.
+    print_numeric_format: {'fixed', 'floating_point', 'scientific', 'general'}, default='general'
+        Numeric format for printing.
+    print_precision: int, default=6
+        Number of digits displayed after the decimal point.
+    solvername_filter: str, default=''
+        Filter to control update events to execute only on calls from the specified solver.
+    compute_volume_average: bool, default=False
+        Flag, when true will compute the volume average of the post-processor.
     )"
   );
   // clang-format on
@@ -155,11 +218,12 @@ WrapPrinter(py::module& post)
       cpp_pp_list.reserve(pp_list.size());
       for (py::handle py_pp: pp_list)
       {
-        cpp_pp_list.push_back(py_pp.cast<const PostProcessor*>());
+        cpp_pp_list.push_back(py_pp.cast<PostProcessor*>());
+        auto back = py_pp.cast<SolverInfoPostProcessor*>();
       }
       // get printer
       PostProcessorPrinter& printer = PostProcessorPrinter::GetInstance();
-      const std::string output = printer.GetPrintedPostProcessors(cpp_pp_list);
+      std::string output = printer.GetPrintedPostProcessors(cpp_pp_list);
       log.Log() << output;
     },
     R"(

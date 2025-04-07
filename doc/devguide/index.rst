@@ -7,3 +7,4 @@ Developer's Guide
    workflow
    coding_standard
    lua_bindings
+   py_bindings

@@ -213,8 +213,28 @@ void
 WrapFunctors(py::module& math)
 {
   // clang-format off
+  // function
+  auto function = py::class_<Function, std::shared_ptr<Function>>(
+    math,
+    "Function",
+    R"(
+    Function base class.
+    )"
+  );
+  function.def(
+    py::init(
+      []()
+      {
+        return std::make_shared<Function>();
+      }
+    ),
+    R"(
+    Empty constructor.
+    )"
+  );
+
   // scalar material function
-  auto scalar_material_function = py::class_<PySMFunction, std::shared_ptr<PySMFunction>>(
+  auto scalar_material_function = py::class_<PySMFunction, std::shared_ptr<PySMFunction>, Function>(
     math,
     "ScalarMaterialFunction",
     R"(
@@ -275,8 +295,70 @@ WrapFunctors(py::module& math)
     py::arg("mat_id")
   );
 
+  // scalar spatial function
+  auto scalar_spatial_function = py::class_<PySSFunction, std::shared_ptr<PySSFunction>, Function>(
+    math,
+    "ScalarSpatialFunction",
+    R"(
+    Scalar spatial function.
+
+    Functions that accept a 3D vector as input and return a scalar.
+
+    Wrapper of :cpp:class:`opensn::ScalarSpatialFunction`.
+
+    Examples
+    --------
+    >>> # Create from a Python function
+    >>> def foo(point):
+    ...     return point.Norm()
+    >>> f = ScalarSpatialFunction(foo)
+    >>> 
+    >>> # Create from lambda
+    >>> a = Vector3(0., 0., 1.)
+    >>> g = ScalarSpatialFunction(lambda p : p @ a)
+    >>> 
+    >>> # Evaluate
+    >>> f(Vector3(4., 4., 7.))
+    9.0
+    >>> g(Vector3(1., 2., 3.))
+    3.0
+    )"
+  );
+  scalar_spatial_function.def(
+    py::init(
+      [](const std::function<double(const Vector3&)>& func)
+      {
+        return std::make_shared<PySSFunction>(func);
+      }
+    ),
+    R"(
+    Construct a scalar spatial function from associated Python function or lambda.
+
+    Parameters
+    ----------
+    func: Callable[[pyopensn.math.Vector3], float]
+        Referenced scalar spatial function.
+    )",
+    py::arg("func")
+  );
+  scalar_spatial_function.def(
+    "__call__",
+    &PySSFunction::Evaluate,
+    R"(
+    Evaluate the associated function.
+
+    Parameters
+    ----------
+    xyz: pyopensn.math.Vector3
+        The xyz coordinates of the point where the function is called.
+    )",
+    py::arg("xyz")
+  );
+
   // scalar spatial material function
-  auto scalar_spatial_material_function = py::class_<PySSMFunction, std::shared_ptr<PySSMFunction>>(
+  auto scalar_spatial_material_function = py::class_<PySSMFunction,
+                                                     std::shared_ptr<PySSMFunction>,
+                                                     Function>(
     math,
     "ScalarSpatialMaterialFunction",
     R"(
@@ -338,7 +420,7 @@ WrapFunctors(py::module& math)
   );
 
   // vector spatial function
-  auto vector_spatial_function = py::class_<PyVSFunction, std::shared_ptr<PyVSFunction>>(
+  auto vector_spatial_function = py::class_<PyVSFunction, std::shared_ptr<PyVSFunction>, Function>(
     math,
     "VectorSpatialFunction",
     R"(

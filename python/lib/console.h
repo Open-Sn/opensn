@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/utils/utils.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <vector>
 #include <string>
@@ -18,17 +19,23 @@ namespace opensnpy
 class Console
 {
 public:
-  static Console& GetInstance() noexcept;
+  static Console& GetInstance() noexcept
+  {
+    static Console singleton;
+    return singleton;
+  }
+
   std::vector<std::string>& GetCommandBuffer() { return command_buffer_; }
-  void FlushConsole();
-  void RunConsoleLoop() const;
-  int ExecuteFile(const std::string& fileName) const;
-  void BindModule(std::function<void(py::module&)> bind_function);
+  void InitConsole();
+  void ExecuteFile(const std::string& input_filename) const;
   void BindBarrier(const mpi::Communicator& comm);
+
+  static void BindModule(std::function<void(py::module&)> bind_function);
 
 private:
   Console() noexcept = default;
-  void ExecutePythonCommand(const std::string& command) const;
+  Console(const Console&) = delete;
+  Console& operator=(const Console&) = delete;
 
   std::vector<std::string> command_buffer_;
 };

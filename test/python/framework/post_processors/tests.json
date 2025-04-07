@@ -1,0 +1,23 @@
+[
+  {
+    "file": "solver_info_01.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type" : "GoldFile", "skiplines_top" : 5, "check_numlines" : 80
+      },
+      {
+        "type" : "GoldFile", "candidate_filename" : "solver_info_01.csv"
+      }
+    ]
+  },
+  {
+    "file": "solver_info_02.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type" : "GoldFile", "skiplines_top" : 5, "check_numlines" : 46
+      }
+    ]
+  }
+]

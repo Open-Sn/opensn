@@ -112,7 +112,7 @@ MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 }
 
 void
-MeshContinuum::SetupOrthogonalBoundaries()
+MeshContinuum::SetOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
@@ -565,7 +565,7 @@ MeshContinuum::SetUniformBlockID(const int blk_id)
 }
 
 void
-MeshContinuum::SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, bool sense)
+MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk_id, bool sense)
 {
   int num_cells_modified = 0;
   for (auto& cell : local_cells)
@@ -594,9 +594,9 @@ MeshContinuum::SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, b
 }
 
 void
-MeshContinuum::SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
-                                        const std::string& boundary_name,
-                                        const bool sense)
+MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
+                                              const std::string& boundary_name,
+                                              const bool sense)
 {
   // Check if name already has id
   auto& grid_bndry_id_map = GetBoundaryIDMap();

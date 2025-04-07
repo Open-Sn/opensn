@@ -9,45 +9,16 @@ permissions:
 
 jobs:
   build-and-deploy:
-    concurrency: ci-${{ github.ref }}
-    defaults:
-      run:
-        shell: bash -el {0}
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted]
     steps:
-      - name: Set up miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: 3.9
-          auto-update-conda: false
-          channels: andrsd,defaults
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Python3-dev
-        uses: sudo apt-get install -y python3-dev
-
-      - name: Install dependencies
+      - uses: actions/checkout@v4
+      - name: Build documentation
+        shell: bash
         run: |
-          conda install \
-            cmake \
-            make \
-            mpich-mpicxx \
-            doxygen \
-            petsc==3.17.5 \
-            vtk \
-            lua \
-            caliper \
-            pybind11 \
-            boost
-          sudo pip install -r doc/requirements.txt
-
-      - name: Build doco
-        run: |
-          cmake -S . -B ${{ github.workspace }}/build \
-            -DOPENSN_WITH_DOCS=ON -DOPENSN_WITH_PYTHON_MODULE=ON
-          make -j2 -C ${{ github.workspace }}/build __init__ doc
+          module load python3/3.12.3 opensn/gcc/14 doxygen/1.13.2
+          mkdir build && cd build
+          cmake -DOPENSN_WITH_DOCS=ON -DOPENSN_WITH_PYTHON_MODULE=ON ..
+          make -j __init__ doc
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4

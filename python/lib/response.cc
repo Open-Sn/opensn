@@ -41,7 +41,10 @@ WrapResEval(py::module& response)
 
     Parameters
     ----------
-    ???
+    lbs_solver: pyopensn.solver.Solver
+        A handle to an existing LBS solver.
+    options: Dict
+        The specification of adjoint buffers and forward to use.
     )"
   );
   res_eval.def(
@@ -67,17 +70,17 @@ WrapResEval(py::module& response)
       self.SetOptions(input);
     },
     R"(
-      Set options for the response evaluator for adding adjoint buffers and defining forward sources.
+    Set options for the response evaluator for adding adjoint buffers and defining forward sources.
 
-      Parameters
-      ----------
-      buffers: List[Dict], default=[]
-      A list of dictionaries containing adjoint buffer specifications.
-      clear_sources: bool, default=False
-      A flag to clear existing sources.
-      sources: List[Dict], default=[]
-      A list of dictionaries containing source specification information.
-      )"
+    Parameters
+    ----------
+    buffers: List[Dict], default=[]
+        A list of dictionaries containing adjoint buffer specifications.
+    clear_sources: bool, default=False
+        A flag to clear existing sources.
+    sources: List[Dict], default=[]
+        A list of dictionaries containing source specification information.
+    )"
     );
   res_eval.def(
     "ClearForwardSources",

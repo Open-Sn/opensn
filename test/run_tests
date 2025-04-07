@@ -3,7 +3,7 @@
 OpenSn Test system
 
 Principles:
-- A test is specified by an input file (.lua file)
+- A test is specified by an input file
 - A test can be subjected to one or more checks
   - RunCheck: Does it run and exit with error-code 0
   - ConsoleOutputCheck: Does the console output contain specific text
@@ -52,7 +52,6 @@ parser.add_argument(
 parser.add_argument(
     "--exe",
     type=str, required=False,
-    default="build/test/opensn-test",
     help="The executable to use for testing"
 )
 
@@ -86,10 +85,6 @@ parser.add_argument(
 
 argv = parser.parse_args()
 
-# Check the exe exists
-if not os.path.isfile(argv.exe):
-    raise FileNotFoundError(argv.exe)
-
 # --test should provide the full path to a test file. Break that up and set
 # test and directory appropriately
 if argv.test is not None:
@@ -100,6 +95,16 @@ if argv.test is not None:
 # Check the test directory exists
 if not os.path.isdir(argv.directory):
     raise NotADirectoryError(argv.directory)
+
+# Check the exe exists
+if argv.exe is not None:
+    if not os.path.isfile(argv.exe):
+        raise FileNotFoundError(argv.exe)
+else:
+    if 'lua' in argv.directory:
+        argv.exe = "build/test/lua/opensn-test"
+    elif 'python' in argv.directory:
+        argv.exe = "build/test/python/opensn-test"
 
 # Ensure exe path is absolute
 argv.exe = os.path.abspath(argv.exe)
@@ -129,7 +134,7 @@ for test_dir in test_hierarchy:
 
 print()
 print("Output description:")
-print("\033[33m[XX]\033[0m <test directory>/<lua filename>.lua (lua args).......", end="")
+print("\033[33m[XX]\033[0m <test directory>/<input filename> (test args).......", end="")
 print("\033[36m[Annotations]\033[0m", end="")
 print("\033[32mPassed\033[0m/\033[31mFailed\033[0m")
 print("\033[33m[XX]\033[0m : Number of MPI processes")
@@ -137,13 +142,13 @@ print("\033[36m[Annotations]\033[0m : Error messages preventing a test from runn
 print("\t\033[36m[Skipped]\033[0m")
 print("\tTest was intentionally skipped. A reason for skipping this test should be")
 print("\tprovided by the responsible developer.\n")
-print("\t\033[36m[Lua file missing]\033[0m")
-print("\tA test pointing to a .lua file was found in a .json file but the lua file is")
-print("\tmissing.\n")
+print("\t\033[36m[Input file missing]\033[0m")
+print("\tA test pointing to an input file was found in a .json file but the input file")
+print("\tis missing.\n")
 print("\t\033[36m[Gold file missing]\033[0m")
 print("\tTest with a gold file check has no .gold file in the gold/ directory. If the")
-print("\tinput is input.lua then there needs to be an input.lua.gold file in the gold")
-print("\tdirectory. If this was the first run then copy Input.lua.out from the out/")
+print("\tinput is input.ext then there needs to be an input.ext.gold file in the gold")
+print("\tdirectory. If this was the first run then copy input.ext.out from the out/")
 print("\tdirectory and use that as the gold file.\n")
 print("\t\033[36m[Python error]\033[0m")
 print("\tA python error occurred. Run with -v 1 to see the error.")

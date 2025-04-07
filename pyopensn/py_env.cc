@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "python/lib/py_api.h"
+#include "python/lib/py_env.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
 #include "mpi4py/mpi4py.h"
@@ -12,7 +12,7 @@ namespace opensn
 
 PyEnv::PyEnv()
 {
-  // Check if environment is already initialized
+  // check if environment is already initialized
   if (PyEnv::p_default_env != nullptr)
   {
     return;
@@ -32,12 +32,13 @@ PyEnv::PyEnv()
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
   ::PetscInitialize(nullptr, nullptr, nullptr, nullptr);
+  opensn::suppress_color = true;
   Initialize();
 }
 
 PyEnv::~PyEnv()
 {
-  // Finalize the run
+  // finalize the run
   Finalize();
   ::PetscFinalize();
   // Print execution time
@@ -47,7 +48,7 @@ PyEnv::~PyEnv()
     std::cout << "Elapsed execution time: " << program_timer.GetTimeString() << "\n";
     std::cout << Timer::GetLocalDateTimeString() << " " << program << " finished execution.\n";
   }
-  // Flush caliper
+  // flush caliper
   cali_mgr.flush();
 }
 

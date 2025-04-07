@@ -10,157 +10,125 @@
 namespace opensn
 {
 
-Logger&
-Logger::GetInstance() noexcept
-{
-  static Logger instance;
-  return instance;
-}
-
-Logger::Logger() noexcept
-{
-  verbosity_ = 0;
-}
-
 LogStream
 Logger::Log(LOG_LVL level)
 {
+  int rank = opensn::mpi_comm.rank();
+  std::string header;
+  std::ostream* stream = nullptr;
+  bool use_dummy = false;
+
   switch (level)
   {
-    case LOG_0VERBOSE_0:
     case LOG_0:
+    case LOG_0VERBOSE_0:
     {
-      if (opensn::mpi_comm.rank() == 0)
+      if (rank == 0)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        return {&std::cout, header};
+        header = "[" + std::to_string(rank) + "]  ";
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
     case LOG_0WARNING:
     {
-      if (opensn::mpi_comm.rank() == 0)
+      if (rank == 0)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
-        return {&std::cout, header};
+        header =
+          "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_YELLOW) + "*** WARNING ***  ";
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
     case LOG_0ERROR:
     {
-      if (opensn::mpi_comm.rank() == 0)
+      if (rank == 0)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
-        return {&std::cerr, header};
+        header =
+          "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_RED) + "**** ERROR ****  ";
+        stream = &std::cerr;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
-
     case LOG_0VERBOSE_1:
     {
-      if ((opensn::mpi_comm.rank() == 0) and (verbosity_ >= 1))
+      if (rank == 0 and verbosity_ >= 1)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_CYAN);
-        return {&std::cout, header};
+        header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_CYAN);
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
-    case Logger::LOG_LVL::LOG_0VERBOSE_2:
+    case LOG_0VERBOSE_2:
     {
-      if ((opensn::mpi_comm.rank() == 0) and (verbosity_ >= 2))
+      if (rank == 0 and verbosity_ >= 2)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_MAGENTA);
-        return {&std::cout, header};
+        header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_MAGENTA);
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
-    case LOG_ALLVERBOSE_0:
     case LOG_ALL:
+    case LOG_ALLVERBOSE_0:
     {
-      std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-      return {&std::cout, header};
+      header = "[" + std::to_string(rank) + "]  ";
+      stream = &std::cout;
+      break;
     }
     case LOG_ALLWARNING:
     {
-      std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-      header += StringStreamColor(FG_YELLOW) + "**WARNING** ";
-      return {&std::cout, header};
+      header =
+        "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_YELLOW) + "*** WARNING ***  ";
+      stream = &std::cout;
+      break;
     }
     case LOG_ALLERROR:
     {
-      std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-      header += StringStreamColor(FG_RED) + "**!**ERROR**!** ";
-      return {&std::cerr, header};
+      header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_RED) + "**** ERROR ****  ";
+      stream = &std::cerr;
+      break;
     }
-
     case LOG_ALLVERBOSE_1:
     {
       if (verbosity_ >= 1)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_CYAN);
-        return {&std::cout, header};
+        header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_CYAN);
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
     case LOG_ALLVERBOSE_2:
     {
       if (verbosity_ >= 2)
       {
-        std::string header = "[" + std::to_string(opensn::mpi_comm.rank()) + "]  ";
-        header += StringStreamColor(FG_MAGENTA);
-        return {&std::cout, header};
+        header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_MAGENTA);
+        stream = &std::cout;
       }
       else
-      {
-        std::string header = " ";
-        return {&dummy_stream_, header, true};
-      }
+        use_dummy = true;
+      break;
     }
     default:
-      std::string header = " ";
-      return {&dummy_stream_, header};
+      use_dummy = true;
+      break;
   }
-}
 
-void
-Logger::SetVerbosity(int int_level)
-{
-  verbosity_ = std::min(int_level, 2);
-}
+  if (use_dummy)
+    return {&dummy_stream_, " ", true};
 
-int
-Logger::GetVerbosity() const
-{
-  return verbosity_;
+  return {stream, header};
 }
 
 } // namespace opensn

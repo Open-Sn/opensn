@@ -60,7 +60,7 @@ public:
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
   /// Defines the standard x/y/z min/max boundaries.
-  void SetupOrthogonalBoundaries();
+  void SetOrthogonalBoundaries();
 
   /**
    * Populates a face histogram.
@@ -117,12 +117,12 @@ public:
   void SetUniformBlockID(const int blk_id);
 
   /// Sets block IDs using a logical volume.
-  void SetBlockIDFromLogical(const LogicalVolume& log_vol, int blk_id, bool sense);
+  void SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk_id, bool sense);
 
   /// Sets boundary ids using a logical volume.
-  void SetBoundaryIDFromLogical(const LogicalVolume& log_vol,
-                                const std::string& boundary_name,
-                                bool sense = true);
+  void SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
+                                      const std::string& boundary_name,
+                                      bool sense = true);
 
   /// Computes the centroid from nodes specified by the given list.
   Vector3 ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const;

@@ -38,16 +38,17 @@ if (OPENSN_WITH_CUDA)
     enable_language(CUDA)
 endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
-option(OPENSN_WITH_LUA "Build with lua support" ON)
-option(OPENSN_WITH_PYTHON "Build with python support" OFF)
+option(OPENSN_WITH_LUA "Build with lua support" OFF)
+option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
 
 if(OPENSN_WITH_PYTHON_MODULE)
     set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
 endif()
 
-if(OPENSN_WITH_PYTHON)
-    set(OPENSN_WITH_LUA OFF CACHE BOOL "Python interface requested, disabling Lua" FORCE)
+if(OPENSN_WITH_LUA)
+    set(OPENSN_WITH_PYTHON OFF CACHE BOOL "Lua support requested, disabling Python interface" FORCE)
+    set(OPENSN_WITH_PYTHON_MODULE OFF CACHE BOOL "Lua support requested, disabling Python module" FORCE)
 endif()
 
 # dependencies
@@ -125,12 +126,16 @@ if(caliper_FOUND)
 endif()
 
 # google test
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.15.2
-)
-FetchContent_MakeAvailable(googletest)
+find_package(GTest QUIET)
+if(NOT TARGET GTest::gtest_main)
+    message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.15.2
+    )
+    FetchContent_MakeAvailable(googletest)
+endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
@@ -233,8 +238,8 @@ if(OPENSN_WITH_LUA)
       COMMAND
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
-              -d ${CMAKE_SOURCE_DIR}/test
-              --exe ${CMAKE_BINARY_DIR}/test/opensn-test
+              -d ${CMAKE_SOURCE_DIR}/test/lua
+              --exe ${CMAKE_BINARY_DIR}/test/lua/opensn-test
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
@@ -242,9 +247,21 @@ endif()
 
 if(OPENSN_WITH_PYTHON)
     add_subdirectory(python)
+    add_subdirectory(test)
+
     if(OPENSN_WITH_PYTHON_MODULE)
         add_subdirectory(pyopensn)
     endif()
+
+    add_custom_target(test
+      COMMAND
+      ${CMAKE_BINARY_DIR}/test/opensn-unit &&
+              ${CMAKE_SOURCE_DIR}/test/run_tests
+              -d ${CMAKE_SOURCE_DIR}/test/python
+              --exe ${CMAKE_BINARY_DIR}/test/python/opensn-test
+              -w3
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
 endif()
 
 configure_file(config.h.in config.h)

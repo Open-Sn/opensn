@@ -27,12 +27,9 @@ Timer program_timer;
 bool suppress_color = false;
 std::filesystem::path input_path;
 
-std::vector<std::shared_ptr<SurfaceMesh>> surface_mesh_stack;
 std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-std::vector<std::shared_ptr<UnpartitionedMesh>> unpartitionedmesh_stack;
 std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
-std::vector<std::shared_ptr<AngularQuadrature>> angular_quadrature_stack;
 std::vector<std::shared_ptr<Object>> object_stack;
 std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
@@ -63,12 +60,21 @@ void
 Finalize()
 {
   SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
-  surface_mesh_stack.clear();
+
   field_func_interpolation_stack.clear();
-  unpartitionedmesh_stack.clear();
   multigroup_xs_stack.clear();
-  function_stack.clear();
+  field_function_stack.clear();
   object_stack.clear();
+  sdm_stack.clear();
+  postprocessor_stack.clear();
+  function_stack.clear();
+
+  // Flush standard streams
+  std::cout.flush();
+  std::cerr.flush();
+  std::clog.flush();
+
+  opensn::mpi_comm.barrier();
 
   CALI_MARK_END(opensn::program.c_str());
 }
