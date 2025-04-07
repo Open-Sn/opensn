@@ -23,5 +23,35 @@
         "abs_tol": 1e-03
       }
     ]
+  },
+  {
+    "file": "prod_quad_1d_slab.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "prod_quad_2d_xy.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "prod_quad_3d_xyz.lua",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
   }
 ]

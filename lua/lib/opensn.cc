@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/logging/log.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/vector3.h"
@@ -162,6 +163,9 @@ static bool reg = opensnlua::Console::Bind(
       .addFunction("CreateGLCProductQuadrature3DXYZ", &AQuadCreateGLCProductQuadrature3DXYZ)
       //
       .beginClass<AngularQuadrature>("AngularQuadrature")
+      .addProperty("weights", &AngularQuadrature::weights)
+      .addProperty("omegas", &AngularQuadrature::omegas)
+      .addProperty("abscissae", &AngularQuadrature::abscissae)
       .endClass()
       .beginClass<std::shared_ptr<AngularQuadrature>>("AngularQuadraturePtr")
       .endClass()
