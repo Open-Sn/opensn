@@ -59,14 +59,23 @@ public:
   unsigned int GetDimension() const { return dim_; }
   void SetDimension(unsigned int dim) { dim_ = dim; }
 
-  const BoundBox& GetBoundingBox() const { return bound_box_; }
-  void ComputeBoundingBox();
+  CoordinateSystemType GetCoordinateSystem() const { return coord_sys_; }
+  void SetCoordinateSystem(const CoordinateSystemType coord_sys) { coord_sys_ = coord_sys; }
 
   void SetType(MeshType type) { mesh_type_ = type; }
   const MeshType& GetType() const { return mesh_type_; }
 
   void SetExtruded(bool extruded) { extruded_ = extruded; }
   bool IsExtruded() const { return extruded_; }
+
+  void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
+  const OrthoMeshAttributes& GetOrthoAttributes() const { return ortho_attrs_; }
+
+  const BoundBox& GetBoundingBox() const { return bound_box_; }
+  void ComputeBoundingBox();
+
+  const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
+  std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
 
   const std::vector<std::set<uint64_t>>& GetVertextCellSubscriptions() const
   {
@@ -105,15 +114,10 @@ public:
 
   void AddBoundary(uint64_t id, const std::string& name);
 
-  const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
-  std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
-
-  void SetOrthoAttributes(size_t nx, size_t ny, size_t nz);
-  const OrthoMeshAttributes& GetOrthoAttributes() const { return ortho_attrs_; }
-
 protected:
   /// Spatial mesh dimension
   unsigned int dim_;
+  CoordinateSystemType coord_sys_;
   MeshType mesh_type_;
   bool extruded_;
   OrthoMeshAttributes ortho_attrs_;
