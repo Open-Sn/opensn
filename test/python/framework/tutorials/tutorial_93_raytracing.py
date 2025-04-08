@@ -31,7 +31,7 @@ pquad = GLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
 
 # Setup Physics
 solver_name = "LBS"
-phys1 = DiscreteOrdinatesSolver(
+phys1 = DiscreteOrdinatesProblem(
     name=solver_name,
     mesh=grid,
     num_groups=num_groups,
@@ -53,7 +53,7 @@ phys1 = DiscreteOrdinatesSolver(
         "field_function_prefix": solver_name,
     },
 )
-ss_solver = SteadyStateSolver(lbs_solver=phys1)
+ss_solver = SteadyStateSolver(lbs_problem=phys1)
 ss_solver.Initialize()
 ss_solver.Execute()
 

@@ -17,7 +17,7 @@ else
   l_max_its = 5
 end
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create({
+phys1 = lbs.DiscreteOrdinatesProblem.Create({
   mesh = grid,
   num_groups = num_groups,
   groupsets = {
@@ -50,13 +50,13 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
 
 -- Execute Solver
 if k_method == "pi" then
-  k_solver = lbs.PowerIterationKEigen.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.PowerIterationKEigenSolver.Create({
+    lbs_problem = phys1,
     k_tol = 1.0e-8,
   })
 elseif k_method == "pi_scdsa" then
-  k_solver = lbs.PowerIterationKEigenSCDSA.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.PowerIterationKEigenSCDSASolver.Create({
+    lbs_problem = phys1,
     diff_accel_sdm = "pwld",
     accel_pi_verbose = true,
     k_tol = 1.0e-8,
@@ -64,8 +64,8 @@ elseif k_method == "pi_scdsa" then
     accel_pi_max_its = 50,
   })
 elseif k_method == "pi_scdsa_pwlc" then
-  k_solver = lbs.PowerIterationKEigenSCDSA.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.PowerIterationKEigenSCDSASolver.Create({
+    lbs_problem = phys1,
     diff_accel_sdm = "pwlc",
     accel_pi_verbose = true,
     k_tol = 1.0e-8,
@@ -73,8 +73,8 @@ elseif k_method == "pi_scdsa_pwlc" then
     accel_pi_max_its = 50,
   })
 elseif k_method == "pi_smm" then
-  k_solver = lbs.PowerIterationKEigenSMM.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.PowerIterationKEigenSMMSolver.Create({
+    lbs_problem = phys1,
     accel_pi_verbose = true,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
@@ -82,8 +82,8 @@ elseif k_method == "pi_smm" then
     diff_sdm = "pwlc",
   })
 elseif k_method == "pi_smm_pwld" then
-  k_solver = lbs.PowerIterationKEigenSMM.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.PowerIterationKEigenSMMSolver.Create({
+    lbs_problem = phys1,
     accel_pi_verbose = true,
     k_tol = 1.0e-8,
     accel_pi_k_tol = 1.0e-8,
@@ -91,8 +91,8 @@ elseif k_method == "pi_smm_pwld" then
     diff_sdm = "pwld",
   })
 elseif k_method == "jfnk" then
-  k_solver = lbs.NonLinearKEigen.Create({
-    lbs_solver = phys1,
+  k_solver = lbs.NonLinearKEigenSolver.Create({
+    lbs_problem = phys1,
     nl_max_its = 50,
     nl_abs_tol = 1.0e-10,
     nl_rel_tol = 1.0e-10,

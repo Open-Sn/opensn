@@ -40,7 +40,7 @@ end
 pquad = aquad.CreateGLCProductQuadrature2DXY(4, 8)
 
 -- Solver
-phys1 = lbs.DiscreteOrdinatesSolver.Create({
+phys1 = lbs.DiscreteOrdinatesProblem.Create({
   mesh = grid,
   num_groups = num_groups,
   groupsets = {
@@ -77,8 +77,8 @@ phys1 = lbs.DiscreteOrdinatesSolver.Create({
 })
 
 -- Execute Solver
-k_solver = lbs.PowerIterationKEigen.Create({
-  lbs_solver = phys1,
+k_solver = lbs.PowerIterationKEigenSolver.Create({
+  lbs_problem = phys1,
   k_tol = 1.0e-8,
 })
 k_solver:Initialize()

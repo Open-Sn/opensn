@@ -36,7 +36,7 @@ struct TwoGridCollapsedInfo
 // };
 
 /// Multi-group diffusion solver
-class MGDiffusionSolver : public opensn::Solver
+class MGDiffusionSolver : public Solver
 {
 public:
   /** Multigroup diffusion boundary */
@@ -63,6 +63,8 @@ public:
 
   /// Updates the field functions with the latest data.
   void UpdateFieldFunctions();
+
+  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
 
 private:
   void InitializeMaterials(std::set<int>& material_ids);
@@ -116,6 +118,8 @@ protected:
 
   std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo_;
   //  std::map<int, Multigroup_D_and_sigR> map_mat_id_2_tgXS;
+
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 
 public:
   static InputParameters GetInputParameters();

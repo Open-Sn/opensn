@@ -45,6 +45,7 @@
 #include "framework/field_functions/interpolation/ffinter_point.h"
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
+#include "framework/physics/problem.h"
 #include "framework/physics/solver.h"
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"
 #include "framework/post_processors/cell_volume_integral_post_processor.h"
@@ -52,15 +53,15 @@
 #include "modules/diffusion/diffusion_solver.h"
 #include "modules/diffusion/cfem_diffusion_solver.h"
 #include "modules/diffusion/dfem_diffusion_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
-#include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
+#include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_scdsa_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_smm_solver.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
 #include "lua/lib/aquad.h"
@@ -506,12 +507,17 @@ static bool reg = opensnlua::Console::Bind(
       .endNamespace();
 
     luabridge::getGlobalNamespace(L)
+      .beginClass<Problem>("Problem")
+      .addFunction("GetFieldFunctions", luabridge::constOverload<>(&Problem::GetFieldFunctions))
+      .endClass()
+      .beginClass<std::shared_ptr<Problem>>("ProblemPtr")
+      .endClass()
+      //
       .beginClass<Solver>("Solver")
       .addFunction("Initialize", &Solver::Initialize)
       .addFunction("Execute", &Solver::Execute)
       .addFunction("Step", &Solver::Step)
       .addFunction("Advance", &Solver::Advance)
-      .addFunction("GetFieldFunctions", luabridge::constOverload<>(&Solver::GetFieldFunctions))
       .endClass()
       .beginClass<std::shared_ptr<Solver>>("SolverPtr")
       .endClass();
@@ -520,6 +526,8 @@ static bool reg = opensnlua::Console::Bind(
       .beginNamespace("diffusion")
       .deriveClass<DiffusionSolverBase, Solver>("DiffusionSolverBase")
       .addFunction("UpdateFieldFunctions", &DiffusionSolverBase::UpdateFieldFunctions)
+      .addFunction("GetFieldFunctions",
+                   luabridge::constOverload<>(&DiffusionSolverBase::GetFieldFunctions))
       .addFunction("SetDCoefFunction", &DiffusionSolverBase::SetDCoefFunction)
       .addFunction("SetQExtFunction", &DiffusionSolverBase::SetQExtFunction)
       .addFunction("SetSigmaAFunction", &DiffusionSolverBase::SetSigmaAFunction)
@@ -559,24 +567,24 @@ static bool reg = opensnlua::Console::Bind(
 
     luabridge::getGlobalNamespace(L)
       .beginNamespace("lbs")
-      .deriveClass<LBSSolver, Solver>("LBSSolver")
-      .addFunction("SetOptions", &LBSSolver::SetOptions)
-      .addFunction("GetPowerFieldFunction", &LBSSolver::GetPowerFieldFunction)
+      .deriveClass<LBSProblem, Problem>("LBSProblem")
+      .addFunction("SetOptions", &LBSProblem::SetOptions)
+      .addFunction("GetPowerFieldFunction", &LBSProblem::GetPowerFieldFunction)
       .endClass()
       //
-      .deriveClass<DiscreteOrdinatesSolver, LBSSolver>("DiscreteOrdinatesSolver")
-      .addStaticFunction("Create", &DiscreteOrdinatesSolver::Create)
-      .addFunction("ComputeBalance", &DiscreteOrdinatesSolver::ComputeBalance)
+      .deriveClass<DiscreteOrdinatesProblem, LBSProblem>("DiscreteOrdinatesProblem")
+      .addStaticFunction("Create", &DiscreteOrdinatesProblem::Create)
+      .addFunction("ComputeBalance", &DiscreteOrdinatesProblem::ComputeBalance)
       .endClass()
-      .beginClass<std::shared_ptr<DiscreteOrdinatesSolver>>("DiscreteOrdinatesSolverPtr")
+      .beginClass<std::shared_ptr<DiscreteOrdinatesProblem>>("DiscreteOrdinatesProblemPtr")
       .endClass()
       //
-      .deriveClass<DiscreteOrdinatesCurvilinearSolver, DiscreteOrdinatesSolver>(
-        "DiscreteOrdinatesCurvilinearSolver")
-      .addStaticFunction("Create", &DiscreteOrdinatesCurvilinearSolver::Create)
+      .deriveClass<DiscreteOrdinatesCurvilinearProblem, DiscreteOrdinatesProblem>(
+        "DiscreteOrdinatesCurvilinearProblem")
+      .addStaticFunction("Create", &DiscreteOrdinatesCurvilinearProblem::Create)
       .endClass()
-      .beginClass<std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>>(
-        "DiscreteOrdinatesCurvilinearSolverPtr")
+      .beginClass<std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>>(
+        "DiscreteOrdinatesCurvilinearProblemPtr")
       .endClass()
       //
       .deriveClass<SteadyStateSolver, Solver>("SteadyStateSolver")
@@ -585,31 +593,31 @@ static bool reg = opensnlua::Console::Bind(
       .beginClass<std::shared_ptr<SteadyStateSolver>>("SteadyStateSolverPtr")
       .endClass()
       //
-      .deriveClass<NonLinearKEigen, Solver>("NonLinearKEigen")
-      .addStaticFunction("Create", &NonLinearKEigen::Create)
+      .deriveClass<NonLinearKEigenSolver, Solver>("NonLinearKEigenSolver")
+      .addStaticFunction("Create", &NonLinearKEigenSolver::Create)
       .endClass()
-      .beginClass<std::shared_ptr<NonLinearKEigen>>("NonLinearKEigenPtr")
-      .endClass()
-      //
-      .deriveClass<PowerIterationKEigen, Solver>("PowerIterationKEigen")
-      .addStaticFunction("Create", &PowerIterationKEigen::Create)
-      .endClass()
-      .beginClass<std::shared_ptr<PowerIterationKEigen>>("PowerIterationKEigenPtr")
+      .beginClass<std::shared_ptr<NonLinearKEigenSolver>>("NonLinearKEigenPtr")
       .endClass()
       //
-      .deriveClass<PowerIterationKEigenSCDSA, Solver>("PowerIterationKEigenSCDSA")
-      .addStaticFunction("Create", &PowerIterationKEigenSCDSA::Create)
+      .deriveClass<PowerIterationKEigenSolver, Solver>("PowerIterationKEigenSolver")
+      .addStaticFunction("Create", &PowerIterationKEigenSolver::Create)
       .endClass()
-      .beginClass<std::shared_ptr<PowerIterationKEigenSCDSA>>("PowerIterationKEigenSCDSAPtr")
-      .endClass()
-      //
-      .deriveClass<PowerIterationKEigenSMM, Solver>("PowerIterationKEigenSMM")
-      .addStaticFunction("Create", &PowerIterationKEigenSMM::Create)
-      .endClass()
-      .beginClass<std::shared_ptr<PowerIterationKEigenSMM>>("PowerIterationKEigenSMMPtr")
+      .beginClass<std::shared_ptr<PowerIterationKEigenSolver>>("PowerIterationKEigenPtr")
       .endClass()
       //
-      .deriveClass<DiffusionDFEMSolver, LBSSolver>("DiffusionDFEMSolver")
+      .deriveClass<PowerIterationKEigenSCDSASolver, Solver>("PowerIterationKEigenSCDSASolver")
+      .addStaticFunction("Create", &PowerIterationKEigenSCDSASolver::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<PowerIterationKEigenSCDSASolver>>("PowerIterationKEigenSCDSAPtr")
+      .endClass()
+      //
+      .deriveClass<PowerIterationKEigenSMMSolver, Solver>("PowerIterationKEigenSMMSolver")
+      .addStaticFunction("Create", &PowerIterationKEigenSMMSolver::Create)
+      .endClass()
+      .beginClass<std::shared_ptr<PowerIterationKEigenSMMSolver>>("PowerIterationKEigenSMMPtr")
+      .endClass()
+      //
+      .deriveClass<DiffusionDFEMSolver, LBSProblem>("DiffusionDFEMSolver")
       .addStaticFunction("Create", &DiffusionDFEMSolver::Create)
       .endClass()
       .beginClass<std::shared_ptr<DiffusionDFEMSolver>>("DiffusionDFEMSolverPtr")

@@ -18,7 +18,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # Angular quadrature
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -80,6 +80,6 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = PowerIterationKEigen(lbs_solver=phys)
+    k_solver = PowerIterationKEigenSolver(lbs_problem=phys)
     k_solver.Initialize()
     k_solver.Execute()

@@ -87,6 +87,7 @@ void py_settings(py::module& pyopensn);
 
 /// Wrap the solver components of OpenSn (unfinshed).
 void py_solver(py::module& pyopensn);
+void WrapProblem(py::module& slv);
 void WrapSolver(py::module& slv);
 void WrapLBS(py::module& slv);
 void WrapSteadyState(py::module& slv);

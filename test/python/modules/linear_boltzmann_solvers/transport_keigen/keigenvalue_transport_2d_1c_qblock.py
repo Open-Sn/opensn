@@ -16,7 +16,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigenSCDSA
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSCDSASolver
 
 if __name__ == "__main__":
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(8, 16)
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -56,8 +56,8 @@ if __name__ == "__main__":
             "save_angular_flux": True,
         },
     )
-    k_solver = PowerIterationKEigenSCDSA(
-        lbs_solver=phys,
+    k_solver = PowerIterationKEigenSCDSASolver(
+        lbs_problem=phys,
         diff_accel_sdm="pwld",
         accel_pi_verbose=False,
         k_tol=1.0e-8,

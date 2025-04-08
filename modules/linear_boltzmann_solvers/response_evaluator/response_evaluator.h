@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/object.h"
 #include <memory>
 
@@ -111,7 +111,7 @@ private:
                                                 double time = 0.0) const;
 
 private:
-  std::shared_ptr<LBSSolver> lbs_solver_;
+  std::shared_ptr<LBSProblem> lbs_problem_;
 
   std::map<std::string, AdjointBuffer> adjoint_buffers_;
 

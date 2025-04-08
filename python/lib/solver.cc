@@ -6,15 +6,15 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_solver/lbs_curvilinear_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_solver/lbs_discrete_ordinates_solver.h"
-#include "modules/linear_boltzmann_solvers/executors/lbs_steady_state.h"
-#include "modules/linear_boltzmann_solvers/executors/nl_keigen.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_scdsa.h"
-#include "modules/linear_boltzmann_solvers/executors/pi_keigen_smm.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/io/lbs_solver_io.h"
-#include "modules/linear_boltzmann_solvers/lbs_solver/lbs_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_scdsa_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_smm_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
 #include <pybind11/numpy.h>
 #include <algorithm>
@@ -27,6 +27,37 @@
 
 namespace opensn
 {
+
+// Wrap problem
+void
+WrapProblem(py::module& slv)
+{
+  // clang-format off
+  // problem base
+  auto problem = py::class_<Problem, std::shared_ptr<Problem>>(
+    slv,
+    "Problem",
+    R"(
+    Base class for all problem.
+
+    Wrapper of :cpp:class:`opensn::Problem`.
+    )"
+  );
+  problem.def(
+    "GetFieldFunctions",
+    [](Problem& self)
+    {
+      py::list ff_list;
+      std::vector<std::shared_ptr<FieldFunctionGridBased>>& cpp_ff_list = self.GetFieldFunctions();
+      for (std::shared_ptr<FieldFunctionGridBased>& ff : cpp_ff_list) {
+        ff_list.append(ff);
+      }
+      return ff_list;
+    },
+    "Get the list of field functions."
+  );
+  // clang-format on
+}
 
 // Wrap solver
 void
@@ -75,19 +106,6 @@ WrapSolver(py::module& slv)
     },
     "Advance time values function."
   );
-  solver.def(
-    "GetFieldFunctions",
-    [](Solver& self)
-    {
-      py::list ff_list;
-      std::vector<std::shared_ptr<FieldFunctionGridBased>>& cpp_ff_list = self.GetFieldFunctions();
-      for (std::shared_ptr<FieldFunctionGridBased>& ff : cpp_ff_list) {
-        ff_list.append(ff);
-      }
-      return ff_list;
-    },
-    "Get the list of field functions."
-  );
   // clang-format on
 }
 
@@ -96,19 +114,19 @@ void
 WrapLBS(py::module& slv)
 {
   // clang-format off
-  // LBS solver
-  auto lbs_solver = py::class_<LBSSolver, std::shared_ptr<LBSSolver>, Solver>(
+  // LBS problem
+  auto lbs_problem = py::class_<LBSProblem, std::shared_ptr<LBSProblem>, Problem>(
     slv,
-    "LBSSolver",
+    "LBSProblem",
     R"(
     Base class for all Linear Boltzmann solvers.
 
-    Wrapper of :cpp:class:`opensn::LBSSolver`.
+    Wrapper of :cpp:class:`opensn::LBSProblem`.
     )"
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "GetScalarFieldFunctionList",
-    [](LBSSolver& self, bool only_scalar_flux)
+    [](LBSProblem& self, bool only_scalar_flux)
     {
       py::list field_function_list_per_group;
       for (std::size_t group = 0; group < self.GetNumGroups(); group++)
@@ -144,18 +162,18 @@ WrapLBS(py::module& slv)
     )",
     py::arg("only_scalar_flux") = true
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "GetPowerFieldFunction",
-    &LBSSolver::GetPowerFieldFunction,
+    &LBSProblem::GetPowerFieldFunction,
     R"(
     Returns the power generation field function, if enabled.
     )"
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "SetOptions",
-    [](LBSSolver& self, py::kwargs& params)
+    [](LBSProblem& self, py::kwargs& params)
     {
-      InputParameters input = LBSSolver::GetOptionsBlock();
+      InputParameters input = LBSProblem::GetOptionsBlock();
       input.AssignParameters(kwargs_to_param_block(params));
       self.SetOptions(input);
     },
@@ -230,9 +248,9 @@ WrapLBS(py::module& slv)
         Clear all volumetric sources.
     )"
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "ComputeFissionRate",
-    [](LBSSolver& self, const std::string& nature)
+    [](LBSProblem& self, const std::string& nature)
     {
       const std::vector<double>* phi_ptr;
       if (nature == "old")
@@ -259,9 +277,9 @@ WrapLBS(py::module& slv)
     )",
     py::arg("nature")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "WriteFluxMoments",
-    [](LBSSolver& self, const std::string& file_base)
+    [](LBSProblem& self, const std::string& file_base)
     {
       LBSSolverIO::WriteFluxMoments(self, file_base);
     },
@@ -275,9 +293,9 @@ WrapLBS(py::module& slv)
     )",
     py::arg("file_base")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "CreateAndWriteSourceMoments",
-    [](LBSSolver& self, const std::string& file_base)
+    [](LBSProblem& self, const std::string& file_base)
     {
       std::vector<double> source_moments = self.MakeSourceMomentsFromPhi();
       LBSSolverIO::WriteFluxMoments(self, file_base, source_moments);
@@ -292,9 +310,9 @@ WrapLBS(py::module& slv)
     )",
     py::arg("file_base")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "ReadFluxMomentsAndMakeSourceMoments",
-    [](LBSSolver& self, const std::string& file_base, bool single_file_flag)
+    [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, self.GetExtSrcMomentsLocal());
       log.Log() << "Making source moments from flux file.";
@@ -316,9 +334,9 @@ WrapLBS(py::module& slv)
     py::arg("file_base"),
     py::arg("single_file_flag")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "ReadSourceMoments",
-    [](LBSSolver& self, const std::string& file_base, bool single_file_flag)
+    [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, self.GetExtSrcMomentsLocal());
     },
@@ -335,9 +353,9 @@ WrapLBS(py::module& slv)
     py::arg("file_base"),
     py::arg("single_file_flag")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "ReadFluxMoments",
-    [](LBSSolver& self, const std::string& file_base, bool single_file_flag)
+    [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag);
     },
@@ -354,9 +372,9 @@ WrapLBS(py::module& slv)
     py::arg("file_base"),
     py::arg("single_file_flag")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "WriteAngularFluxes",
-    [](LBSSolver& self, const std::string& file_base)
+    [](LBSProblem& self, const std::string& file_base)
     {
       LBSSolverIO::WriteAngularFluxes(self, file_base);
     },
@@ -370,9 +388,9 @@ WrapLBS(py::module& slv)
     )",
     py::arg("file_base")
   );
-  lbs_solver.def(
+  lbs_problem.def(
     "ReadAngularFluxes",
-    [](LBSSolver& self, const std::string& file_base)
+    [](LBSProblem& self, const std::string& file_base)
     {
       LBSSolverIO::ReadAngularFluxes(self, file_base);
     },
@@ -388,24 +406,24 @@ WrapLBS(py::module& slv)
   );
 
   // discrete ordinate solver
-  auto do_solver = py::class_<DiscreteOrdinatesSolver, std::shared_ptr<DiscreteOrdinatesSolver>,
-                              LBSSolver>(
+  auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,
+                               LBSProblem>(
     slv,
-    "DiscreteOrdinatesSolver",
+    "DiscreteOrdinatesProblem",
     R"(
     Base class for discrete ordinates solvers.
 
     This class mostly establishes utilities related to sweeping. From here, steady-state, transient,
     adjoint, and k-eigenvalue solver can be derived.
 
-    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesSolver`.
+    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesProblem`.
     )"
   );
-  do_solver.def(
+  do_problem.def(
     py::init(
       [](py::kwargs& params)
       {
-        return DiscreteOrdinatesSolver::Create(kwargs_to_param_block(params));
+        return DiscreteOrdinatesProblem::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -416,20 +434,20 @@ WrapLBS(py::module& slv)
     ???
     )"
   );
-  do_solver.def(
+  do_problem.def(
     "ComputeBalance",
-    &DiscreteOrdinatesSolver::ComputeBalance,
+    &DiscreteOrdinatesProblem::ComputeBalance,
     R"(
     ???
     )"
   );
-  do_solver.def(
+  do_problem.def(
     "ComputeLeakage",
-    [](DiscreteOrdinatesSolver& self, py::list bnd_names)
+    [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
       // get the supported boundaries
-      std::map<std::string, std::uint64_t> allowed_bd_names = LBSSolver::supported_boundary_names;
-      std::map<std::uint64_t, std::string> allowed_bd_ids = LBSSolver::supported_boundary_ids;
+      std::map<std::string, std::uint64_t> allowed_bd_names = LBSProblem::supported_boundary_names;
+      std::map<std::uint64_t, std::string> allowed_bd_ids = LBSProblem::supported_boundary_ids;
       // get the boundaries to parse
       std::vector<std::uint64_t> bndry_ids;
       if (bnd_names.size() > 1)
@@ -468,24 +486,24 @@ WrapLBS(py::module& slv)
     py::arg("bnd_names")
   );
 
-  // discrete ordinate curvilinear solver
-  auto do_curvilinear_solver = py::class_<DiscreteOrdinatesCurvilinearSolver,
-                                          std::shared_ptr<DiscreteOrdinatesCurvilinearSolver>,
-                                          DiscreteOrdinatesSolver>(
+  // discrete ordinates curvilinear problem
+  auto do_curvilinear_problem = py::class_<DiscreteOrdinatesCurvilinearProblem,
+                                          std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>,
+                                          DiscreteOrdinatesProblem>(
     slv,
-    "DiscreteOrdinatesCurvilinearSolver",
+    "DiscreteOrdinatesCurvilinearProblem",
     R"(
     A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
     coordinates.
 
-    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesCurvilinearSolver`.
+    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesCurvilinearProblem`.
     )"
   );
-  do_curvilinear_solver.def(
+  do_curvilinear_problem.def(
     py::init(
       [](py::kwargs& params)
       {
-        return DiscreteOrdinatesCurvilinearSolver::Create(kwargs_to_param_block(params));
+        return DiscreteOrdinatesCurvilinearProblem::Create(kwargs_to_param_block(params));
       }
         ),
     R"(
@@ -499,7 +517,7 @@ WrapLBS(py::module& slv)
 
   // diffusion DFEM solver
   auto diffusion_dfem_solver = py::class_<DiffusionDFEMSolver, std::shared_ptr<DiffusionDFEMSolver>,
-                                          LBSSolver>(
+                                          LBSProblem>(
     slv,
     "DiffusionDFEMSolver",
     R"(
@@ -566,21 +584,21 @@ WrapNLKEigen(py::module& slv)
 {
   // clang-format off
   // non-linear k-eigen solver
-  auto non_linear_k_eigen_solver = py::class_<NonLinearKEigen, std::shared_ptr<NonLinearKEigen>,
+  auto non_linear_k_eigen_solver = py::class_<NonLinearKEigenSolver, std::shared_ptr<NonLinearKEigenSolver>,
                                               Solver>(
     slv,
-    "NonLinearKEigen",
+    "NonLinearKEigenSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::NonLinearKEigen`.
+    Wrapper of :cpp:class:`opensn::NonLinearKEigenSolver`.
     )"
   );
   non_linear_k_eigen_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return NonLinearKEigen::Create(kwargs_to_param_block(params));
+        return NonLinearKEigenSolver::Create(kwargs_to_param_block(params));
       }
         ),
     R"(
@@ -600,21 +618,21 @@ WrapPIteration(py::module& slv)
 {
   // clang-format off
   // power iteration k-eigen solver
-  auto pi_k_eigen_solver = py::class_<PowerIterationKEigen, std::shared_ptr<PowerIterationKEigen>,
+  auto pi_k_eigen_solver = py::class_<PowerIterationKEigenSolver, std::shared_ptr<PowerIterationKEigenSolver>,
                                       Solver>(
     slv,
-    "PowerIterationKEigen",
+    "PowerIterationKEigenSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::PowerIterationKEigen`.
+    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSolver`.
     )"
   );
   pi_k_eigen_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return PowerIterationKEigen::Create(kwargs_to_param_block(params));
+        return PowerIterationKEigenSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -627,22 +645,22 @@ WrapPIteration(py::module& slv)
   );
 
   // power iteration k-eigen SCDSA solver
-  auto pi_k_eigen_scdsa_solver = py::class_<PowerIterationKEigenSCDSA,
-                                            std::shared_ptr<PowerIterationKEigenSCDSA>,
-                                            PowerIterationKEigen>(
+  auto pi_k_eigen_scdsa_solver = py::class_<PowerIterationKEigenSCDSASolver,
+                                            std::shared_ptr<PowerIterationKEigenSCDSASolver>,
+                                            PowerIterationKEigenSolver>(
     slv,
-    "PowerIterationKEigenSCDSA",
+    "PowerIterationKEigenSCDSASolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSCDSA`.
+    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSCDSASolver`.
     )"
   );
   pi_k_eigen_scdsa_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return PowerIterationKEigenSCDSA::Create(kwargs_to_param_block(params));
+        return PowerIterationKEigenSCDSASolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -655,22 +673,22 @@ WrapPIteration(py::module& slv)
   );
 
   // power iteration k-eigen SMM solver
-  auto pi_k_eigen_smm_solver = py::class_<PowerIterationKEigenSMM,
-                                          std::shared_ptr<PowerIterationKEigenSMM>,
-                                          PowerIterationKEigen>(
+  auto pi_k_eigen_smm_solver = py::class_<PowerIterationKEigenSMMSolver,
+                                          std::shared_ptr<PowerIterationKEigenSMMSolver>,
+                                          PowerIterationKEigenSolver>(
     slv,
-    "PowerIterationKEigenSMM",
+    "PowerIterationKEigenSMMSolver",
     R"(
     ???
 
-    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSMM`.
+    Wrapper of :cpp:class:`opensn::PowerIterationKEigenSMMSolver`.
     )"
   );
   pi_k_eigen_smm_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return PowerIterationKEigenSMM::Create(kwargs_to_param_block(params));
+        return PowerIterationKEigenSMMSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -786,6 +804,7 @@ void
 py_solver(py::module& pyopensn)
 {
   py::module slv = pyopensn.def_submodule("solver", "Solver module.");
+  WrapProblem(slv);
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);

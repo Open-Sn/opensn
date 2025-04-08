@@ -56,9 +56,9 @@ lbs_block = {
     { block_ids = { 0, 1 }, xs = xs_diag },
   },
 }
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys:SetOptions(lbs_options)
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys })
 
 -- Solve
 ss_solver:Initialize()

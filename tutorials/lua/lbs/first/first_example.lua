@@ -156,10 +156,10 @@ lbs_block = {
 ### Putting the Linear Boltzmann Solver Together
 We then create the physics solver, initialize it, and execute it.
 --]]
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 
 -- Initialize and Execute Solver
-ss_solver = lbs.SteadyStateSolver.Create({ lbs_solver = phys })
+ss_solver = lbs.SteadyStateSolver.Create({ lbs_problem = phys })
 
 ss_solver:Initialize()
 ss_solver:Execute()

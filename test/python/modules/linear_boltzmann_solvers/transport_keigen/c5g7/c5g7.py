@@ -13,8 +13,9 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, PowerIterationKEigen
-    from pyopensn.solver import PowerIterationKEigenSCDSA, PowerIterationKEigenSMM, NonLinearKEigen
+    from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
+    from pyopensn.solver import PowerIterationKEigenSCDSASolver, PowerIterationKEigenSMMSolver, \
+        NonLinearKEigenSolver
 
 if __name__ == "__main__":
 
@@ -74,7 +75,7 @@ if __name__ == "__main__":
         inner_linear_method = "petsc_gmres"
         l_max_its = 5
 
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -107,13 +108,13 @@ if __name__ == "__main__":
 
     # Execute Solver
     if k_method == "pi":
-        k_solver = PowerIterationKEigen(
-            lbs_solver=phys,
+        k_solver = PowerIterationKEigenSolver(
+            lbs_problem=phys,
             k_tol=1.0e-8,
         )
     elif k_method == "pi_scdsa":
-        k_solver = PowerIterationKEigenSCDSA(
-            lbs_solver=phys,
+        k_solver = PowerIterationKEigenSCDSASolver(
+            lbs_problem=phys,
             diff_accel_sdm="pwld",
             accel_pi_verbose=True,
             k_tol=1.0e-8,
@@ -121,8 +122,8 @@ if __name__ == "__main__":
             accel_pi_max_its=50,
         )
     elif k_method == "pi_scdsa_pwlc":
-        k_solver = PowerIterationKEigenSCDSA(
-            lbs_solver=phys,
+        k_solver = PowerIterationKEigenSCDSASolver(
+            lbs_problem=phys,
             diff_accel_sdm="pwlc",
             accel_pi_verbose=True,
             k_tol=1.0e-8,
@@ -130,8 +131,8 @@ if __name__ == "__main__":
             accel_pi_max_its=50,
         )
     elif k_method == "pi_smm":
-        k_solver = PowerIterationKEigenSMM(
-            lbs_solver=phys,
+        k_solver = PowerIterationKEigenSMMSolver(
+            lbs_problem=phys,
             accel_pi_verbose=True,
             k_tol=1.0e-8,
             accel_pi_k_tol=1.0e-8,
@@ -139,8 +140,8 @@ if __name__ == "__main__":
             diff_sdm="pwlc",
         )
     elif k_method == "pi_smm_pwld":
-        k_solver = PowerIterationKEigenSMM(
-            lbs_solver=phys,
+        k_solver = PowerIterationKEigenSMMSolver(
+            lbs_problem=phys,
             accel_pi_verbose=True,
             k_tol=1.0e-8,
             accel_pi_k_tol=1.0e-8,
@@ -148,8 +149,8 @@ if __name__ == "__main__":
             diff_sdm="pwld",
         )
     elif k_method == "jfnk":
-        k_solver = NonLinearKEigen(
-            lbs_solver=phys,
+        k_solver = NonLinearKEigenSolver(
+            lbs_problem=phys,
             nl_max_its=50,
             nl_abs_tol=1.0e-10,
             nl_rel_tol=1.0e-10,

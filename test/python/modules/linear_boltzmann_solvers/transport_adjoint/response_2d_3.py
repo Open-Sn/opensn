@@ -32,7 +32,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import PointSource, VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
-    from pyopensn.solver import DiscreteOrdinatesSolver, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.response import ResponseEvaluator
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.math import VectorSpatialFunction
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(4, 48)
 
     # Setup physics
-    phys = DiscreteOrdinatesSolver(
+    phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=[
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     )
 
     # Forward solve
-    ss_solver = SteadyStateSolver(lbs_solver=phys)
+    ss_solver = SteadyStateSolver(lbs_problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     phys.WriteFluxMoments("adjoint_2d_3")
 
     # Create response evaluator and evaluate response
-    evaluator = ResponseEvaluator(lbs_solver=phys)
+    evaluator = ResponseEvaluator(lbs_problem=phys)
     evaluator.SetOptions(
         buffers=[{"name": "buff", "file_prefixes": {"flux_moments": "adjoint_2d_3"}}],
         sources={"point": [pt_src]}

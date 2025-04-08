@@ -49,12 +49,12 @@ lbs_block = {
 --  verbose_outer_iterations = true,
 --}
 
-phys1 = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys1 = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 --phys1:SetOptions(lbs_options)
 
---k_solver0 = lbs.PowerIterationKEigen.Create({ lbs_solver = phys1, })
-k_solver0 = lbs.PowerIterationKEigenSCDSA.Create({
-  lbs_solver = phys1,
+--k_solver0 = lbs.PowerIterationKEigenSolver.Create({ lbs_problem = phys1, })
+k_solver0 = lbs.PowerIterationKEigenSCDSASolver.Create({
+  lbs_problem = phys1,
   diff_accel_sdm = "pwld",
   accel_pi_verbose = false,
   k_tol = 1.0e-8,

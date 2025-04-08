@@ -85,11 +85,11 @@ lbs_options = {
   verbose_outer_iterations = true,
 }
 
-phys = lbs.DiscreteOrdinatesSolver.Create(lbs_block)
+phys = lbs.DiscreteOrdinatesProblem.Create(lbs_block)
 phys:SetOptions(lbs_options)
 
-k_solver0 = lbs.PowerIterationKEigenSMM.Create({
-  lbs_solver = phys,
+k_solver0 = lbs.PowerIterationKEigenSMMSolver.Create({
+  lbs_problem = phys,
   accel_pi_verbose = true,
   k_tol = 1.0e-8,
   accel_pi_k_tol = 1.0e-8,
