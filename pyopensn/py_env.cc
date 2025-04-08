@@ -52,7 +52,6 @@ PyEnv::~PyEnv()
   cali_mgr.flush();
 }
 
-// Default environement
 PyEnv* PyEnv::p_default_env = nullptr;
 
 } // namespace opensn

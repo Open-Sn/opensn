@@ -51,6 +51,10 @@ if(OPENSN_WITH_LUA)
     set(OPENSN_WITH_PYTHON_MODULE OFF CACHE BOOL "Lua support requested, disabling Python module" FORCE)
 endif()
 
+if (OPENSN_WITH_DOCS AND NOT OPENSN_WITH_PYTHON_MODULE)
+    message(FATAL_ERROR "Python module is required to build documentation!")
+endif()
+
 # dependencies
 find_package(MPI REQUIRED)
 

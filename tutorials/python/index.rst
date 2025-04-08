@@ -1,13 +1,10 @@
-
-Linear Boltzmann Solver
-=======================
-- :doc:`/tutorials/lbs/first/first_example`
+=========
+Tutorials
+=========
 
 .. toctree::
-   :maxdepth: 1
-   :hidden:
+   :numbered:
+   :maxdepth: 2
 
-   first/first_example
-
-
-
+   mesh/index
+   lbs/index
