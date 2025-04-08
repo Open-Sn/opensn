@@ -1,9 +1,0 @@
-﻿pyopensn.solver.PowerIterationKEigenSMM
-=======================================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: PowerIterationKEigenSMM
-   :special-members: __init__
-   :members:
-   :inherited-members:

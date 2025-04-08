@@ -1,8 +1,0 @@
-﻿pyopensn.solver.LBSSolver
-=========================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: LBSSolver
-   :members:
-   :inherited-members:

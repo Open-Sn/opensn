@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyopensn.solver.LBSProblem &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyopensn.solver.DiscreteOrdinatesProblem" href="pyopensn.solver.DiscreteOrdinatesProblem.html" />
+    <link rel="prev" title="pyopensn.solver.Solver" href="pyopensn.solver.Solver.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#solver">Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#id4">Base class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#linear-boltzmann-solver">Linear Boltzmann solver</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.LBSProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html">pyopensn.solver.DiscreteOrdinatesProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.DiffusionDFEMSolver.html">pyopensn.solver.DiffusionDFEMSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#steady-state-solver">Steady state solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#point-kinetic-trnasient-solver">Point kinetic trnasient solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#diffusion-solver">Diffusion solver</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#post-processors">Post-processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
+      <li class="breadcrumb-item active">pyopensn.solver.LBSProblem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyopensn-solver-lbsproblem">
+<h1>pyopensn.solver.LBSProblem<a class="headerlink" href="#pyopensn-solver-lbsproblem" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">LBSProblem</span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem" title="Link to this definition"></a></dt>
+<dd><p>Base class for all Linear Boltzmann solvers.</p>
+<p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::LBSProblem</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ComputeFissionRate">
+<span class="sig-name descname"><span class="pre">ComputeFissionRate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ComputeFissionRate" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nature</strong> (<em>{'old'</em><em>, </em><em>'new'}</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.CreateAndWriteSourceMoments">
+<span class="sig-name descname"><span class="pre">CreateAndWriteSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.CreateAndWriteSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetFieldFunctions">
+<span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.solver.Problem</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetFieldFunctions" title="Link to this definition"></a></dt>
+<dd><p>Get the list of field functions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetPowerFieldFunction">
+<span class="sig-name descname"><span class="pre">GetPowerFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetPowerFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Returns the power generation field function, if enabled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetScalarFieldFunctionList">
+<span class="sig-name descname"><span class="pre">GetScalarFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_scalar_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetScalarFieldFunctionList" title="Link to this definition"></a></dt>
+<dd><p>Return, for each group, a list of field functions corresponding to each moment. Note that the
+moment index varies more rapidly than the group index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>only_scalar_flux</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, only return a list of of field functions corresponding to moment zero-th for each
+group. The result is only a simple list of field functions. Otherwise, the result will be a
+list per group of list per moment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadAngularFluxes">
+<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadFluxMoments">
+<span class="sig-name descname"><span class="pre">ReadFluxMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadFluxMoments" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – <p>???</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadFluxMomentsAndMakeSourceMoments">
+<span class="sig-name descname"><span class="pre">ReadFluxMomentsAndMakeSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadFluxMomentsAndMakeSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – <p>???</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadSourceMoments">
+<span class="sig-name descname"><span class="pre">ReadSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – <p>???</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetOptions">
+<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetOptions" title="Link to this definition"></a></dt>
+<dd><p>Set options from a large list of parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spatial_discretization</strong> (<em>str</em><em>, </em><em>default='pwld'</em>) – What spatial discretization to use. Currently only <code class="docutils literal notranslate"><span class="pre">pwld</span></code> is supported.</p></li>
+<li><p><strong>scattering_order</strong> (<em>int</em><em>, </em><em>default=1</em>) – The level of harmonic expansion for the scattering source.</p></li>
+<li><p><strong>max_mpi_message_size</strong> (<em>int default=32768</em>) – The maximum MPI message size used during sweep initialization.</p></li>
+<li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.</p></li>
+<li><p><strong>write_delayed_psi_to_restart</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag that controls writing of delayed angular fluxes to restarts.</p></li>
+<li><p><strong>read_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for reading restart dumps including file stem.</p></li>
+<li><p><strong>write_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for writing restart dumps including file stem.</p></li>
+<li><p><strong>write_restart_time_interval</strong> (<em>int</em><em>, </em><em>default=0</em>) – Time interval in seconds at which restart data is to be written.</p></li>
+<li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
+<li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
+<li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
+<li><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p></li>
+<li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
+<li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
+<li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations.</p></li>
+<li><p><strong>ags_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Across-groupset iterations tolerance.</p></li>
+<li><p><strong>ags_convergence_check</strong> (<em>{'l2'</em><em>, </em><em>'pointwise'}</em><em>, </em><em>default='l2'</em>) – Type of convergence check for AGS iterations.</p></li>
+<li><p><strong>verbose_ags_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
+<li><p><strong>power_field_function_on</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag to control the creation of the power generation field function. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, a
+field function will be created with the general name <code class="docutils literal notranslate"><span class="pre">&lt;solver_name&gt;_power_generation</span></code>.</p></li>
+<li><p><strong>power_default_kappa</strong> (<em>float</em><em>, </em><em>default=3.20435e-11</em>) – Default <code class="docutils literal notranslate"><span class="pre">kappa</span></code> value (Energy released per fission) to use for power generation when cross
+sections do not have <code class="docutils literal notranslate"><span class="pre">kappa</span></code> values. Default corresponds to 200 MeV per fission.</p></li>
+<li><p><strong>power_normalization</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – Power normalization factor to use. Supply a negative or zero number to turn this off.</p></li>
+<li><p><strong>field_function_prefix_option</strong> (<em>{'prefix'</em><em>, </em><em>'solver_name'}</em><em>, </em><em>default='prefix'</em>) – Prefix option on field function names. If unset, flux field functions will be exported as
+<code class="docutils literal notranslate"><span class="pre">phi_gXXX_mYYY</span></code>, where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is the zero-padded 3-digit group number and <code class="docutils literal notranslate"><span class="pre">YYY</span></code> is the
+zero-padded 3-digit moment.</p></li>
+<li><p><strong>field_function_prefix</strong> (<em>str</em><em>, </em><em>default=''</em>) – Prefix to use on all field functions. By default, this is empty. If specified, flux moments
+are exported as <code class="docutils literal notranslate"><span class="pre">prefix_phi_gXXX_mYYY</span></code>.</p></li>
+<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list containing tables for each boundary specification.</p></li>
+<li><p><strong>clear_boundary_conditions</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clears all boundary conditions. If no additional boundary conditions are supplied, all
+boundaries become vacuum.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of point sources.</p></li>
+<li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all point sources.</p></li>
+<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>
+<li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all volumetric sources.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.WriteAngularFluxes">
+<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.WriteFluxMoments">
+<span class="sig-name descname"><span class="pre">WriteFluxMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.WriteFluxMoments" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyopensn.solver.Solver.html" class="btn btn-neutral float-left" title="pyopensn.solver.Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.solver.DiscreteOrdinatesProblem.html" class="btn btn-neutral float-right" title="pyopensn.solver.DiscreteOrdinatesProblem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

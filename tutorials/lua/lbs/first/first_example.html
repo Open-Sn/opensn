@@ -237,9 +237,9 @@ tolerances, and other solver options.</p></li>
 <section id="putting-the-linear-boltzmann-solver-together">
 <h3>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#putting-the-linear-boltzmann-solver-together" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
-<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">phys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nv">lbs_block</span><span class="p">)</span>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="nv">phys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">DiscreteOrdinatesProblem</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nv">lbs_block</span><span class="p">)</span>
 <span class="c1">-- Initialize and Execute Solver</span>
-<span class="nv">ss_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">SteadyStateSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">lbs_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">phys</span><span class="w"> </span><span class="p">})</span>
+<span class="nv">ss_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">SteadyStateSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">lbs_problem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">phys</span><span class="w"> </span><span class="p">})</span>
 <span class="nv">ss_solver</span><span class="p">:</span><span class="nf">Initialize</span><span class="p">()</span>
 <span class="nv">ss_solver</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>
 </pre></div>
@@ -354,10 +354,10 @@ on post-processing for more details on field functions.</p>
 <span class="w">  </span><span class="p">},</span>
 <span class="p">}</span>
 
-<span class="nv">phys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">DiscreteOrdinatesSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nv">lbs_block</span><span class="p">)</span>
+<span class="nv">phys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">DiscreteOrdinatesProblem</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nv">lbs_block</span><span class="p">)</span>
 
 <span class="c1">-- Initialize and Execute Solver</span>
-<span class="nv">ss_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">SteadyStateSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">lbs_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">phys</span><span class="w"> </span><span class="p">})</span>
+<span class="nv">ss_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lbs</span><span class="p">.</span><span class="py">SteadyStateSolver</span><span class="p">.</span><span class="nf">Create</span><span class="p">({</span><span class="w"> </span><span class="nv">lbs_problem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">phys</span><span class="w"> </span><span class="p">})</span>
 
 <span class="nv">ss_solver</span><span class="p">:</span><span class="nf">Initialize</span><span class="p">()</span>
 <span class="nv">ss_solver</span><span class="p">:</span><span class="nf">Execute</span><span class="p">()</span>

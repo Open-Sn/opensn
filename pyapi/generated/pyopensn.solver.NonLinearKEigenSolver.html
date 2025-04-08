@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyopensn.solver.NonLinearKEigen &mdash; OpenSn  documentation</title>
+  <title>pyopensn.solver.NonLinearKEigenSolver &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
@@ -20,7 +20,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.solver.PowerIterationKEigen" href="pyopensn.solver.PowerIterationKEigen.html" />
+    <link rel="next" title="pyopensn.solver.PowerIterationKEigenSolver" href="pyopensn.solver.PowerIterationKEigenSolver.html" />
     <link rel="prev" title="pyopensn.solver.SteadyStateSolver" href="pyopensn.solver.SteadyStateSolver.html" /> 
 </head>
 
@@ -61,7 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../index.html#linear-boltzmann-solver">Linear Boltzmann solver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#steady-state-solver">Steady state solver</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.NonLinearKEigen</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.NonLinearKEigenSolver</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a></li>
@@ -91,7 +91,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
-      <li class="breadcrumb-item active">pyopensn.solver.NonLinearKEigen</li>
+      <li class="breadcrumb-item active">pyopensn.solver.NonLinearKEigenSolver</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,46 +100,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyopensn-solver-nonlinearkeigen">
-<h1>pyopensn.solver.NonLinearKEigen<a class="headerlink" href="#pyopensn-solver-nonlinearkeigen" title="Link to this heading"></a></h1>
+  <section id="pyopensn-solver-nonlinearkeigensolver">
+<h1>pyopensn.solver.NonLinearKEigenSolver<a class="headerlink" href="#pyopensn-solver-nonlinearkeigensolver" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">NonLinearKEigen</span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">NonLinearKEigenSolver</span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver" title="Link to this definition"></a></dt>
 <dd><p>???</p>
-<p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::NonLinearKEigen</span></code>.</p>
+<p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::NonLinearKEigenSolver</span></code>.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.Advance">
-<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.Advance" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver.Advance">
+<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver.Advance" title="Link to this definition"></a></dt>
 <dd><p>Advance time values function.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.Execute" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver.Execute" title="Link to this definition"></a></dt>
 <dd><p>Execute the solver.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.GetFieldFunctions">
-<span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.GetFieldFunctions" title="Link to this definition"></a></dt>
-<dd><p>Get the list of field functions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.Initialize" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver.Initialize">
+<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver.Initialize" title="Link to this definition"></a></dt>
 <dd><p>Initialize the solver.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.Step">
-<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.Step" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver.Step">
+<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver.Step" title="Link to this definition"></a></dt>
 <dd><p>Step the solver.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigen.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.NonLinearKEigen" title="pyopensn.solver.NonLinearKEigen"><span class="pre">pyopensn.solver.NonLinearKEigen</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigen.__init__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyopensn.solver.NonLinearKEigenSolver.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.NonLinearKEigenSolver.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a non-linear k-eigen solver object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -157,7 +151,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="pyopensn.solver.SteadyStateSolver.html" class="btn btn-neutral float-left" title="pyopensn.solver.SteadyStateSolver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.solver.PowerIterationKEigen.html" class="btn btn-neutral float-right" title="pyopensn.solver.PowerIterationKEigen" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.solver.PowerIterationKEigenSolver.html" class="btn btn-neutral float-right" title="pyopensn.solver.PowerIterationKEigenSolver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

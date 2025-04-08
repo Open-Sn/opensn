@@ -1,9 +1,0 @@
-﻿pyopensn.solver.DiscreteOrdinatesCurvilinearSolver
-==================================================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: DiscreteOrdinatesCurvilinearSolver
-   :special-members: __init__
-   :members:
-   :inherited-members:
