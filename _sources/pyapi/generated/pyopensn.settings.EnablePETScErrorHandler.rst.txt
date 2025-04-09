@@ -1,6 +1,0 @@
-﻿pyopensn.settings.EnablePETScErrorHandler
-=========================================
-
-.. currentmodule:: pyopensn.settings
-
-.. autofunction:: EnablePETScErrorHandler

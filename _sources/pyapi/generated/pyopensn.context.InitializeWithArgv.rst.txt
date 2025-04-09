@@ -1,0 +1,6 @@
+﻿pyopensn.context.InitializeWithArgv
+===================================
+
+.. currentmodule:: pyopensn.context
+
+.. autofunction:: InitializeWithArgv

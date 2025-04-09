@@ -402,9 +402,9 @@ Logs
    :nosignatures:
    :template: noinit.rst
 
-   settings.SetVerbosityLevel
-   settings.UseColor
-   settings.EnablePETScErrorHandler
+   context.SetVerbosityLevel
+   context.UseColor
+   context.EnablePETScErrorHandler
 
 Caliper configuration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -414,5 +414,16 @@ Caliper configuration
    :nosignatures:
    :template: noinit.rst
 
-   settings.SetCaliperConfig
-   settings.EnableCaliper
+   context.SetCaliperConfig
+   context.EnableCaliper
+
+Argument vector
+^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   context.InitializeWithArgv
+   context.Finalize

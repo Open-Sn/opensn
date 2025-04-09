@@ -1,0 +1,6 @@
+﻿pyopensn.context.UseColor
+=========================
+
+.. currentmodule:: pyopensn.context
+
+.. autofunction:: UseColor

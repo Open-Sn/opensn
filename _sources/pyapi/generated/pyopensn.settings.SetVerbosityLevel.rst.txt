@@ -1,6 +1,0 @@
-﻿pyopensn.settings.SetVerbosityLevel
-===================================
-
-.. currentmodule:: pyopensn.settings
-
-.. autofunction:: SetVerbosityLevel

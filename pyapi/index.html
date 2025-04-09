@@ -17,13 +17,14 @@
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pyopensn.math.Ylm" href="generated/pyopensn.math.Ylm.html" />
-    <link rel="prev" title="3. Linear Boltzmann Solver" href="../tutorials/lbs/index.html" /> 
+    <link rel="prev" title="2.1. A First Example" href="../tutorials/lbs/first/first_example.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -219,14 +220,19 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#settings">Settings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#logs">Logs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.SetVerbosityLevel.html">pyopensn.settings.SetVerbosityLevel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.UseColor.html">pyopensn.settings.UseColor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.EnablePETScErrorHandler.html">pyopensn.settings.EnablePETScErrorHandler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.SetVerbosityLevel.html">pyopensn.context.SetVerbosityLevel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.UseColor.html">pyopensn.context.UseColor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.EnablePETScErrorHandler.html">pyopensn.context.EnablePETScErrorHandler</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#caliper-configuration">Caliper configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.SetCaliperConfig.html">pyopensn.settings.SetCaliperConfig</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.settings.EnableCaliper.html">pyopensn.settings.EnableCaliper</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.SetCaliperConfig.html">pyopensn.context.SetCaliperConfig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.EnableCaliper.html">pyopensn.context.EnableCaliper</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#argument-vector">Argument vector</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.InitializeWithArgv.html">pyopensn.context.InitializeWithArgv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.context.Finalize.html">pyopensn.context.Finalize</a></li>
 </ul>
 </li>
 </ul>
@@ -698,13 +704,13 @@
 <h3>Logs<a class="headerlink" href="#logs" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.SetVerbosityLevel.html#pyopensn.settings.SetVerbosityLevel" title="pyopensn.settings.SetVerbosityLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.SetVerbosityLevel</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.context.SetVerbosityLevel.html#pyopensn.context.SetVerbosityLevel" title="pyopensn.context.SetVerbosityLevel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.SetVerbosityLevel</span></code></a></p></td>
 <td><p>Set verbosity level (0 to 3).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.settings.UseColor.html#pyopensn.settings.UseColor" title="pyopensn.settings.UseColor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.UseColor</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.context.UseColor.html#pyopensn.context.UseColor" title="pyopensn.context.UseColor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.UseColor</span></code></a></p></td>
 <td><p>Enable/disable color output.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.EnablePETScErrorHandler.html#pyopensn.settings.EnablePETScErrorHandler" title="pyopensn.settings.EnablePETScErrorHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.EnablePETScErrorHandler</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.context.EnablePETScErrorHandler.html#pyopensn.context.EnablePETScErrorHandler" title="pyopensn.context.EnablePETScErrorHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.EnablePETScErrorHandler</span></code></a></p></td>
 <td><p>Allow PETSc error handler.</p></td>
 </tr>
 </tbody>
@@ -714,11 +720,24 @@
 <h3>Caliper configuration<a class="headerlink" href="#caliper-configuration" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.settings.SetCaliperConfig.html#pyopensn.settings.SetCaliperConfig" title="pyopensn.settings.SetCaliperConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.SetCaliperConfig</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.context.SetCaliperConfig.html#pyopensn.context.SetCaliperConfig" title="pyopensn.context.SetCaliperConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.SetCaliperConfig</span></code></a></p></td>
 <td><p>Set configuration to the Caliper manager.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.settings.EnableCaliper.html#pyopensn.settings.EnableCaliper" title="pyopensn.settings.EnableCaliper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">settings.EnableCaliper</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.context.EnableCaliper.html#pyopensn.context.EnableCaliper" title="pyopensn.context.EnableCaliper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.EnableCaliper</span></code></a></p></td>
 <td><p>Start the Caliper manager and mark the program begin.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="argument-vector">
+<h3>Argument vector<a class="headerlink" href="#argument-vector" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.context.InitializeWithArgv.html#pyopensn.context.InitializeWithArgv" title="pyopensn.context.InitializeWithArgv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.InitializeWithArgv</span></code></a></p></td>
+<td><p>Overwrite OpenSn settings using <code class="docutils literal notranslate"><span class="pre">sys.argv</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.context.Finalize.html#pyopensn.context.Finalize" title="pyopensn.context.Finalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">context.Finalize</span></code></a></p></td>
+<td><p>Finalize OpenSn context.</p></td>
 </tr>
 </tbody>
 </table>
@@ -730,7 +749,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../tutorials/lbs/index.html" class="btn btn-neutral float-left" title="3. Linear Boltzmann Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorials/lbs/first/first_example.html" class="btn btn-neutral float-left" title="2.1. A First Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/pyopensn.math.Ylm.html" class="btn btn-neutral float-right" title="pyopensn.math.Ylm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

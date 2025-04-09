@@ -17,6 +17,7 @@
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -109,7 +110,7 @@
 <p>This page describes the coding standard of OpenSn.</p>
 <section id="file-names">
 <h2>File names<a class="headerlink" href="#file-names" title="Link to this heading"></a></h2>
-<p>Directory and file names should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">snake</span></a> style.</p>
+<p>Directory and file names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">some_directory</span><span class="o">/</span><span class="n">file_name1</span><span class="o">.</span><span class="n">ext</span>
 <span class="n">some_directory</span><span class="o">/</span><span class="n">file_name2</span><span class="o">.</span><span class="n">ext</span>
 <span class="n">some_other_directory</span><span class="o">/</span><span class="n">another_file</span>
@@ -120,15 +121,15 @@
 <h2>C++ conventions<a class="headerlink" href="#c-conventions" title="Link to this heading"></a></h2>
 <section id="macros">
 <h3>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h3>
-<p>Macro names should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">Pascal</span></a> case, macro parameters should
-use <a class="reference internal" href="#naming-conventions"><span class="xref myst">snake</span></a> style</p>
+<p>Macro names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> case, macro parameters should
+use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define MacroDefinition(macro_parameter)</span>
 </pre></div>
 </div>
 </section>
 <section id="namespaces">
 <h3>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h3>
-<p>Namespace names should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">snake</span></a> style.</p>
+<p>Namespace names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
 <div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">ns_one</span><span class="w"> </span><span class="p">{</span>
 
 <span class="p">...</span>
@@ -139,7 +140,7 @@ use <a class="reference internal" href="#naming-conventions"><span class="xref m
 </section>
 <section id="enums">
 <h3>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h3>
-<p>Enum names should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">Pascal</span></a> style, enum values upper case.</p>
+<p>Enum names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style, enum values upper case.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">OurEnumType</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">ENUM_VALUE_1</span><span class="p">,</span>
 <span class="w">  </span><span class="n">ENUM_VALUE_2</span><span class="p">,</span>
@@ -157,11 +158,11 @@ use <a class="reference internal" href="#naming-conventions"><span class="xref m
 </section>
 <section id="classes-and-structs">
 <h3>Classes and Structs<a class="headerlink" href="#classes-and-structs" title="Link to this heading"></a></h3>
-<p>Class names should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">Pascal</span></a> style.
-Member variables should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">snake</span></a> style.
+<p>Class names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style.
+Member variables should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.
 Private and protected member variables should have trailing <code class="docutils literal notranslate"><span class="pre">_</span></code> (underscore).
-Member functions should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">Pascal</span></a> style.
-Member function parameters should use <a class="reference internal" href="#naming-conventions"><span class="xref myst">snake</span></a> style.</p>
+Member functions should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style.
+Member function parameters should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ThisIsAClassName</span><span class="w"> </span><span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">public_member_var</span><span class="p">;</span>
@@ -284,7 +285,7 @@ and <code class="docutils literal notranslate"><span class="pre">/**</span> <spa
 <section id="command-line-parameters">
 <h2>Command-line parameters<a class="headerlink" href="#command-line-parameters" title="Link to this heading"></a></h2>
 <p>Command line parameters used by the OpenSn binary or any OpenSn script should use
-<a class="reference internal" href="#naming-conventions"><span class="xref myst">kebab</span></a> style.</p>
+<a class="reference internal" href="#naming-conventions"><span class="std std-ref">kebab</span></a> style.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>

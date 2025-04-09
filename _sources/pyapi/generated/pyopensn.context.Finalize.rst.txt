@@ -1,0 +1,6 @@
+﻿pyopensn.context.Finalize
+=========================
+
+.. currentmodule:: pyopensn.context
+
+.. autofunction:: Finalize

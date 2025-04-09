@@ -6,6 +6,5 @@ Tutorials
    :numbered:
    :maxdepth: 2
 
-   meshing/index
-   material/index
+   mesh/index
    lbs/index

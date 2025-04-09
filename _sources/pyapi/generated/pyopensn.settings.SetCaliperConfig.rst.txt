@@ -1,6 +1,0 @@
-﻿pyopensn.settings.SetCaliperConfig
-==================================
-
-.. currentmodule:: pyopensn.settings
-
-.. autofunction:: SetCaliperConfig
