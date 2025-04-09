@@ -7,6 +7,7 @@
 #include "lua/lib/parse_table.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/vector3.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "LuaBridge/LuaBridge.h"
 #include <stdexcept>
 extern "C"
@@ -101,6 +102,42 @@ struct Stack<opensn::Vector3>
     lua_settable(L, -3);
     res = Stack<std::string>::push(L, "z");
     res = Stack<double>::push(L, v.z);
+    lua_settable(L, -3);
+    return {};
+  }
+
+  inline static bool isInstance(lua_State* L, int index)
+  {
+    return lua_type(L, index) == LUA_TTABLE;
+  }
+};
+
+template <>
+struct Stack<opensn::QuadraturePointPhiTheta>
+{
+  inline static TypeResult<opensn::QuadraturePointPhiTheta> get(lua_State* L, int idx)
+  {
+    auto res = Stack<std::string>::push(L, "phi");
+    lua_gettable(L, idx);
+    auto phi = Stack<double>::get(L, -1).value();
+    lua_pop(L, 1);
+
+    res = Stack<std::string>::push(L, "theta");
+    lua_gettable(L, idx);
+    auto theta = Stack<double>::get(L, -1).value();
+    lua_pop(L, 1);
+
+    return opensn::QuadraturePointPhiTheta(phi, theta);
+  }
+
+  inline static Result push(lua_State* L, const opensn::QuadraturePointPhiTheta& pt)
+  {
+    lua_newtable(L);
+    auto res = Stack<std::string>::push(L, "phi");
+    res = Stack<double>::push(L, pt.phi);
+    lua_settable(L, -3);
+    res = Stack<std::string>::push(L, "theta");
+    res = Stack<double>::push(L, pt.theta);
     lua_settable(L, -3);
     return {};
   }

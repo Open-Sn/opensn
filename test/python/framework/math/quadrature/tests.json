@@ -23,5 +23,35 @@
         "abs_tol": 1e-03
       }
     ]
+  },
+  {
+    "file": "prod_quad_1d_slab.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "prod_quad_2d_xy.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "prod_quad_3d_xyz.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
   }
 ]

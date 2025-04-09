@@ -34,6 +34,7 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   console.BindModule(WrapVector3);
   console.BindModule(WrapFunctors);
 
+  console.BindModule(WrapQuadraturePointPhiTheta);
   console.BindModule(WrapQuadrature);
   console.BindModule(WrapProductQuadrature);
   console.BindModule(WrapCurvilinearQuadrature);

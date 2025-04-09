@@ -6,11 +6,47 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
+#include <pybind11/stl.h>
 #include <memory>
 #include <stdexcept>
 
 namespace opensn
 {
+
+// Wrap quadrature point
+void
+WrapQuadraturePointPhiTheta(py::module& aquad)
+{
+  // clang-format off
+  py::class_<QuadraturePointPhiTheta> quad_pt_phi_theta(aquad,
+    "QuadraturePointPhiTheta",
+    R"(
+    Angular quadrature point.
+
+    Wrapper of :cpp:class:`opensn::QuadraturePointPhiTheta`.
+    )"
+  );
+  quad_pt_phi_theta.def_readonly(
+    "phi",
+    &QuadraturePointPhiTheta::phi,
+    "Azimuthal angle."
+  );
+  quad_pt_phi_theta.def_readonly(
+    "theta",
+    &QuadraturePointPhiTheta::theta,
+    "Polar angle."
+  );
+  quad_pt_phi_theta.def(
+    "__repr__",
+    [](QuadraturePointPhiTheta& self)
+    {
+      std::ostringstream os;
+      os << "QuadraturePointPhiTheta(phi=" << self.phi << ", theta=" << self.theta << ")";
+      return os.str();
+    }
+  );
+  // clang-format on
+}
 
 // Wrap angular quadrature
 void
@@ -26,6 +62,21 @@ WrapQuadrature(py::module& aquad)
 
     Wrapper of :cpp:class:`opensn::AngularQuadrature`.
     )"
+  );
+  angular_quadrature.def_readonly(
+    "abscissae",
+    &AngularQuadrature::abscissae,
+    "Vector of polar and azimuthal angles."
+  );
+  angular_quadrature.def_readonly(
+    "weights",
+    &AngularQuadrature::weights,
+    "Quadrature weights."
+  );
+  angular_quadrature.def_readonly(
+    "omegas",
+    &AngularQuadrature::omegas,
+    "Vector of direction vectors."
   );
   // clang-format on
 }
@@ -284,6 +335,7 @@ void
 py_aquad(py::module& pyopensn)
 {
   py::module aquad = pyopensn.def_submodule("aquad", "Angular quadrature module.");
+  WrapQuadraturePointPhiTheta(aquad);
   WrapQuadrature(aquad);
   WrapProductQuadrature(aquad);
   WrapCurvilinearQuadrature(aquad);
