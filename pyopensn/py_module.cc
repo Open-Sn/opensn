@@ -28,7 +28,6 @@ PYBIND11_MODULE(pyopensn, pyopensn)
 
   // Wrap libraries
   py_context(pyopensn);
-  py_settings(pyopensn);
   py_math(pyopensn);
   py_aquad(pyopensn);
   py_mesh(pyopensn);

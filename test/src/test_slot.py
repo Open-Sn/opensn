@@ -31,10 +31,15 @@ class TestSlot:
         if test.skip != "":
             return
 
+        if self.argv.engine in ["module", "jupyter"]:
+            cmd_exe = sys.executable
+        else:
+            cmd_exe = f"{self.argv.exe} -i"
+
         base_name, extension = os.path.splitext(test.filename)
         cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
-        cmd += self.argv.exe + " "
-        cmd += "-i " + test.filename + " "
+        cmd += cmd_exe + " "
+        cmd += test.filename + " "
         cmd += "--suppress-color "
         if extension == ".py":
             cmd += "--py master_export=False "

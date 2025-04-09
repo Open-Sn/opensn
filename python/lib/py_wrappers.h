@@ -38,7 +38,6 @@ ParameterBlock kwargs_to_param_block(const py::kwargs& params);
 
 /// Wrap the context components of OpenSn.
 void py_context(py::module& pyopensn);
-void WrapFinalize(py::module& context);
 
 /// Wrap the angular quadrature components of OpenSn.
 void py_aquad(py::module& pyopensn);

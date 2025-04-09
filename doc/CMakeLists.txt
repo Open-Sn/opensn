@@ -17,33 +17,15 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         endforeach()
     endmacro()
 
-    macro(lua2md src dest)
-        add_custom_command(
-            OUTPUT ${dest}
-            COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py ${src} ${dest} -d ${CMAKE_SOURCE_DIR}
-            DEPENDS ${src} ${CMAKE_SOURCE_DIR}/doc/scripts/lua2md.py
-        )
-        list(APPEND RST_FILES ${dest})
-    endmacro()
-
     macro(generate_tutorial srcDir)
         message(STATUS "Generating tutorial ${srcDir}")
-        file(RELATIVE_PATH tutPath ${CMAKE_SOURCE_DIR}/tutorials ${srcDir})
+        file(RELATIVE_PATH tutPath ${CMAKE_SOURCE_DIR}/tutorials/python ${srcDir})
         set(destDir ${CMAKE_BINARY_DIR}/doc/src/tutorials)
         # copy images
         file(MAKE_DIRECTORY ${destDir}/${tutPath})
         copy_files("png" ${srcDir} ${destDir}/${tutPath})
         copy_files("jpg" ${srcDir} ${destDir}/${tutPath})
         copy_files("gif" ${srcDir} ${destDir}/${tutPath})
-        # process lua files
-        file(GLOB_RECURSE luaFiles RELATIVE ${srcDir} "${srcDir}/*.lua")
-        foreach(luaFile ${luaFiles})
-            set(srcLuaPath ${srcDir}/${luaFile})
-            if(NOT IS_DIRECTORY ${srcLuaPath})
-                get_filename_component(baseName ${luaFile} NAME_WE)
-                lua2md(${srcLuaPath} ${destDir}/${tutPath}/${baseName}.md)
-            endif()
-        endforeach()
     endmacro()
 
     configure_file(Doxyfile.in Doxyfile)
@@ -76,10 +58,16 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(_templates/function.rst src/_templates/function.rst COPYONLY)
     configure_file(_templates/noinit.rst src/_templates/noinit.rst COPYONLY)
     configure_file(_templates/python.rst src/_templates/python.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/index.rst src/tutorials/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/lbs/index.rst src/tutorials/lbs/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/meshing/index.rst src/tutorials/meshing/index.rst)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lua/material/index.rst src/tutorials/material/index.rst)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/index.rst src/tutorials/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/index.rst src/tutorials/lbs/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first/first_example.ipynb
+                   src/tutorials/lbs/first/first_example.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/index.rst
+                   src/tutorials/mesh/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/introduction.rst
+                   src/tutorials/mesh/introduction.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_2D.ipynb
+                   src/tutorials/mesh/mesh_ortho_2D.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
@@ -94,10 +82,8 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         ${PROJECT_SOURCE_DIR}/modules/*.h
     )
 
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/meshing)
-    copy_files("md" ${CMAKE_SOURCE_DIR}/tutorials/lua/meshing ${CMAKE_BINARY_DIR}/doc/src/tutorials/meshing)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/material)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lua/lbs/first)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/mesh)
 
     add_custom_command(
         OUTPUT

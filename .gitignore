@@ -86,3 +86,4 @@ doc/**/*.vtu
 
 tutorials/**/*.pvtu
 tutorials/**/*.vtu
+tutorials/**/*.py

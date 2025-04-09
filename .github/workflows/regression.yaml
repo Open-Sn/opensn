@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          mkdir build && cd build && cmake .. && make -j && cd ..
+          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
@@ -29,7 +29,8 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
+          export PYTHONPATH=$PWD/build
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --engine=jupyter
       - name: test unit
         shell: bash
         run: |

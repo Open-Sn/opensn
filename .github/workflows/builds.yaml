@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake .. && make -j && cd ..
+          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
       - name: test
         shell: bash
         run: |
@@ -38,7 +38,8 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3
+          export PYTHONPATH=$PWD/build
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --engine=jupyter
       - name: test unit
         shell: bash
         run: |
@@ -53,7 +54,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/clang/17
-          cmake --preset clang+debug+sanitizer
+          cmake -DOPENSN_WITH_PYTHON_MODULE=ON --preset clang+debug+sanitizer
           cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash
@@ -66,6 +67,7 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
+          export PYTHONPATH=$PWD/build-debug-sanitizer
           test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test
 
   coverage:
@@ -76,7 +78,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          cmake --preset coverage
+          cmake -DOPENSN_WITH_PYTHON_MODULE=ON --preset coverage
           cmake --build --preset coverage -j64
       - name: test
         shell: bash
@@ -92,7 +94,8 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test
+          export PYTHONPATH=$PWD/build-coverage
+          test/run_tests -d tutorials/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter
       - name: coveralls
         shell: bash
         run: |

@@ -4,6 +4,8 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
+#include <pybind11/iostream.h>
+#include <memory>
 
 namespace py = pybind11;
 
