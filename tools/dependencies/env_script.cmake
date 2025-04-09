@@ -1,0 +1,7 @@
+set(OPENSN_ENV_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+set(ENV_SCRIPT "${OPENSN_ENV_DIR}/set_opensn_env.sh")
+file(MAKE_DIRECTORY "${OPENSN_ENV_DIR}")
+file(WRITE "${ENV_SCRIPT}" "export CMAKE_PREFIX_PATH=\"${CMAKE_INSTALL_PREFIX}\"\${CMAKE_PREFIX_PATH:+:\${CMAKE_PREFIX_PATH}}\n")
+file(CHMOD "${ENV_SCRIPT}" FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)
+message(STATUS "OpenSn dependency install complete.")
+message(STATUS "To update your CMAKE_PREFIX_PATH environment variable, execute the command: source ${ENV_SCRIPT}")
