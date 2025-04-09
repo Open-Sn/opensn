@@ -67,7 +67,11 @@ if (OPENSN_WITH_CUDA)
 endif()
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
-find_package(Boost REQUIRED CONFIG)
+find_package(Boost CONFIG)
+if (NOT Boost_FOUND)
+    message(STATUS "Boost CONFIG not found, falling back to module mode")
+    find_package(Boost REQUIRED)
+endif()
 
 if(OPENSN_WITH_LUA)
     find_package(Lua 5.3 REQUIRED)
