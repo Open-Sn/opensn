@@ -147,7 +147,7 @@ class TestSlot:
         test_file_name = os.path.relpath(test_path, self.argv.directory)
 
         if not os.path.isfile(test_path):
-            test.annotations.append("Lua file missing")
+            test.annotations.append("Input file missing")
 
         args_str = ', '.join(map(str, test.args))
         if len(args_str) != 0:
