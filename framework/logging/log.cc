@@ -17,6 +17,7 @@ Logger::Log(LOG_LVL level)
   std::string header;
   std::ostream* stream = nullptr;
   bool use_dummy = false;
+  bool use_color = false;
 
   switch (level)
   {
@@ -38,6 +39,7 @@ Logger::Log(LOG_LVL level)
       {
         header =
           "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_YELLOW) + "*** WARNING ***  ";
+        use_color = true;
         stream = &std::cout;
       }
       else
@@ -50,6 +52,7 @@ Logger::Log(LOG_LVL level)
       {
         header =
           "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_RED) + "**** ERROR ****  ";
+        use_color = true;
         stream = &std::cerr;
       }
       else
@@ -61,6 +64,7 @@ Logger::Log(LOG_LVL level)
       if (rank == 0 and verbosity_ >= 1)
       {
         header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_CYAN);
+        use_color = true;
         stream = &std::cout;
       }
       else
@@ -72,6 +76,7 @@ Logger::Log(LOG_LVL level)
       if (rank == 0 and verbosity_ >= 2)
       {
         header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_MAGENTA);
+        use_color = true;
         stream = &std::cout;
       }
       else
@@ -89,12 +94,14 @@ Logger::Log(LOG_LVL level)
     {
       header =
         "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_YELLOW) + "*** WARNING ***  ";
+      use_color = true;
       stream = &std::cout;
       break;
     }
     case LOG_ALLERROR:
     {
       header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_RED) + "**** ERROR ****  ";
+      use_color = true;
       stream = &std::cerr;
       break;
     }
@@ -103,6 +110,7 @@ Logger::Log(LOG_LVL level)
       if (verbosity_ >= 1)
       {
         header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_CYAN);
+        use_color = true;
         stream = &std::cout;
       }
       else
@@ -114,6 +122,7 @@ Logger::Log(LOG_LVL level)
       if (verbosity_ >= 2)
       {
         header = "[" + std::to_string(rank) + "]  " + StringStreamColor(FG_MAGENTA);
+        use_color = true;
         stream = &std::cout;
       }
       else
@@ -128,7 +137,7 @@ Logger::Log(LOG_LVL level)
   if (use_dummy)
     return {&dummy_stream_, " ", true};
 
-  return {stream, header};
+  return {stream, header, false, use_color};
 }
 
 } // namespace opensn
