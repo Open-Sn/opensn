@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2.4. Read HDF5 file from OpenMC to load multi-group cross sections &mdash; OpenSn  documentation</title>
+  <title>2.5. Read HDF5 file from OpenMC to load multi-group cross sections &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="3. Linear Boltzmann Solver" href="../lbs/index.html" />
-    <link rel="prev" title="2.3. Read ASCII file for multi-group cross sections" href="mg_xs_read_file.html" /> 
+    <link rel="prev" title="2.4. Read ASCII file for multi-group cross sections" href="mg_xs_read_file.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,13 +53,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">2. Cross Sections</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="1g_xs_simple.html">2.1. Built-in method for 1-group cross sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="1g_xs_read_file.html">2.2. Read ASCII file for 1-group cross sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mg_xs_read_file.html">2.3. Read ASCII file for multi-group cross sections</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">2.4. Read HDF5 file from OpenMC to load multi-group cross sections</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Call-OpenMC-cross-section-reader">2.4.1. Call OpenMC cross-section reader</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Some-cross-section-data-can-be-retrieve-in-Python">2.4.2. Some cross-section data can be retrieve in Python</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">2.4.3. Finalize (for Jupyter Notebook only)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">2.1. Introduction to Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="1g_xs_simple.html">2.2. Built-in method for 1-group cross sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="1g_xs_read_file.html">2.3. Read ASCII file for 1-group cross sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mg_xs_read_file.html">2.4. Read ASCII file for multi-group cross sections</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2.5. Read HDF5 file from OpenMC to load multi-group cross sections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Call-OpenMC-cross-section-reader">2.5.1. Call OpenMC cross-section reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Some-cross-section-data-can-be-retrieved-in-Python">2.5.2. Some cross-section data can be retrieved in Python</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">2.5.3. Finalize (for Jupyter Notebook only)</a></li>
 </ul>
 </li>
 </ul>
@@ -87,7 +88,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">2. </span>Cross Sections</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">2.4. </span>Read HDF5 file from OpenMC to load multi-group cross sections</li>
+      <li class="breadcrumb-item active"><span class="section-number">2.5. </span>Read HDF5 file from OpenMC to load multi-group cross sections</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -97,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section id="Read-HDF5-file-from-OpenMC-to-load-multi-group-cross-sections">
-<h1><span class="section-number">2.4. </span>Read HDF5 file from OpenMC to load multi-group cross sections<a class="headerlink" href="#Read-HDF5-file-from-OpenMC-to-load-multi-group-cross-sections" title="Link to this heading"></a></h1>
+<h1><span class="section-number">2.5. </span>Read HDF5 file from OpenMC to load multi-group cross sections<a class="headerlink" href="#Read-HDF5-file-from-OpenMC-to-load-multi-group-cross-sections" title="Link to this heading"></a></h1>
 <p>Here, we load the cross sections from an OpenMC HDF5 file.</p>
 <p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
 <p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
@@ -119,7 +120,7 @@
 </div>
 </div>
 <section id="Call-OpenMC-cross-section-reader">
-<h2><span class="section-number">2.4.1. </span>Call OpenMC cross-section reader<a class="headerlink" href="#Call-OpenMC-cross-section-reader" title="Link to this heading"></a></h2>
+<h2><span class="section-number">2.5.1. </span>Call OpenMC cross-section reader<a class="headerlink" href="#Call-OpenMC-cross-section-reader" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -132,8 +133,8 @@
 </div>
 </div>
 </section>
-<section id="Some-cross-section-data-can-be-retrieve-in-Python">
-<h2><span class="section-number">2.4.2. </span>Some cross-section data can be retrieve in Python<a class="headerlink" href="#Some-cross-section-data-can-be-retrieve-in-Python" title="Link to this heading"></a></h2>
+<section id="Some-cross-section-data-can-be-retrieved-in-Python">
+<h2><span class="section-number">2.5.2. </span>Some cross-section data can be retrieved in Python<a class="headerlink" href="#Some-cross-section-data-can-be-retrieved-in-Python" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -156,7 +157,7 @@
 </div>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">2.4.3. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">2.5.3. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -182,7 +183,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mg_xs_read_file.html" class="btn btn-neutral float-left" title="2.3. Read ASCII file for multi-group cross sections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mg_xs_read_file.html" class="btn btn-neutral float-left" title="2.4. Read ASCII file for multi-group cross sections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../lbs/index.html" class="btn btn-neutral float-right" title="3. Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
