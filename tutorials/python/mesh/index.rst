@@ -6,3 +6,10 @@ Meshing and Partitioning
 
    introduction
    mesh_ortho_2D
+   mesh_ortho_3D
+   mesh_read_gmsh_2D
+   mesh_read_gmsh_3D
+   mesh_read_obj_2D
+   mesh_read_VTU_3D
+   mesh_extrude
+   mesh_ortho_3D_blockIDs

@@ -68,6 +68,30 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
                    src/tutorials/mesh/introduction.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_2D.ipynb
                    src/tutorials/mesh/mesh_ortho_2D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D.ipynb
+            src/tutorials/mesh/mesh_ortho_3D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_gmsh_2D.ipynb
+            src/tutorials/mesh/mesh_read_gmsh_2D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_gmsh_3D.ipynb
+            src/tutorials/mesh/mesh_read_gmsh_3D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_obj_2D.ipynb
+            src/tutorials/mesh/mesh_read_obj_2D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_VTU_3D.ipynb
+            src/tutorials/mesh/mesh_read_VTU_3D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_extrude.ipynb
+            src/tutorials/mesh/mesh_extrude.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D_blockIDs.ipynb
+            src/tutorials/mesh/mesh_ortho_3D_blockIDs.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/index.rst
+            src/tutorials/xs/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/1g_xs_simple.ipynb
+            src/tutorials/xs/1g_xs_simple.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/1g_xs_read_file.ipynb
+            src/tutorials/xs/1g_xs_read_file.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/mg_xs_read_file.ipynb
+            src/tutorials/xs/mg_xs_read_file.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/mg_xs_read_openmc.ipynb
+            src/tutorials/xs/mg_xs_read_openmc.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
