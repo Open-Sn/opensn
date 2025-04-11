@@ -348,6 +348,12 @@ if(OPENSN_WITH_LUA)
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
         FILES_MATCHING PATTERN "*.h"
     )
+
+    install(
+        DIRECTORY ${CMAKE_SOURCE_DIR}/external/LuaBridge
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
+        FILES_MATCHING PATTERN "*.h"
+    )
 endif()
 
 if(OPENSN_WITH_PYTHON)
