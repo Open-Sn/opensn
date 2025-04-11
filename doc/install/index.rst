@@ -12,3 +12,5 @@ Quick Install Guide
     install_linux_easy
     install_macos
     install_macos_easy
+    install
+    easy_install
