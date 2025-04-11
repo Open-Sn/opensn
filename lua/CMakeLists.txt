@@ -9,16 +9,18 @@ target_include_directories(libopensnlua
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
+    PUBLIC
     ${LUA_INCLUDE_DIR}
 )
 
 target_link_libraries(libopensnlua
     PRIVATE
     libopensn
-    ${LUA_LIBRARIES}
     ${PETSC_LIBRARY}
     MPI::MPI_CXX
     caliper
+    PUBLIC
+    ${LUA_LIBRARIES}
 )
 
 target_compile_definitions(libopensnlua PRIVATE OPENSN_WITH_LUA)
