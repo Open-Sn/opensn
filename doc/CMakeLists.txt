@@ -76,8 +76,8 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
             src/tutorials/mesh/mesh_read_gmsh_3D.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_obj_2D.ipynb
             src/tutorials/mesh/mesh_read_obj_2D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_VTU_3D.ipynb
-            src/tutorials/mesh/mesh_read_VTU_3D.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_vtu_3D.ipynb
+            src/tutorials/mesh/mesh_read_vtu_3D.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_extrude.ipynb
             src/tutorials/mesh/mesh_extrude.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D_blockIDs.ipynb
