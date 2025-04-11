@@ -13,7 +13,7 @@ files in the following formats:
 - ``Ensight gold``
 - ``obj`` (Wavefront objects) [only in 2D]
 
-Meshes can be supplied with ``material IDs`` and ``boundary IDs`` to define
+Meshes can be supplied with ``block IDs`` (for material IDs) and ``boundary IDs`` to define
 heterogeneous properties in the domain (i.e., materials and volumetric sources)
 and boundary sources.
 

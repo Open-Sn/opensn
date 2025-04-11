@@ -4,10 +4,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# 2D Orthogonal Grid\n",
+    "# 2D Orthogonal Grid Generation\n",
     "Here, we will use the in-house orthogonal mesh generator for a simple Cartesian grid.\n",
     "\n",
-    "To run the code, simply type: `jupyter nbconvert --to python --execute mesh_ortho_2D.ipynb`."
+    "To run the code, simply type: `jupyter nbconvert --to python --execute mesh_ortho_2D.ipynb`.\n",
+    "\n",
+    "To convert it to a python file (named `mesh_ortho_2D.py`), simply type: `jupyter nbconvert --to python mesh_ortho_2D.ipynb`\n",
+    "\n",
+    "To run the python file from the terminal, using N processes, simply type: `mpiexec -n <N> python mesh_ortho_2D.py`"
    ]
   },
   {
@@ -35,8 +39,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## List of nodes\n",
-    "We first create a list of nodes. The nodes will be spread from -L/2 to +L/2."
+    "## List of Nodes\n",
+    "First, we create a list of nodes that are evenly spaced from -L/2 to +L/2."
    ]
   },
   {
@@ -52,17 +56,20 @@
     "length = 2.\n",
     "n_cells = 10\n",
     "dx = length / n_cells\n",
-    "nodes = [i * dx for i in range(n_cells + 1)]"
+    "nodes = [-length/2 + i * dx for i in range(n_cells + 1)]"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Mesh and KBA partition\n",
+    "## Mesh and KBA Partition\n",
     "We use the `OrthogonalMeshGenerator` and pass the list of nodes per dimension. Here, we pass\n",
     "2 times the same list of nodes to create a 2D geometry with square cells. Thus, we create a\n",
-    "square domain, of side length L, centered on the origin (0,0)."
+    "square domain, of side length L, centered on the origin (0,0).\n",
+    "\n",
+    "The domain will be partitioned using the `KBAGraphPartitioner` into 4 subdomains and the\n",
+    "locations of the plane cuts along x and y need to be specified."
    ]
   },
   {
@@ -137,7 +144,7 @@
    "metadata": {},
    "source": [
     "## Mesh (again) and Parmetis partition\n",
-    "Now, we use the Parmetis partitioner."
+    "Now, we partition the mesh using the Parmetis partitioner, accessed through `PETScGraphPartitioner`."
    ]
   },
   {
@@ -187,7 +194,7 @@
     "## Finalize (for Jupyter Notebook only)\n",
     "\n",
     "In Python script mode, PyOpenSn automatically handles environment termination. However, this\n",
-    "automatic finalization does not occur when running in a Jupyter notebook, so explicitly finalization\n",
+    "automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization\n",
     "of the environment at the end of the notebook is required. Do not call the finalization in Python\n",
     "script mode, or in console mode.\n",
     "\n",
@@ -217,10 +224,24 @@
   }
  ],
  "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
-   "name": "python"
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.2"
   }
  },
  "nbformat": 4,
- "nbformat_minor": 2
+ "nbformat_minor": 4
 }

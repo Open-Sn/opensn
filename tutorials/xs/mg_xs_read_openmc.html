@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2.4. Read HDF5 file from OpenMC to load multi-group cross sections &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3. Linear Boltzmann Solver" href="../lbs/index.html" />
+    <link rel="prev" title="2.3. Read ASCII file for multi-group cross sections" href="mg_xs_read_file.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">2. Cross Sections</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="1g_xs_simple.html">2.1. Built-in method for 1-group cross sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="1g_xs_read_file.html">2.2. Read ASCII file for 1-group cross sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mg_xs_read_file.html">2.3. Read ASCII file for multi-group cross sections</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2.4. Read HDF5 file from OpenMC to load multi-group cross sections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Call-OpenMC-cross-section-reader">2.4.1. Call OpenMC cross-section reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Some-cross-section-data-can-be-retrieve-in-Python">2.4.2. Some cross-section data can be retrieve in Python</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">2.4.3. Finalize (for Jupyter Notebook only)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">3. Linear Boltzmann Solver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">2. </span>Cross Sections</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2.4. </span>Read HDF5 file from OpenMC to load multi-group cross sections</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Read-HDF5-file-from-OpenMC-to-load-multi-group-cross-sections">
+<h1><span class="section-number">2.4. </span>Read HDF5 file from OpenMC to load multi-group cross sections<a class="headerlink" href="#Read-HDF5-file-from-OpenMC-to-load-multi-group-cross-sections" title="Link to this heading"></a></h1>
+<p>Here, we load the cross sections from an OpenMC HDF5 file.</p>
+<p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
+<p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+
+<span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Call-OpenMC-cross-section-reader">
+<h2><span class="section-number">2.4.1. </span>Call OpenMC cross-section reader<a class="headerlink" href="#Call-OpenMC-cross-section-reader" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load cross sections</span>
+<span class="n">xs_uo2</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;../../../test/python/modules/linear_boltzmann_solvers/transport_keigen/uo2.h5&quot;</span>
+<span class="n">xs_uo2</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;set1&quot;</span><span class="p">,</span> <span class="mf">294.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Some-cross-section-data-can-be-retrieve-in-Python">
+<h2><span class="section-number">2.4.2. </span>Some cross-section data can be retrieve in Python<a class="headerlink" href="#Some-cross-section-data-can-be-retrieve-in-Python" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve properties</span>
+<span class="n">ng</span> <span class="o">=</span> <span class="n">xs_uo2</span><span class="o">.</span><span class="n">num_groups</span>
+<span class="n">sca_order</span> <span class="o">=</span> <span class="n">xs_uo2</span><span class="o">.</span><span class="n">scattering_order</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;num_groups       = &quot;</span><span class="p">,</span> <span class="n">ng</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scattering_order = &quot;</span><span class="p">,</span> <span class="n">sca_order</span><span class="p">)</span>
+
+<span class="c1"># note cross sections are read-only objects of type &lt;memoryview&gt;</span>
+<span class="c1"># retrieve a numpy array</span>
+<span class="n">siga</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs_uo2</span><span class="o">.</span><span class="n">sigma_a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;siga = &quot;</span><span class="p">,</span> <span class="n">siga</span><span class="p">)</span>
+<span class="c1"># retrieve as list</span>
+<span class="n">sigt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">xs_uo2</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sigt = &quot;</span><span class="p">,</span> <span class="n">sigt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">2.4.3. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mg_xs_read_file.html" class="btn btn-neutral float-left" title="2.3. Read ASCII file for multi-group cross sections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lbs/index.html" class="btn btn-neutral float-right" title="3. Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
