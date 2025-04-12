@@ -34,11 +34,13 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     add_custom_target(doc DEPENDS ${PROJECT_BINARY_DIR}/html/index.html)
 
     configure_file(index.rst src/index.rst)
+    # installation guide
     configure_file(install/index.rst src/install/index.rst COPYONLY)
     configure_file(install/install_linux.rst src/install/install_linux.rst COPYONLY)
     configure_file(install/install_linux_easy.rst src/install/install_linux_easy.rst COPYONLY)
     configure_file(install/install_macos.rst src/install/install_macos.rst COPYONLY)
     configure_file(install/install_macos_easy.rst src/install/install_macos_easy.rst COPYONLY)
+    # theory guide
     configure_file(theory/index.rst src/theory/index.rst)
     configure_file(theory/background.rst src/theory/background.rst)
     configure_file(theory/discretization.rst src/theory/discretization.rst)
@@ -47,21 +49,26 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(theory/iterative.rst src/theory/iterative.rst)
     configure_file(theory/parallelization.rst src/theory/parallelization.rst)
     configure_file(theory/adjoint.rst src/theory/adjoint.rst)
+    # developers guide
     configure_file(devguide/index.rst src/devguide/index.rst)
     configure_file(devguide/coding_standard.md src/devguide/coding_standard.md)
     configure_file(devguide/workflow.md src/devguide/workflow.md)
     configure_file(devguide/lua_bindings.md src/devguide/lua_bindings.md)
     configure_file(devguide/py_bindings.rst src/devguide/py_bindings.rst COPYONLY)
+    # Python API
     configure_file(pyapi/index.rst src/pyapi/index.rst COPYONLY)
     file(MAKE_DIRECTORY src/pyapi/generated)
     configure_file(_static/pyopensn.css src/_static/pyopensn.css COPYONLY)
     configure_file(_templates/function.rst src/_templates/function.rst COPYONLY)
     configure_file(_templates/noinit.rst src/_templates/noinit.rst COPYONLY)
     configure_file(_templates/python.rst src/_templates/python.rst COPYONLY)
+    # Tutorials TOC
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/index.rst src/tutorials/index.rst COPYONLY)
+    # Tutorials LBS
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/index.rst src/tutorials/lbs/index.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first/first_example.ipynb
                    src/tutorials/lbs/first/first_example.ipynb COPYONLY)
+    # Tutorials mesh
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/index.rst
                    src/tutorials/mesh/index.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/introduction.rst
@@ -82,6 +89,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
             src/tutorials/mesh/mesh_extrude.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D_blockIDs.ipynb
             src/tutorials/mesh/mesh_ortho_3D_blockIDs.ipynb COPYONLY)
+    # Tutorials XS
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/index.rst
             src/tutorials/xs/index.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/introduction.rst
@@ -94,6 +102,13 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
             src/tutorials/xs/mg_xs_read_file.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/mg_xs_read_openmc.ipynb
             src/tutorials/xs/mg_xs_read_openmc.ipynb COPYONLY)
+    # Tutorials aquad
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/index.rst
+            src/tutorials/aquad/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/introduction.rst
+            src/tutorials/aquad/introduction.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/product_GLC.ipynb
+            src/tutorials/aquad/product_GLC.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
