@@ -1017,7 +1017,6 @@ LBSProblem::InitializeMaterials()
     {
       const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
       auto& transport_view = cell_transport_views_[cell.local_id];
-
       transport_view.ReassignXS(*xs_ptr);
     }
 
@@ -1291,7 +1290,6 @@ LBSProblem::InitializeParrays()
   for (auto& cell : grid_ptr_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
-    int mat_id = cell.block_id;
 
     // compute cell volumes
     double cell_volume = 0.0;
@@ -1347,13 +1345,12 @@ LBSProblem::InitializeParrays()
 
     if (num_nodes > max_cell_dof_count_)
       max_cell_dof_count_ = num_nodes;
-
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
                                        num_grps,
                                        num_moments_,
                                        num_faces,
-                                       *block_id_to_xs_map_[mat_id],
+                                       *block_id_to_xs_map_[cell.block_id],
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,

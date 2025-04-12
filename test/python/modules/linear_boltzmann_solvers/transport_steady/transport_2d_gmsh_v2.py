@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Source
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 100.0
-    mg_src = VolumetricSource(block_ids=[1], group_strength=strength)
+    mg_src = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Quadrature
     Npolar = 4
@@ -59,7 +59,7 @@ if __name__ == "__main__":
             },
         ],
         xs_map=[
-            {"block_ids": [0, 1], "xs": xs_diag},
+            {"block_ids": [1, 2], "xs": xs_diag},
         ],
         options={
             "boundary_conditions": [
