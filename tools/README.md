@@ -37,6 +37,14 @@ A description of the files or sub-directory is given in the table below.
 | ----------------- | ----------- |
 | [XS README](./xs/MGXS_README.md) | Description of the contents of the `xs` directory |
 
+### Angular Quadrature Plotting
 
+Files are located in `ang_quad_plotting`
+
+A description of the files or subdirectory is given in the table below.
+
+| File or Directory | Description |
+| ----------------- | ----------- |
+| `sldfe_plot_quadrature.py` | Python script for plotting angular discretization (see [SLDFE Plotting README](./ang_quad_plotting/README.md)) | 
 
 [Return to OpenSn](../README.md)
