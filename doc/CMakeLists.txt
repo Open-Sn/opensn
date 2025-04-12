@@ -127,6 +127,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
 
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/mesh)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/aquad)
 
     add_custom_command(
         OUTPUT
