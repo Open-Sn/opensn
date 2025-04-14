@@ -10,10 +10,10 @@
 namespace opensn
 {
 
-class AahSweepChunk : public SweepChunk
+class AAHSweepChunk : public SweepChunk
 {
 public:
-  AahSweepChunk(const std::shared_ptr<MeshContinuum> grid,
+  AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                 const SpatialDiscretization& discretization,
                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
                 std::vector<CellLBSView>& cell_transport_views,

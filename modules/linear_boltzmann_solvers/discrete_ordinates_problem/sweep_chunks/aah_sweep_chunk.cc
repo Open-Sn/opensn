@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-AahSweepChunk::AahSweepChunk(const std::shared_ptr<MeshContinuum> grid,
+AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<CellLBSView>& cell_transport_views,
@@ -37,9 +37,9 @@ AahSweepChunk::AahSweepChunk(const std::shared_ptr<MeshContinuum> grid,
 }
 
 void
-AahSweepChunk::Sweep(AngleSet& angle_set)
+AAHSweepChunk::Sweep(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("AahSweepChunk::Sweep");
+  CALI_CXX_MARK_SCOPE("AAHSweepChunk::Sweep");
 
   auto gs_size = groupset_.groups.size();
   auto gs_gi = groupset_.groups.front().id;
@@ -195,7 +195,6 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
       } // for gsg
 
       // Update phi
-      auto& output_phi = GetDestinationPhi();
       for (int m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[m][direction_num];
@@ -203,16 +202,15 @@ AahSweepChunk::Sweep(AngleSet& angle_set)
         {
           const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
           for (int gsg = 0; gsg < gs_size; ++gsg)
-            output_phi[ir + gsg] += wn_d2m * b[gsg](i);
+            destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
         }
       }
 
       // Save angular flux during sweep
       if (save_angular_flux_)
       {
-        auto& output_psi = GetDestinationPsi();
         double* cell_psi_data =
-          &output_psi[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+          &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {

@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
+CBCSweepChunk::CBCSweepChunk(std::vector<double>& destination_phi,
                              std::vector<double>& destination_psi,
                              const std::shared_ptr<MeshContinuum> grid,
                              const SpatialDiscretization& discretization,
@@ -52,7 +52,7 @@ CbcSweepChunk::CbcSweepChunk(std::vector<double>& destination_phi,
 }
 
 void
-CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
+CBCSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("CbcSweepChunk::SetAngleSet");
 
@@ -67,7 +67,7 @@ CbcSweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
+CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 {
   cell_ = cell_ptr;
   cell_local_id_ = cell_ptr->local_id;
@@ -84,7 +84,7 @@ CbcSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 }
 
 void
-CbcSweepChunk::Sweep(AngleSet& angle_set)
+CBCSweepChunk::Sweep(AngleSet& angle_set)
 {
   const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
@@ -228,7 +228,6 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
     } // for gsg
 
     // Update phi
-    auto& output_phi = GetDestinationPhi();
     for (int m = 0; m < num_moments_; ++m)
     {
       const double wn_d2m = d2m_op[m][direction_num];
@@ -236,16 +235,15 @@ CbcSweepChunk::Sweep(AngleSet& angle_set)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
         for (int gsg = 0; gsg < gs_size_; ++gsg)
-          output_phi[ir + gsg] += wn_d2m * b[gsg](i);
+          destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
       }
     }
 
     // Save angular flux during sweep
     if (save_angular_flux_)
     {
-      auto& output_psi = GetDestinationPsi();
       double* cell_psi_data =
-        &output_psi[discretization_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
+        &destination_psi_[discretization_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
 
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {

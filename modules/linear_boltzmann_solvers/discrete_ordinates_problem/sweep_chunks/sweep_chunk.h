@@ -52,15 +52,15 @@ public:
       groupset_angle_group_stride_(groupset_.psi_uk_man_.GetNumberOfUnknowns() *
                                    groupset_.groups.size()),
       groupset_group_stride_(groupset_.groups.size()),
-      destination_phi_(&destination_phi),
-      destination_psi_(&destination_psi)
+      destination_phi_(destination_phi),
+      destination_psi_(destination_psi)
   {
   }
 
   /// Sweep chunks should override this.
   virtual void Sweep(AngleSet& angle_set) {}
 
-  /// Sets the currently active FLUx Data Structure
+  /// Sets the currently active angleset.
   virtual void SetAngleSet(AngleSet& angle_set) {}
 
   /// For cell-by-cell methods or computing the residual on a single cell.
@@ -68,29 +68,14 @@ public:
 
   virtual ~SweepChunk() = default;
 
-protected:
-  friend class SweepScheduler;
-
-  /// Sets the location where flux moments are to be written.
-  void SetDestinationPhi(std::vector<double>& phi) { destination_phi_ = (&phi); }
-
   /**
-   * Sets the portion of the output flux moments vector corresponding to the groupset this
-   * sweep chunk operates on to zero.
+   * Zero the portion of the output flux moments vector corresponding to the groupset for this
+   * sweep chunk.
    */
   void ZeroDestinationPhi();
 
-  /// Returns a reference to the output flux moments vector.
-  std::vector<double>& GetDestinationPhi() { return *destination_phi_; }
-
-  /// Sets the location where angular fluxes are to be written.
-  void SetDestinationPsi(std::vector<double>& psi) { destination_psi_ = (&psi); }
-
   /// Sets all elements of the output angular flux vector to zero.
-  void ZeroDestinationPsi() { (*destination_psi_).assign((*destination_psi_).size(), 0.0); }
-
-  /// Returns a reference to the output angular flux vector.
-  std::vector<double>& GetDestinationPsi() { return *destination_psi_; }
+  void ZeroDestinationPsi() { (destination_psi_).assign((destination_psi_).size(), 0.0); }
 
   /// Activates or deactives the surface src flag.
   void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active_ = flag_value; }
@@ -98,6 +83,7 @@ protected:
   /// Returns the surface src-active flag.
   bool IsSurfaceSourceActive() const { return surface_source_active_; }
 
+protected:
   const std::shared_ptr<MeshContinuum> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
@@ -111,10 +97,8 @@ protected:
   const bool save_angular_flux_;
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;
-
-private:
-  std::vector<double>* destination_phi_;
-  std::vector<double>* destination_psi_;
+  std::vector<double>& destination_phi_;
+  std::vector<double>& destination_psi_;
   bool surface_source_active_ = false;
 };
 

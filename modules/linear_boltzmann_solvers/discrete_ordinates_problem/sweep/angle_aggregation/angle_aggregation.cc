@@ -16,8 +16,7 @@ AngleAggregation::AngleAggregation(
   size_t num_groups,
   std::shared_ptr<AngularQuadrature>& quadrature,
   std::shared_ptr<MeshContinuum>& grid)
-  : is_setup_(false),
-    num_groups_(num_groups),
+  : num_groups_(num_groups),
     num_ang_unknowns_avail_(false),
     grid_(grid),
     quadrature_(quadrature),
@@ -25,8 +24,6 @@ AngleAggregation::AngleAggregation(
 {
   for (auto& bndry_id_cond : boundaries)
     bndry_id_cond.second->Setup(grid, *quadrature);
-
-  is_setup_ = true;
 }
 
 void
