@@ -35,6 +35,11 @@ endif()
 
 option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
 if (OPENSN_WITH_CUDA)
+    set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+    find_package(CUDAToolkit 12.0 REQUIRED)
+    add_definitions(-DUSE_CUDA)
+    message(STATUS "CUDA support enabled")
+    message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
     enable_language(CUDA)
 endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
@@ -57,14 +62,6 @@ endif()
 
 # dependencies
 find_package(MPI REQUIRED)
-
-# Set up CUDA if enabled
-if (OPENSN_WITH_CUDA)
-    find_package(CUDAToolkit 12.0 REQUIRED)
-    add_definitions(-DUSE_CUDA)
-    message(STATUS "CUDA support enabled")
-    message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
-endif()
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
 find_package(Boost CONFIG)
@@ -148,7 +145,9 @@ endif()
 # compile options
 set(OPENSN_CXX_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    if (NOT OPENSN_WITH_CUDA)
+      list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+    endif()
     list(APPEND OPENSN_CXX_FLAGS "-Wall")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
@@ -203,7 +202,7 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
 if (OPENSN_WITH_CUDA)
-    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>)
+    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
 endif()
 if (OPENSN_WITH_LUA)
     target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${LUA_INCLUDE_DIRS}>)
