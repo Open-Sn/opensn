@@ -302,35 +302,6 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   file.close();
 
-  // Remap block-ids
-  std::set<int> block_ids_set_as_read;
-  std::map<int, int> block_mapping;
-
-  for (auto& cell : mesh->GetRawCells())
-    block_ids_set_as_read.insert(cell->block_id);
-
-  std::set<int> boundary_ids_set_as_read;
-  std::map<int, int> boundary_mapping;
-
-  for (auto& cell : mesh->GetRawBoundaryCells())
-    boundary_ids_set_as_read.insert(cell->block_id);
-
-  {
-    int m = 0;
-    for (const auto& mat_id : block_ids_set_as_read)
-      block_mapping.insert(std::make_pair(mat_id, m++));
-
-    int b = 0;
-    for (const auto& bndry_id : boundary_ids_set_as_read)
-      boundary_mapping.insert(std::make_pair(bndry_id, b++));
-  }
-
-  for (auto& cell : mesh->GetRawCells())
-    cell->block_id = block_mapping[cell->block_id];
-
-  for (auto& cell : mesh->GetRawBoundaryCells())
-    cell->block_id = boundary_mapping[cell->block_id];
-
   unsigned int dimension = (mesh_is_2D) ? 2 : 3;
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
