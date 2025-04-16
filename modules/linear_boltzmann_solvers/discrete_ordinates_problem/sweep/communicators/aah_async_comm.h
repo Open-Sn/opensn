@@ -29,10 +29,10 @@ private:
   bool data_initialized_;
   bool upstream_data_initialized_;
 
-  std::vector<std::vector<mpi::Request>> preloc_recv_requests_;
+  std::vector<std::vector<bool>> preloc_msg_received_;
   std::vector<std::vector<std::tuple<int, size_t, size_t>>> preloc_msg_data_;
 
-  std::vector<std::vector<mpi::Request>> delayed_preloc_recv_requests_;
+  std::vector<std::vector<bool>> delayed_preloc_msg_received_;
   std::vector<std::vector<std::tuple<int, size_t, size_t>>> delayed_preloc_msg_data_;
 
   std::vector<mpi::Request> deploc_msg_request_;
