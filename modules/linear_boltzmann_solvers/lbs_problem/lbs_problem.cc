@@ -948,7 +948,7 @@ LBSProblem::InitializeMaterials()
   for (auto& cell : grid_ptr_->local_cells)
   {
     unique_block_ids.insert(cell.block_id);
-    if (cell.block_id < 0)
+    if (cell.block_id < 0 or (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_ptr_->cells.GetGhostGlobalIDs();
@@ -956,7 +956,7 @@ LBSProblem::InitializeMaterials()
   {
     const auto& cell = grid_ptr_->cells[cell_id];
     unique_block_ids.insert(cell.block_id);
-    if (cell.block_id < 0)
+    if (cell.block_id < 0 or (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
