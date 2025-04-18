@@ -37,7 +37,6 @@ public:
   explicit PowerIterationKEigenSCDSASolver(const InputParameters& params);
 
   void Initialize() override;
-
   void Execute() override;
 
   /// Copies only the scalar moments from an lbs primary flux moments vector.

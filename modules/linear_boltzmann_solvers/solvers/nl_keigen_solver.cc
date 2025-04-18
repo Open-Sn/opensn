@@ -105,7 +105,13 @@ NonLinearKEigenSolver::Execute()
 
   lbs_problem_->UpdateFieldFunctions();
 
-  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  log.Log() << "LinearBoltzmann::NonLinearKEigenvalueSolver execution completed\n\n";
+}
+
+double
+NonLinearKEigenSolver::GetEigenvalue() const
+{
+  return nl_context_->kresid_func_context.k_eff;
 }
 
 } // namespace opensn

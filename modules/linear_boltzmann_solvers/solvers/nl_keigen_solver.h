@@ -25,8 +25,9 @@ public:
   explicit NonLinearKEigenSolver(const InputParameters& params);
 
   void Initialize() override;
-
   void Execute() override;
+  /// Return the current k-eigenvalue
+  double GetEigenvalue() const;
 
 public:
   static InputParameters GetInputParameters();

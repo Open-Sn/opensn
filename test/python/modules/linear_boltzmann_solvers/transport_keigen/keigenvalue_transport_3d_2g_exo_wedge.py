@@ -77,3 +77,6 @@ if __name__ == "__main__":
     )
     k_solver.Initialize()
     k_solver.Execute()
+
+    k = k_solver.GetEigenvalue()
+    print(f"Python k-eigenvalue: {k}")
