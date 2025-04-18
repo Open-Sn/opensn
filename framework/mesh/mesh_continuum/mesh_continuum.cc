@@ -767,8 +767,8 @@ MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, const uns
   throw std::logic_error("MeshContinuum::MapCellFace: Mapping failure.");
 }
 
-void
-MeshContinuum::ComputeVolumePerBlockID()
+std::map<int, double>
+MeshContinuum::ComputeVolumePerBlockID() const
 {
   // Create a map to hold local volume with local block as key
   std::map<int, double> block_volumes;
@@ -823,13 +823,7 @@ MeshContinuum::ComputeVolumePerBlockID()
     global_block_volumes[global_block_ids[i]] = global_volumes[i];
   }
 
-  // Output the volumes per material_id on the root process
-  if (mpi_comm.rank() == 0)
-  {
-    for (const auto& [id, vol] : global_block_volumes)
-      log.Log() << "Block ID: " << id << " Volume: " << std::setprecision(12) << vol << std::endl;
-    log.Log() << std::endl;
-  }
+  return global_block_volumes;
 }
 
 } // namespace opensn
