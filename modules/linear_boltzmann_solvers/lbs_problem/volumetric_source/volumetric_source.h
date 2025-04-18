@@ -48,6 +48,8 @@ public:
   const std::vector<int>& GetBlockIDs() const { return block_ids_; }
 
 private:
+  int id_;
+
   std::vector<int> block_ids_;
   const std::shared_ptr<LogicalVolume> logvol_;
 
@@ -62,6 +64,9 @@ private:
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<VolumetricSource> Create(const ParameterBlock& params);
+
+private:
+  static int next_id_;
 };
 
 } // namespace opensn

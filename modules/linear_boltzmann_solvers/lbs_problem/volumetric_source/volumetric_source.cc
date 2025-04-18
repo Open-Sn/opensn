@@ -17,6 +17,8 @@ namespace opensn
 
 OpenSnRegisterObjectInNamespace(lbs, VolumetricSource);
 
+int VolumetricSource::next_id_ = 0;
+
 InputParameters
 VolumetricSource::GetInputParameters()
 {
@@ -57,7 +59,8 @@ VolumetricSource::Create(const ParameterBlock& params)
 }
 
 VolumetricSource::VolumetricSource(const InputParameters& params)
-  : block_ids_(params.GetParamVectorValue<int>("block_ids")),
+  : id_(next_id_++),
+    block_ids_(params.GetParamVectorValue<int>("block_ids")),
     logvol_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
     strength_(params.GetParamVectorValue<double>("group_strength")),
     function_(std::dynamic_pointer_cast<VectorSpatialFunction>(
@@ -112,9 +115,10 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
   num_local_subsribers_ = subscribers_.size();
   mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());
 
-  log.LogAll() << "Volumetric source has " << num_local_subsribers_
-               << " subscribing cells on processor " << opensn::mpi_comm.rank() << ".";
-  log.Log() << "Volumetric source has " << num_global_subscribers_ << " total subscribing cells.";
+  log.LogAllVerbose1() << "Volumetric source #" << id_ << " has " << num_local_subsribers_
+                       << " subscribing cells on processor " << opensn::mpi_comm.rank() << ".";
+  log.Log() << "Volumetric source #" << id_ << " has " << num_global_subscribers_
+            << " total subscribing cells.";
 }
 
 std::vector<double>
