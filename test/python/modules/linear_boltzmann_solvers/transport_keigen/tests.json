@@ -39,10 +39,9 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
-        "gold": 2.2800213,
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.2800213,
         "abs_tol": 1e-05
       }
     ]
@@ -53,10 +52,9 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
-        "gold": 2.280431,
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.280431,
         "abs_tol": 1e-05
       }
     ]
@@ -150,10 +148,9 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
-        "gold": 0.5969127,
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5969127,
         "abs_tol": 1e-07
       }
     ]
@@ -207,10 +204,9 @@
     "num_procs": 1,
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
-        "gold": 0.9293377,
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.9293377,
         "abs_tol": 1e-07
       }
     ]
