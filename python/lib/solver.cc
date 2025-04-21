@@ -5,7 +5,6 @@
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
@@ -514,34 +513,6 @@ WrapLBS(py::module& slv)
     ???
     )"
   );
-
-  // diffusion DFEM solver
-  auto diffusion_dfem_solver = py::class_<DiffusionDFEMSolver, std::shared_ptr<DiffusionDFEMSolver>,
-                                          LBSProblem>(
-    slv,
-    "DiffusionDFEMSolver",
-    R"(
-    ???
-
-    Wrapper of :cpp:class:`opensn::DiffusionDFEMSolver`.
-    )"
-  );
-  diffusion_dfem_solver.def(
-    py::init(
-      [](py::kwargs& params)
-      {
-        return DiffusionDFEMSolver::Create(kwargs_to_param_block(params));
-      }
-    ),
-    R"(
-    Construct a diffusion DFEM solver object.
-
-    Parameters
-    ----------
-    ???
-    )"
-  );
-  // clang-format on
 }
 
 // Wrap steady-state solver
