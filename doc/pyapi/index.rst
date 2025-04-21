@@ -261,8 +261,8 @@ Cross section
    xs.MultiGroupXS
 
 
-Solver
-------
+Problem
+-------
 
 Base class
 ^^^^^^^^^^
@@ -272,18 +272,10 @@ Base class
    :nosignatures:
    :template: noinit
 
-   solver.Solver
-   solver.Problem
-
-Linear Boltzmann problem
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: noinit
-
    solver.LBSProblem
+
+Discrete ordinates problem
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
@@ -291,8 +283,30 @@ Linear Boltzmann problem
    :template: python
 
    solver.DiscreteOrdinatesProblem
+
+Discrete ordinates curvilinear problem
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
    solver.DiscreteOrdinatesCurvilinearProblem
-   solver.DiffusionDFEMSolver
+
+
+Solvers
+-------
+
+Solver base class
+^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   solver.Solver
 
 Steady state solver
 ^^^^^^^^^^^^^^^^^^^
@@ -326,7 +340,7 @@ Power iteration solver
    solver.PowerIterationKEigenSCDSASolver
    solver.PowerIterationKEigenSMMSolver
 
-Point kinetic trnasient solver
+Point kinetic transient solver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
