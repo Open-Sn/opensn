@@ -145,7 +145,7 @@ public:
   GlobalCellHandler cells;
 
   /// Compute volume per block IDs
-  void ComputeVolumePerBlockID();
+  std::map<int, double> ComputeVolumePerBlockID() const;
 
 private:
   /// Spatial dimension

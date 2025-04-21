@@ -45,4 +45,9 @@ if __name__ == "__main__":
     vol1 = RPPLogicalVolume(xmin=-1000.0, xmax=L / N, infy=True, infz=True)
     grid.SetBlockIDFromLogicalVolume(vol1, 1, True)
 
-    grid.ComputeVolumePerBlockID()
+    volumes_per_block = grid.ComputeVolumePerBlockID()
+
+    if rank == 0:
+        # iterate through block → volume
+        for block_id, volume in volumes_per_block.items():
+            print(f"Block {block_id}: volume = {volume:.4f}")

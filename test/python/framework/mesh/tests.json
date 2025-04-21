@@ -25,13 +25,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]  Block ID: 0 Volume:",
+        "key": "Block 0: volume =",
         "goldvalue": 11.25,
         "abs_tol": 1.0e-6
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]  Block ID: 1 Volume:",
+        "key": "Block 1: volume =",
         "goldvalue": 13.75,
         "abs_tol": 1.0e-6
       }

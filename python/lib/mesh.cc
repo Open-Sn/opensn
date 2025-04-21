@@ -18,6 +18,7 @@
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/utils/timer.h"
 #include <pybind11/functional.h>
+#include <pybind11/stl.h>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -120,7 +121,14 @@ WrapMesh(py::module& mesh)
   mesh_continuum.def(
     "ComputeVolumePerBlockID",
     &MeshContinuum::ComputeVolumePerBlockID,
-    "Compute volume per block ID."
+    R"(
+    Compute volume per block ID
+
+    Returns
+    -------
+    Dict[int, float]
+        Key is the block ID and the value is the computed volume
+    )"
   );
   mesh_continuum.def(
     "SetBlockIDFromFunction",
