@@ -20,7 +20,6 @@ LBSGroupset::GetInputParameters()
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("Input Parameters for groupsets.");
-  params.SetDocGroup("LuaLBSGroupsets");
 
   // Groupsets
   params.AddRequiredParameterArray("groups_from_to",

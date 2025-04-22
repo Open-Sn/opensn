@@ -14,8 +14,6 @@ RPPLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  params.SetDocGroup("LuaLogicVolumes");
-
   params.AddOptionalParameter("xmin", 0.0, "X-min of the volume");
   params.AddOptionalParameter("xmax", 1.0, "X-max of the volume");
   params.AddOptionalParameter("ymin", 0.0, "Y-min of the volume");

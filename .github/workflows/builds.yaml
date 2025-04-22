@@ -95,36 +95,3 @@ jobs:
           module load python3/3.12.3 opensn/gcc/14
           gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|python|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
-
-  lua:
-    name: "${{ matrix.compiler }}"
-    runs-on: [self-hosted]
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler:
-          - gcc/14
-          - clang/17
-          - intel/oneapi
-    steps:
-      - uses: actions/checkout@v4
-      - name: build
-        shell: bash
-        run: |
-          module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DOPENSN_WITH_LUA=True .. && make -j && cd ..
-      - name: test
-        shell: bash
-        run: |
-          module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests -d test/lua -j 32 -v 1 -w 3
-      - name: test tutorials
-        shell: bash
-        run: |
-          module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests -d tutorials/lua -j 32 -v 1 -w 3
-      - name: test unit
-        shell: bash
-        run: |
-          module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          build/test/opensn-unit

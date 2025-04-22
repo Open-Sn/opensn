@@ -19,8 +19,6 @@ SurfaceMeshLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  params.SetDocGroup("LuaLogicVolumes");
-
   params.AddRequiredParameter<std::shared_ptr<SurfaceMesh>>(
     "surface_mesh", "Handle to a surface mesh that will represent this object");
 

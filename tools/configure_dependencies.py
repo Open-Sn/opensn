@@ -85,10 +85,6 @@ package_info = {
         "1_86_0",
         "https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz"
     ],
-    "lua": [
-        "5.4.6",
-        "https://www.lua.org/ftp/lua-5.4.6.tar.gz"
-    ],
     "hdf5": [
         "1.14.3",
         "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/\
@@ -238,75 +234,6 @@ def InstallBoostPackage(pkg: str,
             log_file.write(f"{command}\n{err}\n")
             package_log_file.write(f"{command}\n{err}\n")
             raise RuntimeError(f"Failed to install {pkg} headers")
-
-        package_log_file.close()
-    else:
-        print(f"{pkg} already installed")
-
-    os.chdir(install_dir)
-
-    if os.path.exists(f"{pkg_install_dir}/{gold_file}"):
-        return True
-    else:
-        return False
-
-
-# Install Lua
-def InstallLuaPackage(pkg: str,
-                      ver: str,
-                      gold_file: str):
-    package_log_filename = f"{install_dir}/logs/{pkg}_log.txt"
-    pkg_install_dir = f"{install_dir}"
-
-    shutil.copy(f"{install_dir}/downloads/{pkg}-{ver}.tar.gz",
-                f"{install_dir}/src/{pkg}-{ver}.tar.gz")
-
-    os.chdir(f"{install_dir}/src")
-
-    # Check if it is installed already
-    if not os.path.exists(f"{pkg_install_dir}/{gold_file}"):
-        ExtractPackage(pkg, ver)
-
-        package_log_file = open(package_log_filename, "w")
-
-        print(f"Configuring {pkg.upper()} {ver} in \"{os.getcwd()}\"", flush=True)
-        log_file.write(f"Configuring {pkg.upper()} {ver} to \"{os.getcwd()}\"")
-        log_file.write(f" See {package_log_filename}\n")
-        log_file.flush()
-
-        env_vars = os.environ.copy()
-        if len(os.getenv("CC")) == 0:
-            env_vars["CC"] = shutil.which("mpicc")
-        if len(os.getenv("CXX")) == 0:
-            env_vars["CXX"] = shutil.which("mpicxx")
-        if len(os.getenv("FC")) == 0:
-            env_vars["FC"] = shutil.which("mpifort")
-
-        os_tag = "linux"
-        if "Darwin" in os.uname():
-            os_tag = "macosx"
-
-        os.chdir(f"{pkg}-{ver}")
-
-        command = f"make {os_tag} MYCFLAGS=-fPIC MYLIBS=-lncurses -j{argv.jobs}"
-        success, err, outstr = ExecSub(
-            command, out_log=package_log_file, env_vars=env_vars
-        )
-        if not success:
-            print(command, err)
-            log_file.write(f"{command}\n{err}\n")
-            package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to build {pkg}")
-
-        command = f"make install INSTALL_TOP={pkg_install_dir}"
-        success, err, outstr = ExecSub(
-            command, out_log=package_log_file, env_vars=env_vars
-        )
-        if not success:
-            print(command, err)
-            log_file.write(f"{command}\n{err}\n")
-            package_log_file.write(f"{command}\n{err}\n")
-            raise RuntimeError(f"Failed to install {pkg}")
 
         package_log_file.close()
     else:
@@ -754,8 +681,6 @@ try:
         success = False
         if pkg == 'boost':
             success = InstallBoostPackage(pkg, ver, gold_file="include/boost")
-        elif pkg == 'lua':
-            success = InstallLuaPackage(pkg, ver, gold_file="lib/liblua.a")
         elif pkg == 'petsc':
             success = InstallPETSc(pkg, ver, gold_file="include/petsc")
         elif pkg == 'vtk':

@@ -17,8 +17,6 @@ BooleanLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  params.SetDocGroup("LuaLogicVolumes\n");
-
   params.AddRequiredParameterArray(
     "parts",
     "Array of combinatorial logic each entry has the following required params "

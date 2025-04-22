@@ -54,9 +54,8 @@ public:
   /**
    * \addtogroup SolverBase
    *
-   * \section Properties Properties that can be set
-   * The following properties can be set via the lua call
-   * `SolverSetProperties`
+   * \section Properties Properties that can be set via
+   * `SetProperties`
    * \copydoc opensn::Solver::SetProperties
    *
    * Base solver settable properties:
