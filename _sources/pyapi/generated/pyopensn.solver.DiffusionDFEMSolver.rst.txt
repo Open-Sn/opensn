@@ -1,9 +1,0 @@
-﻿pyopensn.solver.DiffusionDFEMSolver
-===================================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: DiffusionDFEMSolver
-   :special-members: __init__
-   :members:
-   :inherited-members:
