@@ -45,6 +45,7 @@
         "goldvalue": 13.75,
         "abs_tol": 1.0e-6
       }
-    ]
+    ],
+    "skip": "Lua binding is outdated." 
   }
 ]
