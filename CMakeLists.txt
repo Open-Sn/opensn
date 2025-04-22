@@ -43,7 +43,6 @@ if (OPENSN_WITH_CUDA)
     enable_language(CUDA)
 endif()
 option(OPENSN_WITH_DOCS "Enable documentation" OFF)
-option(OPENSN_WITH_LUA "Build with lua support" OFF)
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
 
@@ -52,8 +51,7 @@ if(OPENSN_WITH_PYTHON_MODULE)
 endif()
 
 if(OPENSN_WITH_LUA)
-    set(OPENSN_WITH_PYTHON OFF CACHE BOOL "Lua support requested, disabling Python interface" FORCE)
-    set(OPENSN_WITH_PYTHON_MODULE OFF CACHE BOOL "Lua support requested, disabling Python module" FORCE)
+  message(FATAL_ERROR "The option OPENSN_WITH_LUA has been removed and is no longer supported.")
 endif()
 
 if (OPENSN_WITH_DOCS AND NOT OPENSN_WITH_PYTHON_MODULE)
@@ -68,10 +66,6 @@ find_package(Boost CONFIG)
 if (NOT Boost_FOUND)
     message(STATUS "Boost CONFIG not found, falling back to module mode")
     find_package(Boost REQUIRED)
-endif()
-
-if(OPENSN_WITH_LUA)
-    find_package(Lua 5.3 REQUIRED)
 endif()
 
 find_package(VTK QUIET)
@@ -204,9 +198,6 @@ target_include_directories(libopensn
 if (OPENSN_WITH_CUDA)
     target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
 endif()
-if (OPENSN_WITH_LUA)
-    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${LUA_INCLUDE_DIRS}>)
-endif()
 
 target_link_libraries(libopensn
     PRIVATE
@@ -218,10 +209,6 @@ target_link_libraries(libopensn
 )
 if (OPENSN_WITH_CUDA)
     target_link_libraries(libopensn PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
-endif()
-if(OPENSN_WITH_LUA)
-    target_link_libraries(libopensn PRIVATE ${LUA_LIBRARIES})
-    target_compile_definitions(libopensn PRIVATE OPENSN_WITH_LUA)
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
@@ -236,21 +223,6 @@ set_target_properties(
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
 )
-
-if(OPENSN_WITH_LUA)
-    add_subdirectory(lua)
-    add_subdirectory(test)
-
-    add_custom_target(test
-      COMMAND
-      ${CMAKE_BINARY_DIR}/test/opensn-unit &&
-              ${CMAKE_SOURCE_DIR}/test/run_tests
-              -d ${CMAKE_SOURCE_DIR}/test/lua
-              --exe ${CMAKE_BINARY_DIR}/test/lua/opensn-test
-              -w3
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-endif()
 
 if(OPENSN_WITH_PYTHON)
     add_subdirectory(python)
@@ -332,28 +304,6 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/OpenSnConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opensn
 )
-
-if(OPENSN_WITH_LUA)
-    install(
-        TARGETS opensn libopensnlua
-        EXPORT openSnTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-    )
-
-    install(
-        DIRECTORY ${CMAKE_SOURCE_DIR}/lua
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
-        FILES_MATCHING PATTERN "*.h"
-    )
-
-    install(
-        DIRECTORY ${CMAKE_SOURCE_DIR}/external/LuaBridge
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
-        FILES_MATCHING PATTERN "*.h"
-    )
-endif()
 
 if(OPENSN_WITH_PYTHON)
     install(

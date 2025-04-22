@@ -12,9 +12,7 @@ GaussQuadrature::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  params.SetGeneralDescription("\\defgroup math__Quadrature\n"
-                               "\\ingroup LuaQuadrature\n"
-                               "Base class for Gauss quadratures");
+  params.SetGeneralDescription("Base class for Gauss quadratures");
 
   params.AddRequiredParameter<int>("order", "Quadrature order.");
 

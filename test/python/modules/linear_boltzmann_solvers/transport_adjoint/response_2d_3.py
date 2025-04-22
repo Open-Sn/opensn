@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Create point source (multigroup)
     src = [0.0] * num_groups
-    src[0] = 1.0  # Lua's src[1] becomes index 0 in Python.
+    src[0] = 1.0
 
     loc = [1.25 - 0.5 * ds, 1.5 * ds, 0.0]
     pt_src = PointSource(location=loc, strength=src)
