@@ -14,8 +14,6 @@ RCCLogicalVolume::GetInputParameters()
 {
   InputParameters params = LogicalVolume::GetInputParameters();
 
-  params.SetDocGroup("LuaLogicVolumes");
-
   params.AddOptionalParameter("r", 1.0, "Radius of the sphere.");
   params.AddOptionalParameter("x0", 0.0, "X-coordinate of the volume base");
   params.AddOptionalParameter("y0", 0.0, "Y-coordinate of the volume base");

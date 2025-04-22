@@ -8,7 +8,7 @@ for neutral particles in a deterministic manner. OpenSn tackles a
 variety of problems, including steady-state and dynamical
 source-driven scenarios, as well as eigenvalue (criticality) problems.
 
-Written in modern C++, OpenSn features a Lua interface, making it
+Written in modern C++, OpenSn features a Python interface, making it
 versatile and accessible. From a simple laptop to a supercomputer,
 OpenSn can be compiled and executed across a wide range of computing
 platforms.

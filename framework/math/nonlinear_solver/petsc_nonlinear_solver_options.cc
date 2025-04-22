@@ -13,7 +13,6 @@ PETScNonLinearSolverOptions::GetInputParameters()
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("Options available on NonLinearSolver");
-  params.SetDocGroup("LuaMath");
 
   params.AddOptionalParameter("name", "NonLinearSolver", "A name to assign to the solver.");
 

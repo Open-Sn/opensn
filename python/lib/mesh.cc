@@ -245,8 +245,8 @@ WrapMesh(py::module& mesh)
       int global_num_faces_modified;
       mpi_comm.all_reduce(local_num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
       log.Log0Verbose1() << program_timer.GetTimeString()
-                         << " Done setting boundary id from lua function. "
-                         << "Number of cells modified = " << global_num_faces_modified << ".";
+                         << " Done setting boundary id. Number of cells modified = "
+                         << global_num_faces_modified << ".";
     },
     R"(
     Set boundary ID from a function.

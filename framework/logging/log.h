@@ -21,10 +21,8 @@ namespace opensn
  * space and the number for the verbosity (0,1 or 2).
  *
  * \code
- * ./opensn InputFile.lua -v 1
+ * ./opensn InputFile.py -v 1
  * \endcode
- *
- * The lua command `LogSetVerbosity(int_level)` achieves the same.\n\n
  *
  * Printing a log under the auspices of a verbosity level again has
  * numerous options. Firstly, any log can be a normal log, a warning

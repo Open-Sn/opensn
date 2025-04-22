@@ -77,7 +77,7 @@ public:
 class BoundaryFunction
 {
 public:
-  /// Customized boundary function by calling a lua routine.
+  /// Customized boundary function by calling an input routine.
   virtual std::vector<double>
   Evaluate(size_t cell_global_id,
            int cell_block_id,
