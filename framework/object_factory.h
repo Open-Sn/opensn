@@ -29,12 +29,12 @@
 /**
  * Macro for registering an object alias within the ObjectFactory
  *
- * \param namespace_name Name of the LUA namespace
- * \param lua_object Name of the LUA object
+ * \param namespace_name Namespace name
+ * \param alias Name of the object
  * \param object_name C++ class name to register.
  *
  * \note This will register a C++ class `object_name` such that it will show up as
- * `namespace_name.alias` in the LUA space
+ * `namespace_name.alias`
  */
 #define OpenSnRegisterObjectAliasInNamespace(namespace_name, alias, object_name)                   \
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \

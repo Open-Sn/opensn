@@ -14,8 +14,6 @@ SphereLogicalVolume::GetInputParameters()
 {
   InputParameters params = Object::GetInputParameters();
 
-  params.SetDocGroup("LuaLogicVolumes");
-
   params.AddOptionalParameter("r", 1.0, "Radius of the sphere.");
   params.AddOptionalParameter("x", 0.0, "X-location of the volume.");
   params.AddOptionalParameter("y", 0.0, "Y-location of the volume.");

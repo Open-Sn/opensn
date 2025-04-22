@@ -60,8 +60,8 @@ public:
    * \addtogroup prk
    *
    * \section Properties Properties that can be set
-   * The following properties can be set via the lua call
-   * `SolverSetProperties`
+   * The following properties can be set via the
+   * `SetProperties` call.
    * \copydoc PRKSolver::SetProperties
    *
    * PRK Transient solver settable properties:

@@ -25,9 +25,8 @@ VolumetricSource::GetInputParameters()
   InputParameters params = Object::GetInputParameters();
 
   params.SetGeneralDescription("General implementation of an arbitrary multi-group "
-                               "volumetric source. A volumetric source is given by a "
-                               "logical volume and a Lua function handle. Currently, only "
-                               "isotropic volumetric sources are allowed.");
+                               "volumetric source. Currently, only isotropic volumetric "
+                               "sources are allowed.");
   params.SetClassName("Volumetric Source");
   params.SetDocGroup("LBSUtilities");
 

@@ -547,10 +547,8 @@ LBSProblem::GetBoundaryOptionsBlock()
                                            {},
                                            "Required only if \"type\" is \"isotropic\". An array "
                                            "of isotropic strength per group");
-  params.AddOptionalParameter("function_name",
-                              "",
-                              "Text name of the lua function to be called for this boundary "
-                              "condition.");
+  params.AddOptionalParameter(
+    "function_name", "", "Text name of the function to be called for this boundary condition.");
   params.ConstrainParameterRange(
     "name", AllowableRangeList::New({"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
   params.ConstrainParameterRange("type",
