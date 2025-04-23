@@ -57,7 +57,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/diffusion_dfem_solver/lbs_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
@@ -619,12 +618,6 @@ static bool reg = opensnlua::Console::Bind(
       .addStaticFunction("Create", &PowerIterationKEigenSMMSolver::Create)
       .endClass()
       .beginClass<std::shared_ptr<PowerIterationKEigenSMMSolver>>("PowerIterationKEigenSMMPtr")
-      .endClass()
-      //
-      .deriveClass<DiffusionDFEMSolver, LBSProblem>("DiffusionDFEMSolver")
-      .addStaticFunction("Create", &DiffusionDFEMSolver::Create)
-      .endClass()
-      .beginClass<std::shared_ptr<DiffusionDFEMSolver>>("DiffusionDFEMSolverPtr")
       .endClass()
       //
       .beginClass<PointSource>("PointSource")
