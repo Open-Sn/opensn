@@ -13,10 +13,8 @@ namespace opensn
 {
 
 PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshContinuum> grid,
-                                                     QuadratureOrder q_order,
-                                                     CoordinateSystemType cs_type)
-  : PieceWiseLinearBase(
-      grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS, cs_type)
+                                                     QuadratureOrder q_order)
+  : PieceWiseLinearBase(grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
 {
   CreateCellMappings();
 
@@ -24,17 +22,15 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshC
 }
 
 std::shared_ptr<PieceWiseLinearContinuous>
-PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid,
-                               QuadratureOrder q_order,
-                               CoordinateSystemType cs_type)
+PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order)
 
 {
   const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
-  // First try to find an existing spatial discretization that matches the
-  // one requested.
+
+  // First try to find an existing spatial discretization that matches the one requested.
   for (auto& sdm : sdm_stack)
     if (sdm->GetType() == PWLC and sdm->GetGrid() == grid and
-        sdm->GetCoordinateSystemType() == cs_type)
+        sdm->GetGrid()->GetCoordinateSystem() == grid->GetCoordinateSystem())
     {
       auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
 
@@ -50,8 +46,8 @@ PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid,
       return sdm_ptr;
     }
 
-  auto new_sdm = std::shared_ptr<PieceWiseLinearContinuous>(
-    new PieceWiseLinearContinuous(grid, q_order, cs_type));
+  auto new_sdm =
+    std::shared_ptr<PieceWiseLinearContinuous>(new PieceWiseLinearContinuous(grid, q_order));
 
   sdm_stack.push_back(new_sdm);
 
@@ -65,7 +61,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // Build set of local scope nodes
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
-  for (const auto& cell : ref_grid_->local_cells)
+  for (const auto& cell : grid_->local_cells)
     for (uint64_t node_id : cell.vertex_ids)
       ls_node_ids_set.insert(node_id);
 
@@ -81,10 +77,10 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Now we add the partitions associated with the
   // ghost cells.
-  const auto ghost_cell_ids = ref_grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
-    const auto& ghost_cell = ref_grid_->cells[ghost_id];
+    const auto& ghost_cell = grid_->cells[ghost_id];
     for (const uint64_t vid : ghost_cell.vertex_ids)
       ls_node_ids_psubs[vid].insert(ghost_cell.partition_id);
   } // for ghost_id
@@ -263,7 +259,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   nodal_nnz_in_diag.resize(local_base_block_size_, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_, 0);
 
-  for (auto& cell : ref_grid_->local_cells)
+  for (auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
@@ -306,7 +302,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   using ROWJLINKS = std::pair<int64_t, std::vector<int64_t>>;
   std::vector<ROWJLINKS> ir_links;
 
-  for (auto& cell : ref_grid_->local_cells)
+  for (auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
 

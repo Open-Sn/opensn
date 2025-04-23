@@ -20,9 +20,7 @@ class PieceWiseLinearContinuous : public PieceWiseLinearBase
 public:
   /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearContinuous>
-  New(const std::shared_ptr<MeshContinuum> grid,
-      QuadratureOrder q_order = QuadratureOrder::SECOND,
-      CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN);
+  New(const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
 
   void BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                             std::vector<int64_t>& nodal_nnz_off_diag,
@@ -63,8 +61,7 @@ protected:
 
 private:
   explicit PieceWiseLinearContinuous(const std::shared_ptr<MeshContinuum> grid,
-                                     QuadratureOrder q_order,
-                                     CoordinateSystemType cs_type);
+                                     QuadratureOrder q_order);
 };
 
 } // namespace opensn

@@ -46,6 +46,8 @@ private:
   {
     /// Dimension of the mesh (2D, 3D).
     unsigned int dimension;
+    /// The coordinate system of the mesh.
+    CoordinateSystemType coord_sys;
     /// Type of mesh.
     MeshType mesh_type;
     /// Whether the mesh is extruded or not.

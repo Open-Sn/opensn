@@ -128,6 +128,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t
 
     // Basic mesh data
     serial_data.Write<unsigned int>(umesh.GetDimension());
+    serial_data.Write(static_cast<int>(umesh.GetCoordinateSystem()));
     serial_data.Write(static_cast<int>(umesh.GetType()));
     serial_data.Write(umesh.IsExtruded());
     const auto& [Nx, Ny, Nz] = umesh.GetOrthoAttributes();
@@ -204,6 +205,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
 
   // Basic mesh data
   info_block.dimension = serial_data.Read<unsigned int>();
+  info_block.coord_sys = static_cast<CoordinateSystemType>(serial_data.Read<int>());
   info_block.mesh_type = static_cast<MeshType>(serial_data.Read<int>());
   info_block.extruded = serial_data.Read<bool>();
   info_block.ortho_attributes.Nx = serial_data.Read<size_t>();
@@ -293,6 +295,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
+  grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);
   grid_ptr->SetType(mesh_info.mesh_type);
   grid_ptr->SetExtruded(mesh_info.extruded);
   grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);

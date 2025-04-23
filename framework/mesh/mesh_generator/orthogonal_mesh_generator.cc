@@ -8,7 +8,10 @@
 namespace opensn
 {
 OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
-  : MeshGenerator(params)
+  : MeshGenerator(params),
+    coord_sys_(params.GetParamValue<std::string>("coord_sys") == "cartesian"     ? CARTESIAN
+               : params.GetParamValue<std::string>("coord_sys") == "cylindrical" ? CYLINDRICAL
+                                                                                 : SPHERICAL)
 {
   // Parse the node_sets param
   if (params.IsParameterValid("node_sets"))
@@ -83,11 +86,11 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(
                                 " mesh generator because it cannot process an input mesh");
 
   if (node_sets_.size() == 1)
-    return CreateUnpartitioned1DOrthoMesh(node_sets_[0]);
+    return CreateUnpartitioned1DOrthoMesh(node_sets_[0], coord_sys_);
   if (node_sets_.size() == 2)
-    return CreateUnpartitioned2DOrthoMesh(node_sets_[0], node_sets_[1]);
+    return CreateUnpartitioned2DOrthoMesh(node_sets_[0], node_sets_[1], coord_sys_);
   if (node_sets_.size() == 3)
-    return CreateUnpartitioned3DOrthoMesh(node_sets_[0], node_sets_[1], node_sets_[2]);
+    return CreateUnpartitioned3DOrthoMesh(node_sets_[0], node_sets_[1], node_sets_[2], coord_sys_);
 
   // This will never get triggered because of the checks in constructor
   throw std::logic_error("");
@@ -106,6 +109,9 @@ OrthogonalMeshGenerator::GetInputParameters()
   params.AddRequiredParameterArray("node_sets",
                                    "Sets of nodes per dimension. Node values "
                                    "must be monotonically increasing");
+  params.AddOptionalParameter("coord_sys", "cartesian", "The coordinate system of the mesh.");
+  params.ConstrainParameterRange(
+    "coord_sys", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
   return params;
 }
@@ -118,7 +124,8 @@ OrthogonalMeshGenerator::Create(const ParameterBlock& params)
 }
 
 std::shared_ptr<UnpartitionedMesh>
-OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices)
+OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double>& vertices,
+                                                        const CoordinateSystemType coord_sys)
 {
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
@@ -129,6 +136,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
     zverts.emplace_back(0.0, 0.0, z_coord);
 
   umesh->SetDimension(1);
+  umesh->SetCoordinateSystem(coord_sys);
 
   // Create vertices
   const auto Nz = vertices.size();
@@ -188,11 +196,13 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
 
 std::shared_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double>& vertices_1d_x,
-                                                        const std::vector<double>& vertices_1d_y)
+                                                        const std::vector<double>& vertices_1d_y,
+                                                        const CoordinateSystemType coord_sys)
 {
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->SetDimension(2);
+  umesh->SetCoordinateSystem(coord_sys);
 
   // Create vertices
   const auto Nx = vertices_1d_x.size();
@@ -305,11 +315,13 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
 std::shared_ptr<UnpartitionedMesh>
 OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double>& vertices_1d_x,
                                                         const std::vector<double>& vertices_1d_y,
-                                                        const std::vector<double>& vertices_1d_z)
+                                                        const std::vector<double>& vertices_1d_z,
+                                                        const CoordinateSystemType coord_sys)
 {
   auto umesh = std::make_shared<UnpartitionedMesh>();
 
   umesh->SetDimension(3);
+  umesh->SetCoordinateSystem(coord_sys);
 
   // Create vertices
   const auto Nx = vertices_1d_x.size();

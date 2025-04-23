@@ -34,8 +34,6 @@ public:
   /// Returns the reference grid on which this discretization is based.
   const std::shared_ptr<MeshContinuum> GetGrid() const;
 
-  CoordinateSystemType GetCoordinateSystemType() const;
-
   /**
    * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.
    * The modified vectors are: `nodal_nnz_in_diag` which specifies for each row the number of
@@ -213,10 +211,9 @@ public:
 
 protected:
   SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
-                        CoordinateSystemType cs_type,
                         SpatialDiscretizationType sdm_type);
 
-  const std::shared_ptr<MeshContinuum> ref_grid_;
+  const std::shared_ptr<MeshContinuum> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
   std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
 
@@ -226,8 +223,6 @@ protected:
 
   uint64_t local_base_block_size_ = 0;
   uint64_t global_base_block_size_ = 0;
-
-  const CoordinateSystemType coord_sys_type_;
 
 private:
   const SpatialDiscretizationType type_;

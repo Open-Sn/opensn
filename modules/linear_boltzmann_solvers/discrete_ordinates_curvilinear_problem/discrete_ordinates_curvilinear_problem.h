@@ -17,8 +17,6 @@ namespace opensn
 class DiscreteOrdinatesCurvilinearProblem : public DiscreteOrdinatesProblem
 {
 private:
-  /// Coordinate system type.
-  CoordinateSystemType coord_system_type_;
   /** Discretisation pointer to matrices of the secondary cell view  (matrices of the primary cell
    * view forwarded to the base class).
    */

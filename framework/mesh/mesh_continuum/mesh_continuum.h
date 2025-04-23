@@ -30,6 +30,9 @@ public:
   MeshType GetType() const { return mesh_type_; }
   void SetType(const MeshType type) { mesh_type_ = type; }
 
+  CoordinateSystemType GetCoordinateSystem() const { return coord_sys_; }
+  void SetCoordinateSystem(const CoordinateSystemType coord_sys) { coord_sys_ = coord_sys; }
+
   bool Extruded() const { return extruded_; }
   void SetExtruded(const bool extruded) { extruded_ = extruded; }
 
@@ -151,6 +154,7 @@ private:
   /// Spatial dimension
   unsigned int dim_;
   MeshType mesh_type_;
+  CoordinateSystemType coord_sys_;
   bool extruded_;
   OrthoMeshAttributes ortho_attributes_;
   std::map<uint64_t, std::string> boundary_id_map_;

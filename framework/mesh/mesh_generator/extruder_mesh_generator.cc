@@ -233,6 +233,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   }   // for layer
 
   umesh->SetDimension(3);
+  umesh->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   umesh->SetExtruded(true);
 
   umesh->ComputeCentroids();

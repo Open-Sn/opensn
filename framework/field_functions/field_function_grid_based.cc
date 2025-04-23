@@ -30,7 +30,7 @@ FieldFunctionGridBased::GetInputParameters()
 
   params.AddOptionalParameter("discretization", "FV", "The spatial discretization type to be used");
   params.AddOptionalParameter(
-    "coordinate_system", "cartesian", "Coordinate system to apply to element mappings");
+    "coord_sys", "cartesian", "Coordinate system to apply to element mappings");
   params.AddOptionalParameter("quadrature_order",
                               0,
                               "If supplied, will overwrite the default for the "
@@ -41,7 +41,7 @@ FieldFunctionGridBased::GetInputParameters()
 
   params.ConstrainParameterRange("discretization", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
   params.ConstrainParameterRange(
-    "coordinate_system", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
+    "coord_sys", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
   return params;
 }
@@ -326,25 +326,15 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto grid_ptr = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
   if (sdm_type == "FV")
-    return FiniteVolume::New(grid_ptr);
+    return FiniteVolume::New(grid);
 
-  CoordinateSystemType cs_type = CoordinateSystemType::CARTESIAN;
   std::string cs = "cartesian";
-  if (params.IsParameterValid("coordinate_system"))
-  {
-    cs = params.GetParamValue<std::string>("coordinate_system");
-
-    if (cs == "cartesian")
-      cs_type = CoordinateSystemType::CARTESIAN;
-    if (cs == "cylindrical")
-      cs_type = CoordinateSystemType::CYLINDRICAL;
-    if (cs == "spherical")
-      cs_type = CoordinateSystemType::SPHERICAL;
-  }
+  if (params.IsParameterValid("coord_sys"))
+    cs = params.GetParamValue<std::string>("coord_sys");
 
   QuadratureOrder q_order = QuadratureOrder::SECOND;
 
@@ -360,16 +350,18 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
   {
     if (cs == "cartesian")
       q_order = QuadratureOrder::SECOND;
-    if (cs == "cylindrical")
+    else if (cs == "cylindrical")
       q_order = QuadratureOrder::THIRD;
-    if (cs == "spherical")
+    else if (cs == "spherical")
       q_order = QuadratureOrder::FOURTH;
+    else
+      throw std::logic_error("Unrecognized coordinate system.");
   }
 
   if (sdm_type == "PWLC")
-    return PieceWiseLinearContinuous::New(grid_ptr, q_order, cs_type);
+    return PieceWiseLinearContinuous::New(grid, q_order);
   else if (sdm_type == "PWLD")
-    return PieceWiseLinearDiscontinuous::New(grid_ptr, q_order, cs_type);
+    return PieceWiseLinearDiscontinuous::New(grid, q_order);
 
   // If not returned by now
   OpenSnInvalidArgument("Unsupported discretization \"" + sdm_type + "\"");

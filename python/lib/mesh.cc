@@ -452,6 +452,8 @@ WrapMeshGenerator(py::module& mesh)
         Flag, when set, makes the mesh appear in full fidelity on each process.
     node_sets: List[List[float]]
         Sets of nodes per dimension. Node values must be monotonically increasing.
+    coord_sys: {'cartesian', 'cylindrical', 'spherical'}
+        The coordinate system of the mesh.
     )"
   );
 
@@ -494,6 +496,8 @@ WrapMeshGenerator(py::module& mesh)
         .e files.
     boundary_id_fieldname: str, default=''
         The name of the field storing boundary-ids.
+    coord_sys: {'cartesian', 'cylindrical', 'spherical'}
+        The coordinate system of the mesh.
     )"
   );
 
@@ -586,6 +590,8 @@ WrapMeshGenerator(py::module& mesh)
         PETScGraphPartitioner with a "parmetis" setting.
     replicated_mesh: bool, default=False
         Flag, when set, makes the mesh appear in full fidelity on each process.
+    coord_sys: {'cartesian', 'cylindrical', 'spherical'}
+        The coordinate system of the mesh.
     )"
   );
   // clang-format on

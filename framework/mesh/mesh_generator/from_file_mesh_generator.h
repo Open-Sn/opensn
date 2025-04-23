@@ -20,6 +20,7 @@ protected:
   const std::string filename_;
   const std::string block_id_fieldname_;
   const std::string boundary_id_fieldname_;
+  const CoordinateSystemType coord_sys_;
 
 public:
   static InputParameters GetInputParameters();

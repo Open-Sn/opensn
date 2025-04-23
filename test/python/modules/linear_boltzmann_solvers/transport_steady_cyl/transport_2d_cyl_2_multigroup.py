@@ -13,6 +13,7 @@ import sys
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
+
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
@@ -39,7 +40,7 @@ if __name__ == "__main__":
         delta = length[d] / ncells[d]
         node_set = [i * delta for i in range(ncells[d] + 1)]
         nodes.append(node_set)
-    meshgen = OrthogonalMeshGenerator(node_sets=[nodes[0], nodes[1]])
+    meshgen = OrthogonalMeshGenerator(node_sets=[nodes[0], nodes[1]], coord_sys="cylindrical")
     grid = meshgen.Execute()
 
     # Define a logical volume covering the entire domain and set block IDs
@@ -66,7 +67,6 @@ if __name__ == "__main__":
     # Create and configure the curvilinear solver for cylindrical geometry
     phys = DiscreteOrdinatesCurvilinearProblem(
         mesh=grid,
-        coord_system=2,
         num_groups=ngrp,
         groupsets=[
             {

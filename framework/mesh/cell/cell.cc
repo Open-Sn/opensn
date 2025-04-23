@@ -141,9 +141,8 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
 }
 
 void
-CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const unsigned int f)
+CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
 {
-
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
@@ -153,24 +152,46 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const unsigned int f)
   // Compute areas and normals
   if (vertex_ids.size() == 1)
   {
-    // For a 1D cell, a face has a unit area in Cartesian geometry.
-    // The first face always points in the negative direction while the
-    // right always points in the positive direction.
-    area = 1.0;
-    normal = Vector3(0.0, 0.0, f == 0 ? -1.0 : 1.0);
+    // For a 1D cell, the normal always points in the direction of
+    // a vector from the cell centroid to the face centroid.
+    normal = (centroid - cell.centroid).Normalized();
+
+    switch (grid->GetCoordinateSystem())
+    {
+      case CARTESIAN:
+        area = 1.0;
+        break;
+      case CYLINDRICAL:
+        area = 2.0 * M_PI * centroid.z;
+        break;
+      case SPHERICAL:
+        area = 4.0 * M_PI * centroid.z * centroid.z;
+        break;
+      default:
+        throw std::logic_error("Unrecognized coordinate system type.");
+    }
   }
   else if (vertex_ids.size() == 2)
   {
+    // A polygon face is just a line. Normals and areas are
+    // computed using the vertices.
     const auto& v0 = grid->vertices[vertex_ids[0]];
     const auto& v1 = grid->vertices[vertex_ids[1]];
 
-    // A polygon face is a line. The area is the distance between
-    // the two vertices. The outward pointing normal is orthogonal
-    // to the vector pointing from the first vertex to the second,
-    // which can be computed with the cross product of the unit
-    // vector in the +z direction with the prior.
-    area = (v1 - v0).Norm();
+    // The outward pointing normal is orthogonal to the vector
+    // pointing from the first vertex to the second. This is
+    // computed with a cross product with the +z unit vector.
     normal = Vector3(0.0, 0.0, 1.0).Cross(v0 - v1).Normalized();
+
+    // TODO This keeps the old behavior of always computing the Cartesian
+    //      face area. This should be extended to be correct for other
+    //      coordinate systems.
+    switch (grid->GetCoordinateSystem())
+    {
+      default:
+        area = (v1 - v0).Norm();
+        break;
+    }
   }
   else
   {
@@ -189,7 +210,19 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const unsigned int f)
       const auto& v1 = grid->vertices[vid1];
 
       const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
-      const auto subarea = 0.5 * subnormal.Norm();
+
+      // TODO This keeps the old behavior of always computing the Cartesian
+      //      face area. This should be extended to be correct for other
+      //      coordinate systems.
+      double subarea = 0.0;
+      switch (grid->GetCoordinateSystem())
+      {
+        default:
+        {
+          subarea = 0.5 * subnormal.Norm();
+          break;
+        }
+      }
 
       area += subarea;
       normal += subarea * subnormal.Normalized();
@@ -295,9 +328,8 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
-  unsigned int f = 0;
   for (auto& face : faces)
-    face.ComputeGeometricInfo(grid, f++);
+    face.ComputeGeometricInfo(grid, *this);
 
   // Compute cell volumes
   volume = 0.0;
