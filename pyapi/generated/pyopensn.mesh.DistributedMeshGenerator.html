@@ -131,6 +131,7 @@ partitioned into multiple parts, serialized, and distributed to all other MPI ra
 <li><p><strong>partitioner</strong> (<a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>, </em><em>default=None</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
 PETScGraphPartitioner with a “parmetis” setting.</p></li>
 <li><p><strong>replicated_mesh</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when set, makes the mesh appear in full fidelity on each process.</p></li>
+<li><p><strong>coord_sys</strong> (<em>{'cartesian'</em><em>, </em><em>'cylindrical'</em><em>, </em><em>'spherical'}</em>) – The coordinate system of the mesh.</p></li>
 </ul>
 </dd>
 </dl>
