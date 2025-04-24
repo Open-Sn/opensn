@@ -47,7 +47,7 @@ Console::FlushConsole()
   catch (const std::exception& e)
   {
     opensn::log.LogAllError() << e.what();
-    opensn::Exit(EXIT_FAILURE);
+    opensn::mpi_comm.abort(EXIT_FAILURE);
   }
 }
 
@@ -85,14 +85,10 @@ Console::RunConsoleLoop(char*) const
     {
       LuaDoString(console_input);
     }
-    catch (const opensn::RecoverableException& e)
-    {
-      opensn::log.LogAllError() << e.what();
-    }
     catch (const std::exception& e)
     {
       opensn::log.LogAllError() << e.what();
-      Exit(EXIT_FAILURE);
+      opensn::mpi_comm.abort(EXIT_FAILURE);
     }
   } // while not termination posted
 

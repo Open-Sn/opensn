@@ -48,26 +48,6 @@ extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 extern std::vector<std::shared_ptr<Function>> function_stack;
 
-/// Customized exceptions.
-class RecoverableException : public std::runtime_error
-{
-public:
-  explicit RecoverableException(const char* message)
-    : std::runtime_error(std::string("RecoverableException: ") + std::string(message))
-  {
-  }
-  explicit RecoverableException(const std::string& message)
-    : std::runtime_error(std::string("RecoverableException: ") + message)
-  {
-  }
-  RecoverableException(const std::string& prefix, const std::string& message)
-    : std::runtime_error(prefix + message)
-  {
-  }
-
-  ~RecoverableException() noexcept override = default;
-};
-
 /**
  * Attempts to retrieve an object of base-type `shared_ptr<T>` at the given handle. It then attempts
  * to cast it to type `shared_ptr<R>` and, if  successful, will return a reference of type R&.
@@ -171,8 +151,5 @@ void Finalize();
 
 /// Gets the version string.
 std::string GetVersionStr();
-
-/// Exits the program appropriately.
-void Exit(int error_code);
 
 } // namespace opensn

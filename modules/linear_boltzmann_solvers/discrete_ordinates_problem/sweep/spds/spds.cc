@@ -300,8 +300,7 @@ SPDS::MapLocJToPrelocI(int locJ) const
     }
   }
 
-  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToPrelocI.";
-  Exit(EXIT_FAILURE);
+  throw std::runtime_error("SPDS: Invalid mapping encountered in MapLocJToPrelocI");
   return 0;
 }
 
@@ -318,8 +317,7 @@ SPDS::MapLocJToDeplocI(int locJ) const
     }
   }
 
-  log.LogAllError() << "SPDS Invalid mapping encountered in MapLocJToDeplocI.";
-  Exit(EXIT_FAILURE);
+  throw std::runtime_error("SPDS: Invalid mapping encountered in MapLocJToDeplocI");
   return 0;
 }
 

@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi_utils.h"
+#include <sstream>
 
 namespace opensn
 {
@@ -58,7 +59,6 @@ PieceWiseLinearDiscontinuous::New(const std::shared_ptr<MeshContinuum> grid,
 void
 PieceWiseLinearDiscontinuous::OrderNodes()
 {
-  const std::string fname = __FUNCTION__;
   Timer t_stage[6];
 
   t_stage[0].Reset();
@@ -137,7 +137,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
     const auto& global_id_list = ghost_cell_ids_consolidated.at(pid);
 
     if (mapping_list.size() != global_id_list.size())
-      throw std::logic_error(fname + ": Ghost cell mapping error.");
+      throw std::logic_error("PieceWiseLinearDiscontinuous: Ghost cell mapping error");
 
     const size_t list_size = mapping_list.size();
     for (size_t k = 0; k < list_size; ++k)
@@ -306,10 +306,10 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 
     if (not found)
     {
-      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                        << "with global index " << cell.global_id << " and partition-ID "
-                        << cell.partition_id;
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "PieceWiseLinearDiscontinuous: Mapping failed for cell (global index = "
+          << cell.global_id << ", partition id = " << cell.partition_id << ")";
+      throw std::runtime_error(oss.str());
     }
 
     if (storage == UnknownStorageType::BLOCK)
@@ -374,10 +374,10 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 
     if (not found)
     {
-      log.LogAllError() << "SpatialDiscretization_PWL::MapDFEMDOF. Mapping failed for cell "
-                        << "with global index " << cell.global_id << " and partition-ID "
-                        << cell.partition_id;
-      Exit(EXIT_FAILURE);
+      std::stringstream oss;
+      oss << "PieceWiseLinearDiscontinuous: Mapping failed for cell (global index = "
+          << cell.global_id << ", partition id = " << cell.partition_id << ")";
+      throw std::runtime_error(oss.str());
     }
 
     if (storage == UnknownStorageType::BLOCK)

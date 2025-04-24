@@ -221,8 +221,6 @@ MGDiffusionSolver::SetOptions(const InputParameters& params)
 void
 MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
 {
-  const std::string fname = "MGSolver::SetBoundaryOptions";
-
   const auto boundary = params.GetParamValue<std::string>("boundary");
   const auto bc_type = params.GetParamValue<std::string>("type");
   const auto bc_type_lc = LowerCase(bc_type);
@@ -236,7 +234,8 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   }
   else if (bc_type_lc == "dirichlet")
   {
-    throw std::invalid_argument(fname + ": Dirichlet BC is not supported in multigroup diffusion.");
+    throw std::invalid_argument(
+      "MGDiffusionSolver: Dirichlet BC is not supported in multigroup diffusion.");
   }
   else if (bc_type_lc == "neumann")
   {
@@ -244,7 +243,7 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
     std::vector<double> b_values(num_groups_, 1.0);
     const auto f_values = params.GetParamVectorValue<double>("f");
     if (f_values.size() != num_groups_)
-      throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
+      throw std::invalid_argument("MGDiffusionSolver: Expecting " + std::to_string(num_groups_) +
                                   " values in the 'f' parameter.");
 
     BoundaryInfo bndry_info;
@@ -271,7 +270,7 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
   {
     auto a_values = params.GetParamVectorValue<double>("a");
     if (a_values.size() != num_groups_)
-      throw std::invalid_argument("Expecting " + std::to_string(num_groups_) +
+      throw std::invalid_argument("MGDiffusionSolver: Expecting " + std::to_string(num_groups_) +
                                   " values in the 'a' parameter.");
 
     auto b_values = params.GetParamVectorValue<double>("b");
@@ -283,7 +282,7 @@ MGDiffusionSolver::SetBoundaryOptions(const InputParameters& params)
     opensn::log.Log() << "Boundary " << boundary << " set as Robin";
   }
   else
-    throw std::invalid_argument(fname + ": Unsupported boundary type '" + bc_type + "'.");
+    throw std::invalid_argument("MGDiffusionSolver: Unsupported boundary type '" + bc_type + "'.");
 }
 
 void
@@ -295,7 +294,7 @@ MGDiffusionSolver::Initialize()
 
   // Get grid
   if (grid_ptr_ == nullptr)
-    throw std::logic_error(std::string(__PRETTY_FUNCTION__) + " No grid defined.");
+    throw std::logic_error("MGDiffusionSolver: No grid defined.");
   const auto& grid = *grid_ptr_;
 
   log.Log() << "Global num cells: " << grid.GetGlobalNumberOfCells();
@@ -438,31 +437,28 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
 
     // Check valid ids
     if (mat_id < 0)
-    {
-      throw std::logic_error(
-        "MG-diff-InitializeMaterials: Cells encountered with no assigned material.");
-    }
+      throw std::logic_error("MGDiffusionSolver: Cells encountered with no assigned material.");
 
     // Extract properties
     // Check number of groups legal
     if (block_id_to_xs_map_[mat_id]->GetNumGroups() != num_groups_)
     {
-      log.LogAllError() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
-                        << "\" has " << block_id_to_xs_map_[mat_id]->GetNumGroups()
-                        << " groups and "
-                        << "the simulation has " << num_groups_ << " groups. The material "
-                        << "must have the same number of groups.";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "MGDiffusionSolver: Cross-sections for block \"" << mat_id << "\" have "
+          << block_id_to_xs_map_[mat_id]->GetNumGroups() << " group(s) and "
+          << "the simulation has " << num_groups_ << " groups. The material must have "
+          << "the same number of groups as the simulation.";
+      throw std::runtime_error(oss.str());
     }
 
     // Check number of moments
     if (block_id_to_xs_map_[mat_id]->GetScatteringOrder() > 1)
     {
-      log.Log0Warning() << "MG-Diff-InitializeMaterials: Cross-sections on block \"" << mat_id
-                        << "\" has a scattering order of "
-                        << block_id_to_xs_map_[mat_id]->GetScatteringOrder() << " and"
-                        << " the simulation has a scattering order of One (MG-Diff)"
-                        << " The higher moments will therefore not be used.";
+      log.Log0Warning() << "Cross-sections for block \"" << mat_id
+                        << "\" have a scattering order of "
+                        << block_id_to_xs_map_[mat_id]->GetScatteringOrder() << " and "
+                        << "the simulation has a scattering order of one. The higher "
+                        << "moments will not be used.";
     }
 
     materials_list << " number of moments " << block_id_to_xs_map_[mat_id]->GetScatteringOrder() + 1
@@ -504,11 +500,7 @@ MGDiffusionSolver::InitializeMaterials(std::set<int>& material_ids)
   // Compute two-grid params
   do_two_grid_ = basic_options_("do_two_grid").GetBoolValue();
   if ((lfg == num_groups_) and do_two_grid_)
-  {
-    log.Log0Error() << "Two-grid is not possible with no upscattering.";
-    do_two_grid_ = false;
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("MGDiffusionSolver: Two-grid is not possible with no upscattering");
   if (do_two_grid_)
   {
     log.Log() << "ComputeTwoGridParams";
@@ -620,7 +612,6 @@ MGDiffusionSolver::ComputeTwoGridVolumeFractions()
 void
 MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids)
 {
-  const std::string fname = "MGSolver::SetBCs";
   log.Log0Verbose1() << "Setting Boundary Conditions";
 
   uint64_t max_boundary_id = 0;
@@ -633,7 +624,7 @@ MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids)
   for (uint64_t bndry_id : global_unique_bndry_ids)
   {
     if (grid_boundary_id_map.count(bndry_id) == 0)
-      throw std::logic_error(fname + ": Boundary id " + std::to_string(bndry_id) +
+      throw std::logic_error("MGDiffusionSolver: Boundary id " + std::to_string(bndry_id) +
                              " does not have a name-assignment.");
 
     const auto& bndry_name = grid_boundary_id_map.at(bndry_id);
@@ -653,8 +644,7 @@ MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids)
         case BoundaryType::Robin:
         {
           if (bndry_vals.size() != 3)
-            throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
-                                   " Robin needs 3 values in bndry vals.");
+            throw std::logic_error("MGDiffusionSolver: Robin needs 3 values in bndry vals.");
           boundaries_.insert(std::make_pair(bndry_id, MGBoundary(BoundaryType::Robin, bndry_vals)));
           log.Log() << "Boundary " << bndry_name << " set to robin.";
           break;
@@ -672,14 +662,13 @@ MGDiffusionSolver::SetBCs(const std::vector<uint64_t>& global_unique_bndry_ids)
         case BoundaryType::Neumann:
         {
           if (bndry_vals.size() != 3)
-            throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
-                                   " Neumann needs 3 values in bndry vals.");
+            throw std::logic_error("MGDiffusionSolver: Neumann needs 3 values in bndry vals.");
           boundaries_.insert(std::make_pair(bndry_id, MGBoundary{BoundaryType::Robin, bndry_vals}));
           log.Log() << "Boundary " << bndry_name << " set to neumann.";
           break;
         }
         default:
-          throw std::invalid_argument("Unsupported boundary condition type");
+          throw std::invalid_argument("MGDiffusionSolver: Unsupported boundary condition type");
       } // switch boundary type
     }
     else
@@ -786,7 +775,8 @@ MGDiffusionSolver::AssembleAbext()
         for (uint g = 0; g < num_groups_ + i_two_grid; ++g)
         {
           if (std::fabs(bval[g]) < 1e-8)
-            throw std::logic_error("if b=0, this is a Dirichlet BC, not a Robin BC");
+            throw std::logic_error(
+              "MGDiffusionSolver: If b=0, this is a Dirichlet BC, not a Robin BC");
         }
 
         // true Robin when a!=0, otherwise, it is a Neumann:

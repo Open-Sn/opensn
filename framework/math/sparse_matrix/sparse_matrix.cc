@@ -6,6 +6,7 @@
 #include "framework/logging/log.h"
 #include <iomanip>
 #include <algorithm>
+#include <sstream>
 
 namespace opensn
 {
@@ -37,10 +38,10 @@ SparseMatrix::Insert(size_t i, size_t j, double value)
 
   if ((i < 0) or (i >= row_size_) or (j < 0) or (j >= col_size_))
   {
-    log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
-                      << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
-                      << ")";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "SparseMatrix: Insert encountered out of bounds ("
+        << "i = " << i << ", j = " << j << ", bounds = " << row_size_ << ", " << col_size_ << ")";
+    throw std::runtime_error(oss.str());
   }
 
   auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
@@ -65,10 +66,10 @@ SparseMatrix::InsertAdd(size_t i, size_t j, double value)
 
   if ((i < 0) or (i >= row_size_) or (j < 0) or (j >= col_size_))
   {
-    log.LogAllError() << "SparseMatrix::Insert encountered out of bounds,"
-                      << " i=" << i << " j=" << j << " bounds(" << row_size_ << "," << col_size_
-                      << ")";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "SparseMatrix: Insert encountered out of bounds ("
+        << "i = " << i << ", j = " << j << ", bounds = " << row_size_ << ", " << col_size_ << ")";
+    throw std::runtime_error(oss.str());
   }
 
   auto relative_location = std::find(rowI_indices[i].begin(), rowI_indices[i].end(), j);
@@ -94,11 +95,8 @@ SparseMatrix::SetDiagonal(const std::vector<double>& diag)
   size_t num_rows = rowI_values.size();
   // Check size
   if (diag.size() != rowI_values.size())
-  {
-    log.LogAllError() << "Incompatible matrix-vector size encountered "
-                      << "in call to SparseMatrix::SetDiagonal.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error(
+      "SparseMatrix: Incompatible matrix-vector size encountered in call to SetDiagonal");
 
   // Assign values
   for (size_t i = 0; i < num_rows; ++i)
@@ -125,10 +123,9 @@ SparseMatrix::GetValueIJ(size_t i, size_t j) const
   double retval = 0.0;
   if ((i < 0) or (i >= rowI_indices.size()))
   {
-    log.LogAllError() << "Index i out of bounds"
-                      << " in call to SparseMatrix::ValueIJ"
-                      << " i=" << i;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "SparseMatrix: Index i out of bounds in call to ValueIJ (i = " << i << ")";
+    throw std::runtime_error(oss.str());
   }
 
   if (not rowI_indices[i].empty())
@@ -218,10 +215,7 @@ void
 SparseMatrix::CheckInitialized() const
 {
   if (rowI_values.empty())
-  {
-    log.LogAllError() << "Illegal call to unitialized SparseMatrix matrix.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("SparseMatrix: Illegal call to uninitialized matrix");
 }
 
 //  Iterator routines

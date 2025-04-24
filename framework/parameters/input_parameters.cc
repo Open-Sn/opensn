@@ -307,9 +307,10 @@ InputParameters::AssignParameters(const ParameterBlock& params)
 
       if (this->Has(param_name) and (dep_errs.count(param_name) > 0))
       {
-        log.Log0Error() << "Parameter \"" << param_name << "\" has been deprecated.\n"
-                        << dep_errs.at(param_name);
-        Exit(EXIT_FAILURE);
+        std::ostringstream oss;
+        oss << "Parameter \"" << param_name << "\" has been deprecated.\n"
+            << dep_errs.at(param_name);
+        throw std::runtime_error(oss.str());
       }
     }
   }
