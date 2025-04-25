@@ -57,7 +57,6 @@ PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid, Quadra
 void
 PieceWiseLinearContinuous::OrderNodes()
 {
-  const std::string fname = __FUNCTION__;
   // Build set of local scope nodes
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
@@ -138,7 +137,7 @@ PieceWiseLinearContinuous::OrderNodes()
 
     for (const uint64_t node_id : node_list)
       if (node_mapping_.count(node_id) == 0)
-        throw std::logic_error("Error mapping query node.");
+        throw std::logic_error("PieceWiseLinearContinuous: Error mapping query node");
       else
       {
         const int64_t mapping = node_mapping_.at(node_id);
@@ -161,7 +160,7 @@ PieceWiseLinearContinuous::OrderNodes()
       const auto& mappings = nonlocal_node_ids_map_mapped.at(pid);
 
       if (mappings.size() != node_list.size())
-        throw std::logic_error("mappings.size() != node_list.size()");
+        throw std::logic_error("PieceWiseLinearContinuous: mappings.size() != node_list.size()");
 
       const size_t num_nodes = node_list.size();
       for (size_t i = 0; i < num_nodes; ++i)
@@ -173,11 +172,13 @@ PieceWiseLinearContinuous::OrderNodes()
   }
   catch (const std::out_of_range& oor)
   {
-    throw std::out_of_range(fname + ": Processing non-local mapping failed.");
+    throw std::out_of_range("PieceWiseLinearContinuous: Processing non-local mapping failed");
   }
   catch (const std::logic_error& lerr)
   {
-    throw std::logic_error(fname + ": Processing non-local mapping failed." + lerr.what());
+    std::ostringstream oss;
+    oss << "PieceWiseLinearContinuous: Processing non-local mapping failed: " << lerr.what();
+    throw std::logic_error(oss.str());
   }
 }
 
@@ -222,17 +223,11 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   // Writes a message on ir error
   auto IR_MAP_ERROR = []()
-  {
-    log.LogAllError() << "PWL-MapCFEMDOF: ir Mapping error node ";
-    Exit(EXIT_FAILURE);
-  };
+  { throw std::runtime_error("PieceWiseLinearContinuous: ir mapping error"); };
 
   // Writes a message on jr error
   auto JR_MAP_ERROR = []()
-  {
-    log.LogAllError() << "PWL-MapCFEMDOF: jr Mapping error node ";
-    Exit(EXIT_FAILURE);
-  };
+  { throw std::runtime_error("PieceWiseLinearContinuous: jr mapping error"); };
 
   // Checks whether an integer is already in a vector
   auto IS_VALUE_IN_VECTOR = [](const std::vector<int64_t>& vec, int64_t val)
@@ -246,8 +241,6 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
       }
     return already_there;
   };
-
-  //**************************************** END OF UTILITIES
 
   // Build local sparsity pattern
   log.Log0Verbose1() << "Building local sparsity pattern.";

@@ -58,21 +58,23 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
   if (grid_->GetCoordinateSystem() != CoordinateSystemType::CYLINDRICAL and
       grid_->GetCoordinateSystem() != CoordinateSystemType::SPHERICAL)
   {
-    throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                           "invalid coordinate system, static_cast<int>(type) = " +
-                           std::to_string(static_cast<int>(grid_->GetCoordinateSystem())));
+    std::ostringstream oss;
+    oss << "DiscreteOrdinatesCurvilinearSolver: Invalid coordinate system (type = "
+        << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+    throw std::runtime_error(oss.str());
   }
 
   // re-interpret geometry type to curvilinear
   switch (options_.geometry_type)
   {
     case GeometryType::ONED_SLAB:
-      throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                             "invalid geometry, static_cast<int>(type) = " +
-                             std::to_string(static_cast<int>(options_.geometry_type)) +
-                             " for curvilinear coordinate system, static_cast<int>(type) = " +
-                             std::to_string(static_cast<int>(grid_->GetCoordinateSystem())));
+    {
+      std::ostringstream oss;
+      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
+          << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+      throw std::runtime_error(oss.str());
       break;
+    }
     case GeometryType::TWOD_CARTESIAN:
     {
       switch (grid_->GetCoordinateSystem())
@@ -83,19 +85,25 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           break;
         }
         default:
-          throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                                 "invalid geometry, static_cast<int>(type) = " +
-                                 std::to_string(static_cast<int>(options_.geometry_type)) +
-                                 " for curvilinear coordinate system, static_cast<int>(type) = " +
-                                 std::to_string(static_cast<int>(grid_->GetCoordinateSystem())));
+        {
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearSolver: Invalid geometry (type = "
+              << std::to_string(static_cast<int>(options_.geometry_type)) << ") "
+              << "for curvilinear coordinate system (type = "
+              << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+          throw std::runtime_error(oss.str());
+        }
       }
       break;
     }
     default:
-      throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                             "invalid geometry, static_cast<int>(type) = " +
-                             std::to_string(static_cast<int>(options_.geometry_type)) +
-                             " for curvilinear coordinate system");
+    {
+      std::ostringstream oss;
+      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
+          << std::to_string(static_cast<int>(options_.geometry_type)) << ") "
+          << "for curvilinear coordinate system";
+      throw std::runtime_error(oss.str());
+    }
   }
 
   for (size_t gs = 0; gs < groupsets_.size(); ++gs)
@@ -110,10 +118,12 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           std::dynamic_pointer_cast<GLCProductQuadrature2DRZ>(angular_quad_ptr);
 
         if (curvilinear_angular_quad_ptr == nullptr)
-          throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                                 "invalid angular quadrature, static_cast<int>(type) = " +
-                                 std::to_string(static_cast<int>(angular_quad_ptr->GetType())) +
-                                 ", for groupset " + std::to_string(gs));
+        {
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angular quadrature (type = "
+              << static_cast<int>(angular_quad_ptr->GetType()) << ")";
+          throw std::runtime_error(oss.str());
+        }
         break;
       }
       case CoordinateSystemType::SPHERICAL:
@@ -122,16 +132,21 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           std::dynamic_pointer_cast<GLProductQuadrature1DSpherical>(angular_quad_ptr);
 
         if (curvilinear_angular_quad_ptr == nullptr)
-          throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                                 "invalid angular quadrature, static_cast<int>(type) = " +
-                                 std::to_string(static_cast<int>(angular_quad_ptr->GetType())) +
-                                 ", for groupset " + std::to_string(gs));
+        {
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angular quadrature (type = "
+              << static_cast<int>(angular_quad_ptr->GetType()) << ")";
+          throw std::runtime_error(oss.str());
+        }
         break;
       }
       default:
-        throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                               "invalid curvilinear coordinate system, static_cast<int>(type) = " +
-                               std::to_string(static_cast<int>(grid_->GetCoordinateSystem())));
+      {
+        std::ostringstream oss;
+        oss << "DiscreteOrdinatesCurvilinearProblem: Invalid coordinate system (type = "
+            << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+        throw std::runtime_error(oss.str());
+      }
     }
 
     // angle aggregation type must be compatible with coordinate system
@@ -142,26 +157,31 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       {
         if (angleagg_method != AngleAggregationType::AZIMUTHAL)
         {
-          log.LogAllError() << "D_DO_RZ_SteadyState::SteadyStateSolver::PerformInputChecks : "
-                            << "invalid angle aggregation type, static_cast<int>(type) = "
-                            << static_cast<int>(angleagg_method) << ", for groupset " << gs;
-          Exit(EXIT_FAILURE);
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angle aggregation (type = "
+              << static_cast<int>(angleagg_method) << ") for groupsset " << gs;
+          throw std::runtime_error(oss.str());
         }
         break;
       }
       case CoordinateSystemType::SPHERICAL:
       {
         if (angleagg_method != AngleAggregationType::POLAR)
-          throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                                 "invalid angle aggregation type, static_cast<int>(type) = " +
-                                 std::to_string(static_cast<int>(angleagg_method)) + ", " +
-                                 "for groupset " + std::to_string(gs));
+        {
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angle aggregation (type = "
+              << static_cast<int>(angleagg_method) << ") for groupsset " << gs;
+          throw std::runtime_error(oss.str());
+        }
         break;
       }
       default:
-        throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                               "invalid curvilinear coordinate system, static_cast<int>(type) = " +
-                               std::to_string(static_cast<int>(grid_->GetCoordinateSystem())));
+      {
+        std::ostringstream oss;
+        oss << "DiscreteOrdinatesCurvilinearProblem: Invalid coordinate system (type = "
+            << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+        throw std::runtime_error(oss.str());
+      }
     }
   }
 
@@ -193,11 +213,12 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
               const auto& vertex = grid_->vertices[v_id];
               if (std::abs(vertex[d]) > 1.0e-12)
               {
-                throw std::logic_error(
-                  "DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                  "Mesh contains boundary faces with outward-oriented unit normal vector " +
-                  (-1 * unit_normal_vectors[d]).PrintStr() + ", with vertices characterized by v(" +
-                  std::to_string(d) + ") != 0.");
+                std::ostringstream oss;
+                oss << "DiscreteOrdinatesCurvilinearProblem: Mesh contains boundary faces with "
+                    << "outward-oriented unit normal vector " +
+                         (-1 * unit_normal_vectors[d]).PrintStr()
+                    << ", with vertices characterized by v(" + std::to_string(d) + ") != 0";
+                throw std::runtime_error(oss.str());
               }
             }
             face_orthogonal = true;
@@ -205,9 +226,12 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           }
         }
         if (not face_orthogonal)
-          throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : "
-                                 "Mesh contains boundary faces not orthogonal with respect to"
-                                 "Cartesian reference frame.");
+        {
+          std::ostringstream oss;
+          oss << "DiscreteOrdinatesCurvilinearProblem: Mesh contains boundary faces not "
+              << "orthogonal with respect to Cartesian reference frame";
+          throw std::runtime_error(oss.str());
+        }
       }
     }
   }
@@ -235,10 +259,12 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
       break;
     }
     default:
-      throw std::logic_error("DiscreteOrdinatesCurvilinearSolver::"
-                             "InitializeSpatialDiscretization : invalid geometry, "
-                             "static_cast<int>(type) = " +
-                             std::to_string(static_cast<int>(options_.geometry_type)));
+    {
+      std::ostringstream oss;
+      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
+          << static_cast<int>(options_.geometry_type) << ")";
+      throw std::runtime_error(oss.str());
+    }
   }
 
   discretization_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);
@@ -263,10 +289,12 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
       break;
     }
     default:
-      throw std::logic_error(
-        "DiscreteOrdinatesCurvilinearSolver::InitializeSpatialDiscretization : "
-        "invalid geometry, static_cast<int>(type) = " +
-        std::to_string(static_cast<int>(options_.geometry_type)));
+    {
+      std::ostringstream oss;
+      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
+          << static_cast<int>(options_.geometry_type) << ")";
+      throw std::runtime_error(oss.str());
+    }
   }
 
   discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);

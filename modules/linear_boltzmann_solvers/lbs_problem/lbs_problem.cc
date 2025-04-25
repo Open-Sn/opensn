@@ -780,7 +780,6 @@ LBSProblem::SetOptions(const InputParameters& input)
 void
 LBSProblem::SetBoundaryOptions(const InputParameters& params)
 {
-  const std::string fname = __FUNCTION__;
   const auto boundary_name = params.GetParamValue<std::string>("name");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
@@ -812,7 +811,7 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
     }
     case LBSBoundaryType::ARBITRARY:
     {
-      throw std::runtime_error("Arbitrary boundary conditions are not currently supported.");
+      throw std::runtime_error("Arbitrary boundary conditions are not currently supported");
       break;
     }
   }
@@ -848,42 +847,30 @@ void
 LBSProblem::PerformInputChecks()
 {
   if (groups_.empty())
-  {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to solver.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("LBSProblem: No groups added to solver");
 
   num_groups_ = groups_.size();
 
   if (groupsets_.empty())
-  {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No group-sets added to solver.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("LBSProblem: No group-sets added to solver");
+
   int grpset_counter = 0;
   for (auto& group_set : groupsets_)
   {
     if (group_set.groups.empty())
     {
-      log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No groups added to groupset "
-                        << grpset_counter << ".";
-      Exit(EXIT_FAILURE);
+      std::stringstream oss;
+      oss << "LBSPRoblem: No groups added to groupset " << grpset_counter;
+      throw std::runtime_error(oss.str());
     }
     ++grpset_counter;
   }
 
   if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
-  {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No discretization_ method set.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("LBSProblem:: Invalid spatial discretization method");
 
   if (grid_ == nullptr)
-  {
-    log.LogAllError() << "LinearBoltzmann::SteadyStateSolver: No "
-                         "grid_ available from region.";
-    Exit(EXIT_FAILURE);
-  }
+    throw std::runtime_error("LBSProblem: Invalid grid");
 
   // Determine geometry type
   const auto dim = grid_->GetDimension();
@@ -1204,16 +1191,12 @@ LBSProblem::ComputeNumberOfMoments()
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
     if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
         groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
-      throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
-                             "Moment-to-Harmonics mapping differs between "
-                             "groupsets_, which is not allowed.");
+      throw std::logic_error("LBSProblem: Moment-to-Harmonics mapping differs between groupsets");
 
   num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
 
   if (num_moments_ == 0)
-    throw std::logic_error("LinearBoltzmann::SteadyStateSolver::ComputeNumberOfMoments : "
-                           "unable to infer number of moments from angular "
-                           "quadrature.");
+    throw std::logic_error("LBSProblem: Unable to infer number of moments from angular quadrature");
 }
 
 void
@@ -1468,7 +1451,6 @@ LBSProblem::InitializeBoundaries()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeBoundaries");
 
-  const std::string fname = "LBSProblem::InitializeBoundaries";
   // Determine boundary-ids involved in the problem
   std::set<uint64_t> global_unique_bids_set;
   {
@@ -1523,9 +1505,9 @@ LBSProblem::InitializeBoundaries()
               if (not n_ptr)
                 n_ptr = std::make_unique<Vector3>(face.normal);
               if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-                throw std::logic_error(fname +
-                                       ": Not all face normals are, within tolerance, locally the "
-                                       "same for the reflecting boundary condition requested.");
+                throw std::logic_error(
+                  "LBSProblem: Not all face normals are, within tolerance, locally the "
+                  "same for the reflecting boundary condition requested");
             }
 
         // Now check globally
@@ -1550,9 +1532,9 @@ LBSProblem::InitializeBoundaries()
 
             if (local_has_bid)
               if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-                throw std::logic_error(fname +
-                                       ": Not all face normals are, within tolerance, globally the "
-                                       "same for the reflecting boundary condition requested.");
+                throw std::logic_error(
+                  "LBSProblem: Not all face normals are, within tolerance, globally the "
+                  "same for the reflecting boundary condition requested");
 
             global_normal = locJ_normal;
           }

@@ -91,9 +91,7 @@ MPIBarrier()
 static bool reg = opensnlua::Console::Bind(
   [](lua_State* L)
   {
-    luabridge::getGlobalNamespace(L)
-      .addFunction("MPIBarrier", &opensnlua::MPIBarrier)
-      .addFunction("Exit", &Exit);
+    luabridge::getGlobalNamespace(L).addFunction("MPIBarrier", &opensnlua::MPIBarrier);
 
     // enum values
     luabridge::getGlobalNamespace(L)

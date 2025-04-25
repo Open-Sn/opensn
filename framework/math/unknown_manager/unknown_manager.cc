@@ -36,31 +36,17 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
   {
     if (dimension == 0)
     {
-      log.LogAllError() << "UnknownManager: When adding unknown of type VECTOR_N, "
-                        << "the dimension must not be 0.";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "UnknownManager: When adding unknown of type VECTOR_N, dimension cannot be 0";
+      throw std::runtime_error(oss.str());
     }
 
     unknowns.emplace_back(UnknownType::VECTOR_N, dimension, last_unknown_end + 1);
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
-  else if (unk_type == UnknownType::TENSOR)
-  {
-    if (dimension == 0 or dimension == 1)
-    {
-      log.LogAllError() << "UnknownManager: When adding unknown of type TENSOR, "
-                        << "the dimension must not be 0 or 1.";
-      Exit(EXIT_FAILURE);
-    }
-
-    throw std::invalid_argument("UnknownManager: TENSOR unknowns are not "
-                                "supported yet.");
-  }
   else
-  {
-    throw std::logic_error("UnknownManager: Invalid call to AddUnknown(). "
-                           "Unknown type is probably not supported yet.");
-  }
+    throw std::runtime_error(
+      "UnknownManager: Invalid call to AddUnknown. Unknown type not supported.");
 
   return new_unknown_index;
 }
@@ -70,8 +56,9 @@ UnknownManager::MapUnknown(int unknown_id, unsigned int component) const
 {
   if (unknown_id < 0 or unknown_id >= unknowns.size())
   {
-    log.LogAllError() << "UnknownManager failed call to MapUnknown " << unknown_id;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to MapUnknown failed (id = " << unknown_id << ")";
+    throw std::runtime_error(oss.str());
   }
   return unknowns[unknown_id].GetMap(component);
 }
@@ -90,10 +77,10 @@ UnknownManager::SetUnknownNumOffBlockConnections(int unknown_id, int num_conn)
 {
   if (unknown_id < 0 or unknown_id >= unknowns.size())
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownNumOffBlockConnections,"
-                         " illegal index. "
-                      << unknown_id;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownNumOffBlockConnections failed (id = " << unknown_id
+        << ")";
+    throw std::runtime_error(oss.str());
   }
 
   for (auto& val : unknowns[unknown_id].num_off_block_connections)
@@ -107,18 +94,18 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(int unknown_id,
 {
   if (unknown_id < 0 or unknown_id >= unknowns.size())
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentNumOffBlockConnections,"
-                         " illegal unknown index. "
-                      << unknown_id;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownComponentNumOffBlockConnections failed "
+        << "(id = " << unknown_id << ")";
+    throw std::runtime_error(oss.str());
   }
 
   if (component < 0 or component >= unknowns[unknown_id].num_components)
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentNumOffBlockConnections,"
-                         " illegal component index. "
-                      << component;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownComponentNumOffBlockConnections failed "
+        << "(component id = " << component << ")";
+    throw std::runtime_error(oss.str());
   }
 
   unknowns[unknown_id].num_off_block_connections[component] = num_conn;
@@ -129,10 +116,9 @@ UnknownManager::SetUnknownName(int unknown_id, const std::string& unk_name)
 {
   if (unknown_id < 0 or unknown_id >= unknowns.size())
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownName,"
-                         " illegal index. "
-                      << unknown_id;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownName failed (id = " << unknown_id << ")";
+    throw std::runtime_error(oss.str());
   }
 
   unknowns[unknown_id].name = unk_name;
@@ -145,18 +131,17 @@ UnknownManager::SetUnknownComponentName(int unknown_id,
 {
   if (unknown_id < 0 or unknown_id >= unknowns.size())
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentName,"
-                         " illegal unknown index. "
-                      << unknown_id;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownComponentName failed (id = " << unknown_id << ")";
+    throw std::runtime_error(oss.str());
   }
 
   if (component < 0 or component >= unknowns[unknown_id].num_components)
   {
-    log.LogAllError() << "UnknownManager failed call to SetUnknownComponentName,"
-                         " illegal component index. "
-                      << component;
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "UnknownManager: Call to SetUnknownComponentName failed "
+        << "(component id = " << component << ")";
+    throw std::runtime_error(oss.str());
   }
 
   unknowns[unknown_id].component_names[component] = component_name;

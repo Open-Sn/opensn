@@ -191,15 +191,19 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           }
         }
         if (not found)
-          throw std::runtime_error(
-            "Lock-box location not found in call to InitializeAlphaElements. "
-            "Local Cell: " +
-            std::to_string(cell.local_id) + ", Face: " + std::to_string(f) +
-            ", Looking for Cell: " + std::to_string(face.GetNeighborLocalID(grid.get())) +
-            ", Adjacent Face: " + std::to_string(adj_face_idx) +
-            ", Category: " + std::to_string(face_categ) + ", Omega: " + spds.GetOmega().PrintStr() +
-            ", Lock-box Size: " + std::to_string(lock_box.size()));
-
+        {
+          std::ostringstream oss;
+          oss << "AAH_FLUDSCommonData: Lock-box location not found in call to "
+                 "InitializeAlphaElements.\n"
+              << "Local cell: " << std::to_string(cell.local_id) << ", "
+              << "Face: " << std::to_string(f) << ", "
+              << "Looking for cell: " << std::to_string(face.GetNeighborLocalID(grid.get())) << ", "
+              << "Adjacent face: " << std::to_string(adj_face_idx) << ", "
+              << "Category: " << std::to_string(face_categ) << ", "
+              << "Omega: " << spds.GetOmega().PrintStr() << ", "
+              << "Lock-box size: " << std::to_string(lock_box.size());
+          throw std::runtime_error(oss.str());
+        }
       } // if local
     }   // if incident
 
@@ -673,10 +677,12 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_cell < 0)
           {
-            log.LogAll() << "Required predecessor cell not located in call to"
-                         << " InitializeBetaElements. locJ=" << locJ << " prelocI=" << prelocI
-                         << " cell=" << face.neighbor_id;
-            Exit(EXIT_FAILURE);
+            std::ostringstream oss;
+            oss << "AAH_FLUDSCommonData: Required predecessor cell not found in call to "
+                   "InitializeBetaElements ("
+                << "locJ = " << locJ << ", prelocI = " << prelocI << ", cell = " << face.neighbor_id
+                << ")";
+            throw std::runtime_error(oss.str());
           }
 
           // Find associated face
@@ -700,10 +706,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             }
           }
           if (adj_face_idx < 0)
-          {
-            log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Exit(EXIT_FAILURE);
-          }
+            throw std::runtime_error(
+              "AAH_FLUDSCommonData: Associated face not found in call to InitializeBetaElements");
 
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
@@ -723,11 +727,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             }
 
             if (not match_found)
-            {
-              log.LogAll() << "Associated vertex not found in call to "
-                              "InitializeBetaElements";
-              Exit(EXIT_FAILURE);
-            }
+              throw std::runtime_error("AAH_FLUDSCommonData: Associated vertex not found in call "
+                                       "to InitializeBetaElements");
           }
 
           // Push back final face info
@@ -757,10 +758,12 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
           if (ass_cell < 0)
           {
-            log.LogAll() << "Required predecessor cell not located in call to"
-                         << " InitializeBetaElements. locJ=" << locJ
-                         << " delayed prelocI=" << delayed_preLocI << " cell=" << face.neighbor_id;
-            Exit(EXIT_FAILURE);
+            std::ostringstream oss;
+            oss << "AAH_FLUDSCommonData: Required predecessor cell not located in call to "
+                   "InitializeBetaElements ("
+                << "locJ = " << locJ << ", delayed prelocI = " << delayed_preLocI
+                << ", cell = " << face.neighbor_id << ")";
+            throw std::runtime_error(oss.str());
           }
 
           // Find associated face
@@ -795,10 +798,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             }
           }
           if (adj_face_idx < 0)
-          {
-            log.LogAll() << "Associated face not found in call to InitializeBetaElements";
-            Exit(EXIT_FAILURE);
-          }
+            throw std::runtime_error(
+              "AAH_FLUDSCommonData: Associated face not found in call to InitializeBetaElements");
 
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
@@ -818,11 +819,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             }
 
             if (not match_found)
-            {
-              log.LogAll() << "Associated vertex not found in call to "
-                              "InitializeBetaElements";
-              Exit(EXIT_FAILURE);
-            }
+              throw std::runtime_error("AAH_FLUDSCommonData: Associated vertex not found in call "
+                                       "to InitializeBetaElements");
           }
 
           // Push back final face info

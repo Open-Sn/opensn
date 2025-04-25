@@ -79,12 +79,6 @@ Finalize()
   CALI_MARK_END(opensn::program.c_str());
 }
 
-void
-Exit(int error_code)
-{
-  mpi_comm.abort(error_code);
-}
-
 std::string
 GetVersionStr()
 {

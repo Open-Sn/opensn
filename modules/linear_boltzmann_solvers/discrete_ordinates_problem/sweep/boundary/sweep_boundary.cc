@@ -15,8 +15,8 @@ SweepBoundary::PsiIncoming(uint64_t cell_local_id,
                            unsigned int angle_num,
                            int group_num)
 {
-  log.LogAllError() << "PsiIncoming call made to boundary that has no such information.";
-  Exit(EXIT_FAILURE);
+  throw std::runtime_error(
+    "SweepBoundary: PsiIncoming call made to boundary that has no such information.");
   return nullptr;
 }
 
@@ -26,8 +26,8 @@ SweepBoundary::PsiOutgoing(uint64_t cell_local_id,
                            unsigned int fi,
                            unsigned int angle_num)
 {
-  log.LogAllError() << "PsiOutgoing call made to boundary that has no such information.";
-  Exit(EXIT_FAILURE);
+  throw std::runtime_error(
+    "SweepBoundary: PsiOutgoing call made to boundary that has no such information.");
   return nullptr;
 }
 

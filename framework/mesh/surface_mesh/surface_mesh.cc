@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace opensn
 {
@@ -189,15 +190,13 @@ SurfaceMesh::UpdateInternalConnectivity()
 int
 SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const Vector3& transform)
 {
-  const std::string fname = "SurfaceMesh::ImportFromOBJFile";
-
   // Opening the file
   std::ifstream file;
   file.open(fileName);
   if (not file.is_open())
   {
     std::ostringstream oss;
-    oss << fname << ": Failed to open file: " << fileName;
+    oss << "SurfaceMesh: Failed to open file " << fileName;
     throw std::runtime_error(oss.str());
   }
   log.Log() << "Loading surface mesh with transform " << transform.PrintStr();
@@ -604,8 +603,6 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
 int
 SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
 {
-  const std::string fname = "SurfaceMesh::ImportFromTriangleFiles";
-
   std::string node_filename = std::string(fileName) + std::string(".1.node");
   std::string tria_filename = std::string(fileName) + std::string(".1.ele");
 
@@ -615,7 +612,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   if (not file.is_open())
   {
     std::ostringstream oss;
-    oss << fname << ": Failed to open file: " << node_filename;
+    oss << "SurfaceMesh: Failed to open file " << node_filename;
     throw std::runtime_error(oss.str());
   }
 
@@ -640,7 +637,7 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   if (not file.is_open())
   {
     std::ostringstream oss;
-    oss << fname << ": Failed to open file: " << tria_filename;
+    oss << "SurfaceMesh: Failed to open file " << tria_filename;
     throw std::runtime_error(oss.str());
   }
 
@@ -746,8 +743,6 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
 int
 SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 {
-  const std::string fname = "SurfaceMesh::ImportFromMshFiles";
-
   const std::string node_section_name = "$Nodes";
   const std::string elements_section_name = "$Elements";
 
@@ -760,7 +755,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   if (not file.is_open())
   {
     std::ostringstream oss;
-    oss << fname << ": Failed to open file: " << fileName;
+    oss << "SurfaceMesh: Failed to open file " << fileName;
     throw std::runtime_error(oss.str());
   }
 
@@ -776,8 +771,9 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   int num_nodes;
   if (not(iss >> num_nodes))
   {
-    log.LogAllError() << "Failed while trying to read the number of nodes.\n";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "SurfaceMesh: Error reading number of nodes from " << fileName;
+    throw std::runtime_error(oss.str());
   }
 
   vertices_.resize(num_nodes);
@@ -791,14 +787,16 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     int vert_index;
     if (not(iss >> vert_index))
     {
-      log.LogAllError() << "Failed to read vertex index.\n";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "SurfaceMesh: Error reading vertex index from " << fileName;
+      throw std::runtime_error(oss.str());
     }
 
     if (not(iss >> vertex.x >> vertex.y >> vertex.z))
     {
-      log.LogAllError() << "Failed while reading the vertex coordinates.\n";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "SurfaceMesh: Error reading vertex coordinates from " << fileName;
+      throw std::runtime_error(oss.str());
     }
 
     vertices_[vert_index - 1] = vertex;
@@ -817,8 +815,9 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   int num_elems;
   if (not(iss >> num_elems))
   {
-    log.LogAllError() << "Failed to read number of elements.\n";
-    Exit(EXIT_FAILURE);
+    std::ostringstream oss;
+    oss << "SurfaceMesh: Error reading number of elements from " << fileName;
+    throw std::runtime_error(oss.str());
   }
 
   for (int n = 0; n < num_elems; ++n)
@@ -830,23 +829,27 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
     if (not(iss >> element_index >> elem_type >> num_tags))
     {
-      log.LogAllError() << "Failed while reading element index, element "
-                           "type, and number of tags.\n";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "SurfaceMesh: Error reading element index, type, and tags from " << fileName;
+      throw std::runtime_error(oss.str());
     }
 
     if (not(iss >> physical_reg))
     {
-      log.LogAllError() << "Failed while reading physical region.\n";
-      Exit(EXIT_FAILURE);
+      std::ostringstream oss;
+      oss << "SurfaceMesh: Error reading physical regions from " << fileName;
+      throw std::runtime_error(oss.str());
     }
 
     for (int i = 1; i < num_tags; ++i)
+    {
       if (not(iss >> tag))
       {
-        log.LogAllError() << "Failed when reading tags.\n";
-        Exit(EXIT_FAILURE);
+        std::ostringstream oss;
+        oss << "SurfaceMesh: Error reading tag from " << fileName;
+        throw std::runtime_error(oss.str());
       }
+    }
 
     if (elem_type == 2)
     {
@@ -854,11 +857,14 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
       int nodes[num_nodes];
       for (int i = 0; i < num_nodes; ++i)
+      {
         if (not(iss >> nodes[i]))
         {
-          log.LogAllError() << "Failed when reading element node index.\n";
-          Exit(EXIT_FAILURE);
+          std::stringstream oss;
+          oss << "SurfaceMesh: Error reading element node indices from " << fileName;
+          throw std::runtime_error(oss.str());
         }
+      }
 
       newFace->v_indices.resize(num_nodes);
       for (int i = 0; i < num_nodes; ++i)
@@ -870,11 +876,14 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
       int nodes[num_nodes];
       for (int& node : nodes)
+      {
         if (not(iss >> node))
         {
-          log.LogAllError() << "Failed when reading element node index.\n";
-          Exit(EXIT_FAILURE);
+          std::stringstream oss;
+          oss << "SurfaceMesh: Error reading element node indices from " << fileName;
+          throw std::runtime_error(oss.str());
         }
+      }
 
       newFace->v_indices.resize(num_nodes);
       for (int i = 0; i < num_nodes; ++i)

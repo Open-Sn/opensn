@@ -65,7 +65,7 @@ SplitFileMeshGenerator::Execute()
     log.Log0Warning() << "After creating a split-mesh with mpi-processes < "
                          "num_parts the program will now auto terminate. This is not an error "
                          "and is the default behavior for the SplitFileMeshGenerator.\n";
-    Exit(EXIT_SUCCESS);
+    opensn::mpi_comm.abort(EXIT_SUCCESS);
   }
 
   mpi_comm.barrier();
