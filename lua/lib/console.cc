@@ -112,7 +112,7 @@ Console::ExecuteFile(const std::string& fileName, int argc, char** argv) const
 
     if (error > 0)
     {
-      opensn::log.LogAllError() << "LuaError: " << lua_tostring(this->console_state_, -1);
+      opensn::log.LogAllError() << lua_tostring(this->console_state_, -1);
       return EXIT_FAILURE;
     }
   }
