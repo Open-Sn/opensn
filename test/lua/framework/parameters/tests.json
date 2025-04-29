@@ -11,14 +11,14 @@
     "file" : "params_test_01a.lua", "num_procs" : 1, "checks" :
     [
       { "type" : "StrCompare", "key" : "*** WARNING ***  Parameter \"limiter_type\"" },
-      { "type" : "StrCompare", "key" : "**** ERROR ****  Parameter \"scheme\" has been deprecated." }
+      { "type" : "StrCompare", "key" : "**** ERROR ****  params_test_01a.lua:14: Parameter \"scheme\" has been deprecated." }
     ]
   },
   {
     "file" : "params_test_01b.lua", "num_procs" : 1, "checks" :
     [
       { "type" : "StrCompare", "key" : "TestSubObject created num_groups=99" },
-      { "type" : "StrCompare", "key" : "**** ERROR ****  Parameter \"format\" has been deprecated." }
+      { "type" : "StrCompare", "key" : "**** ERROR ****  params_test_01b.lua:13: Parameter \"format\" has been deprecated." }
     ]
   },
   {
