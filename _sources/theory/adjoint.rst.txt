@@ -47,7 +47,7 @@ where
 
   .. math:: \psi^{\dagger,g}(\vec{r},\vec{\Omega},t=T) = h^g_T(\vec{r},\vec{\Omega},g) \qquad \forall \vec{r}\in \mathcal{D},\ \forall g \in [1,G], \ \forall\vec{\Omega}\in \mathcal{S}^2
 | Multigroup :math:`S_n` codes can be used to perform adjoint
-  calculations. One need only adjust the calculation as follows:
+  calculations. One only needs to adjust the calculation as follows:
 
 #. Transpose the multigroup transfer cross sections.
 
@@ -55,7 +55,7 @@ where
    :math:`\vec{\Omega}` as the adjoint flux in direction
    :math:`-\vec{\Omega}`.
 
-#. Interpret the S\ :math:`_n` source in direction :math:`\vec{\Omega}`
+#. Interpret the :math:`S_n` source in direction :math:`\vec{\Omega}`
    as the adjoint source evaluated in direction :math:`-\vec{\Omega}`.
    The user is responsible for doing this.
 
@@ -82,7 +82,7 @@ where
 
   .. math:: (f,h) = \sum_g \int_0^T dt \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)
 
-  .. math:: \langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)
+  .. math:: \langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  | \vec{\Omega} \cdot \vec{n}(\vec{r}) |  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)
 
   .. math:: \left\{ f,h\right\}_\tau = \sum_g  \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},\tau)  h^g(\vec{r},\vec{\Omega},\tau)
 
@@ -109,8 +109,8 @@ where
 | *Example of a quantity of interest (QoI).*
 | Suppose one wants to compute the reaction rate in a detector (detector
   cross section :math:`\sigma_{\text{det}}`) due to a source
-  :math:`Q_{\text{ext}}`. Suppose the boundary of the problem is a
-  vacuum. The problem is steady state. The QoI is given by:
+  :math:`Q_{\text{ext}}`. Suppose the boundary of the problem is 
+  vacuum and that the problem is steady state. The QoI is given by:
 
   .. math:: \text{QoI} = \left( \Psi, \sigma_{\text{det}} \right) \,.
 

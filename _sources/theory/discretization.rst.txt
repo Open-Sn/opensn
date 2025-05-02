@@ -217,7 +217,7 @@ OpenSn, we have:
   materials, low density materials, and in presence of small localized
   sources, ... An uncollided-flux approach is often employed to mitigate
   ray effects. See the section on the uncollided-flux approach for
-  additional details .
+  additional details.
 
 Spatial Discretization
 ----------------------

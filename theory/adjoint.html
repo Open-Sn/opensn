@@ -131,14 +131,14 @@ a known outgoing adjoint flux</p>
 </div></blockquote>
 <div class="line-block">
 <div class="line">Multigroup <span class="math notranslate nohighlight">\(S_n\)</span> codes can be used to perform adjoint
-calculations. One need only adjust the calculation as follows:</div>
+calculations. One only needs to adjust the calculation as follows:</div>
 </div>
 <ol class="arabic simple">
 <li><p>Transpose the multigroup transfer cross sections.</p></li>
 <li><p>Interpret the <span class="math notranslate nohighlight">\(S_n\)</span> flux solution in direction
 <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span> as the adjoint flux in direction
 <span class="math notranslate nohighlight">\(-\vec{\Omega}\)</span>.</p></li>
-<li><p>Interpret the S<span class="math notranslate nohighlight">\(_n\)</span> source in direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>
+<li><p>Interpret the <span class="math notranslate nohighlight">\(S_n\)</span> source in direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>
 as the adjoint source evaluated in direction <span class="math notranslate nohighlight">\(-\vec{\Omega}\)</span>.
 The user is responsible for doing this.</p></li>
 </ol>
@@ -168,7 +168,7 @@ and <span class="math notranslate nohighlight">\(g\)</span> are multigroup-value
 <div><div class="math notranslate nohighlight">
 \[(f,h) = \sum_g \int_0^T dt \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
 <div class="math notranslate nohighlight">
-\[\langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
+\[\langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  | \vec{\Omega} \cdot \vec{n}(\vec{r}) |  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
 <div class="math notranslate nohighlight">
 \[\left\{ f,h\right\}_\tau = \sum_g  \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},\tau)  h^g(\vec{r},\vec{\Omega},\tau)\]</div>
 <p>Note that in the notation <span class="math notranslate nohighlight">\((\Psi,\Psi^{\dagger})\)</span>, the entries
@@ -198,8 +198,8 @@ statement holds</div>
 <div class="line"><em>Example of a quantity of interest (QoI).</em></div>
 <div class="line">Suppose one wants to compute the reaction rate in a detector (detector
 cross section <span class="math notranslate nohighlight">\(\sigma_{\text{det}}\)</span>) due to a source
-<span class="math notranslate nohighlight">\(Q_{\text{ext}}\)</span>. Suppose the boundary of the problem is a
-vacuum. The problem is steady state. The QoI is given by:</div>
+<span class="math notranslate nohighlight">\(Q_{\text{ext}}\)</span>. Suppose the boundary of the problem is
+vacuum and that the problem is steady state. The QoI is given by:</div>
 </div>
 <blockquote>
 <div><div class="math notranslate nohighlight">
