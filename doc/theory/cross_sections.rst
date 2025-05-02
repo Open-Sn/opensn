@@ -33,9 +33,9 @@ Transfer matrix:
 
      .. math:: \vartheta^{g'\to g} = \frac{ \sum_{\text{x}=1,2,3,\ldots} f_\text{x}\sigma_{\text{(n,xn)},0}^{g'\to g}}{ \sum_{\text{x}=1,2,3,\ldots} \sigma_{\text{(n,xn)},0}^{g'\to g}}
 
-     Of course, when (n,xn) reactions are ignored (x\ :math:`\, \ge 2`),
+     Of course, when (n,xn) reactions with x\ :math:`\, \ge 2` are ignored,
      we have :math:`\vartheta^{g'\to g}=1` and
-     :math:`\sigma_{\ell}^{g'\to g} = \sigma_{s,\ell}^{g'\to g}`.
+     :math:`\sigma_{\ell}^{g'\to g} = \sigma_{s,\ell}^{g'\to g}.`
    | The multigroup transfer matrix is a mandatory input of OpenSn. The
      transfer matrix a sparse array of dimension
      :math:`G \times G \times L_{\text{max}}`, whose sparsity pattern
