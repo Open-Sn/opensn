@@ -53,7 +53,6 @@ if __name__ == "__main__":
 
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,
-            "save_angular_flux": True,
         },
         sweep_type="CBC",
     )
