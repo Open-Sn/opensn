@@ -75,7 +75,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   {
     const size_t num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
-    std::vector<uint64_t> succesors;
+    std::vector<uint64_t> successors;
 
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -88,11 +88,11 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       {
         const auto& face = cell.faces[f];
         if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
-          succesors.push_back(grid->cells[face.neighbor_id].local_id);
+          successors.push_back(grid->cells[face.neighbor_id].local_id);
       }
     }
 
-    task_list_.push_back({num_dependencies, succesors, cell.local_id, &cell, false});
+    task_list_.push_back({num_dependencies, successors, cell.local_id, &cell, false});
   }
 }
 
