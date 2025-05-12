@@ -94,7 +94,7 @@ hash_djb2a(const std::string_view sv)
   return hash;
 }
 
-inline constexpr uint32_t operator"" _hash(const char* str, size_t len)
+inline constexpr uint32_t operator""_hash(const char* str, size_t len)
 {
   return hash_djb2a(std::string_view{str, len});
 }
