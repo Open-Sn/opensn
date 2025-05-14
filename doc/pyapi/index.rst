@@ -15,7 +15,7 @@ Spherical harmonics
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    math.Ylm
 
@@ -25,7 +25,7 @@ Point
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    math.Vector3
 
@@ -39,7 +39,7 @@ Function wrappers
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: function.rst
+   :template: function
 
    math.Function
    math.ScalarMaterialFunction
@@ -57,7 +57,7 @@ Base class
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    aquad.AngularQuadrature
 
@@ -67,7 +67,7 @@ Product quadratures
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    aquad.ProductQuadrature
    aquad.CurvilinearQuadrature
@@ -75,7 +75,7 @@ Product quadratures
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    aquad.GLProductQuadrature1DSlab
    aquad.GLCProductQuadrature2DXY
@@ -84,7 +84,7 @@ Product quadratures
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    aquad.GLCProductQuadrature2DRZ
 
@@ -94,7 +94,7 @@ Simplified LDFES quadrature
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    aquad.SLDFESQuadrature
 
@@ -108,7 +108,7 @@ Base class
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    fieldfunc.FieldFunction
 
@@ -118,7 +118,7 @@ Grid-based
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    fieldfunc.FieldFunctionGridBased
 
@@ -128,7 +128,7 @@ Interpolation
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    fieldfunc.FieldFunctionInterpolationPoint
    fieldfunc.FieldFunctionInterpolationLine
@@ -144,7 +144,7 @@ Mesh
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    mesh.MeshContinuum
 
@@ -154,7 +154,7 @@ Surface mesh
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    mesh.SurfaceMesh
 
@@ -164,14 +164,14 @@ Mesh generator
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    mesh.MeshGenerator
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    mesh.ExtruderMeshGenerator
    mesh.OrthogonalMeshGenerator
@@ -185,14 +185,14 @@ Graph partitioner
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    mesh.GraphPartitioner
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    mesh.KBAGraphPartitioner
    mesh.LinearGraphPartitioner
@@ -208,7 +208,7 @@ Base class
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    logvol.LogicalVolume
 
@@ -218,7 +218,7 @@ Logical volume types
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    logvol.BooleanLogicalVolume
    logvol.RCCLogicalVolume
@@ -233,7 +233,7 @@ Response evaluator
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    response.ResponseEvaluator
 
@@ -244,7 +244,7 @@ Source
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    source.PointSource
    source.VolumetricSource
@@ -256,7 +256,7 @@ Cross section
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    xs.MultiGroupXS
 
@@ -270,24 +270,25 @@ Base class
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    solver.Solver
+   solver.Problem
 
-Linear Boltzmann solver
-^^^^^^^^^^^^^^^^^^^^^^^
+Linear Boltzmann problem
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    solver.LBSProblem
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    solver.DiscreteOrdinatesProblem
    solver.DiscreteOrdinatesCurvilinearProblem
@@ -299,7 +300,7 @@ Steady state solver
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    solver.SteadyStateSolver
 
@@ -309,7 +310,7 @@ Non-linear k-eigen
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    solver.NonLinearKEigenSolver
 
@@ -319,7 +320,7 @@ Power iteration solver
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSASolver
@@ -331,7 +332,7 @@ Point kinetic trnasient solver
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    solver.PRKSolver
 
@@ -341,14 +342,14 @@ Diffusion solver
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    diffusion.DiffusionSolverBase
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    diffusion.CFEMDiffusionSolver
    diffusion.DFEMDiffusionSolver
@@ -363,7 +364,7 @@ Base class
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    post.PostProcessor
 
@@ -373,7 +374,7 @@ Post-processor
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    post.SolverInfoPostProcessor
    post.AggregateNodalValuePostProcessor
@@ -385,7 +386,7 @@ Printer
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: python.rst
+   :template: python
 
    post.Print
    post.SetPrinterOptions
@@ -400,7 +401,7 @@ Logs
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    context.SetVerbosityLevel
    context.UseColor
@@ -412,7 +413,7 @@ Caliper configuration
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    context.SetCaliperConfig
    context.EnableCaliper
@@ -423,7 +424,7 @@ Argument vector
 .. autosummary::
    :toctree: generated
    :nosignatures:
-   :template: noinit.rst
+   :template: noinit
 
    context.InitializeWithArgv
    context.Finalize

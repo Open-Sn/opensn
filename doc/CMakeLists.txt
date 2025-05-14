@@ -36,11 +36,8 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(index.rst src/index.rst)
     # installation guide
     configure_file(install/index.rst src/install/index.rst COPYONLY)
-    configure_file(install/install_linux.rst src/install/install_linux.rst COPYONLY)
-    configure_file(install/install_linux_easy.rst src/install/install_linux_easy.rst COPYONLY)
-    configure_file(install/install_macos.rst src/install/install_macos.rst COPYONLY)
-    configure_file(install/install_macos_easy.rst src/install/install_macos_easy.rst COPYONLY)
-    # theory guide
+    configure_file(install/install.rst src/install/install.rst COPYONLY)
+    configure_file(install/easy_install.rst src/install/easy_install.rst COPYONLY)
     configure_file(theory/index.rst src/theory/index.rst)
     configure_file(theory/background.rst src/theory/background.rst)
     configure_file(theory/discretization.rst src/theory/discretization.rst)
