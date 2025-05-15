@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.solver
 
 .. autoclass:: DiscreteOrdinatesCurvilinearProblem
+   :special-members: __init__
+   :members:
+   :inherited-members:

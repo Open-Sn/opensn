@@ -4,3 +4,5 @@
 .. currentmodule:: pyopensn.solver
 
 .. autoclass:: Solver
+   :members:
+   :inherited-members:

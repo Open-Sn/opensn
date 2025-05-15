@@ -162,16 +162,24 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.xs.MultiGroupXS.html">pyopensn.xs.MultiGroupXS</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#solver">Solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id4">Base class</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.Solver.html">pyopensn.solver.Solver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.Problem.html">pyopensn.solver.Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html">pyopensn.solver.LBSProblem</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#linear-boltzmann-problem">Linear Boltzmann problem</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html">pyopensn.solver.LBSProblem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-ordinates-problem">Discrete ordinates problem</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesProblem.html">pyopensn.solver.DiscreteOrdinatesProblem</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-ordinates-curvilinear-problem">Discrete ordinates curvilinear problem</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#solvers">Solvers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solver-base-class">Solver base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.Solver.html">pyopensn.solver.Solver</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#steady-state-solver">Steady state solver</a><ul>
@@ -188,7 +196,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSMMSolver.html">pyopensn.solver.PowerIterationKEigenSMMSolver</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#point-kinetic-trnasient-solver">Point kinetic trnasient solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#point-kinetic-transient-solver">Point kinetic transient solver</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.PRKSolver.html">pyopensn.solver.PRKSolver</a></li>
 </ul>
 </li>
@@ -554,37 +562,47 @@
 </tbody>
 </table>
 </section>
-<section id="solver">
-<h2>Solver<a class="headerlink" href="#solver" title="Link to this heading"></a></h2>
+<section id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Link to this heading"></a></h2>
 <section id="id4">
 <h3>Base class<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.Solver</span></code></a></p></td>
-<td><p>Base class for all solvers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.Problem.html#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.Problem</span></code></a></p></td>
-<td><p>Base class for all problem.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.LBSProblem</span></code></a></p></td>
+<td><p>Base class for all linear Boltzmann problems.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="linear-boltzmann-problem">
-<h3>Linear Boltzmann problem<a class="headerlink" href="#linear-boltzmann-problem" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.LBSProblem</span></code></a></p></td>
-<td><p>Base class for all Linear Boltzmann solvers.</p></td>
-</tr>
-</tbody>
-</table>
+<section id="discrete-ordinates-problem">
+<h3>Discrete ordinates problem<a class="headerlink" href="#discrete-ordinates-problem" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesProblem</span></code></a></p></td>
-<td><p>Base class for discrete ordinates solvers.</p></td>
+<td><p>Base class for discrete ordinates problems in Cartesian geometry.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesCurvilinearProblem</span></code></a></p></td>
-<td><p>A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear coordinates.</p></td>
+</tbody>
+</table>
+</section>
+<section id="discrete-ordinates-curvilinear-problem">
+<h3>Discrete ordinates curvilinear problem<a class="headerlink" href="#discrete-ordinates-curvilinear-problem" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesCurvilinearProblem</span></code></a></p></td>
+<td><p>Base class for discrete ordinates problems in curvilinear geometry.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="solvers">
+<h2>Solvers<a class="headerlink" href="#solvers" title="Link to this heading"></a></h2>
+<section id="solver-base-class">
+<h3>Solver base class<a class="headerlink" href="#solver-base-class" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.Solver</span></code></a></p></td>
+<td><p>Base class for all solvers.</p></td>
 </tr>
 </tbody>
 </table>
@@ -594,7 +612,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.SteadyStateSolver.html#pyopensn.solver.SteadyStateSolver" title="pyopensn.solver.SteadyStateSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.SteadyStateSolver</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Steady state solver.</p></td>
 </tr>
 </tbody>
 </table>
@@ -604,7 +622,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.NonLinearKEigenSolver</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Non-linear k-eigenvalue solver.</p></td>
 </tr>
 </tbody>
 </table>
@@ -614,23 +632,23 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigenSolver</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Power iteration k-eigenvalue solver.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSCDSASolver.html#pyopensn.solver.PowerIterationKEigenSCDSASolver" title="pyopensn.solver.PowerIterationKEigenSCDSASolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigenSCDSASolver</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Power iteration k-eigenvalue solver with SCDSA.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PowerIterationKEigenSMMSolver.html#pyopensn.solver.PowerIterationKEigenSMMSolver" title="pyopensn.solver.PowerIterationKEigenSMMSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PowerIterationKEigenSMMSolver</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Power iteration k-eigenvalue solver with SMM acceleration.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="point-kinetic-trnasient-solver">
-<h3>Point kinetic trnasient solver<a class="headerlink" href="#point-kinetic-trnasient-solver" title="Link to this heading"></a></h3>
+<section id="point-kinetic-transient-solver">
+<h3>Point kinetic transient solver<a class="headerlink" href="#point-kinetic-transient-solver" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.PRKSolver.html#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.PRKSolver</span></code></a></p></td>
-<td><p>General transient solver for point kinetics.</p></td>
+<td><p>General transient solver for point reactor kinetics.</p></td>
 </tr>
 </tbody>
 </table>

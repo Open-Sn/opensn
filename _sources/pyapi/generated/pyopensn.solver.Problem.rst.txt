@@ -1,6 +1,0 @@
-﻿pyopensn.solver.Problem
-=======================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: Problem

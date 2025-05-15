@@ -59,21 +59,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#solver">Solver</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#problem">Problem</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../index.html#id4">Base class</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html#linear-boltzmann-problem">Linear Boltzmann problem</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.LBSProblem.html">pyopensn.solver.LBSProblem</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#discrete-ordinates-problem">Discrete ordinates problem</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.DiscreteOrdinatesProblem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#steady-state-solver">Steady state solver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#point-kinetic-trnasient-solver">Point kinetic trnasient solver</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#diffusion-solver">Diffusion solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-curvilinear-problem">Discrete ordinates curvilinear problem</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#solvers">Solvers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#post-processors">Post-processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
 </ul>
@@ -110,9 +105,10 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">DiscreteOrdinatesProblem</span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="Link to this definition"></a></dt>
-<dd><p>Base class for discrete ordinates solvers.</p>
-<p>This class mostly establishes utilities related to sweeping. From here, steady-state, transient,
-adjoint, and k-eigenvalue solver can be derived.</p>
+<dd><p>Base class for discrete ordinates problems in Cartesian geometry.</p>
+<p>This class implements the algorithms necessary to solve a problem using the discrete ordinates method.
+When paired with a solver base, the result is a solver instance configured for a specific problem type
+(steady-state, transient, adjoint, k-eigenvalue, etc.).</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::DiscreteOrdinatesProblem</span></code>.</p>
 </dd></dl>
 
