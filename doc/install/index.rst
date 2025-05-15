@@ -8,7 +8,5 @@ Quick Install Guide
     :maxdepth: 2
     :titlesonly:
 
-    install_linux
-    install_linux_easy
-    install_macos
-    install_macos_easy
+    install
+    easy_install
