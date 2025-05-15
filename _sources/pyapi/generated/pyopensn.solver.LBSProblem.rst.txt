@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.solver
 
 .. autoclass:: LBSProblem
-   :members:
-   :inherited-members:

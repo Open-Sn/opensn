@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.fieldfunc
 
 .. autoclass:: FieldFunction
-   :members:
-   :inherited-members:

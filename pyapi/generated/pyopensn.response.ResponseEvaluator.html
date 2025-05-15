@@ -9,6 +9,7 @@
   <title>pyopensn.response.ResponseEvaluator &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -107,66 +109,6 @@ evaluations. To begin, one should add all adjoint solutions that are desired for
 computations into the buffer. Then, one should define the different forward source
 configurations of interest. With this, the user can now iterate over the source
 configurations and convolve them against all available adjoint solutions in the buffer.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.ClearForwardSources">
-<span class="sig-name descname"><span class="pre">ClearForwardSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.ClearForwardSources" title="Link to this definition"></a></dt>
-<dd><p>Clear the existing forward sources from the response evaluator.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.EvaluateResponse">
-<span class="sig-name descname"><span class="pre">EvaluateResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.EvaluateResponse" title="Link to this definition"></a></dt>
-<dd><p>Evaluate a response using the specified adjoint buffer with the currently defined sources in
-the solver.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>buffer_name</strong> (<em>str</em>) – <p>???</p>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetBufferOptions">
-<span class="sig-name descname"><span class="pre">SetBufferOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetBufferOptions" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetOptions">
-<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetOptions" title="Link to this definition"></a></dt>
-<dd><p>Set options for the response evaluator for adding adjoint buffers and defining forward sources.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>buffers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of dictionaries containing adjoint buffer specifications.</p></li>
-<li><p><strong>clear_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag to clear existing sources.</p></li>
-<li><p><strong>sources</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of dictionaries containing source specification information.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetSourceOptions">
-<span class="sig-name descname"><span class="pre">SetSourceOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetSourceOptions" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.__init__" title="Link to this definition"></a></dt>
-<dd><p>Construct a response evaluator object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lbs_problem</strong> (<a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><em>pyopensn.solver.Solver</em></a>) – A handle to an existing LBS problem.</p></li>
-<li><p><strong>options</strong> (<em>Dict</em>) – The specification of adjoint buffers and forward to use.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>

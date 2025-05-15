@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.aquad
 
 .. autoclass:: CurvilinearQuadrature
-   :members:
-   :inherited-members:

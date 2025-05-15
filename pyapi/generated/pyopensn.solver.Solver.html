@@ -9,6 +9,7 @@
   <title>pyopensn.solver.Solver &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,11 +18,12 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.solver.LBSProblem" href="pyopensn.solver.LBSProblem.html" />
+    <link rel="next" title="pyopensn.solver.Problem" href="pyopensn.solver.Problem.html" />
     <link rel="prev" title="pyopensn.xs.MultiGroupXS" href="pyopensn.xs.MultiGroupXS.html" /> 
 </head>
 
@@ -60,9 +62,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#solver">Solver</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#id4">Base class</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.Solver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.Problem.html">pyopensn.solver.Problem</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#linear-boltzmann-solver">Linear Boltzmann solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#linear-boltzmann-problem">Linear Boltzmann problem</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#steady-state-solver">Steady state solver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a></li>
@@ -108,30 +111,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">Solver</span></span><a class="headerlink" href="#pyopensn.solver.Solver" title="Link to this definition"></a></dt>
 <dd><p>Base class for all solvers.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::Solver</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.Solver.Advance">
-<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Advance" title="Link to this definition"></a></dt>
-<dd><p>Advance time values function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.Solver.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Execute" title="Link to this definition"></a></dt>
-<dd><p>Execute the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.Solver.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Initialize" title="Link to this definition"></a></dt>
-<dd><p>Initialize the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.Solver.Step">
-<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Step" title="Link to this definition"></a></dt>
-<dd><p>Step the solver.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -141,7 +120,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="pyopensn.xs.MultiGroupXS.html" class="btn btn-neutral float-left" title="pyopensn.xs.MultiGroupXS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.solver.LBSProblem.html" class="btn btn-neutral float-right" title="pyopensn.solver.LBSProblem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.solver.Problem.html" class="btn btn-neutral float-right" title="pyopensn.solver.Problem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

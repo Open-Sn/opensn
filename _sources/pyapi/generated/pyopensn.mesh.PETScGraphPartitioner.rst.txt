@@ -4,6 +4,3 @@
 .. currentmodule:: pyopensn.mesh
 
 .. autoclass:: PETScGraphPartitioner
-   :special-members: __init__
-   :members:
-   :inherited-members:

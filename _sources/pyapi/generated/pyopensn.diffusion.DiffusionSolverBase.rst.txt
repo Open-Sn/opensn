@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.diffusion
 
 .. autoclass:: DiffusionSolverBase
-   :members:
-   :inherited-members:

@@ -9,6 +9,7 @@
   <title>pyopensn.fieldfunc.FieldFunctionInterpolationVolume &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -106,89 +108,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.fieldfunc.</span></span><span class="sig-name descname"><span class="pre">FieldFunctionInterpolationVolume</span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="Link to this definition"></a></dt>
 <dd><p>A line based interpolation function.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::FieldFunctionInterpolationVolume</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.AddFieldFunction">
-<span class="sig-name descname"><span class="pre">AddFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><span class="pre">pyopensn.fieldfunc.FieldFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.AddFieldFunction" title="Link to this definition"></a></dt>
-<dd><p>Add a field function to the list.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Execute" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.ExportToCSV">
-<span class="sig-name descname"><span class="pre">ExportToCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.ExportToCSV" title="Link to this definition"></a></dt>
-<dd><p>Export field function interpolation to CSV files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>base_name</strong> (<em>str</em>) – Base name of the exported CSVs.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetFieldFunctionByName">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GetFieldFunctionByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ff_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetFieldFunctionByName" title="Link to this definition"></a></dt>
-<dd><p>Get the list of field functions matching a given name.</p>
-<p>This function returns a list of field functions whose names match the given argument. The list
-may be empty or contain multiple elements.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ff_name</strong> (<em>str</em>) – Field function name</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetValue">
-<span class="sig-name descname"><span class="pre">GetValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetValue" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Initialize" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetLogicalVolume">
-<span class="sig-name descname"><span class="pre">SetLogicalVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><span class="pre">pyopensn.logvol.LogicalVolume</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetLogicalVolume" title="Link to this definition"></a></dt>
-<dd><p>Set logical volume.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetOperationFunction">
-<span class="sig-name descname"><span class="pre">SetOperationFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.ScalarMaterialFunction.html#pyopensn.math.ScalarMaterialFunction" title="pyopensn.math.ScalarMaterialFunction"><span class="pre">pyopensn.math.ScalarMaterialFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetOperationFunction" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>function</strong> (<a class="reference internal" href="pyopensn.math.ScalarMaterialFunction.html#pyopensn.math.ScalarMaterialFunction" title="pyopensn.math.ScalarMaterialFunction"><em>pyopensn.math.ScalarMaterialFunction</em></a>) – <p>???</p>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetOperationType">
-<span class="sig-name descname"><span class="pre">SetOperationType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetOperationType" title="Link to this definition"></a></dt>
-<dd><p>Set operation type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>op_type</strong> (<em>{'sum'</em><em>, </em><em>'avg'</em><em>, </em><em>'max'</em><em>, </em><em>'sum_func'</em><em>, </em><em>'avg_func'</em><em>, </em><em>'max_func'}</em>) – Operation type.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.__init__" title="Link to this definition"></a></dt>
-<dd><p>Default constructor.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

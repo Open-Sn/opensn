@@ -4,6 +4,3 @@
 .. currentmodule:: pyopensn.mesh
 
 .. autoclass:: DistributedMeshGenerator
-   :special-members: __init__
-   :members:
-   :inherited-members:

@@ -9,6 +9,7 @@
   <title>pyopensn.fieldfunc.FieldFunctionInterpolationLine &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -106,87 +108,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.fieldfunc.</span></span><span class="sig-name descname"><span class="pre">FieldFunctionInterpolationLine</span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="Link to this definition"></a></dt>
 <dd><p>Line based interpolation function.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::FieldFunctionInterpolationLine</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.AddFieldFunction">
-<span class="sig-name descname"><span class="pre">AddFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><span class="pre">pyopensn.fieldfunc.FieldFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.AddFieldFunction" title="Link to this definition"></a></dt>
-<dd><p>Add a field function to the list.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.Execute" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.ExportToCSV">
-<span class="sig-name descname"><span class="pre">ExportToCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.ExportToCSV" title="Link to this definition"></a></dt>
-<dd><p>Export field function interpolation to CSV files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>base_name</strong> (<em>str</em>) – Base name of the exported CSVs.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.GetFieldFunctionByName">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GetFieldFunctionByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ff_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.GetFieldFunctionByName" title="Link to this definition"></a></dt>
-<dd><p>Get the list of field functions matching a given name.</p>
-<p>This function returns a list of field functions whose names match the given argument. The list
-may be empty or contain multiple elements.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ff_name</strong> (<em>str</em>) – Field function name</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.Initialize" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetFinalPoint">
-<span class="sig-name descname"><span class="pre">SetFinalPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetFinalPoint" title="Link to this definition"></a></dt>
-<dd><p>Set final point.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>point</strong> (<a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><em>pyopensn.math.Vector3</em></a>) – Coordinates of the final point.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetInitialPoint">
-<span class="sig-name descname"><span class="pre">SetInitialPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetInitialPoint" title="Link to this definition"></a></dt>
-<dd><p>Set initial point.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>point</strong> (<a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><em>pyopensn.math.Vector3</em></a>) – Coordinates of the initial point.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetNumberOfPoints">
-<span class="sig-name descname"><span class="pre">SetNumberOfPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.SetNumberOfPoints" title="Link to this definition"></a></dt>
-<dd><p>Set number of points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>number</strong> (<em>int</em>) – Number of points.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.__init__" title="Link to this definition"></a></dt>
-<dd><p>Default constructor.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

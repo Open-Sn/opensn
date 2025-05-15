@@ -4,6 +4,3 @@
 .. currentmodule:: pyopensn.response
 
 .. autoclass:: ResponseEvaluator
-   :special-members: __init__
-   :members:
-   :inherited-members:

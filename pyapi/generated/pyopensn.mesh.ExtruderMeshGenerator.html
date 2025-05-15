@@ -9,6 +9,7 @@
   <title>pyopensn.mesh.ExtruderMeshGenerator &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -110,46 +112,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.mesh.</span></span><span class="sig-name descname"><span class="pre">ExtruderMeshGenerator</span></span><a class="headerlink" href="#pyopensn.mesh.ExtruderMeshGenerator" title="Link to this definition"></a></dt>
 <dd><p>Extruded mesh generator.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::ExtruderMeshGenerator</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.ExtruderMeshGenerator.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><span class="pre">pyopensn.mesh.MeshGenerator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></span><a class="headerlink" href="#pyopensn.mesh.ExtruderMeshGenerator.Execute" title="Link to this definition"></a></dt>
-<dd><p>Final execution step.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.ExtruderMeshGenerator.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.ExtruderMeshGenerator" title="pyopensn.mesh.ExtruderMeshGenerator"><span class="pre">pyopensn.mesh.ExtruderMeshGenerator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.ExtruderMeshGenerator.__init__" title="Link to this definition"></a></dt>
-<dd><p>Construct an extruded mesh generator.</p>
-<p>Extrude 2D geometry using extrusion layers. Each layer is specified by either:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> to compute the z-levels automatically.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">h</span></code> to compute the h-levels automatically.</p></li>
-</ul>
-</div></blockquote>
-<p>The list of layers can be specified with a mixture of both ways.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Uniform scale to apply to the mesh after reading.</p></li>
-<li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><em>pyopensn.mesh.MeshGenerator</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of MeshGenerator objects.</p></li>
-<li><p><strong>partitioner</strong> (<a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>, </em><em>default=None</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
-PETScGraphPartitioner with a “parmetis” setting.</p></li>
-<li><p><strong>replicated_mesh</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when set, makes the mesh appear in full fidelity on each process.</p></li>
-<li><p><strong>layers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – List of layers. Parameters of each layers are represented as Python dictionary.</p></li>
-<li><p><strong>top_boundary_name</strong> (<em>str</em><em>, </em><em>default='ZMAX'</em>) – The name to associate with the top boundary.</p></li>
-<li><p><strong>bottom_boundary_name</strong> (<em>str</em><em>, </em><em>default='ZMIN'</em>) – The name to associate with the bottom boundary.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">emg</span> <span class="o">=</span> <span class="n">ExtruderMeshGenerator</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">layers</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}]</span>
-<span class="gp">... </span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </dd></dl>
 
 </section>

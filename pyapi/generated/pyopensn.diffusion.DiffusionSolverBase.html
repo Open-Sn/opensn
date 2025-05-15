@@ -9,6 +9,7 @@
   <title>pyopensn.diffusion.DiffusionSolverBase &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -59,7 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#solver">Solver</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../index.html#id4">Base class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#linear-boltzmann-solver">Linear Boltzmann solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#linear-boltzmann-problem">Linear Boltzmann problem</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#steady-state-solver">Steady state solver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a></li>
@@ -110,89 +112,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.diffusion.</span></span><span class="sig-name descname"><span class="pre">DiffusionSolverBase</span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase" title="Link to this definition"></a></dt>
 <dd><p>Base class for diffusion solvers.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::DiffusionSolverBase</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.Advance">
-<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.Advance" title="Link to this definition"></a></dt>
-<dd><p>Advance time values function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.Execute">
-<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.Execute" title="Link to this definition"></a></dt>
-<dd><p>Execute the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.GetFieldFunctions">
-<span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.GetFieldFunctions" title="Link to this definition"></a></dt>
-<dd><p>Get the field functions associated with the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.Initialize" title="Link to this definition"></a></dt>
-<dd><p>Initialize the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.SetDCoefFunction">
-<span class="sig-name descname"><span class="pre">SetDCoefFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><span class="pre">pyopensn.math.ScalarSpatialMaterialFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.SetDCoefFunction" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> (<a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><em>pyopensn.math.ScalarSpatialMaterialFunction</em></a>) – <p>???</p>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.SetOptions">
-<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.SetOptions" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – An array contain dictionaries for each boundary specification.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.SetQExtFunction">
-<span class="sig-name descname"><span class="pre">SetQExtFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><span class="pre">pyopensn.math.ScalarSpatialMaterialFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.SetQExtFunction" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> (<a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><em>pyopensn.math.ScalarSpatialMaterialFunction</em></a>) – <p>???</p>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.SetSigmaAFunction">
-<span class="sig-name descname"><span class="pre">SetSigmaAFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><span class="pre">pyopensn.math.ScalarSpatialMaterialFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.SetSigmaAFunction" title="Link to this definition"></a></dt>
-<dd><p>???</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> (<a class="reference internal" href="pyopensn.math.ScalarSpatialMaterialFunction.html#pyopensn.math.ScalarSpatialMaterialFunction" title="pyopensn.math.ScalarSpatialMaterialFunction"><em>pyopensn.math.ScalarSpatialMaterialFunction</em></a>) – <p>???</p>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.Step">
-<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.Step" title="Link to this definition"></a></dt>
-<dd><p>Step the solver.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.diffusion.DiffusionSolverBase.UpdateFieldFunctions">
-<span class="sig-name descname"><span class="pre">UpdateFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.diffusion.DiffusionSolverBase" title="pyopensn.diffusion.DiffusionSolverBase"><span class="pre">pyopensn.diffusion.DiffusionSolverBase</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.diffusion.DiffusionSolverBase.UpdateFieldFunctions" title="Link to this definition"></a></dt>
-<dd><p>Updates the field functions with the latest data.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

@@ -9,6 +9,7 @@
   <title>pyopensn.mesh.LinearGraphPartitioner &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -112,18 +114,6 @@
 bad. It partitions cells based on their linear index <code class="docutils literal notranslate"><span class="pre">global_id</span></code> instead of actually
 working with the graph.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::LinearGraphPartitioner</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.LinearGraphPartitioner.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.LinearGraphPartitioner" title="pyopensn.mesh.LinearGraphPartitioner"><span class="pre">pyopensn.mesh.LinearGraphPartitioner</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.LinearGraphPartitioner.__init__" title="Link to this definition"></a></dt>
-<dd><p>Construct a linear graph partitioner.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>all_to_rank</strong> (<em>int</em><em>, </em><em>default=-1</em>) – Rank to which all cells are restricted if non-zero. Otherwise, the partitioner is equivalent
-to a single-rank partitioner.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>

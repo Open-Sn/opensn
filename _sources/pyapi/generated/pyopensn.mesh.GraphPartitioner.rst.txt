@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.mesh
 
 .. autoclass:: GraphPartitioner
-   :members:
-   :inherited-members:

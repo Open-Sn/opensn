@@ -4,6 +4,3 @@
 .. currentmodule:: pyopensn.math
 
 .. autoclass:: VectorSpatialFunction
-   :special-members: __init__, __call__
-   :members:
-   :inherited-members:

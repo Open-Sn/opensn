@@ -4,6 +4,3 @@
 .. currentmodule:: pyopensn.solver
 
 .. autoclass:: PRKSolver
-   :special-members: __init__
-   :members:
-   :inherited-members:

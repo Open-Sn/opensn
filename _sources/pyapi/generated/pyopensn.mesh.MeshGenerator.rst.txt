@@ -4,5 +4,3 @@
 .. currentmodule:: pyopensn.mesh
 
 .. autoclass:: MeshGenerator
-   :members:
-   :inherited-members:

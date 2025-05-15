@@ -9,6 +9,7 @@
   <title>pyopensn.aquad.SLDFESQuadrature &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=1c2e0e3b" />
 
   
@@ -17,9 +18,8 @@
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -106,62 +106,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.aquad.</span></span><span class="sig-name descname"><span class="pre">SLDFESQuadrature</span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature" title="Link to this definition"></a></dt>
 <dd><p>Piecewise-linear finite element quadrature using quadrilaterals.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::SimplifiedLDFESQ::Quadrature</span></code>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.LocallyRefine">
-<span class="sig-name descname"><span class="pre">LocallyRefine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.aquad.SLDFESQuadrature" title="pyopensn.aquad.SLDFESQuadrature"><span class="pre">pyopensn.aquad.SLDFESQuadrature</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cone_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_as_plane_normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.LocallyRefine" title="Link to this definition"></a></dt>
-<dd><p>Locally refines the cells.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ref_dir</strong> (<a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><em>pyopensn.math.Vector3</em></a>) – Reference direction <span class="math notranslate nohighlight">\(\vec{r}\)</span>.</p></li>
-<li><p><strong>cone_size</strong> (<em>float</em>) – Cone size (in radians) <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
-<li><p><strong>dir_as_plane_normal</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, interpret SQ-splitting as when <span class="math notranslate nohighlight">\(|\omega \cdot \vec{r}| &lt; \sin(\theta)\)</span>.
-Otherwise, SQs will be split if <span class="math notranslate nohighlight">\(\omega \cdot \vec{r} &gt; \cos(\theta)\)</span>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.PrintQuadratureToFile">
-<span class="sig-name descname"><span class="pre">PrintQuadratureToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.aquad.SLDFESQuadrature" title="pyopensn.aquad.SLDFESQuadrature"><span class="pre">pyopensn.aquad.SLDFESQuadrature</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.PrintQuadratureToFile" title="Link to this definition"></a></dt>
-<dd><p>Prints the quadrature to file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – File base name.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.aquad.SLDFESQuadrature" title="pyopensn.aquad.SLDFESQuadrature"><span class="pre">pyopensn.aquad.SLDFESQuadrature</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.__init__" title="Link to this definition"></a></dt>
-<dd><p>Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>level</strong> (<em>int</em>) – Number of subdivisions of the inscribed cube.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.abscissae">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">abscissae</span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.abscissae" title="Link to this definition"></a></dt>
-<dd><p>Vector of polar and azimuthal angles.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.omegas">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">omegas</span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.omegas" title="Link to this definition"></a></dt>
-<dd><p>Vector of direction vectors.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.SLDFESQuadrature.weights">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#pyopensn.aquad.SLDFESQuadrature.weights" title="Link to this definition"></a></dt>
-<dd><p>Quadrature weights.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
