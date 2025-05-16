@@ -220,7 +220,7 @@ WrapSysArgv(py::module& context)
     sys_argv: List[str], default=sys.argv
         Argument vector to be used. Default to ``sys.argv``.
     )",
-    py::arg("sys_argv") = py::module::import("sys").attr("argv").cast<py::list>()
+    py::arg_v("sys_argv", py::module::import("sys").attr("argv").cast<py::list>(), "sys.argv")
   );
   // clang-format on
 }
