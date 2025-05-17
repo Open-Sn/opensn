@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.aquad
 
 .. autoclass:: GLCProductQuadrature3DXYZ
+   :special-members: __init__
+   :members:
+   :inherited-members:

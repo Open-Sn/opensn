@@ -106,6 +106,23 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.source.</span></span><span class="sig-name descname"><span class="pre">VolumetricSource</span></span><a class="headerlink" href="#pyopensn.source.VolumetricSource" title="Link to this definition"></a></dt>
 <dd><p>Multi-group isotropic volumetric sources.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::VolumetricSource</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.source.VolumetricSource.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><span class="pre">pyopensn.source.VolumetricSource</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.source.VolumetricSource.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a multi-group isotropic volumetric sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – An array of block IDs the volumetric source is present within.</p></li>
+<li><p><strong>logical_volume</strong> (<a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><em>pyopensn.logvol.LogicalVolume</em></a>) – Logical volume that the volumetric source is defined within.</p></li>
+<li><p><strong>group_strength</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – An array of multi-group source strength values. Note that this is only used when a function
+is not provided.</p></li>
+<li><p><strong>func</strong> (<a class="reference internal" href="pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><em>pyopensn.math.VectorSpatialFunction</em></a>) – Function to be used to define the source.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

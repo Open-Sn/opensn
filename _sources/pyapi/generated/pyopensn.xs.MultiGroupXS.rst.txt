@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.xs
 
 .. autoclass:: MultiGroupXS
+   :special-members: __init__
+   :members:
+   :inherited-members:

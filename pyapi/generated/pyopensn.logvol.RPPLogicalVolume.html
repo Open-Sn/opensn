@@ -110,6 +110,33 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.logvol.</span></span><span class="sig-name descname"><span class="pre">RPPLogicalVolume</span></span><a class="headerlink" href="#pyopensn.logvol.RPPLogicalVolume" title="Link to this definition"></a></dt>
 <dd><p>Rectangular parallel piped logical volume.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::RPPLogicalVolume</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.logvol.RPPLogicalVolume.Inside">
+<span class="sig-name descname"><span class="pre">Inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><span class="pre">pyopensn.logvol.LogicalVolume</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.logvol.RPPLogicalVolume.Inside" title="Link to this definition"></a></dt>
+<dd><p>Check if a point is inside or outside the logical volume.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.logvol.RPPLogicalVolume.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.logvol.RPPLogicalVolume" title="pyopensn.logvol.RPPLogicalVolume"><span class="pre">pyopensn.logvol.RPPLogicalVolume</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.logvol.RPPLogicalVolume.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct an RPP logical volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xmin</strong> (<em>float</em><em>, </em><em>default=0.0</em>) – X-min of the volume.</p></li>
+<li><p><strong>xmax</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – X-max of the volume.</p></li>
+<li><p><strong>ymin</strong> (<em>float</em><em>, </em><em>default=0.0</em>) – Y-min of the volume.</p></li>
+<li><p><strong>ymax</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Y-max of the volume.</p></li>
+<li><p><strong>zmin</strong> (<em>float</em><em>, </em><em>default=0.0</em>) – Z-min of the volume.</p></li>
+<li><p><strong>zmax</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Z-max of the volume.</p></li>
+<li><p><strong>infx</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when true, will ignore xmin and xmax.</p></li>
+<li><p><strong>infy</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when true, will ignore ymin and ymax.</p></li>
+<li><p><strong>infz</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when true, will ignore zmin and zmax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

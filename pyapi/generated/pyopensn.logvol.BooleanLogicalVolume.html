@@ -110,6 +110,36 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.logvol.</span></span><span class="sig-name descname"><span class="pre">BooleanLogicalVolume</span></span><a class="headerlink" href="#pyopensn.logvol.BooleanLogicalVolume" title="Link to this definition"></a></dt>
 <dd><p>Boolean logical volume.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::BooleanLogicalVolume</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.logvol.BooleanLogicalVolume.Inside">
+<span class="sig-name descname"><span class="pre">Inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><span class="pre">pyopensn.logvol.LogicalVolume</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.logvol.BooleanLogicalVolume.Inside" title="Link to this definition"></a></dt>
+<dd><p>Check if a point is inside or outside the logical volume.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.logvol.BooleanLogicalVolume.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.logvol.BooleanLogicalVolume" title="pyopensn.logvol.BooleanLogicalVolume"><span class="pre">pyopensn.logvol.BooleanLogicalVolume</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.logvol.BooleanLogicalVolume.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a boolean logical volume from a list of combinatorial logics. Each combinatorial logic
+are represented by a Python dictionary with two keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">op</span></code> maps to a boolean. True means included and False means excluded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lv</span></code> maps to a <a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.logvol.LogicalVolume</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parts</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – List of dictionary of combinatorial logics.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">blv</span> <span class="o">=</span> <span class="n">BooleanLogicalVolume</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">parts</span><span class="o">=</span><span class="p">[{</span> <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;lv&quot;</span><span class="p">:</span> <span class="n">volume1</span> <span class="p">},</span> <span class="p">{</span> <span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;lv&quot;</span><span class="p">:</span> <span class="n">volume2</span> <span class="p">}]</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>

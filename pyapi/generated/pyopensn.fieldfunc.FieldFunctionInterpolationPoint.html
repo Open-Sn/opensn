@@ -110,6 +110,60 @@
 <dd><p>Line based interpolation function.
 ??? (same docuumentation as FieldFunctionInterpolationLine)</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::FieldFunctionInterpolationPoint</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.AddFieldFunction">
+<span class="sig-name descname"><span class="pre">AddFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><span class="pre">pyopensn.fieldfunc.FieldFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.AddFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Add a field function to the list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.Execute" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.ExportToCSV">
+<span class="sig-name descname"><span class="pre">ExportToCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.ExportToCSV" title="Link to this definition"></a></dt>
+<dd><p>Export field function interpolation to CSV files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>base_name</strong> (<em>str</em>) – Base name of the exported CSVs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.GetFieldFunctionByName">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GetFieldFunctionByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ff_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.GetFieldFunctionByName" title="Link to this definition"></a></dt>
+<dd><p>Get the list of field functions matching a given name.</p>
+<p>This function returns a list of field functions whose names match the given argument. The list
+may be empty or contain multiple elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ff_name</strong> (<em>str</em>) – Field function name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.GetPointValue">
+<span class="sig-name descname"><span class="pre">GetPointValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.GetPointValue" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.Initialize">
+<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.Initialize" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationPoint.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.__init__" title="Link to this definition"></a></dt>
+<dd><p>Default constructor.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

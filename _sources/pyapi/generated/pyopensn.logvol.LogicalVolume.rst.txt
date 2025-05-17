@@ -4,3 +4,5 @@
 .. currentmodule:: pyopensn.logvol
 
 .. autoclass:: LogicalVolume
+   :members:
+   :inherited-members:

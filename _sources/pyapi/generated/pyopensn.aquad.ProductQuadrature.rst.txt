@@ -4,3 +4,5 @@
 .. currentmodule:: pyopensn.aquad
 
 .. autoclass:: ProductQuadrature
+   :members:
+   :inherited-members:

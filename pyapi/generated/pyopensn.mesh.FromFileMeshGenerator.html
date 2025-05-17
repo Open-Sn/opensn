@@ -113,6 +113,34 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.mesh.</span></span><span class="sig-name descname"><span class="pre">FromFileMeshGenerator</span></span><a class="headerlink" href="#pyopensn.mesh.FromFileMeshGenerator" title="Link to this definition"></a></dt>
 <dd><p>From file mesh generator.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::FromFileMeshGenerator</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.mesh.FromFileMeshGenerator.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><span class="pre">pyopensn.mesh.MeshGenerator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><span class="pre">pyopensn.mesh.MeshContinuum</span></a></span></span><a class="headerlink" href="#pyopensn.mesh.FromFileMeshGenerator.Execute" title="Link to this definition"></a></dt>
+<dd><p>Final execution step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.mesh.FromFileMeshGenerator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.FromFileMeshGenerator" title="pyopensn.mesh.FromFileMeshGenerator"><span class="pre">pyopensn.mesh.FromFileMeshGenerator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.FromFileMeshGenerator.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a from-file mesh generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Uniform scale to apply to the mesh after reading.</p></li>
+<li><p><strong>inputs</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><em>pyopensn.mesh.MeshGenerator</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of MeshGenerator objects.</p></li>
+<li><p><strong>partitioner</strong> (<a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>, </em><em>default=None</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
+PETScGraphPartitioner with a “parmetis” setting.</p></li>
+<li><p><strong>replicated_mesh</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when set, makes the mesh appear in full fidelity on each process.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Path to the file.</p></li>
+<li><p><strong>block_id_fieldname</strong> (<em>str</em><em>, </em><em>default='BlockID'</em>) – The name of the field storing cell block/block ids. Only really used for .vtu, .pvtu and
+.e files.</p></li>
+<li><p><strong>boundary_id_fieldname</strong> (<em>str</em><em>, </em><em>default=''</em>) – The name of the field storing boundary-ids.</p></li>
+<li><p><strong>coord_sys</strong> (<em>{'cartesian'</em><em>, </em><em>'cylindrical'</em><em>, </em><em>'spherical'}</em>) – The coordinate system of the mesh.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

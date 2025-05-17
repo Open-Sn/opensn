@@ -110,6 +110,97 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">PRKSolver</span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver" title="Link to this definition"></a></dt>
 <dd><p>General transient solver for point reactor kinetics.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::PRKSolver</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.Advance">
+<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.Advance" title="Link to this definition"></a></dt>
+<dd><p>Advance time values function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.Execute" title="Link to this definition"></a></dt>
+<dd><p>Execute the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetPeriod">
+<span class="sig-name descname"><span class="pre">GetPeriod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetPeriod" title="Link to this definition"></a></dt>
+<dd><p>Get the period computed for the last time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetPopulationNew">
+<span class="sig-name descname"><span class="pre">GetPopulationNew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetPopulationNew" title="Link to this definition"></a></dt>
+<dd><p>Get the population at the next time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetPopulationPrev">
+<span class="sig-name descname"><span class="pre">GetPopulationPrev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetPopulationPrev" title="Link to this definition"></a></dt>
+<dd><p>Get the population at the previous time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetSolutionNew">
+<span class="sig-name descname"><span class="pre">GetSolutionNew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetSolutionNew" title="Link to this definition"></a></dt>
+<dd><p>Get the solution at the next time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetSolutionPrev">
+<span class="sig-name descname"><span class="pre">GetSolutionPrev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetSolutionPrev" title="Link to this definition"></a></dt>
+<dd><p>Get the solution at the previous time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetTimeNew">
+<span class="sig-name descname"><span class="pre">GetTimeNew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetTimeNew" title="Link to this definition"></a></dt>
+<dd><p>Get the time computed for the next time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.GetTimePrev">
+<span class="sig-name descname"><span class="pre">GetTimePrev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.GetTimePrev" title="Link to this definition"></a></dt>
+<dd><p>Get the time computed for the last time step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.Initialize">
+<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.Initialize" title="Link to this definition"></a></dt>
+<dd><p>Initialize the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.SetRho">
+<span class="sig-name descname"><span class="pre">SetRho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.SetRho" title="Link to this definition"></a></dt>
+<dd><p>Set the reactivity value for the solver in dollars.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.Step">
+<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.Step" title="Link to this definition"></a></dt>
+<dd><p>Step the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PRKSolver.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PRKSolver" title="pyopensn.solver.PRKSolver"><span class="pre">pyopensn.solver.PRKSolver</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PRKSolver.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a point reactor kinetics solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>precursor_lambdas</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>0.0124</em><em>, </em><em>0.0304</em><em>, </em><em>0.111</em><em>, </em><em>0.301</em><em>, </em><em>1.14</em><em>, </em><em>3.01</em><em>]</em>) – Decay constants for delayed neutron precursors.</p></li>
+<li><p><strong>precursor_betas</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>0.00021</em><em>, </em><em>0.00142</em><em>, </em><em>0.00127</em><em>, </em><em>0.00257</em><em>, </em><em>0.00075</em><em>, </em><em>0.00027</em><em>]</em>) – Fractional delayed neutron fractions.</p></li>
+<li><p><strong>gen_time</strong> (<em>float</em><em>, </em><em>default=1.0e-5</em>) – Neutron generation time [s].</p></li>
+<li><p><strong>initial_rho</strong> (<em>float</em><em>, </em><em>default=0.0</em>) – Initial reactivity in dollars.</p></li>
+<li><p><strong>initial_source</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Initial source strength [particles/s].</p></li>
+<li><p><strong>initial_population</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Initial neutron population.</p></li>
+<li><p><strong>time_integration</strong> (<em>str</em><em>, </em><em>default='implicit_euler'</em>) – One of {‘explicit_euler’,’implicit_euler’,’crank_nicolson’}.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

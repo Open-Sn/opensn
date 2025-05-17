@@ -110,6 +110,45 @@
 <dd><p>Aggregator for nodal values.</p>
 <p>Gets the max/min/avg nodal value of a field function among nodal values.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::AggregateNodalValuePostProcessor</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.post.AggregateNodalValuePostProcessor.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.post.PostProcessor.html#pyopensn.post.PostProcessor" title="pyopensn.post.PostProcessor"><span class="pre">pyopensn.post.PostProcessor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ManualExecutation'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.post.AggregateNodalValuePostProcessor.Execute" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event_name</strong> (<em>str</em><em>, </em><em>default='ManualExecutation'</em>) – <p>???</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.post.AggregateNodalValuePostProcessor.GetValue">
+<span class="sig-name descname"><span class="pre">GetValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.post.PostProcessor.html#pyopensn.post.PostProcessor" title="pyopensn.post.PostProcessor"><span class="pre">pyopensn.post.PostProcessor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.post.AggregateNodalValuePostProcessor.GetValue" title="Link to this definition"></a></dt>
+<dd><p>???</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.post.AggregateNodalValuePostProcessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.post.AggregateNodalValuePostProcessor" title="pyopensn.post.AggregateNodalValuePostProcessor"><span class="pre">pyopensn.post.AggregateNodalValuePostProcessor</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.post.AggregateNodalValuePostProcessor.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct an aggregate nodal value post processor object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the post processor; used throughout the program.</p></li>
+<li><p><strong>execute_on</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>'SolverInitialized'</em><em>, </em><em>'SolverAdvanced'</em><em>, </em><em>'SolverExecuted'</em><em>, </em><em>'ProgramExecuted'</em><em>]</em>) – List of events at which the post-processor executes.</p></li>
+<li><p><strong>print_on</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>'SolverInitialized'</em><em>, </em><em>'SolverAdvanced'</em><em>, </em><em>'SolverExecuted'</em><em>, </em><em>'ProgramExecuted'</em><em>]</em>) – List of events at which the post-processor prints, ensuring these events are also set for the
+post-processor printer.</p></li>
+<li><p><strong>initial_value</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – Dictionary of initial value.</p></li>
+<li><p><strong>print_numeric_format</strong> (<em>{'fixed'</em><em>, </em><em>'floating_point'</em><em>, </em><em>'scientific'</em><em>, </em><em>'general'}</em><em>, </em><em>default='general'</em>) – Numeric format for printing.</p></li>
+<li><p><strong>print_precision</strong> (<em>int</em><em>, </em><em>default=6</em>) – Number of digits displayed after the decimal point.</p></li>
+<li><p><strong>solvername_filter</strong> (<em>str</em><em>, </em><em>default=''</em>) – Filter to control update events to execute only on calls from the specified solver.</p></li>
+<li><p><strong>operation</strong> (<em>{'max'</em><em>, </em><em>'min'</em><em>, </em><em>'avg'}</em>) – The required operation to be performed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

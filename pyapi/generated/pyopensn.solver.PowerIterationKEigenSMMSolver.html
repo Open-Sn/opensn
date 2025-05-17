@@ -112,6 +112,68 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">PowerIterationKEigenSMMSolver</span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver" title="Link to this definition"></a></dt>
 <dd><p>Power iteration k-eigenvalue solver with SMM acceleration.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::PowerIterationKEigenSMMSolver</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.Advance">
+<span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.Advance" title="Link to this definition"></a></dt>
+<dd><p>Advance time values function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.Execute">
+<span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.Execute" title="Link to this definition"></a></dt>
+<dd><p>Execute the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.GetEigenvalue">
+<span class="sig-name descname"><span class="pre">GetEigenvalue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.GetEigenvalue" title="Link to this definition"></a></dt>
+<dd><p>Return the current k‑eigenvalue.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.Initialize">
+<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.Initialize" title="Link to this definition"></a></dt>
+<dd><p>Initialize the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.Step">
+<span class="sig-name descname"><span class="pre">Step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.Step" title="Link to this definition"></a></dt>
+<dd><p>Step the solver.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSMMSolver.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSMMSolver" title="pyopensn.solver.PowerIterationKEigenSMMSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSMMSolver</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSMMSolver.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a power iteration k-eigen SMM solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lbs_problem</strong> (<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><em>pyopensn.solver.LBSProblem</em></a>) – Existing LBSProblem instance.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>defauilt=1000</em>) – Maximum power iterations allowed.</p></li>
+<li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Tolerance on the k-eigenvalue.</p></li>
+<li><p><strong>reset_solution</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, initialize flux moments to 1.0.</p></li>
+<li><p><strong>reset_phi0</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, reinitializes scalar fluxes to 1.0.</p></li>
+<li><p><strong>accel_pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Maximum number of power iterations allowed for the second-moment method’s diffusion solver.</p></li>
+<li><p><strong>accel_pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Convergence tolerance for the k-eigenvalue in the second-moment method diffusion solver.</p></li>
+<li><p><strong>accel_pi_verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, enables verbose output from the second-moment method diffusion solver.</p></li>
+<li><p><strong>diff_sdm</strong> (<em>{'pwlc'</em><em>, </em><em>'pwld'}</em><em>, </em><em>default='pwlc'</em>) – <dl class="simple">
+<dt>Spatial discretization method for the second-moment method diffusion system.</dt><dd><ul>
+<li><p>’pwlc’: Piecewise Linear Continuous</p></li>
+<li><p>’pwld’: Piecewise Linear Discontinuous</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>diff_l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Absolute residual tolerance for convergence of the diffusion accelerator linear solver.</p></li>
+<li><p><strong>diff_l_max_its</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of iterations allowed for the diffusion accelerator linear solver.</p></li>
+<li><p><strong>diff_petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;&quot;</em>) – Additional PETSc options to pass to the diffusion accelerator solver.</p></li>
+<li><p><strong>diff_verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If True, enables verbose output from the diffusion accelerator.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

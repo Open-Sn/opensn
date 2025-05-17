@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.diffusion
 
 .. autoclass:: DFEMDiffusionSolver
+   :special-members: __init__
+   :members:
+   :inherited-members:

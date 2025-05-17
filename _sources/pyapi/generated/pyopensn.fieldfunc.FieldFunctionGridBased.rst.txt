@@ -4,3 +4,5 @@
 .. currentmodule:: pyopensn.fieldfunc
 
 .. autoclass:: FieldFunctionGridBased
+   :members:
+   :inherited-members:

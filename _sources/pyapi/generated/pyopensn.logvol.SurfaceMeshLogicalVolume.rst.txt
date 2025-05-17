@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.logvol
 
 .. autoclass:: SurfaceMeshLogicalVolume
+   :special-members: __init__
+   :members:
+   :inherited-members:

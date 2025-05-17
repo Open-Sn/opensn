@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.fieldfunc
 
 .. autoclass:: FieldFunctionInterpolationLine
+   :special-members: __init__
+   :members:
+   :inherited-members:

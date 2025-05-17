@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.math
 
 .. autoclass:: Function
+   :special-members: __init__, __call__
+   :members:
+   :inherited-members:

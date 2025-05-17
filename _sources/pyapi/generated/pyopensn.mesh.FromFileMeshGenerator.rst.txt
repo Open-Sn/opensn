@@ -4,3 +4,6 @@
 .. currentmodule:: pyopensn.mesh
 
 .. autoclass:: FromFileMeshGenerator
+   :special-members: __init__
+   :members:
+   :inherited-members:

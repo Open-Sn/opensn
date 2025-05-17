@@ -105,6 +105,151 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.xs.</span></span><span class="sig-name descname"><span class="pre">MultiGroupXS</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS" title="Link to this definition"></a></dt>
 <dd><p>Multi-group cross section.</p>
 <p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::MultiGroupXS</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup">
+<span class="sig-name descname"><span class="pre">CreateSimpleOneGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="Link to this definition"></a></dt>
+<dd><p>Create a one-group cross section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_t</strong> (<em>float</em>) – Total cross section.</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Scattering ratio.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenMC">
+<span class="sig-name descname"><span class="pre">LoadFromOpenMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="Link to this definition"></a></dt>
+<dd><p>Load multi-group cross sections from an OpenMC cross-section file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenSn">
+<span class="sig-name descname"><span class="pre">LoadFromOpenSn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="Link to this definition"></a></dt>
+<dd><p>Load multi-group cross sections from an OpenSn cross section input file.</p>
+<p>Format is as follows (for transfers, gprime denotes the departing group and g is the arrival
+group).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Add comment lines, as needed
+NUM_GROUPS ng
+NUM_MOMENTS nmom
+
+SIGMA_T_BEGIN
+0 value
+.
+.
+ng-1 value
+SIGMA_T_END
+
+SIGMA_A_BEGIN
+0 value
+.
+.
+ng-1 value
+SIGMA_A_END
+
+TRANSFER_MOMENTS_BEGIN
+M_GPRIME_G_VAL 0 0 0 value
+.
+M_GPRIME_G_VAL moment gprime g value
+.
+M_GPRIME_G_VAL nmom-1 ng-1 ng-1 value
+TRANSFER_MOMENTS_END
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.SetScalingFactor">
+<span class="sig-name descname"><span class="pre">SetScalingFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.SetScalingFactor" title="Link to this definition"></a></dt>
+<dd><p>Scale the cross sections by the specified factor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.__init__" title="Link to this definition"></a></dt>
+<dd><p>Create an empty multi-group cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.chi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chi</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.chi" title="Link to this definition"></a></dt>
+<dd><p>Get neutron fission spectrum.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.inv_velocity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inv_velocity</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.inv_velocity" title="Link to this definition"></a></dt>
+<dd><p>Get inverse velocity.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.is_fissionable">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fissionable</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.is_fissionable" title="Link to this definition"></a></dt>
+<dd><p>Check if the material is fissile.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_delayed_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_delayed_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_delayed_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get delayed neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_prompt_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_prompt_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_prompt_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get prompt neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.nu_sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.nu_sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get neutron production due to fission.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.num_groups">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_groups</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.num_groups" title="Link to this definition"></a></dt>
+<dd><p>Get number of energy groups.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.num_precursors">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_precursors</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.num_precursors" title="Link to this definition"></a></dt>
+<dd><p>Get number of precursors.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.scaling_factor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scaling_factor</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.scaling_factor" title="Link to this definition"></a></dt>
+<dd><p>Get the arbitrary scaling factor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.scattering_order">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scattering_order</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.scattering_order" title="Link to this definition"></a></dt>
+<dd><p>Get Legendre scattering order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_a">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_a</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_a" title="Link to this definition"></a></dt>
+<dd><p>Get absorption cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_f</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_f" title="Link to this definition"></a></dt>
+<dd><p>Get fission cross section.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.sigma_t">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sigma_t</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.sigma_t" title="Link to this definition"></a></dt>
+<dd><p>Get total cross section.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
