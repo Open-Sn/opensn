@@ -545,8 +545,8 @@ WrapLBS(py::module& slv)
 
   // discrete ordinates curvilinear problem
   auto do_curvilinear_problem = py::class_<DiscreteOrdinatesCurvilinearProblem,
-                                          std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>,
-                                          DiscreteOrdinatesProblem>(
+                                           std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>,
+                                           DiscreteOrdinatesProblem>(
     slv,
     "DiscreteOrdinatesCurvilinearProblem",
     R"(
