@@ -47,8 +47,37 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_slepc_U235.py",
+    "comment":
+      "3D 172G keigenvalue test using OpenMX MGXS cross-sections and SLEPc Krylov-Schur iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.2800213,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_slepc_power_U235.py",
+    "comment":
+      "3D 172G keigenvalue test using OpenMX MGXS cross-sections and SLEPc power iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.2800213,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_openmcxs_U235_smm.py",
-    "comment": "3D 84G keigenvalue test using OpenMC MGXS cross-sections and power iteration with SMM",
+    "comment":
+      "3D 84G keigenvalue test using OpenMC MGXS cross-sections and power iteration with SMM",
     "num_procs": 4,
     "checks": [
       {
@@ -171,7 +200,8 @@
   },
   {
     "file": "keigenvalue_transport_3d_openmcxs_UO2_crichardson.py",
-    "comment": "3D 172G KEigenvalue::Solver test using Power Iteration with Classic Richardson and OpenMC MGXS library",
+    "comment":
+      "3D 172G KEigenvalue::Solver test using Power Iteration with Classic Richardson and OpenMC MGXS library",
     "num_procs": 4,
     "checks": [
       {
@@ -200,7 +230,8 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_exo_wedge.py",
-    "comment": "3D_2G Infinite medium testing wedge elements of EXODUSII; should agree with the hex model",
+    "comment":
+      "3D_2G Infinite medium testing wedge elements of EXODUSII; should agree with the hex model",
     "num_procs": 1,
     "checks": [
       {
@@ -213,7 +244,8 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_exo_hex.py",
-    "comment": "3D_2G Infinite medium testing hex elements of EXODUSII; should agree with the wedge model",
+    "comment":
+      "3D_2G Infinite medium testing hex elements of EXODUSII; should agree with the wedge model",
     "num_procs": 1,
     "checks": [
       {
