@@ -43,10 +43,10 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   auto& front_wgs_solver = lbs_problem.GetWGSSolvers()[front_gs.id];
   auto frons_wgs_context = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver->GetContext());
 
-  double F_prev = 1.0;
   k_eff = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
+  double F_prev = lbs_problem.ComputeFissionProduction(phi_old_local);
 
   // Start power iterations
   ags_solver->SetVerbosity(lbs_problem.GetOptions().verbose_ags_iterations);

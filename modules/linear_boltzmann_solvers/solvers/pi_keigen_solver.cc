@@ -94,6 +94,8 @@ PowerIterationKEigenSolver::Initialize()
 
   if (reset_phi0_ and not restart_successful)
     LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
+
+  F_prev_ = lbs_problem_->ComputeFissionProduction(phi_old_local_);
 }
 
 void

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/linear_solver/linear_solver.h"
+#include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/math/linear_solver/linear_solver_context.h"
 #include <string>
 #include <utility>
@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-class PETScLinearSolver : public LinearSolver
+class PETScLinearSolver : public LinearSystemSolver
 {
 public:
   struct ToleranceOptions
@@ -26,8 +26,7 @@ public:
     double gmres_breakdown_tolerance = 1.0e6;
   } tolerance_options;
 
-  PETScLinearSolver(IterativeMethod iterative_method,
-                    std::shared_ptr<LinearSolverContext> context_ptr);
+  PETScLinearSolver(IterativeMethod method, std::shared_ptr<LinearSystemContext> context_ptr);
 
   virtual ~PETScLinearSolver();
 
@@ -72,12 +71,10 @@ protected:
 private:
   bool system_set_;
   bool suppress_kspsolve_;
+  std::string PETScIterativeMethodName();
 
 protected:
   static int LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
-
-private:
-  static std::string PETScIterativeMethodName(IterativeMethod iterative_method);
 };
 
 } // namespace opensn
