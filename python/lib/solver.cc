@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/steady_state_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/slepc_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
@@ -1526,6 +1527,48 @@ WrapTransient(py::module& slv)
   // clang-format on
 }
 
+// Wrap linear k-eigen solver
+void
+WrapSLEPcKEigen(py::module& slv)
+{
+  // clang-format off
+  // Linear k-eigen solver
+  auto linear_k_eigen_solver = py::class_<SLEPcKEigenSolver, std::shared_ptr<SLEPcKEigenSolver>,
+                                              Solver>(
+    slv,
+    "SLEPcKEigenSolver",
+    R"(
+    Linear k-eigenvalue solver.
+
+    Wrapper of :cpp:class:`opensn::SLEPcKEigenSolver`.
+    )"
+  );
+  linear_k_eigen_solver.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return SLEPcKEigenSolver::Create(kwargs_to_param_block(params));
+      }
+        ),
+    R"(
+    Construct a linear k-eigenvalue solver.
+
+    Parameters
+    ----------
+    lbs_problem: pyopensn.solver.DiscreteOrdinatesProblem
+        Existing discrete ordinates problem instance.
+    )"
+  );
+  linear_k_eigen_solver.def(
+    "GetEigenvalue",
+    &SLEPcKEigenSolver::GetEigenvalue,
+    R"(
+    Return the current k‑eigenvalue.
+    )"
+  );
+  // clang-format on
+}
+
 // Wrap non-linear k-eigen solver
 void
 WrapNLKEigen(py::module& slv)
@@ -1887,6 +1930,7 @@ py_solver(py::module& pyopensn)
   WrapLBS(slv);
   WrapSteadyState(slv);
   WrapTransient(slv);
+  WrapSLEPcKEigen(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
   WrapPIteration(slv);

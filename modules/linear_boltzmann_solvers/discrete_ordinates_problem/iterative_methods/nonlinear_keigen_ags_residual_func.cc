@@ -14,6 +14,20 @@
 namespace opensn
 {
 
+namespace
+{
+
+int64_t
+GetLocalGroupsetVectorSize(const LBSProblem& lbs_problem, const LBSGroupset& groupset)
+{
+  const auto num_phi_dofs =
+    lbs_problem.GetLocalNodeCount() * lbs_problem.GetNumMoments() * groupset.GetNumGroups();
+  const auto num_delayed_psi_dofs = groupset.angle_agg->GetNumDelayedAngularDOFs().first;
+  return static_cast<int64_t>(num_phi_dofs) + static_cast<int64_t>(num_delayed_psi_dofs);
+}
+
+} // namespace
+
 PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
@@ -33,9 +47,16 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   const auto& groupset_ids = nl_context_ptr->groupset_ids;
 
-  // Disassemble phi vector
-  LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
-    *lbs_problem, groupset_ids, phi, PhiSTLOption::PHI_OLD);
+  // Disassemble scalar fluxes. Delayed angular fluxes are groupset-scoped and are restored
+  // immediately before each groupset sweep below.
+  int64_t offset = 0;
+  for (const auto groupset_id : groupset_ids)
+  {
+    const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
+    LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+      *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
+    offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
+  }
 
   // Compute 1/k F phi
   lbs_problem->ZeroQMoments();
@@ -62,17 +83,18 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   // Sweep all the groupsets
   // After this phi_new = DLinv(MSD phi + 1/k FD phi)
-  for (const auto& groupset : lbs_problem->GetGroupsets())
+  offset = 0;
+  for (const auto groupset_id : groupset_ids)
   {
+    const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
     auto& wgs_context = do_problem->GetWGSContext(groupset.id);
+    LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+      *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
     wgs_context.ApplyInverseTransportOperator(SourceFlags());
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+      *lbs_problem, groupset, r, PhiSTLOption::PHI_NEW, offset);
+    offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
   }
-
-  // Reassemble PETSc vector
-  // We use r as a proxy for delta-phi here since
-  // we are anycase going to subtract phi from it.
-  LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(
-    *lbs_problem, groupset_ids, r, PhiSTLOption::PHI_NEW);
 
   ierr = VecAXPY(r, -1.0, phi);
   if (ierr != PETSC_SUCCESS)
@@ -81,7 +103,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   for (const auto& groupset : lbs_problem->GetGroupsets())
   {
     auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-    WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
+    if (groupset.apply_wgdsa or groupset.apply_tgdsa)
+      WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
   }
 
   // Assign k to the context so monitors can work
