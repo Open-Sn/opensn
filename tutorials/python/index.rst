@@ -10,3 +10,4 @@ Tutorials
    xs/index
    aquad/index
    lbs/index
+   logvol/index
