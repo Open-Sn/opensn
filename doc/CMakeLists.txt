@@ -108,6 +108,13 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
             src/tutorials/aquad/product_GLC.ipynb COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/sLDFE.ipynb
             src/tutorials/aquad/sLDFE.ipynb COPYONLY)
+    # Tutorials logical volume
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/index.rst
+            src/tutorials/aquad/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/introduction.rst
+            src/tutorials/aquad/introduction.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/logvol_examples.ipynb
+            src/tutorials/aquad/product_GLC.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
@@ -125,6 +132,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/mesh)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/aquad)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/logvol)
 
     add_custom_command(
         OUTPUT
