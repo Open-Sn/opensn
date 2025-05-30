@@ -22,7 +22,8 @@ MultiGroupXS::Initialize(double sigma_t, double c)
 }
 
 void
-MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
+MultiGroupXS::Initialize(
+  const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations)
 {
   Reset();
 
@@ -37,9 +38,8 @@ MultiGroupXS::Initialize(std::vector<std::pair<int, double>>& combinations)
   // Loop over cross sections
   for (auto& combo : combinations)
   {
-    // Get the cross section from the stack
-    std::shared_ptr<MultiGroupXS> xs;
-    xs = GetStackItemPtr(multigroup_xs_stack, combo.first, std::string(__FUNCTION__));
+    // Get the cross section
+    auto xs = combo.first;
     xsecs.push_back(xs);
 
     // Set the scaling factor

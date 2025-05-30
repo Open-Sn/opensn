@@ -26,7 +26,8 @@ public:
   void Initialize(double sigma_t, double c);
 
   /// Populates the cross section from a combination of others.
-  void Initialize(std::vector<std::pair<int, double>>& combinations);
+  void
+  Initialize(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
 
   /// This method populates transport cross sections from an OpenSn cross-section file.
   void Initialize(const std::string& file_name);
