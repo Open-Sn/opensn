@@ -107,7 +107,8 @@ included, the above equation is amended as follows
 
 where the prompt fission operator is
 
-.. math:: P_p\Psi = \frac{\chi_p(E)}{4\pi} \int dE \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,
+.. math:: P_p\Psi = \frac{1}{4\pi} \int dE' \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E')p_f(E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,
+(often, the dependence of $p_f(E'\to E)$ is assumed to be weak in the incident energy $E'$ and thus $p_f(E'\to E)\approx p_f(E):=\chi_p(E)$, where $\chi_p$ is known as the prompt fission spectrum).
 
 and the delayed neutron operator is
 
@@ -205,11 +206,11 @@ where
 
       Y_{\ell,m}(\vec{\Omega}) = 
           \begin{cases}
-              (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+              (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
           & \text{if } m < 0 \\
           \\
               \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) & \text{if } m = 0 \\ \\
-          (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+          (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
           & \text{if } m > 0 \\
           \end{cases}
 
@@ -268,7 +269,7 @@ Short summary of Transport Equations Solved in OpenSn
 
    .. math:: L\Psi = M \Sigma \Phi + M F \Phi + Q_{\text{ext}} \,,
 
-   where :math:`P` is the total (prompt+delayed) fission production
+   where :math:`F` is the total (prompt+delayed) fission production
    operator.
 
 -  :math:`k`-eigenvalue transport problem:
