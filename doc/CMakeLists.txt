@@ -110,11 +110,11 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
             src/tutorials/aquad/sLDFE.ipynb COPYONLY)
     # Tutorials logical volume
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/index.rst
-            src/tutorials/aquad/index.rst COPYONLY)
+            src/tutorials/logvol/index.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/introduction.rst
-            src/tutorials/aquad/introduction.rst COPYONLY)
+            src/tutorials/logvol/introduction.rst COPYONLY)
     configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/logvol_examples.ipynb
-            src/tutorials/aquad/product_GLC.ipynb COPYONLY)
+            src/tutorials/logvol/logvol_examples.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
     copy_files("png" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
