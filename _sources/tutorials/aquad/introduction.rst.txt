@@ -1,12 +1,9 @@
-Introduction to Angular Quadratures
-===================================
+Introduction to Logical Volumes
+===============================
 
-Discrete-ordinates codes need angular quadratures to select the sweeping directions and to compute moments of the angular flux.
+Logical volumes can be used to select a collection of cells for various purposes, such as
+- assigning/modifying a `blockID`, or
+- selecting a sub-region for post-processing purposes.
+In the future, assigning/modifying a boundary ID should be possible.
 
-Several choices are possible:
-
-- A Product Quadrature set (using Gauss-Legendre quadrature along the polar angle, and a Gauss-Chebyshev quadrature along the azimuthal angle)
-- A Linear Discontinuous Finite Element (LDFE) Quadrature set that allows for local angular refinement
-
-
-Triangular Quadrature sets and Lebedev sets may be added in the future.
+A cell assignment to a logical volume is determined based on whether the cell centroid is inside the logical volume.

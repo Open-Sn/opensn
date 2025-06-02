@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3.1. Introduction to Angular Quadratures &mdash; OpenSn  documentation</title>
+  <title>3.1. Introduction to Logical Volumes &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="3.2. Product Quadrature" href="product_GLC.html" />
-    <link rel="prev" title="3. Angular Quadrature" href="index.html" /> 
+    <link rel="next" title="4. Linear Boltzmann Solver" href="../lbs/index.html" />
+    <link rel="prev" title="3. Logical Volumes" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,10 +52,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../xs/index.html">2. Cross Sections</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">3. Angular Quadrature</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">3.1. Introduction to Angular Quadratures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="product_GLC.html">3.2. Product Quadrature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sLDFE.html">3.3. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">3. Logical Volumes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.1. Introduction to Logical Volumes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">4. Linear Boltzmann Solver</a></li>
@@ -80,8 +78,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3. </span>Angular Quadrature</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">3.1. </span>Introduction to Angular Quadratures</li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3. </span>Logical Volumes</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1. </span>Introduction to Logical Volumes</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -90,23 +88,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="introduction-to-angular-quadratures">
-<h1><span class="section-number">3.1. </span>Introduction to Angular Quadratures<a class="headerlink" href="#introduction-to-angular-quadratures" title="Link to this heading"></a></h1>
-<p>Discrete-ordinates codes need angular quadratures to select the sweeping directions and to compute moments of the angular flux.</p>
-<p>Several choices are possible:</p>
-<ul class="simple">
-<li><p>A Product Quadrature set (using Gauss-Legendre quadrature along the polar angle, and a Gauss-Chebyshev quadrature along the azimuthal angle)</p></li>
-<li><p>A Linear Discontinuous Finite Element (LDFE) Quadrature set that allows for local angular refinement</p></li>
-</ul>
-<p>Triangular Quadrature sets and Lebedev sets may be added in the future.</p>
+  <section id="introduction-to-logical-volumes">
+<h1><span class="section-number">3.1. </span>Introduction to Logical Volumes<a class="headerlink" href="#introduction-to-logical-volumes" title="Link to this heading"></a></h1>
+<p>Logical volumes can be used to select a collection of cells for various purposes, such as
+- assigning/modifying a <cite>blockID</cite>, or
+- selecting a sub-region for post-processing purposes.
+In the future, assigning/modifying a boundary ID should be possible.</p>
+<p>A cell assignment to a logical volume is determined based on whether the cell centroid is inside the logical volume.</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="3. Angular Quadrature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="product_GLC.html" class="btn btn-neutral float-right" title="3.2. Product Quadrature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="3. Logical Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lbs/index.html" class="btn btn-neutral float-right" title="4. Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
