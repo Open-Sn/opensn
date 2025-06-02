@@ -191,7 +191,8 @@ included, the above equation is amended as follows</p>
 \[\frac{1}{v} \frac{\partial \Psi}{\partial t} = H\Psi  +P_p\Psi + Q_{\text{ext}} + \sum_i S_{d,i} - L\Psi \,,\]</div>
 <p>where the prompt fission operator is</p>
 <div class="math notranslate nohighlight">
-\[P_p\Psi = \frac{\chi_p(E)}{4\pi} \int dE \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,\]</div>
+\[P_p\Psi = \frac{1}{4\pi} \int dE' \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E')p_f(E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,\]</div>
+<p>(often, the dependence of $p_f(E’to E)$ is assumed to be weak in the incident energy $E’$ and thus $p_f(E’to E)approx p_f(E):=chi_p(E)$, where $chi_p$ is known as the prompt fission spectrum).</p>
 <p>and the delayed neutron operator is</p>
 <div class="math notranslate nohighlight">
 \[S_{d,i} = \frac{\chi_{d,i}(E)}{4\pi} C_i(\vec{r},t) \,,\]</div>
@@ -274,11 +275,11 @@ value)</p></li>
 <div class="math notranslate nohighlight">
 \[\begin{split}Y_{\ell,m}(\vec{\Omega}) =
     \begin{cases}
-        (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+        (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
     &amp; \text{if } m &lt; 0 \\
     \\
         \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) &amp; \text{if } m = 0 \\ \\
-    (-1)^m \sqrt(2)\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+    (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
     &amp; \text{if } m &gt; 0 \\
     \end{cases}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(P^m_\ell(\mu)\)</span> is the associated Legendre function of
@@ -328,7 +329,7 @@ flux moments.</p>
 <li><p>Steady-state, subcritical, source-driven transport problem:</p>
 <div class="math notranslate nohighlight">
 \[L\Psi = M \Sigma \Phi + M F \Phi + Q_{\text{ext}} \,,\]</div>
-<p>where <span class="math notranslate nohighlight">\(P\)</span> is the total (prompt+delayed) fission production
+<p>where <span class="math notranslate nohighlight">\(F\)</span> is the total (prompt+delayed) fission production
 operator.</p>
 </li>
 <li><p><span class="math notranslate nohighlight">\(k\)</span>-eigenvalue transport problem:</p>
