@@ -1,8 +1,9 @@
-Logical Volumes
-===============
+Angular Quadrature
+==================
 
 .. toctree::
    :maxdepth: 1
 
    introduction
-   logvol_examples
+   product_GLC
+   sLDFE

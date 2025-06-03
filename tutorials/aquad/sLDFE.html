@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simplified Linear Discontinuous Finite Element (LDFE) Quadrature &mdash; OpenSn  documentation</title>
+  <title>3.3. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -25,7 +25,9 @@
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="4. Linear Boltzmann Solver" href="../lbs/index.html" />
+    <link rel="prev" title="3.2. Product Quadrature" href="product_GLC.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,10 +49,30 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">3. Angular Quadrature</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">3.1. Introduction to Angular Quadratures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="product_GLC.html">3.2. Product Quadrature</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.3. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Example-1:-sLDFE-Quadrature-parameters">3.3.1. Example-1: sLDFE Quadrature parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Plot-the-resulting-quadrature">3.3.2. Plot the resulting quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Example-2:-sLDFE-Quadrature-parameters">3.3.3. Example-2: sLDFE Quadrature parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">3.3.4. Example-1: sLDFE Quadrature parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">3.3.5. Plot the resulting quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">3.3.6. Finalize (for Jupyter Notebook only)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">4. Linear Boltzmann Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logvol/index.html">5. Logical Volumes</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
 </ul>
@@ -69,7 +91,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</li>
+          <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3. </span>Angular Quadrature</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.3. </span>Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -79,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="Simplified-Linear-Discontinuous-Finite-Element-(LDFE)-Quadrature">
-<h1>Simplified Linear Discontinuous Finite Element (LDFE) Quadrature<a class="headerlink" href="#Simplified-Linear-Discontinuous-Finite-Element-(LDFE)-Quadrature" title="Link to this heading"></a></h1>
+<h1><span class="section-number">3.3. </span>Simplified Linear Discontinuous Finite Element (LDFE) Quadrature<a class="headerlink" href="#Simplified-Linear-Discontinuous-Finite-Element-(LDFE)-Quadrature" title="Link to this heading"></a></h1>
 <p>This set uses the simplified Linear Discontinuous Finite Element (LDFE) quadrature.</p>
 <p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
 <p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
@@ -102,7 +126,7 @@
 </div>
 </div>
 <section id="Example-1:-sLDFE-Quadrature-parameters">
-<h2>Example-1: sLDFE Quadrature parameters<a class="headerlink" href="#Example-1:-sLDFE-Quadrature-parameters" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.1. </span>Example-1: sLDFE Quadrature parameters<a class="headerlink" href="#Example-1:-sLDFE-Quadrature-parameters" title="Link to this heading"></a></h2>
 <p>Here, we use the sLDFE Quadrature with 4 levels of uniform refinement, followed by 2 levels of local refinements.</p>
 <p>The local refinement happens around point <span class="math notranslate nohighlight">\(P=[1/\sqrt{3},1/\sqrt{3},1/\sqrt{3}]\)</span>. The first local refinement is for a cone of <span class="math notranslate nohighlight">\(\theta=30^o\)</span> around that point, and the second refinement for a cone of <span class="math notranslate nohighlight">\(\theta=10^o\)</span>.</p>
 <p>When the last argument (boolean variable) is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the refinement of the spherical quadrangles is performed when this condition is met:</p>
@@ -127,7 +151,7 @@
 </div>
 </section>
 <section id="Plot-the-resulting-quadrature">
-<h2>Plot the resulting quadrature<a class="headerlink" href="#Plot-the-resulting-quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.2. </span>Plot the resulting quadrature<a class="headerlink" href="#Plot-the-resulting-quadrature" title="Link to this heading"></a></h2>
 <p>We use the plotting routine found in the <code class="docutils literal notranslate"><span class="pre">tools/</span></code> folder of OpenSn</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -147,10 +171,10 @@
 <p><img alt="quad1" src="../../_images/sLDFE1.png" /></p>
 </section>
 <section id="Example-2:-sLDFE-Quadrature-parameters">
-<h2>Example-2: sLDFE Quadrature parameters<a class="headerlink" href="#Example-2:-sLDFE-Quadrature-parameters" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.3. </span>Example-2: sLDFE Quadrature parameters<a class="headerlink" href="#Example-2:-sLDFE-Quadrature-parameters" title="Link to this heading"></a></h2>
 </section>
 <section id="id1">
-<h2>Example-1: sLDFE Quadrature parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.4. </span>Example-1: sLDFE Quadrature parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>Here, we use the sLDFE Quadrature with 4 levels of uniform refinement, followed by 2 levels of local refinements.</p>
 <p>The local refinement happens around point <span class="math notranslate nohighlight">\(P=[0,0,1]\)</span>. The first local refinement is for a cone of <span class="math notranslate nohighlight">\(\theta=15^o\)</span> around that point, and the second refinement for a cone of <span class="math notranslate nohighlight">\(\theta=4^o\)</span>.</p>
 <p>When the last argument (boolean variable) is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the refinement of the spherical quadrangles is performed when this condition is met:</p>
@@ -174,7 +198,7 @@
 </div>
 </section>
 <section id="id2">
-<h2>Plot the resulting quadrature<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.5. </span>Plot the resulting quadrature<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>We use the plotting routine found in the <code class="docutils literal notranslate"><span class="pre">tools/</span></code> folder of OpenSn</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -203,7 +227,7 @@
 </div>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -228,7 +252,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="product_GLC.html" class="btn btn-neutral float-left" title="3.2. Product Quadrature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lbs/index.html" class="btn btn-neutral float-right" title="4. Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
