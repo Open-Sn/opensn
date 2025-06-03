@@ -71,7 +71,7 @@ class CMakeBuilder(build_ext):
         # get generator from environment if precised
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
         if cmake_generator:
-            cmake_args += ["-G {cmake_generator}"]
+            cmake_args += [f"-G {cmake_generator}"]
         # get extra CMake arguments
         if "CMAKE_ARGS" in os.environ:
             cmake_args += [
