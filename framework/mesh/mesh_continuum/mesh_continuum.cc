@@ -167,6 +167,13 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
 
+  if (face_size_histogram.empty())
+  {
+    log.LogAllWarning() << "MeshContinuum::MakeGridFaceHistogram called on mesh "
+                        "with no faces.";
+    return std::make_shared<GridFaceHistogram>(face_categories_list);
+  }
+
   // Determine total face dofs
   size_t total_face_dofs_count = 0;
   for (auto face_size : face_size_histogram)

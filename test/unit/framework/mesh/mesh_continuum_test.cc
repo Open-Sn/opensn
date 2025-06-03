@@ -204,3 +204,10 @@ TEST_F(MeshContinuumTest, PointInsideCellFace3D)
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);
 }
+
+TEST_F(MeshContinuumTest, EmptyFaceHistogram)
+{
+  auto grid_ptr = std::make_shared<MeshContinuum>();
+  ASSERT_NO_THROW({ auto hist = grid_ptr->MakeGridFaceHistogram();
+                    EXPECT_EQ(hist->GetNumberOfFaceHistogramBins(), 0u); });
+}
