@@ -16,11 +16,9 @@ namespace opensn
  * The workflow for this utility is constructed to minimize the file reading necessary for
  * evaluations. To begin, one should add all adjoint solutions that are desired for response
  * computations into the buffer. Then, one should define the different forward source
- * configurations of interest in Lua. With this, the user can now iterate over the source
- * configurations in Lua and convolve them against all available adjoint solutions in the buffer.
- * For example,
- * \code
- *    buffers = {
+ * configurations of interest in the input. With this, the user can now iterate over the source
+ * configurations in the input and convolve them against all available adjoint solutions in the
+ * buffer. For example, \code buffers = {
  *        {
  *            buffer1,
  *            buffer2,

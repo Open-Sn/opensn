@@ -7,8 +7,6 @@ Read a cross section file, apply a scaling factor, and print out some components
 import pprint
 import logging
 
-# A helper function similar to the Lua dump function
-
 
 def dump(o):
     return pprint.pformat(o)

@@ -29,8 +29,6 @@ Do **NOT** merge `main` into your feature branch.
 - C++ code should be formatted according to our `clang-format` choices, found in 
 [the .clang_format](https://github.com/Open-Sn/opensn/blob/main/.clang-format) file in the repository root.
 
-- Lua input files must be formated using StyLua, [see these instructions.](https://github.com/Open-Sn/opensn/blob/main/tools/lua-input-style.md)
-
 - Python linting and style guide checking is performed using [flake8](https://flake8.pycqa.org/en/latest/index.html) 
 and our style guide configuration is found in the [.flake8](https://github.com/Open-Sn/opensn/blob/main/.flake8) file in the repository root.
 

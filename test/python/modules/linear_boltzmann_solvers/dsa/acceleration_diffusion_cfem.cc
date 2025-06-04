@@ -135,8 +135,8 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
                              false,
                              true);
   // TODO: For this to work, add MMS support into `lbs/acceleration/DiffusionSolver`
-  // solver.options.ref_solution_lua_function = "MMS_phi";
-  // solver.options.source_lua_function = "MMS_q";
+  // solver.options.ref_solution_function = "MMS_phi";
+  // solver.options.source_function = "MMS_q";
   solver.options.verbose = true;
   solver.options.residual_tolerance = 1.0e-12;
   solver.options.perform_symmetry_check = true;

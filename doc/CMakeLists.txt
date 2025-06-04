@@ -50,7 +50,6 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(devguide/index.rst src/devguide/index.rst)
     configure_file(devguide/coding_standard.md src/devguide/coding_standard.md)
     configure_file(devguide/workflow.md src/devguide/workflow.md)
-    configure_file(devguide/lua_bindings.md src/devguide/lua_bindings.md)
     configure_file(devguide/py_bindings.rst src/devguide/py_bindings.rst COPYONLY)
     # Python API
     configure_file(pyapi/index.rst src/pyapi/index.rst COPYONLY)
