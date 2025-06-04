@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-class Object : public std::enable_shared_from_this<Object>
+class Object
 {
 private:
   size_t stack_id_;

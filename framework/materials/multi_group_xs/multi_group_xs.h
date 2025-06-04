@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-class MultiGroupXS : public std::enable_shared_from_this<MultiGroupXS>
+class MultiGroupXS
 {
 public:
   MultiGroupXS()

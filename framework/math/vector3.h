@@ -16,7 +16,7 @@ namespace opensn
 struct TensorRank2Dim3;
 
 /// General 3-element vector structure.
-struct Vector3 : public std::enable_shared_from_this<Vector3>
+struct Vector3
 {
   /// X-component of the vector
   double x{0.0};

@@ -25,7 +25,7 @@ struct QuadraturePointPhiTheta
   QuadraturePointPhiTheta(const double phi, const double theta) : phi(phi), theta(theta) {}
 };
 
-class AngularQuadrature : public std::enable_shared_from_this<AngularQuadrature>
+class AngularQuadrature
 {
 public:
   struct HarmonicIndices
