@@ -93,7 +93,7 @@ PowerIterationKEigenSolver::Initialize()
     restart_successful = ReadRestartData();
 
   if (reset_phi0_ and not restart_successful)
-    LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
+    lbs_problem_->SetZerothMomentValue(PhiSTLOption::PHI_OLD, 1.0);
 
   F_prev_ = lbs_problem_->ComputeFissionProduction(phi_old_local_);
 }
@@ -184,7 +184,7 @@ PowerIterationKEigenSolver::Execute()
 }
 
 void
-PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
+PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<std::vector<double>>& input,
                                                 const bool additive)
 {
   if (not additive)
@@ -198,7 +198,7 @@ PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input
 }
 
 void
-PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input,
+PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<std::vector<double>>& input,
                                                 const bool additive,
                                                 const bool suppress_wg_scat)
 {
@@ -224,10 +224,27 @@ PowerIterationKEigenSolver::ReadRestartData()
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
+
   if (file >= 0)
   {
+    std::size_t n_groupsets;
+    success &= H5ReadAttribute(file, "groupsets", n_groupsets);
     // Read phi
-    success &= H5ReadDataset1D<double>(file, "phi_old", phi_old_local);
+    if (phi_old_local.size() != n_groupsets)
+    {
+      log.Log0Error() << "Number of groupsets in the solver does not match number of groupsets in "
+                         "the restart file."
+                      << std::endl;
+      H5Fclose(file);
+      return false;
+    }
+
+    for (std::size_t i = 0; i < n_groupsets; ++i)
+    {
+      std::stringstream ss;
+      ss << "phi_old[" << i << "]";
+      success &= H5ReadDataset1D<double>(file, ss.str(), phi_old_local[i]);
+    }
 
     // Read psi
     int gs_id = 0;
@@ -271,10 +288,18 @@ PowerIterationKEigenSolver::WriteRestartData()
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);
+
   if (file >= 0)
   {
+    auto n_groupsets = groupsets.size();
+    H5CreateAttribute(file, "groupsets", n_groupsets);
     // Write phi
-    success &= H5WriteDataset1D<double>(file, "phi_old", phi_old_local);
+    for (std::size_t i = 0; i < n_groupsets; ++i)
+    {
+      std::stringstream ss;
+      ss << "phi_old[" << i << "]";
+      success &= H5WriteDataset1D<double>(file, ss.str(), phi_old_local[i]);
+    }
 
     // Write psi
     if (options.write_delayed_psi_to_restart)

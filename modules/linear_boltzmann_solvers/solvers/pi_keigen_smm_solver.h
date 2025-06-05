@@ -46,7 +46,7 @@ protected:
    * \param[in] input A transport flux moments vector to transfer data from.
    * \param[out] output A vector to place the transferred data.
    */
-  void TransferTransportToDiffusion(const std::vector<double>& input,
+  void TransferTransportToDiffusion(const std::vector<std::vector<double>>& input,
                                     std::vector<double>& output) const;
 
   /**
@@ -56,13 +56,14 @@ protected:
    * \param[out] output A transport flux moments vector to transfer data to.
    */
   void TransferDiffusionToTransport(const std::vector<double>& input,
-                                    std::vector<double>& output) const;
+                                    std::vector<std::vector<double>>& output) const;
 
-  double CheckScalarFluxConvergence(const std::vector<double>& phi_new,
-                                    const std::vector<double>& phi_old);
+  double CheckScalarFluxConvergence(const std::vector<std::vector<double>>& phi_new,
+                                    const std::vector<std::vector<double>>& phi_old);
 
 protected:
   unsigned int dimension_;
+  std::vector<std::size_t> num_unknowns_;
   std::vector<std::vector<double>>& psi_new_local_;
 
   // Second moment closures

@@ -269,7 +269,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionRate",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr;
+      const std::vector<std::vector<double>>* phi_ptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();
@@ -326,7 +326,7 @@ WrapLBS(py::module& slv)
     "CreateAndWriteSourceMoments",
     [](LBSProblem& self, const std::string& file_base)
     {
-      std::vector<double> source_moments = self.MakeSourceMomentsFromPhi();
+      auto source_moments = self.MakeSourceMomentsFromPhi();
       LBSSolverIO::WriteFluxMoments(self, file_base, source_moments);
     },
     R"(
@@ -345,7 +345,7 @@ WrapLBS(py::module& slv)
     {
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, self.GetExtSrcMomentsLocal());
       log.Log() << "Making source moments from flux file.";
-      std::vector<double>& temp_phi = self.GetPhiOldLocal();
+      auto & temp_phi = self.GetPhiOldLocal();
       self.GetPhiOldLocal() = self.GetExtSrcMomentsLocal();
       self.GetExtSrcMomentsLocal() = self.MakeSourceMomentsFromPhi();
       self.GetPhiOldLocal() = temp_phi;

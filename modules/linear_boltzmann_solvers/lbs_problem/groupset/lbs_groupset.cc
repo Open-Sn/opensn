@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_group.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
@@ -201,6 +202,17 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSP
 
   wgdsa_string = params.GetParamValue<std::string>("wgdsa_petsc_options");
   tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
+}
+
+std::size_t
+LBSGroupset::GetGroupIndex(int g) const
+{
+  for (std::size_t i = 0; i < groups.size(); ++i)
+  {
+    if (groups[i].id == g)
+      return i;
+  }
+  throw std::runtime_error("Group not found");
 }
 
 } // namespace opensn

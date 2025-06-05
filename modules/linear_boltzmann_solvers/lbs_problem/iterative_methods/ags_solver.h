@@ -14,16 +14,7 @@ namespace opensn
 class AGSSolver
 {
 public:
-  AGSSolver(LBSProblem& lbs_problem, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
-    : lbs_problem_(lbs_problem),
-      wgs_solvers_(std::move(wgs_solvers)),
-      phi_old_(lbs_problem.GetPhiOldLocal().size()),
-      max_iterations_(100),
-      tolerance_(1.0e-6),
-      verbose_(true)
-  {
-  }
-
+  AGSSolver(LBSProblem& lbs_problem, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers);
   ~AGSSolver() {}
 
   void Solve();
@@ -43,7 +34,7 @@ public:
 private:
   LBSProblem& lbs_problem_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
-  std::vector<double> phi_old_;
+  std::vector<std::vector<double>> phi_old_;
   int max_iterations_;
   double tolerance_;
   bool verbose_;

@@ -74,6 +74,7 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": [0, 62],
+                # "groups_from_to": [0, 100],
                 "angular_quadrature": pquad,
                 "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
@@ -85,6 +86,7 @@ if __name__ == "__main__":
             },
             {
                 "groups_from_to": [63, num_groups - 1],
+                # "groups_from_to": [101, num_groups - 1],
                 "angular_quadrature": pquad,
                 "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",

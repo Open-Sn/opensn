@@ -93,6 +93,9 @@ public:
 
   const std::vector<LBSGroupset>& GetGroupsets() const;
 
+  /// Return groupset index for a given group
+  std::size_t GetGroupsetIndex(std::size_t group) const;
+
   /// Adds a point source to the solver.
   void AddPointSource(std::shared_ptr<PointSource> point_source);
 
@@ -129,7 +132,7 @@ public:
   const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
   /// Returns a reference to the list of local cell transport views.
-  const std::vector<CellLBSView>& GetCellTransportViews() const;
+  const std::vector<std::vector<CellLBSView>>& GetCellTransportViews() const;
 
   /// Read/Write access to the boundary preferences.
   std::map<uint64_t, BoundaryPreference>& GetBoundaryPreferences();
@@ -144,28 +147,28 @@ public:
   size_t GetGlobalNodeCount() const;
 
   /// Read/write access to source moments vector.
-  std::vector<double>& GetQMomentsLocal();
+  std::vector<std::vector<double>>& GetQMomentsLocal();
 
   /// Read access to source moments vector.
-  const std::vector<double>& GetQMomentsLocal() const;
+  const std::vector<std::vector<double>>& GetQMomentsLocal() const;
 
   /// Read/write access to exterior src moments vector.
-  std::vector<double>& GetExtSrcMomentsLocal();
+  std::vector<std::vector<double>>& GetExtSrcMomentsLocal();
 
   /// Read access to exterior src moments vector.
-  const std::vector<double>& GetExtSrcMomentsLocal() const;
+  const std::vector<std::vector<double>>& GetExtSrcMomentsLocal() const;
 
   /// Read/write access to last updated flux vector.
-  std::vector<double>& GetPhiOldLocal();
+  std::vector<std::vector<double>>& GetPhiOldLocal();
 
   /// Read access to last updated flux vector.
-  const std::vector<double>& GetPhiOldLocal() const;
+  const std::vector<std::vector<double>>& GetPhiOldLocal() const;
 
   /// Read/write access to newest updated flux vector.
-  std::vector<double>& GetPhiNewLocal();
+  std::vector<std::vector<double>>& GetPhiNewLocal();
 
   /// Read access to newest updated flux vector.
-  const std::vector<double>& GetPhiNewLocal() const;
+  const std::vector<std::vector<double>>& GetPhiNewLocal() const;
 
   /// Read/write access to newest updated precursors vector.
   std::vector<double>& GetPrecursorsNewLocal();
@@ -212,6 +215,9 @@ public:
 
   /// Initializes default materials and physics materials.
   void InitializeMaterials();
+
+  /// Initializes precursors.
+  void InitializePrecursors();
 
   /// Initializes the Within-Group DSA solver.
   void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
@@ -262,7 +268,7 @@ public:
   }
 
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
-  std::vector<double> MakeSourceMomentsFromPhi();
+  std::vector<std::vector<double>> MakeSourceMomentsFromPhi();
 
   /// Copy relevant section of phi_old to the field functions.
   void UpdateFieldFunctions();
@@ -275,12 +281,12 @@ public:
   /**
    * Compute the total fission production in the problem.
    */
-  double ComputeFissionProduction(const std::vector<double>& phi);
+  double ComputeFissionProduction(const std::vector<std::vector<double>>& phi);
 
   /**
    * Computes the total fission rate in the problem.
    */
-  double ComputeFissionRate(const std::vector<double>& phi);
+  double ComputeFissionRate(const std::vector<std::vector<double>>& phi);
 
   /// Compute the steady state delayed neutron precursor concentrations.
   void ComputePrecursors();
@@ -291,6 +297,14 @@ public:
    * @note This does nothing for diffusion-based solvers.
    */
   virtual void ReorientAdjointSolution(){};
+
+  /**
+   * Sets the zeroth (scalar) moment to a value
+   *
+   * @param phi_opt Use either phi_new or phi_old
+   * @param value Value to set the zeroth moment to
+   */
+  void SetZerothMomentValue(PhiSTLOption phi_opt, double value);
 
 protected:
   /// Performs general input checks before initialization continues.
@@ -347,7 +361,7 @@ protected:
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
-  std::vector<CellLBSView> cell_transport_views_;
+  std::vector<std::vector<CellLBSView>> cell_transport_views_;
 
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
@@ -358,8 +372,8 @@ protected:
   uint64_t local_node_count_ = 0;
   uint64_t global_node_count_ = 0;
 
-  std::vector<double> q_moments_local_, ext_src_moments_local_;
-  std::vector<double> phi_new_local_, phi_old_local_;
+  std::vector<std::vector<double>> q_moments_local_, ext_src_moments_local_;
+  std::vector<std::vector<double>> phi_new_local_, phi_old_local_;
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<double> precursor_new_local_;
   std::vector<double> densities_local_;
@@ -374,6 +388,12 @@ protected:
 
   /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
+
+  /// Indices into the solution vector that correspont to the zeroth moment
+  std::vector<std::size_t> zeroth_mom_idxs_;
+
+  /// Groupset index per group
+  std::vector<std::size_t> groupset_index_;
 
   /// Cleans up memory consuming items.
   static void CleanUpWGDSA(LBSGroupset& groupset);

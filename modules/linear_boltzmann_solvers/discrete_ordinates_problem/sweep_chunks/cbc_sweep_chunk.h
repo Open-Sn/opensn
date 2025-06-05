@@ -18,7 +18,7 @@ public:
                 const std::shared_ptr<MeshContinuum> grid,
                 const SpatialDiscretization& discretization,
                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                std::vector<CellLBSView>& cell_transport_views,
+                std::vector<std::vector<CellLBSView>>& cell_transport_views,
                 const std::vector<double>& densities,
                 const std::vector<double>& source_moments,
                 const LBSGroupset& groupset,
