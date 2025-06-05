@@ -19,7 +19,7 @@ class MeshGenerator;
 class LogicalVolume;
 
 /// Encapsulates all the necessary information required to fully define a computational domain.
-class MeshContinuum : public std::enable_shared_from_this<MeshContinuum>
+class MeshContinuum
 {
 public:
   MeshContinuum();

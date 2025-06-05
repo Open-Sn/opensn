@@ -49,7 +49,7 @@ enum class FieldFunctionInterpolationProperty : int
 };
 
 /// Base class for field-function interpolation objects.
-class FieldFunctionInterpolation : public std::enable_shared_from_this<FieldFunctionInterpolation>
+class FieldFunctionInterpolation
 {
 protected:
   FieldFunctionInterpolationType type_;
