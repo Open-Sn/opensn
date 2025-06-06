@@ -338,6 +338,11 @@ when referring to class or function names. Additionally, avoid redefining any
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
 </div>
+<p>For developers, it is recommended to use the following command to install the
+additional packages required for running regression tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</pre></div>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Unlike the console, the Python interface is fully compatible with <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>.
@@ -373,7 +378,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </s
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Compiling documentation requires the Python module of OpenSn.</p>
+<p>Compiling documentation requires the <strong>Python module of OpenSn</strong>.</p>
 </div>
 <p>Then, from your <code class="docutils literal notranslate"><span class="pre">build</span></code> directory, generate the documentation with:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>build
