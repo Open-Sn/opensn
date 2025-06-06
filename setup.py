@@ -126,5 +126,8 @@ if __name__ == "__main__":
         packages=["pyopensn"],
         ext_modules=[CMakeExtension("pyopensn.__init__")],
         cmdclass={"build_ext": CMakeBuilder},
-        install_requires=["mpi4py", "numpy"]
+        install_requires=["mpi4py", "numpy"],
+        extras_require={
+            "dev": ["matplotlib", "nbconvert"],
+        }
     )

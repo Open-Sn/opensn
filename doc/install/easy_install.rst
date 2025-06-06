@@ -109,6 +109,13 @@ To compile the module and install in the Python ``site-packages`` path:
 
    pip install .
 
+For developers, it is recommended to use the following command to install the
+additional packages required for running regression tests:
+
+.. code-block:: bash
+
+   pip install .[dev]
+
 .. tip::
 
    Unlike the console, the Python interface is fully compatible with ``mpi4py``.
@@ -148,7 +155,7 @@ Install the required Python packages to the virtual environment using ``pip``:
 
 .. important::
 
-   Compiling documentation requires the Python module of OpenSn.
+   Compiling documentation requires the **Python module of OpenSn**.
 
 Then, from your ``build`` directory, generate the documentation with:
 
