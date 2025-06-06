@@ -58,7 +58,7 @@ if __name__ == "__main__":
     src1 = VolumetricSource(block_ids=[3], group_strength=[1.])
 
     # Angular Quadrature
-    gl_quad = GLProductQuadrature1DSlab(128)
+    gl_quad = GLProductQuadrature1DSlab(n_polar=128)
 
     # LBS block option
     num_groups = 1
@@ -114,4 +114,4 @@ if __name__ == "__main__":
     if rank == 0:
         print(f"Leakage-Diff2={leakage_right_diff:.5e}")
 
-    os.system("rm angular_io0.h5")
+    os.remove(f"angular_io{rank}.h5")

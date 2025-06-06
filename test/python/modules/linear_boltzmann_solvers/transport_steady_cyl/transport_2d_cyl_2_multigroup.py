@@ -62,7 +62,7 @@ if __name__ == "__main__":
     xs_data.LoadFromOpenSn("transport_2d_cyl_2_multigroup.xs")
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DRZ(4, 8)
+    pquad = GLCProductQuadrature2DRZ(n_polar=4, n_azimuthal=8)
 
     # Create and configure the curvilinear solver for cylindrical geometry
     phys = DiscreteOrdinatesCurvilinearProblem(

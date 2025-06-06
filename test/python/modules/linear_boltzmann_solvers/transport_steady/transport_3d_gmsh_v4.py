@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # Quadrature
     Npolar = 4
     Nazimuthal = 16
-    pquad = GLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=16)
 
     # Set up solver
     gs1 = [0, num_groups - 1]
