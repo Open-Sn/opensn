@@ -29,5 +29,25 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "xs_combined.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Combined sigma_t:",
+        "wordnum": 2,
+        "gold": 6.5,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Combined sigma_a:",
+        "wordnum": 2,
+        "gold": 4.25,
+        "abs_tol": 1e-05
+      }
+    ]
   }
 ]

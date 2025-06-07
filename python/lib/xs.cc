@@ -3,6 +3,7 @@
 
 #include "python/lib/py_wrappers.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include <pybind11/stl.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -96,6 +97,37 @@ WrapMultiGroupXS(py::module& xs)
        M_GPRIME_G_VAL nmom-1 ng-1 ng-1 value
        TRANSFER_MOMENTS_END
     )"
+  );
+  multigroup_xs.def(
+    "Combine",
+    [](MultiGroupXS& self, const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations)
+    {
+      self.Initialize(combinations);
+    },
+    R"(
+    Combine cross-section
+
+    Parameters
+    ----------
+
+    combinations: List[Tuple[pyopensn.xs.MultiGroupXS, float]]
+        List of combinations (cross section, factor)
+
+    Examples
+    --------
+
+    >>> xs_1 = MultiGroupXS()
+    >>> xs_1.CreateSimpleOneGroup(sigma_t=1, c=0.5)
+    >>> xs_2 = MultiGroupXS()
+    >>> xs_2.CreateSimpleOneGroup(sigma_t=2, c=1./3.)
+    >>> xs_combined = MultiGroupXS()
+    >>> combo = [
+    ...     ( xs_1, 0.5 ),
+    ...     ( xs_2, 3.0 )
+    ... ]
+    >>> xs_combined.Combine(combo)
+    )",
+    py::arg("combinations")
   );
   multigroup_xs.def(
     "LoadFromOpenMC",
