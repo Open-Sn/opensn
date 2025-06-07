@@ -58,7 +58,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Setup Physics
-    pquad = GLProductQuadrature1DSlab(4)
+    pquad = GLProductQuadrature1DSlab(n_polar=4)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

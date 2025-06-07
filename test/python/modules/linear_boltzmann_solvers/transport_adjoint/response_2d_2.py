@@ -70,7 +70,7 @@ if __name__ == "__main__":
     pt_src = PointSource(location=loc, strength=[1.0])
 
     # Create a 2D angular quadrature with 12 polar and 192 azimuthal angles.
-    pquad = GLCProductQuadrature2DXY(12, 192)
+    pquad = GLCProductQuadrature2DXY(n_polar=12, n_azimuthal=192)
 
     # Setup physics and solver
     phys = DiscreteOrdinatesProblem(

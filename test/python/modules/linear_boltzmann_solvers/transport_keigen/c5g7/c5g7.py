@@ -65,7 +65,7 @@ if __name__ == "__main__":
         xs_map.append({"block_ids": [m], "xs": xss[m]})
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8)
 
     # Solver
     if "scdsa" in k_method or "smm" in k_method:

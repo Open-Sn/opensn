@@ -27,7 +27,7 @@ pt_src = PointSource(
 )
 
 # Create a 2D XY quadrature
-pquad = GLCProductQuadrature2DXY(12 * 4 * 2, 12 * 2 * 4 * 4)
+pquad = GLCProductQuadrature2DXY(n_polar=12 * 4 * 2, n_azimuthal=12 * 2 * 4 * 4)
 
 # Setup Physics
 solver_name = "LBS"

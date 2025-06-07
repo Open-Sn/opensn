@@ -56,7 +56,7 @@ if __name__ == "__main__":
     mg_src2 = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature2DXY(2, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=8)
 
     bsrc = [0.0 for _ in range(num_groups)]
     bsrc[0] = 1.0 / 4.0 / math.pi
