@@ -112,9 +112,11 @@ WrapProductQuadrature(py::module& aquad)
   );
   angular_quadrature_gl_prod_1d_slab.def(
     py::init(
-      [](int n_polar, bool verbose)
+      [](py::kwargs& params)
       {
-        return std::make_shared<GLProductQuadrature1DSlab>(n_polar, verbose);
+        static const std::vector<std::string> required_keys = {"n_polar"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLProductQuadrature1DSlab, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -126,9 +128,7 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     verbose: bool, default=False
         Verbosity.
-    )",
-    py::arg("n_polar"),
-    py::arg("verbose") = false
+    )"
   );
 
   // Gauss-Legendre-Chebyshev 2D XY product quadrature
@@ -145,9 +145,11 @@ WrapProductQuadrature(py::module& aquad)
   );
   angular_quadrature_glc_prod_2d_xy.def(
     py::init(
-      [](int n_polar, int n_azimuthal, bool verbose)
+      [](py::kwargs& params)
       {
-        return std::make_shared<GLCProductQuadrature2DXY>(n_polar, n_azimuthal, verbose);
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLCProductQuadrature2DXY, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -161,10 +163,7 @@ WrapProductQuadrature(py::module& aquad)
         Number of azimuthal angles.
     verbose: bool, default=False
         Verbosity.
-    )",
-    py::arg("n_polar"),
-    py::arg("n_azimuthal"),
-    py::arg("verbose") = false
+    )"
   );
 
   // Gauss-Legendre-Chebyshev 3D XYZ product quadrature
@@ -181,9 +180,10 @@ WrapProductQuadrature(py::module& aquad)
   );
   angular_quadrature_glc_prod_3d_xyz.def(
     py::init(
-      [](int n_polar, int n_azimuthal)
+      [](py::kwargs& params)
       {
-        return std::make_shared<GLCProductQuadrature3DXYZ>(n_polar, n_azimuthal);
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
+        return construct_from_kwargs<GLCProductQuadrature3DXYZ, int, int>(params, required_keys);
       }
     ),
     R"(
@@ -195,9 +195,7 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     n_azimuthal: int
         Number of azimuthal angles.
-    )",
-    py::arg("n_polar"),
-    py::arg("n_azimuthal")
+    )"
   );
   // clang-format on
 }
@@ -234,9 +232,11 @@ WrapCurvilinearQuadrature(py::module& aquad)
   );
   curvilinear_quadrature_glc_2d_rz.def(
     py::init(
-      [](int n_polar, int n_azimuthal, bool verbose)
+      [](py::kwargs& params)
       {
-        return std::make_shared<GLCProductQuadrature2DRZ>(n_polar, n_azimuthal, verbose);
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLCProductQuadrature2DRZ, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -250,10 +250,7 @@ WrapCurvilinearQuadrature(py::module& aquad)
         Number of azimuthal angles.
     verbose: bool, default=False
         Verbosity.
-    )",
-    py::arg("n_polar"),
-    py::arg("n_azimuthal"),
-    py::arg("verbose") = false
+    )"
   );
   // clang-format on
 }
@@ -277,9 +274,11 @@ WrapSLDFESQuadrature(py::module& aquad)
   );
   simplified_ldfes_quadrature.def(
     py::init(
-      [](int level)
+      [](py::kwargs& params)
       {
-        SimplifiedLDFESQ::Quadrature * quad = new SimplifiedLDFESQ::Quadrature();
+        static const std::vector<std::string> required_keys = {"level"};
+        int level = std::get<0>(extract_args_tuple<int>(params, required_keys));
+        std::shared_ptr<SimplifiedLDFESQ::Quadrature> quad(new SimplifiedLDFESQ::Quadrature());
         quad->GenerateInitialRefinement(level);
         return quad;
       }
@@ -291,8 +290,7 @@ WrapSLDFESQuadrature(py::module& aquad)
     ----------
     level: int
         Number of subdivisions of the inscribed cube.
-    )",
-    py::arg("level")
+    )"
   );
   simplified_ldfes_quadrature.def(
     "LocallyRefine",

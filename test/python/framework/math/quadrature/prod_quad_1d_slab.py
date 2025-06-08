@@ -16,7 +16,7 @@ def rad2deg(radians):
 if __name__ == "__main__":
 
     n_polar = 4
-    pquad = GLProductQuadrature1DSlab(n_polar)
+    pquad = GLProductQuadrature1DSlab(n_polar=n_polar)
 
     print("TEST_BEGIN")
     for i in range(n_polar):

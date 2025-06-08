@@ -50,7 +50,7 @@ if __name__ == "__main__":
     num_groups = xss["0"].num_groups
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(8, 16)
+    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=16)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Setup Physics
     fac = 1
-    pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
+    pquad = GLCProductQuadrature2DXY(n_polar=6 * fac, n_azimuthal=16 * fac)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

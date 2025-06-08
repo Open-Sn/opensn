@@ -6,6 +6,8 @@
 #include "framework/parameters/parameter_block.h"
 #include "framework/math/vector.h"
 #include <pybind11/pybind11.h>
+#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 namespace py = pybind11;
@@ -31,8 +33,145 @@ convert_vector(const Vector<T>& vec)
   return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
 }
 
+// Cast kwargs to ParameterBlock
+
 /// Translate a Python dictionary into a ParameterBlock.
 ParameterBlock kwargs_to_param_block(const py::kwargs& params);
+
+// Retrieve arguments from the Python interface
+
+/// Pop an object from kwargs with default value
+inline py::object
+pop_cast(py::kwargs& kwargs, const std::string& key, const py::object& default_value)
+{
+  if (kwargs.contains(key.c_str()))
+  {
+    return kwargs.attr("pop")(key);
+  }
+  return default_value;
+}
+
+/// Pop an object from kwargs and raise error if the key is not found
+inline py::object
+pop_cast(py::kwargs& kwargs, const std::string& key)
+{
+  if (!kwargs.contains(key.c_str()))
+  {
+    throw std::runtime_error("Key \"" + key + "\" must be provided.\n");
+  }
+  return kwargs.attr("pop")(key);
+}
+
+/// Extract tuple of arguments
+template <typename... Args>
+std::tuple<Args...>
+extract_args_tuple(py::kwargs& kwargs,
+                   const std::vector<std::string>& required_keys,
+                   const std::vector<std::pair<std::string, py::object>>& optional_keys =
+                     std::vector<std::pair<std::string, py::object>>())
+{
+  // check size
+  if (required_keys.size() + optional_keys.size() != sizeof...(Args))
+  {
+    throw std::runtime_error(
+      "Mismatch number of arguments. "
+      "This is a dev bug, please contact OpenSn developpers for this issue!");
+  }
+  // initialize retriever
+  std::size_t index = 0;
+  auto retriever = [&](auto& arg)
+  {
+    using ArgType = std::decay_t<decltype(arg)>;
+    if (index < required_keys.size())
+    {
+      const std::string& key = required_keys[index];
+      arg = pop_cast(kwargs, key).cast<ArgType>();
+    }
+    else
+    {
+      const auto& [key, default_val] = optional_keys[index - required_keys.size()];
+      arg = pop_cast(kwargs, key, default_val).cast<ArgType>();
+    }
+    ++index;
+  };
+  // retrieve keys
+  std::tuple<Args...> args;
+  std::apply([&](auto&... args) { (retriever(args), ...); }, args);
+  // check for orphan keys
+  if (!kwargs.empty())
+  {
+    std::ostringstream err_log;
+    err_log << "Unknown arguments(s):";
+    for (const auto& item : kwargs)
+    {
+      std::string key = py::str(item.first);
+      err_log << " \"" << key << "\"";
+    }
+    err_log << ".";
+    throw std::runtime_error(err_log.str());
+  }
+  return args;
+}
+
+/**
+ *  @brief Construct an object from kwargs
+ *  @details This function template allows construction of a C++ object from Python keyword
+ *  arguments (`py::kwargs`), with enforcement of required and optional arguments.
+ *  @tparam T The target class type to construct.
+ *  @tparam Args The constructor argument types of T.
+ *  @param kwargs Python keyword arguments provided from a Pybind11 binding.
+ *  @param required_keys List of required argument names (must appear in ``kwargs``).
+ *  @param optional_keys List of optional arguments with default values (used if not found in
+ *  ``kwargs``).
+ *  @note This function is meant to replace the functionality of ``InputParameters``.
+ *  @example
+ *  // C++ class
+ *  class Foo {
+ *    public:
+ *      Foo(int a, double b, const std::string& name, bool verbose = false);
+ *  };
+ *
+ *  // Pybind11 constructor wrapper
+ *  foo.def(
+ *    py::init(
+ *      [](py::kwargs& params) {
+ *        const std::vector<std::string> required_keys = {"a", "b", "name"};
+ *        const std::vector<std::pair<std::string, py::object>> optional_keys = {
+ *          {"verbose", py::bool_(false)}
+ *        };
+ *        return construct_from_kwargs<Foo, int, double, std::string, bool>(params, required_keys,
+ *                                                                          optional_keys);
+ *      }
+ *    ),
+ *    R"(
+ *    Construct ...
+ *
+ *    Parameters
+ *    ----------
+ *    a: int
+ *        ...
+ *    b: float
+ *        ...
+ *    name: str
+ *        ...
+ *    verbose: bool, default=False
+ *        ...
+ *    )"
+ *  );
+ */
+template <class T, typename... Args>
+std::shared_ptr<T>
+construct_from_kwargs(py::kwargs& kwargs,
+                      const std::vector<std::string>& required_keys,
+                      const std::vector<std::pair<std::string, py::object>>& optional_keys =
+                        std::vector<std::pair<std::string, py::object>>())
+{
+  std::tuple<Args...> args = extract_args_tuple<Args...>(kwargs, required_keys, optional_keys);
+  return std::apply(
+    [](auto&&... unpacked_args)
+    { return std::make_shared<T>(std::forward<decltype(unpacked_args)>(unpacked_args)...); },
+    args);
+}
 
 // Module wrappers
 
