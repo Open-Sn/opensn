@@ -46,6 +46,7 @@ void WrapQuadrature(py::module& aquad);
 void WrapProductQuadrature(py::module& aquad);
 void WrapCurvilinearQuadrature(py::module& aquad);
 void WrapSLDFESQuadrature(py::module& aquad);
+void WrapLebedevQuadrature(py::module& aquad);
 
 // Wrap the diffusion components of OpenSn
 void py_diffusion(py::module& pyopensn);
