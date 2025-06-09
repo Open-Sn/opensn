@@ -44,8 +44,6 @@ public:
 
   std::vector<AngleSetGroup> angle_set_groups;
 
-  size_t GetNumberGroups() const { return num_groups_; }
-
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
   {
     return boundaries_;
