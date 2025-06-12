@@ -139,7 +139,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sLDFE quadrature with initial refinement level of 4.</span>
-<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="c1"># Locally refine the quadrature near a given point with a given angular spread.</span>
 <span class="c1"># 30-degree cone around point [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]</span>
 <span class="n">aquad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -186,7 +186,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sLDFE quadrature with initial refinement level of 4.</span>
-<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="c1"># Locally refine the quadrature near a given point with a given angular spread.</span>
 <span class="c1"># 30-degree cone around point [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]</span>
 <span class="n">aquad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span> <span class="mf">15.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>

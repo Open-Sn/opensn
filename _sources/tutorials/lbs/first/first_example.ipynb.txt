@@ -280,9 +280,7 @@
    },
    "outputs": [],
    "source": [
-    "nazimu = 4\n",
-    "npolar = 2\n",
-    "pquad = GLCProductQuadrature2DXY(npolar, nazimu)"
+    "pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4)"
    ]
   },
   {
