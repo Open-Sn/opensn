@@ -64,7 +64,7 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": (0, num_groups - 1),
-                "angular_quadrature": GLProductQuadrature1DSlab(n_angles),
+                "angular_quadrature": GLProductQuadrature1DSlab(n_polar=n_angles),
                 "inner_linear_method": "petsc_gmres",
                 "l_max_its": si_max_iterations,
                 "l_abs_tol": si_tolerance,

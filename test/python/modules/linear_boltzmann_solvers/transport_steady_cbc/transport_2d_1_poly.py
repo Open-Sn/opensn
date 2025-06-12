@@ -64,7 +64,7 @@ if __name__ == "__main__":
     bsrc[0] = 1.0 / 4.0 / math.pi
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(2, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=8)
 
     # Create solver
     phys = DiscreteOrdinatesProblem(
