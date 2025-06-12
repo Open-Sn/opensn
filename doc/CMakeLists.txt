@@ -19,7 +19,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
 
     macro(generate_tutorial srcDir)
         message(STATUS "Generating tutorial ${srcDir}")
-        file(RELATIVE_PATH tutPath ${CMAKE_SOURCE_DIR}/tutorials/python ${srcDir})
+        file(RELATIVE_PATH tutPath ${CMAKE_SOURCE_DIR}/tutorials ${srcDir})
         set(destDir ${CMAKE_BINARY_DIR}/doc/src/tutorials)
         # copy images
         file(MAKE_DIRECTORY ${destDir}/${tutPath})
@@ -59,60 +59,64 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     configure_file(_templates/noinit.rst src/_templates/noinit.rst COPYONLY)
     configure_file(_templates/python.rst src/_templates/python.rst COPYONLY)
     # Tutorials TOC
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/index.rst src/tutorials/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/index.rst src/tutorials/index.rst COPYONLY)
     # Tutorials LBS
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/index.rst src/tutorials/lbs/index.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first/first_example.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/index.rst src/tutorials/lbs/index.rst COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/first/first_example.ipynb
                    src/tutorials/lbs/first/first_example.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/mg_src_driven/hdpe_example.ipynb
+            src/tutorials/lbs/mg_src_driven/hdpe_example.ipynb COPYONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/lbs/mg_keigen/pincell_example.ipynb
+            src/tutorials/lbs/mg_keigen/pincell_example.ipynb COPYONLY)
     # Tutorials mesh
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/index.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/index.rst
                    src/tutorials/mesh/index.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/introduction.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/introduction.rst
                    src/tutorials/mesh/introduction.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_2D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_ortho_2D.ipynb
                    src/tutorials/mesh/mesh_ortho_2D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_ortho_3D.ipynb
             src/tutorials/mesh/mesh_ortho_3D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_gmsh_2D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_read_gmsh_2D.ipynb
             src/tutorials/mesh/mesh_read_gmsh_2D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_gmsh_3D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_read_gmsh_3D.ipynb
             src/tutorials/mesh/mesh_read_gmsh_3D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_obj_2D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_read_obj_2D.ipynb
             src/tutorials/mesh/mesh_read_obj_2D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_read_vtu_3D.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_read_vtu_3D.ipynb
             src/tutorials/mesh/mesh_read_vtu_3D.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_extrude.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_extrude.ipynb
             src/tutorials/mesh/mesh_extrude.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/mesh/mesh_ortho_3D_blockIDs.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/mesh/mesh_ortho_3D_blockIDs.ipynb
             src/tutorials/mesh/mesh_ortho_3D_blockIDs.ipynb COPYONLY)
     # Tutorials XS
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/index.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/index.rst
             src/tutorials/xs/index.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/introduction.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/introduction.rst
             src/tutorials/xs/introduction.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/1g_xs_simple.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/1g_xs_simple.ipynb
             src/tutorials/xs/1g_xs_simple.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/1g_xs_read_file.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/1g_xs_read_file.ipynb
             src/tutorials/xs/1g_xs_read_file.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/mg_xs_read_file.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/mg_xs_read_file.ipynb
             src/tutorials/xs/mg_xs_read_file.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/xs/mg_xs_read_openmc.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/xs/mg_xs_read_openmc.ipynb
             src/tutorials/xs/mg_xs_read_openmc.ipynb COPYONLY)
     # Tutorials aquad
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/index.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/aquad/index.rst
             src/tutorials/aquad/index.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/introduction.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/aquad/introduction.rst
             src/tutorials/aquad/introduction.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/product_GLC.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/aquad/product_GLC.ipynb
             src/tutorials/aquad/product_GLC.ipynb COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/aquad/sLDFE.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/aquad/sLDFE.ipynb
             src/tutorials/aquad/sLDFE.ipynb COPYONLY)
     # Tutorials logical volume
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/index.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/logvol/index.rst
             src/tutorials/logvol/index.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/introduction.rst
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/logvol/introduction.rst
             src/tutorials/logvol/introduction.rst COPYONLY)
-    configure_file(${CMAKE_SOURCE_DIR}/tutorials/python/logvol/logvol_examples.ipynb
+    configure_file(${CMAKE_SOURCE_DIR}/tutorials/logvol/logvol_examples.ipynb
             src/tutorials/logvol/logvol_examples.ipynb COPYONLY)
 
     copy_files("md" ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc/src)
@@ -128,10 +132,10 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
         ${PROJECT_SOURCE_DIR}/modules/*.h
     )
 
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/mesh)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/aquad)
-    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/logvol)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/first)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/mesh)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/aquad)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/logvol)
 
     add_custom_command(
         OUTPUT
