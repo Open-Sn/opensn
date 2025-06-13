@@ -14,23 +14,12 @@ struct LinearSolverContext;
 class LinearSolver
 {
 public:
-  enum class IterativeMethod : int
-  {
-    NONE = 0,
-    CLASSIC_RICHARDSON = 1, ///< Classic Richardson (source iteration)
-    PETSC_RICHARDSON = 3,   ///< PETSc Richardson iteration
-    PETSC_GMRES = 2,        ///< PETSc GMRES iterative algorithm
-    PETSC_BICGSTAB = 4,     ///< PETSc BiCGStab iterative algorithm
-  };
-
-  LinearSolver(IterativeMethod iterative_method, std::shared_ptr<LinearSolverContext> context_ptr)
-    : iterative_method_(iterative_method), context_ptr_(context_ptr)
+  explicit LinearSolver(std::shared_ptr<LinearSolverContext> context_ptr)
+    : context_ptr_(context_ptr)
   {
   }
 
-  virtual ~LinearSolver() {}
-
-  std::shared_ptr<LinearSolverContext> GetContext() { return context_ptr_; }
+  virtual ~LinearSolver() = default;
 
   /// Set up the linaer solver
   virtual void Setup() {}
@@ -38,12 +27,10 @@ public:
   /// Solve the system
   virtual void Solve() = 0;
 
-protected:
-  const IterativeMethod iterative_method_;
-  std::shared_ptr<LinearSolverContext> context_ptr_;
+  std::shared_ptr<LinearSolverContext> GetContext() { return context_ptr_; }
 
-public:
-  static std::string IterativeMethodName(IterativeMethod iterative_method);
+protected:
+  std::shared_ptr<LinearSolverContext> context_ptr_;
 };
 
 } // namespace opensn
