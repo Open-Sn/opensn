@@ -52,17 +52,6 @@ class TestSlot:
                         cmd += "--py " + qarg + " "
                 else:
                     cmd += arg + " "
-        elif extension == ".lua":
-            cmd += "--lua master_export=false "
-            for arg in test.args:
-                if arg.find("\"") >= 0:
-                    qarg = arg.replace('"', '\\"')
-                    if sys.platform.startswith('darwin'):
-                        cmd += "--lua " + "\\\"" + qarg + "\\\" "
-                    else:
-                        cmd += "--lua " + qarg + " "
-                else:
-                    cmd += arg + " "
         self.command = cmd
 
         # Write command to output file
