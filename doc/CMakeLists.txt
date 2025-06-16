@@ -133,6 +133,8 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     )
 
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/first)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/mg_src_driven)
+    generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/lbs/mg_keigen)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/mesh)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/aquad)
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/logvol)
