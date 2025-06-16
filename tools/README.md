@@ -4,7 +4,6 @@ This `tools` directory contains various tools for use by both developers and use
 
 Files located at the root of `tools`:
 - `configure_dependencies.py`: Script for installing OpenSn dependencies
-- [lua-input-style.md](./lua-input-style.md): Notes on how to format `lua` input files. 
 
 ### Tools for Developer
 
