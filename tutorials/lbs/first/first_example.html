@@ -26,7 +26,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="5. Logical Volumes" href="../../logvol/index.html" />
+    <link rel="next" title="4.2. Slowing-Down in High-Density Polyethylene" href="../mg_src_driven/hdpe_example.html" />
     <link rel="prev" title="4. Linear Boltzmann Solver" href="../index.html" /> 
 </head>
 
@@ -66,10 +66,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#Angular-Quadrature">4.1.6. Angular Quadrature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Linear-Boltzmann-Solver">4.1.7. Linear Boltzmann Solver</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Post-Processing-via-Field-Functions">4.1.8. Post-Processing via Field Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.1.9. Finalize (for Jupyter Notebook only)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Possible-Extensions">4.1.10. Possible Extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">4.1.9. Post-processing: Extract the average flux in a portion of the domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.1.10. Finalize (for Jupyter Notebook only)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Possible-Extensions">4.1.11. Possible Extensions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">4.2. Slowing-Down in High-Density Polyethylene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mg_keigen/pincell_example.html">4.3. Reactor pin cell</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">5. Logical Volumes</a></li>
@@ -157,14 +160,16 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># assuming that the execute dir is the notebook dir</span>
 <span class="c1"># this line is not necessary when PyOpenSn is installed using pip</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../..&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">,</span> <span class="n">KBAGraphPartitioner</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSolver</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span><span class="p">,</span> <span class="n">FieldFunctionInterpolationVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
 </pre></div>
 </div>
@@ -268,7 +273,7 @@
 </section>
 <section id="Angular-Quadrature">
 <h2><span class="section-number">4.1.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
-<p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the total number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">npolar</span> <span class="pre">=</span> <span class="pre">4</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">nazimu</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 2D angular quadrature for XY geometry.</p>
+<p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 2D angular quadrature for XY geometry.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -336,7 +341,7 @@
 </section>
 <section id="Post-Processing-via-Field-Functions">
 <h2><span class="section-number">4.1.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
-<p>We extract the scalar flux (i.e., the first entry in the field function list; recall that lua indexing starts at 1) and export it to a VTK file whose name is supplied by the user. See the tutorials’ section on post-processing for more details on field functions.</p>
+<p>We extract the scalar flux (i.e., the first entry in the field function list) and export it to a VTK file whose name is supplied by the user. See the tutorials’ section on post-processing for more details on field functions.</p>
 <p>The resulting scalar flux is shown below:</p>
 <p><img alt="Scalar_flux" src="../../../_images/first_example_scalar_flux.png" /></p>
 <div class="nbinput nblast docutils container">
@@ -353,8 +358,51 @@
 </div>
 </div>
 </section>
+<section id="Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">
+<h2><span class="section-number">4.1.9. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
+<p>We create two edit zones (logical volumes):</p>
+<ol class="arabic simple">
+<li><p>one for one quarter of the domain</p></li>
+<li><p>the other one for the whole domain</p></li>
+</ol>
+<p>We request the average (keyword <code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code>) of the scalar flux over each edit zone and check that the ratio of the values is exactly 1 (due to the problem’s symmetries).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">logvol</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">logvol_whole_domain</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">logvol</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value (edit zone: quarter domain) = </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">logvol_whole_domain</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">val_whole</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value (edit zone: whole domain)   = </span><span class="si">{</span><span class="n">val_whole</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ratio =&quot;</span><span class="p">,</span><span class="n">val_whole</span><span class="o">/</span><span class="n">val</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">4.1.9. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.1.10. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -375,7 +423,7 @@
 </div>
 </section>
 <section id="Possible-Extensions">
-<h2><span class="section-number">4.1.10. </span>Possible Extensions<a class="headerlink" href="#Possible-Extensions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.1.11. </span>Possible Extensions<a class="headerlink" href="#Possible-Extensions" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Change the number of MPI processes;</p></li>
 <li><p>Change the spatial resolution by increasing or decreasing the number of cells;</p></li>
@@ -389,7 +437,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="4. Linear Boltzmann Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../logvol/index.html" class="btn btn-neutral float-right" title="5. Logical Volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../mg_src_driven/hdpe_example.html" class="btn btn-neutral float-right" title="4.2. Slowing-Down in High-Density Polyethylene" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

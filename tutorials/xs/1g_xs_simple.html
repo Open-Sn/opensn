@@ -57,7 +57,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">2. Cross Sections</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="introduction.html">2.1. Introduction to Cross Sections</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">2.2. Built-in method for 1-group cross sections</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Call-built-in-method">2.2.1. Call built-in method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Call-the-built-in-method">2.2.1. Call the built-in method</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Some-cross-section-data-can-be-retrieved-in-Python">2.2.2. Some cross-section data can be retrieved in Python</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">2.2.3. Finalize (for Jupyter Notebook only)</a></li>
 </ul>
@@ -113,8 +113,9 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
@@ -123,8 +124,8 @@
 </pre></div>
 </div>
 </div>
-<section id="Call-built-in-method">
-<h2><span class="section-number">2.2.1. </span>Call built-in method<a class="headerlink" href="#Call-built-in-method" title="Link to this heading"></a></h2>
+<section id="Call-the-built-in-method">
+<h2><span class="section-number">2.2.1. </span>Call the built-in method<a class="headerlink" href="#Call-the-built-in-method" title="Link to this heading"></a></h2>
 <p>We use <span class="math notranslate nohighlight">\(\Sigma_t=1.\)</span> and</p>
 <div class="math notranslate nohighlight">
 \[c=\frac{\Sigma_{S,0}}{\Sigma_t}=0.5\]</div>

@@ -27,8 +27,9 @@
    "source": [
     "import os\n",
     "import sys\n",
+    "from mpi4py import MPI\n",
     "\n",
-    "sys.path.append(\"../../..\")\n",
+    "sys.path.append(\"../..\")\n",
     "\n",
     "from pyopensn.mesh import FromFileMeshGenerator, PETScGraphPartitioner\n",
     "from pyopensn.context import UseColor, Finalize\n",
@@ -58,7 +59,7 @@
    },
    "outputs": [],
    "source": [
-    "filepath = \"../../../test/python/modules/linear_boltzmann_solvers/transport_keigen/c5g7/\"\\\n",
+    "filepath = \"../../test/python/modules/linear_boltzmann_solvers/transport_keigen/c5g7/\"\\\n",
     "           + \"mesh/2D_c5g7_coarse.msh\"\n",
     "meshgen = FromFileMeshGenerator(\n",
     "    filename=filepath,\n",

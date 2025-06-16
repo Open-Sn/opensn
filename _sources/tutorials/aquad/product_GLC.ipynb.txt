@@ -25,8 +25,9 @@
     "import os\n",
     "import sys\n",
     "import numpy as np\n",
+    "from mpi4py import MPI\n",
     "\n",
-    "sys.path.append(\"../../..\")\n",
+    "sys.path.append(\"../..\")\n",
     "\n",
     "from pyopensn.aquad import GLCProductQuadrature2DXY\n",
     "from pyopensn.context import UseColor, Finalize\n",
@@ -208,6 +209,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "#### You should be getting this plot (saved here in the Markdown for convenience).\n",
     "![product_quadrature](images/pGLC.png)"
    ]
   },

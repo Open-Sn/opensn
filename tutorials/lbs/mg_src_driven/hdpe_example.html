@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.2. Slowing-Down in High-Density Polyethylene &mdash; OpenSn  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=1c2e0e3b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4.3. Reactor pin cell" href="../mg_keigen/pincell_example.html" />
+    <link rel="prev" title="4.1. A First Example" href="../first/first_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">4. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../first/first_example.html">4.1. A First Example</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.2. Slowing-Down in High-Density Polyethylene</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Using-this-Notebook">4.2.1. Using this Notebook</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Import-Requirements">4.2.2. Import Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Mesh">4.2.3. Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Cross-Sections">4.2.4. Cross Sections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Volumetric-Source">4.2.5. Volumetric Source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Angular-Quadrature">4.2.6. Angular Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Linear-Boltzmann-Solver">4.2.7. Linear Boltzmann Solver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Post-Processing-via-Field-Functions">4.2.8. Post-Processing via Field Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">4.2.9. Post-processing: Extract the average flux in a portion of the domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.2.10. Finalize (for Jupyter Notebook only)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../mg_keigen/pincell_example.html">4.3. Reactor pin cell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">5. Logical Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Linear Boltzmann Solver</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2. </span>Slowing-Down in High-Density Polyethylene</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Slowing-Down-in-High-Density-Polyethylene">
+<h1><span class="section-number">4.2. </span>Slowing-Down in High-Density Polyethylene<a class="headerlink" href="#Slowing-Down-in-High-Density-Polyethylene" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<section id="Using-this-Notebook">
+<h2><span class="section-number">4.2.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
+<p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
+<section id="Converting-and-Running-this-Notebook-from-the-Terminal">
+<h3><span class="section-number">4.2.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<p>To run this notebook from the terminal, simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;notebook_name&gt;.ipynb</span></code>.</p>
+<p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;notebook_name&gt;.ipynb</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processors.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Import-Requirements">
+<h2><span class="section-number">4.2.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
+<p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># assuming that the execute dir is the notebook dir</span>
+<span class="c1"># this line is not necessary when PyOpenSn is installed using pip</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span><span class="p">,</span> <span class="n">FieldFunctionInterpolationVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Mesh">
+<h2><span class="section-number">4.2.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<p>Here, we use the in-house orthogonal mesh generator for a simple Cartesian grid.</p>
+<p>We first create a list of nodes for each dimension (X and Y). Here, both dimensions share the same node values.</p>
+<p>The nodes will be spread from -10 to +10.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">n_cells</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span> <span class="n">length</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">n_cells</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xmin</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
+    <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">])</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<section id="Material-IDs">
+<h3><span class="section-number">4.2.3.1. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
+<p>When using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. We assign a material ID with value 0 for each cell in the spatial domain.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Cross-Sections">
+<h2><span class="section-number">4.2.4. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
+<p>We load 172-group cross sections that were generated using OpenMC.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_mat</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_mat</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span><span class="s2">&quot;./HDPE.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;set1&quot;</span><span class="p">,</span> <span class="mf">294.0</span><span class="p">)</span>
+<span class="n">num_groups</span> <span class="o">=</span> <span class="n">xs_mat</span><span class="o">.</span><span class="n">num_groups</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Volumetric-Source">
+<h2><span class="section-number">4.2.5. </span>Volumetric Source<a class="headerlink" href="#Volumetric-Source" title="Link to this heading"></a></h2>
+<p>We create a volumetric multigroup source which will be assigned to cells with given block IDs. Volumetric sources are assigned to the solver via the <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter in the LBS block (see below).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">strength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)</span>
+<span class="n">mg_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">strength</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Angular-Quadrature">
+<h2><span class="section-number">4.2.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
+<p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 2D angular quadrature for XY geometry.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pquad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Linear-Boltzmann-Solver">
+<h2><span class="section-number">4.2.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
+<section id="Options-for-the-Linear-Boltzmann-Problem-(LBS)">
+<h3><span class="section-number">4.2.7.1. </span>Options for the Linear Boltzmann Problem (LBS)<a class="headerlink" href="#Options-for-the-Linear-Boltzmann-Problem-(LBS)" title="Link to this heading"></a></h3>
+<p>In the LBS block, we provide</p>
+<ul class="simple">
+<li><p>the number of energy groups,</p></li>
+<li><p>the groupsets (with 0-indexing), the handle for the angular quadrature, the angle aggregation, the solver type, tolerances, and other solver options.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_num_subsets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;volumetric_sources&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">mg_src</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_mat</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Putting-the-Linear-Boltzmann-Solver-Together">
+<h3><span class="section-number">4.2.7.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#Putting-the-Linear-Boltzmann-Solver-Together" title="Link to this heading"></a></h3>
+<p>We then create the physics solver, initialize it, and execute it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss_solver</span> <span class="o">=</span> <span class="n">SteadyStateSolver</span><span class="p">(</span><span class="n">lbs_problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Post-Processing-via-Field-Functions">
+<h2><span class="section-number">4.2.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;hdpe_ex&quot;</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToVTK</span><span class="p">([</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)],</span> <span class="n">vtk_basename</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">
+<h2><span class="section-number">4.2.9. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
+<p>We create an edit zone (logical volume) that is the entire domain.</p>
+<p>We request the average (keyword <code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code>) of the scalar flux over the edit zone, for each group.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">logvol_whole_domain</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span><span class="p">):</span>
+    <span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+    <span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+    <span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">logvol_whole_domain</span><span class="p">)</span>
+    <span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">])</span>
+    <span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">flux</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="n">flux</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flux</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 172-group structure (copied from openmc/openmc/mgxs/__init__.py)</span>
+<span class="n">group_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="mf">1.00001e-05</span><span class="p">,</span> <span class="mf">3.00000e-03</span><span class="p">,</span> <span class="mf">5.00000e-03</span><span class="p">,</span> <span class="mf">6.90000e-03</span><span class="p">,</span> <span class="mf">1.00000e-02</span><span class="p">,</span>
+    <span class="mf">1.50000e-02</span><span class="p">,</span> <span class="mf">2.00000e-02</span><span class="p">,</span> <span class="mf">2.50000e-02</span><span class="p">,</span> <span class="mf">3.00000e-02</span><span class="p">,</span> <span class="mf">3.50000e-02</span><span class="p">,</span>
+    <span class="mf">4.20000e-02</span><span class="p">,</span> <span class="mf">5.00000e-02</span><span class="p">,</span> <span class="mf">5.80000e-02</span><span class="p">,</span> <span class="mf">6.70000e-02</span><span class="p">,</span> <span class="mf">7.70000e-02</span><span class="p">,</span>
+    <span class="mf">8.00000e-02</span><span class="p">,</span> <span class="mf">9.50000e-02</span><span class="p">,</span> <span class="mf">1.00001e-01</span><span class="p">,</span> <span class="mf">1.15000e-01</span><span class="p">,</span> <span class="mf">1.34000e-01</span><span class="p">,</span>
+    <span class="mf">1.40000e-01</span><span class="p">,</span> <span class="mf">1.60000e-01</span><span class="p">,</span> <span class="mf">1.80000e-01</span><span class="p">,</span> <span class="mf">1.89000e-01</span><span class="p">,</span> <span class="mf">2.20000e-01</span><span class="p">,</span>
+    <span class="mf">2.48000e-01</span><span class="p">,</span> <span class="mf">2.80000e-01</span><span class="p">,</span> <span class="mf">3.00000e-01</span><span class="p">,</span> <span class="mf">3.14500e-01</span><span class="p">,</span> <span class="mf">3.20000e-01</span><span class="p">,</span>
+    <span class="mf">3.50000e-01</span><span class="p">,</span> <span class="mf">3.91000e-01</span><span class="p">,</span> <span class="mf">4.00000e-01</span><span class="p">,</span> <span class="mf">4.33000e-01</span><span class="p">,</span> <span class="mf">4.85000e-01</span><span class="p">,</span>
+    <span class="mf">5.00000e-01</span><span class="p">,</span> <span class="mf">5.40000e-01</span><span class="p">,</span> <span class="mf">6.25000e-01</span><span class="p">,</span> <span class="mf">7.05000e-01</span><span class="p">,</span> <span class="mf">7.80000e-01</span><span class="p">,</span>
+    <span class="mf">7.90000e-01</span><span class="p">,</span> <span class="mf">8.50000e-01</span><span class="p">,</span> <span class="mf">8.60000e-01</span><span class="p">,</span> <span class="mf">9.10000e-01</span><span class="p">,</span> <span class="mf">9.30000e-01</span><span class="p">,</span>
+    <span class="mf">9.50000e-01</span><span class="p">,</span> <span class="mf">9.72000e-01</span><span class="p">,</span> <span class="mf">9.86000e-01</span><span class="p">,</span> <span class="mf">9.96000e-01</span><span class="p">,</span> <span class="mf">1.02000e+00</span><span class="p">,</span>
+    <span class="mf">1.03500e+00</span><span class="p">,</span> <span class="mf">1.04500e+00</span><span class="p">,</span> <span class="mf">1.07100e+00</span><span class="p">,</span> <span class="mf">1.09700e+00</span><span class="p">,</span> <span class="mf">1.11000e+00</span><span class="p">,</span>
+    <span class="mf">1.12535e+00</span><span class="p">,</span> <span class="mf">1.15000e+00</span><span class="p">,</span> <span class="mf">1.17000e+00</span><span class="p">,</span> <span class="mf">1.23500e+00</span><span class="p">,</span> <span class="mf">1.30000e+00</span><span class="p">,</span>
+    <span class="mf">1.33750e+00</span><span class="p">,</span> <span class="mf">1.37000e+00</span><span class="p">,</span> <span class="mf">1.44498e+00</span><span class="p">,</span> <span class="mf">1.47500e+00</span><span class="p">,</span> <span class="mf">1.50000e+00</span><span class="p">,</span>
+    <span class="mf">1.59000e+00</span><span class="p">,</span> <span class="mf">1.67000e+00</span><span class="p">,</span> <span class="mf">1.75500e+00</span><span class="p">,</span> <span class="mf">1.84000e+00</span><span class="p">,</span> <span class="mf">1.93000e+00</span><span class="p">,</span>
+    <span class="mf">2.02000e+00</span><span class="p">,</span> <span class="mf">2.10000e+00</span><span class="p">,</span> <span class="mf">2.13000e+00</span><span class="p">,</span> <span class="mf">2.36000e+00</span><span class="p">,</span> <span class="mf">2.55000e+00</span><span class="p">,</span>
+    <span class="mf">2.60000e+00</span><span class="p">,</span> <span class="mf">2.72000e+00</span><span class="p">,</span> <span class="mf">2.76792e+00</span><span class="p">,</span> <span class="mf">3.30000e+00</span><span class="p">,</span> <span class="mf">3.38075e+00</span><span class="p">,</span>
+    <span class="mf">4.00000e+00</span><span class="p">,</span> <span class="mf">4.12925e+00</span><span class="p">,</span> <span class="mf">5.04348e+00</span><span class="p">,</span> <span class="mf">5.34643e+00</span><span class="p">,</span> <span class="mf">6.16012e+00</span><span class="p">,</span>
+    <span class="mf">7.52398e+00</span><span class="p">,</span> <span class="mf">8.31529e+00</span><span class="p">,</span> <span class="mf">9.18981e+00</span><span class="p">,</span> <span class="mf">9.90555e+00</span><span class="p">,</span> <span class="mf">1.12245e+01</span><span class="p">,</span>
+    <span class="mf">1.37096e+01</span><span class="p">,</span> <span class="mf">1.59283e+01</span><span class="p">,</span> <span class="mf">1.94548e+01</span><span class="p">,</span> <span class="mf">2.26033e+01</span><span class="p">,</span> <span class="mf">2.49805e+01</span><span class="p">,</span>
+    <span class="mf">2.76077e+01</span><span class="p">,</span> <span class="mf">3.05113e+01</span><span class="p">,</span> <span class="mf">3.37201e+01</span><span class="p">,</span> <span class="mf">3.72665e+01</span><span class="p">,</span> <span class="mf">4.01690e+01</span><span class="p">,</span>
+    <span class="mf">4.55174e+01</span><span class="p">,</span> <span class="mf">4.82516e+01</span><span class="p">,</span> <span class="mf">5.15780e+01</span><span class="p">,</span> <span class="mf">5.55951e+01</span><span class="p">,</span> <span class="mf">6.79041e+01</span><span class="p">,</span>
+    <span class="mf">7.56736e+01</span><span class="p">,</span> <span class="mf">9.16609e+01</span><span class="p">,</span> <span class="mf">1.36742e+02</span><span class="p">,</span> <span class="mf">1.48625e+02</span><span class="p">,</span> <span class="mf">2.03995e+02</span><span class="p">,</span>
+    <span class="mf">3.04325e+02</span><span class="p">,</span> <span class="mf">3.71703e+02</span><span class="p">,</span> <span class="mf">4.53999e+02</span><span class="p">,</span> <span class="mf">6.77287e+02</span><span class="p">,</span> <span class="mf">7.48518e+02</span><span class="p">,</span>
+    <span class="mf">9.14242e+02</span><span class="p">,</span> <span class="mf">1.01039e+03</span><span class="p">,</span> <span class="mf">1.23410e+03</span><span class="p">,</span> <span class="mf">1.43382e+03</span><span class="p">,</span> <span class="mf">1.50733e+03</span><span class="p">,</span>
+    <span class="mf">2.03468e+03</span><span class="p">,</span> <span class="mf">2.24867e+03</span><span class="p">,</span> <span class="mf">3.35463e+03</span><span class="p">,</span> <span class="mf">3.52662e+03</span><span class="p">,</span> <span class="mf">5.00451e+03</span><span class="p">,</span>
+    <span class="mf">5.53084e+03</span><span class="p">,</span> <span class="mf">7.46586e+03</span><span class="p">,</span> <span class="mf">9.11882e+03</span><span class="p">,</span> <span class="mf">1.11378e+04</span><span class="p">,</span> <span class="mf">1.50344e+04</span><span class="p">,</span>
+    <span class="mf">1.66156e+04</span><span class="p">,</span> <span class="mf">2.47875e+04</span><span class="p">,</span> <span class="mf">2.73944e+04</span><span class="p">,</span> <span class="mf">2.92830e+04</span><span class="p">,</span> <span class="mf">3.69786e+04</span><span class="p">,</span>
+    <span class="mf">4.08677e+04</span><span class="p">,</span> <span class="mf">5.51656e+04</span><span class="p">,</span> <span class="mf">6.73795e+04</span><span class="p">,</span> <span class="mf">8.22975e+04</span><span class="p">,</span> <span class="mf">1.11090e+05</span><span class="p">,</span>
+    <span class="mf">1.22773e+05</span><span class="p">,</span> <span class="mf">1.83156e+05</span><span class="p">,</span> <span class="mf">2.47235e+05</span><span class="p">,</span> <span class="mf">2.73237e+05</span><span class="p">,</span> <span class="mf">3.01974e+05</span><span class="p">,</span>
+    <span class="mf">4.07622e+05</span><span class="p">,</span> <span class="mf">4.50492e+05</span><span class="p">,</span> <span class="mf">4.97871e+05</span><span class="p">,</span> <span class="mf">5.50232e+05</span><span class="p">,</span> <span class="mf">6.08101e+05</span><span class="p">,</span>
+    <span class="mf">8.20850e+05</span><span class="p">,</span> <span class="mf">9.07180e+05</span><span class="p">,</span> <span class="mf">1.00259e+06</span><span class="p">,</span> <span class="mf">1.10803e+06</span><span class="p">,</span> <span class="mf">1.22456e+06</span><span class="p">,</span>
+    <span class="mf">1.35335e+06</span><span class="p">,</span> <span class="mf">1.65299e+06</span><span class="p">,</span> <span class="mf">2.01897e+06</span><span class="p">,</span> <span class="mf">2.23130e+06</span><span class="p">,</span> <span class="mf">2.46597e+06</span><span class="p">,</span>
+    <span class="mf">3.01194e+06</span><span class="p">,</span> <span class="mf">3.67879e+06</span><span class="p">,</span> <span class="mf">4.49329e+06</span><span class="p">,</span> <span class="mf">5.48812e+06</span><span class="p">,</span> <span class="mf">6.06531e+06</span><span class="p">,</span>
+    <span class="mf">6.70320e+06</span><span class="p">,</span> <span class="mf">8.18731e+06</span><span class="p">,</span> <span class="mf">1.00000e+07</span><span class="p">,</span> <span class="mf">1.16183e+07</span><span class="p">,</span> <span class="mf">1.38403e+07</span><span class="p">,</span>
+    <span class="mf">1.49182e+07</span><span class="p">,</span> <span class="mf">1.73325e+07</span><span class="p">,</span> <span class="mf">1.96403e+07</span><span class="p">])</span>
+
+<span class="c1"># flip group edges to have highest energies first, since fastest groups have the lowest index</span>
+<span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">group_edges</span><span class="p">)</span>
+<span class="c1"># compute the group widths</span>
+<span class="n">dE</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+<span class="c1"># compute the group midpoints</span>
+<span class="n">Emid</span> <span class="o">=</span> <span class="n">E</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dE</span><span class="o">/</span><span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Emid</span> <span class="o">*</span> <span class="n">flux</span> <span class="o">/</span> <span class="n">dE</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;flux&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Lethargy Flux&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="c1"># plt.savefig(&quot;images/hdpe_example_lethargy_spectrum.png&quot;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">flux</span> <span class="o">/</span> <span class="n">dE</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;flux&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Flux&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="c1"># plt.savefig(&quot;images/hdpe_example_spectrum.png&quot;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>The resulting spectra are shown below:</p>
+<div style="display: flex; gap: 1rem; align-items: flex-start;"><p><img alt="Lethargy Spectrum" src="tutorials/lbs/mg_src_driven/images/hdpe_example_lethargy_spectrum.png" /> <img alt="Spectrum" src="tutorials/lbs/mg_src_driven/images/hdpe_example_spectrum.png" /></p>
+</div></section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">4.2.10. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../first/first_example.html" class="btn btn-neutral float-left" title="4.1. A First Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mg_keigen/pincell_example.html" class="btn btn-neutral float-right" title="4.3. Reactor pin cell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

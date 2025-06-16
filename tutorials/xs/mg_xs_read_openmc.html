@@ -60,7 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="1g_xs_read_file.html">2.3. Read ASCII file for 1-group cross sections</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mg_xs_read_file.html">2.4. Read ASCII file for multi-group cross sections</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">2.5. Read HDF5 file from OpenMC to load multi-group cross sections</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Call-OpenMC-cross-section-reader">2.5.1. Call OpenMC cross-section reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Call-the-OpenMC-cross-section-reader">2.5.1. Call the OpenMC cross-section reader</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Some-cross-section-data-can-be-retrieved-in-Python">2.5.2. Some cross-section data can be retrieved in Python</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">2.5.3. Finalize (for Jupyter Notebook only)</a></li>
 </ul>
@@ -113,8 +113,9 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
@@ -123,15 +124,15 @@
 </pre></div>
 </div>
 </div>
-<section id="Call-OpenMC-cross-section-reader">
-<h2><span class="section-number">2.5.1. </span>Call OpenMC cross-section reader<a class="headerlink" href="#Call-OpenMC-cross-section-reader" title="Link to this heading"></a></h2>
+<section id="Call-the-OpenMC-cross-section-reader">
+<h2><span class="section-number">2.5.1. </span>Call the OpenMC cross-section reader<a class="headerlink" href="#Call-the-OpenMC-cross-section-reader" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load cross sections</span>
 <span class="n">xs_uo2</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
-<span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;../../../test/python/modules/linear_boltzmann_solvers/transport_keigen/uo2.h5&quot;</span>
+<span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;../../test/python/modules/linear_boltzmann_solvers/transport_keigen/uo2.h5&quot;</span>
 <span class="n">xs_uo2</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;set1&quot;</span><span class="p">,</span> <span class="mf">294.0</span><span class="p">)</span>
 </pre></div>
 </div>

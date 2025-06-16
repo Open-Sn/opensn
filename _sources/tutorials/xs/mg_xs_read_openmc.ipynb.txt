@@ -25,8 +25,9 @@
     "import os\n",
     "import sys\n",
     "import numpy as np\n",
+    "from mpi4py import MPI\n",
     "\n",
-    "sys.path.append(\"../../..\")\n",
+    "sys.path.append(\"../..\")\n",
     "\n",
     "from pyopensn.xs import MultiGroupXS\n",
     "from pyopensn.context import UseColor, Finalize\n",
@@ -38,7 +39,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Call OpenMC cross-section reader"
+    "## Call the OpenMC cross-section reader"
    ]
   },
   {
@@ -53,7 +54,7 @@
    "source": [
     "# load cross sections\n",
     "xs_uo2 = MultiGroupXS()\n",
-    "filepath = \"../../../test/python/modules/linear_boltzmann_solvers/transport_keigen/uo2.h5\"\n",
+    "filepath = \"../../test/python/modules/linear_boltzmann_solvers/transport_keigen/uo2.h5\"\n",
     "xs_uo2.LoadFromOpenMC(filepath, \"set1\", 294.0)"
    ]
   },
