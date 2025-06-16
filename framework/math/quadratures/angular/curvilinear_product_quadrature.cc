@@ -35,10 +35,10 @@ GLProductQuadrature1DSpherical::Initialize(int Npolar, const bool verbose)
                                 std::to_string(polar_quad.weights.size()));
 
   // Verifications on polar quadrature
-  const double polar_quad_sum_weights = 2;
+  const double polar_quad_sum_weights = 1.0;
   const auto polar_quad_span = std::pair<double, double>(-1, +1);
 
-  //  weights sum to 2
+  //  weights sum to 1.0
   const auto integral_weights =
     std::accumulate(polar_quad.weights.begin(), polar_quad.weights.end(), 0.0);
   if (std::abs(integral_weights) > 0)

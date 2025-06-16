@@ -60,7 +60,7 @@ if __name__ == "__main__":
     bsrc = []
     for g in range(num_groups):
         bsrc.append(0.0)
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     # Angular quadrature
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=8)

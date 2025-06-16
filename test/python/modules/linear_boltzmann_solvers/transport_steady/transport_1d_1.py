@@ -58,7 +58,7 @@ if __name__ == "__main__":
     bsrc = []
     for g in range(num_groups):
         bsrc.append(0.0)
-    bsrc[0] = 1.0 / 2.0
+    bsrc[0] = 1.0
 
     # Angular quadrature
     pquad = GLProductQuadrature1DSlab(n_polar=80)

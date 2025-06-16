@@ -45,7 +45,7 @@
       {
         "type": "KeyValuePair",
         "key": "[0]   Absorption rate             =",
-        "goldvalue": 999.9999,
+        "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {

@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     # Set up the boundary source
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     # Create and configure the solver
     phys = DiscreteOrdinatesProblem(
