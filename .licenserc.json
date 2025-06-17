@@ -1,13 +1,17 @@
 {
-    "framework/**/*.{h,cpp}": [
+    "framework/**/*.{h,cc}": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],
-    "modules/**/*.{h,cpp}": [
+    "modules/**/*.{h,cc}": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],
-    "lua/**/*.{h,cpp}": [
+    "python/**/*.{h,cc}": [
+        "// SPDX-FileCopyrightText:",
+        "// SPDX-License-Identifier:"
+    ],
+    "pyopensn/**/*.{h,cc}": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ]
