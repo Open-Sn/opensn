@@ -163,11 +163,11 @@ endif()
 # libopensn
 file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
     framework/*.cc
-    modules/*.cc
+    physics/*.cc
 )
 
 if (OPENSN_WITH_CUDA)
-    file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
+    file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS physics/*.cu)
     list(APPEND LIBOPENSN_SRCS ${LIBOPENSN_CUDA_SRCS})
 endif()
 
@@ -276,7 +276,7 @@ install(
 )
 
 install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/modules
+    DIRECTORY ${CMAKE_SOURCE_DIR}/physics
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
     FILES_MATCHING PATTERN "*.h"
 )

@@ -4,17 +4,16 @@
 #include "python/lib/py_wrappers.h"
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_scdsa_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_smm_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/point_reactor_kinetics/point_reactor_kinetics.h"
+#include "physics/solvers/solver.h"
+#include "physics/problems/linear_boltzmann/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
+#include "physics/problems/linear_boltzmann/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "physics/solvers/steady_state/steady_state_solver.h"
+#include "physics/solvers/keigen/nl_keigen_solver.h"
+#include "physics/solvers/keigen/pi_keigen_solver.h"
+#include "physics/solvers/keigen/pi_keigen_scdsa_solver.h"
+#include "physics/solvers/keigen/pi_keigen_smm_solver.h"
+#include "physics/problems/linear_boltzmann/lbs_problem/io/lbs_problem_io.h"
+#include "physics/problems/linear_boltzmann/lbs_problem/lbs_problem.h"
 #include <pybind11/numpy.h>
 #include <algorithm>
 #include <cstddef>
@@ -849,115 +848,6 @@ WrapPIteration(py::module& slv)
   // clang-format on
 }
 
-// Wrap PRK solver
-void
-WrapPRK(py::module& slv)
-{
-  // clang-format off
-  // point reactor kineatic solver
-  auto prk_solver = py::class_<PRKSolver, std::shared_ptr<PRKSolver>, Solver>(
-    slv,
-    "PRKSolver",
-    R"(
-    General transient solver for point reactor kinetics.
-
-    Wrapper of :cpp:class:`opensn::PRKSolver`.
-    )"
-  );
-  prk_solver.def(
-    py::init(
-      [](py::kwargs& params)
-      {
-        return PRKSolver::Create(kwargs_to_param_block(params));
-      }
-    ),
-    R"(
-    Construct a point reactor kinetics solver.
-
-    Parameters
-    ----------
-    precursor_lambdas: List[float], default=[0.0124, 0.0304, 0.111, 0.301, 1.14, 3.01]
-        Decay constants for delayed neutron precursors.
-    precursor_betas: List[float], default=[0.00021, 0.00142, 0.00127, 0.00257, 0.00075, 0.00027]
-        Fractional delayed neutron fractions.
-    gen_time: float, default=1.0e-5
-        Neutron generation time [s].
-    initial_rho: float, default=0.0
-        Initial reactivity in dollars.
-    initial_source: float, default=1.0
-        Initial source strength [particles/s].
-    initial_population: float, default=1.0
-        Initial neutron population.
-    time_integration: str, default='implicit_euler'
-        One of {'explicit_euler','implicit_euler','crank_nicolson'}.
-    )"
-  );
-  prk_solver.def(
-    "GetPopulationPrev",
-    &PRKSolver::GetPopulationPrev,
-    R"(
-    Get the population at the previous time step.
-    )"
-  );
-  prk_solver.def(
-    "GetPopulationNew",
-    &PRKSolver::GetPopulationNew,
-    R"(
-    Get the population at the next time step.
-    )"
-  );
-  prk_solver.def(
-    "GetPeriod",
-    &PRKSolver::GetPeriod,
-    R"(
-    Get the period computed for the last time step.
-    )"
-  );
-  prk_solver.def(
-    "GetTimePrev",
-    &PRKSolver::GetTimePrev,
-    R"(
-    Get the time computed for the last time step.
-    )"
-  );
-  prk_solver.def(
-    "GetTimeNew",
-    &PRKSolver::GetTimeNew,
-    R"(
-    Get the time computed for the next time step.
-    )"
-  );
-  prk_solver.def(
-    "GetSolutionPrev",
-    [](PRKSolver& self)
-    {
-      return convert_vector(self.GetSolutionPrev());
-    },
-    R"(
-    Get the solution at the previous time step.
-    )"
-  );
-  prk_solver.def(
-    "GetSolutionNew",
-    [](PRKSolver& self)
-    {
-      return convert_vector(self.GetSolutionNew());
-    },
-    R"(
-    Get the solution at the next time step.
-    )"
-  );
-  prk_solver.def(
-    "SetRho",
-    &PRKSolver::SetRho,
-    R"(
-    Set the reactivity value for the solver in dollars.
-    )",
-    py::arg("rho")
-  );
-  // clang-format on
-}
-
 // Wrap the solver components of OpenSn
 void
 py_solver(py::module& pyopensn)
@@ -969,7 +859,6 @@ py_solver(py::module& pyopensn)
   WrapSteadyState(slv);
   WrapNLKEigen(slv);
   WrapPIteration(slv);
-  WrapPRK(slv);
 }
 
 } // namespace opensn

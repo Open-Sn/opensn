@@ -20,7 +20,7 @@ my_xs = {}
 # Load cross section data for fuel
 fuel_xs = MultiGroupXS()
 fuel_xs.LoadFromOpenMC(
-    "../../modules/linear_boltzmann_solvers/transport_keigen/u235_172g.h5",
+    "../../physics/linear_boltzmann/transport_keigen/u235_172g.h5",
     "u235",
     294.0
 )

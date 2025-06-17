@@ -183,7 +183,7 @@ There should **not** be empty lines separating the groups.
 
 Example:
 ```c++
-#include "modules/cfem_diffusion/cfem_diffusion_solver.h"
+#include "physics/cfem_diffusion/cfem_diffusion_solver.h"
 #include "framework/data_types/varying.h"
 #include "petsc.h"
 #include <string>

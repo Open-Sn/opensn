@@ -125,7 +125,7 @@ if(DOXYGEN_FOUND AND NOT ${SPHINX_BUILD} STREQUAL SPHINX_BUILD-NOTFOUND)
     )
     file(GLOB_RECURSE HEADER_FILES
         ${PROJECT_SOURCE_DIR}/framework/*.h
-        ${PROJECT_SOURCE_DIR}/modules/*.h
+        ${PROJECT_SOURCE_DIR}/physics/*.h
     )
 
     generate_tutorial(${CMAKE_SOURCE_DIR}/tutorials/python/lbs/first)

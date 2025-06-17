@@ -3,11 +3,11 @@
 
 #include "python/lib/py_wrappers.h"
 #include "python/lib/functor.h" // temporary, see the included header for more details!
-#include "framework/physics/solver.h"
+#include "physics/solvers/solver.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "modules/diffusion/cfem_diffusion_solver.h"
-#include "modules/diffusion/dfem_diffusion_solver.h"
-#include "modules/diffusion/diffusion_solver.h"
+#include "physics/problems/diffusion/cfem_diffusion_solver.h"
+#include "physics/problems/diffusion/dfem_diffusion_solver.h"
+#include "physics/problems/diffusion/diffusion_solver.h"
 #include <pybind11/stl.h>
 #include <memory>
 

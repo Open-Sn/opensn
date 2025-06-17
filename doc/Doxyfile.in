@@ -100,7 +100,7 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @PROJECT_SOURCE_DIR@/framework
-INPUT                 += @PROJECT_SOURCE_DIR@/modules
+INPUT                 += @PROJECT_SOURCE_DIR@/physics
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = YES

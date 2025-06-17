@@ -3,7 +3,7 @@
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],
-    "modules/**/*.{h,cpp}": [
+    "physics/**/*.{h,cpp}": [
         "// SPDX-FileCopyrightText:",
         "// SPDX-License-Identifier:"
     ],

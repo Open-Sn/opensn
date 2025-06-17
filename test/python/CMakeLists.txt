@@ -1,5 +1,5 @@
 # test binary
-file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS framework/*.cc function_wrapper/*.cc modules/*.cc src/*.cc)
+file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS framework/*.cc function_wrapper/*.cc physics/*.cc src/*.cc)
 
 add_executable(opensn-test ${TEST_SRCS})
 

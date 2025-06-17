@@ -3,8 +3,8 @@
 
 #include "framework/post_processors/solver_info_post_processor.h"
 #include "framework/object_factory.h"
-#include "framework/physics/solver.h"
-#include "framework/physics/time_steppers/time_stepper.h"
+#include "physics/solvers/solver.h"
+#include "physics/solvers/time_steppers/time_stepper.h"
 #include "framework/event_system/event.h"
 #include <algorithm>
 

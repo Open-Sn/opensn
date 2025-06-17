@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
+#include "physics/problems/linear_boltzmann/response_evaluator/response_evaluator.h"
 #include <memory>
 
 namespace opensn
