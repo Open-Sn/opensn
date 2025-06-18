@@ -82,7 +82,10 @@ private:
 
 public:
   friend struct FunctionWeightFromRho;
-  Quadrature() : AngularQuadrature(AngularQuadratureType::SLDFESQ, 3) {}
+  Quadrature(int scattering_order)
+    : AngularQuadrature(AngularQuadratureType::SLDFESQ, 3, scattering_order)
+  {
+  }
 
   virtual ~Quadrature() {}
 

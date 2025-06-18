@@ -54,7 +54,7 @@ if __name__ == "__main__":
     mg_src1 = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Setup the angular quadrature
-    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=0)
 
     # Create and configure the discrete ordinates solver
     phys = DiscreteOrdinatesProblem(

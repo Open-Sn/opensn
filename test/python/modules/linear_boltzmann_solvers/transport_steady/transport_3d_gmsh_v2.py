@@ -39,7 +39,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Quadrature
-    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=16)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=16, scattering_order=0)
 
     # Set up solver
     gs1 = [0, num_groups - 1]

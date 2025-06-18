@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     n_polar = 2
     n_azim = 4
-    pquad = GLCProductQuadrature3DXYZ(n_polar=n_polar, n_azimuthal=n_azim)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=n_polar, n_azimuthal=n_azim, scattering_order=0)
 
     print("TEST_BEGIN")
     for i in range(n_polar * n_azim):

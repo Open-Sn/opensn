@@ -1175,9 +1175,6 @@ LBSProblem::InitializeGroupsets()
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
-
-    groupset.BuildDiscMomOperator(options_.scattering_order, options_.geometry_type);
-    groupset.BuildMomDiscOperator(options_.scattering_order, options_.geometry_type);
   } // for groupset
 }
 
@@ -1187,12 +1184,9 @@ LBSProblem::ComputeNumberOfMoments()
   CALI_CXX_MARK_SCOPE("LBSProblem::ComputeNumberOfMoments");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
+    if (groupsets_[gs].quadrature->GetNumMoments() != groupsets_[0].quadrature->GetNumMoments())
       throw std::logic_error("LBSProblem: Moment-to-Harmonics mapping differs between groupsets");
-
-  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
-
+  num_moments_ = groupsets_.front().quadrature->GetNumMoments();
   if (num_moments_ == 0)
     throw std::logic_error("LBSProblem: Unable to infer number of moments from angular quadrature");
 }

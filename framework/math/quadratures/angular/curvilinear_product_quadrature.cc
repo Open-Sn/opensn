@@ -11,13 +11,18 @@
 namespace opensn
 {
 
-GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(int Npolar, bool verbose)
-  : CurvilinearQuadrature(1)
+GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(int Npolar,
+                                                               int scattering_order,
+                                                               bool verbose)
+  : CurvilinearQuadrature(1, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSpherical: Npolar must be even.");
 
   Initialize(Npolar, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 }
 
 void
@@ -168,17 +173,20 @@ GLProductQuadrature1DSpherical::InitializeParameters()
 }
 
 void
-GLProductQuadrature1DSpherical::MakeHarmonicIndices(unsigned int scattering_order)
+GLProductQuadrature1DSpherical::MakeHarmonicIndices()
 {
   if (m_to_ell_em_map_.empty())
   {
-    for (unsigned int l = 0; l <= scattering_order; ++l)
+    for (unsigned int l = 0; l <= scattering_order_; ++l)
       m_to_ell_em_map_.emplace_back(l, 0);
   }
 }
 
-GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, bool verbose)
-  : CurvilinearQuadrature(2)
+GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
+                                                   int Nazimuthal,
+                                                   int scattering_order,
+                                                   bool verbose)
+  : CurvilinearQuadrature(2, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DRZ: Npolar must be even.");
@@ -191,6 +199,9 @@ GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, b
   for (auto n = 0; n < Npolar; ++n)
     quad_azimuthal.emplace_back(GaussChebyshevQuadrature(Nazimuthal, verbose));
   Initialize(quad_polar, quad_azimuthal, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 }
 
 void
@@ -404,14 +415,13 @@ GLCProductQuadrature2DRZ::InitializeParameters()
 }
 
 void
-GLCProductQuadrature2DRZ::MakeHarmonicIndices(unsigned int scattering_order)
+GLCProductQuadrature2DRZ::MakeHarmonicIndices()
 {
-  if (m_to_ell_em_map_.empty())
-  {
-    for (unsigned int l = 0; l <= scattering_order; ++l)
-      for (int m = 0; m <= l; ++m)
-        m_to_ell_em_map_.emplace_back(l, m);
-  }
+  m_to_ell_em_map_.clear();
+
+  for (auto l = 0; l <= scattering_order_; ++l)
+    for (auto m = 0; m <= l; ++m)
+      m_to_ell_em_map_.emplace_back(l, m);
 }
 
 } // namespace opensn

@@ -114,9 +114,9 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar"};
+        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLProductQuadrature1DSlab, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLProductQuadrature1DSlab, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -147,9 +147,9 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DXY, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLCProductQuadrature2DXY, int, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -182,8 +182,9 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
-        return construct_from_kwargs<GLCProductQuadrature3DXYZ, int, int>(params, required_keys);
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLCProductQuadrature3DXYZ, int, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -195,6 +196,10 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     n_azimuthal: int
         Number of azimuthal angles.
+    scattering_order: int
+        Scattering order.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   // clang-format on
@@ -234,9 +239,9 @@ WrapCurvilinearQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal"};
+        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DRZ, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLCProductQuadrature2DRZ, int, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -276,9 +281,9 @@ WrapSLDFESQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"level"};
-        int level = std::get<0>(extract_args_tuple<int>(params, required_keys));
-        std::shared_ptr<SimplifiedLDFESQ::Quadrature> quad(new SimplifiedLDFESQ::Quadrature());
+        static const std::vector<std::string> required_keys = {"level", "scattering_order"};
+        auto [level, scattering_order] = extract_args_tuple<int, int>(params, required_keys);
+        std::shared_ptr<SimplifiedLDFESQ::Quadrature> quad(new SimplifiedLDFESQ::Quadrature(scattering_order));
         quad->GenerateInitialRefinement(level);
         return quad;
       }

@@ -99,8 +99,8 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
     weight_sum_ += w;
 }
 
-GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
-  : ProductQuadrature(1)
+GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, int scattering_order, bool verbose)
+  : ProductQuadrature(1, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
@@ -121,14 +121,20 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 
   log.Log() << "Using 1D Slab Gauss–Legendre product quadrature with " << omegas.size()
             << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
             << std::endl;
 }
 
-GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose)
-  : ProductQuadrature(2)
+GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar,
+                                                   int Nazimuthal,
+                                                   int scattering_order,
+                                                   bool verbose)
+  : ProductQuadrature(2, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even.");
@@ -158,14 +164,20 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, b
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 
   log.Log() << "Using 2D XY Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
             << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
             << std::endl;
 }
 
-GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose)
-  : ProductQuadrature(3)
+GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar,
+                                                     int Nazimuthal,
+                                                     int scattering_order,
+                                                     bool verbose)
+  : ProductQuadrature(3, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Npolar must be even.");
@@ -194,6 +206,9 @@ GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal,
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 
   log.Log() << "Using 3D XYZ Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
             << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_

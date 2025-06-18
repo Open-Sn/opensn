@@ -26,7 +26,7 @@ if __name__ == "__main__":
         exec(f.read(), globals())
 
     # Setup Physics
-    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=16)
+    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=16, scattering_order=2)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

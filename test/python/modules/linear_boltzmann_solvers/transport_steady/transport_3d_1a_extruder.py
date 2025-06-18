@@ -72,7 +72,7 @@ if __name__ == "__main__":
     mg_src2 = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     bsrc = [0.0 for _ in range(num_groups)]
     bsrc[0] = 1.0
