@@ -323,7 +323,7 @@
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    59",
+        "key": "WGS groups [63-167] Iteration    60",
         "wordnum": 9,
         "gold": "CONVERGED"
       },
@@ -331,14 +331,14 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    53",
         "wordnum": 8,
-        "gold": 5.96018e-07,
+        "gold": 7.39959e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    59",
+        "key": "WGS groups [63-167] Iteration    60",
         "wordnum": 8,
-        "gold": 5.96296e-07,
+        "gold": 4.74878e-07,
         "abs_tol": 1e-09
       }
     ]
@@ -356,7 +356,7 @@
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    56",
+        "key": "WGS groups [63-167] Iteration    58",
         "wordnum": 9,
         "gold": "CONVERGED"
       },
@@ -364,14 +364,14 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    54",
         "wordnum": 8,
-        "gold": 5.00021e-07,
+        "gold": 5.70363e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    56",
+        "key": "WGS groups [63-167] Iteration    58",
         "wordnum": 8,
-        "gold": 9.73954e-07,
+        "gold": 5.98697e-07,
         "abs_tol": 1e-09
       }
     ]
@@ -541,7 +541,7 @@
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    59",
+        "key": "WGS groups [63-167] Iteration    64",
         "wordnum": 9,
         "gold": "CONVERGED"
       },
@@ -549,14 +549,14 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    54",
         "wordnum": 8,
-        "gold": 7.24474e-07,
+        "gold": 9.78553e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    59",
+        "key": "WGS groups [63-167] Iteration    64",
         "wordnum": 8,
-        "gold": 8.17903e-07,
+        "gold": 9.40056e-07,
         "abs_tol": 1e-09
       }
     ]
@@ -729,7 +729,7 @@
       {
         "type": "KeyValuePair",
         "key": " Absorption rate             =",
-        "goldvalue": 999.9999,
+        "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
@@ -839,7 +839,7 @@
       {
         "type": "KeyValuePair",
         "key": " Out-flow rate               =",
-        "goldvalue": 13.43586,
+        "goldvalue": 13.43580,
         "abs_tol": 1e-06
       }
     ]

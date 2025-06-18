@@ -43,7 +43,7 @@ if __name__ == "__main__":
     xs1g.CreateSimpleOneGroup(sigma_t, 0.0)
 
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0
+    bsrc[0] = 2.0
 
     # Setup Physics
     pquad = GLProductQuadrature1DSlab(n_polar=256)

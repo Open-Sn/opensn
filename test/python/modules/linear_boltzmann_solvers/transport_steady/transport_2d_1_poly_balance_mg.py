@@ -58,7 +58,7 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(n_polar=6 * fac, n_azimuthal=16 * fac)
 
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

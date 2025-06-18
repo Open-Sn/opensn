@@ -14,23 +14,15 @@ namespace opensn
 class ProductQuadrature : public AngularQuadrature
 {
 protected:
+  double weight_sum_;
+
   /// Linear indices of ordered directions mapped to polar level.
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 
   ProductQuadrature(int dimension)
-    : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension)
+    : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension), weight_sum_(0.0)
   {
   }
-
-  /**
-   * Optimizes the angular quadrature for polar symmetry by removing all the direction with downward
-   * pointing polar angles.
-   *
-   * \param normalization float. (Optional) The default is a negative number which does not apply
-   *        any normalization. If a positive number is provided, the weights will be normalized to
-   *        sum to this number.
-   */
-  void OptimizeForPolarSymmetry(double normalization);
 
   /// Initializes the quadrature with custom angles and weights.
   void AssembleCosines(const std::vector<double>& azimuthal,
