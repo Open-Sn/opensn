@@ -101,7 +101,6 @@ if __name__ == "__main__":
             "power_field_function_on": True,
             "power_default_kappa": 1.0,
             "power_normalization": 1.0,
-            "save_angular_flux": True,
         },
         sweep_type="AAH",
     )
@@ -152,10 +151,10 @@ if __name__ == "__main__":
         k_solver = NonLinearKEigenSolver(
             lbs_problem=phys,
             nl_max_its=50,
-            nl_abs_tol=1.0e-10,
-            nl_rel_tol=1.0e-10,
-            l_max_its=20,
-            num_initial_power_iterations=2,
+            nl_abs_tol=1.0e-9,
+            nl_rel_tol=1.0e-9,
+            l_abs_tol=1.0e-8,
+            l_rel_tol=1.0e-8,
         )
 
     k_solver.Initialize()
