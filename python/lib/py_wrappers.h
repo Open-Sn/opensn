@@ -230,6 +230,7 @@ void WrapProblem(py::module& slv);
 void WrapSolver(py::module& slv);
 void WrapLBS(py::module& slv);
 void WrapSteadyState(py::module& slv);
+void WrapSLEPcKEigen(py::module& slv);
 void WrapNLKEigen(py::module& slv);
 void WrapPIteration(py::module& slv);
 void WrapPRK(py::module& slv);
