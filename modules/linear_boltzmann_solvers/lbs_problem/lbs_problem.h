@@ -307,7 +307,7 @@ protected:
   void InitializeGroupsets();
 
   /// Computes the number of moments for the given mesher types
-  void ComputeNumberOfMoments();
+  void ValidateAndComputeScatteringMoments();
 
   /// Initializes parallel arrays.
   virtual void InitializeParrays();

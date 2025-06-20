@@ -53,6 +53,8 @@ protected:
   explicit AngularQuadrature(AngularQuadratureType type, int dimension, int scattering_order)
     : type_(type), dimension_(dimension), scattering_order_(scattering_order)
   {
+    if (scattering_order < 0)
+      throw std::invalid_argument("AngularQuadrature: Scattering order must be >= 0");
   }
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
