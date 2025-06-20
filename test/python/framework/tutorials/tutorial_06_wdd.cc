@@ -69,24 +69,21 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "Num globl nodes: " << num_global_nodes;
 
   // Make an angular quadrature
+  const size_t scat_order = 1;
   std::shared_ptr<AngularQuadrature> quadrature;
   if (dimension == 1)
-    quadrature = std::make_shared<GLProductQuadrature1DSlab>(16);
+    quadrature = std::make_shared<GLProductQuadrature1DSlab>(16, scat_order);
   else if (dimension == 2)
-    quadrature = std::make_shared<GLCProductQuadrature2DXY>(16, 32);
+    quadrature = std::make_shared<GLCProductQuadrature2DXY>(16, 32, scat_order);
   else if (dimension == 3)
-    quadrature = std::make_shared<GLCProductQuadrature3DXYZ>(16, 32);
+    quadrature = std::make_shared<GLCProductQuadrature3DXYZ>(16, 32, scat_order);
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
   opensn::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
-  const size_t scat_order = 1;
   const size_t num_groups = 20;
-
-  quadrature->BuildMomentToDiscreteOperator(scat_order);
-  quadrature->BuildDiscreteToMomentOperator(scat_order);
 
   const auto& m2d = quadrature->GetMomentToDiscreteOperator();
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();

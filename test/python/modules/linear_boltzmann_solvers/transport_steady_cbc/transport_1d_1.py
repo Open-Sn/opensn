@@ -61,7 +61,7 @@ if __name__ == "__main__":
     bsrc[0] = 1.0
 
     # Angular quadrature
-    pquad = GLProductQuadrature1DSlab(n_polar=80)
+    pquad = GLProductQuadrature1DSlab(n_polar=80, scattering_order=5)
 
     # Create solver
     phys = DiscreteOrdinatesProblem(

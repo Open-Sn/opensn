@@ -47,7 +47,11 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": [0, 1],
-                "angular_quadrature": GLCProductQuadrature3DXYZ(n_polar=8, n_azimuthal=16),
+                "angular_quadrature": GLCProductQuadrature3DXYZ(
+                    n_polar=8,
+                    n_azimuthal=16,
+                    scattering_order=1
+                ),
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,

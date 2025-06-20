@@ -46,7 +46,7 @@ if __name__ == "__main__":
     bsrc[0] = 2.0
 
     # Setup Physics
-    pquad = GLProductQuadrature1DSlab(n_polar=256)
+    pquad = GLProductQuadrature1DSlab(n_polar=256, scattering_order=0)
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,

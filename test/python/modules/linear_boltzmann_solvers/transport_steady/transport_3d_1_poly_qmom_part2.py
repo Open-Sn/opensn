@@ -74,7 +74,7 @@ if __name__ == "__main__":
     mg_src1 = VolumetricSource(block_ids=[1], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

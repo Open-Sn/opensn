@@ -65,7 +65,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=source)
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DRZ(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature2DRZ(n_polar=4, n_azimuthal=8, scattering_order=0)
 
     # Create the curvilinear solver (for cylindrical geometry)
     phys = DiscreteOrdinatesCurvilinearProblem(

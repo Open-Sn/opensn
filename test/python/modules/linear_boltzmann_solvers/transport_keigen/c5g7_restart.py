@@ -46,7 +46,7 @@ if __name__ == "__main__":
         xs_map.append({"block_ids": [m], "xs": xss[m]})
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Solver
     phys = DiscreteOrdinatesProblem(

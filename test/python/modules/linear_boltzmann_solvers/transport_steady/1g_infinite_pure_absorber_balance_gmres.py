@@ -45,7 +45,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Angular quadrature
-    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Create solver
     phys = DiscreteOrdinatesProblem(
@@ -77,6 +77,7 @@ if __name__ == "__main__":
                 {"name": "zmax", "type": "reflecting"},
             ],
             "volumetric_sources": [mg_src],
+            "scattering_order": 1,
         }
     )
     ss_solver = SteadyStateSolver(lbs_problem=phys)

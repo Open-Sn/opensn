@@ -828,7 +828,7 @@ LBSProblem::Initialize()
   InitializeMaterials();
   InitializeSpatialDiscretization();
   InitializeGroupsets();
-  ComputeNumberOfMoments();
+  ValidateAndComputeScatteringMoments();
   InitializeParrays();
   InitializeBoundaries();
 
@@ -952,14 +952,6 @@ LBSProblem::InitializeMaterials()
   for (auto [blk_id, mat] : block_id_to_xs_map_)
   {
     mat->SetAdjointMode(options_.adjoint);
-
-    // Check number of moments
-    if (block_id_to_xs_map_[blk_id]->GetScatteringOrder() < options_.scattering_order)
-    {
-      log.Log0Warning() << __FUNCTION__ << ": Cross-sections on block \"" << blk_id
-                        << "\" has a lower scattering order (" << mat->GetScatteringOrder() << ") "
-                        << "than the simulation (" << options_.scattering_order << ").";
-    }
 
     OpenSnLogicalErrorIf(mat->GetNumGroups() < groups_.size(),
                          "Cross-sections on block \"" + std::to_string(blk_id) +
@@ -1175,26 +1167,74 @@ LBSProblem::InitializeGroupsets()
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
-
-    groupset.BuildDiscMomOperator(options_.scattering_order, options_.geometry_type);
-    groupset.BuildMomDiscOperator(options_.scattering_order, options_.geometry_type);
   } // for groupset
 }
 
 void
-LBSProblem::ComputeNumberOfMoments()
+LBSProblem::ValidateAndComputeScatteringMoments()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::ComputeNumberOfMoments");
+  /*
+    lfs: Legendre order used in the flux solver
+    lxs: Legendre order used in the cross-section library
+    laq: Legendre order supported by the angular quadrature
+  */
+
+  int lfs = options_.scattering_order;
+  if (lfs < 0)
+    throw std::invalid_argument("LBSProblem: Scattering order must be >= 0");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
-      throw std::logic_error("LBSProblem: Moment-to-Harmonics mapping differs between groupsets");
+    if (groupsets_[gs].quadrature->GetScatteringOrder() !=
+        groupsets_[0].quadrature->GetScatteringOrder())
+      throw std::logic_error("LBSProblem: Number of scattering moments differs between groupsets");
+  int laq = groupsets_[0].quadrature->GetScatteringOrder();
 
-  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
+  for (auto [blk_id, mat] : block_id_to_xs_map_)
+  {
+    int lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
 
-  if (num_moments_ == 0)
-    throw std::logic_error("LBSProblem: Unable to infer number of moments from angular quadrature");
+    if (laq > lxs)
+    {
+      log.Log0Warning()
+        << "The quadrature set(s) supports more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+
+    if (lfs < lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with fewer scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+    else if (lfs > lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+  }
+
+  if (lfs < laq)
+  {
+    log.Log0Warning() << "Using fewer rows/columns of angular matrices (M, D) than the quadrature "
+                      << "supports" << std::endl;
+  }
+  else if (lfs > laq)
+    throw std::logic_error(
+      "LBSProblem: Solver requires more flux moments than the angular quadrature supports");
+
+  // Compute number of solver moments.
+  auto geometry_type = options_.geometry_type;
+  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
+      geometry_type == GeometryType::ONED_SPHERICAL or
+      geometry_type == GeometryType::TWOD_CYLINDRICAL)
+  {
+    num_moments_ = lfs + 1;
+  }
+  else if (geometry_type == GeometryType::TWOD_CARTESIAN)
+    num_moments_ = ((lfs + 1) * (lfs + 2)) / 2;
+  else if (geometry_type == GeometryType::THREED_CARTESIAN)
+    num_moments_ = (lfs + 1) * (lfs + 1);
 }
 
 void

@@ -58,7 +58,7 @@ if __name__ == "__main__":
     mg_src2 = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=32)
+    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=32, scattering_order=1)
 
     # Set up the boundary source
     bsrc = [0.0 for _ in range(num_groups)]
