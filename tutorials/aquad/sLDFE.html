@@ -62,9 +62,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#Example-1:-sLDFE-Quadrature-parameters">3.3.1. Example-1: sLDFE Quadrature parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Plot-the-resulting-quadrature">3.3.2. Plot the resulting quadrature</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Example-2:-sLDFE-Quadrature-parameters">3.3.3. Example-2: sLDFE Quadrature parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">3.3.4. Example-1: sLDFE Quadrature parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">3.3.5. Plot the resulting quadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">3.3.6. Finalize (for Jupyter Notebook only)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">3.3.4. Plot the resulting quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">3.3.5. Finalize (for Jupyter Notebook only)</a></li>
 </ul>
 </li>
 </ul>
@@ -140,7 +139,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sLDFE quadrature with initial refinement level of 4.</span>
-<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="c1"># Locally refine the quadrature near a given point with a given angular spread.</span>
 <span class="c1"># 30-degree cone around point [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]</span>
 <span class="n">aquad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -173,9 +172,6 @@
 </section>
 <section id="Example-2:-sLDFE-Quadrature-parameters">
 <h2><span class="section-number">3.3.3. </span>Example-2: sLDFE Quadrature parameters<a class="headerlink" href="#Example-2:-sLDFE-Quadrature-parameters" title="Link to this heading"></a></h2>
-</section>
-<section id="id1">
-<h2><span class="section-number">3.3.4. </span>Example-1: sLDFE Quadrature parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>Here, we use the sLDFE Quadrature with 4 levels of uniform refinement, followed by 2 levels of local refinements.</p>
 <p>The local refinement happens around point <span class="math notranslate nohighlight">\(P=[0,0,1]\)</span>. The first local refinement is for a cone of <span class="math notranslate nohighlight">\(\theta=15^o\)</span> around that point, and the second refinement for a cone of <span class="math notranslate nohighlight">\(\theta=4^o\)</span>.</p>
 <p>When the last argument (boolean variable) is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the refinement of the spherical quadrangles is performed when this condition is met:</p>
@@ -187,7 +183,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a sLDFE quadrature with initial refinement level of 4.</span>
-<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">aquad</span> <span class="o">=</span> <span class="n">SLDFESQuadrature</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="c1"># Locally refine the quadrature near a given point with a given angular spread.</span>
 <span class="c1"># 30-degree cone around point [1/np.sqrt(3), 1/np.sqrt(3), 1/np.sqrt(3)]</span>
 <span class="n">aquad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span> <span class="mf">15.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -198,8 +194,8 @@
 </div>
 </div>
 </section>
-<section id="id2">
-<h2><span class="section-number">3.3.5. </span>Plot the resulting quadrature<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id1">
+<h2><span class="section-number">3.3.4. </span>Plot the resulting quadrature<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>We use the plotting routine found in the <code class="docutils literal notranslate"><span class="pre">tools/</span></code> folder of OpenSn</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -228,7 +224,7 @@
 </div>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">3.3.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.3.5. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
