@@ -95,8 +95,12 @@ void PrintVector(const std::vector<double>& x);
 /// Scales a vector in place by constant.
 void Scale(std::vector<double>& x, const double& val);
 
+void Scale(std::vector<std::vector<double>>& xs, const double& val);
+
 /// Sets a constant value to a vector.
 void Set(std::vector<double>& x, const double& val);
+
+void Set(std::vector<std::vector<double>>& xss, const double& val);
 
 /// Multiplies the vector with a constant and returns result.
 std::vector<double> Mult(const std::vector<double>& x, const double& val);

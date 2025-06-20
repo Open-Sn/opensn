@@ -32,8 +32,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& Sf = nl_context_ptr->Sf;
 
   // Lambdas
-  auto SetLBSFissionSource = [&active_set_source_function, &front_gs](
-                               const std::vector<double>& input, std::vector<double>& output)
+  auto SetLBSFissionSource =
+    [&active_set_source_function, &front_gs](const std::vector<std::vector<double>>& input,
+                                             std::vector<std::vector<double>>& output)
   {
     Set(output, 0.0);
     active_set_source_function(
@@ -41,8 +42,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   };
 
   auto SetLBSScatterSource =
-    [&active_set_source_function,
-     &front_gs](const std::vector<double>& input, std::vector<double>& output, bool suppress_wgs)
+    [&active_set_source_function, &front_gs](const std::vector<std::vector<double>>& input,
+                                             std::vector<std::vector<double>>& output,
+                                             bool suppress_wgs)
   {
     Set(output, 0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
@@ -56,11 +58,11 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
       const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp[front_gs.id]);
 
     SetLBSFissionSource(phi_temp, q_moments_local);
 
-    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local[front_gs.id]);
     return output;
   };
 
@@ -69,11 +71,11 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
       const std::vector<double>& input, bool suppress_wgs)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp[front_gs.id]);
 
     SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
 
-    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local[front_gs.id]);
     return output;
   };
 
@@ -81,7 +83,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     [&front_gs, &lbs_problem, &phi_temp](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp[front_gs.id]);
 
     return lbs_problem.ComputeFissionProduction(phi_temp);
   };

@@ -176,7 +176,7 @@ PowerIterationKEigenSCDSASolver::Execute()
                                                    const bool additive,
                                                    const bool suppress_wg_scat = false)
   {
-    ProjectBackPhi0(front_gs_, input, phi_temp);
+    ProjectBackPhi0(front_gs_, input, phi_temp[front_gs_.id]);
     SetLBSScatterSource(phi_temp, additive, suppress_wg_scat);
   };
 
@@ -203,20 +203,20 @@ PowerIterationKEigenSCDSASolver::Execute()
     SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
     auto Sf_ell = q_moments_local_;
-    auto Sf0_ell = CopyOnlyPhi0(front_gs_, Sf_ell);
+    auto Sf0_ell = CopyOnlyPhi0(front_gs_, Sf_ell[front_gs_.id]);
 
     // Init old scalar flux storage. If using a single sweep, set
     // it to the existing scalar flux
     std::vector<double> phi0_ell;
     if (not extra_sweep)
-      phi0_ell = CopyOnlyPhi0(front_gs_, phi_old_local_);
+      phi0_ell = CopyOnlyPhi0(front_gs_, phi_old_local_[front_gs_.id]);
 
     // Solve transport inners
     ags_solver_->Solve();
     if (extra_sweep)
     {
       // Set the old scalar flux to the scalar flux before the last sweep
-      phi0_ell = CopyOnlyPhi0(front_gs_, phi_new_local_);
+      phi0_ell = CopyOnlyPhi0(front_gs_, phi_new_local_[front_gs_.id]);
 
       // Do an extra sweep
       q_moments_local_ = Sf_ell;
@@ -225,11 +225,11 @@ PowerIterationKEigenSCDSASolver::Execute()
     }
 
     // Store the intermediate scalar flux
-    auto phi0_star = CopyOnlyPhi0(front_gs_, phi_new_local_);
+    auto phi0_star = CopyOnlyPhi0(front_gs_, phi_new_local_[front_gs_.id]);
 
     // Power Iteration Acceleration
     SetLBSScatterSourcePhi0(phi0_star - phi0_ell, false);
-    auto Ss0_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
+    auto Ss0_res = CopyOnlyPhi0(front_gs_, q_moments_local_[front_gs_.id]);
 
     double production_k = lbs_problem->ComputeFissionProduction(phi_new_local_);
 
@@ -241,11 +241,11 @@ PowerIterationKEigenSCDSASolver::Execute()
 
     for (size_t k = 0; k < accel_pi_max_its_; ++k)
     {
-      ProjectBackPhi0(front_gs_, epsilon_k + phi0_star, phi_temp);
+      ProjectBackPhi0(front_gs_, epsilon_k + phi0_star, phi_temp[front_gs_.id]);
       SetLBSFissionSource(phi_temp, false);
       Scale(q_moments_local_, 1.0 / lambda_k);
 
-      auto Sf0_aux = CopyOnlyPhi0(front_gs_, q_moments_local_);
+      auto Sf0_aux = CopyOnlyPhi0(front_gs_, q_moments_local_[front_gs_.id]);
 
       // Inner iterations seem extremely wasteful. Set this to 1 iteration here for further
       // investigation.
@@ -253,7 +253,7 @@ PowerIterationKEigenSCDSASolver::Execute()
       {
         SetLBSScatterSourcePhi0(epsilon_k, false, true);
 
-        auto Ss0 = CopyOnlyPhi0(front_gs_, q_moments_local_);
+        auto Ss0 = CopyOnlyPhi0(front_gs_, q_moments_local_[front_gs_.id]);
 
         // Solve the diffusion system
         diffusion_solver_->Assemble_b(Ss0 + Sf0_aux + Ss0_res - Sf0_ell);
@@ -262,7 +262,7 @@ PowerIterationKEigenSCDSASolver::Execute()
         epsilon_k = epsilon_kp1;
       }
 
-      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_old_local_);
+      ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_old_local_[front_gs_.id]);
 
       double production_kp1 = lbs_problem->ComputeFissionProduction(phi_old_local_);
 
@@ -281,7 +281,7 @@ PowerIterationKEigenSCDSASolver::Execute()
       production_k = production_kp1;
     } // acceleration
 
-    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_new_local_);
+    ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_new_local_[front_gs_.id]);
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
       *lbs_problem, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 

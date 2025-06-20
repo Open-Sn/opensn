@@ -110,6 +110,10 @@ PowerIterationKEigenSMMSolver::Initialize()
 {
   PowerIterationKEigenSolver::Initialize();
 
+  num_unknowns_.resize(phi_new_local_.size());
+  for (int i = 0; i < phi_new_local_.size(); ++i)
+    num_unknowns_[i] = phi_new_local_[i].size();
+
   // Shorthand information
   const auto grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -266,7 +270,7 @@ PowerIterationKEigenSMMSolver::Execute()
 
       // Compute a new diffusion eigenvalue. This requires mapping the
       // diffusion solution back to the transport discretization.
-      std::vector<double> phi;
+      std::vector<std::vector<double>> phi;
       TransferDiffusionToTransport(phi0, phi);
       double F0 = lbs_problem_->ComputeFissionProduction(phi);
       lambda = F0 / F0_old * lambda_old;
@@ -298,9 +302,11 @@ PowerIterationKEigenSMMSolver::Execute()
     LBSVecOps::ScalePhiVector(*lbs_problem_, PhiSTLOption::PHI_NEW, lambda / production);
 
     const auto phi_change = CheckScalarFluxConvergence(phi_new_local_, phi_ell);
+    const auto gsi = front_gs_.id;
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
-      *lbs_problem_, front_gs_, phi_new_local_, phi_old_local_);
-    LBSVecOps::GSScopedCopyPrimarySTLvectors(*lbs_problem_, front_gs_, phi_new_local_, phi_ell);
+      *lbs_problem_, front_gs_, phi_new_local_[gsi], phi_old_local_[gsi]);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(
+      *lbs_problem_, front_gs_, phi_new_local_[gsi], phi_ell[gsi]);
     ++nit;
 
     if (lbs_problem_->GetOptions().verbose_outer_iterations)
@@ -339,7 +345,6 @@ PowerIterationKEigenSMMSolver::ComputeClosures(const std::vector<std::vector<dou
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
-  const auto& transport_views = lbs_problem_->GetCellTransportViews();
 
   // Create a local tensor vector, set it to zero
   auto local_tensors = tensors_->MakeLocalVector();
@@ -359,11 +364,10 @@ PowerIterationKEigenSMMSolver::ComputeClosures(const std::vector<std::vector<dou
     // Loop over cells
     for (const auto& cell : grid->local_cells)
     {
-      const auto& transport_view = transport_views[cell.local_id];
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
       // Compute node-wise, groupset wise tensors
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+      for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       {
         for (int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
@@ -813,13 +817,15 @@ PowerIterationKEigenSMMSolver::SetNodalDiffusionFissionSource(const std::vector<
                                 "diffusion fission source must have the same size as the "
                                 "local diffusion solver.");
 
-  std::vector<double> phi;
+  std::vector<std::vector<double>> phi;
   TransferDiffusionToTransport(phi0, phi);
 
-  std::vector<double> Sf(phi.size(), 0.0);
+  std::vector<std::vector<double>> Sf(num_unknowns_.size());
+  for (int i = 0; i < num_unknowns_.size(); ++i)
+    Sf[i].assign(num_unknowns_[i], 0.);
   active_set_source_function_(
     front_gs_, Sf, phi, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
-  return Sf;
+  return Sf[front_gs_.id];
 }
 
 std::vector<double>
@@ -835,16 +841,18 @@ PowerIterationKEigenSMMSolver::SetNodalDiffusionScatterSource(const std::vector<
                                 "diffusion fission source must have the same size as the "
                                 "local diffusion solver.");
 
-  std::vector<double> phi;
+  std::vector<std::vector<double>> phi;
   TransferDiffusionToTransport(phi0, phi);
 
-  std::vector<double> Ss(phi.size(), 0.0);
+  std::vector<std::vector<double>> Ss(num_unknowns_.size());
+  for (int i = 0; i < num_unknowns_.size(); ++i)
+    Ss[i].assign(num_unknowns_[i], 0.);
   active_set_source_function_(front_gs_,
                               Ss,
                               phi,
                               APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                 SUPPRESS_WG_SCATTER);
-  return Ss;
+  return Ss[front_gs_.id];
 }
 
 void
@@ -953,8 +961,8 @@ PowerIterationKEigenSMMSolver::ComputeBoundaryFactors()
 }
 
 void
-PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(const std::vector<double>& input,
-                                                            std::vector<double>& output) const
+PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(
+  const std::vector<std::vector<double>>& input, std::vector<double>& output) const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -963,6 +971,7 @@ PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(const std::vector<do
   const auto& phi_uk_man = lbs_problem_->GetUnknownManager();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
+  const auto gsi = front_gs_.id;
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
 
@@ -970,21 +979,25 @@ PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(const std::vector<do
                                                     : diff_sd.GetNumLocalDOFs(diff_uk_man);
 
   // Check the input vector
-  if (input.size() != pwld.GetNumLocalDOFs(phi_uk_man))
+  if (input[gsi].size() != pwld.GetNumLocalDOFs(phi_uk_man))
     throw std::logic_error("Vector size mismatch. Expected an input vector of size " +
                            std::to_string(pwld.GetNumLocalDOFs(phi_uk_man)) + ", but got a " +
                            "vector of size " + std::to_string(input.size()) + ".");
 
   // If diffusion is PWLC, then nodal averages should be transferred to the PWLC vector,
   // otherwise, the result is a copy
-  std::vector<double> mapped_phi;
+  std::vector<std::vector<double>> mapped_phi;
   if (pwlc_ptr_)
-    mapped_phi = ComputeNodallyAveragedPWLDVector(input, pwld, diff_sd, phi_uk_man, ghost_info_);
+  {
+    throw std::runtime_error("PLWC is not supported.");
+    // mapped_phi = ComputeNodallyAveragedPWLDVector(input, pwld, diff_sd, phi_uk_man, ghost_info_);
+  }
   else
     mapped_phi = input;
 
   // Go through the cells and transfer the data to the output vector
   output.assign(num_local_diff_dofs, 0.0);
+  const auto& transport_view = lbs_problem_->GetCellTransportViews()[gsi];
   for (const auto& cell : grid->local_cells)
   {
     // This is the same for PWLC and PWLD, so only this is needed
@@ -992,16 +1005,16 @@ PowerIterationKEigenSMMSolver::TransferTransportToDiffusion(const std::vector<do
 
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto input_dof_map = pwld.MapDOFLocal(cell, i, phi_uk_man, 0, first_grp);
+      const auto input_dof_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
       const auto output_dof_map = diff_sd.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      std::copy_n(&mapped_phi[input_dof_map], num_gs_groups, &output[output_dof_map]);
+      std::copy_n(&mapped_phi[gsi][input_dof_map], num_gs_groups, &output[output_dof_map]);
     }
   }
 }
 
 void
-PowerIterationKEigenSMMSolver::TransferDiffusionToTransport(const std::vector<double>& input,
-                                                            std::vector<double>& output) const
+PowerIterationKEigenSMMSolver::TransferDiffusionToTransport(
+  const std::vector<double>& input, std::vector<std::vector<double>>& output) const
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& pwld = lbs_problem_->GetSpatialDiscretization();
@@ -1010,6 +1023,7 @@ PowerIterationKEigenSMMSolver::TransferDiffusionToTransport(const std::vector<do
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
+  const auto gsi = front_gs_.id;
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
 
@@ -1022,49 +1036,55 @@ PowerIterationKEigenSMMSolver::TransferDiffusionToTransport(const std::vector<do
                            std::to_string(diff_sd.GetNumLocalDOFs(diff_uk_man)) +
                            ", but got a vector of size " + std::to_string(input.size()) + ".");
 
+  output.resize(num_unknowns_.size());
+  for (int i = 0; i < num_unknowns_.size(); ++i)
+    output[i].assign(num_unknowns_[i], 0.0);
   // Go through the cells and transfer data
-  output.assign(pwld.GetNumLocalDOFs(uk_man), 0.0);
+  const auto& transport_view = lbs_problem_->GetCellTransportViews()[gsi];
   for (const auto& cell : grid->local_cells)
   {
     // This is the same for PWLC and PWLD, so only this is needed
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
+    auto& output_gs = output[gsi];
     for (int i = 0; i < num_cell_nodes; ++i)
     {
       const auto input_dof_map = diff_sd.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      const auto output_dof_map = pwld.MapDOFLocal(cell, i, uk_man, 0, first_grp);
-      std::copy_n(&input[input_dof_map], num_gs_groups, &output[output_dof_map]);
+      const auto output_dof_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
+      std::copy_n(&input[input_dof_map], num_gs_groups, &output_gs[output_dof_map]);
     }
   }
 }
 
 double
-PowerIterationKEigenSMMSolver::CheckScalarFluxConvergence(const std::vector<double>& phi_new,
-                                                          const std::vector<double>& phi_old)
+PowerIterationKEigenSMMSolver::CheckScalarFluxConvergence(
+  const std::vector<std::vector<double>>& phi_new, const std::vector<std::vector<double>>& phi_old)
 {
   const auto& grid = lbs_problem_->GetGrid();
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
 
+  const auto gsi = front_gs_.id;
   const auto first_grp = front_gs_.groups.front().id;
   const auto num_gs_groups = front_gs_.groups.size();
 
   double local_l2norm = 0.0;
+  const auto& transport_view = lbs_problem_->GetCellTransportViews()[gsi];
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
     for (int i = 0; i < num_cell_nodes; ++i)
+    {
+      const auto dof = transport_view[cell.local_id].MapDOF(i, 0, 0);
       for (int gsg = 0; gsg < num_gs_groups; ++gsg)
       {
-        const auto g = first_grp + gsg;
-        const auto dof = sdm.MapDOFLocal(cell, i, uk_man, 0, g);
-
-        const double dphi = phi_new.at(dof) - phi_old.at(dof);
+        const double dphi = phi_new[gsi].at(dof + gsg) - phi_old[gsi].at(dof + gsg);
         local_l2norm += dphi * dphi;
       }
+    }
   }
 
   double global_l2norm = 0.0;

@@ -85,7 +85,7 @@ void
 NonLinearKEigenSolver::Execute()
 {
   if (reset_phi0_)
-    LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
+    lbs_problem_->SetZerothMomentValue(PhiSTLOption::PHI_OLD, 1.0);
 
   if (num_initial_power_its_ > 0)
   {

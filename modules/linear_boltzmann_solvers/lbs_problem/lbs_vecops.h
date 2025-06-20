@@ -18,9 +18,6 @@ class LBSGroupset;
 class LBSVecOps
 {
 public:
-  /// Sets a value to the zeroth (scalar) moment of the vector.
-  static void SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double value);
-
   /// Scales a flux moment vector. For sweep methods the delayed angular fluxes will also be scaled.
   static void ScalePhiVector(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double value);
 
@@ -36,16 +33,11 @@ public:
                                                 Vec src,
                                                 PhiSTLOption dest);
 
-  /// Assembles a vector for a given group span from a source vector.
-  static void SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
-                                                         int first_group_id,
-                                                         int last_group_id,
-                                                         Vec dest,
-                                                         const std::vector<double>& src);
-
   /// Assembles a vector for a given groupset from a source vector.
-  static void SetPrimarySTLvectorFromGroupScopedPETScVec(
-    LBSProblem& lbs_problem, int first_group_id, int last_group_id, Vec src, PhiSTLOption dest);
+  static void SetPrimarySTLvectorFromGroupScopedPETScVec(LBSProblem& lbs_problem,
+                                                         const std::vector<LBSGroupset>& groupsets,
+                                                         Vec src,
+                                                         PhiSTLOption dest);
 
   /// Assembles a vector for a given groupset from a source vector.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
@@ -70,10 +62,6 @@ public:
                                                      const std::vector<int>& groupset_ids,
                                                      Vec x,
                                                      PhiSTLOption which_phi);
-
-private:
-  template <typename Functor>
-  static int GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor&& func);
 };
 
 } // namespace opensn

@@ -22,6 +22,7 @@
 #include "caliper/cali.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include <algorithm>
+#include <cstddef>
 #include <iomanip>
 #include <fstream>
 #include <cstring>
@@ -187,6 +188,13 @@ LBSProblem::GetGroupsets() const
   return groupsets_;
 }
 
+std::size_t
+LBSProblem::GetGroupsetIndex(std::size_t group) const
+{
+  assert(group < num_groups_);
+  return groupset_index_[group];
+}
+
 void
 LBSProblem::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
@@ -253,7 +261,7 @@ LBSProblem::GetUnitGhostCellMatrices() const
   return unit_ghost_cell_matrices_;
 }
 
-const std::vector<CellLBSView>&
+const std::vector<std::vector<CellLBSView>>&
 LBSProblem::GetCellTransportViews() const
 {
   return cell_transport_views_;
@@ -277,49 +285,49 @@ LBSProblem::GetGlobalNodeCount() const
   return global_node_count_;
 }
 
-std::vector<double>&
+std::vector<std::vector<double>>&
 LBSProblem::GetQMomentsLocal()
 {
   return q_moments_local_;
 }
 
-const std::vector<double>&
+const std::vector<std::vector<double>>&
 LBSProblem::GetQMomentsLocal() const
 {
   return q_moments_local_;
 }
 
-std::vector<double>&
+std::vector<std::vector<double>>&
 LBSProblem::GetExtSrcMomentsLocal()
 {
   return ext_src_moments_local_;
 }
 
-const std::vector<double>&
+const std::vector<std::vector<double>>&
 LBSProblem::GetExtSrcMomentsLocal() const
 {
   return ext_src_moments_local_;
 }
 
-std::vector<double>&
+std::vector<std::vector<double>>&
 LBSProblem::GetPhiOldLocal()
 {
   return phi_old_local_;
 }
 
-const std::vector<double>&
+const std::vector<std::vector<double>>&
 LBSProblem::GetPhiOldLocal() const
 {
   return phi_old_local_;
 }
 
-std::vector<double>&
+std::vector<std::vector<double>>&
 LBSProblem::GetPhiNewLocal()
 {
   return phi_new_local_;
 }
 
-const std::vector<double>&
+const std::vector<std::vector<double>>&
 LBSProblem::GetPhiNewLocal() const
 {
   return phi_new_local_;
@@ -616,8 +624,11 @@ LBSProblem::SetOptions(const InputParameters& input)
         boundary_preferences_.clear();
 
         // Set all solutions to zero.
-        phi_old_local_.assign(phi_old_local_.size(), 0.0);
-        phi_new_local_.assign(phi_new_local_.size(), 0.0);
+        for (std::size_t gs = 0; gs < this->groupsets_.size(); ++gs)
+        {
+          phi_old_local_[gs].assign(phi_old_local_[gs].size(), 0.0);
+          phi_new_local_[gs].assign(phi_new_local_[gs].size(), 0.0);
+        }
         for (auto& psi : psi_new_local_)
           psi.assign(psi.size(), 0.0);
         precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
@@ -825,11 +836,12 @@ LBSProblem::Initialize()
 
   mpi_comm.barrier();
 
-  InitializeMaterials();
   InitializeSpatialDiscretization();
   InitializeGroupsets();
   ValidateAndComputeScatteringMoments();
+  InitializePrecursors();
   InitializeParrays();
+  InitializeMaterials();
   InitializeBoundaries();
 
   // Initialize point sources
@@ -921,6 +933,38 @@ LBSProblem::PrintSimHeader()
 }
 
 void
+LBSProblem::InitializePrecursors()
+{
+  // Initialize precursor properties
+  num_precursors_ = 0;
+  max_precursors_per_material_ = 0;
+  for (const auto& mat_id_xs : block_id_to_xs_map_)
+  {
+    const auto& xs = mat_id_xs.second;
+    num_precursors_ += xs->GetNumPrecursors();
+    if (xs->GetNumPrecursors() > max_precursors_per_material_)
+      max_precursors_per_material_ = xs->GetNumPrecursors();
+  }
+
+  // if no precursors, turn off precursors
+  if (num_precursors_ == 0)
+    options_.use_precursors = false;
+
+  // check compatibility when precursors are on
+  if (options_.use_precursors)
+  {
+    for (const auto& [mat_id, xs] : block_id_to_xs_map_)
+    {
+      OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
+                           "Incompatible cross-section data encountered for material ID " +
+                             std::to_string(mat_id) + ". When delayed neutron data is present " +
+                             "for one fissionable matrial, it must be present for all fissionable "
+                             "materials.");
+    }
+  }
+}
+
+void
 LBSProblem::InitializeMaterials()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeMaterials");
@@ -960,42 +1004,19 @@ LBSProblem::InitializeMaterials()
                            "Cross-sections must have at least as many groups as the simulation.");
   }
 
-  // Initialize precursor properties
-  num_precursors_ = 0;
-  max_precursors_per_material_ = 0;
-  for (const auto& mat_id_xs : block_id_to_xs_map_)
-  {
-    const auto& xs = mat_id_xs.second;
-    num_precursors_ += xs->GetNumPrecursors();
-    if (xs->GetNumPrecursors() > max_precursors_per_material_)
-      max_precursors_per_material_ = xs->GetNumPrecursors();
-  }
-
-  // if no precursors, turn off precursors
-  if (num_precursors_ == 0)
-    options_.use_precursors = false;
-
-  // check compatibility when precursors are on
-  if (options_.use_precursors)
-  {
-    for (const auto& [mat_id, xs] : block_id_to_xs_map_)
-    {
-      OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
-                           "Incompatible cross-section data encountered for material ID " +
-                             std::to_string(mat_id) + ". When delayed neutron data is present " +
-                             "for one fissionable matrial, it must be present for all fissionable "
-                             "materials.");
-    }
-  }
-
   // Update transport views if available
-  if (grid_->local_cells.size() == cell_transport_views_.size())
-    for (const auto& cell : grid_->local_cells)
+  for (std::size_t gsi = 0; gsi < groupsets_.size(); ++gsi)
+  {
+    if (grid_->local_cells.size() == cell_transport_views_[gsi].size())
     {
-      const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
-      auto& transport_view = cell_transport_views_[cell.local_id];
-      transport_view.ReassignXS(*xs_ptr);
+      for (const auto& cell : grid_->local_cells)
+      {
+        const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
+        auto& transport_view = cell_transport_views_[gsi][cell.local_id];
+        transport_view.ReassignXS(*xs_ptr);
+      }
     }
+  }
 
   mpi_comm.barrier();
 }
@@ -1156,6 +1177,7 @@ LBSProblem::InitializeGroupsets()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeGroupsets");
 
+  groupset_index_.resize(num_groups_);
   for (auto& groupset : groupsets_)
   {
     // Build groupset angular flux unknown manager
@@ -1167,6 +1189,9 @@ LBSProblem::InitializeGroupsets()
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
+
+    for (auto& g : groupset.groups)
+      groupset_index_[g.id] = groupset.id;
   } // for groupset
 }
 
@@ -1265,9 +1290,17 @@ LBSProblem::InitializeParrays()
   log.LogAllVerbose1() << "LBS Number of phi unknowns: " << local_unknown_count;
 
   // Size local vectors
-  q_moments_local_.assign(local_unknown_count, 0.0);
-  phi_old_local_.assign(local_unknown_count, 0.0);
-  phi_new_local_.assign(local_unknown_count, 0.0);
+  auto num_groupsets = groupsets_.size();
+  q_moments_local_.resize(num_groupsets);
+  phi_old_local_.resize(num_groupsets);
+  phi_new_local_.resize(num_groupsets);
+  for (std::size_t gs = 0; gs < num_groupsets; ++gs)
+  {
+    auto num_unknowns = local_node_count_ * num_moments_ * groupsets_[gs].groups.size();
+    q_moments_local_[gs].assign(num_unknowns, 0.0);
+    phi_old_local_[gs].assign(num_unknowns, 0.0);
+    phi_new_local_[gs].assign(num_unknowns, 0.0);
+  }
 
   // Setup groupset psi vectors
   psi_new_local_.clear();
@@ -1299,86 +1332,93 @@ LBSProblem::InitializeParrays()
   // amount of nodes on the cell. max_cell_dof_count is
   // initialized here.
   //
-  size_t block_MG_counter = 0; // Counts the strides of moment and group
 
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
   max_cell_dof_count_ = 0;
-  cell_transport_views_.clear();
-  cell_transport_views_.reserve(grid_->local_cells.size());
-  for (auto& cell : grid_->local_cells)
+  cell_transport_views_.resize(groupsets_.size());
+  for (auto& groupset : groupsets_)
   {
-    size_t num_nodes = discretization_->GetCellNumNodes(cell);
+    size_t block_MG_counter = 0; // Counts the strides of moment and group
 
-    // compute cell volumes
-    double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
-    for (size_t i = 0; i < num_nodes; ++i)
-      cell_volume += IntV_shapeI(i);
+    const auto gsi = groupset.id;
+    const size_t num_gs_groups = groupset.groups.size();
 
-    size_t cell_phi_address = block_MG_counter;
-
-    const size_t num_faces = cell.faces.size();
-    std::vector<bool> face_local_flags(num_faces, true);
-    std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
-    std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
-    bool cell_on_boundary = false;
-    int f = 0;
-    for (auto& face : cell.faces)
+    cell_transport_views_[gsi].reserve(grid_->local_cells.size());
+    for (auto& cell : grid_->local_cells)
     {
-      if (not face.has_neighbor)
+      const size_t num_nodes = discretization_->GetCellNumNodes(cell);
+
+      // compute cell volumes
+      double cell_volume = 0.0;
+      const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
+      for (size_t i = 0; i < num_nodes; ++i)
+        cell_volume += IntV_shapeI(i);
+
+      size_t cell_phi_address = block_MG_counter;
+
+      const size_t num_faces = cell.faces.size();
+      std::vector<bool> face_local_flags(num_faces, true);
+      std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
+      std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
+      bool cell_on_boundary = false;
+      int f = 0;
+      for (auto& face : cell.faces)
       {
-        Vector3& n = face.normal;
+        if (not face.has_neighbor)
+        {
+          Vector3& n = face.normal;
 
-        int boundary_id = -1;
-        if (n.Dot(ihat) < -0.999)
-          boundary_id = XMIN;
-        else if (n.Dot(ihat) > 0.999)
-          boundary_id = XMAX;
-        else if (n.Dot(jhat) < -0.999)
-          boundary_id = YMIN;
-        else if (n.Dot(jhat) > 0.999)
-          boundary_id = YMAX;
-        else if (n.Dot(khat) < -0.999)
-          boundary_id = ZMIN;
-        else if (n.Dot(khat) > 0.999)
-          boundary_id = ZMAX;
+          int boundary_id = -1;
+          if (n.Dot(ihat) < -0.999)
+            boundary_id = XMIN;
+          else if (n.Dot(ihat) > 0.999)
+            boundary_id = XMAX;
+          else if (n.Dot(jhat) < -0.999)
+            boundary_id = YMIN;
+          else if (n.Dot(jhat) > 0.999)
+            boundary_id = YMAX;
+          else if (n.Dot(khat) < -0.999)
+            boundary_id = ZMIN;
+          else if (n.Dot(khat) > 0.999)
+            boundary_id = ZMAX;
 
-        if (boundary_id >= 0)
-          face.neighbor_id = boundary_id;
-        cell_on_boundary = true;
+          if (boundary_id >= 0)
+            face.neighbor_id = boundary_id;
+          cell_on_boundary = true;
 
-        face_local_flags[f] = false;
-        face_locality[f] = -1;
-      } // if bndry
-      else
-      {
-        const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
-        face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
-        face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_->cells[face.neighbor_id];
-      }
+          face_local_flags[f] = false;
+          face_locality[f] = -1;
+        } // if bndry
+        else
+        {
+          const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
+          face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
+          face_locality[f] = neighbor_partition;
+          neighbor_cell_ptrs[f] = &grid_->cells[face.neighbor_id];
+        }
 
-      ++f;
-    } // for f
+        ++f;
+      } // for f
 
-    if (num_nodes > max_cell_dof_count_)
-      max_cell_dof_count_ = num_nodes;
-    cell_transport_views_.emplace_back(cell_phi_address,
-                                       num_nodes,
-                                       num_grps,
-                                       num_moments_,
-                                       num_faces,
-                                       *block_id_to_xs_map_[cell.block_id],
-                                       cell_volume,
-                                       face_local_flags,
-                                       face_locality,
-                                       neighbor_cell_ptrs,
-                                       cell_on_boundary);
-    block_MG_counter += num_nodes * num_grps * num_moments_;
-  } // for local cell
+      if (num_nodes > max_cell_dof_count_)
+        max_cell_dof_count_ = num_nodes;
+      cell_transport_views_[gsi].emplace_back(cell_phi_address,
+                                              num_nodes,
+                                              num_gs_groups,
+                                              num_moments_,
+                                              num_faces,
+                                              *block_id_to_xs_map_[cell.block_id],
+                                              cell_volume,
+                                              face_local_flags,
+                                              face_locality,
+                                              neighbor_cell_ptrs,
+                                              cell_on_boundary);
+      block_MG_counter += num_nodes * num_gs_groups * num_moments_;
+    } // for local cell
+  }
 
   // Populate grid nodal mappings
   // This is used in the Flux Data Structures (FLUDS)
@@ -1673,10 +1713,12 @@ LBSProblem::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<doubl
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1685,13 +1727,13 @@ LBSProblem::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<doubl
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
-      double* output_mapped = &output_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
+      auto* output_mapped = &output_phi_local[dphi_map];
+      const auto* phi_in_mapped = &phi_in[phi_map];
 
-      for (size_t g = 0; g < gss; ++g)
+      for (size_t g = 0; g < groupset.groups.size(); ++g)
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
@@ -1712,8 +1754,10 @@ LBSProblem::GSProjectBackPhi0(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1722,13 +1766,13 @@ LBSProblem::GSProjectBackPhi0(const LBSGroupset& groupset,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];
 
-      for (int g = 0; g < gss; ++g)
+      for (int g = 0; g < groupset.groups.size(); ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
   }   // for cell
@@ -1745,11 +1789,13 @@ LBSProblem::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
 
   delta_phi_local.clear();
   delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1759,15 +1805,12 @@ LBSProblem::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
-      double* delta_phi_mapped = &delta_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
-      for (size_t g = 0; g < gss; ++g)
+      for (size_t g = 0; g < groupset.groups.size(); ++g)
       {
-        delta_phi_mapped[g] = sigma_s[gsi + g] * phi_in_mapped[g];
+        delta_phi_local[dphi_map + g] = sigma_s[first_group + g] * phi_in[phi_map + g];
       } // for g
     }   // for node
   }     // for cell
@@ -1784,8 +1827,10 @@ LBSProblem::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1794,14 +1839,11 @@ LBSProblem::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
-      const double* delta_phi_mapped = &delta_phi_local[dphi_map];
-      double* phi_new_mapped = &ref_phi_new[phi_map];
-
-      for (int g = 0; g < gss; ++g)
-        phi_new_mapped[g] += delta_phi_mapped[g];
+      for (int g = 0; g < groupset.groups.size(); ++g)
+        ref_phi_new[phi_map + g] += delta_phi_local[dphi_map + g];
     } // for dof
   }   // for cell
 }
@@ -1889,11 +1931,13 @@ LBSProblem::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
 
   delta_phi_local.clear();
   delta_phi_local.assign(local_node_count_, 0.0);
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1903,20 +1947,17 @@ LBSProblem::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
-      double& delta_phi_mapped = delta_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
-      for (size_t g = 0; g < gss; ++g)
+      for (size_t g = 0; g < groupset.groups.size(); ++g)
       {
         double R_g = 0.0;
-        for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
+        for (const auto& [row_g, gprime, sigma_sm] : S.Row(first_group + g))
+          if (gprime >= first_group and gprime != (first_group + g))
+            R_g += sigma_sm * phi_in[phi_map + (gprime - first_group)];
 
-        delta_phi_mapped += R_g;
+        delta_phi_local[dphi_map] += R_g;
       } // for g
     }   // for node
   }     // for cell
@@ -1932,10 +1973,12 @@ LBSProblem::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.id;
+  const auto first_group = groupset.groups.front().id;
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
+
+  const auto& transport_view = GetCellTransportViews()[gsi];
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -1946,26 +1989,24 @@ LBSProblem::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i);
+      const auto phi_map = transport_view[cell.local_id].MapDOF(i, 0, 0);
 
-      const double delta_phi_mapped = delta_phi_local[dphi_map];
-      double* phi_new_mapped = &ref_phi_new[phi_map];
-
-      for (int g = 0; g < gss; ++g)
-        phi_new_mapped[g] += delta_phi_mapped * xi_g[gsi + g];
+      for (int g = 0; g < groupset.groups.size(); ++g)
+        ref_phi_new[phi_map + g] += delta_phi_local[dphi_map] * xi_g[first_group + g];
     } // for dof
   }   // for cell
 }
 
-std::vector<double>
+std::vector<std::vector<double>>
 LBSProblem::MakeSourceMomentsFromPhi()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::MakeSourceMomentsFromPhi");
 
   size_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
 
-  std::vector<double> source_moments(num_local_dofs, 0.0);
+  std::vector<std::vector<double>> source_moments(groupsets_.size(),
+                                                  std::vector(num_local_dofs, 0.0));
   for (auto& groupset : groupsets_)
   {
     active_set_source_function_(groupset,
@@ -1984,27 +2025,29 @@ LBSProblem::UpdateFieldFunctions()
   CALI_CXX_MARK_SCOPE("LBSProblem::UpdateFieldFunctions");
 
   const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
 
   // Update flux moments
   for (const auto& [g_and_m, ff_index] : phi_field_functions_local_map_)
   {
     const size_t g = g_and_m.first;
     const size_t m = g_and_m.second;
+    const auto gs_idx = GetGroupsetIndex(g);
+    const auto g_idx = groupsets_[gs_idx].GetGroupIndex(g);
 
     std::vector<double> data_vector_local(local_node_count_, 0.0);
 
     for (const auto& cell : grid_->local_cells)
     {
+      const auto& transport_view = cell_transport_views_[gs_idx][cell.local_id];
       const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const int64_t imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+        const int64_t imapA = transport_view.MapDOF(i, m, g_idx);
         const int64_t imapB = sdm.MapDOFLocal(cell, i);
 
-        data_vector_local[imapB] = phi_new_local_[imapA];
+        data_vector_local[imapB] = phi_new_local_[gs_idx][imapA];
       } // for node
     }   // for cell
 
@@ -2018,37 +2061,42 @@ LBSProblem::UpdateFieldFunctions()
     std::vector<double> data_vector_local(local_node_count_, 0.0);
 
     double local_total_power = 0.0;
-    for (const auto& cell : grid_->local_cells)
+    for (auto& groupset : groupsets_)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
-
-      const auto& xs = block_id_to_xs_map_.at(cell.block_id);
-
-      if (not xs->IsFissionable())
-        continue;
-
-      for (size_t i = 0; i < num_nodes; ++i)
+      const auto gsi = groupset.id;
+      for (const auto& cell : grid_->local_cells)
       {
-        const int64_t imapA = sdm.MapDOFLocal(cell, i);
-        const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
+        const auto& cell_mapping = sdm.GetCellMapping(cell);
+        const size_t num_nodes = cell_mapping.GetNumNodes();
 
-        double nodal_power = 0.0;
-        for (size_t g = 0; g < groups_.size(); ++g)
+        const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
+
+        const auto& xs = block_id_to_xs_map_.at(cell.block_id);
+
+        if (not xs->IsFissionable())
+          continue;
+
+        for (size_t i = 0; i < num_nodes; ++i)
         {
-          const double sigma_fg = xs->GetSigmaFission()[g];
-          // const double kappa_g = xs->Kappa()[g];
-          const double kappa_g = options_.power_default_kappa;
+          const int64_t imapA = sdm.MapDOFLocal(cell, i);
+          const int64_t imapB = transport_view.MapDOF(i, 0, 0);
 
-          nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
-        } // for g
+          double nodal_power = 0.0;
+          for (size_t g = 0; g < groups_.size(); ++g)
+          {
+            const double sigma_fg = xs->GetSigmaFission()[g];
+            // const double kappa_g = xs->Kappa()[g];
+            const double kappa_g = options_.power_default_kappa;
 
-        data_vector_local[imapA] = nodal_power;
-        local_total_power += nodal_power * Vi(i);
-      } // for node
-    }   // for cell
+            nodal_power += kappa_g * sigma_fg * phi_new_local_[gsi][imapB + g];
+          } // for g
+
+          data_vector_local[imapA] = nodal_power;
+          local_total_power += nodal_power * Vi(i);
+        } // for node
+      }   // for cell
+    }     // for groupsets
 
     if (options_.power_normalization > 0.0)
     {
@@ -2092,21 +2140,23 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
       const size_t ff_index = phi_field_functions_local_map_.at({g, m});
       const auto& ff_ptr = field_functions_.at(ff_index);
       const auto& ff_data = ff_ptr->GetLocalFieldVector();
+      const auto gsi = GetGroupsetIndex(g);
 
       for (const auto& cell : grid_->local_cells)
       {
+        const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
         const auto& cell_mapping = sdm.GetCellMapping(cell);
         const size_t num_nodes = cell_mapping.GetNumNodes();
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
           const int64_t imapA = sdm.MapDOFLocal(cell, i);
-          const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const int64_t imapB = transport_view.MapDOF(i, m, g);
 
           if (which_phi == PhiSTLOption::PHI_OLD)
-            phi_old_local_[imapB] = ff_data[imapA];
+            phi_old_local_[gsi][imapB] = ff_data[imapA];
           else if (which_phi == PhiSTLOption::PHI_NEW)
-            phi_new_local_[imapB] = ff_data[imapA];
+            phi_new_local_[gsi][imapB] = ff_data[imapA];
         } // for node
       }   // for cell
     }     // for g
@@ -2114,48 +2164,57 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
 }
 
 double
-LBSProblem::ComputeFissionProduction(const std::vector<double>& phi)
+LBSProblem::ComputeFissionProduction(const std::vector<std::vector<double>>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::ComputeFissionProduction");
 
-  const int first_grp = groups_.front().id;
-  const int last_grp = groups_.back().id;
-
   // Loop over local cells
   double local_production = 0.0;
-  for (auto& cell : grid_->local_cells)
+  for (auto& gs : groupsets_)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
-
-    // Obtain xs
-    const auto& xs = transport_view.GetXS();
-    const auto& F = xs.GetProductionMatrix();
-    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
-
-    if (not xs.IsFissionable())
-      continue;
-
-    // Loop over nodes
-    const int num_nodes = transport_view.GetNumNodes();
-    for (int i = 0; i < num_nodes; ++i)
+    for (auto& cell : grid_->local_cells)
     {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
+      const auto& transport_view = cell_transport_views_[gs.id][cell.local_id];
+      const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
-      // Loop over groups
-      for (size_t g = first_grp; g <= last_grp; ++g)
+      // Obtain xs
+      const auto& xs = transport_view.GetXS();
+      const auto& F = xs.GetProductionMatrix();
+      const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+
+      if (not xs.IsFissionable())
+        continue;
+
+      // Loop over nodes
+      const int num_nodes = transport_view.GetNumNodes();
+      for (int i = 0; i < num_nodes; ++i)
       {
-        const auto& prod = F[g];
-        for (size_t gp = 0; gp <= last_grp; ++gp)
-          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
+        const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+        const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
-        if (options_.use_precursors)
-          for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
-            local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
-      }
-    } // for node
-  }   // for cell
+        // Loop over groups
+        for (size_t g = 0; g < gs.groups.size(); ++g)
+        {
+          const auto& prod = F[gs.groups.front().id + g];
+
+          for (auto& gps : groupsets_)
+          {
+            const auto& tvp = cell_transport_views_[gps.id][cell.local_id];
+            const size_t ofst = tvp.MapDOF(i, 0, 0);
+            for (size_t gpi = 0; gpi < gps.groups.size(); ++gpi)
+            {
+              local_production +=
+                prod[gps.groups.front().id + gpi] * phi[gps.id][ofst + gpi] * IntV_ShapeI;
+            }
+          }
+          if (options_.use_precursors)
+            for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
+              local_production +=
+                nu_delayed_sigma_f[gs.groups.front().id + g] * phi[gs.id][uk_map + g] * IntV_ShapeI;
+        }
+      } // for node
+    }   // for cell
+  }
 
   // Allreduce global production
   double global_production = 0.0;
@@ -2165,40 +2224,42 @@ LBSProblem::ComputeFissionProduction(const std::vector<double>& phi)
 }
 
 double
-LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
+LBSProblem::ComputeFissionRate(const std::vector<std::vector<double>>& phi)
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::ComputeFissionRate");
 
-  const int first_grp = groups_.front().id;
-  const int last_grp = groups_.back().id;
-
   // Loop over local cells
   double local_fission_rate = 0.0;
-  for (auto& cell : grid_->local_cells)
+  for (auto& groupset : groupsets_)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
-
-    // Obtain xs
-    const auto& xs = transport_view.GetXS();
-    const auto& sigma_f = xs.GetSigmaFission();
-
-    // skip non-fissionable material
-    if (not xs.IsFissionable())
-      continue;
-
-    // Loop over nodes
-    const int num_nodes = transport_view.GetNumNodes();
-    for (int i = 0; i < num_nodes; ++i)
+    const auto gsi = groupset.id;
+    for (auto& cell : grid_->local_cells)
     {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
+      const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
+      const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
 
-      // Loop over groups
-      for (size_t g = first_grp; g <= last_grp; ++g)
-        local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
-    } // for node
-  }   // for cell
+      // Obtain xs
+      const auto& xs = transport_view.GetXS();
+      const auto& sigma_f = xs.GetSigmaFission();
+
+      // skip non-fissionable material
+      if (not xs.IsFissionable())
+        continue;
+
+      // Loop over nodes
+      const int num_nodes = transport_view.GetNumNodes();
+      for (int i = 0; i < num_nodes; ++i)
+      {
+        const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+        const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
+
+        // Loop over groups
+        for (size_t g = 0; g < groupset.groups.size(); ++g)
+          local_fission_rate +=
+            sigma_f[groupset.groups.front().id + g] * phi[gsi][uk_map + g] * IntV_ShapeI;
+      } // for node
+    }   // for cell
+  }     // for groupset
 
   // Allreduce global production
   double global_fission_rate = 0.0;
@@ -2216,39 +2277,66 @@ LBSProblem::ComputePrecursors()
 
   precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
 
-  // Loop over cells
-  for (const auto& cell : grid_->local_cells)
+  for (auto& groupset : groupsets_)
   {
-    const auto& fe_values = unit_cell_matrices_[cell.local_id];
-    const auto& transport_view = cell_transport_views_[cell.local_id];
-    const double cell_volume = transport_view.GetVolume();
-
-    // Obtain xs
-    const auto& xs = transport_view.GetXS();
-    const auto& precursors = xs.GetPrecursors();
-    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
-
-    // Loop over precursors
-    for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
+    const auto gsi = groupset.id;
+    // Loop over cells
+    for (const auto& cell : grid_->local_cells)
     {
-      size_t dof = cell.local_id * J + j;
-      const auto& precursor = precursors[j];
-      const double coeff = precursor.fractional_yield / precursor.decay_constant;
+      const auto& fe_values = unit_cell_matrices_[cell.local_id];
+      const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
+      const double cell_volume = transport_view.GetVolume();
 
-      // Loop over nodes
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+      // Obtain xs
+      const auto& xs = transport_view.GetXS();
+      const auto& precursors = xs.GetPrecursors();
+      const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+
+      // Loop over precursors
+      for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
       {
-        const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
+        size_t dof = cell.local_id * J + j;
+        const auto& precursor = precursors[j];
+        const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
-        // Loop over groups
-        for (unsigned int g = 0; g < groups_.size(); ++g)
-          precursor_new_local_[dof] +=
-            coeff * nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
-      } // for node i
-    }   // for precursor j
+        // Loop over nodes
+        for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+        {
+          const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+          const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
-  } // for cell
+          // Loop over groups
+          for (unsigned int g = 0; g < groupset.groups.size(); ++g)
+            precursor_new_local_[dof] += coeff *
+                                         nu_delayed_sigma_f[groupset.groups.front().id + g] *
+                                         phi_new_local_[gsi][uk_map + g] * node_V_fraction;
+        } // for node i
+      }   // for precursor j
+    }     // for cell
+  }       // for groupsets
+}
+
+void
+LBSProblem::SetZerothMomentValue(PhiSTLOption phi_opt, double value)
+{
+  auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? GetPhiNewLocal() : GetPhiOldLocal();
+
+  for (auto& groupset : groupsets_)
+  {
+    const auto gsi = groupset.id;
+    for (const auto& cell : grid_->local_cells)
+    {
+      const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
+      const std::size_t num_nodes = transport_view.GetNumNodes();
+
+      for (std::size_t i = 0; i < num_nodes; ++i)
+      {
+        const auto offset = transport_view.MapDOF(i, 0, 0);
+        for (std::size_t g = 0; g < groupset.groups.size(); ++g)
+          phi[gsi][offset + g] = value;
+      }
+    }
+  }
 }
 
 } // namespace opensn

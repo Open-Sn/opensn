@@ -38,6 +38,8 @@ protected:
 
   double cell_volume_ = 0.0;
   size_t g_ = 0;
+  /// group index within group set, i.e. (0..num_groups_within_groupset)
+  size_t gsgi_ = 0;
   const double* fixed_src_moments_ = nullptr;
   std::vector<double> default_zero_src_;
 
@@ -58,8 +60,8 @@ public:
    *        and across/within-groups fission.
    */
   virtual void operator()(const LBSGroupset& groupset,
-                          std::vector<double>& q,
-                          const std::vector<double>& phi,
+                          std::vector<std::vector<double>>& q,
+                          const std::vector<std::vector<double>>& phi,
                           SourceFlags source_flags);
 
   virtual double AddSourceMoments() const;
@@ -72,8 +74,8 @@ public:
                                    const double* phi) const;
 
   virtual void AddAdditionalSources(const LBSGroupset& groupset,
-                                    std::vector<double>& q,
-                                    const std::vector<double>& phi,
+                                    std::vector<std::vector<double>>& q,
+                                    const std::vector<std::vector<double>>& phi,
                                     SourceFlags source_flags)
   {
     AddPointSources(groupset, q, phi, source_flags);
@@ -82,14 +84,14 @@ public:
 
   /// Adds point sources to the source moments.
   void AddPointSources(const LBSGroupset& groupset,
-                       std::vector<double>& q,
-                       const std::vector<double>& phi,
+                       std::vector<std::vector<double>>& q,
+                       const std::vector<std::vector<double>>& phi,
                        SourceFlags source_flags);
 
   /// Adds volumetric sources to the source moments.
   void AddVolumetricSources(const LBSGroupset& groupset,
-                            std::vector<double>& q,
-                            const std::vector<double>& phi,
+                            std::vector<std::vector<double>>& q,
+                            const std::vector<std::vector<double>>& phi,
                             SourceFlags source_flags);
 };
 

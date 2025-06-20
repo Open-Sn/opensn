@@ -9,18 +9,18 @@ namespace opensn
 void
 SweepChunk::ZeroDestinationPhi()
 {
-  const auto gsi = groupset_.groups.front().id;
+  const auto gsi = groupset_.id;
   const auto gss = groupset_.groups.size();
 
   for (const auto& cell : grid_->local_cells)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& transport_view = cell_transport_views_[gsi][cell.local_id];
 
     for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (int m = 0; m < num_moments_; ++m)
       {
-        const auto mapping = transport_view.MapDOF(i, m, gsi);
+        const auto mapping = transport_view.MapDOF(i, m, 0);
         for (int g = 0; g < gss; ++g)
         {
           (destination_phi_)[mapping + g] = 0.0;

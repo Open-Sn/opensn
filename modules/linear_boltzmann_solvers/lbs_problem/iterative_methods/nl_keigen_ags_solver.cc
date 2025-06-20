@@ -111,9 +111,9 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   auto& lbs_problem = nl_context_ptr->lbs_problem;
 
   // Unpack solution
-  const auto& groups = lbs_problem->GetGroups();
+  const auto& groupsets = lbs_problem->GetGroupsets();
   LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
-    *lbs_problem, groups.front().id, groups.back().id, x_, PhiSTLOption::PHI_NEW);
+    *lbs_problem, groupsets, x_, PhiSTLOption::PHI_NEW);
 
   // Compute final k_eff
   double k_eff = lbs_problem->ComputeFissionProduction(lbs_problem->GetPhiOldLocal());

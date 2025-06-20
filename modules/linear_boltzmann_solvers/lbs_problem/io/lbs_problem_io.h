@@ -52,7 +52,8 @@ public:
   static void WriteFluxMoments(
     LBSProblem& lbs_problem,
     const std::string& file_stem,
-    std::optional<const std::reference_wrapper<std::vector<double>>> opt_src = std::nullopt);
+    std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src =
+      std::nullopt);
 
   /**
    * Read a flux moments vector from a file.
@@ -62,11 +63,12 @@ public:
    * \param single_file Single data file or data file per rank?
    * \param per_material Optional flux moments destination vector
    */
-  static void ReadFluxMoments(
-    LBSProblem& lbs_problem,
-    const std::string& file_stem,
-    bool single_file,
-    std::optional<std::reference_wrapper<std::vector<double>>> opt_dest = std::nullopt);
+  static void
+  ReadFluxMoments(LBSProblem& lbs_problem,
+                  const std::string& file_stem,
+                  bool single_file,
+                  std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest =
+                    std::nullopt);
 };
 
 } // namespace opensn

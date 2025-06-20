@@ -17,7 +17,7 @@ CBCSweepChunk::CBCSweepChunk(std::vector<double>& destination_phi,
                              const std::shared_ptr<MeshContinuum> grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                             std::vector<CellLBSView>& cell_transport_views,
+                             std::vector<std::vector<CellLBSView>>& cell_transport_views,
                              const std::vector<double>& densities,
                              const std::vector<double>& source_moments,
                              const LBSGroupset& groupset,
@@ -72,7 +72,7 @@ CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   cell_ = cell_ptr;
   cell_local_id_ = cell_ptr->local_id;
   cell_mapping_ = &discretization_.GetCellMapping(*cell_);
-  cell_transport_view_ = &cell_transport_views_[cell_->local_id];
+  cell_transport_view_ = &cell_transport_views_[groupset_.id][cell_->local_id];
   cell_num_faces_ = cell_->faces.size();
   cell_num_nodes_ = cell_mapping_->GetNumNodes();
 
@@ -202,7 +202,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         double temp_src = 0.0;
         for (int m = 0; m < num_moments_; ++m)
         {
-          const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(gs_gi_ + gsg));
+          const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(gsg));
           temp_src += m2d_op[m][direction_num] * source_moments_[ir];
         }
         source[i] = temp_src;
@@ -233,7 +233,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       const double wn_d2m = d2m_op[m][direction_num];
       for (int i = 0; i < cell_num_nodes_; ++i)
       {
-        const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
+        const size_t ir = cell_transport_view_->MapDOF(i, m, 0);
         for (int gsg = 0; gsg < gs_size_; ++gsg)
           destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
       }
@@ -290,7 +290,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         {
           for (int gsg = 0; gsg < gs_size_; ++gsg)
             cell_transport_view_->AddOutflow(
-              f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
+              f, gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
         }
 
         double* psi = nullptr;

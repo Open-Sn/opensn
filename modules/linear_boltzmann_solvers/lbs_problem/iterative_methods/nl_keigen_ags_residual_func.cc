@@ -31,6 +31,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     groupset_ids.push_back(groupset.id);
 
   // Disassemble phi vector
+  assert(groupset_ids.size() <= 1);
   LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
     *lbs_problem, groupset_ids, phi, PhiSTLOption::PHI_OLD);
 

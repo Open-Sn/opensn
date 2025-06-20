@@ -17,8 +17,8 @@ SourceFunction::SourceFunction(const LBSProblem& lbs_problem) : lbs_problem_(lbs
 
 void
 SourceFunction::operator()(const LBSGroupset& groupset,
-                           std::vector<double>& q,
-                           const std::vector<double>& phi,
+                           std::vector<std::vector<double>>& q,
+                           const std::vector<std::vector<double>>& phi,
                            const SourceFlags source_flags)
 {
   CALI_CXX_MARK_SCOPE("SourceFunction::operator");
@@ -38,11 +38,12 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   // Get group setup
   gs_i_ = static_cast<size_t>(groupset.groups.front().id);
   gs_f_ = static_cast<size_t>(groupset.groups.back().id);
+  auto gss = groupset.groups.size();
 
   first_grp_ = static_cast<size_t>(lbs_problem_.GetGroups().front().id);
   last_grp_ = static_cast<size_t>(lbs_problem_.GetGroups().back().id);
 
-  default_zero_src_.assign(lbs_problem_.GetGroups().size(), 0.0);
+  default_zero_src_.assign(gss, 0.0);
 
   const auto& cell_transport_views = lbs_problem_.GetCellTransportViews();
 
@@ -56,7 +57,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   for (const auto& cell : grid->local_cells)
   {
     const auto& rho = densities[cell.local_id];
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& transport_view = cell_transport_views[groupset.id][cell.local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
@@ -76,17 +77,18 @@ SourceFunction::operator()(const LBSGroupset& groupset,
       {
         const auto ell = m_to_ell_em_map[m].ell;
         const auto uk_map = transport_view.MapDOF(i, m, 0);
-        const double* phi_im = &phi[uk_map];
+        const double* phi_im = &phi[groupset.id][uk_map];
 
         // Declare moment src
         fixed_src_moments_ = default_zero_src_.data();
 
         if (lbs_problem_.GetOptions().use_src_moments)
-          fixed_src_moments_ = &ext_src_moments_local[uk_map];
+          fixed_src_moments_ = &ext_src_moments_local[groupset.id][uk_map];
 
         // Loop over groupset groups
         for (size_t g = gs_i_; g <= gs_f_; ++g)
         {
+          gsgi_ = g - gs_i_;
           g_ = g;
 
           double rhs = 0.0;
@@ -101,9 +103,19 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             const auto& S_ell = S[ell];
             // Add Across GroupSet Scattering (AGS)
             if (apply_ags_scatter_src_)
-              for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
-                if (gp < gs_i_ or gp > gs_f_)
-                  rhs += rho * sigma_sm * phi_im[gp];
+            {
+              for (auto& gsp : lbs_problem_.GetGroupsets())
+              {
+                if (gsp.id != groupset.id)
+                {
+                  const auto& tvp = cell_transport_views[gsp.id][cell.local_id];
+                  auto gsp_first = gsp.groups.front().id;
+                  const auto ofst = tvp.MapDOF(i, m, 0);
+                  for (size_t gp = 0; gp < gsp.groups.size(); ++gp)
+                    rhs += rho * S_ell.GetValueIJ(g, gsp_first + gp) * phi[gsp.id][ofst + gp];
+                }
+              }
+            }
 
             // Add Within GroupSet Scattering (WGS)
             if (apply_wgs_scatter_src_)
@@ -112,7 +124,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 {
                   if (suppress_wg_scatter_src_ and g_ == gp)
                     continue;
-                  rhs += rho * sigma_sm * phi_im[gp];
+                  rhs += rho * sigma_sm * phi_im[gp - gs_i_];
                 }
           }
 
@@ -121,20 +133,31 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           {
             const auto& F_g = F[g];
             if (apply_ags_fission_src_)
-              for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
-                if (gp < gs_i_ or gp > gs_f_)
-                  rhs += rho * F_g[gp] * phi_im[gp];
+            {
+              for (auto& gsp : lbs_problem_.GetGroupsets())
+              {
+                if (gsp.id != groupset.id)
+                {
+                  const auto& tvp = cell_transport_views[gsp.id][cell.local_id];
+                  auto gsp_first = gsp.groups.front().id;
+                  const auto ofst = tvp.MapDOF(i, m, 0);
+                  for (size_t gp = 0; gp < gsp.groups.size(); ++gp)
+                    rhs += rho * F_g[gsp_first + gp] * phi[gsp.id][ofst + gp];
+                }
+              }
+            }
 
             if (apply_wgs_fission_src_)
-              for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
-                rhs += rho * F_g[gp] * phi_im[gp];
+              for (size_t gpi = 0; gpi < gss; ++gpi)
+                rhs += rho * F_g[gs_i_ + gpi] * phi_im[gpi];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += this->AddDelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
+              rhs += this->AddDelayedFission(
+                precursors, rho, nu_delayed_sigma_f, &phi[groupset.id][uk_map]);
           }
 
           // Add to destination vector
-          q[uk_map + g] += rhs;
+          q[groupset.id][uk_map + gsgi_] += rhs;
 
         } // for g
       }   // for m
@@ -147,7 +170,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 double
 SourceFunction::AddSourceMoments() const
 {
-  return fixed_src_moments_[g_];
+  return fixed_src_moments_[gsgi_];
 }
 
 double
@@ -158,25 +181,30 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
 {
   double value = 0.0;
   if (apply_ags_fission_src_)
+  {
     for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
+        {
+          assert(false);
           value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
                    nu_delayed_sigma_f[gp] * phi[gp];
+        }
+  }
 
   if (apply_wgs_fission_src_)
     for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
         value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
-                 nu_delayed_sigma_f[gp] * phi[gp];
+                 nu_delayed_sigma_f[gp] * phi[gp - gs_i_];
 
   return value;
 }
 
 void
 SourceFunction::AddPointSources(const LBSGroupset& groupset,
-                                std::vector<double>& q,
-                                const std::vector<double>&,
+                                std::vector<std::vector<double>>& q,
+                                const std::vector<std::vector<double>>&,
                                 const SourceFlags source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
@@ -193,7 +221,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
     {
       for (const auto& subscriber : point_source->GetSubscribers())
       {
-        auto& transport_view = transport_views[subscriber.cell_local_id];
+        auto& transport_view = transport_views[groupset.id][subscriber.cell_local_id];
 
         const auto& strength = point_source->GetStrength();
         const auto& node_weights = subscriber.node_weights;
@@ -202,8 +230,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
         for (size_t i = 0; i < transport_view.GetNumNodes(); ++i)
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
-          for (size_t g = gs_i; g <= gs_f; ++g)
-            q[uk_map + g] += strength[g] * node_weights(i) * volume_weight;
+          for (size_t g = 0; g < groupset.groups.size(); ++g)
+            q[groupset.id][uk_map + g] += strength[gs_i + g] * node_weights(i) * volume_weight;
         } // for node i
       }   // for subscriber
     }     // for point source
@@ -212,8 +240,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
 void
 SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
-                                     std::vector<double>& q,
-                                     const std::vector<double>& phi,
+                                     std::vector<std::vector<double>>& q,
+                                     const std::vector<std::vector<double>>& phi,
                                      const SourceFlags source_flags)
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
@@ -234,7 +262,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
       for (const auto local_id : volumetric_source->GetSubscribers())
       {
         const auto& cell = grid->local_cells[local_id];
-        const auto& transport_view = cell_transport_views[local_id];
+        const auto& transport_view = cell_transport_views[groupset.id][local_id];
         const auto nodes = discretization.GetCellNodeLocations(cell);
         const auto num_cell_nodes = discretization.GetCellNumNodes(cell);
 
@@ -246,8 +274,8 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
-          for (size_t g = gs_i; g <= gs_f; ++g)
-            q[dof_map + g] += src[g];
+          for (size_t g = 0; g < groupset.groups.size(); ++g)
+            q[groupset.id][dof_map + g] += src[gs_i + g];
         } // for node i
       }   // for subscriber
     }     // for volumetric source

@@ -13,15 +13,14 @@ void
 LBSSolverIO::WriteFluxMoments(
   LBSProblem& lbs_problem,
   const std::string& file_base,
-  std::optional<const std::reference_wrapper<std::vector<double>>> opt_src)
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src)
 {
   // Open file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
   hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
-  std::vector<double>& src =
-    opt_src.has_value() ? opt_src.value().get() : lbs_problem.GetPhiNewLocal();
+  auto& src = opt_src.has_value() ? opt_src.value().get() : lbs_problem.GetPhiNewLocal();
 
   log.Log() << "Writing flux moments to " << file_base;
 
@@ -34,7 +33,10 @@ LBSSolverIO::WriteFluxMoments(
   auto num_local_cells = grid->local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_local_dofs = num_local_nodes * num_moments * num_groups;
-  OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
+  auto vec_size = 0;
+  for (auto& v : src)
+    vec_size += v.size();
+  OpenSnLogicalErrorIf(vec_size != num_local_dofs, "Incompatible flux moments vector provided.");
 
   // Write number of moments and groups to the root of the h5 file
   H5CreateAttribute(file_id, "num_moments", num_moments);
@@ -73,28 +75,41 @@ LBSSolverIO::WriteFluxMoments(
   H5WriteDataset1D(file_id, "mesh/nodes_y", nodes_y);
   H5WriteDataset1D(file_id, "mesh/nodes_z", nodes_z);
 
-  // Loop through dof and store flux values
+  std::size_t n_dofs = lbs_problem.GetNumPhiIterativeUnknowns().first;
   std::vector<double> values;
-  values.reserve(num_local_dofs);
-  for (const auto& cell : grid->local_cells)
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
-      for (uint64_t m = 0; m < num_moments; ++m)
-        for (uint64_t g = 0; g < num_groups; ++g)
+  values.resize(n_dofs);
+  for (auto& groupset : lbs_problem.GetGroupsets())
+  {
+    const auto gsi = groupset.id;
+    const auto first_group = groupset.groups.front().id;
+    auto& transport_view = lbs_problem.GetCellTransportViews()[gsi];
+    const auto num_groups = groupset.groups.size();
+    auto num_local_dofs = num_local_nodes * num_moments * num_groups;
+    // Loop through cells and store flux values
+    for (const auto& cell : grid->local_cells)
+    {
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+        for (uint64_t m = 0; m < num_moments; ++m)
         {
-          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
-          values.push_back(src[dof_map]);
+          const auto gs_ofst = transport_view[cell.local_id].MapDOF(i, m, 0);
+          const auto phi_ofst = discretization.MapDOFLocal(cell, i, uk_man, m, first_group);
+          for (uint64_t g = 0; g < num_groups; ++g)
+            values[phi_ofst + g] = src[gsi][gs_ofst + g];
         }
-
+    }
+  }
   // Write flux values to h5 and close file
   H5WriteDataset1D(file_id, "values", values);
+
   H5Fclose(file_id);
 }
 
 void
-LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
-                             const std::string& file_base,
-                             bool single_file,
-                             std::optional<std::reference_wrapper<std::vector<double>>> opt_dest)
+LBSSolverIO::ReadFluxMoments(
+  LBSProblem& lbs_problem,
+  const std::string& file_base,
+  bool single_file,
+  std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest)
 {
   // Open file
   const auto file_name =
@@ -102,8 +117,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
 
-  std::vector<double>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_problem.GetPhiOldLocal();
+  auto& dest = opt_dest.has_value() ? opt_dest.value().get() : lbs_problem.GetPhiOldLocal();
 
   log.Log() << "Reading flux moments from " << file_base;
 
@@ -192,27 +206,38 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
     }
   }
 
-  // Read the flux moments data
   std::vector<double> values;
   H5ReadDataset1D<double>(file_id, "values", values);
+  OpenSnLogicalErrorIf(values.size() != lbs_problem.GetNumPhiIterativeUnknowns().first,
+                       "Number of flux moments in the restart file does not match the number of "
+                       "flux moments in the solver.");
 
-  uint64_t v = 0;
+  dest.resize(lbs_problem.GetGroupsets().size());
   // Assign flux moments data to destination vector
-  dest.assign(num_local_dofs, 0.0);
-  for (uint64_t c = 0; c < file_num_local_cells; ++c)
+  for (auto& groupset : lbs_problem.GetGroupsets())
   {
-    const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->cells[cell_global_id];
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
-      for (uint64_t m = 0; m < num_moments; ++m)
-        for (uint64_t g = 0; g < num_groups; ++g)
+    const auto gsi = groupset.id;
+    const auto first_group = groupset.groups.front().id;
+    auto& transport_view = lbs_problem.GetCellTransportViews()[gsi];
+    const auto num_groups = groupset.groups.size();
+    auto num_local_dofs = num_local_nodes * num_moments * num_groups;
+    dest[gsi].resize(num_local_dofs);
+    // Loop through cells and store flux values
+    for (const auto& cell : grid->local_cells)
+    {
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+        for (uint64_t m = 0; m < num_moments; ++m)
         {
-          const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
-          const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, m, g);
-          dest[dof_map] = values[v];
-          ++v;
+          const auto gs_ofst = transport_view[cell.local_id].MapDOF(i, m, 0);
+          const auto& imap = file_cell_nodal_mapping.at(cell.global_id).at(i);
+          const auto phi_ofst = discretization.MapDOFLocal(cell, imap, uk_man, m, first_group);
+
+          for (uint64_t g = 0; g < num_groups; ++g)
+            dest[gsi][gs_ofst + g] = values[phi_ofst + g];
         }
+    }
   }
+
   H5Fclose(file_id);
 }
 

@@ -64,10 +64,26 @@ Scale(std::vector<double>& x, const double& val)
 }
 
 void
+Scale(std::vector<std::vector<double>>& xs, const double& val)
+{
+  for (auto& x : xs)
+    for (double& xi : x)
+      xi *= val;
+}
+
+void
 Set(std::vector<double>& x, const double& val)
 {
   for (double& xi : x)
     xi = val;
+}
+
+void
+Set(std::vector<std::vector<double>>& xs, const double& val)
+{
+  for (auto& x : xs)
+    for (double& xi : x)
+      xi = val;
 }
 
 double

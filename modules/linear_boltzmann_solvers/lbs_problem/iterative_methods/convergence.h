@@ -13,19 +13,23 @@ class LBSProblem;
 double ComputePointwisePhiChange(
   LBSProblem& lbs_problem,
   int groupset_id,
-  std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_phi_old =
+    std::nullopt);
 
 double ComputePointwisePhiChange(
   LBSProblem& lbs_problem,
-  std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_phi_old =
+    std::nullopt);
 
 double ComputePointwisePhiChange(
   LBSProblem& lbs_problem,
   std::vector<int> groupset_ids,
-  std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_phi_old =
+    std::nullopt);
 
 double ComputeL2PhiChange(
   LBSProblem& lbs_problem,
-  std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_phi_old =
+    std::nullopt);
 
 } // namespace opensn

@@ -4,8 +4,10 @@
 #pragma once
 
 #include "hdf5.h"
+#include <stdexcept>
 #include <vector>
 #include <string>
+#include <cassert>
 
 namespace opensn
 {
