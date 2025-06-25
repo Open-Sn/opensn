@@ -58,9 +58,9 @@ public:
                               unsigned int fi,
                               unsigned int angle_num);
 
-  virtual void UpdateAnglesReadyStatus(const std::vector<size_t>& angles) {}
+  virtual void UpdateAnglesReadyStatus(const std::vector<std::uint32_t>& angles) {}
 
-  virtual bool CheckAnglesReadyStatus(const std::vector<size_t>& angles) { return true; }
+  virtual bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) { return true; }
 
   virtual void Setup(const std::shared_ptr<MeshContinuum> grid, const AngularQuadrature& quadrature)
   {

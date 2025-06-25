@@ -5,6 +5,12 @@ AllowShortBlocksOnASingleLine: 'true'
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: 'false'
 AlwaysBreakTemplateDeclarations: 'Yes'
+AttributeMacros:
+  - __host__
+  - __device__
+  - __global__
+  - __shared__
+  - __managed__
 BinPackArguments: 'false'
 BinPackParameters: 'false'
 BreakBeforeBraces: Allman

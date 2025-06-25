@@ -36,7 +36,10 @@ protected:
   void ComputeSecondaryUnitIntegrals();
 
 private:
-  std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
+  std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset,
+                                            size_t max_level_size,
+                                            size_t max_groupset_size,
+                                            size_t max_angleset_size) override;
 
 public:
   static InputParameters GetInputParameters();

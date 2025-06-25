@@ -61,6 +61,9 @@ protected:
   explicit DiscreteOrdinatesProblem(const std::string& name,
                                     std::shared_ptr<MeshContinuum> grid_ptr);
 
+  /// Checks if the current CPU is associated with any GPU.
+  void CheckSystem();
+
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;
 
@@ -85,7 +88,10 @@ protected:
   void ResetSweepOrderings(LBSGroupset& groupset);
 
   /// Sets up the sweek chunk for the given discretization method.
-  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
+  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset,
+                                                    size_t max_level_size,
+                                                    size_t max_groupset_size,
+                                                    size_t max_angleset_size);
 
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
@@ -96,6 +102,7 @@ protected:
 
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
+  bool use_gpus_;
 
 public:
   static InputParameters GetInputParameters();
