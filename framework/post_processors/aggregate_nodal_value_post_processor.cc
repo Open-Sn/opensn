@@ -128,7 +128,7 @@ AggregateNodalValuePostProcessor::Execute(const Event& event_context)
         local_accumulation += field_value;
       }
     } // for i
-  }   // for cell-id
+  } // for cell-id
 
   if (operation_ == "max")
   {

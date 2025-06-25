@@ -171,7 +171,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               cell_A(i, jm) += aij;
               adj_A(i, fj) -= aij;
             } // for fj
-          }   // for fi
+          } // for fi
 
           // Assemble gradient terms
           // For the following comments we use the notation:
@@ -193,7 +193,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               cell_A(i, jm) += aij;
               adj_A(i, fj) -= aij;
             } // for fj
-          }   // for i
+          } // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
           for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -211,7 +211,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               cell_A(im, j) += aij;
               adj_AT(fi, j) -= aij;
             } // for j
-          }   // for fi
+          } // for fi
 
           MatSetValues(A_,
                        num_nodes,
@@ -276,7 +276,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 cell_A(i, jm) += aij;
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for fi
+            } // for fi
 
             // Assemble gradient terms
             // For the following comments we use the notation:
@@ -312,8 +312,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 cell_A(i, j) += aij;
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for i
-          }     // Dirichlet BC
+            } // for i
+          } // Dirichlet BC
           else if (bc.type == BCType::ROBIN)
           {
             const double aval = bc.values[0];
@@ -342,7 +342,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
                   cell_A(i, j) += aij;
                 } // for fj
-              }   // if a nonzero
+              } // if a nonzero
 
               if (std::fabs(fval) >= 1.0e-12)
               {
@@ -353,16 +353,16 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
 
       MatSetValues(
         A_, num_nodes, cell_idxs.data(), num_nodes, cell_idxs.data(), cell_A.data(), ADD_VALUES);
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
@@ -440,7 +440,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
               entry_rhs_i += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp) *
                              fe_vol_data.JxW(qp) * qg[j];
             } // for qp
-          }   // for j
+          } // for j
         else
         {
           for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
@@ -506,7 +506,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for fi
+            } // for fi
 
             // Assemble gradient terms
             // For the following comments we use the notation:
@@ -541,8 +541,8 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for i
-          }     // Dirichlet BC
+            } // for i
+          } // Dirichlet BC
           else if (bc.type == BCType::ROBIN)
           {
             const double bval = bc.values[1];
@@ -564,13 +564,13 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
@@ -706,7 +706,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               cell_A(i, jm) += aij;
               adj_A(i, fj) -= aij;
             } // for fj
-          }   // for fi
+          } // for fi
 
           // Assemble gradient terms
           // For the following comments we use the notation:
@@ -724,7 +724,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               cell_A(i, jm) += aij;
               adj_A(i, fj) -= aij;
             } // for fj
-          }   // for i
+          } // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
           for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -738,7 +738,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               cell_A(im, j) += aij;
               adj_AT(fi, j) -= aij;
             } // for j
-          }   // for fi
+          } // for fi
 
           MatSetValues(A_,
                        num_nodes,
@@ -791,7 +791,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
                 cell_A(i, jm) += aij;
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for fi
+            } // for fi
 
             // Assemble gradient terms
             // For the following comments we use the notation:
@@ -809,8 +809,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
                 cell_A(i, j) += aij;
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for i
-          }     // Dirichlet BC
+            } // for i
+          } // Dirichlet BC
           else if (bc.type == BCType::ROBIN)
           {
             const double aval = bc.values[0];
@@ -834,7 +834,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
                   cell_A(i, j) += aij;
                 } // for fj
-              }   // if a nonzero
+              } // if a nonzero
 
               if (std::fabs(fval) >= 1.0e-12)
               {
@@ -842,16 +842,16 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
 
       MatSetValues(
         A_, num_nodes, cell_idxs.data(), num_nodes, cell_idxs.data(), cell_A.data(), ADD_VALUES);
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
@@ -986,7 +986,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for fi
+            } // for fi
 
             // Assemble gradient terms
             // For the following comments we use the notation:
@@ -1003,8 +1003,8 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for i
-          }     // Dirichlet BC
+            } // for i
+          } // Dirichlet BC
           else if (bc.type == BCType::ROBIN)
           {
             const double bval = bc.values[1];
@@ -1023,14 +1023,14 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
 
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
@@ -1139,7 +1139,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for fi
+            } // for fi
 
             // Assemble gradient terms
             // For the following comments we use the notation:
@@ -1156,8 +1156,8 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
                 cell_rhs(i) += aij_bc_value;
               } // for fj
-            }   // for i
-          }     // Dirichlet BC
+            } // for i
+          } // Dirichlet BC
           else if (bc.type == BCType::ROBIN)
           {
             const double bval = bc.values[1];
@@ -1176,13 +1176,13 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   VecRestoreArrayRead(petsc_q_vector, &q_vector);
 

@@ -256,7 +256,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& s
       }
       return;
     } // if in triangle
-  }   // for side
+  } // for side
 }
 
 Vector3
@@ -348,7 +348,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
         node_shape_value.push_back(SideShape(s, i, qpoint));
         node_shape_grad.emplace_back(SideGradShape_x(s, i), SideGradShape_y(s, i), 0.0);
       } // for qp
-    }   // for side
+    } // for side
 
     V_shape_value.push_back(node_shape_value);
     V_shape_grad.push_back(node_shape_grad);
@@ -366,7 +366,7 @@ PieceWiseLinearPolygonMapping::MakeVolumetricFiniteElementData() const
       const auto& qp_xyz_tilde = volume_quadrature_.qpoints[qp];
       V_qpoints_xyz.push_back(side.v0 + side.J * qp_xyz_tilde);
     } // for qp
-  }   // for side
+  } // for side
 
   V_num_nodes = num_nodes_;
 

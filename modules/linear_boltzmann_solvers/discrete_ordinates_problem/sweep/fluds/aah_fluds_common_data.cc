@@ -205,7 +205,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           throw std::runtime_error(oss.str());
         }
       } // if local
-    }   // if incident
+    } // if incident
 
   } // for f
 
@@ -300,7 +300,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         AddFaceViewToDepLocI(deplocI, cell_g_index, face_slot, face);
 
       } // non-local neighbor
-    }   // if outgoing
+    } // if outgoing
 
   } // for f
 
@@ -394,8 +394,8 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         dof_mapping.second.shrink_to_fit();
         inco_face_dof_mapping.push_back(dof_mapping);
       } // if local
-    }   // if incident
-  }     // for incindent f
+    } // if incident
+  } // for incindent f
 
   std::vector<INCOMING_FACE_INFO> inco_face_info_array(inco_face_dof_mapping.size());
   for (auto i = 0; i < inco_face_dof_mapping.size(); ++i)
@@ -836,8 +836,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
         } // If delayed predecessor
 
       } // if not local and not boundary
-    }   // if incident
-  }     // for incindent f
+    } // if incident
+  } // for incindent f
 }
 
 } // namespace opensn

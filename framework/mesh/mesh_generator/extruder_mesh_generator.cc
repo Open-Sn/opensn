@@ -230,7 +230,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
       } // for template cell
       ++k;
     } // for sub-layer n
-  }   // for layer
+  } // for layer
 
   umesh->SetDimension(3);
   umesh->SetCoordinateSystem(input_umesh->GetCoordinateSystem());

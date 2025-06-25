@@ -25,13 +25,13 @@ struct WGSContext : public LinearSolverContext
              SourceFlags rhs_scope,
              bool log_info);
 
-  virtual void PreSetupCallback(){};
+  virtual void PreSetupCallback() {};
 
-  virtual void SetPreconditioner(KSP& solver){};
+  virtual void SetPreconditioner(KSP& solver) {};
 
-  virtual void PostSetupCallback(){};
+  virtual void PostSetupCallback() {};
 
-  virtual void PreSolveCallback(){};
+  virtual void PreSolveCallback() {};
 
   int MatrixAction(Mat& matrix, Vec& action_vector, Vec& action) override;
 
@@ -43,7 +43,7 @@ struct WGSContext : public LinearSolverContext
    */
   virtual void ApplyInverseTransportOperator(SourceFlags scope) = 0;
 
-  virtual void PostSolveCallback(){};
+  virtual void PostSolveCallback() {};
 
   LBSProblem& lbs_problem;
   LBSGroupset& groupset;

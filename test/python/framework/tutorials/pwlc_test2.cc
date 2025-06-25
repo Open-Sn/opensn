@@ -57,7 +57,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   // Retrieve the functions defined in the global namespace.
   py::module main_module = py::module::import("__main__");
   py::object MMS_phi = main_module.attr("MMS_phi");
-  py::object MMS_q   = main_module.attr("MMS_q");
+  py::object MMS_q = main_module.attr("MMS_q");
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
@@ -106,7 +106,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
         const uint i = cell_mapping.MapFaceNode(f, fi);
         node_boundary_flag[i] = true;
       } // for fi
-    }   // for face f
+    } // for face f
 
     // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
@@ -139,7 +139,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
         VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
       }
     } // for i
-  }   // for cell
+  } // for cell
 
   opensn::log.Log() << "Global assembly";
 

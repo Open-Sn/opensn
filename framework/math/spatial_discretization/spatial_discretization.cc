@@ -160,7 +160,7 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
           if (face_adj_mapping[fi] < 0)
             throw std::logic_error("Face node mapping failed");
         } // for fi
-      }   // if internal face
+      } // if internal face
 
       per_face_adj_mapping.push_back(std::move(face_adj_mapping));
     } // for face
@@ -210,8 +210,8 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
 
           to_vector[imap] = from_vector[fmap];
         } // for component c
-      }   // for node i
-    }     // for cell
+      } // for node i
+    } // for cell
   }
   catch (const std::out_of_range& oor)
   {

@@ -336,7 +336,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
                    << "doc-string: " << GetParameterDocString(param_name);
         continue;
       } // if not mismatch allowed
-    }   // if type mismatch
+    } // if type mismatch
 
     // Check constraint
     if (constraint_tags_.count(input_param.GetName()) != 0)

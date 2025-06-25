@@ -78,14 +78,14 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
           IntV_shapeI_shapeJ(i, j) += fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) *
                                       fe_vol_data.JxW(qp); // M-matrix
-        }                                                  // for qp
-      }                                                    // for j
+        } // for qp
+      } // for j
 
       for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
-    }   // for i
+    } // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
@@ -106,14 +106,14 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
             IntS_shapeI_gradshapeJ[f](i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
-        }   // for j
+        } // for j
 
         for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
-      }   // for i
-    }     // for f
+      } // for i
+    } // for f
 
     unit_cell_matrices[cell.local_id] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
                                                          {},

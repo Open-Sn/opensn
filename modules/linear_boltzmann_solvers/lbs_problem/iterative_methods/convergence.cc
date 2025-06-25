@@ -69,10 +69,10 @@ ComputePointwisePhiChange(
             else
               pw_change = std::max(delta_phi, pw_change);
           } // for m
-        }   // for g
-      }     // for id
-    }       // for i
-  }         // for cell
+        } // for g
+      } // for id
+    } // for i
+  } // for cell
 
   double global_pw_change = 0.0;
   mpi_comm.all_reduce<double>(pw_change, global_pw_change, mpi::op::max<double>());

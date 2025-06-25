@@ -22,7 +22,7 @@ public:
     : num_groups_(num_groups),
       num_angles_(num_angles),
       num_groups_and_angles_(num_groups_ * num_angles_),
-      spds_(spds){};
+      spds_(spds) {};
 
   const SPDS& GetSPDS() const { return spds_; }
 
