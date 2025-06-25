@@ -59,9 +59,9 @@ VolumetricSource::Create(const ParameterBlock& params)
 VolumetricSource::VolumetricSource(const InputParameters& params)
   : id_(next_id_++),
     block_ids_(params.GetParamVectorValue<int>("block_ids")),
-    logvol_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
+    logvol_(params.GetSharedPtrParam<LogicalVolume>("logical_volume", false)),
     strength_(params.GetParamVectorValue<double>("group_strength")),
-    function_(params.GetParamValue<std::shared_ptr<VectorSpatialFunction>>("func"))
+    function_(params.GetSharedPtrParam<VectorSpatialFunction>("func", false))
 {
   if (not logvol_ and block_ids_.empty())
     throw std::invalid_argument("A volumetric source must be defined with a logical volume, "

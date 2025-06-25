@@ -65,7 +65,7 @@ DiffusionSolverBase::DiffusionSolverBase(const std::string& name,
 
 DiffusionSolverBase::DiffusionSolverBase(const InputParameters& params)
   : Solver(params),
-    grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
+    grid_ptr_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     num_local_dofs_(0),
     num_global_dofs_(0),
     x_(nullptr),

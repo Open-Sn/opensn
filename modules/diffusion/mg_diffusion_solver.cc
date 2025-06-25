@@ -136,7 +136,7 @@ MGDiffusionSolver::GetXSMapEntryBlock()
 
 MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
   : Solver(params),
-    grid_ptr_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")),
+    grid_ptr_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     num_groups_(0),
     last_fast_group_(0),
     do_two_grid_(false),
@@ -158,7 +158,7 @@ MGDiffusionSolver::MGDiffusionSolver(const InputParameters& params)
     const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
     block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     const auto& block_ids = block_ids_param.GetVectorValue<int>();
-    auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
+    auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
   }

@@ -32,8 +32,7 @@ TransientSolver::GetInputParameters()
 
 TransientSolver::TransientSolver(const InputParameters& params)
   : Solver(params),
-    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
+    lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem")),
     time_integration_(GetStackItemPtrAsType<TimeIntegration>(
       object_stack, params.GetParamValue<size_t>("time_integration")))
 {

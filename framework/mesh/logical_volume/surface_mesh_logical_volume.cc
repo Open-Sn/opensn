@@ -34,7 +34,7 @@ SurfaceMeshLogicalVolume::Create(const ParameterBlock& params)
 
 SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params)
   : LogicalVolume(params),
-    surf_mesh_(params.GetParamValue<std::shared_ptr<SurfaceMesh>>("surface_mesh")),
+    surf_mesh_(params.GetSharedPtrParam<SurfaceMesh>("surface_mesh")),
     xbounds_({1.0e6, -1.0e6}),
     ybounds_({1.0e6, -1.0e6}),
     zbounds_({1.0e6, -1.0e6})

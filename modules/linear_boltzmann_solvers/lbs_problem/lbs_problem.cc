@@ -70,7 +70,7 @@ LBSProblem::GetInputParameters()
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
-  : Problem(params), grid_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
+  : Problem(params), grid_(params.GetSharedPtrParam<MeshContinuum>("mesh"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -104,7 +104,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
     const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
     block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     const auto& block_ids = block_ids_param.GetVectorValue<int>();
-    auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
+    auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
   }

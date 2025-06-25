@@ -251,6 +251,42 @@ public:
   }
 
   /**
+   * Fetches the parameter of type std::shared_ptr<T> with the given name and returns its value.
+   *
+   * Will perform checking on whether or not the pointed-to-object is null (if \p check = true)
+   *
+   * The optional second template argument can be used to attempt to cast the object
+   * to the derived type and will throw an exception if the cast fails.
+   */
+  template <typename T, typename Derived = T>
+  std::shared_ptr<Derived> GetSharedPtrParam(const std::string& param_name,
+                                             const bool check = true) const
+  {
+    static_assert(std::is_base_of_v<T, Derived>, "T is not a base of derived");
+
+    auto value = this->GetParamValue<std::shared_ptr<T>>(param_name);
+    if (!value)
+    {
+      if (check)
+        throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                               ": shared_ptr param is null");
+      return nullptr;
+    }
+    if constexpr (!std::is_same_v<T, Derived>)
+    {
+      if (auto derived_value = std::dynamic_pointer_cast<Derived>(value))
+        return derived_value;
+
+      throw std::logic_error(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
+                             ": Supplied object is not derived from " + typeid(T).name());
+    }
+    else
+    {
+      return value;
+    }
+  }
+
+  /**
    * Converts the parameters of an array-type parameter block to a vector of primitive types and
    * returns it.
    */
