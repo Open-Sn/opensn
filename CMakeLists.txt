@@ -5,7 +5,7 @@ project(opensn
     LANGUAGES C CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -37,7 +37,6 @@ option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
 if (OPENSN_WITH_CUDA)
     set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
     find_package(CUDAToolkit 12.0 REQUIRED)
-    add_definitions(-DUSE_CUDA)
     message(STATUS "CUDA support enabled")
     message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
     enable_language(CUDA)
@@ -168,13 +167,17 @@ file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
 
 if (OPENSN_WITH_CUDA)
     file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
-    list(APPEND LIBOPENSN_SRCS ${LIBOPENSN_CUDA_SRCS})
+    add_library(libopensncuda STATIC ${LIBOPENSN_CUDA_SRCS})
 endif()
 
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
 
 if (OPENSN_WITH_CUDA)
-    target_compile_options(libopensn PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>)
+    target_compile_options(libopensncuda PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
+    target_compile_definitions(libopensncuda PRIVATE __OPENSN_USE_CUDA__)
+    target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
+    set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
+    set_property(TARGET libopensncuda PROPERTY OUTPUT_NAME opensncuda)
 endif()
 
 target_include_directories(libopensn
@@ -192,7 +195,24 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
 if (OPENSN_WITH_CUDA)
-    target_include_directories(libopensn PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
+    target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
+    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
+    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
+    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>)
+    target_include_directories(libopensncuda
+      PRIVATE
+      $<INSTALL_INTERFACE:include/opensn>
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+      $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${PROJECT_SOURCE_DIR}
+      ${PROJECT_SOURCE_DIR}/external
+      PUBLIC
+      $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
+      $<BUILD_INTERFACE:${caliper_INCLUDE_DIR}>
+      $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
+      $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
+  )
 endif()
 
 target_link_libraries(libopensn
@@ -204,7 +224,8 @@ target_link_libraries(libopensn
     MPI::MPI_CXX
 )
 if (OPENSN_WITH_CUDA)
-    target_link_libraries(libopensn PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
+    target_link_libraries(libopensncuda PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
+    target_link_libraries(libopensn INTERFACE libopensncuda)
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
@@ -268,6 +289,18 @@ install(
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+if(OPENSN_WITH_CUDA)
+    install(
+        TARGETS libopensncuda
+        EXPORT openSnTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endif()
 
 install(
     DIRECTORY ${CMAKE_SOURCE_DIR}/framework

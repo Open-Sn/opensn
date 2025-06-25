@@ -333,8 +333,8 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                                       fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
         } // for qp
-      }   // for j
-    }     // for i
+      } // for j
+    } // for i
 
     return UnitCellMatrices{{},
                             {},
@@ -357,7 +357,10 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 }
 
 std::shared_ptr<SweepChunk>
-DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
+DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset,
+                                                   size_t max_level_size,
+                                                   size_t max_groupset_size,
+                                                   size_t max_angleset_size)
 {
   auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(grid_,
                                                        *discretization_,

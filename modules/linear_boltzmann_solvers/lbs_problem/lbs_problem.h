@@ -14,6 +14,7 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/physics/problem.h"
 #include <petscksp.h>
+#include <any>
 #include <chrono>
 
 namespace opensn
@@ -33,13 +34,13 @@ public:
   explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid);
 
   /// Input parameters based construction.
-  explicit LBSProblem(const InputParameters& params);
+  explicit LBSProblem(const InputParameters& pManagerarams);
 
   LBSProblem(const LBSProblem&) = delete;
 
   LBSProblem& operator=(const LBSProblem&) = delete;
 
-  virtual ~LBSProblem() = default;
+  virtual ~LBSProblem();
 
   /// Returns a reference to the solver options.
   LBSOptions& GetOptions();
@@ -118,6 +119,12 @@ public:
 
   /// Obtains a reference to the grid.
   const std::shared_ptr<MeshContinuum> GetGrid() const;
+
+  /// Get pointer to carriers.
+  inline void* GetCarrier(std::uint32_t idx) { return carriers_.at(idx); }
+
+  /// Get pointer to pinners.
+  inline void* GetPinner(std::uint32_t idx) { return pinners_.at(idx); }
 
   /// Obtains a reference to the spatial discretization.
   const SpatialDiscretization& GetSpatialDiscretization() const;
@@ -256,7 +263,7 @@ public:
    *
    * @note This does nothing for diffusion-based solvers.
    */
-  virtual void ReorientAdjointSolution(){};
+  virtual void ReorientAdjointSolution() {};
 
 protected:
   /// Performs general input checks before initialization continues.
@@ -285,7 +292,13 @@ protected:
 
   virtual void InitializeSolverSchemes();
 
-  virtual void InitializeWGSSolvers(){};
+  virtual void InitializeWGSSolvers() {};
+
+  /// Initializes data carriers to GPUs and memory pinner.
+  void InitializeGPUExtras();
+
+  /// Reset data carriers to null and unpin memory.
+  void ResetGPUCarriers();
 
   LBSOptions options_;
   size_t num_moments_ = 0;
@@ -338,6 +351,18 @@ protected:
 
   /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
+
+  /**
+   * @brief Data carriers for necessary data to run the sweep on GPU.
+   * @details These objects manage GPU memory allocation automatically, organize cross-section,
+   * outflow, and mesh data into contiguous memory on the CPU, and handle copying it to the GPU.
+   *
+   * There are 3 carriers, respectively for cross sections, outflow and mesh.
+   */
+  std::array<void*, 3> carriers_ = {nullptr, nullptr, nullptr};
+
+  /// Memory pinner for source moments and destination phi.
+  std::array<void*, 2> pinners_ = {nullptr, nullptr};
 
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;

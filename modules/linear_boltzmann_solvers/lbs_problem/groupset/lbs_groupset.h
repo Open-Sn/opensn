@@ -52,6 +52,8 @@ public:
   std::string wgdsa_string;
   std::string tgdsa_string;
 
+  void* quad_carrier = nullptr;
+
   std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
   std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
 
@@ -74,6 +76,14 @@ public:
   LBSGroupset();
 
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
+
+  /// Initialize carrier for copying quadrature data to GPU.
+  void InitializeGPUCarriers();
+
+  /// Delete carrier and deallocate memory on GPU.
+  void ResetGPUCarriers();
+
+  ~LBSGroupset();
 
 private:
   void Init(int id);

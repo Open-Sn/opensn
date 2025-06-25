@@ -23,9 +23,10 @@ protected:
   const size_t num_groups_;
   const SPDS& spds_;
   std::shared_ptr<FLUDS> fluds_;
-  const std::vector<size_t> angles_;
+  std::vector<std::uint32_t> angles_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries_;
   bool executed_ = false;
+  void* memory_pin_ = nullptr;
 
 public:
   AngleSet(size_t id,
@@ -38,9 +39,10 @@ public:
       num_groups_(num_groups),
       spds_(spds),
       fluds_(fluds),
-      angles_(angle_indices),
+      angles_(angle_indices.begin(), angle_indices.end()),
       boundaries_(boundaries)
   {
+    InitializeMemoryPin();
   }
 
   /// Returns the angleset's unique id.
@@ -53,7 +55,7 @@ public:
   FLUDS& GetFLUDS() { return *fluds_; }
 
   /// Returns the angle indices associated with this angleset.
-  const std::vector<size_t>& GetAngleIndices() const { return angles_; }
+  const std::vector<std::uint32_t>& GetAngleIndices() const { return angles_; }
 
   /// Returns the angle indices associated with this angleset.
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() { return boundaries_; }
@@ -61,6 +63,8 @@ public:
   size_t GetNumGroups() const { return num_groups_; }
 
   size_t GetNumAngles() const { return angles_.size(); }
+
+  void* GetMemoryPin() { return memory_pin_; }
 
   virtual AsynchronousCommunicator* GetCommunicator()
   {
@@ -106,7 +110,13 @@ public:
                                unsigned int face_num,
                                unsigned int fi) = 0;
 
-  virtual ~AngleSet() = default;
+  /// Initialize memory pinning manager.
+  void InitializeMemoryPin();
+
+  /// Reset memory pinning manager.
+  void ResetMemoryPin();
+
+  virtual ~AngleSet();
 };
 
 } // namespace opensn
