@@ -185,7 +185,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
                   cell_A(i, j) += aij;
                 } // for fj
-              }   // if a nonzero
+              } // if a nonzero
 
               if (std::fabs(fval) >= 1.0e-12)
               {
@@ -193,16 +193,16 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
 
       MatSetValues(
         A_, num_nodes, cell_idxs.data(), num_nodes, cell_idxs.data(), cell_A.data(), ADD_VALUES);
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
@@ -379,13 +379,13 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   VecAssemblyBegin(rhs_);
   VecAssemblyEnd(rhs_);
@@ -513,13 +513,13 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
                 cell_rhs(i) += rhs_val;
               } // if f nonzero
-            }   // for fi
-          }     // Robin BC
-        }       // boundary face
-      }         // for face
+            } // for fi
+          } // Robin BC
+        } // boundary face
+      } // for face
       VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
-  }   // for cell
+  } // for cell
 
   VecRestoreArrayRead(petsc_q_vector, &q_vector);
 

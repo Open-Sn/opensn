@@ -137,9 +137,9 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           q[uk_map + g] += rhs;
 
         } // for g
-      }   // for m
-    }     // for dof i
-  }       // for cell
+      } // for m
+    } // for dof i
+  } // for cell
 
   AddAdditionalSources(groupset, q, phi, source_flags);
 }
@@ -205,8 +205,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
           for (size_t g = gs_i; g <= gs_f; ++g)
             q[uk_map + g] += strength[g] * node_weights(i) * volume_weight;
         } // for node i
-      }   // for subscriber
-    }     // for point source
+      } // for subscriber
+    } // for point source
   }
 }
 
@@ -249,8 +249,8 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
           for (size_t g = gs_i; g <= gs_f; ++g)
             q[dof_map + g] += src[g];
         } // for node i
-      }   // for subscriber
-    }     // for volumetric source
+      } // for subscriber
+    } // for volumetric source
   }
 }
 

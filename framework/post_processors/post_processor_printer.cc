@@ -692,7 +692,7 @@ PostProcessorPrinter::BuildPPHistoryMatrix(size_t timehistsize,
           pp->ConvertValueToString(pp->GetTimeHistory().at(t + offset).value);
       }
     } // for j
-  }   // for t
+  } // for t
 
   // Now the last row
   {

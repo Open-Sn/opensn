@@ -114,8 +114,8 @@ UnpartitionedMesh::CheckQuality()
             ++num_negative_volume_elements;
         }
       } // for face
-    }   // if polyhedron
-  }     // for cell in raw_cells
+    } // if polyhedron
+  } // for cell in raw_cells
 
   log.Log0Verbose1() << "Checking face sizes";
   size_t cell_id = 0;
@@ -348,7 +348,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
           break;
         }
       } // for adj_cell_id
-    }   // for face
+    } // for face
 
   num_bndry_faces = 0;
   for (const auto& cell : raw_cells_)

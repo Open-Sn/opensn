@@ -374,7 +374,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
             break;
           }
         } // for face
-      }   // for edge
+      } // for edge
 
       log.Log() << "UnpartitionedMesh: assigned " << num_faces_boundarified
                 << " faces to boundary id " << bndry_id << " with name " << block_data[bid].name;

@@ -280,7 +280,7 @@ MultiGroupXS::ComputeAbsorption()
         log.Log0Warning() << "Negative absorption cross section encountered in group " << g
                           << " when estimating from the transfer matrices";
     } // for g
-  }   // if scattering present
+  } // if scattering present
 }
 
 void
@@ -314,7 +314,7 @@ MultiGroupXS::ComputeDiffusionParameters()
             break;
           }
       } // for gp
-    }   // if moment 1 available
+    } // if moment 1 available
 
     // Compute transport cross section
     if (sigma_1 >= sigma_t_[g])

@@ -80,13 +80,13 @@ public:
 
   FieldFunctionInterpolationType Type() const { return type_; }
 
-  virtual void Initialize(){};
+  virtual void Initialize() {};
 
-  virtual void Execute(){};
+  virtual void Execute() {};
 
   virtual void ExportToCSV(std::string base_name) const {};
 
-  virtual void ExportToPython(std::string base_name){};
+  virtual void ExportToPython(std::string base_name) {};
 };
 
 } // namespace opensn

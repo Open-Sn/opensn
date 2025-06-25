@@ -179,7 +179,7 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
         if (intersects_cell)
           break;
       } // for side
-    }   // POLYHEDRON
+    } // POLYHEDRON
 
     if (intersects_cell)
       break;
@@ -373,7 +373,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
         if (not perform_concavity_checks_)
           break;
       } // if intersects
-    }   // for side
+    } // for side
 
     if (intersection_found and (not perform_concavity_checks_))
       break;
@@ -683,7 +683,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
             distance_set.insert(d);
         }
       } // for edge
-    }   // for face
+    } // for face
   }
 
   // Populate segment lengths

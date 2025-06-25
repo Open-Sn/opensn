@@ -138,8 +138,8 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
 
         q_source[dof_map] = 1.0;
       } // for node i
-    }   // if inside box
-  }     // for cell
+    } // if inside box
+  } // for cell
 
   // Define sweep chunk
   NDArray<double, 4> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
@@ -364,9 +364,9 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
           else
             pw_change = std::max(delta_phi, pw_change);
         } // for g
-      }   // for m
-    }     // for i
-  }       // for cell
+      } // for m
+    } // for i
+  } // for cell
 
   return pw_change;
 }
@@ -414,9 +414,9 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
             source_moments[dof_map + g] += inscat_g;
           }
         } // for g
-      }   // for m
-    }     // for node i
-  }       // for cell
+      } // for m
+    } // for node i
+  } // for cell
 
   return source_moments;
 }

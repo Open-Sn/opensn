@@ -446,7 +446,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
       }
       ++f;
     } // for face
-  }   // for cell
+  } // for cell
 }
 
 void

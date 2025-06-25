@@ -137,7 +137,7 @@ FiniteVolume::OrderNodes()
       const auto& local_cell = grid_->cells[gid];
       local_ids.push_back(local_cell.local_id);
     } // for gid
-  }   // for pid_list_pair
+  } // for pid_list_pair
 
   // Communicate back the mapped ids
   const auto mapped_nb_gids = MapAllToAll(mapped_query_nb_gids, mpi_comm);
@@ -206,8 +206,8 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
             nodal_nnz_off_diag[i] += 1;
         }
       } // for cell
-    }   // for components
-  }     // for unknown
+    } // for components
+  } // for unknown
 }
 
 int64_t
@@ -322,7 +322,7 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
         const int64_t dofmap = MapDOF(cell, 0, unknown_manager, u, c);
         dof_ids.push_back(dofmap);
       } // for c
-    }   // for u
+    } // for u
   }
 
   return dof_ids;
