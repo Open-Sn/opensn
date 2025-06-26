@@ -364,6 +364,12 @@ protected:
   /// Memory pinner for source moments and destination phi.
   std::array<void*, 2> pinners_ = {nullptr, nullptr};
 
+  /// Flag indicating if GPU acceleration is enabled.
+  bool use_gpus_;
+
+  /// Checks if the current CPU is associated with any GPU.
+  static void CheckCapableDevices();
+
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;
   static std::map<uint64_t, std::string> supported_boundary_ids;

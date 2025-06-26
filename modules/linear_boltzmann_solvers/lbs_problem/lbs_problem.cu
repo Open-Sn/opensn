@@ -13,6 +13,11 @@ namespace opensn
 void
 LBSProblem::InitializeGPUExtras()
 {
+  // exit if GPU acceleration is not enabled
+  if (!use_gpus_)
+  {
+    return;
+  }
   // initialize carriers
   TotalXSCarrier* xs_ptr = new TotalXSCarrier(*this);
   OutflowCarrier* of_ptr = new OutflowCarrier(*this);
@@ -30,6 +35,11 @@ LBSProblem::InitializeGPUExtras()
 void
 LBSProblem::ResetGPUCarriers()
 {
+  // exit if GPU acceleration is not enabled
+  if (!use_gpus_)
+  {
+    return;
+  }
   // delete carriers
   if (carriers_[0])
   {
@@ -61,6 +71,16 @@ LBSProblem::ResetGPUCarriers()
     MemoryPinner<double>* phi = reinterpret_cast<MemoryPinner<double>*>(pinners_[1]);
     delete phi;
     pinners_[1] = nullptr;
+  }
+}
+
+void
+LBSProblem::CheckCapableDevices()
+{
+  std::uint32_t num_gpus = crb::get_num_gpus();
+  if (num_gpus == 0)
+  {
+    throw std::runtime_error("No GPU detected.\n");
   }
 }
 

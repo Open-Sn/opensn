@@ -34,7 +34,8 @@ public:
            const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
-           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
+           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+           bool use_gpu)
     : id_(id),
       num_groups_(num_groups),
       spds_(spds),
@@ -42,7 +43,8 @@ public:
       angles_(angle_indices.begin(), angle_indices.end()),
       boundaries_(boundaries)
   {
-    InitializeMemoryPin();
+    if (use_gpu)
+      InitializeMemoryPin();
   }
 
   /// Returns the angleset's unique id.

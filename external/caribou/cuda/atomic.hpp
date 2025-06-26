@@ -18,7 +18,9 @@ __device__ inline double atomic_add(double * address, double val) {
     return ::__longlong_as_double(old);
 }
 #else
-using atomic_add = ::atomicAdd;
+__device__ inline double atomic_add(double* address, double val) {
+    return ::atomicAdd(address, val);
+}
 #endif
 
 }  // namespace caribou

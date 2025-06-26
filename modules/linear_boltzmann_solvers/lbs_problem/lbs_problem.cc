@@ -69,13 +69,16 @@ LBSProblem::GetInputParameters()
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
 
+  params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
+
   return params;
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
     scattering_order_(params.GetParamValue<size_t>("scattering_order")),
-    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh"))
+    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
+    use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -112,6 +115,16 @@ LBSProblem::LBSProblem(const InputParameters& params)
     auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
+  }
+  // Check system for GPU acceleration
+  if (use_gpus_)
+  {
+#ifdef __OPENSN_USE_CUDA__
+    CheckCapableDevices();
+#else
+    throw std::invalid_argument(
+      "GPU support was requested, but OpenSn was built without CUDA enabled.\n");
+#endif // __OPENSN_USE_CUDA__
   }
 
   // Options
@@ -1169,7 +1182,9 @@ LBSProblem::InitializeGroupsets()
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
-    groupset.InitializeGPUCarriers();
+
+    if (use_gpus_)
+      groupset.InitializeGPUCarriers();
   } // for groupset
 }
 
@@ -1621,6 +1636,12 @@ void
 LBSProblem::ResetGPUCarriers()
 {
 }
+
+void
+LBSProblem::CheckCapableDevices()
+{
+}
+
 #endif // __OPENSN_USE_CUDA__
 
 std::vector<double>

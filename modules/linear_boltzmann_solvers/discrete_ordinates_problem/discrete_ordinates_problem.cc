@@ -61,8 +61,6 @@ DiscreteOrdinatesProblem::GetInputParameters()
 
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
 
-  params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
-
   return params;
 }
 
@@ -76,18 +74,8 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
   : LBSProblem(params),
     verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
-    sweep_type_(params.GetParamValue<std::string>("sweep_type")),
-    use_gpus_(params.GetParamValue<bool>("use_gpus"))
+    sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
-  if (use_gpus_)
-  {
-#ifdef __OPENSN_USE_CUDA__
-    CheckSystem();
-#else
-    throw std::invalid_argument(
-      "GPU support was requested, but OpenSn was built without CUDA enabled.\n");
-#endif // __OPENSN_USE_CUDA__
-  }
   if (use_gpus_ && sweep_type_ == "CBC")
   {
     std::clog << "Sweep computation on GPUs has not yet been supported for CBC. "
@@ -110,13 +98,6 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
       groupset.angle_agg->angle_set_groups.clear();
   }
 }
-
-#ifndef __OPENSN_USE_CUDA__
-void
-DiscreteOrdinatesProblem::CheckSystem()
-{
-}
-#endif // __OPENSN_USE_CUDA__
 
 std::pair<size_t, size_t>
 DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns()
@@ -1078,7 +1059,8 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         angle_indices,
                                                         sweep_boundaries_,
                                                         options_.max_mpi_message_size,
-                                                        *grid_local_comm_set_);
+                                                        *grid_local_comm_set_,
+                                                        use_gpus_);
 
         angle_set_group.GetAngleSets().push_back(angle_set);
       }
@@ -1101,7 +1083,8 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         fluds,
                                                         angle_indices,
                                                         sweep_boundaries_,
-                                                        *grid_local_comm_set_);
+                                                        *grid_local_comm_set_,
+                                                        use_gpus_);
 
         angle_set_group.GetAngleSets().push_back(angle_set);
       }
