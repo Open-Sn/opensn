@@ -41,7 +41,8 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
     max_level_size_(max_level_size),
     use_gpus_(use_gpus)
 {
-  CreateDeviceLevelVector();
+  if (use_gpus_)
+    CreateDeviceLevelVector();
 }
 
 void

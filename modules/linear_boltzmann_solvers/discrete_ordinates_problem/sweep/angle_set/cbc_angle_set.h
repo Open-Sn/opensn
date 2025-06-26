@@ -26,7 +26,8 @@ public:
                std::shared_ptr<FLUDS>& fluds,
                const std::vector<size_t>& angle_indices,
                std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-               const MPICommunicatorSet& comm_set);
+               const MPICommunicatorSet& comm_set,
+               bool use_gpu);
 
   AsynchronousCommunicator* GetCommunicator() override;
 

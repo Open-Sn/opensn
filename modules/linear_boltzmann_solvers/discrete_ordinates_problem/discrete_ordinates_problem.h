@@ -61,9 +61,6 @@ protected:
   explicit DiscreteOrdinatesProblem(const std::string& name,
                                     std::shared_ptr<MeshContinuum> grid_ptr);
 
-  /// Checks if the current CPU is associated with any GPU.
-  void CheckSystem();
-
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;
 
@@ -102,7 +99,6 @@ protected:
 
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
-  bool use_gpus_;
 
 public:
   static InputParameters GetInputParameters();
