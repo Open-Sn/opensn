@@ -8,10 +8,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/functions/scalar_spatial_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "python/lib/functor.h"
 #include "test/python/src/bindings.h"
 
 using namespace opensn;
@@ -131,8 +129,8 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   py::module main_module = py::module::import("__main__");
   py::object mms_phi_fn = main_module.attr("mms_phi_fn");
   py::object mms_q_fn = main_module.attr("mms_q_fn");
-  std::shared_ptr<ScalarSpatialFunction> mms_phi = mms_phi_fn.cast<std::shared_ptr<PySSFunction>>();
-  std::shared_ptr<ScalarSpatialFunction> mms_q = mms_q_fn.cast<std::shared_ptr<PySSFunction>>();
+  ScalarSpatialFunction mms_phi = mms_phi_fn.cast<ScalarSpatialFunction>();
+  ScalarSpatialFunction mms_q = mms_q_fn.cast<ScalarSpatialFunction>();
 
   // Make solver
   DiffusionMIPSolver solver(
@@ -186,7 +184,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      double phi_true = mms_phi->Evaluate(fe_vol_data.QPointXYZ(qp));
+      double phi_true = mms_phi(fe_vol_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }

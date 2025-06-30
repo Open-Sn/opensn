@@ -22,13 +22,6 @@ FieldFunctionInterpolationVolume::Create()
 }
 
 void
-FieldFunctionInterpolationVolume::SetOperationFunction(
-  std::shared_ptr<ScalarMaterialFunction> function)
-{
-  oper_function_ = function;
-}
-
-void
 FieldFunctionInterpolationVolume::Initialize()
 {
   log.Log0Verbose1() << "Initializing volume interpolator.";
@@ -100,7 +93,7 @@ FieldFunctionInterpolationVolume::Execute()
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
           op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
-        function_value = oper_function_->Evaluate(ff_value, cell.block_id);
+        function_value = oper_function_(ff_value, cell.block_id);
 
       local_volume += fe_vol_data.JxW(qp);
       local_sum += function_value * fe_vol_data.JxW(qp);

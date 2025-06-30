@@ -8,7 +8,6 @@
 #include "framework/utils/timer.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
-#include "framework/math/functions/scalar_spatial_material_function.h"
 
 namespace opensn
 {
@@ -241,9 +240,9 @@ FVDiffusionSolver::Execute()
 
     const auto block_id = cell_P.block_id;
 
-    const double sigma_a = sigma_a_function_->Evaluate(block_id, x_cc_P);
-    const double q_ext = q_ext_function_->Evaluate(block_id, x_cc_P);
-    const double D_P = d_coef_function_->Evaluate(block_id, x_cc_P);
+    const double sigma_a = sigma_a_function_(block_id, x_cc_P);
+    const double q_ext = q_ext_function_(block_id, x_cc_P);
+    const double D_P = d_coef_function_(block_id, x_cc_P);
 
     const int64_t imap = sdm.MapDOF(cell_P, 0);
     MatSetValue(A_, imap, imap, sigma_a * volume_P, ADD_VALUES);
@@ -263,7 +262,7 @@ FVDiffusionSolver::Execute()
         const auto& x_cc_N = cell_N.centroid;
         const auto x_PN = x_cc_N - x_cc_P;
 
-        const double D_N = d_coef_function_->Evaluate(jmat, x_cc_N);
+        const double D_N = d_coef_function_(jmat, x_cc_N);
 
         const double w = x_PF.Norm() / x_PN.Norm();
         const double D_f = 1.0 / (w / D_P + (1.0 - w) / D_N);

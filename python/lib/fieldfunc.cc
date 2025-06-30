@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "python/lib/functor.h" // temporary, see the included header for more details!
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/field_functions/interpolation/ffinter_point.h"
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
+#include <pybind11/functional.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -304,7 +304,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
   );
   field_func_interp_volume.def(
     "SetOperationFunction",
-    [](FieldFunctionInterpolationVolume& self, std::shared_ptr<PySMFunction> function)
+    [](FieldFunctionInterpolationVolume& self, const ScalarMaterialFunction& function)
     {
       self.SetOperationFunction(function);
     },
@@ -313,7 +313,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
 
     Parameters
     ----------
-    function: pyopensn.math.ScalarMaterialFunction
+    function: Callable[[float, int], float]
         ???
     )",
     py::arg("function")

@@ -6,6 +6,7 @@
 #include "python/lib/console.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 #include <memory>
 
 using namespace opensn;

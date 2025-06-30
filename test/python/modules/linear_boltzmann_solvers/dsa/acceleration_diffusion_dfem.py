@@ -27,8 +27,8 @@ def MMS_q(pt):
     return math.pi**2 * (math.cos(math.pi * pt.x) + math.cos(math.pi * pt.y))
 
 
-mms_phi_fn = ScalarSpatialFunction(MMS_phi)
-mms_q_fn = ScalarSpatialFunction(MMS_q)
+mms_phi_fn = MMS_phi
+mms_q_fn = MMS_q
 acceleration_Diffusion_DFEM(grid)
 MPIBarrier()
 if rank == 0:

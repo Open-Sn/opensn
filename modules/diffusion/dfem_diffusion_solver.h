@@ -12,7 +12,6 @@ namespace opensn
 {
 class MeshContinuum;
 class SpatialDiscretization;
-class ScalarSpatialMaterialFunction;
 class Cell;
 
 /// DFEM diffusion solver

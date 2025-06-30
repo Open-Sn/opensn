@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
+#include "framework/math/functions/function.h"
 
 namespace opensn
 {
@@ -12,7 +13,6 @@ class Cell;
 struct Vector3;
 class SpatialDiscretization;
 struct UnitCellMatrices;
-class ScalarSpatialFunction;
 
 /**
  * Generalized diffusion solver for both WGDSA and TGDSA based on the MIP-method
@@ -31,9 +31,15 @@ public:
                      bool verbose);
   virtual ~DiffusionMIPSolver() = default;
 
-  void SetSourceFunction(std::shared_ptr<ScalarSpatialFunction> function);
+  inline void SetSourceFunction(const ScalarSpatialFunction& function)
+  {
+    source_function_ = function;
+  }
 
-  void SetReferenceSolutionFunction(std::shared_ptr<ScalarSpatialFunction> function);
+  inline void SetReferenceSolutionFunction(const ScalarSpatialFunction& function)
+  {
+    ref_solution_function_ = function;
+  }
 
   /**
    * Assembles both the matrix and the RHS using quadrature points. These routines exist for
@@ -84,8 +90,8 @@ public:
                       double epsilon = 1.0e-12);
 
 private:
-  std::shared_ptr<ScalarSpatialFunction> source_function_;
-  std::shared_ptr<ScalarSpatialFunction> ref_solution_function_;
+  ScalarSpatialFunction source_function_;
+  ScalarSpatialFunction ref_solution_function_;
 };
 
 } // namespace opensn
