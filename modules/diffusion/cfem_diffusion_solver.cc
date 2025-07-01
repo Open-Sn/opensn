@@ -6,7 +6,6 @@
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include "framework/math/functions/scalar_spatial_material_function.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 
@@ -255,16 +254,16 @@ CFEMDiffusionSolver::Execute()
         double entry_aij = 0.0;
         for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
         {
-          entry_aij += (d_coef_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
+          entry_aij += (d_coef_function_(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeGrad(i, qp).Dot(fe_vol_data.ShapeGrad(j, qp)) +
-                        sigma_a_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
+                        sigma_a_function_(block_id, fe_vol_data.QPointXYZ(qp)) *
                           fe_vol_data.ShapeValue(i, qp) * fe_vol_data.ShapeValue(j, qp)) *
                        fe_vol_data.JxW(qp);
         } // for qp
         Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-        cell_rhs(i) += q_ext_function_->Evaluate(block_id, fe_vol_data.QPointXYZ(qp)) *
+        cell_rhs(i) += q_ext_function_(block_id, fe_vol_data.QPointXYZ(qp)) *
                        fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
     } // for i
 

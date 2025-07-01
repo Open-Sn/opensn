@@ -10,15 +10,8 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
-    from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
-    from pyopensn.fieldfunc import FieldFunctionGridBased
-    from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
-    from pyopensn.math import Vector3
+    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
@@ -63,10 +56,6 @@ if __name__ == "__main__":
     grid.SetBoundaryIDFromLogicalVolume(n_vol, n_bndry, True)
     grid.SetBoundaryIDFromLogicalVolume(s_vol, s_bndry, True)
 
-    d_coef_fn = ScalarSpatialMaterialFunction(D_coef)
-    Q_ext_fn = ScalarSpatialMaterialFunction(Q_ext)
-    Sigma_a_fn = ScalarSpatialMaterialFunction(Sigma_a)
-
     # DFEM solver
     phys = DFEMDiffusionSolver(
         name="DFEMDiffusionSolver",
@@ -79,9 +68,9 @@ if __name__ == "__main__":
         {"boundary": s_bndry, "type": "dirichlet", "coeffs": [0.0]},
         {"boundary": w_bndry, "type": "dirichlet", "coeffs": [0.0]},
     ])
-    phys.SetDCoefFunction(d_coef_fn)
-    phys.SetQExtFunction(Q_ext_fn)
-    phys.SetSigmaAFunction(Sigma_a_fn)
+    phys.SetDCoefFunction(D_coef)
+    phys.SetQExtFunction(Q_ext)
+    phys.SetSigmaAFunction(Sigma_a)
     phys.Initialize()
     phys.Execute()
 

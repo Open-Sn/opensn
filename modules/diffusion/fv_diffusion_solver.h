@@ -14,7 +14,6 @@ namespace opensn
 {
 class MeshContinuum;
 class SpatialDiscretization;
-class ScalarSpatialMaterialFunction;
 
 /// FV diffusion solver
 class FVDiffusionSolver : public DiffusionSolverBase

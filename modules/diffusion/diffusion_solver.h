@@ -7,7 +7,7 @@
 #include "framework/object_factory.h"
 #include "framework/physics/solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/math/functions/scalar_spatial_material_function.h"
+#include "framework/math/functions/function.h"
 
 namespace opensn
 {
@@ -42,9 +42,18 @@ public:
 
   const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
 
-  void SetDCoefFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetQExtFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
-  void SetSigmaAFunction(std::shared_ptr<ScalarSpatialMaterialFunction> function);
+  inline void SetDCoefFunction(const ScalarSpatialMaterialFunction& function)
+  {
+    d_coef_function_ = function;
+  }
+  inline void SetQExtFunction(const ScalarSpatialMaterialFunction& function)
+  {
+    q_ext_function_ = function;
+  }
+  inline void SetSigmaAFunction(const ScalarSpatialMaterialFunction& function)
+  {
+    sigma_a_function_ = function;
+  }
 
   void SetOptions(const InputParameters& params);
   virtual void SetBoundaryOptions(const InputParameters& params) = 0;
@@ -69,9 +78,9 @@ protected:
   std::map<uint64_t, Boundary> boundaries_;
   BoundaryPreferences boundary_preferences_;
 
-  std::shared_ptr<ScalarSpatialMaterialFunction> d_coef_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> sigma_a_function_;
-  std::shared_ptr<ScalarSpatialMaterialFunction> q_ext_function_;
+  ScalarSpatialMaterialFunction d_coef_function_;
+  ScalarSpatialMaterialFunction sigma_a_function_;
+  ScalarSpatialMaterialFunction q_ext_function_;
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 

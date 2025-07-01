@@ -20,7 +20,7 @@ class LBSProblem;
  *
  * This class differs from the standard material property sources in that it can be specified
  * for an arbitrary logical volume that may span multiple material regions and with spatial,
- * material id, and group-wise behaviors via a VectorSpatialMaterialFunction.
+ * material id, and group-wise behaviors via a VectorSpatialFunction.
  *
  * The flexibility of this object allows for its use as a standard volumetric source or as
  * a volumetric response function for adjoint calculations.

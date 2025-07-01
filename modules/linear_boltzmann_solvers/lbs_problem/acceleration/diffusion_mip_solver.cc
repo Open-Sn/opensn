@@ -7,7 +7,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/functions/scalar_spatial_function.h"
+#include "framework/math/functions/function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -15,18 +15,6 @@
 
 namespace opensn
 {
-
-void
-DiffusionMIPSolver::SetSourceFunction(std::shared_ptr<ScalarSpatialFunction> function)
-{
-  source_function_ = function;
-}
-
-void
-DiffusionMIPSolver::SetReferenceSolutionFunction(std::shared_ptr<ScalarSpatialFunction> function)
-{
-  ref_solution_function_ = function;
-}
 
 DiffusionMIPSolver::DiffusionMIPSolver(std::string name,
                                        const opensn::SpatialDiscretization& sdm,
@@ -119,7 +107,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
         if (source_function_)
         {
           for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-            entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
+            entry_rhs_i += source_function_(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
 
@@ -280,8 +268,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 {
                   aij_bc_value = 0.0;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                    aij_bc_value += kappa *
-                                    ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
+                    aij_bc_value += kappa * ref_solution_function_(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                                     fe_srf_data.JxW(qp);
                 }
@@ -314,7 +301,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 {
                   Vector3 vec_aij_mms;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                    vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
+                    vec_aij_mms += ref_solution_function_(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
@@ -457,7 +444,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
         else
         {
           for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-            entry_rhs_i += source_function_->Evaluate(fe_vol_data.QPointXYZ(qp)) *
+            entry_rhs_i += source_function_(fe_vol_data.QPointXYZ(qp)) *
                            fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
         }
 
@@ -512,7 +499,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 {
                   aij_bc_value = 0.0;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                    aij_bc_value += kappa * source_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
+                    aij_bc_value += kappa * source_function_(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                                     fe_srf_data.JxW(qp);
                 }
@@ -544,7 +531,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 {
                   Vector3 vec_aij_mms;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                    vec_aij_mms += ref_solution_function_->Evaluate(fe_srf_data.QPointXYZ(qp)) *
+                    vec_aij_mms += ref_solution_function_(fe_srf_data.QPointXYZ(qp)) *
                                    (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) *
                                       fe_srf_data.JxW(qp) +
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) *
