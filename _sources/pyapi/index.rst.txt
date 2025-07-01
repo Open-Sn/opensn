@@ -32,19 +32,11 @@ Point
 Function wrappers
 ^^^^^^^^^^^^^^^^^
 
-.. note::
-
-   This API is temporary. It will no longer required once ``ParameterBlock`` is removed.
-
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: function.rst
 
-   math.Function
-   math.ScalarMaterialFunction
-   math.ScalarSpatialFunction
-   math.ScalarSpatialMaterialFunction
    math.VectorSpatialFunction
 
 
@@ -339,16 +331,6 @@ Power iteration solver
    solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSASolver
    solver.PowerIterationKEigenSMMSolver
-
-Point kinetic transient solver
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: python.rst
-
-   solver.PRKSolver
 
 Diffusion solver
 ^^^^^^^^^^^^^^^^
