@@ -17,6 +17,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/logging/log.h"
@@ -82,8 +84,8 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
 
   for (auto& groupset : groupsets_)
   {
-    CleanUpWGDSA(groupset);
-    CleanUpTGDSA(groupset);
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
 
     // Reset sweep orderings
     if (groupset.angle_agg != nullptr)
@@ -144,8 +146,8 @@ DiscreteOrdinatesProblem::Initialize()
   {
     InitFluxDataStructures(groupset);
 
-    InitWGDSA(groupset);
-    InitTGDSA(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
   }
   InitializeSolverSchemes();
 }

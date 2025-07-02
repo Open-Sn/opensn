@@ -120,7 +120,7 @@ public:
   const std::shared_ptr<MeshContinuum> GetGrid() const;
 
   /// Obtains a reference to the spatial discretization.
-  const class SpatialDiscretization& GetSpatialDiscretization() const;
+  const SpatialDiscretization& GetSpatialDiscretization() const;
 
   /// Returns read-only access to the unit cell matrices.
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
@@ -213,9 +213,6 @@ public:
   /// Initializes default materials and physics materials.
   void InitializeMaterials();
 
-  /// Initializes the Within-Group DSA solver.
-  void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
-
   /**
    * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
    * DOFs needed by WGDSA.
@@ -228,25 +225,6 @@ public:
                          const std::vector<double>& input,
                          std::vector<double>& output);
 
-  /// Assembles a delta-phi vector on the first moment.
-  void AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                   const std::vector<double>& phi_in,
-                                   std::vector<double>& delta_phi_local);
-
-  /// DAssembles a delta-phi vector on the first moment.
-  void DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                      const std::vector<double>& delta_phi_local,
-                                      std::vector<double>& ref_phi_new);
-
-  /// Assembles a delta-phi vector on the first moment.
-  void AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                   const std::vector<double>& phi_in,
-                                   std::vector<double>& delta_phi_local);
-
-  /// DAssembles a delta-phi vector on the first moment.
-  void DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                      const std::vector<double>& delta_phi_local,
-                                      std::vector<double>& ref_phi_new);
   bool TriggerRestartDump()
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
@@ -321,9 +299,6 @@ protected:
 
   virtual void InitializeWGSSolvers(){};
 
-  /// Initializes the Within-Group DSA solver.
-  void InitTGDSA(LBSGroupset& groupset);
-
   LBSOptions options_;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
@@ -339,7 +314,7 @@ protected:
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
 
   std::shared_ptr<MeshContinuum> grid_;
-  std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
   std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
@@ -352,7 +327,7 @@ protected:
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
-  opensn::UnknownManager flux_moments_uk_man_;
+  UnknownManager flux_moments_uk_man_;
 
   size_t max_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
@@ -374,12 +349,6 @@ protected:
 
   /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
-
-  /// Cleans up memory consuming items.
-  static void CleanUpWGDSA(LBSGroupset& groupset);
-
-  /// Cleans up memory consuming items.
-  static void CleanUpTGDSA(LBSGroupset& groupset);
 
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;

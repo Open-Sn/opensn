@@ -5,6 +5,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/linear_solver/linear_solver.h"
@@ -52,20 +54,20 @@ ClassicRichardson::Solve()
     if (groupset.apply_wgdsa)
     {
       std::vector<double> delta_phi;
-      lbs_problem.AssembleWGDSADeltaPhiVector(groupset, phi_new - phi_old, delta_phi);
+      WGDSA::AssembleDeltaPhiVector(lbs_problem, groupset, phi_new - phi_old, delta_phi);
       groupset.wgdsa_solver->Assemble_b(delta_phi);
       groupset.wgdsa_solver->Solve(delta_phi);
-      lbs_problem.DisAssembleWGDSADeltaPhiVector(groupset, delta_phi, phi_new);
+      WGDSA::DisassembleDeltaPhiVector(lbs_problem, groupset, delta_phi, phi_new);
     }
 
     // Apply TGDSA
     if (groupset.apply_tgdsa)
     {
       std::vector<double> delta_phi;
-      lbs_problem.AssembleTGDSADeltaPhiVector(groupset, phi_new - phi_old, delta_phi);
+      TGDSA::AssembleDeltaPhiVector(lbs_problem, groupset, phi_new - phi_old, delta_phi);
       groupset.tgdsa_solver->Assemble_b(delta_phi);
       groupset.tgdsa_solver->Solve(delta_phi);
-      lbs_problem.DisAssembleTGDSADeltaPhiVector(groupset, delta_phi, phi_new);
+      TGDSA::DisassembleDeltaPhiVector(lbs_problem, groupset, delta_phi, phi_new);
     }
 
     double pw_phi_change = ComputePointwisePhiChange(lbs_problem, groupset.id);
