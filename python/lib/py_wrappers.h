@@ -186,10 +186,6 @@ void WrapProductQuadrature(py::module& aquad);
 void WrapCurvilinearQuadrature(py::module& aquad);
 void WrapSLDFESQuadrature(py::module& aquad);
 
-// Wrap the diffusion components of OpenSn
-void py_diffusion(py::module& pyopensn);
-void WrapDiffusion(py::module& diffusion);
-
 /// Wrap the field function components of OpenSn.
 void py_ffunc(py::module& pyopensn);
 void WrapFieldFunction(py::module& ffunc);
@@ -232,10 +228,6 @@ void WrapLBS(py::module& slv);
 void WrapSteadyState(py::module& slv);
 void WrapNLKEigen(py::module& slv);
 void WrapPIteration(py::module& slv);
-
-// Wrap the diffusion components of OpenSn
-void py_diffusion(py::module& pyopensn);
-void WrapDiffusion(py::module& diffusion);
 
 /// Wrap the source components of OpenSn.
 void py_source(py::module& pyopensn);
