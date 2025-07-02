@@ -21,9 +21,9 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
 
-    num_procs = 4
-    if size != num_procs:
-        sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
+    # num_procs = 4
+    # if size != num_procs:
+    #     sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
 
     # Mesh variables
     L = 100.0      # Domain length

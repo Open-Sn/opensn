@@ -23,7 +23,7 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr->lbs_problem.GetPhiNewLocal();
+  auto& phi_new_local = gs_context_ptr->lbs_problem.GetPhiNewLocal()[groupset.id];
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
     lbs_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
 
@@ -65,7 +65,7 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   LBSGroupset& groupset = gs_context_ptr.groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr.lbs_problem.GetPhiNewLocal();
+  auto& phi_new_local = gs_context_ptr.lbs_problem.GetPhiNewLocal()[groupset.id];
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
     lbs_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
 

@@ -13,12 +13,25 @@
 namespace opensn
 {
 
+AGSSolver::AGSSolver(LBSProblem& lbs_problem,
+                     std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
+  : lbs_problem_(lbs_problem),
+    wgs_solvers_(std::move(wgs_solvers)),
+    phi_old_(lbs_problem.GetPhiOldLocal().size()),
+    max_iterations_(100),
+    tolerance_(1.0e-6),
+    verbose_(true)
+{
+  for (std::size_t i = 0; i < lbs_problem.GetPhiOldLocal().size(); ++i)
+    phi_old_[i].resize(lbs_problem.GetPhiOldLocal()[i].size());
+}
+
 void
 AGSSolver::Solve()
 {
   CALI_CXX_MARK_SCOPE("AGSSolver::Solve");
 
-  std::fill(phi_old_.begin(), phi_old_.end(), 0.0);
+  Set(phi_old_, 0.);
 
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
   // to function and for keigen-value problems

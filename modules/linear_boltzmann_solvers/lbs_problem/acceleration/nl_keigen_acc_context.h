@@ -36,6 +36,10 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
       kresid_func_context({diff_solver.GetName(), 1.0}),
       diff_num_local_dofs(diff_solver.GetNumPhiIterativeUnknowns().first)
   {
+    phi_l.assign(diff_num_local_dofs, 0.0);
+    phi_lph_i.assign(diff_num_local_dofs, 0.0);
+    phi_lph_ip1.assign(diff_num_local_dofs, 0.0);
+    Sf.assign(diff_num_local_dofs, 0.0);
   }
 
   std::vector<double> PhiVecToSTLVec(Vec phi) const

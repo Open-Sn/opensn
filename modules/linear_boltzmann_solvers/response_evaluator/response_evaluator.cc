@@ -136,7 +136,7 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 
   const auto prefixes = params.GetParam("file_prefixes");
 
-  std::vector<double> phi;
+  std::vector<std::vector<double>> phi;
   if (prefixes.Has("flux_moments"))
     LBSSolverIO::ReadFluxMoments(
       *lbs_problem_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
@@ -322,6 +322,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   const auto& phi_dagger = buffer_data.first;
   const auto& psi_dagger = buffer_data.second;
 
+  // FIXME: {phi|psi}_dagger are now vec of vecs
   OpenSnLogicalErrorIf(not material_sources_.empty() and phi_dagger.empty(),
                        "If material sources are present, adjoint flux moments "
                        "must be available for response evaluation.");
@@ -337,7 +338,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
   const auto& grid = lbs_problem_->GetGrid();
   const auto& discretization = lbs_problem_->GetSpatialDiscretization();
-  const auto& transport_views = lbs_problem_->GetCellTransportViews();
+  const auto& cell_transport_views = lbs_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem_->GetUnitCellMatrices();
   const auto num_groups = lbs_problem_->GetNumGroups();
 
@@ -346,33 +347,36 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   // Material sources
   if (not material_sources_.empty())
   {
-    for (const auto& cell : grid->local_cells)
+    for (auto& groupset : lbs_problem_->GetGroupsets())
     {
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
-      const auto num_cell_nodes = cell_mapping.GetNumNodes();
-
-      if (material_sources_.count(cell.block_id) > 0)
+      const auto gsi = groupset.id;
+      for (const auto& cell : grid->local_cells)
       {
-        const auto& src = material_sources_.at(cell.block_id);
-        for (size_t i = 0; i < num_cell_nodes; ++i)
+        const auto& transport_view = cell_transport_views[gsi][cell.local_id];
+        const auto& fe_values = unit_cell_matrices[cell.local_id];
+        const auto num_cell_nodes = transport_view.GetNumNodes();
+
+        if (material_sources_.count(cell.block_id) > 0)
         {
-          const auto dof_map = transport_view.MapDOF(i, 0, 0);
-          const auto& V_i = fe_values.intV_shapeI(i);
-          for (size_t g = 0; g < num_groups; ++g)
-            local_response += src[g] * phi_dagger[dof_map + g] * V_i;
+          const auto& src = material_sources_.at(cell.block_id);
+          for (size_t i = 0; i < num_cell_nodes; ++i)
+          {
+            const auto dof_map = transport_view.MapDOF(i, 0, 0);
+            const auto& V_i = fe_values.intV_shapeI(i);
+            for (size_t g = 0; g < num_groups; ++g)
+              local_response += src[g] * phi_dagger[gsi][dof_map + g] * V_i;
+          }
         }
-      }
-    } // for cell
-  }   // if material sources
+      } // for cell
+    }   // if material sources
+  }
 
   // Boundary sources
   if (not boundary_sources_.empty())
   {
-    size_t gs = 0;
     for (const auto& groupset : lbs_problem_->GetGroupsets())
     {
+      const auto gsi = groupset.id;
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;
       const auto& num_gs_angles = quadrature->omegas.size();
@@ -410,7 +414,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
                   for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=
-                      weight * psi_dagger[gs][dof_map + gsg] * psi_bndry[num_gs_groups * n + gsg];
+                      weight * psi_dagger[gsi][dof_map + gsg] * psi_bndry[num_gs_groups * n + gsg];
                 } // if outgoing
               }
             } // for face node fi
@@ -418,49 +422,60 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
           ++f;
         } // for face
       }   // for cell
-      ++gs;
-    } // for groupset
-  }   // if boundary sources
+    }     // for groupset
+  }       // if boundary sources
 
   // Point sources
   for (const auto& point_source : point_sources_)
-    for (const auto& subscriber : point_source->GetSubscribers())
+  {
+    for (auto& groupset : lbs_problem_->GetGroupsets())
     {
-      const auto& cell = grid->local_cells[subscriber.cell_local_id];
-      const auto& transport_view = transport_views[cell.local_id];
-
-      const auto& src = point_source->GetStrength();
-      const auto& vol_wt = subscriber.volume_weight;
-
-      const auto num_cell_nodes = transport_view.GetNumNodes();
-      for (size_t i = 0; i < num_cell_nodes; ++i)
+      const auto gsi = groupset.id;
+      for (const auto& subscriber : point_source->GetSubscribers())
       {
-        const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& shape_val = subscriber.shape_values(i);
-        for (size_t g = 0; g < num_groups; ++g)
-          local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
-      } // for node i
-    }   // for subscriber
+        const auto& cell = grid->local_cells[subscriber.cell_local_id];
+        const auto& transport_view = cell_transport_views[gsi][cell.local_id];
+
+        const auto& src = point_source->GetStrength();
+        const auto& vol_wt = subscriber.volume_weight;
+
+        const auto num_cell_nodes = transport_view.GetNumNodes();
+        for (size_t i = 0; i < num_cell_nodes; ++i)
+        {
+          const auto dof_map = transport_view.MapDOF(i, 0, 0);
+          const auto& shape_val = subscriber.shape_values(i);
+          for (size_t g = 0; g < num_groups; ++g)
+            local_response += vol_wt * shape_val * src[g] * phi_dagger[gsi][dof_map + g];
+        } // for node i
+      }   // for subscriber
+    }     // for groupset
+  }
 
   // Volumetric sources
   for (const auto& volumetric_source : volumetric_sources_)
-    for (const uint64_t local_id : volumetric_source->GetSubscribers())
+  {
+    for (auto& groupset : lbs_problem_->GetGroupsets())
     {
-      const auto& cell = grid->local_cells[local_id];
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
-      const auto& nodes = discretization.GetCellNodeLocations(cell);
-
-      const auto num_cell_nodes = transport_view.GetNumNodes();
-      for (size_t i = 0; i < num_cell_nodes; ++i)
+      const auto gsi = groupset.id;
+      for (const uint64_t local_id : volumetric_source->GetSubscribers())
       {
-        const auto& V_i = fe_values.intV_shapeI(i);
-        const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = (*volumetric_source)(cell, nodes[i], num_groups);
-        for (size_t g = 0; g < num_groups; ++g)
-          local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
+        const auto& cell = grid->local_cells[local_id];
+        const auto& transport_view = cell_transport_views[gsi][cell.local_id];
+        const auto& fe_values = unit_cell_matrices[cell.local_id];
+        const auto& nodes = discretization.GetCellNodeLocations(cell);
+
+        const auto num_cell_nodes = transport_view.GetNumNodes();
+        for (size_t i = 0; i < num_cell_nodes; ++i)
+        {
+          const auto& V_i = fe_values.intV_shapeI(i);
+          const auto dof_map = transport_view.MapDOF(i, 0, 0);
+          const auto& vals = (*volumetric_source)(cell, nodes[i], num_groups);
+          for (size_t g = 0; g < num_groups; ++g)
+            local_response += vals[g] * phi_dagger[gsi][dof_map + g] * V_i;
+        }
       }
     }
+  }
 
   double global_response = 0.0;
   mpi_comm.all_reduce(local_response, global_response, mpi::op::sum<double>());
