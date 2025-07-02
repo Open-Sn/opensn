@@ -232,6 +232,7 @@ void WrapLBS(py::module& slv);
 void WrapSteadyState(py::module& slv);
 void WrapNLKEigen(py::module& slv);
 void WrapPIteration(py::module& slv);
+void WrapLBSAcceleration(py::module& slv);
 
 // Wrap the diffusion components of OpenSn
 void py_diffusion(py::module& pyopensn);
