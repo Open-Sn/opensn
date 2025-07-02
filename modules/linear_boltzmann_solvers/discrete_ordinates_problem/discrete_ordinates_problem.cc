@@ -1037,7 +1037,6 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
           std::make_shared<CBC_FLUDS>(gs_num_grps,
                                       angle_indices.size(),
                                       dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      psi_new_local_[groupset.id],
                                       groupset.psi_uk_man_,
                                       *discretization_);
 
