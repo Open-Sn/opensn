@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
@@ -30,12 +31,13 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
+  params.AddOptionalParameter<std::shared_ptr<LBSAcceleration>>(
+    "lbs_acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
   params.AddOptionalParameter(
     "reset_solution", true, "If set to true will initialize the flux moments to 1.0");
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
-
   return params;
 }
 
@@ -49,6 +51,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : Solver(params),
     do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("problem"))),
+    lbs_acceleration_(params.GetSharedPtrParam<LBSAcceleration>("lbs_acceleration", false)),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
@@ -97,11 +100,17 @@ PowerIterationKEigenSolver::Initialize()
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
   F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
+
+  if (lbs_acceleration_)
+    lbs_acceleration_->Initialize(*this);
 }
 
 void
 PowerIterationKEigenSolver::Execute()
 {
+  if (lbs_acceleration_)
+    lbs_acceleration_->PreExecute();
+
   auto& options = do_problem_->GetOptions();
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
@@ -115,18 +124,30 @@ PowerIterationKEigenSolver::Execute()
     SetLBSFissionSource(phi_old_local_, false);
     Scale(q_moments_local_, 1.0 / k_eff_);
 
+    if (lbs_acceleration_)
+      lbs_acceleration_->PrePowerIteration();
+
     // This solves the inners for transport
     ags_solver_->Solve();
 
+    // Get k-eigenvalue from the acceleration method
+    if (lbs_acceleration_)
+    {
+      k_eff_ = lbs_acceleration_->PostPowerIteration();
+    }
     // Recompute k-eigenvalue
-    double F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
-    k_eff_ = F_new / F_prev_ * k_eff_;
-    double reactivity = (k_eff_ - 1.0) / k_eff_;
+    else
+    {
+      const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
+      k_eff_ = F_new / F_prev_ * k_eff_;
+      F_prev_ = F_new;
+    }
+
+    const double reactivity = (k_eff_ - 1.0) / k_eff_;
 
     // Check convergence, bookkeeping
     k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
-    F_prev_ = F_new;
     nit += 1;
 
     if (k_eff_change < std::max(k_tolerance_, 1.0e-12))

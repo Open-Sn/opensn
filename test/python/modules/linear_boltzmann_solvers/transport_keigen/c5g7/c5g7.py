@@ -14,8 +14,8 @@ if "opensn_console" not in globals():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
-    from pyopensn.solver import PowerIterationKEigenSCDSASolver, PowerIterationKEigenSMMSolver, \
-        NonLinearKEigenSolver
+    from pyopensn.solver import PowerIterationKEigenSMMSolver, NonLinearKEigenSolver
+    from pyopensn.solver import SCDSAAcceleration
 
 if __name__ == "__main__":
 
@@ -112,22 +112,28 @@ if __name__ == "__main__":
             k_tol=1.0e-8,
         )
     elif k_method == "pi_scdsa":
-        k_solver = PowerIterationKEigenSCDSASolver(
-            problem=phys,
-            diff_accel_sdm="pwld",
-            accel_pi_verbose=True,
-            k_tol=1.0e-8,
-            accel_pi_k_tol=1.0e-8,
-            accel_pi_max_its=50,
+        scdsa = SCDSAAcceleration(
+            sdm="pwld",
+            verbose=True,
+            pi_k_tol=1.0e-8,
+            pi_max_its=50
         )
-    elif k_method == "pi_scdsa_pwlc":
-        k_solver = PowerIterationKEigenSCDSASolver(
+        k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            diff_accel_sdm="pwlc",
-            accel_pi_verbose=True,
+            lbs_acceleration=scdsa,
+            k_tol=1.0e-8
+        )
+    elif k_method == "i_scdsa_pwlc":
+        scdsa = SCDSAAcceleration(
+            sdm="pwlc",
+            verbose=True,
+            pi_k_tol=1.0e-8,
+            pi_max_its=50
+        )
+        k_solver = PowerIterationKEigenSolver(
+            problem=phys,
+            lbs_acceleration=scdsa,
             k_tol=1.0e-8,
-            accel_pi_k_tol=1.0e-8,
-            accel_pi_max_its=50,
         )
     elif k_method == "pi_smm":
         k_solver = PowerIterationKEigenSMMSolver(

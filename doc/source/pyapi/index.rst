@@ -329,7 +329,7 @@ Power iteration solver
    :template: python.rst
 
    solver.PowerIterationKEigenSolver
-   solver.PowerIterationKEigenSCDSASolver
+   solver.PowerIterationKEigenSCDSASolver TODO FIX ME
    solver.PowerIterationKEigenSMMSolver
 
 
