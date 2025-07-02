@@ -87,8 +87,6 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
         {
           const auto tet_face_vertices = grid->GetTetrahedralFaceVertices(cell, face, side);
           for (const auto& v : tet_face_vertices)
-          {
-            const auto c = (v[0] + v[1] + v[2]) / 3.0;
             for (const auto& other_cell : grid->local_cells)
             {
               const auto same_cell_or_neighbor =
@@ -97,7 +95,6 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
               const auto within = grid->CheckPointInsideCell(other_cell, face.centroid);
               EXPECT_EQ(same_cell_or_neighbor, within);
             }
-          }
         }
   }
 }

@@ -36,9 +36,7 @@ SteadyStateSolver::Create(const ParameterBlock& params)
 }
 
 SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
-  : Solver(params),
-    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
+  : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem"))
 {
 }
 

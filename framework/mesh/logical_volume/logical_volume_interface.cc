@@ -20,7 +20,7 @@ LogicalVolumeInterface::GetInputParameters()
 }
 
 LogicalVolumeInterface::LogicalVolumeInterface(const InputParameters& params)
-  : logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume"))
+  : logical_volume_(params.GetSharedPtrParam<LogicalVolume>("logical_volume", false))
 {
 }
 

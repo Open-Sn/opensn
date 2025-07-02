@@ -62,7 +62,7 @@ Solver::InitTimeStepper(const InputParameters& params)
 {
   if (params.IsParameterValid("timestepper"))
   {
-    auto stepper = params.GetParamValue<std::shared_ptr<TimeStepper>>("timestepper");
+    auto stepper = params.GetSharedPtrParam<TimeStepper>("timestepper");
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));

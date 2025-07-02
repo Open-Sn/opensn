@@ -44,8 +44,7 @@ ResponseEvaluator::Create(const ParameterBlock& params)
 }
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
-  : lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
+  : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem"))
 {
   if (params.IsParameterValid("options"))
   {

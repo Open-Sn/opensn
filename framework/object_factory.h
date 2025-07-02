@@ -216,6 +216,7 @@ private:
   template <typename T, typename base_T>
   static std::shared_ptr<base_T> CallObjectConstructor(const InputParameters& params)
   {
+    static_assert(std::is_base_of_v<base_T, T>, "Is not a base");
     return std::make_shared<T>(params);
   }
 
