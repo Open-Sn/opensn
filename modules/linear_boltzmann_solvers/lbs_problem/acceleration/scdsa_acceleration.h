@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 
 namespace opensn
 {
@@ -12,7 +12,7 @@ class VectorGhostCommunicator;
 class LinearSolver;
 struct WGSContext;
 
-class SCDSAAcceleration : public LBSAcceleration
+class SCDSAAcceleration : public LBSKEigenAcceleration
 {
 public:
   static InputParameters GetInputParameters();

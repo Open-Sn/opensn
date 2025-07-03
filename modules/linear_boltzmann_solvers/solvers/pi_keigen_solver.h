@@ -10,7 +10,7 @@ namespace opensn
 {
 
 class LBSProblem;
-class LBSAcceleration;
+class LBSKEigenAcceleration;
 class AGSSolver;
 class LinearSolver;
 
@@ -18,7 +18,7 @@ class PowerIterationKEigenSolver : public Solver
 {
 protected:
   const std::shared_ptr<LBSProblem> lbs_problem_;
-  const std::shared_ptr<LBSAcceleration> lbs_acceleration_;
+  const std::shared_ptr<LBSKEigenAcceleration> lbs_acceleration_;
 
   size_t max_iters_;
   double k_eff_;
