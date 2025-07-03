@@ -151,8 +151,7 @@ PowerIterationKEigenSolver::Execute()
     k_eff_prev = k_eff_;
     nit += 1;
 
-    if (k_eff_change < std::max(k_tolerance_, 1.0e-12))
-      converged = true;
+    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
 
     // Print iteration summary
     if (options.verbose_outer_iterations)

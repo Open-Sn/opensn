@@ -1,0 +1,85 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
+
+namespace opensn
+{
+class DiffusionSolver;
+class GhostedParallelSTLVector;
+
+class SMMAcceleration : public LBSKEigenAcceleration
+{
+public:
+  static InputParameters GetInputParameters();
+
+  static std::shared_ptr<SMMAcceleration> Create(const ParameterBlock& params);
+
+  explicit SMMAcceleration(const InputParameters& params);
+
+  void Initialize() override final;
+  void PreExecute() override final;
+  void PrePowerIteration() override final;
+  double PostPowerIteration() override final;
+
+private:
+  void ComputeAuxiliaryUnitCellMatrices();
+  void ComputeBoundaryFactors();
+  void AssembleDiffusionBCs() const;
+
+  void ComputeClosures(const std::vector<std::vector<double>>& psi);
+  std::vector<double> ComputeSourceCorrection() const;
+
+  void SetNodalDiffusionFissionSource(const std::vector<double>& phi0,
+                                      std::vector<double>& out) const;
+  void SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
+                                      std::vector<double>& out) const;
+  std::vector<double> AssembleDiffusionRHS(const std::vector<double>& q0) const;
+
+  /**
+   * Obtain the index of the associated node on the opposing side of a face.
+   * Given a node, go through the nodes of a neighbor cell to find a matching
+   * node. This routine returns the local cell node index of the specified node
+   * for the neighboring cell.
+   *
+   * \param node The node to find an associated node for.
+   * \param nbr_nodes The cell nodes on a neighbor cell.
+   * \param epsilon A matching tolerance.
+   * \return The local cell node index on the neighboring cell.
+   */
+  static int MapAssociatedFaceNode(const Vector3& node,
+                                   const std::vector<Vector3>& nbr_nodes,
+                                   double epsilon = 1.0e-12);
+
+  /// Spatial discretization method, from parameters
+  const std::string sdm_;
+
+  std::vector<std::vector<double>>& psi_new_local_;
+
+  /// Grid dimension, set in Initialize()
+  unsigned int dimension_;
+  /// Cell-wise tensor stiffness matrices, set in Initialize()
+  std::vector<NDArray<double, 4>> K_tensor_matrices_;
+  /// Quadrature approximated boundary factors per groupset, set in Initialize()
+  std::map<uint64_t, std::vector<double>> bndry_factors_;
+
+  // Second moment closures, set in Initialize()
+  ///@{
+  UnknownManager tensor_uk_man_;
+  std::shared_ptr<GhostedParallelSTLVector> tensors_;
+  std::map<uint64_t, std::vector<double>> betas_;
+  ///@}
+
+  /**
+   * Work vectors
+   */
+  ///@{
+  std::vector<double> phi_ell_;
+  std::vector<double> phi0_;
+  std::vector<double> phi0_old_;
+  std::vector<double> phi0_m_;
+  std::vector<double> Sf_;
+  std::vector<double> Ss_;
+  ///@}
+};
+} // namespace opensn

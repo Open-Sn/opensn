@@ -8,9 +8,13 @@
 
 namespace opensn
 {
+class DiffusionSolver;
 class LBSProblem;
 class LBSGroupset;
 class PowerIterationKEigenSolver;
+class SpatialDiscretization;
+class UnknownManager;
+class VectorGhostCommunicator;
 
 /**
  * Base class for LBS acceleration methods.
@@ -67,6 +71,33 @@ public:
   const std::string& GetName() const { return name_; }
 
 protected:
+  struct GhostInfo
+  {
+    std::shared_ptr<VectorGhostCommunicator> vector_ghost_communicator = nullptr;
+    std::map<int64_t, int64_t> ghost_global_id_2_local_map;
+  };
+
+  static std::vector<int64_t> MakePWLDGhostIndices(const SpatialDiscretization& pwld,
+                                                   const UnknownManager& uk_man);
+
+  static GhostInfo MakePWLDGhostInfo(const SpatialDiscretization& pwld,
+                                     const UnknownManager& uk_man);
+
+  void InitializeLinearContinuous();
+
+  /**
+   * Takes an input vector that is the local version of a PWLD discrete space and then
+   * makes it continuous by applying nodal averages.
+   */
+  void NodallyAveragedPWLDVector(const std::vector<double>& input,
+                                 std::vector<double>& output) const;
+
+  /// Copies only the scalar moments from an lbs primary flux moments vector.
+  void CopyOnlyPhi0(const std::vector<double>& phi_in, std::vector<double>& phi_local);
+
+  /// Copies back only the scalar moments to a lbs primary flux vector.
+  void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
+
   /// The associated LBS problem
   LBSProblem& lbs_problem_;
 
@@ -78,9 +109,15 @@ protected:
   const bool verbose_;
   /// PETSc options from parameters
   const std::string petsc_options_;
+  /// Maximum inner power iteration count, from parameters
+  const int pi_max_its_;
+  /// k-eigenvalue tolerance for inner power iterations, from parameters
+  const double pi_k_tol_;
 
   /// Groupsets from the LBSProblem
   std::vector<LBSGroupset>& groupsets_;
+  /// Front groupset from the LBSProblem
+  LBSGroupset& front_gs_;
   /// Source moments vector from the LBSProblem
   std::vector<double>& q_moments_local_;
   /// Last updated flux vector from the LBSProblem
@@ -91,7 +128,22 @@ protected:
   /// Associated PI solver, filled during Initialize()
   PowerIterationKEigenSolver* solver_;
 
+  /// Underlying continuous discretization, if needed
+  std::shared_ptr<SpatialDiscretization> pwlc_ptr_ = nullptr;
+  /// Ghost information, needed with a continuous discretization
+  GhostInfo ghost_info_;
+
+  /// Underlying diffusion solver
+  std::shared_ptr<DiffusionSolver> diffusion_solver_ = nullptr;
+
 private:
   const std::string name_;
+
+  /**
+   * Work vectors
+   */
+  ///@{
+  std::vector<double> copy_only_phi0_tmp_;
+  ///@}
 };
 } // namespace opensn

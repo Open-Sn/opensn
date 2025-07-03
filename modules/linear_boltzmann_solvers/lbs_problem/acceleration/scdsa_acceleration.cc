@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/object_factory.h"
 
@@ -20,10 +19,6 @@ SCDSAAcceleration::GetInputParameters()
   auto params = LBSKEigenAcceleration::GetInputParameters();
 
   params.AddOptionalParameter("sdm", "pwld", "Spatial discretization");
-  params.AddOptionalParameter(
-    "pi_max_its", 50, "Maximum allowable iterations for inner power iterations");
-  params.AddOptionalParameter(
-    "pi_k_tol", 1.0e-10, "k-eigenvalue tolerance for the inner power iterations");
 
   params.ConstrainParameterRange("sdm", AllowableRangeList::New({"pwld", "pwlc"}));
 
@@ -40,25 +35,8 @@ SCDSAAcceleration::Create(const ParameterBlock& params)
 }
 
 SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
-  : LBSKEigenAcceleration(params),
-    sdm_(params.GetParamValue<std::string>("sdm")),
-    pi_max_its_(params.GetParamValue<int>("pi_max_its")),
-    pi_k_tol_(params.GetParamValue<double>("pi_k_tol")),
-    front_gs_(groupsets_.front())
+  : LBSKEigenAcceleration(params), sdm_(params.GetParamValue<std::string>("sdm"))
 {
-  if (lbs_problem_.GetGroupsets().size() != 1)
-    throw std::logic_error("The SCDSA acceleration scheme is only implemented for "
-                           "problems with a single groupset.");
-
-  // If using the AAH solver with one sweep, a few iterations need to be done
-  // to get rid of the junk in the unconverged lagged angular fluxes.  Five
-  // sweeps is a guess at how many initial sweeps are necessary.
-  if (const auto do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem_))
-    if (do_problem->GetSweepType() == "AAH" and front_gs_.max_iterations == 1)
-      throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
-                             "the presence of lagged angular fluxes.  Multiple sweeps are "
-                             "allowed, however, the number of sweeps required to get sensible "
-                             "results is not well studied and problem dependent.");
 }
 
 void
@@ -97,19 +75,15 @@ SCDSAAcceleration::Initialize()
   }
   else
   {
-    continuous_sdm_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
+    InitializeLinearContinuous();
     diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_WGDSA"),
-                                                              *continuous_sdm_ptr_,
+                                                              *pwlc_ptr_,
                                                               uk_man,
                                                               bcs,
                                                               matid_2_mgxs_map,
                                                               unit_cell_matrices,
                                                               false,
                                                               true);
-    lbs_pwld_ghost_info_ = MakePWLDVecGhostCommInfo();
-
-    const auto& cfem_sdm = *continuous_sdm_ptr_;
-    const auto ghost_dof_ids = cfem_sdm.GetGhostDOFIndices(lbs_problem_.GetUnknownManager());
   }
 
   auto& ds = *diffusion_solver_;
@@ -128,7 +102,7 @@ SCDSAAcceleration::Initialize()
   if (sdm_ == "pwld")
     dummy_rhs.assign(sdm.GetNumLocalDOFs(uk_man), 0.0);
   else
-    dummy_rhs.assign(continuous_sdm_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
+    dummy_rhs.assign(pwlc_ptr_->GetNumLocalAndGhostDOFs(uk_man), 0.0);
   ds.AssembleAand_b(dummy_rhs);
   log.Log() << "Done Assembling A and b";
 }
@@ -249,264 +223,5 @@ SCDSAAcceleration::PostPowerIteration()
     lbs_problem_, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
   return lambda_kp1;
-}
-
-SCDSAAcceleration::GhostInfo
-SCDSAAcceleration::MakePWLDVecGhostCommInfo() const
-{
-  const auto& sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto& uk_man = lbs_problem_.GetUnknownManager();
-
-  log.Log() << "Making PWLD ghost communicator";
-
-  const size_t num_local_dofs = sdm.GetNumLocalDOFs(uk_man);
-  const size_t num_global_dofs = sdm.GetNumGlobalDOFs(uk_man);
-
-  log.Log() << "Number of global dofs" << num_global_dofs;
-
-  const size_t num_unknowns = uk_man.unknowns.size();
-
-  // Build a list of global ids
-  std::set<int64_t> global_dof_ids_set;
-
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto ghost_cell_ids = grid->cells.GetGhostGlobalIDs();
-  for (const auto global_id : ghost_cell_ids)
-  {
-    const auto& cell = grid->cells[global_id];
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      for (size_t u = 0; u < num_unknowns; ++u)
-      {
-        const size_t num_comps = uk_man.unknowns[u].num_components;
-        for (size_t c = 0; c < num_comps; ++c)
-        {
-          const int64_t dof_map = sdm.MapDOF(cell, i, uk_man, u, c);
-          global_dof_ids_set.insert(dof_map);
-        } // for component
-      }   // for unknown
-    }     // for node i
-  }       // for ghost cell
-
-  // Convert the list to a vector
-  std::vector<int64_t> global_indices(global_dof_ids_set.begin(), global_dof_ids_set.end());
-
-  // Create the vector ghost communicator
-  auto vgc = std::make_shared<VectorGhostCommunicator>(
-    num_local_dofs, num_global_dofs, global_indices, mpi_comm);
-
-  // Create the map
-  std::map<int64_t, int64_t> ghost_global_id_2_local_map;
-  int64_t k = 0;
-  for (const auto ghost_id : global_indices)
-  {
-    ghost_global_id_2_local_map[ghost_id] = static_cast<int64_t>(num_local_dofs + k++);
-  }
-
-  log.Log() << "Done making PWLD ghost communicator";
-  return {vgc, ghost_global_id_2_local_map};
-}
-
-void
-SCDSAAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in, std::vector<double>& phi_local)
-{
-  const auto& lbs_sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem_.GetUnknownManager();
-  const int gsi = front_gs_.groups.front().id;
-  const size_t gss = front_gs_.groups.size();
-  const size_t diff_num_local_dofs = continuous_sdm_ptr_
-                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
-
-  if (continuous_sdm_ptr_)
-    NodallyAveragedPWLDVector(phi_in, copy_only_phi0_tmp_);
-  const std::vector<double>* const phi_data = continuous_sdm_ptr_ ? &copy_only_phi0_tmp_ : &phi_in;
-
-  phi_local.resize(diff_num_local_dofs);
-  std::fill(phi_local.begin(), phi_local.end(), 0.0);
-
-  for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
-  {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      const int64_t lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-      const auto input_begin = phi_data->begin() + lbs_phi_map;
-      const auto output_begin = phi_local.begin() + diff_phi_map;
-      std::copy_n(input_begin, gss, output_begin);
-    } // for node
-  }   // for cell
-
-  if (continuous_sdm_ptr_)
-    copy_only_phi0_tmp_.clear();
-}
-
-void
-SCDSAAcceleration::ProjectBackPhi0(const std::vector<double>& input,
-                                   std::vector<double>& output) const
-{
-  const auto& lbs_sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
-  const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem_.GetUnknownManager();
-  const int gsi = front_gs_.groups.front().id;
-  const size_t gss = front_gs_.groups.size();
-  const size_t diff_num_local_dofs = continuous_sdm_ptr_
-                                       ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                       : diff_sdm.GetNumLocalDOFs(diff_uk_man);
-
-  OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
-
-  for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
-  {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      const int64_t lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-      const auto input_begin = input.begin() + diff_phi_map;
-      const auto output_begin = output.begin() + lbs_phi_map;
-      std::copy_n(input_begin, gss, output_begin);
-    } // for dof
-  }   // for cell
-}
-
-void
-SCDSAAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& input,
-                                             std::vector<double>& output) const
-{
-  const auto& pwld_sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto& pwlc_sdm = diffusion_solver_->GetSpatialDiscretization();
-  const auto& uk_man = lbs_problem_.GetUnknownManager();
-
-  const auto& vgc = lbs_pwld_ghost_info_.vector_ghost_communicator;
-  const auto& dfem_dof_global2local_map = lbs_pwld_ghost_info_.ghost_global_id_2_local_map;
-
-  auto input_with_ghosts = vgc->MakeGhostedVector(input);
-  vgc->CommunicateGhostEntries(input_with_ghosts);
-
-  const auto& grid = pwld_sdm.GetGrid();
-
-  const size_t num_unknowns = uk_man.unknowns.size();
-
-  const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
-
-  std::vector<double> cont_input(num_cfem_local_dofs, 0.0);
-  std::vector<double> cont_input_ctr(num_cfem_local_dofs, 0.0);
-
-  std::map<int64_t, int64_t> cfem_dof_global2local_map;
-
-  // Local cells first
-  std::set<uint64_t> partition_bndry_vertex_id_set;
-  for (const auto& cell : grid->local_cells)
-  {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      for (size_t u = 0; u < num_unknowns; ++u)
-      {
-        const size_t num_components = uk_man.unknowns[u].num_components;
-        for (size_t c = 0; c < num_components; ++c)
-        {
-          const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
-
-          cfem_dof_global2local_map[dof_cfem_map_global] = dof_cfem_map;
-
-          const double phi_value = input[dof_dfem_map];
-
-          cont_input[dof_cfem_map] += phi_value;
-          cont_input_ctr[dof_cfem_map] += 1.0;
-        } // for component c
-      }   // for unknown u
-    }     // for node i
-
-    for (const auto& face : cell.faces)
-      if (face.has_neighbor)
-        if (not grid->IsCellLocal(face.neighbor_id))
-          for (const uint64_t vid : face.vertex_ids)
-            partition_bndry_vertex_id_set.insert(vid);
-  } // for local cell
-
-  // Ghost cells
-  const auto ghost_cell_ids = grid->cells.GetGhostGlobalIDs();
-  const auto& vid_set = partition_bndry_vertex_id_set;
-  for (const auto global_id : ghost_cell_ids)
-  {
-    const auto& cell = grid->cells[global_id];
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      if (vid_set.find(cell.vertex_ids[i]) == vid_set.end())
-        continue;
-
-      for (size_t u = 0; u < num_unknowns; ++u)
-      {
-        const size_t num_components = uk_man.unknowns[u].num_components;
-        for (size_t c = 0; c < num_components; ++c)
-        {
-          const int64_t dof_dfem_map_global = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
-          if (cfem_dof_global2local_map.count(dof_cfem_map_global) > 0)
-          {
-            const int64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);
-            const int64_t dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_global];
-
-            const double phi_value = input_with_ghosts[dof_dfem_map];
-
-            cont_input[dof_cfem_map] += phi_value;
-            cont_input_ctr[dof_cfem_map] += 1.0;
-          }
-        } // for component
-      }   // for unknown
-    }     // for node i
-  }       // for ghost cell
-
-  // Compute nodal averages
-  {
-    const size_t num_vals = cont_input.size();
-    for (size_t k = 0; k < num_vals; ++k)
-      cont_input[k] /= cont_input_ctr[k];
-  }
-
-  // Project back to dfem
-  output = input;
-  for (const auto& cell : grid->local_cells)
-  {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      for (size_t u = 0; u < num_unknowns; ++u)
-      {
-        const size_t num_components = uk_man.unknowns[u].num_components;
-        for (size_t c = 0; c < num_components; ++c)
-        {
-          const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-
-          const double phi_value = cont_input[dof_cfem_map];
-
-          output[dof_dfem_map] = phi_value;
-        } // for component c
-      }   // for unknown u
-    }     // for node i
-  }       // for local cell
 }
 } // namespace opensn

@@ -330,7 +330,7 @@ Power iteration solver
 
    solver.PowerIterationKEigenSolver
    solver.PowerIterationKEigenSCDSASolver TODO FIX ME
-   solver.PowerIterationKEigenSMMSolver
+   solver.PowerIterationKEigenSMMSolver TODO FIX ME
 
 
 Post-processors
