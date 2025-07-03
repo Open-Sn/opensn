@@ -14,7 +14,8 @@ struct QuadraturePointPhiTheta;
 enum class AngularQuadratureType
 {
   ProductQuadrature = 1,
-  SLDFESQ = 2
+  SLDFESQ = 2,
+  LebedevQuadrature = 3
 };
 
 struct QuadraturePointPhiTheta
