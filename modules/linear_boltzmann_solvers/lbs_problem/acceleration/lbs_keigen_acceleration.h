@@ -15,14 +15,14 @@ class PowerIterationKEigenSolver;
 /**
  * Base class for LBS acceleration methods.
  */
-class LBSAcceleration : public Object
+class LBSKEigenAcceleration : public Object
 {
 public:
   static InputParameters GetInputParameters();
 
-  explicit LBSAcceleration(const InputParameters& params);
+  explicit LBSKEigenAcceleration(const InputParameters& params);
 
-  virtual ~LBSAcceleration() = default;
+  virtual ~LBSKEigenAcceleration() = default;
 
   /**
    * Public initialize method, to be called by the power iteration solver

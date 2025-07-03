@@ -17,7 +17,7 @@ OpenSnRegisterObjectInNamespace(lbs, SCDSAAcceleration);
 InputParameters
 SCDSAAcceleration::GetInputParameters()
 {
-  auto params = LBSAcceleration::GetInputParameters();
+  auto params = LBSKEigenAcceleration::GetInputParameters();
 
   params.AddOptionalParameter("sdm", "pwld", "Spatial discretization");
   params.AddOptionalParameter(
@@ -40,7 +40,7 @@ SCDSAAcceleration::Create(const ParameterBlock& params)
 }
 
 SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
-  : LBSAcceleration(params),
+  : LBSKEigenAcceleration(params),
     sdm_(params.GetParamValue<std::string>("sdm")),
     pi_max_its_(params.GetParamValue<int>("pi_max_its")),
     pi_k_tol_(params.GetParamValue<double>("pi_k_tol")),

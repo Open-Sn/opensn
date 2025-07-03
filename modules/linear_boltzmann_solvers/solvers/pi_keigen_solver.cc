@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
@@ -32,6 +32,7 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
   params.AddOptionalParameter<std::shared_ptr<LBSAcceleration>>(
+  params.AddOptionalParameter<std::shared_ptr<LBSKEigenAcceleration>>(
     "lbs_acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
@@ -51,7 +52,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : Solver(params),
     do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("problem"))),
-    lbs_acceleration_(params.GetSharedPtrParam<LBSAcceleration>("lbs_acceleration", false)),
+    lbs_acceleration_(params.GetSharedPtrParam<LBSKEigenAcceleration>("lbs_acceleration", false)),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),

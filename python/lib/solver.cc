@@ -6,7 +6,7 @@
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -725,8 +725,8 @@ WrapPIteration(py::module& slv)
     ----------
     lbs_problem: pyopensn.solver.LBSProblem
         Existing LBSProblem instance.
-    lbs_acceleration: pyopensn.solver.LBSAcceleration
-        Optional LBSAcceleration instance for acceleration.
+    lbs_acceleration: pyopensn.solver.LBSKEigenAcceleration
+        Optional LBSKEigenAcceleration instance for acceleration.
     max_iters: int, default = 1000
         Maximum power iterations allowed.
     k_tol: float, default = 1.0e-10
@@ -804,25 +804,25 @@ WrapPIteration(py::module& slv)
 
 // Wrap LBS solver
 void
-WrapLBSAcceleration(py::module& slv)
+WrapLBSKEigenAcceleration(py::module& slv)
 {
   // clang-format off
-  // LBSAcceleration base
-  auto lbs_acceleration = py::class_<LBSAcceleration,
-                                     std::shared_ptr<LBSAcceleration>>(
+  // LBSKEigenAcceleration base
+  auto lbs_acceleration = py::class_<LBSKEigenAcceleration,
+                                     std::shared_ptr<LBSKEigenAcceleration>>(
     slv,
     "LBSAccelertion",
     R"(
     Base class for LBS acceleration methods.
 
-    Wrapper of :cpp:class:`opensn::LBSAcceleration`.
+    Wrapper of :cpp:class:`opensn::LBSKEigenAcceleration`.
     )"
   );
 
   // SCDSA acceleration
   auto scdsa_acceleration = py::class_<SCDSAAcceleration,
                                        std::shared_ptr<SCDSAAcceleration>,
-                                       LBSAcceleration>(
+                                       LBSKEigenAcceleration>(
     slv,
     "SCDSAAcceleration",
     R"(
@@ -877,7 +877,7 @@ py_solver(py::module& pyopensn)
   WrapSteadyState(slv);
   WrapNLKEigen(slv);
   WrapPIteration(slv);
-  WrapLBSAcceleration(slv);
+  WrapLBSKEigenAcceleration(slv);
 }
 
 } // namespace opensn

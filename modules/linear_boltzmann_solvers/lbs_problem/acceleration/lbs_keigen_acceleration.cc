@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 
 namespace opensn
 {
 InputParameters
-LBSAcceleration::GetInputParameters()
+LBSKEigenAcceleration::GetInputParameters()
 {
   auto params = Object::GetInputParameters();
 
@@ -28,7 +28,7 @@ LBSAcceleration::GetInputParameters()
   return params;
 }
 
-LBSAcceleration::LBSAcceleration(const InputParameters& params)
+LBSKEigenAcceleration::LBSKEigenAcceleration(const InputParameters& params)
   : Object(params),
     lbs_problem_(*params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem")),
     l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
@@ -44,7 +44,7 @@ LBSAcceleration::LBSAcceleration(const InputParameters& params)
 }
 
 void
-LBSAcceleration::Initialize(PowerIterationKEigenSolver& solver)
+LBSKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solver)
 {
   solver_ = &solver;
   Initialize();

@@ -15,7 +15,7 @@
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/physics/solver.h"
 #include "framework/post_processors/post_processor.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
@@ -82,7 +82,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   TO_PARAMBLOCK(FieldFunction);
   TO_PARAMBLOCK(FieldFunctionInterpolation);
   TO_PARAMBLOCK(GraphPartitioner);
-  TO_PARAMBLOCK(LBSAcceleration);
+  TO_PARAMBLOCK(LBSKEigenAcceleration);
   TO_PARAMBLOCK(LogicalVolume);
   TO_PARAMBLOCK(MeshContinuum);
   TO_PARAMBLOCK(MeshGenerator);
