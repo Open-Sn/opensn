@@ -332,24 +332,6 @@ Power iteration solver
    solver.PowerIterationKEigenSCDSASolver
    solver.PowerIterationKEigenSMMSolver
 
-Diffusion solver
-^^^^^^^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: noinit.rst
-
-   diffusion.DiffusionSolverBase
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: python.rst
-
-   diffusion.CFEMDiffusionSolver
-   diffusion.DFEMDiffusionSolver
-
 
 Post-processors
 ---------------

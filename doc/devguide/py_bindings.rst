@@ -18,7 +18,6 @@ In addition to the global namespace, **OpenSn** defines several internal
 namespaces to organize related functionality:
 
 - ``aquad`` — for angular quadrature
-- ``diffusion`` — for diffusion solver
 - ``fieldfunc`` — for field functions
 - ``logvol`` — for logical volumes
 - ``mesh`` — for mesh-related functionality

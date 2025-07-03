@@ -64,8 +64,6 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   console.BindModule(WrapNLKEigen);
   console.BindModule(WrapPIteration);
 
-  console.BindModule(WrapDiffusion);
-
   console.BindModule(WrapPostProcessor);
   console.BindModule(WrapPrinter);
 }
