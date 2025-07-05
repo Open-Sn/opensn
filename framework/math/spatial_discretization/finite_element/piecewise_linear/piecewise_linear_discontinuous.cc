@@ -242,7 +242,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
         nodal_nnz_off_diag[ir] = backup_nnz_off_diag[i];
       } // for j
-    }   // for i
+    } // for i
   }
   else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
@@ -255,7 +255,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
         nodal_nnz_off_diag[ir] = backup_nnz_off_diag[i];
       } // for i
-    }   // for j
+    } // for j
   }
 
   opensn::mpi_comm.barrier();

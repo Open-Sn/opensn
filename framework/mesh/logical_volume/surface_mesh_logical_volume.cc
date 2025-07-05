@@ -200,7 +200,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
         } //
 
       } // for inner iter face
-    }   // if sense negative
+    } // if sense negative
 
     if ((closest_distance < distance_to_face) and closest_sense_pos)
       good_to_go = true;

@@ -78,7 +78,7 @@ SweepScheduler::InitializeAlgoDOG()
             break;
           }
         } // for locations in plane
-      }   // for sweep planes
+      } // for sweep planes
 
       // Set up rule values
       if (loc_depth >= 0)
@@ -97,7 +97,7 @@ SweepScheduler::InitializeAlgoDOG()
       else
         throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
     } // for anglesets
-  }   // for quadrants/anglesetgroups
+  } // for quadrants/anglesetgroups
 
   std::stable_sort(rule_values_.begin(),
                    rule_values_.end(),
@@ -140,7 +140,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       if (status != AngleSetStatus::FINISHED)
         finished = false;
     } // for each angleset rule
-  }   // while not finished
+  } // while not finished
 
   // Receive delayed data
   opensn::mpi_comm.barrier();
@@ -194,7 +194,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
         if (angle_set_status == AngleSetStatus::NOT_FINISHED)
           completion_status = AngleSetStatus::NOT_FINISHED;
       } // for angleset
-  }     // while not finished
+  } // while not finished
 
   // Receive delayed data
   opensn::mpi_comm.barrier();

@@ -128,7 +128,7 @@ CellVolumeIntegralPostProcessor::Execute(const Event& event_context)
       local_integral += ff_value * coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
       local_volume += coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
     } // for qp
-  }   // for cell-id
+  } // for cell-id
 
   double global_integral;
   mpi_comm.all_reduce(local_integral, global_integral, mpi::op::sum<double>());

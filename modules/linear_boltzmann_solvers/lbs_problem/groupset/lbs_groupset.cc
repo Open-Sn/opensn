@@ -203,4 +203,21 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSP
   tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
+#ifndef __OPENSN_USE_CUDA__
+void
+LBSGroupset::InitializeGPUCarriers()
+{
+}
+
+void
+LBSGroupset::ResetGPUCarriers()
+{
+}
+#endif // __OPENSN_USE_CUDA__
+
+LBSGroupset::~LBSGroupset()
+{
+  ResetGPUCarriers();
+}
+
 } // namespace opensn

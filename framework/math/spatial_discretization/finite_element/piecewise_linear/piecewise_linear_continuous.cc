@@ -281,9 +281,9 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
           else
             nodal_nnz_off_diag[il] += 1;
         } // for j
-      }   // if i local
-    }     // for i
-  }       // for cell
+      } // if i local
+    } // for i
+  } // for cell
 
   // Build non-local sparsity pattern
   log.Log0Verbose1() << "Building non-local sparsity pattern.";
@@ -342,8 +342,8 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         }
 
       } // if i not local
-    }   // for i
-  }     // for cell
+    } // for i
+  } // for cell
 
   // Build communication structure
   log.Log0Verbose1() << "Building communication structure.";
@@ -435,7 +435,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
         nodal_nnz_off_diag[ir] = backup_nnz_off_diag[i];
       } // for j
-    }   // for i
+    } // for i
   }
   else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
@@ -448,7 +448,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
         nodal_nnz_off_diag[ir] = backup_nnz_off_diag[i];
       } // for i
-    }   // for j
+    } // for j
   }
 }
 
@@ -597,7 +597,7 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
 
         dof_ids.push_back(address);
       } // for c
-    }   // for u
+    } // for u
   }
 
   return dof_ids;

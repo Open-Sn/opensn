@@ -60,9 +60,9 @@ public:
                       unsigned int fi,
                       unsigned int angle_num) override;
 
-  void UpdateAnglesReadyStatus(const std::vector<size_t>& angles) override;
+  void UpdateAnglesReadyStatus(const std::vector<std::uint32_t>& angles) override;
 
-  bool CheckAnglesReadyStatus(const std::vector<size_t>& angles) override;
+  bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) override;
 
   /// Resets angle ready flags to false.
   void ResetAnglesReadyStatus();

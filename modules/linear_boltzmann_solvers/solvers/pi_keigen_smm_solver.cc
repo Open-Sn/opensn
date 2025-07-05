@@ -394,8 +394,8 @@ PowerIterationKEigenSMMSolver::ComputeClosures(const std::vector<std::vector<dou
               }
             }
           } // for direction d
-        }   // for groupset group gsg
-      }     // for node i
+        } // for groupset group gsg
+      } // for node i
 
       // Loop over cell faces
       int f = 0;
@@ -429,12 +429,12 @@ PowerIterationKEigenSMMSolver::ComputeClosures(const std::vector<std::vector<dou
                 const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
                 beta[g] += wt * (mu - bfac) * psi[gs][psi_dof];
               } // for direction n
-            }   // for groupset group gsg
-          }     // for face node fi
+            } // for groupset group gsg
+          } // for face node fi
         }
         ++f;
       } // for face
-    }   // for cell
+    } // for cell
     ++gs;
   } // for groupset
 
@@ -515,7 +515,7 @@ PowerIterationKEigenSMMSolver::ComputeSourceCorrection() const
         output.SetValue(imap, -val / sig_tr, VecOpType::ADD_VALUE);
 
       } // for node i
-    }   // for groupset group gsg
+    } // for groupset group gsg
 
     // Surface terms
     for (int f = 0; f < num_cell_faces; ++f)
@@ -628,7 +628,7 @@ PowerIterationKEigenSMMSolver::ComputeSourceCorrection() const
             } // for face node fi
           }
         } // for groupset group gsg
-      }   // if face has neighbor
+      } // if face has neighbor
 
       // Boundary face terms
       if (not face.has_neighbor)
@@ -666,11 +666,11 @@ PowerIterationKEigenSMMSolver::ComputeSourceCorrection() const
               output.SetValue(imap, -val, VecOpType::ADD_VALUE);
 
             } // for face node fi
-          }   // for groupset group gsg
-        }     // if Robin boundary
-      }       // if face is boundary
-    }         // for face f
-  }           // for cell
+          } // for groupset group gsg
+        } // if Robin boundary
+      } // if face is boundary
+    } // for face f
+  } // for cell
 
   output.Assemble();
   return output.MakeLocalVector();
@@ -737,12 +737,12 @@ PowerIterationKEigenSMMSolver::AssembleDiffusionBCs() const
                 vals.push_back(bfac * face_M(i, j));
               }
             } // for face node fj
-          }   // for face node fi
-        }     // if Robin boundary
-      }       // if boundary face
+          } // for face node fi
+        } // if Robin boundary
+      } // if boundary face
       ++f;
     } // for face
-  }   // for cell
+  } // for cell
 
   // Add the contributions to the diffusion solver matrix
   diffusion_solver_->AddToMatrix(rows, cols, vals);
@@ -793,8 +793,8 @@ PowerIterationKEigenSMMSolver::AssembleDiffusionRHS(const std::vector<double>& q
         }
         rhs.SetValue(imap, val, VecOpType::ADD_VALUE);
       } // for node i
-    }   // for group gsg
-  }     // for cell
+    } // for group gsg
+  } // for cell
 
   rhs.Assemble();
   return rhs.MakeLocalVector();
@@ -947,7 +947,7 @@ PowerIterationKEigenSMMSolver::ComputeBoundaryFactors()
         }
         ++f;
       } // for face
-    }   // for cell
+    } // for cell
     ++gs;
   } // for groupset
 }

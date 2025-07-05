@@ -546,7 +546,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
           ++num_faces_boundarified;
         }
       } // for face_id
-    }   // for boundary cell bc
+    } // for boundary cell bc
 
     log.Log() << "UnpartitionedMesh: assigned " << num_faces_boundarified << " to boundary id "
               << bndry_id << " with name " << ugrid_name.second;
@@ -866,9 +866,9 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
             for (int vid : face.vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
-        }   // for face
-      }     // if polyhedron
-    }       // for local cell
+        } // for face
+      } // if polyhedron
+    } // for local cell
 
     // Write header
     fprintf(of, "# Exported mesh file from Extrusion script\n");

@@ -497,8 +497,8 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
         } // for dof
         return;
       } // if in tet
-    }   // for side
-  }     // for face
+    } // for side
+  } // for face
 }
 
 Vector3
@@ -615,8 +615,8 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
                                        FaceSideGradShape_y(f, s, i),
                                        FaceSideGradShape_z(f, s, i));
         } // for qp
-      }   // for side
-    }     // for face
+      } // for side
+    } // for face
 
     V_shape_value.push_back(node_shape_value);
     V_shape_grad.push_back(node_shape_grad);
@@ -636,8 +636,8 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
         const auto& qp_xyz_tilde = volume_quadrature_.qpoints[qp];
         V_qpoints_xyz.push_back(side.v0 + side.J * qp_xyz_tilde);
       } // for qp
-    }   // for side
-  }     // for face
+    } // for side
+  } // for face
 
   V_num_nodes = num_nodes_;
 
@@ -697,7 +697,7 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
         node_shape_grad.emplace_back(
           FaceSideGradShape_x(f, s, i), FaceSideGradShape_y(f, s, i), FaceSideGradShape_z(f, s, i));
       } // for qp
-    }   // for s
+    } // for s
     F_shape_value.push_back(node_shape_value);
     F_shape_grad.push_back(node_shape_grad);
   } // for i
