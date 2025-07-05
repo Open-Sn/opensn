@@ -16,7 +16,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "caliper/cali.h"
 #include "caribou/caribou.h"
-#include <format>
 
 namespace crb = caribou;
 
@@ -402,11 +401,9 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
   // check arguments
   if (max_num_cell_dofs_ > max_dof)
   {
-    std::clog << std::format("GPU sweep expects max number of DOF to be {}, but got a mesh with "
-                             "cell(s) requiring upto {} DOFs.\n",
-                             max_dof,
-                             max_num_cell_dofs_);
-    std::clog.flush();
+    log.Log0Warning() << "GPU sweep expects max number of DOF to be " << max_dof
+                      << ", but got a mesh with cell(s) requiring upto " << max_num_cell_dofs_
+                      << " DOFs.\n";
     throw std::runtime_error("Max DOF exceeded. Cannot run this mesh on GPU!\n");
   }
   CALI_CXX_MARK_SCOPE("AahSweepChunk::Sweep");

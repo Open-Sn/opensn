@@ -85,10 +85,7 @@ protected:
   void ResetSweepOrderings(LBSGroupset& groupset);
 
   /// Sets up the sweek chunk for the given discretization method.
-  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset,
-                                                    size_t max_level_size,
-                                                    size_t max_groupset_size,
-                                                    size_t max_angleset_size);
+  virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
@@ -99,6 +96,13 @@ protected:
 
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
+
+  /// Max level size.
+  std::size_t max_level_size_ = 0;
+  /// Max angle-set size.
+  std::size_t max_angleset_size_ = 0;
+  /// Max group-set size.
+  std::size_t max_groupset_size_ = 0;
 
 public:
   static InputParameters GetInputParameters();

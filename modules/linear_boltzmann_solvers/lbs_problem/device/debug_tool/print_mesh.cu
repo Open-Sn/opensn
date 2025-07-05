@@ -17,6 +17,9 @@
 namespace opensn
 {
 
+namespace device_dbg
+{
+
 inline __device__ void
 PrintFace(FaceView& face)
 {
@@ -113,10 +116,12 @@ PrintMesh(char* mesh_data)
   }
 }
 
+} // namespace device_dbg
+
 void
-debug::PrintMeshOnDevice(MeshCarrier& mesh)
+device_dbg::PrintMeshOnDevice(MeshCarrier& mesh)
 {
-  PrintMesh<<<1, 1>>>(mesh.GetDevicePtr());
+  device_dbg::PrintMesh<<<1, 1>>>(mesh.GetDevicePtr());
   crb::synchronize();
 }
 

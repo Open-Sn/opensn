@@ -34,7 +34,7 @@ public:
   explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid);
 
   /// Input parameters based construction.
-  explicit LBSProblem(const InputParameters& pManagerarams);
+  explicit LBSProblem(const InputParameters& params);
 
   LBSProblem(const LBSProblem&) = delete;
 

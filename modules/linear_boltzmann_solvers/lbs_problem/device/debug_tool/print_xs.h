@@ -5,10 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
 
-namespace opensn::debug
+namespace opensn::device_dbg
 {
 
 /// Print total cross section for each block ID on device.
 void PrintTotalXSOnDevice(TotalXSCarrier& xs);
 
-} // namespace opensn::debug
+} // namespace opensn::device_dbg

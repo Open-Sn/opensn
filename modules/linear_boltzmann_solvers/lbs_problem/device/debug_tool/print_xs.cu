@@ -6,6 +6,9 @@
 namespace opensn
 {
 
+namespace device_dbg
+{
+
 __global__ void
 PrintXS(double* xs, int block_id, std::uint32_t num_groups)
 {
@@ -17,8 +20,10 @@ PrintXS(double* xs, int block_id, std::uint32_t num_groups)
   std::printf("\n");
 }
 
+} // namespace device_dbg
+
 void
-debug::PrintTotalXSOnDevice(TotalXSCarrier& xs)
+device_dbg::PrintTotalXSOnDevice(TotalXSCarrier& xs)
 {
   std::printf("[DB] Print total cross sections on GPU for each block ID:\n");
   for (auto& [block_id, index] : xs.block_id_to_index)

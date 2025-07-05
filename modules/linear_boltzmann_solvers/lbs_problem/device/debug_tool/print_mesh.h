@@ -5,10 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 
-namespace opensn::debug
+namespace opensn::device_dbg
 {
 
 /// Print mesh on device.
 void PrintMeshOnDevice(MeshCarrier& mesh);
 
-} // namespace opensn::debug
+} // namespace opensn::device_dbg

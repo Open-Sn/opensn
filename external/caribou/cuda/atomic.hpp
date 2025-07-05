@@ -19,7 +19,7 @@ __device__ inline double atomic_add(double * address, double val) {
 }
 #else
 __device__ inline double atomic_add(double* address, double val) {
-    return ::atomicAdd(address, val);
+    return atomicAdd(address, val);
 }
 #endif
 

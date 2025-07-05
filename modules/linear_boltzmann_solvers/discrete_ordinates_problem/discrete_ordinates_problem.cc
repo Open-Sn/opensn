@@ -78,8 +78,8 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
 {
   if (use_gpus_ && sweep_type_ == "CBC")
   {
-    std::clog << "Sweep computation on GPUs has not yet been supported for CBC. "
-              << "Falling back to CPU sweep.\n";
+    log.Log0Warning() << "Sweep computation on GPUs has not yet been supported for CBC. "
+                      << "Falling back to CPU sweep.\n";
     use_gpus_ = false;
   }
 }
@@ -164,14 +164,10 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeWGSSolvers");
 
   // Determine max size and number of matrices along sweep front
-  size_t max_level_size = 0;
-  size_t max_angleset_size = 0;
-  size_t max_groupset_size = 0;
-
   for (auto& groupset : groupsets_)
   {
     // Max groupset size
-    max_groupset_size = std::max(max_groupset_size, groupset.groups.size());
+    max_groupset_size_ = std::max(max_groupset_size_, groupset.groups.size());
 
     for (auto& angle_set_group : groupset.angle_agg->angle_set_groups)
     {
@@ -181,10 +177,10 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
         const auto& spds = angleset->GetSPDS();
         const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
         for (auto& level : levelized_spls)
-          max_level_size = std::max(max_level_size, level.size());
+          max_level_size_ = std::max(max_level_size_, level.size());
 
         // Max angleset size
-        max_angleset_size = std::max(max_angleset_size, angleset->GetAngleIndices().size());
+        max_angleset_size_ = std::max(max_angleset_size_, angleset->GetAngleIndices().size());
       }
     }
   }
@@ -192,8 +188,7 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
   wgs_solvers_.clear(); // this is required
   for (auto& groupset : groupsets_)
   {
-    std::shared_ptr<SweepChunk> sweep_chunk =
-      SetSweepChunk(groupset, max_level_size, max_groupset_size, max_angleset_size);
+    std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
     auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext>(
       *this,
       groupset,
@@ -1102,10 +1097,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
 }
 
 std::shared_ptr<SweepChunk>
-DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset,
-                                        size_t max_level_size,
-                                        size_t max_groupset_size,
-                                        size_t max_angleset_size)
+DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::SetSweepChunk");
 
@@ -1124,9 +1116,9 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset,
                                                        num_moments_,
                                                        max_cell_dof_count_,
                                                        *this,
-                                                       max_level_size,
-                                                       max_groupset_size,
-                                                       max_angleset_size,
+                                                       max_level_size_,
+                                                       max_groupset_size_,
+                                                       max_angleset_size_,
                                                        use_gpus_);
 
     return sweep_chunk;

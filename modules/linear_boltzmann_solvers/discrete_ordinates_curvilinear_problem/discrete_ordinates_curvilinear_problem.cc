@@ -357,10 +357,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 }
 
 std::shared_ptr<SweepChunk>
-DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset,
-                                                   size_t max_level_size,
-                                                   size_t max_groupset_size,
-                                                   size_t max_angleset_size)
+DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(grid_,
                                                        *discretization_,
