@@ -144,4 +144,79 @@ WGDSA::CleanUp(LBSGroupset& groupset)
     groupset.wgdsa_solver = nullptr;
 }
 
+std::vector<double>
+WGDSA::WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
+                       const LBSGroupset& groupset,
+                       const std::vector<double>& phi_in)
+{
+  CALI_CXX_MARK_SCOPE("WGDSA::WGSCopyOnlyPhi0");
+
+  const auto grid = lbs_problem.GetGrid();
+  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
+  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
+
+  std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
+
+  for (const auto& cell : grid->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+
+      double* output_mapped = &output_phi_local[dphi_map];
+      const double* phi_in_mapped = &phi_in[phi_map];
+
+      for (size_t g = 0; g < gss; ++g)
+      {
+        output_mapped[g] = phi_in_mapped[g];
+      } // for g
+    }   // for node
+  }     // for cell
+
+  return output_phi_local;
+}
+
+void
+WGDSA::GSProjectBackPhi0(LBSProblem& lbs_problem,
+                         const LBSGroupset& groupset,
+                         const std::vector<double>& input,
+                         std::vector<double>& output)
+{
+  CALI_CXX_MARK_SCOPE("WGDSA::GSProjectBackPhi0");
+
+  const auto grid = lbs_problem.GetGrid();
+  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
+  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+
+  const int gsi = groupset.groups.front().id;
+  const size_t gss = groupset.groups.size();
+
+  for (const auto& cell : grid->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+
+      const double* input_mapped = &input[dphi_map];
+      double* output_mapped = &output[phi_map];
+
+      for (int g = 0; g < gss; ++g)
+        output_mapped[g] = input_mapped[g];
+    } // for dof
+  }   // for cell
+}
+
 } // namespace opensn

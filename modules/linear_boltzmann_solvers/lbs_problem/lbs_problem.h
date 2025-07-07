@@ -213,18 +213,6 @@ public:
   /// Initializes default materials and physics materials.
   void InitializeMaterials();
 
-  /**
-   * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
-   * DOFs needed by WGDSA.
-   */
-  std::vector<double> WGSCopyOnlyPhi0(const LBSGroupset& groupset,
-                                      const std::vector<double>& phi_in);
-
-  /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
-  void GSProjectBackPhi0(const LBSGroupset& groupset,
-                         const std::vector<double>& input,
-                         std::vector<double>& output);
-
   bool TriggerRestartDump()
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
