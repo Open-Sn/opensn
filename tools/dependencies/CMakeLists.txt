@@ -21,21 +21,13 @@ set(OPENSN_ENV_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 set(ENV_SCRIPT "${OPENSN_ENV_DIR}/set_opensn_env.sh")
 
 find_package(MPI REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
 option(ENABLE_BOOST   "Install Boost"   ON)
-option(ENABLE_LUA     "Install Lua"     ON)
 option(ENABLE_PETSC   "Install PETSc"   ON)
 option(ENABLE_HDF5    "Install HDF5"    ON)
 option(ENABLE_VTK     "Install VTK"     ON)
 option(ENABLE_CALIPER "Install Caliper" ON)
-option(ENABLE_PYTHON  "Install Python"  ON)
-
-# Only needed for Lua
-if(APPLE)
-  set(OS_TAG macosx)
-else()
-  set(OS_TAG linux)
-endif()
 
 set(INSTALLED_DEP_COUNT 0)
 
@@ -53,23 +45,6 @@ if(ENABLE_BOOST)
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${CMAKE_INSTALL_PREFIX}/include/boost
-    )
-    math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
-  endif()
-endif()
-
-# Lua
-if(ENABLE_LUA)
-  find_package(Lua 5.3 QUIET)
-  if (Lua_FOUND)
-    message(STATUS "Found Lua: ${LUA_INCLUDE_DIR}")
-  else()
-    ExternalProject_Add(lua
-      URL https://www.lua.org/ftp/lua-5.4.6.tar.gz
-      SOURCE_DIR ${CMAKE_BINARY_DIR}/lua-src
-      CONFIGURE_COMMAND ""
-      BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make ${OS_TAG} MYCFLAGS=-fPIC MYLIBS=-lncurses -j${JOBS}
-      INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install INSTALL_TOP=${CMAKE_INSTALL_PREFIX}
     )
     math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
   endif()
@@ -94,8 +69,9 @@ if(ENABLE_PETSC)
                         --download-hypre=1 --with-ssl=0 --with-debugging=0 --with-pic=1 --with-fc=0
                         --with-shared-libraries=1 --download-bison=1 --download-f2cblaslapack=1
                         --download-metis=1 --download-parmetis=1 --download-superlu_dist=1
-                        --download-ptscotch=1 --with-cxx-dialect=C++11 --with-64-bit-indices
-                        CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER} COPTFLAGS="-O3" CXXOPTFLAGS="-O3"
+                        --download-ptscotch=1 --download-slepsc=1 --with-cxx-dialect=C++11
+			--with-64-bit-indices CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER}
+			CFLAGS= CXXFLAGS= COPTFLAGS=-O3 CXXOPTFLAGS=-O3
       BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make -j${JOBS}
       INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install
     )
@@ -170,22 +146,6 @@ if(ENABLE_CALIPER)
                         -DWITH_MPI=ON -DWITH_KOKKOS=OFF -DWITH_GOTCHA=OFF ..
       BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR>/build make -j${JOBS}
       INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR>/build make install
-    )
-    math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
-  endif()
-endif()
-
-if(ENABLE_PYTHON)
-  find_package(Python3 COMPONENTS Interpreter Development QUIET)
-  if(Python3_FOUND)
-    message(STATUS "Found Python 3: ${Python3_EXECUTABLE}")
-  else()
-    ExternalProject_Add(python
-      URL https://www.python.org/ftp/python/3.11.3/Python-3.11.3.tgz
-      SOURCE_DIR ${CMAKE_BINARY_DIR}/python-src
-      CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix=${CMAKE_INSTALL_PREFIX} --enable-optimizations
-      BUILD_COMMAND make -j${JOBS}
-      INSTALL_COMMAND make install
     )
     math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
   endif()
