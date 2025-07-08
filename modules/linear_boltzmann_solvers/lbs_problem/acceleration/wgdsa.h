@@ -33,6 +33,20 @@ public:
 
   /// Cleans up memory consuming items.
   static void CleanUp(LBSGroupset& groupset);
+
+  /**
+   * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
+   * DOFs needed by WGDSA.
+   */
+  static std::vector<double> WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
+                                             const LBSGroupset& groupset,
+                                             const std::vector<double>& phi_in);
+
+  /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
+  static void GSProjectBackPhi0(LBSProblem& lbs_problem,
+                                const LBSGroupset& groupset,
+                                const std::vector<double>& input,
+                                std::vector<double>& output);
 };
 
 } // namespace opensn
