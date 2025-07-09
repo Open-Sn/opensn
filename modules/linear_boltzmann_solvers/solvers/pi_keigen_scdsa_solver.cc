@@ -232,7 +232,7 @@ PowerIterationKEigenSCDSASolver::Execute()
     SetLBSScatterSourcePhi0(phi0_star - phi0_ell, false);
     auto Ss0_res = CopyOnlyPhi0(front_gs_, q_moments_local_);
 
-    double production_k = lbs_problem->ComputeFissionProduction(phi_new_local_);
+    double production_k = ComputeFissionProduction(*lbs_problem, phi_new_local_);
 
     std::vector<double> epsilon_k(phi0_star.size(), 0.0);
     auto epsilon_kp1 = epsilon_k;
@@ -265,7 +265,7 @@ PowerIterationKEigenSCDSASolver::Execute()
 
       ProjectBackPhi0(front_gs_, epsilon_kp1 + phi0_star, phi_old_local_);
 
-      double production_kp1 = lbs_problem->ComputeFissionProduction(phi_old_local_);
+      double production_kp1 = ComputeFissionProduction(*lbs_problem, phi_old_local_);
 
       lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
@@ -286,7 +286,7 @@ PowerIterationKEigenSCDSASolver::Execute()
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
       *lbs_problem, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
-    const double production = lbs_problem->ComputeFissionProduction(phi_old_local_);
+    const double production = ComputeFissionProduction(*lbs_problem, phi_old_local_);
     LBSVecOps::ScalePhiVector(*lbs_problem, PhiSTLOption::PHI_OLD, lambda_kp1 / production);
     //
     // Recompute k-eigenvalue
