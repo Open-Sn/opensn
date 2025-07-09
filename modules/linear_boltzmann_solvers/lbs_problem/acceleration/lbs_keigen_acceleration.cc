@@ -308,8 +308,8 @@ LBSKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Vector size mismatch");
 
-  output.resize(lbs_sdm.GetNumLocalDOFs(phi_uk_man));
-  std::fill(output.begin(), output.end(), 0.0);
+  output.resize(lbs_sdm.GetNumLocalDOFs(phi_uk_man), 0.0);
+  // std::fill(output.begin(), output.end(), 0.0);
 
   for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
   {
