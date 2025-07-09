@@ -329,8 +329,8 @@ Power iteration solver
    :template: python.rst
 
    solver.PowerIterationKEigenSolver
-   solver.PowerIterationKEigenSCDSASolver
-   solver.PowerIterationKEigenSMMSolver
+   solver.PowerIterationKEigenSCDSASolver TODO FIX ME
+   solver.PowerIterationKEigenSMMSolver TODO FIX ME
 
 
 Post-processors
