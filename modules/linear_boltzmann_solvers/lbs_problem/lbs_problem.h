@@ -255,9 +255,6 @@ public:
    */
   double ComputeFissionRate(const std::vector<double>& phi);
 
-  /// Compute the steady state delayed neutron precursor concentrations.
-  void ComputePrecursors();
-
   /**
    * A method for post-processing an adjoint solution.
    *

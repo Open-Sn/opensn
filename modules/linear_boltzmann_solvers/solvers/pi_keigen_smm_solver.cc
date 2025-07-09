@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
@@ -327,7 +328,7 @@ PowerIterationKEigenSMMSolver::Execute()
 
   if (lbs_problem_->GetOptions().use_precursors)
   {
-    lbs_problem_->ComputePrecursors();
+    ComputePrecursors(*lbs_problem_);
     Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 

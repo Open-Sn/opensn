@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
@@ -327,7 +328,7 @@ PowerIterationKEigenSCDSASolver::Execute()
 
   if (lbs_problem->GetOptions().use_precursors)
   {
-    lbs_problem->ComputePrecursors();
+    ComputePrecursors(*lbs_problem);
     Scale(lbs_problem->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 

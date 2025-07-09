@@ -1893,50 +1893,6 @@ LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
   return global_fission_rate;
 }
 
-void
-LBSProblem::ComputePrecursors()
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::ComputePrecursors");
-
-  const size_t J = max_precursors_per_material_;
-
-  precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
-
-  // Loop over cells
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& fe_values = unit_cell_matrices_[cell.local_id];
-    const auto& transport_view = cell_transport_views_[cell.local_id];
-    const double cell_volume = transport_view.GetVolume();
-
-    // Obtain xs
-    const auto& xs = transport_view.GetXS();
-    const auto& precursors = xs.GetPrecursors();
-    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
-
-    // Loop over precursors
-    for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
-    {
-      size_t dof = cell.local_id * J + j;
-      const auto& precursor = precursors[j];
-      const double coeff = precursor.fractional_yield / precursor.decay_constant;
-
-      // Loop over nodes
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
-      {
-        const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
-
-        // Loop over groups
-        for (unsigned int g = 0; g < groups_.size(); ++g)
-          precursor_new_local_[dof] +=
-            coeff * nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
-      } // for node i
-    } // for precursor j
-
-  } // for cell
-}
-
 LBSProblem::~LBSProblem()
 {
   ResetGPUCarriers();
