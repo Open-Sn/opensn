@@ -1799,49 +1799,6 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
   } // for m
 }
 
-double
-LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::ComputeFissionRate");
-
-  const int first_grp = groups_.front().id;
-  const int last_grp = groups_.back().id;
-
-  // Loop over local cells
-  double local_fission_rate = 0.0;
-  for (auto& cell : grid_->local_cells)
-  {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices_[cell.local_id];
-
-    // Obtain xs
-    const auto& xs = transport_view.GetXS();
-    const auto& sigma_f = xs.GetSigmaFission();
-
-    // skip non-fissionable material
-    if (not xs.IsFissionable())
-      continue;
-
-    // Loop over nodes
-    const int num_nodes = transport_view.GetNumNodes();
-    for (int i = 0; i < num_nodes; ++i)
-    {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
-      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
-
-      // Loop over groups
-      for (size_t g = first_grp; g <= last_grp; ++g)
-        local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
-    } // for node
-  } // for cell
-
-  // Allreduce global production
-  double global_fission_rate = 0.0;
-  mpi_comm.all_reduce(local_fission_rate, global_fission_rate, mpi::op::sum<double>());
-
-  return global_fission_rate;
-}
-
 LBSProblem::~LBSProblem()
 {
   ResetGPUCarriers();
