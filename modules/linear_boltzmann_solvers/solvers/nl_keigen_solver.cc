@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/power_iteration_keigen.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 
@@ -98,7 +99,7 @@ NonLinearKEigenSolver::Execute()
 
   if (lbs_problem_->GetOptions().use_precursors)
   {
-    lbs_problem_->ComputePrecursors();
+    ComputePrecursors(*lbs_problem_);
     Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
   }
 

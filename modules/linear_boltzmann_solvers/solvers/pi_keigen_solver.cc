@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -173,7 +174,7 @@ PowerIterationKEigenSolver::Execute()
 
   if (options.use_precursors)
   {
-    lbs_problem_->ComputePrecursors();
+    ComputePrecursors(*lbs_problem_);
     Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 

@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
 #include "caliper/cali.h"
@@ -65,7 +66,7 @@ SteadyStateSolver::Execute()
     WriteRestartData();
 
   if (options.use_precursors)
-    lbs_problem_->ComputePrecursors();
+    ComputePrecursors(*lbs_problem_);
 
   if (options.adjoint)
     lbs_problem_->ReorientAdjointSolution();
