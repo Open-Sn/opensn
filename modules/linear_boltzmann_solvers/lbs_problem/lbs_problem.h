@@ -12,6 +12,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/linear_solver/linear_solver.h"
+#include "framework/math/unit_cell_matrices/unit_cell_matrices.h"
 #include "framework/physics/problem.h"
 #include <petscksp.h>
 #include <chrono>

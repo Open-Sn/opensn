@@ -11,6 +11,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/object_factory.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
@@ -852,29 +853,7 @@ PowerIterationKEigenSMMSolver::ComputeAuxiliaryUnitCellMatrices()
 {
   const auto& discretization = lbs_problem_->GetSpatialDiscretization();
 
-  // Spatial weight functions
-  struct SpatialWeightFunction
-  {
-    virtual ~SpatialWeightFunction() = default;
-    virtual double operator()(const Vector3& p) const { return 1.0; }
-  };
-
-  struct CylindricalWeightFunction : public SpatialWeightFunction
-  {
-    double operator()(const Vector3& p) const override { return p[0]; }
-  };
-
-  struct SphericalWeightFunction : public SpatialWeightFunction
-  {
-    double operator()(const Vector3& p) const override { return p[2] * p[2]; }
-  };
-
-  auto swf = std::make_shared<SpatialWeightFunction>();
-  const auto geom_type = lbs_problem_->GetOptions().geometry_type;
-  if (geom_type == GeometryType::ONED_SPHERICAL)
-    swf = std::make_shared<SphericalWeightFunction>();
-  else if (geom_type == GeometryType::TWOD_CYLINDRICAL)
-    swf = std::make_shared<CylindricalWeightFunction>();
+  auto swf = SpatialWeightFunction::FromGeometryType(lbs_problem_->GetOptions().geometry_type);
 
   // Compute integrals
   const auto num_local_cells = lbs_problem_->GetGrid()->local_cells.size();
