@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -46,7 +47,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   k_eff = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
-  double F_prev = lbs_problem.ComputeFissionProduction(phi_old_local);
+  double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local);
 
   // Start power iterations
   ags_solver->SetVerbosity(lbs_problem.GetOptions().verbose_ags_iterations);
@@ -67,7 +68,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
     ags_solver->Solve();
 
     // Recompute k-eigenvalue
-    double F_new = lbs_problem.ComputeFissionProduction(phi_new_local);
+    double F_new = ComputeFissionProduction(lbs_problem, phi_new_local);
     k_eff = F_new / F_prev * k_eff;
     double reactivity = (k_eff - 1.0) / k_eff;
 

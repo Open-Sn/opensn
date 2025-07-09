@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
 
 #include <petscsnes.h>
@@ -42,7 +43,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
                                phi_old_local,
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
-  const double k_eff = lbs_problem->ComputeFissionProduction(phi_old_local);
+  const double k_eff = ComputeFissionProduction(*lbs_problem, phi_old_local);
   Scale(q_moments_local, 1.0 / k_eff);
 
   // Now add MS phi

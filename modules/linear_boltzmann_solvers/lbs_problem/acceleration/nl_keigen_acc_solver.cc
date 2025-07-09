@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_residual_func.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
@@ -109,7 +110,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   // Compute final k_eff
   double k_eff = nl_context_ptr->kresid_func_context.k_eff;
 
-  const double production = lbs_problem.ComputeFissionProduction(phi_old_local);
+  const double production = ComputeFissionProduction(lbs_problem, phi_old_local);
   LBSVecOps::ScalePhiVector(lbs_problem, PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals;

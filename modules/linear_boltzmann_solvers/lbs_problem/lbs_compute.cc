@@ -8,6 +8,63 @@
 namespace opensn
 {
 
+double
+ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi)
+{
+  CALI_CXX_MARK_SCOPE("ComputeFissionProduction");
+
+  auto& groups = lbs_problem.GetGroups();
+  auto& grid = lbs_problem.GetGrid();
+  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  auto& options = lbs_problem.GetOptions();
+
+  const int first_grp = groups.front().id;
+  const int last_grp = groups.back().id;
+
+  // Loop over local cells
+  double local_production = 0.0;
+  for (auto& cell : grid->local_cells)
+  {
+    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+
+    // Obtain xs
+    const auto& xs = transport_view.GetXS();
+    const auto& F = xs.GetProductionMatrix();
+    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+
+    if (not xs.IsFissionable())
+      continue;
+
+    // Loop over nodes
+    const int num_nodes = transport_view.GetNumNodes();
+    for (int i = 0; i < num_nodes; ++i)
+    {
+      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+      const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
+
+      // Loop over groups
+      for (size_t g = first_grp; g <= last_grp; ++g)
+      {
+        const auto& prod = F[g];
+        for (size_t gp = 0; gp <= last_grp; ++gp)
+          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
+
+        if (options.use_precursors)
+          for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
+            local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+      }
+    } // for node
+  } // for cell
+
+  // Allreduce global production
+  double global_production = 0.0;
+  mpi_comm.all_reduce(local_production, global_production, mpi::op::sum<double>());
+
+  return global_production;
+}
+
 void
 ComputePrecursors(LBSProblem& lbs_problem)
 {

@@ -236,7 +236,7 @@ PowerIterationKEigenSMMSolver::Execute()
     // Start diffusion power iterations
     double lambda = k_eff_;
     double lambda_old = k_eff_;
-    double F0_old = lbs_problem_->ComputeFissionProduction(phi_new_local_);
+    double F0_old = ComputeFissionProduction(*lbs_problem_, phi_new_local_);
 
     for (int m = 0; m < accel_pi_max_its_; ++m)
     {
@@ -269,7 +269,7 @@ PowerIterationKEigenSMMSolver::Execute()
       // diffusion solution back to the transport discretization.
       std::vector<double> phi;
       TransferDiffusionToTransport(phi0, phi);
-      double F0 = lbs_problem_->ComputeFissionProduction(phi);
+      double F0 = ComputeFissionProduction(*lbs_problem_, phi);
       lambda = F0 / F0_old * lambda_old;
 
       // Check for convergence
@@ -295,7 +295,7 @@ PowerIterationKEigenSMMSolver::Execute()
 
     TransferDiffusionToTransport(phi0, phi_new_local_);
 
-    const double production = lbs_problem_->ComputeFissionProduction(phi_new_local_);
+    const double production = ComputeFissionProduction(*lbs_problem_, phi_new_local_);
     LBSVecOps::ScalePhiVector(*lbs_problem_, PhiSTLOption::PHI_NEW, lambda / production);
 
     const auto phi_change = CheckScalarFluxConvergence(phi_new_local_, phi_ell);

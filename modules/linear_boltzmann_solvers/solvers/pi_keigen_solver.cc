@@ -95,7 +95,7 @@ PowerIterationKEigenSolver::Initialize()
   if (reset_phi0_ and not restart_successful)
     LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
-  F_prev_ = lbs_problem_->ComputeFissionProduction(phi_old_local_);
+  F_prev_ = ComputeFissionProduction(*lbs_problem_, phi_old_local_);
 }
 
 void
@@ -118,7 +118,7 @@ PowerIterationKEigenSolver::Execute()
     ags_solver_->Solve();
 
     // Recompute k-eigenvalue
-    double F_new = lbs_problem_->ComputeFissionProduction(phi_new_local_);
+    double F_new = ComputeFissionProduction(*lbs_problem_, phi_new_local_);
     k_eff_ = F_new / F_prev_ * k_eff_;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
