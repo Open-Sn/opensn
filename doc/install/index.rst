@@ -9,4 +9,3 @@ Quick Install Guide
     :titlesonly:
 
     install
-    easy_install
