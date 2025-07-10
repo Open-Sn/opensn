@@ -66,12 +66,12 @@ if(ENABLE_PETSC)
       URL https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/petsc-src
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=${CMAKE_INSTALL_PREFIX}
-                        --download-hypre=1 --with-ssl=0 --with-debugging=0 --with-pic=1 --with-fc=0
-                        --with-shared-libraries=1 --download-bison=1 --download-f2cblaslapack=1
-                        --download-metis=1 --download-parmetis=1 --download-superlu_dist=1
-                        --download-ptscotch=1 --download-slepsc=1 --with-cxx-dialect=C++11
-			--with-64-bit-indices CC=${MPI_C_COMPILER} CXX=${MPI_CXX_COMPILER}
-			CFLAGS= CXXFLAGS= COPTFLAGS=-O3 CXXOPTFLAGS=-O3
+                        --download-hypre=yes --with-ssl=no --with-debugging=no --with-pic=yes --with-fc=0
+                        --with-shared-libraries=yes --download-bison=yes --download-f2cblaslapack=yes
+                        --download-metis=yes --download-parmetis=yes --download-superlu_dist=yes
+                        --download-ptscotch=yes --download-slepc=yes --with-cxx-dialect=C++11
+			--with-64-bit-indices=yes --CC=${MPI_C_COMPILER} --CXX=${MPI_CXX_COMPILER}
+			--CFLAGS+=-O3 --CXXFLAGS+=-O3
       BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make -j${JOBS}
       INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install
     )
@@ -139,7 +139,7 @@ if(ENABLE_CALIPER)
     message(STATUS "Found Caliper: ${caliper_DIR}")
   else()
     ExternalProject_Add(caliper
-      URL https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz
+      URL https://github.com/LLNL/Caliper/archive/refs/tags/v2.13.0.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/caliper-src
       CONFIGURE_COMMAND cmake -E make_directory <SOURCE_DIR>/build && cd <SOURCE_DIR>/build &&
                         cmake -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
