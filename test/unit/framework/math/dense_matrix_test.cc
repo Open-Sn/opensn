@@ -1,5 +1,5 @@
 #include "test/unit/opensn_unit_test.h"
-#include "framework/math/dense_matrix.h"
+#include "framework/data_types/dense_matrix.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;

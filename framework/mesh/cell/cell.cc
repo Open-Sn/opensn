@@ -3,7 +3,7 @@
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/cell/cell.h"
-#include "framework/math/matrix3x3.h"
+#include "framework/data_types/matrix3x3.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"

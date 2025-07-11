@@ -4,7 +4,7 @@
 #include "python/lib/py_wrappers.h"
 #include "framework/math/functions/function.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <memory>

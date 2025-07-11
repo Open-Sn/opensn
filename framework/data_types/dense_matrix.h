@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "framework/math/vector.h"
+#include "framework/data_types/vector.h"
 
 namespace opensn
 {

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/parameters/parameter_block.h"
-#include "framework/math/vector.h"
+#include "framework/data_types/vector.h"
 #include <pybind11/pybind11.h>
 #include <unordered_set>
 #include <unordered_map>

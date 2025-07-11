@@ -4,8 +4,8 @@
 #pragma once
 
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
 
 namespace opensn
 {

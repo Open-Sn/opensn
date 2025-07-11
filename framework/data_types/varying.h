@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "framework/data_types/data_types.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 #include "framework/logging/log_exceptions.h"
 #include <cstddef>
 #include <iostream>
@@ -14,6 +13,21 @@
 
 namespace opensn
 {
+
+/// Enumeration of data-types supported by Varying
+enum class VaryingDataType : int
+{
+  VOID = 0,            ///< Basically undefined or null
+  ARBITRARY_BYTES = 1, ///< Basic sequence of bytes
+  STRING = 2,          ///< Datatype mapping to std::string
+  BOOL = 3,            ///< Datatype mapping to bool
+  INTEGER = 4,         ///< Datatype mapping to int64_t
+  FLOAT = 5,           ///< Datatype mapping to double
+  USER_DATA = 6        ///< Datatype mapping to user data
+};
+
+/// Provides a string-name for an enumerated VaryingDataType.
+std::string VaryingDataTypeStringName(VaryingDataType type);
 
 template <typename T>
 struct is_shared_ptr : std::false_type

@@ -6,7 +6,7 @@
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/math_range.h"
+#include "framework/data_types/range.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"

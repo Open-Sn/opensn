@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/object.h"
-#include "framework/data_types/basic_options.h"
 #include "framework/parameters/parameter_block.h"
 #include <iostream>
 #include <utility>

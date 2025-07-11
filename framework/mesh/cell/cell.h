@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/data_types/data_types.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
+#include "framework/data_types/byte_array.h"
 #include <tuple>
 #include <vector>
 #include <cstdint>

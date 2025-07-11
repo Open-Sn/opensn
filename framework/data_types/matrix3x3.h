@@ -3,11 +3,11 @@
 
 #pragma once
 
+#include "framework/data_types/vector3.h"
 #include <cmath>
 #include <sstream>
 #include <array>
 #include <algorithm>
-#include "framework/math/vector3.h"
 
 namespace opensn
 {

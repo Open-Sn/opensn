@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/math/parallel_vector/parallel_vector.h"
+#include "framework/data_types/parallel_vector/parallel_vector.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <iomanip>

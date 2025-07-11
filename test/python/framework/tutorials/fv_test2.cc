@@ -5,7 +5,7 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "test/python/src/bindings.h"

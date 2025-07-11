@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/object.h"
-#include "framework/data_types/basic_options.h"
 #include "framework/parameters/parameter_block.h"
 #include <iostream>
 #include <utility>
@@ -24,14 +23,10 @@ public:
   /// Returns the input parameters.
   static InputParameters GetInputParameters();
   explicit Solver(std::string name);
-  Solver(std::string name, std::initializer_list<BasicOption> options);
   explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
 
   std::string GetName() const;
-
-  BasicOptions& GetBasicOptions();
-  const BasicOptions& GetBasicOptions() const;
 
   TimeStepper& GetTimeStepper();
   const TimeStepper& GetTimeStepper() const;
@@ -68,7 +63,6 @@ public:
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
 protected:
-  BasicOptions basic_options_;
   std::shared_ptr<TimeStepper> timestepper_ = nullptr;
 
 private:

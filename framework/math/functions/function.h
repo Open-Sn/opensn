@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/object.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 #include <functional>
 
 namespace opensn

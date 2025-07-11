@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/math/parallel_vector/parallel_stl_vector.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/data_types/parallel_vector/parallel_stl_vector.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
 namespace mpi = mpicpp_lite;
