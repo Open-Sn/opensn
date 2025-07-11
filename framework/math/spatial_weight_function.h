@@ -9,21 +9,25 @@
 namespace opensn
 {
 
-// Define spatial weighting functions
 struct SpatialWeightFunction
 {
-  virtual double operator()(const Vector3& pt) const { return 1.0; }
+  virtual double operator()(const Vector3& pt) const = 0;
   virtual ~SpatialWeightFunction() = default;
 
   static std::shared_ptr<SpatialWeightFunction> FromCoordinateType(CoordinateSystemType coord_sys);
 };
 
-struct SphericalWeightFunction : public SpatialWeightFunction
+struct CartesianSpatialWeightFunction : public SpatialWeightFunction
+{
+  virtual double operator()(const Vector3& pt) const { return 1.0; }
+};
+
+struct SphericalSpatialWeightFunction : public CartesianSpatialWeightFunction
 {
   double operator()(const Vector3& pt) const override { return pt[2] * pt[2]; }
 };
 
-struct CylindricalWeightFunction : public SpatialWeightFunction
+struct CylindricalSpatialWeightFunction : public CartesianSpatialWeightFunction
 {
   double operator()(const Vector3& pt) const override { return pt[0]; }
 };

@@ -12,11 +12,11 @@ std::shared_ptr<SpatialWeightFunction>
 SpatialWeightFunction::FromCoordinateType(CoordinateSystemType coord_sys)
 {
   if (coord_sys == CoordinateSystemType::CARTESIAN)
-    return std::make_shared<SpatialWeightFunction>();
+    return std::make_shared<CartesianSpatialWeightFunction>();
   else if (coord_sys == CoordinateSystemType::SPHERICAL)
-    return std::make_shared<SphericalWeightFunction>();
+    return std::make_shared<SphericalSpatialWeightFunction>();
   else if (coord_sys == CoordinateSystemType::CYLINDRICAL)
-    return std::make_shared<CylindricalWeightFunction>();
+    return std::make_shared<CylindricalSpatialWeightFunction>();
   else
     throw std::runtime_error("Undefined coordinate system type");
 }
