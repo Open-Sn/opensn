@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_residual_func.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -116,7 +117,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
     *lbs_problem, groups.front().id, groups.back().id, x_, PhiSTLOption::PHI_NEW);
 
   // Compute final k_eff
-  double k_eff = lbs_problem->ComputeFissionProduction(lbs_problem->GetPhiOldLocal());
+  double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
