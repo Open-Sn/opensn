@@ -1,5 +1,5 @@
 #include "test/unit/opensn_unit_test.h"
-#include "framework/math/sparse_matrix/sparse_matrix.h"
+#include "framework/data_types/sparse_matrix/sparse_matrix.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

@@ -4,7 +4,7 @@
 #include "test/python/src/bindings.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/math/math_range.h"
+#include "framework/data_types/range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <array>

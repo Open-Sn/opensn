@@ -10,7 +10,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
+#include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/object_factory.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"

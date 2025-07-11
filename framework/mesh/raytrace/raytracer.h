@@ -5,7 +5,7 @@
 
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/cell/cell.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 
 namespace opensn
 {

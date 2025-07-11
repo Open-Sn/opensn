@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"

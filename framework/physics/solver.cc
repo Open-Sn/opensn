@@ -43,13 +43,6 @@ Solver::Solver(std::string name)
 {
 }
 
-Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
-  : basic_options_(options),
-    timestepper_(InitTimeStepper(GetInputParameters())),
-    name_(std::move(name))
-{
-}
-
 Solver::Solver(const InputParameters& params)
   : Object(params),
     timestepper_(InitTimeStepper(params)),
@@ -103,18 +96,6 @@ std::string
 Solver::GetName() const
 {
   return name_;
-}
-
-BasicOptions&
-Solver::GetBasicOptions()
-{
-  return basic_options_;
-}
-
-const BasicOptions&
-Solver::GetBasicOptions() const
-{
-  return basic_options_;
 }
 
 TimeStepper&

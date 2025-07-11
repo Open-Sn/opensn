@@ -5,11 +5,11 @@
 
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
-#include "framework/math/vector.h"
-#include "framework/math/dense_matrix.h"
+#include "framework/data_types/dense_matrix.h"
+#include "framework/data_types/matrix3x3.h"
+#include "framework/data_types/vector.h"
 #include "framework/math/math.h"
 #include "framework/mesh/mesh.h"
-#include "framework/math/matrix3x3.h"
 #include <vector>
 #include <array>
 

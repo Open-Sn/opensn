@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/parallel_vector/parallel_vector.h"
+#include "framework/data_types/parallel_vector/parallel_vector.h"
 #include "framework/math/math.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <vector>
