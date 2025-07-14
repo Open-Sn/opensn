@@ -92,10 +92,11 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_graphite},
             {"block_ids": [1], "xs": xs_air},
         ],
-        options={"scattering_order": 1,
-                 "max_ags_iterations": 1,
-                 "volumetric_sources": [mg_src]
-                 },
+        scattering_order=1,
+        options={
+            "max_ags_iterations": 1,
+            "volumetric_sources": [mg_src]
+        },
     )
 
     # Initialize and Execute Solver

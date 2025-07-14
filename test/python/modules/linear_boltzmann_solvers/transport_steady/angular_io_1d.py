@@ -76,8 +76,8 @@ if __name__ == "__main__":
         },
     ]
     solver_dict["xs_map"] = xs_map
+    solver_dict["scattering_order"] = 0
     solver_dict["options"] = {
-        "scattering_order": 0,
         "spatial_discretization": "pwld",
         "boundary_conditions": [
             {"name": "zmin", "type": "vacuum"},
