@@ -15,6 +15,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h"
@@ -130,6 +131,18 @@ DiscreteOrdinatesProblem::GetSweepBoundaries() const
   return sweep_boundaries_;
 }
 
+std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiNewLocal()
+{
+  return psi_new_local_;
+}
+
+const std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiNewLocal() const
+{
+  return psi_new_local_;
+}
+
 void
 DiscreteOrdinatesProblem::Initialize()
 {
@@ -139,6 +152,18 @@ DiscreteOrdinatesProblem::Initialize()
 
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
+
+  // Setup groupset psi vectors
+  psi_new_local_.clear();
+  for (auto& groupset : groupsets_)
+  {
+    psi_new_local_.emplace_back();
+    if (options_.save_angular_flux)
+    {
+      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+      psi_new_local_.back().assign(num_ang_unknowns, 0.0);
+    }
+  }
 
   const auto grid_dim = grid_->GetDimension();
   for (auto& groupset : groupsets_)
@@ -953,6 +978,13 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   }
   else
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
+}
+
+void
+DiscreteOrdinatesProblem::ZeroSolutions()
+{
+  for (auto& psi : psi_new_local_)
+    psi.assign(psi.size(), 0.0);
 }
 
 } // namespace opensn

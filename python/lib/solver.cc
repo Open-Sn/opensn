@@ -206,8 +206,6 @@ WrapLBS(py::module& slv)
         Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.
     save_angular_flux: bool, default=False
         Flag indicating whether angular fluxes are to be stored or not.
-    adjoint: bool, default=False
-        Flag for toggling whether the solver is in adjoint mode.
     verbose_inner_iterations: bool, default=True
         Flag to control verbosity of inner iterations.
     verbose_outer_iterations: bool, default=True
@@ -388,7 +386,7 @@ WrapLBS(py::module& slv)
   );
   lbs_problem.def(
     "WriteAngularFluxes",
-    [](LBSProblem& self, const std::string& file_base)
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base)
     {
       LBSSolverIO::WriteAngularFluxes(self, file_base);
     },
@@ -404,7 +402,7 @@ WrapLBS(py::module& slv)
   );
   lbs_problem.def(
     "ReadAngularFluxes",
-    [](LBSProblem& self, const std::string& file_base)
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base)
     {
       LBSSolverIO::ReadAngularFluxes(self, file_base);
     },
@@ -464,6 +462,23 @@ WrapLBS(py::module& slv)
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
         supported.
+    )"
+  );
+  do_problem.def(
+    "SetOptions",
+    [](DiscreteOrdinatesProblem& self, py::kwargs& params)
+    {
+      InputParameters input = DiscreteOrdinatesProblem::GetOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetOptions(input);
+    },
+    R"(
+    Set problem options from a large list of parameters.
+
+    Parameters
+    ----------
+    adjoint: bool, default=False
+        Flag for toggling whether the solver is in adjoint mode.
     )"
   );
   do_problem.def(
