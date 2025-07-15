@@ -307,7 +307,6 @@ protected:
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
   std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
-  std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;

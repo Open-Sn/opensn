@@ -104,6 +104,8 @@ protected:
   /// Max group-set size.
   std::size_t max_groupset_size_ = 0;
 
+  std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
+
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);

@@ -129,6 +129,9 @@ DiscreteOrdinatesProblem::Initialize()
 
   LBSProblem::Initialize();
 
+  // Make face histogram
+  grid_face_histogram_ = grid_->MakeGridFaceHistogram();
+
   const auto grid_dim = grid_->GetDimension();
   for (auto& groupset : groupsets_)
   {

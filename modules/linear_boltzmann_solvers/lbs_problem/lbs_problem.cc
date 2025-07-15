@@ -1429,9 +1429,6 @@ LBSProblem::InitializeParrays()
   // Get grid localized communicator set
   grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
 
-  // Make face histogram
-  grid_face_histogram_ = grid_->MakeGridFaceHistogram();
-
   // Initialize Field Functions
   InitializeFieldFunctions();
 
