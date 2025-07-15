@@ -28,6 +28,15 @@ public:
   const std::string& GetSweepType() const { return sweep_type_; }
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
+
+  /// Read/write access to newest updated angular flux vector.
+  std::vector<std::vector<double>>& GetPsiNewLocal();
+
+  /// Read access to newest updated angular flux vector.
+  const std::vector<std::vector<double>>& GetPsiNewLocal() const;
+
+  void SetOptions(const InputParameters& params);
+
   void Initialize() override;
 
   /// Returns the sweep boundaries as a read only reference
@@ -90,6 +99,8 @@ protected:
   std::size_t max_groupset_size_ = 0;
 
   std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
+
+  std::vector<std::vector<double>> psi_new_local_;
 
 public:
   static InputParameters GetInputParameters();
