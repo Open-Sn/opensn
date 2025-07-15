@@ -41,16 +41,11 @@ if (OPENSN_WITH_CUDA)
     message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
     enable_language(CUDA)
 endif()
-option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
 
 if(OPENSN_WITH_PYTHON_MODULE)
     set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
-endif()
-
-if (OPENSN_WITH_DOCS AND NOT OPENSN_WITH_PYTHON_MODULE)
-    message(FATAL_ERROR "Python module is required to build documentation!")
 endif()
 
 # dependencies
@@ -215,6 +210,7 @@ if (OPENSN_WITH_CUDA)
       $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
   )
+  target_link_libraries(libopensncuda PRIVATE MPI::MPI_CXX)
 endif()
 
 target_link_libraries(libopensn
@@ -263,10 +259,6 @@ if(OPENSN_WITH_PYTHON)
 endif()
 
 configure_file(config.h.in config.h)
-
-if(OPENSN_WITH_DOCS)
-    add_subdirectory(doc)
-endif()
 
 # install
 configure_package_config_file(
