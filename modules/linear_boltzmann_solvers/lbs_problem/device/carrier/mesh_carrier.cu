@@ -62,7 +62,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
       // IntF_shape_I
       alloc_size += num_face_nodes * sizeof(double);
       // cell mapping (allocate up to the smallest even number to ensure 64-bit alignment)
-      num_face_nodes = (num_face_nodes + 1) & ~1zu;
+      num_face_nodes = (num_face_nodes + 1) & ~static_cast<std::size_t>(1);
       alloc_size += num_face_nodes * sizeof(std::uint32_t);
     }
   }

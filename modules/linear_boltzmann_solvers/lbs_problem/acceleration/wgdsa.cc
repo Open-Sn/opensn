@@ -178,8 +178,8 @@ WGDSA::WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
-    }   // for node
-  }     // for cell
+    } // for node
+  } // for cell
 
   return output_phi_local;
 }
@@ -216,7 +216,7 @@ WGDSA::GSProjectBackPhi0(LBSProblem& lbs_problem,
       for (int g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
-  }   // for cell
+  } // for cell
 }
 
 } // namespace opensn

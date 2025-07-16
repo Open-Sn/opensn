@@ -31,7 +31,7 @@ struct FloodPtr
 struct FloodFace
 {
   /**
-   * Pointer to fluxes in the FLUDs for each face node (first index) and angle in angleset (second
+   * Pointer to fluxes in the FLUDS for each face node (first index) and angle in angleset (second
    * index).
    */
   NDArray<FloodPtr, 2> flux;
@@ -51,7 +51,7 @@ struct FloodLevel
   std::vector<char> precomputed_offset;
 };
 
-/** @brief Flatten data structure of AAH_FLUDs for tracking angular flux pointers on a contiguous
+/** @brief Flatten data structure of AAH_FLUDS for tracking angular flux pointers on a contiguous
  *  memory block on device.
  */
 class AAHD_FLUDS

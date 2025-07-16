@@ -9,18 +9,18 @@ namespace opensn
 
 template <typename T>
 inline static char*
-write_to(char* dest, const T& src)
+write_to(char* buffer, const T& src)
 {
-  T* dest_ = reinterpret_cast<T*>(dest);
-  *(dest_++) = src;
-  return reinterpret_cast<char*>(dest_);
+  T* dest = reinterpret_cast<T*>(buffer);
+  *(dest++) = src;
+  return reinterpret_cast<char*>(dest);
 }
 
 static void
 record_incoming_flux(int f,
                      std::size_t num_face_nodes,
                      FaceOrientation face_orientation,
-                     FloodFace& flud_face,
+                     FloodFace& fluds_face,
                      const Cell& cell,
                      const CellLBSView& cell_transport_view,
                      int cell_local_idx,
@@ -33,7 +33,7 @@ record_incoming_flux(int f,
                      AAH_FLUDS& fluds)
 {
   std::size_t nangles = angle_set.GetAngleIndices().size();
-  flud_face.flux = NDArray<FloodPtr, 2>({num_face_nodes, nangles}, FloodPtr());
+  fluds_face.flux = NDArray<FloodPtr, 2>({num_face_nodes, nangles}, FloodPtr());
   // increase counters
   bool is_local_face = cell_transport_view.IsFaceLocal(f);
   bool is_boundary_face = not cell.faces[f].has_neighbor;
@@ -45,10 +45,10 @@ record_incoming_flux(int f,
   {
     ++preloc_face_counter;
   }
-  // record pointer to FLUDs of a given asngle index and a given face node
+  // record pointer to FLUDS of a given angle-set index and a given face node
   for (std::size_t as_ss_idx = 0; as_ss_idx < nangles; ++as_ss_idx)
   {
-    std::size_t direction_num = angle_set.GetAngleIndices()[as_ss_idx];
+    const std::uint32_t& direction_num = angle_set.GetAngleIndices()[as_ss_idx];
     for (int fi = 0; fi < num_face_nodes; ++fi)
     {
       const double* psi = nullptr;
@@ -70,7 +70,7 @@ record_incoming_flux(int f,
                                     gs_gi,
                                     is_surface_source_active);
       }
-      flud_face.flux(fi, as_ss_idx).incoming = psi;
+      fluds_face.flux(fi, as_ss_idx).incoming = psi;
     }
   }
 }
@@ -79,7 +79,7 @@ static void
 record_outgoing_flux(int f,
                      std::size_t num_face_nodes,
                      FaceOrientation face_orientation,
-                     FloodFace& flud_face,
+                     FloodFace& fluds_face,
                      const Cell& cell,
                      const CellLBSView& cell_transport_view,
                      int cell_local_idx,
@@ -92,7 +92,7 @@ record_outgoing_flux(int f,
                      AAH_FLUDS& fluds)
 {
   std::size_t nangles = angle_set.GetAngleIndices().size();
-  flud_face.flux = NDArray<FloodPtr, 2>({num_face_nodes, nangles}, FloodPtr());
+  fluds_face.flux = NDArray<FloodPtr, 2>({num_face_nodes, nangles}, FloodPtr());
   // increase counters
   out_face_counter++;
   bool is_local_face = cell_transport_view.IsFaceLocal(f);
@@ -103,10 +103,10 @@ record_outgoing_flux(int f,
   {
     ++deploc_face_counter;
   }
-  // record pointer to FLUDs of a given asngle index and a given face node
+  // record pointer to FLUDS of a given angle-set index and a given face node
   for (std::size_t as_ss_idx = 0; as_ss_idx < nangles; ++as_ss_idx)
   {
-    std::size_t direction_num = angle_set.GetAngleIndices()[as_ss_idx];
+    const std::uint32_t& direction_num = angle_set.GetAngleIndices()[as_ss_idx];
     for (int fi = 0; fi < num_face_nodes; ++fi)
     {
       double* psi = nullptr;
@@ -127,7 +127,7 @@ record_outgoing_flux(int f,
       {
         psi = reinterpret_cast<double*>(UINTPTR_MAX);
       }
-      flud_face.flux(fi, as_ss_idx).outgoing = psi;
+      fluds_face.flux(fi, as_ss_idx).outgoing = psi;
     }
   }
 }
@@ -140,7 +140,7 @@ AAHD_FLUDS::AAHD_FLUDS(LBSProblem& lbs_problem,
   // get SPDS
   const SPDS& spds = angle_set.GetSPDS();
   const std::vector<std::vector<int>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
-  // get FLUD
+  // get FLUDS
   AAH_FLUDS& fluds = dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
   // get groupset and angleset details
   groupset_size_ = group_set.groups.size();
@@ -177,11 +177,11 @@ AAHD_FLUDS::AAHD_FLUDS(LBSProblem& lbs_problem,
     }
     size_ = std::max(size_, cell_data_size + face_data_size + flux_data_size);
     // record offset for each group, angles and face node
-    FloodLevel flud_level;
-    flud_level.precomputed_offset.resize(cell_data_size + face_data_size);
+    FloodLevel fluds_level;
+    fluds_level.precomputed_offset.resize(cell_data_size + face_data_size);
     std::uint64_t face_offset = cell_data_size;
     std::int64_t flux_offset = cell_data_size + face_data_size;
-    char* cell_data = flud_level.precomputed_offset.data();
+    char* cell_data = fluds_level.precomputed_offset.data();
     char* face_data = cell_data + cell_data_size;
     for (const int& cell_local_idx : level)
     {
@@ -213,27 +213,27 @@ AAHD_FLUDS::AAHD_FLUDS(LBSProblem& lbs_problem,
         }
       }
     }
-    // record pointer to the flux in the FLUDs of each face
-    flud_level.cells.reserve(level.size());
+    // record pointer to the flux in the FLUDS of each face
+    fluds_level.cells.reserve(level.size());
     for (const int& cell_local_idx : level)
     {
-      FloodCell flud_cell;
+      FloodCell fluds_cell;
       const Cell& cell = mesh.local_cells[cell_local_idx];
       const CellMapping& cell_mapping = discretization.GetCellMapping(cell);
       const std::vector<std::vector<int>>& face_node_mappings = cell_mapping.GetFaceNodeMappings();
       const CellLBSView& cell_transport_view = lbs_problem.GetCellTransportViews()[cell_local_idx];
       const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_idx];
-      flud_cell.reserve(cell.faces.size());
+      fluds_cell.reserve(cell.faces.size());
       int in_face_counter = -1, out_face_counter = -1;
       for (int f = 0; f < cell.faces.size(); ++f)
       {
-        FloodFace flud_face;
+        FloodFace fluds_face;
         if (face_orientations[f] == FaceOrientation::INCOMING)
         {
           record_incoming_flux(f,
                                face_node_mappings[f].size(),
                                face_orientations[f],
-                               flud_face,
+                               fluds_face,
                                cell,
                                cell_transport_view,
                                cell_local_idx,
@@ -250,7 +250,7 @@ AAHD_FLUDS::AAHD_FLUDS(LBSProblem& lbs_problem,
           record_outgoing_flux(f,
                                face_node_mappings[f].size(),
                                face_orientations[f],
-                               flud_face,
+                               fluds_face,
                                cell,
                                cell_transport_view,
                                cell_local_idx,
@@ -262,13 +262,13 @@ AAHD_FLUDS::AAHD_FLUDS(LBSProblem& lbs_problem,
                                deploc_face_counter,
                                fluds);
         }
-        flud_cell.push_back(std::move(flud_face));
+        fluds_cell.push_back(std::move(fluds_face));
       }
-      flud_level.cells.push_back(std::move(flud_cell));
+      fluds_level.cells.push_back(std::move(fluds_cell));
       ++spls_idx;
     }
-    // record FLUD pointers for each level
-    fluds_map_.push_back(std::move(flud_level));
+    // record FLUDS pointers for each level
+    fluds_map_.push_back(std::move(fluds_level));
   }
   // allocate memory for host vector
   host_buffer_.resize(size_);

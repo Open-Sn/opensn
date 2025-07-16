@@ -8,6 +8,9 @@
 namespace opensn
 {
 
+namespace device_dbg
+{
+
 __global__ void
 PrintQuadrature(char* quad_data)
 {
@@ -38,10 +41,12 @@ PrintQuadrature(char* quad_data)
   }
 }
 
+} // namespace device_dbg
+
 void
-debug::PrintQuadratureOnDevice(QuadratureCarrier& quad)
+device_dbg::PrintQuadratureOnDevice(QuadratureCarrier& quad)
 {
-  PrintQuadrature<<<1, 1>>>(quad.GetDevicePtr());
+  device_dbg::PrintQuadrature<<<1, 1>>>(quad.GetDevicePtr());
 }
 
 } // namespace opensn

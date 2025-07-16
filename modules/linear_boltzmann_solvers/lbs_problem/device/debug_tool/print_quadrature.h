@@ -5,10 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h"
 
-namespace opensn::debug
+namespace opensn::device_dbg
 {
 
 /// Print quadrature on device.
 void PrintQuadratureOnDevice(QuadratureCarrier& quad);
 
-} // namespace opensn::debug
+} // namespace opensn::device_dbg
