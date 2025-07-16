@@ -64,6 +64,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs1g},
         ],
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {
@@ -72,7 +73,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "scattering_order": 0,
             "save_angular_flux": True,
         },
     )

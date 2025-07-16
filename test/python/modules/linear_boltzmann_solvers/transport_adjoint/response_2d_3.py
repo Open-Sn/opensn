@@ -104,8 +104,8 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_1},
             {"block_ids": [1], "xs": xs_2},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "point_sources": [pt_src],
         },
     )

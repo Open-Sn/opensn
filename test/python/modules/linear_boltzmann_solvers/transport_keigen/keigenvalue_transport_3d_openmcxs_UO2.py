@@ -78,6 +78,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_uo2},
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
@@ -87,7 +88,6 @@ if __name__ == "__main__":
                 {"name": "zmin", "type": "reflecting"},
                 {"name": "zmax", "type": "reflecting"},
             ],
-            "scattering_order": 1,
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,

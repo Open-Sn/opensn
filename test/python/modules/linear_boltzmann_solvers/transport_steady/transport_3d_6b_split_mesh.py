@@ -103,12 +103,12 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_graphite},
         ],
+        scattering_order=1,
         sweep_type="CBC",
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
-            "scattering_order": 1,
             "save_angular_flux": True,
             "volumetric_sources": [mg_src],
         },

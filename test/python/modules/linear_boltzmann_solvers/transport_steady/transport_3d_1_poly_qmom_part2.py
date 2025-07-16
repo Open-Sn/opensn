@@ -94,8 +94,8 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1], "xs": xs_graphite},
         ],
+        scattering_order=1,
         options={
-            "scattering_order": 1,
             "use_source_moments": True,
             "volumetric_sources": [mg_src0, mg_src1],
         },

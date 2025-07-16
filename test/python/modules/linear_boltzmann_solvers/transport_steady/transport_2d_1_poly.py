@@ -95,12 +95,12 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
             "volumetric_sources": [mg_src1, mg_src2],
-            "scattering_order": 1,
             "max_ags_iterations": 1
         }
     )

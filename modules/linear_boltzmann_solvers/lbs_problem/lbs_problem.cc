@@ -60,7 +60,10 @@ LBSProblem::GetInputParameters()
   params.LinkParameterToBlock("groupsets", "LBSGroupset");
 
   params.AddRequiredParameterArray("xs_map",
-                                   "Cross-section map from block IDs to corss-section objects.");
+                                   "Cross-section map from block IDs to cross-section objects.");
+
+  params.AddRequiredParameter<size_t>("scattering_order",
+                                      "The level of harmonic expansion for the scattering source.");
 
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
@@ -70,7 +73,9 @@ LBSProblem::GetInputParameters()
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
-  : Problem(params), grid_(params.GetSharedPtrParam<MeshContinuum>("mesh"))
+  : Problem(params),
+    scattering_order_(params.GetParamValue<size_t>("scattering_order")),
+    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -441,8 +446,6 @@ LBSProblem::GetOptionsBlock()
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
                               "is supported");
-  params.AddOptionalParameter(
-    "scattering_order", 1, "Defines the level of harmonic expansion for the scattering source.");
   params.AddOptionalParameter("max_mpi_message_size",
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
@@ -636,9 +639,6 @@ LBSProblem::SetOptions(const InputParameters& input)
       if (sdm_name == "pwld")
         options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
-
-    else if (spec.GetName() == "scattering_order")
-      options_.scattering_order = spec.GetValue<int>();
 
     else if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
@@ -892,7 +892,7 @@ LBSProblem::PrintSimHeader()
   {
     std::stringstream outstr;
     outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
-           << "Scattering order    : " << options_.scattering_order << "\n"
+           << "Scattering order    : " << scattering_order_ << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
 
@@ -1179,7 +1179,7 @@ LBSProblem::ValidateAndComputeScatteringMoments()
     laq: Legendre order supported by the angular quadrature
   */
 
-  int lfs = options_.scattering_order;
+  int lfs = scattering_order_;
   if (lfs < 0)
     throw std::invalid_argument("LBSProblem: Scattering order must be >= 0");
 

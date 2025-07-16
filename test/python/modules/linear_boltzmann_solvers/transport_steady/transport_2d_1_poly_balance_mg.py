@@ -86,6 +86,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1], "xs": xs_3_170},
         ],
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {
@@ -94,7 +95,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "scattering_order": 0,
             "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,

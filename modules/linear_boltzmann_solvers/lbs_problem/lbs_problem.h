@@ -290,6 +290,7 @@ protected:
   LBSOptions options_;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
+  size_t scattering_order_ = 0;
   size_t num_precursors_ = 0;
   size_t max_precursors_per_material_ = 0;
 
