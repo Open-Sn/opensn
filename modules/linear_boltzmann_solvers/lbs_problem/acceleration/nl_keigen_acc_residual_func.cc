@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log.h"
 #include <petscsnes.h>
 
@@ -84,7 +85,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     Set(phi_temp, 0.0);
     WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
 
-    return lbs_problem.ComputeFissionProduction(phi_temp);
+    return ComputeFissionProduction(lbs_problem, phi_temp);
   };
 
   // Business end

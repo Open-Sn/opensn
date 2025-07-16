@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -94,7 +95,7 @@ PowerIterationKEigenSolver::Initialize()
   if (reset_phi0_ and not restart_successful)
     LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
-  F_prev_ = lbs_problem_->ComputeFissionProduction(phi_old_local_);
+  F_prev_ = ComputeFissionProduction(*lbs_problem_, phi_old_local_);
 }
 
 void
@@ -117,7 +118,7 @@ PowerIterationKEigenSolver::Execute()
     ags_solver_->Solve();
 
     // Recompute k-eigenvalue
-    double F_new = lbs_problem_->ComputeFissionProduction(phi_new_local_);
+    double F_new = ComputeFissionProduction(*lbs_problem_, phi_new_local_);
     k_eff_ = F_new / F_prev_ * k_eff_;
     double reactivity = (k_eff_ - 1.0) / k_eff_;
 
@@ -173,7 +174,7 @@ PowerIterationKEigenSolver::Execute()
 
   if (options.use_precursors)
   {
-    lbs_problem_->ComputePrecursors();
+    ComputePrecursors(*lbs_problem_);
     Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
   }
 

@@ -14,6 +14,7 @@
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_smm_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include <pybind11/numpy.h>
 #include <algorithm>
 #include <cstddef>
@@ -281,7 +282,7 @@ WrapLBS(py::module& slv)
       {
         throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
       }
-      return self.ComputeFissionRate(*phi_ptr);
+      return ComputeFissionRate(self, *phi_ptr);
     },
     R"(
     Computes the total fission rate.
