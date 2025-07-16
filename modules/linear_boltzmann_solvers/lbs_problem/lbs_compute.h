@@ -9,6 +9,7 @@ namespace opensn
 {
 
 class LBSProblem;
+class DiscreteOrdinatesProblem;
 
 /**
  * Compute the total fission production in the problem.
@@ -22,5 +23,8 @@ double ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& ph
 
 /// Compute the steady state delayed neutron precursor concentrations.
 void ComputePrecursors(LBSProblem& lbs_problem);
+
+/// Compute balance
+void ComputeBalance(DiscreteOrdinatesProblem& do_problem);
 
 } // namespace opensn

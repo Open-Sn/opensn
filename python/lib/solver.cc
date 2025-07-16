@@ -481,7 +481,10 @@ WrapLBS(py::module& slv)
   );
   do_problem.def(
     "ComputeBalance",
-    &DiscreteOrdinatesProblem::ComputeBalance,
+    [](DiscreteOrdinatesProblem& self)
+    {
+      ComputeBalance(self);
+    },
     R"(
     Compute and print particle balance for the problem.
     )"

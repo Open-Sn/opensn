@@ -36,9 +36,6 @@ public:
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
-  /// Compute balance
-  void ComputeBalance();
-
   /**
    * Computes the angular flux based leakage from boundary surfaces.
    * \param groupset_id The groupset for which to compute the leakage.
