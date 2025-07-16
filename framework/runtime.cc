@@ -33,7 +33,6 @@ std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 std::vector<std::shared_ptr<Object>> object_stack;
 std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
-std::vector<std::shared_ptr<Function>> function_stack;
 
 int
 Initialize()
@@ -67,7 +66,6 @@ Finalize()
   object_stack.clear();
   sdm_stack.clear();
   postprocessor_stack.clear();
-  function_stack.clear();
 
   // Flush standard streams
   std::cout.flush();

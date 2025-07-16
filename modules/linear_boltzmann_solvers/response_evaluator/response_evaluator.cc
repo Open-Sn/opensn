@@ -44,8 +44,7 @@ ResponseEvaluator::Create(const ParameterBlock& params)
 }
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
-  : lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem")))
+  : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem"))
 {
   if (params.IsParameterValid("options"))
   {
@@ -366,7 +365,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         }
       }
     } // for cell
-  }   // if material sources
+  } // if material sources
 
   // Boundary sources
   if (not boundary_sources_.empty())
@@ -418,10 +417,10 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
           }
           ++f;
         } // for face
-      }   // for cell
+      } // for cell
       ++gs;
     } // for groupset
-  }   // if boundary sources
+  } // if boundary sources
 
   // Point sources
   for (const auto& point_source : point_sources_)
@@ -441,7 +440,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         for (size_t g = 0; g < num_groups; ++g)
           local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
       } // for node i
-    }   // for subscriber
+    } // for subscriber
 
   // Volumetric sources
   for (const auto& volumetric_source : volumetric_sources_)

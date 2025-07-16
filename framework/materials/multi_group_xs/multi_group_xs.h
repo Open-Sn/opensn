@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/sparse_matrix/sparse_matrix.h"
+#include "framework/data_types/sparse_matrix/sparse_matrix.h"
 
 namespace opensn
 {

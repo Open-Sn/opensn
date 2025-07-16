@@ -46,7 +46,7 @@ if __name__ == "__main__":
         xs_map.append({"block_ids": [m], "xs": xss[m]})
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Solver
     phys = DiscreteOrdinatesProblem(
@@ -64,12 +64,12 @@ if __name__ == "__main__":
             },
         ],
         xs_map=xs_map,
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "scattering_order": 1,
             "verbose_outer_iterations": True,
             "verbose_inner_iterations": True,
             "power_field_function_on": True,

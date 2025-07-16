@@ -170,7 +170,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
           phi_tally[dof_map] += ell_k * w_avg;
         } // for moment m
-      }   // for node i
+      } // for node i
 
       shape_values_k = shape_values_kp1;
       weight *= exp(-sigma_t * segment_length_k);

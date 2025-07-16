@@ -54,7 +54,7 @@ if __name__ == "__main__":
     mg_src1 = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Setup the angular quadrature
-    pquad = GLCProductQuadrature3DXYZ(4, 8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=0)
 
     # Create and configure the discrete ordinates solver
     phys = DiscreteOrdinatesProblem(
@@ -75,8 +75,8 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1], "xs": xs_graphite},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "volumetric_sources": [mg_src0, mg_src1],
         }
     )

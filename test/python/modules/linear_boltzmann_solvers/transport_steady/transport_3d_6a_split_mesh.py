@@ -77,10 +77,10 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[1], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature3DXYZ(8, 8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=8, n_azimuthal=8, scattering_order=1)
 
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -100,12 +100,12 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_graphite},
         ],
+        scattering_order=1,
         sweep_type="CBC",
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
-            "scattering_order": 1,
             "save_angular_flux": True,
             "volumetric_sources": [mg_src],
         },

@@ -4,9 +4,9 @@
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -19,13 +19,6 @@ FieldFunctionInterpolationVolume::Create()
   auto ffi = std::make_shared<FieldFunctionInterpolationVolume>();
   field_func_interpolation_stack.emplace_back(ffi);
   return ffi;
-}
-
-void
-FieldFunctionInterpolationVolume::SetOperationFunction(
-  std::shared_ptr<ScalarMaterialFunction> function)
-{
-  oper_function_ = function;
 }
 
 void
@@ -100,7 +93,7 @@ FieldFunctionInterpolationVolume::Execute()
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
           op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
-        function_value = oper_function_->Evaluate(ff_value, cell.block_id);
+        function_value = oper_function_(ff_value, cell.block_id);
 
       local_volume += fe_vol_data.JxW(qp);
       local_sum += function_value * fe_vol_data.JxW(qp);

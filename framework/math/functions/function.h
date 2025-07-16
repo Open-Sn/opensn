@@ -4,19 +4,25 @@
 #pragma once
 
 #include "framework/object.h"
+#include "framework/data_types/vector3.h"
+#include <functional>
 
 namespace opensn
 {
 
-/// Base class for functions
-class Function : public Object
+using ScalarSpatialFunction = std::function<double(const Vector3&)>;
+using ScalarSpatialMaterialFunction = std::function<double(int, const Vector3&)>;
+using ScalarMaterialFunction = std::function<double(double, int)>;
+
+/// Base class for evaluating spatial material functions given a coordinate.
+class VectorSpatialFunction : public std::function<std::vector<double>(const Vector3&, int)>
 {
 public:
-  Function() = default;
-  static InputParameters GetInputParameters() { return Object::GetInputParameters(); }
-
-protected:
-  explicit Function(const InputParameters& params) : Object(params) {}
+  VectorSpatialFunction() = default;
+  VectorSpatialFunction(const std::function<std::vector<double>(const Vector3&, int)>& src)
+    : std::function<std::vector<double>(const Vector3&, int)>(src)
+  {
+  }
 };
 
 } // namespace opensn

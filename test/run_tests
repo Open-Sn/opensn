@@ -105,18 +105,10 @@ if not os.path.isdir(argv.directory):
     raise NotADirectoryError(argv.directory)
 
 # Check the exe exists
-if argv.exe is not None:
-    if not os.path.isfile(argv.exe):
-        raise FileNotFoundError(argv.exe)
-else:
-    if 'lua' in argv.directory:
-        argv.exe = "build/test/lua/opensn-test"
-    elif 'python' in argv.directory:
-        argv.exe = "build/test/python/opensn-test"
-
-# Check if Jupyter engine is associated to Python
-if argv.engine in ["jupyter", "module"] and 'lua' in argv.directory:
-    raise ValueError("Jupyter/Module engine is not compatible with Lua inputs.")
+if argv.exe is None:
+    argv.exe = "build/test/python/opensn-test"
+if not os.path.isfile(argv.exe):
+    raise FileNotFoundError(argv.exe)
 
 # Ensure exe path is absolute
 argv.exe = os.path.abspath(argv.exe)

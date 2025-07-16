@@ -102,7 +102,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
 
   // as = angle set
   // ss = subset
-  const std::vector<size_t>& as_angle_indices = angle_set.GetAngleIndices();
+  const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
   for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
   {
     auto direction_num = as_angle_indices[as_ss_idx];
@@ -188,8 +188,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
           for (int gsg = 0; gsg < gs_size_; ++gsg)
             b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
-      }   // for face node i
-    }     // for f
+      } // for face node i
+    } // for f
 
     // Looping over groups, assembling mass terms
     for (int gsg = 0; gsg < gs_size_; ++gsg)
@@ -313,8 +313,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
           }
         }
       } // for fi
-    }   // for face
-  }     // for angleset/subset
+    } // for face
+  } // for angleset/subset
 }
 
 } // namespace opensn

@@ -205,7 +205,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           throw std::runtime_error(oss.str());
         }
       } // if local
-    }   // if incident
+    } // if incident
 
   } // for f
 
@@ -300,7 +300,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         AddFaceViewToDepLocI(deplocI, cell_g_index, face_slot, face);
 
       } // non-local neighbor
-    }   // if outgoing
+    } // if outgoing
 
   } // for f
 
@@ -371,7 +371,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         const auto& adj_cell = grid->cells[face.neighbor_id];
         const auto adj_so_index = local_so_cell_mapping[adj_cell.local_id];
         const auto& face_oris = spds.GetCellFaceOrientations()[adj_cell.local_id];
-        int ass_f_counter = -1;
+        int adj_f_counter = -1;
 
         int out_f = -1;
         for (auto af = 0; af < adj_cell.faces.size(); ++af)
@@ -383,19 +383,19 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
 
           if (af == adj_face_idx)
           {
-            ass_f_counter = out_f;
+            adj_f_counter = out_f;
             break;
           }
         }
 
         dof_mapping.first = /*local_psi_stride*G**/
-          so_cell_outb_face_slot_indices_[adj_so_index][ass_f_counter];
+          so_cell_outb_face_slot_indices_[adj_so_index][adj_f_counter];
 
         dof_mapping.second.shrink_to_fit();
         inco_face_dof_mapping.push_back(dof_mapping);
       } // if local
-    }   // if incident
-  }     // for incindent f
+    } // if incident
+  } // for incindent f
 
   std::vector<INCOMING_FACE_INFO> inco_face_info_array(inco_face_dof_mapping.size());
   for (auto i = 0; i < inco_face_dof_mapping.size(); ++i)
@@ -666,16 +666,16 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
         if (prelocI >= 0)
         {
           // Find the cell in prelocI cell views
-          int ass_cell = -1;
+          int adj_cell = -1;
           for (auto c = 0; c < prelocI_cell_views_[prelocI].size(); ++c)
           {
             if (prelocI_cell_views_[prelocI][c].first == face.neighbor_id)
             {
-              ass_cell = c;
+              adj_cell = c;
               break;
             }
           }
-          if (ass_cell < 0)
+          if (adj_cell < 0)
           {
             std::ostringstream oss;
             oss << "AAH_FLUDSCommonData: Required predecessor cell not found in call to "
@@ -687,7 +687,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
 
           // Find associated face
           std::set<int> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
-          CompactCellView* adj_cell_view = &prelocI_cell_views_[prelocI][ass_cell];
+          CompactCellView* adj_cell_view = &prelocI_cell_views_[prelocI][adj_cell];
           int adj_face_idx = -1, af = -1;
           for (auto& adj_face : adj_cell_view->second)
           {
@@ -712,13 +712,13 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[adj_face_idx].first;
-          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[adj_face_idx].second;
+          std::vector<uint64_t>* adj_face_verts = &adj_cell_view->second[adj_face_idx].second;
           for (auto fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;
-            for (auto afv = 0; afv < ass_face_verts->size(); ++afv)
+            for (auto afv = 0; afv < adj_face_verts->size(); ++afv)
             {
-              if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
+              if (face.vertex_ids[fv] == adj_face_verts->operator[](afv))
               {
                 match_found = true;
                 dof_mapping.second.push_back(afv);
@@ -804,13 +804,13 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           // Map dofs
           std::pair<int, std::vector<int>> dof_mapping;
           dof_mapping.first = adj_cell_view->second[adj_face_idx].first;
-          std::vector<uint64_t>* ass_face_verts = &adj_cell_view->second[adj_face_idx].second;
+          std::vector<uint64_t>* adj_face_verts = &adj_cell_view->second[adj_face_idx].second;
           for (auto fv = 0; fv < face.vertex_ids.size(); ++fv)
           {
             bool match_found = false;
-            for (auto afv = 0; afv < ass_face_verts->size(); ++afv)
+            for (auto afv = 0; afv < adj_face_verts->size(); ++afv)
             {
-              if (face.vertex_ids[fv] == ass_face_verts->operator[](afv))
+              if (face.vertex_ids[fv] == adj_face_verts->operator[](afv))
               {
                 match_found = true;
                 dof_mapping.second.push_back(afv);
@@ -836,8 +836,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
         } // If delayed predecessor
 
       } // if not local and not boundary
-    }   // if incident
-  }     // for incindent f
+    } // if incident
+  } // for incindent f
 }
 
 } // namespace opensn

@@ -65,7 +65,11 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": (0, num_groups - 1),
-                "angular_quadrature": GLCProductQuadrature3DXYZ(2, 4),
+                "angular_quadrature": GLCProductQuadrature3DXYZ(
+                    n_polar=2,
+                    n_azimuthal=4,
+                    scattering_order=1
+                ),
                 "inner_linear_method": "petsc_gmres",
                 "l_max_its": 500,
                 "l_abs_tol": 1.0e-12,
@@ -74,6 +78,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_uo2},
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
@@ -83,7 +88,6 @@ if __name__ == "__main__":
                 {"name": "zmin", "type": "reflecting"},
                 {"name": "zmax", "type": "reflecting"},
             ],
-            "scattering_order": 1,
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,

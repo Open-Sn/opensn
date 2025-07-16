@@ -21,7 +21,7 @@ FieldFunctionInterface::GetInputParameters()
 }
 
 FieldFunctionInterface::FieldFunctionInterface(const InputParameters& params)
-  : field_function_(params.GetParamValue<std::shared_ptr<FieldFunction>>("field_function"))
+  : field_function_(params.GetSharedPtrParam<FieldFunction>("field_function"))
 {
 }
 

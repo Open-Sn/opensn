@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
-#include "framework/logging/log.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include "framework/math/vector3.h"
-#include "framework/runtime.h"
+#include "framework/data_types/vector3.h"
+#include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "framework/runtime.h"
 #include <algorithm>
 #include <map>
 
@@ -208,7 +208,7 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
 
       initial_octant_SQs_.push_back(sq);
     } // for j
-  }   // for i
+  } // for i
 }
 
 void
@@ -494,7 +494,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
         integral[k] += EvaluateShapeFunction(shape_coeffs[k], xyz) * detJ * legendre_qweights[i] *
                        legendre_qweights[j];
     } // for j
-  }   // for i
+  } // for i
 
   return integral;
 }
@@ -685,7 +685,7 @@ SimplifiedLDFESQ::Quadrature::RiemannIntegral(BaseFunctor* F, int Ni)
 
       I_riemann += fval * sin(theta) * dtheta * dphi;
     } // for j
-  }   // for i
+  } // for i
 
   return I_riemann;
 }

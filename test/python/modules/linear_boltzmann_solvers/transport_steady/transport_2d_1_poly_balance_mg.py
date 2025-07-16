@@ -55,10 +55,10 @@ if __name__ == "__main__":
 
     # Setup Physics
     fac = 1
-    pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
+    pquad = GLCProductQuadrature2DXY(n_polar=6 * fac, n_azimuthal=16 * fac, scattering_order=0)
 
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -86,6 +86,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1], "xs": xs_3_170},
         ],
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {
@@ -94,7 +95,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "scattering_order": 0,
             "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,

@@ -1,5 +1,5 @@
 #include "test/unit/opensn_unit_test.h"
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 
 using namespace opensn;
 

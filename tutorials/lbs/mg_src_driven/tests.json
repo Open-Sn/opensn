@@ -1,0 +1,12 @@
+[
+  {
+    "file": "hdpe_example.py",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  }
+]

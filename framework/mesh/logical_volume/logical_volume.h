@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 #include "framework/logging/log.h"
 #include "framework/object.h"
 #include <array>

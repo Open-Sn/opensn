@@ -66,7 +66,7 @@ if __name__ == "__main__":
     mg_src1 = VolumetricSource(block_ids=[1], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -100,12 +100,12 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_graphite},
             {"block_ids": [1], "xs": xs_air},
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "scattering_order": 1,
             "max_ags_iterations": 1,
             "volumetric_sources": [mg_src0, mg_src1],
         },

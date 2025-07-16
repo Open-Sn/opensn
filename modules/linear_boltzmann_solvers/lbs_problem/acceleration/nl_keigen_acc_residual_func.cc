@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
 #include "framework/logging/log.h"
 #include <petscsnes.h>
 
@@ -56,11 +57,11 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
       const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
 
     SetLBSFissionSource(phi_temp, q_moments_local);
 
-    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(lbs_problem, front_gs, q_moments_local);
     return output;
   };
 
@@ -69,11 +70,11 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
       const std::vector<double>& input, bool suppress_wgs)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
 
     SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
 
-    auto output = lbs_problem.WGSCopyOnlyPhi0(front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(lbs_problem, front_gs, q_moments_local);
     return output;
   };
 
@@ -81,7 +82,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     [&front_gs, &lbs_problem, &phi_temp](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    lbs_problem.GSProjectBackPhi0(front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
 
     return lbs_problem.ComputeFissionProduction(phi_temp);
   };

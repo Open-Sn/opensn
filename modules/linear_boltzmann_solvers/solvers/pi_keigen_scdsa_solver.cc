@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
@@ -376,8 +376,8 @@ PowerIterationKEigenSCDSASolver::CopyOnlyPhi0(const LBSGroupset& groupset,
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
-    }   // for node
-  }     // for cell
+    } // for node
+  } // for cell
 
   return output_phi_local;
 }
@@ -415,7 +415,7 @@ PowerIterationKEigenSCDSASolver::ProjectBackPhi0(const LBSGroupset& groupset,
       for (int g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
-  }   // for cell
+  } // for cell
 }
 
 PowerIterationKEigenSCDSASolver::GhostInfo
@@ -452,9 +452,9 @@ PowerIterationKEigenSCDSASolver::MakePWLDVecGhostCommInfo(const SpatialDiscretiz
           const int64_t dof_map = sdm.MapDOF(cell, i, uk_man, u, c);
           global_dof_ids_set.insert(dof_map);
         } // for component
-      }   // for unknown
-    }     // for node i
-  }       // for ghost cell
+      } // for unknown
+    } // for node i
+  } // for ghost cell
 
   // Convert the list to a vector
   std::vector<int64_t> global_indices(global_dof_ids_set.begin(), global_dof_ids_set.end());
@@ -525,8 +525,8 @@ PowerIterationKEigenSCDSASolver::NodallyAveragedPWLDVector(
           cont_input[dof_cfem_map] += phi_value;
           cont_input_ctr[dof_cfem_map] += 1.0;
         } // for component c
-      }   // for unknown u
-    }     // for node i
+      } // for unknown u
+    } // for node i
 
     for (const auto& face : cell.faces)
       if (face.has_neighbor)
@@ -567,9 +567,9 @@ PowerIterationKEigenSCDSASolver::NodallyAveragedPWLDVector(
             cont_input_ctr[dof_cfem_map] += 1.0;
           }
         } // for component
-      }   // for unknown
-    }     // for node i
-  }       // for ghost cell
+      } // for unknown
+    } // for node i
+  } // for ghost cell
 
   // Compute nodal averages
   {
@@ -599,9 +599,9 @@ PowerIterationKEigenSCDSASolver::NodallyAveragedPWLDVector(
 
           output[dof_dfem_map] = phi_value;
         } // for component c
-      }   // for unknown u
-    }     // for node i
-  }       // for local cell
+      } // for unknown u
+    } // for node i
+  } // for local cell
 
   return output;
 }

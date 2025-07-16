@@ -61,7 +61,10 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": (0, num_groups - 1),
-                "angular_quadrature": GLProductQuadrature1DSlab(n_angles),
+                "angular_quadrature": GLProductQuadrature1DSlab(
+                    n_polar=n_angles,
+                    scattering_order=scat_order
+                ),
                 "inner_linear_method": "petsc_gmres",
                 "l_max_its": si_max_iterations,
                 "l_abs_tol": si_tolerance,
@@ -73,8 +76,8 @@ if __name__ == "__main__":
                 "xs": xs_simple_fissile,
             }
         ],
+        scattering_order=scat_order,
         options={
-            "scattering_order": scat_order,
             "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,

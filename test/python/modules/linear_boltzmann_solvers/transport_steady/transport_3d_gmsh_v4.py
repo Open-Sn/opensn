@@ -39,9 +39,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Quadrature
-    Npolar = 4
-    Nazimuthal = 16
-    pquad = GLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=16, scattering_order=0)
 
     # Set up solver
     gs1 = [0, num_groups - 1]
@@ -62,12 +60,12 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [1, 2, 3], "xs": xs_diag},
         ],
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "scattering_order": 0,
             "volumetric_sources": [mg_src],
         },
     )

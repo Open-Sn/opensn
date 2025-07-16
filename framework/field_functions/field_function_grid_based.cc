@@ -50,8 +50,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     discretization_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(
-      params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh")->GetLocalBoundingBox())
+    local_grid_bounding_box_(params.GetSharedPtrParam<MeshContinuum>("mesh")->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
@@ -182,10 +181,10 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
             local_point_value[c] += dof_value * shape_values(j);
           } // for node i
-        }   // for component c
-      }     // if inside cell
-    }       // for cell
-  }         // if in bounding box
+        } // for component c
+      } // if inside cell
+    } // for cell
+  } // if in bounding box
 
   // Communicate number of point hits
   size_t global_num_point_hits;
@@ -315,7 +314,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
       point_data->AddArray(point_array);
       cell_data->AddArray(cell_array);
     } // for component
-  }   // for ff_ptr
+  } // for ff_ptr
 
   WritePVTUFiles(ugrid, file_base_name);
 
@@ -326,7 +325,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid = params.GetSharedPtrParam<MeshContinuum>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
   if (sdm_type == "FV")

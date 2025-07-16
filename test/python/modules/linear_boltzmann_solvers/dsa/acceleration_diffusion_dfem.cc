@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/dense_matrix.h"
+#include "framework/data_types/dense_matrix.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/functions/scalar_spatial_function.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "python/lib/functor.h"
 #include "test/python/src/bindings.h"
 
 using namespace opensn;
@@ -81,14 +79,14 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
           IntV_shapeI_shapeJ(i, j) += fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) *
                                       fe_vol_data.JxW(qp); // M-matrix
-        }                                                  // for qp
-      }                                                    // for j
+        } // for qp
+      } // for j
 
       for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) += fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
-    }   // for i
+    } // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
@@ -109,14 +107,14 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
             IntS_shapeI_gradshapeJ[f](i, j) +=
               fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
-        }   // for j
+        } // for j
 
         for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
-      }   // for i
-    }     // for f
+      } // for i
+    } // for f
 
     unit_cell_matrices[cell.local_id] = UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
                                                          {},
@@ -131,8 +129,8 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   py::module main_module = py::module::import("__main__");
   py::object mms_phi_fn = main_module.attr("mms_phi_fn");
   py::object mms_q_fn = main_module.attr("mms_q_fn");
-  std::shared_ptr<ScalarSpatialFunction> mms_phi = mms_phi_fn.cast<std::shared_ptr<PySSFunction>>();
-  std::shared_ptr<ScalarSpatialFunction> mms_q = mms_q_fn.cast<std::shared_ptr<PySSFunction>>();
+  ScalarSpatialFunction mms_phi = mms_phi_fn.cast<ScalarSpatialFunction>();
+  ScalarSpatialFunction mms_q = mms_q_fn.cast<ScalarSpatialFunction>();
 
   // Make solver
   DiffusionMIPSolver solver(
@@ -186,7 +184,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      double phi_true = mms_phi->Evaluate(fe_vol_data.QPointXYZ(qp));
+      double phi_true = mms_phi(fe_vol_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }

@@ -18,7 +18,7 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
+    from pyopensn.context import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 

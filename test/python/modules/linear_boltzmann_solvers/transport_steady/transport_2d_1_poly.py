@@ -60,10 +60,10 @@ if __name__ == "__main__":
     bsrc = []
     for g in range(num_groups):
         bsrc.append(0.0)
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(2, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=8, scattering_order=1)
 
     # Create solver
     phys = DiscreteOrdinatesProblem(
@@ -95,12 +95,12 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
             "volumetric_sources": [mg_src1, mg_src2],
-            "scattering_order": 1,
             "max_ags_iterations": 1
         }
     )

@@ -62,7 +62,7 @@ AngleAggregation::ZeroIncomingDelayedPsi()
                   val = 0.0;
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -199,7 +199,7 @@ AngleAggregation::InitializeReflectingBCs()
             ++f;
           }
         } // for cells
-      }   // for angles
+      } // for angles
 
       // Determine if boundary is opposing reflecting
       // The boundary with the smallest bid will
@@ -225,7 +225,7 @@ AngleAggregation::InitializeReflectingBCs()
 
       reflecting_bcs_initialized = true;
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   if (reflecting_bcs_initialized)
     log.Log0Verbose1() << "Reflecting boundary conditions initialized.";
@@ -258,7 +258,7 @@ AngleAggregation::GetNumDelayedAngularDOFs()
                 local_ang_unknowns += dofvec.size();
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -304,7 +304,7 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
                 }
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -350,7 +350,7 @@ AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_r
                 }
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -396,7 +396,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double
                 }
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -442,7 +442,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
                 }
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -490,7 +490,7 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
                   psi_vector.push_back(val);
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -538,7 +538,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
                   val = stl_vector[index++];
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -580,7 +580,7 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
                   psi_vector.push_back(val);
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -628,7 +628,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
                   val = stl_vector[index++];
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -660,7 +660,7 @@ AngleAggregation::SetDelayedPsiOld2New()
         rbndry.GetBoundaryFluxNew() = rbndry.GetBoundaryFluxOld();
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
@@ -690,7 +690,7 @@ AngleAggregation::SetDelayedPsiNew2Old()
         rbndry.GetBoundaryFluxOld() = rbndry.GetBoundaryFluxNew();
 
     } // if reflecting
-  }   // for bndry
+  } // for bndry
 
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)

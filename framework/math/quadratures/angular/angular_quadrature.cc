@@ -12,31 +12,27 @@ namespace opensn
 {
 
 void
-AngularQuadrature::MakeHarmonicIndices(unsigned int scattering_order)
+AngularQuadrature::MakeHarmonicIndices()
 {
   m_to_ell_em_map_.clear();
 
   if (dimension_ == 1)
-    for (int ell = 0; ell <= scattering_order; ++ell)
+    for (auto ell = 0; ell <= scattering_order_; ++ell)
       m_to_ell_em_map_.emplace_back(ell, 0);
   else if (dimension_ == 2)
-    for (int ell = 0; ell <= scattering_order; ++ell)
-      for (int m = -ell; m <= ell; m += 2)
+    for (auto ell = 0; ell <= scattering_order_; ++ell)
+      for (auto m = -ell; m <= ell; m += 2)
         m_to_ell_em_map_.emplace_back(ell, m);
   else if (dimension_ == 3)
-    for (int ell = 0; ell <= scattering_order; ++ell)
-      for (int m = -ell; m <= ell; ++m)
+    for (auto ell = 0; ell <= scattering_order_; ++ell)
+      for (auto m = -ell; m <= ell; ++m)
         m_to_ell_em_map_.emplace_back(ell, m);
 }
 
 void
-AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order)
+AngularQuadrature::BuildDiscreteToMomentOperator()
 {
-  if (d2m_op_built_)
-    return;
-
   d2m_op_.clear();
-  MakeHarmonicIndices(scattering_order);
 
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
@@ -46,7 +42,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order)
     std::vector<double> cur_mom;
     cur_mom.reserve(num_angles);
 
-    for (int n = 0; n < num_angles; ++n)
+    for (auto n = 0; n < num_angles; ++n)
     {
       const auto& cur_angle = abscissae[n];
       double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
@@ -56,15 +52,14 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order)
 
     d2m_op_.push_back(cur_mom);
   }
-  d2m_op_built_ = true;
 
   // Verbose printout
   std::stringstream outs;
   outs << "\nQuadrature d2m operator:\n";
-  for (int n = 0; n < num_angles; ++n)
+  for (auto n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (int m = 0; m < num_moms; ++m)
+    for (auto m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[m][n]
            << " ";
@@ -76,13 +71,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator(unsigned int scattering_order)
 }
 
 void
-AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order)
+AngularQuadrature::BuildMomentToDiscreteOperator()
 {
-  if (m2d_op_built_)
-    return;
-
   m2d_op_.clear();
-  MakeHarmonicIndices(scattering_order);
 
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
@@ -94,7 +85,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order)
     std::vector<double> cur_mom;
     cur_mom.reserve(num_angles);
 
-    for (int n = 0; n < num_angles; ++n)
+    for (auto n = 0; n < num_angles; ++n)
     {
       const auto& cur_angle = abscissae[n];
       double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
@@ -103,17 +94,16 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order)
     }
 
     m2d_op_.push_back(cur_mom);
-  } // for m
-  m2d_op_built_ = true;
+  }
 
   // Verbose printout
   std::stringstream outs;
 
   outs << "\nQuadrature m2d operator:\n";
-  for (int n = 0; n < num_angles; ++n)
+  for (auto n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (int m = 0; m < num_moms; ++m)
+    for (auto m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[m][n]
            << " ";
@@ -127,31 +117,18 @@ AngularQuadrature::BuildMomentToDiscreteOperator(unsigned int scattering_order)
 std::vector<std::vector<double>> const&
 AngularQuadrature::GetDiscreteToMomentOperator() const
 {
-  const std::string fname = __FUNCTION__;
-  if (not d2m_op_built_)
-    throw std::logic_error(fname + ": D2M operator not yet built. Make a call to "
-                                   "BuildDiscreteToMomentOperator before using.");
   return d2m_op_;
 }
 
 std::vector<std::vector<double>> const&
 AngularQuadrature::GetMomentToDiscreteOperator() const
 {
-  const std::string fname = __FUNCTION__;
-  if (not m2d_op_built_)
-    throw std::logic_error(fname + ": M2D operator not yet built. Make a call to "
-                                   "BuildMomentToDiscreteOperator before using.");
   return m2d_op_;
 }
 
 const std::vector<AngularQuadrature::HarmonicIndices>&
 AngularQuadrature::GetMomentToHarmonicsIndexMap() const
 {
-  const std::string fname = __FUNCTION__;
-  if (not(d2m_op_built_ or m2d_op_built_))
-    throw std::logic_error(fname + ": Harmonics index map not yet built. Make a call to "
-                                   "BuildDiscreteToMomentOperator or BuildMomentToDiscreteOperator "
-                                   "before using.");
   return m_to_ell_em_map_;
 }
 

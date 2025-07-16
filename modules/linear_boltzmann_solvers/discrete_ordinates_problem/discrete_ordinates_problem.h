@@ -97,6 +97,13 @@ protected:
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
 
+  /// Max level size.
+  std::size_t max_level_size_ = 0;
+  /// Max angle-set size.
+  std::size_t max_angleset_size_ = 0;
+  /// Max group-set size.
+  std::size_t max_groupset_size_ = 0;
+
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);

@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_residual_func.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -102,7 +103,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1;
 
   auto phi_lp1_temp = phi_lph_ip1 + delta_phi;
-  lbs_problem.GSProjectBackPhi0(front_gs, phi_lp1_temp, phi_new_local);
+  WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, phi_lp1_temp, phi_new_local);
   LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_problem, front_gs, phi_new_local, phi_old_local);
 
   // Compute final k_eff

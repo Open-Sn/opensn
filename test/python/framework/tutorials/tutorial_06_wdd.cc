@@ -6,7 +6,7 @@
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/math_range.h"
+#include "framework/data_types/range.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
 #include "test/python/src/bindings.h"
@@ -69,24 +69,21 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "Num globl nodes: " << num_global_nodes;
 
   // Make an angular quadrature
+  const size_t scat_order = 1;
   std::shared_ptr<AngularQuadrature> quadrature;
   if (dimension == 1)
-    quadrature = std::make_shared<GLProductQuadrature1DSlab>(16);
+    quadrature = std::make_shared<GLProductQuadrature1DSlab>(16, scat_order);
   else if (dimension == 2)
-    quadrature = std::make_shared<GLCProductQuadrature2DXY>(16, 32);
+    quadrature = std::make_shared<GLCProductQuadrature2DXY>(16, 32, scat_order);
   else if (dimension == 3)
-    quadrature = std::make_shared<GLCProductQuadrature3DXYZ>(16, 32);
+    quadrature = std::make_shared<GLCProductQuadrature3DXYZ>(16, 32, scat_order);
   else
     throw std::logic_error(fname + "Error with the dimensionality "
                                    "of the mesh.");
   opensn::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
-  const size_t scat_order = 1;
   const size_t num_groups = 20;
-
-  quadrature->BuildMomentToDiscreteOperator(scat_order);
-  quadrature->BuildDiscreteToMomentOperator(scat_order);
 
   const auto& m2d = quadrature->GetMomentToDiscreteOperator();
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();
@@ -141,8 +138,8 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
 
         q_source[dof_map] = 1.0;
       } // for node i
-    }   // if inside box
-  }     // for cell
+    } // if inside box
+  } // for cell
 
   // Define sweep chunk
   NDArray<double, 4> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
@@ -367,9 +364,9 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
           else
             pw_change = std::max(delta_phi, pw_change);
         } // for g
-      }   // for m
-    }     // for i
-  }       // for cell
+      } // for m
+    } // for i
+  } // for cell
 
   return pw_change;
 }
@@ -417,9 +414,9 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
             source_moments[dof_map + g] += inscat_g;
           }
         } // for g
-      }   // for m
-    }     // for node i
-  }       // for cell
+      } // for m
+    } // for node i
+  } // for cell
 
   return source_moments;
 }

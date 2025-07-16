@@ -40,7 +40,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=[1.0])
 
     # Angular Quadrature
-    pquad = GLCProductQuadrature3DXYZ(4, 8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # LBS block option
     num_groups = 1
@@ -59,6 +59,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs1g},
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},

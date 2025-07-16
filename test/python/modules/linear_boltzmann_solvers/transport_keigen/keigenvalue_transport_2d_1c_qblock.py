@@ -26,7 +26,7 @@ if __name__ == "__main__":
         exec(f.read(), globals())
 
     # Setup Physics
-    pquad = GLCProductQuadrature2DXY(8, 16)
+    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=16, scattering_order=2)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -42,12 +42,12 @@ if __name__ == "__main__":
             },
         ],
         xs_map=xs_map,
+        scattering_order=2,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "scattering_order": 2,
 
             "use_precursors": False,
 

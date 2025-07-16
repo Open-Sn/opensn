@@ -65,7 +65,7 @@ if __name__ == "__main__":
         xs_map.append({"block_ids": [m], "xs": xss[m]})
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(4, 8)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Solver
     if "scdsa" in k_method or "smm" in k_method:
@@ -90,18 +90,17 @@ if __name__ == "__main__":
             },
         ],
         xs_map=xs_map,
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "scattering_order": 1,
             "verbose_outer_iterations": True,
             "verbose_inner_iterations": True,
             "power_field_function_on": True,
             "power_default_kappa": 1.0,
             "power_normalization": 1.0,
-            "save_angular_flux": True,
         },
         sweep_type="AAH",
     )
@@ -152,10 +151,10 @@ if __name__ == "__main__":
         k_solver = NonLinearKEigenSolver(
             lbs_problem=phys,
             nl_max_its=50,
-            nl_abs_tol=1.0e-10,
-            nl_rel_tol=1.0e-10,
-            l_max_its=20,
-            num_initial_power_iterations=2,
+            nl_abs_tol=1.0e-9,
+            nl_rel_tol=1.0e-9,
+            l_abs_tol=1.0e-8,
+            l_rel_tol=1.0e-8,
         )
 
     k_solver.Initialize()

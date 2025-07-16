@@ -4,7 +4,7 @@
 #include "test/python/src/bindings.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/math/math_range.h"
+#include "framework/data_types/range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <array>
@@ -135,9 +135,7 @@ math_Test01_WDD_IJK_Sweep()
   //  sigma_t.Set(0.2);
   //  q.Set(0.0);
 
-  auto pquad = std::make_shared<GLProductQuadrature1DSlab>(2, verbose);
-
-  pquad->BuildDiscreteToMomentOperator(0);
+  auto pquad = std::make_shared<GLProductQuadrature1DSlab>(2, 0, verbose);
 
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 

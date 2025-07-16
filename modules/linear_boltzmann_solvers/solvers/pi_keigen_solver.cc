@@ -46,8 +46,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : Solver(params),
-    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
+    lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>(("lbs_problem"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
@@ -94,6 +93,8 @@ PowerIterationKEigenSolver::Initialize()
 
   if (reset_phi0_ and not restart_successful)
     LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
+
+  F_prev_ = lbs_problem_->ComputeFissionProduction(phi_old_local_);
 }
 
 void

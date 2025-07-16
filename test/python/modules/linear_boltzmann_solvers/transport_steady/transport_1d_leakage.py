@@ -43,10 +43,10 @@ if __name__ == "__main__":
     xs1g.CreateSimpleOneGroup(sigma_t, 0.0)
 
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0
+    bsrc[0] = 2.0
 
     # Setup Physics
-    pquad = GLProductQuadrature1DSlab(256)
+    pquad = GLProductQuadrature1DSlab(n_polar=256, scattering_order=0)
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
@@ -64,6 +64,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs1g},
         ],
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {
@@ -72,7 +73,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "scattering_order": 0,
             "save_angular_flux": True,
         },
     )

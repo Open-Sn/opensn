@@ -89,7 +89,7 @@ if __name__ == "__main__":
     fwd_src = VolumetricSource(block_ids=[2], group_strength=[3.0])
 
     # Create a 2D angular quadrature with 12 polar and 192 azimuthal angles.
-    pquad = GLCProductQuadrature2DXY(12, 192)
+    pquad = GLCProductQuadrature2DXY(n_polar=12, n_azimuthal=192, scattering_order=0)
 
     # Setup solver
     phys = DiscreteOrdinatesProblem(
@@ -110,8 +110,8 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_1g2},
             {"block_ids": [2], "xs": xs_1g3},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "volumetric_sources": [fwd_src],
         },
     )

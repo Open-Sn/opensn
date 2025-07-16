@@ -45,7 +45,7 @@ SolverInfoPostProcessor::Create(const ParameterBlock& params)
 
 SolverInfoPostProcessor::SolverInfoPostProcessor(const InputParameters& params)
   : PostProcessor(params, PPType::SCALAR),
-    solver_(params.GetParamValue<std::shared_ptr<Solver>>("solver")),
+    solver_(params.GetSharedPtrParam<Solver>("solver")),
     info_(params.GetParam("info"))
 {
   if (params.IsParameterValid("solvername_filter"))

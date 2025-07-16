@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/math/vector3.h"
+#include "framework/data_types/vector3.h"
 #include <memory>
 #include <vector>
 
@@ -46,18 +46,19 @@ protected:
   std::vector<std::vector<double>> d2m_op_;
   std::vector<std::vector<double>> m2d_op_;
   std::vector<HarmonicIndices> m_to_ell_em_map_;
-  bool d2m_op_built_ = false;
-  bool m2d_op_built_ = false;
   AngularQuadratureType type_;
   int dimension_;
+  int scattering_order_;
 
-  explicit AngularQuadrature(AngularQuadratureType type, int dimension)
-    : type_(type), dimension_(dimension)
+  explicit AngularQuadrature(AngularQuadratureType type, int dimension, int scattering_order)
+    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
   {
+    if (scattering_order < 0)
+      throw std::invalid_argument("AngularQuadrature: Scattering order must be >= 0");
   }
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
-  virtual void MakeHarmonicIndices(unsigned int scattering_order);
+  void MakeHarmonicIndices();
 
 public:
   std::vector<QuadraturePointPhiTheta> abscissae;
@@ -67,32 +68,33 @@ public:
   virtual ~AngularQuadrature() = default;
 
   /// Computes the discrete to moment operator.
-  virtual void BuildDiscreteToMomentOperator(unsigned int scattering_order);
+  void BuildDiscreteToMomentOperator();
 
   /// Computes the moment to discrete operator.
-  virtual void BuildMomentToDiscreteOperator(unsigned int scattering_order);
+  void BuildMomentToDiscreteOperator();
 
   /**
-   * Returns a reference to the precomputed d2m operator. This will throw a std::logic_error if the
-   * operator has not been built yet. The operator is accessed as [m][d], where m is the moment
-   * index and d is the direction index.
+   * Returns a reference to the precomputed d2m operator. The operator is accessed as [m][d], where
+   * m is the moment index and d is the direction index.
    */
   std::vector<std::vector<double>> const& GetDiscreteToMomentOperator() const;
 
   /**
-   * Returns a reference to the precomputed m2d operator. This will throw a std::logic_error if the
-   * operator has not been built yet. The operator is accessed as [m][d], where m is the moment
-   * index and d is the direction index.
+   * Returns a reference to the precomputed m2d operator. where m is the moment index and d is the
+   * direction index.
    */
   std::vector<std::vector<double>> const& GetMomentToDiscreteOperator() const;
 
   /**
-   * Returns a reference to the precomputed harmonic index map. This will throw a std::logic_error
-   * if the map has not been built yet.
+   * Returns a reference to the precomputed harmonic index map.
    */
   const std::vector<HarmonicIndices>& GetMomentToHarmonicsIndexMap() const;
 
   int GetDimension() { return dimension_; }
+
+  int GetScatteringOrder() { return scattering_order_; }
+
+  int GetNumMoments() { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
 };

@@ -45,7 +45,7 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
   abscissae.clear();
   weights.clear();
   std::stringstream ostr;
-  double weight_sum = 0.0;
+  weight_sum_ = 0.0;
   for (unsigned int i = 0; i < Na; ++i)
   {
     for (unsigned int j = 0; j < Np; ++j)
@@ -58,7 +58,7 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
       const double weight = wts[i * Np + j];
       weights.emplace_back(weight);
-      weight_sum += weight;
+      weight_sum_ += weight;
 
       if (verbose)
       {
@@ -89,56 +89,18 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
       log.Log() << "Quadrature angle=" << new_omega.PrintStr();
   }
 
-  if (verbose)
-  {
-    log.Log() << ostr.str() << "\n"
-              << "Weight sum=" << weight_sum;
-  }
+  // Normalize weights to 1.0
+  for (auto& w : weights)
+    w /= weight_sum_;
+
+  // Compute and store sum of weights after normalization
+  weight_sum_ = 0.0;
+  for (auto& w : weights)
+    weight_sum_ += w;
 }
 
-void
-ProductQuadrature::OptimizeForPolarSymmetry(const double normalization)
-{
-  std::vector<QuadraturePointPhiTheta> new_abscissae;
-  std::vector<double> new_weights;
-  std::vector<Vector3> new_omegas;
-  std::vector<double> new_polar_ang;
-  std::vector<double> new_azimu_ang;
-
-  const size_t num_pol = polar_ang.size();
-  const size_t num_azi = azimu_ang.size();
-
-  std::vector<unsigned int> new_polar_map;
-  for (size_t p = 0; p < num_pol; ++p)
-    if (polar_ang[p] < M_PI_2)
-    {
-      new_polar_ang.push_back(polar_ang[p]);
-      new_polar_map.push_back(p);
-    }
-  new_azimu_ang = azimu_ang;
-
-  const size_t new_num_pol = new_polar_ang.size();
-  double weight_sum = 0.0;
-  for (size_t a = 0; a < num_azi; ++a)
-    for (size_t p = 0; p < new_num_pol; ++p)
-    {
-      const auto pmap = new_polar_map[p];
-      const auto dmap = GetAngleNum(pmap, a);
-      new_weights.push_back(weights[dmap]);
-      weight_sum += weights[dmap];
-    }
-
-  if (normalization > 0.0)
-    for (double& w : new_weights)
-      w *= normalization / weight_sum;
-
-  AssembleCosines(new_azimu_ang, new_polar_ang, new_weights, false);
-  polar_ang = new_polar_ang;
-  azimu_ang = new_azimu_ang;
-}
-
-GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
-  : ProductQuadrature(1)
+GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, int scattering_order, bool verbose)
+  : ProductQuadrature(1, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
@@ -159,10 +121,20 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, bool verbose)
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
+
+  log.Log() << "Using 1D Slab Gauss–Legendre product quadrature with " << omegas.size()
+            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
+            << std::endl;
 }
 
-GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, bool verbose)
-  : ProductQuadrature(2)
+GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar,
+                                                   int Nazimuthal,
+                                                   int scattering_order,
+                                                   bool verbose)
+  : ProductQuadrature(2, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even.");
@@ -178,25 +150,34 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar, int Nazimuthal, b
   for (auto i = 0; i < Nazimuthal; ++i)
     azimu_ang.emplace_back(M_PI * (2 * (i + 1) - 1) / Nazimuthal);
 
-  // Create polar angles
-  polar_ang.clear();
-  for (auto j = 0; j < Npolar; ++j)
-    polar_ang.emplace_back(M_PI - acos(gl_polar.qpoints[j][0]));
+  // Create polar angles (only take the half of the GL nodes < M_PI/2)
+  const int half = Npolar / 2;
+  polar_ang.resize(half);
+  for (int j = 0; j < half; ++j)
+    polar_ang[j] = M_PI - std::acos(gl_polar.qpoints[j][0]);
 
   // Create combined weights
   std::vector<double> weights;
   for (auto i = 0; i < azimu_ang.size(); ++i)
     for (auto j = 0; j < polar_ang.size(); ++j)
-      weights.emplace_back(2 * gc_azimu.weights[i] * gl_polar.weights[j]);
+      weights.emplace_back(2.0 * gc_azimu.weights[i] * gl_polar.weights[j]);
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 
-  OptimizeForPolarSymmetry(4.0 * M_PI);
+  log.Log() << "Using 2D XY Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
+            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
+            << std::endl;
 }
 
-GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal, bool verbose)
-  : ProductQuadrature(3)
+GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar,
+                                                     int Nazimuthal,
+                                                     int scattering_order,
+                                                     bool verbose)
+  : ProductQuadrature(3, scattering_order)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Npolar must be even.");
@@ -225,6 +206,13 @@ GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar, int Nazimuthal,
 
   // Initialize
   AssembleCosines(azimu_ang, polar_ang, weights, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
+
+  log.Log() << "Using 3D XYZ Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
+            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
+            << std::endl;
 }
 
 } // namespace opensn

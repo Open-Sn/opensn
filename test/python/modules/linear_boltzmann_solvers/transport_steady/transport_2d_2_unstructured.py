@@ -58,11 +58,11 @@ if __name__ == "__main__":
     mg_src2 = VolumetricSource(block_ids=[2], group_strength=strength)
 
     # Angular quadrature
-    pquad = GLCProductQuadrature2DXY(8, 32)
+    pquad = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=32, scattering_order=1)
 
     # Set up the boundary source
     bsrc = [0.0 for _ in range(num_groups)]
-    bsrc[0] = 1.0 / 4.0 / math.pi
+    bsrc[0] = 1.0
 
     # Create and configure the solver
     phys = DiscreteOrdinatesProblem(
@@ -91,6 +91,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_3_170},
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {
@@ -99,7 +100,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "scattering_order": 1,
             "max_ags_iterations": 1,
             "volumetric_sources": [mg_src1, mg_src2],
         }

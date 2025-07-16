@@ -45,7 +45,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Angular quadrature
-    pquad = GLCProductQuadrature3DXYZ(4, 8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Create solver
     phys = DiscreteOrdinatesProblem(
@@ -67,6 +67,7 @@ if __name__ == "__main__":
                 "xs": xs1g
             }
         ],
+        scattering_order=1,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},

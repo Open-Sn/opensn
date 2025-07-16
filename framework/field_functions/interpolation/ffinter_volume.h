@@ -5,7 +5,7 @@
 
 #include "framework/field_functions/interpolation/ffinterpolation.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/math/functions/scalar_material_function.h"
+#include "framework/math/functions/function.h"
 
 namespace opensn
 {
@@ -23,7 +23,7 @@ private:
   std::shared_ptr<LogicalVolume> logical_volume_;
   FieldFunctionInterpolationOperation op_type_;
   double op_value_;
-  std::shared_ptr<ScalarMaterialFunction> oper_function_;
+  ScalarMaterialFunction oper_function_;
   std::vector<uint64_t> cell_local_ids_inside_logvol_;
 
 public:
@@ -49,7 +49,10 @@ public:
 
   double GetValue() const { return op_value_; }
 
-  void SetOperationFunction(std::shared_ptr<ScalarMaterialFunction> function);
+  inline void SetOperationFunction(const ScalarMaterialFunction& function)
+  {
+    oper_function_ = function;
+  }
 
   void Initialize() override;
 

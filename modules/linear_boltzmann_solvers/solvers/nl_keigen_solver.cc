@@ -53,8 +53,7 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
   : Solver(params),
-    lbs_problem_(std::dynamic_pointer_cast<LBSProblem>(
-      params.GetParamValue<std::shared_ptr<Problem>>("lbs_problem"))),
+    lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem")),
     nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),

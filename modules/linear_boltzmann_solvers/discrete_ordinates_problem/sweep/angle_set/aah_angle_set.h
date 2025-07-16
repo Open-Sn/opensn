@@ -23,7 +23,8 @@ public:
                std::vector<size_t>& angle_indices,
                std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                int maximum_message_size,
-               const MPICommunicatorSet& in_comm_set);
+               const MPICommunicatorSet& in_comm_set,
+               bool use_gpu);
 
   void InitializeDelayedUpstreamData() override;
 

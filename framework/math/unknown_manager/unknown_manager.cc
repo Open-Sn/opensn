@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

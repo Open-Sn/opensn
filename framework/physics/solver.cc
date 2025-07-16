@@ -43,13 +43,6 @@ Solver::Solver(std::string name)
 {
 }
 
-Solver::Solver(std::string name, std::initializer_list<BasicOption> options)
-  : basic_options_(options),
-    timestepper_(InitTimeStepper(GetInputParameters())),
-    name_(std::move(name))
-{
-}
-
 Solver::Solver(const InputParameters& params)
   : Object(params),
     timestepper_(InitTimeStepper(params)),
@@ -62,7 +55,7 @@ Solver::InitTimeStepper(const InputParameters& params)
 {
   if (params.IsParameterValid("timestepper"))
   {
-    auto stepper = params.GetParamValue<std::shared_ptr<TimeStepper>>("timestepper");
+    auto stepper = params.GetSharedPtrParam<TimeStepper>("timestepper");
 
     stepper->SetTimeStepSize(params.GetParamValue<double>("dt"));
     stepper->SetTime(params.GetParamValue<double>("time"));
@@ -103,18 +96,6 @@ std::string
 Solver::GetName() const
 {
   return name_;
-}
-
-BasicOptions&
-Solver::GetBasicOptions()
-{
-  return basic_options_;
-}
-
-const BasicOptions&
-Solver::GetBasicOptions() const
-{
-  return basic_options_;
 }
 
 TimeStepper&

@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/math_range.h"
+#include "framework/data_types/range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -20,8 +20,9 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                           const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
+                           const MPICommunicatorSet& comm_set,
+                           bool use_gpu)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpu),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     async_comm_(id, *fluds, comm_set)
 {

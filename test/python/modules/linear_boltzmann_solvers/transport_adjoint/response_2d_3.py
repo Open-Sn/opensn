@@ -84,7 +84,7 @@ if __name__ == "__main__":
     pt_src = PointSource(location=loc, strength=src)
 
     # Create a 2D angular quadrature with 4 polar and 48 azimuthal angles.
-    pquad = GLCProductQuadrature2DXY(4, 48)
+    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=48, scattering_order=0)
 
     # Setup physics
     phys = DiscreteOrdinatesProblem(
@@ -104,8 +104,8 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_1},
             {"block_ids": [1], "xs": xs_2},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "point_sources": [pt_src],
         },
     )

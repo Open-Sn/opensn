@@ -14,6 +14,7 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/physics/problem.h"
 #include <petscksp.h>
+#include <any>
 #include <chrono>
 
 namespace opensn
@@ -39,7 +40,7 @@ public:
 
   LBSProblem& operator=(const LBSProblem&) = delete;
 
-  virtual ~LBSProblem() = default;
+  virtual ~LBSProblem();
 
   /// Returns a reference to the solver options.
   LBSOptions& GetOptions();
@@ -119,8 +120,14 @@ public:
   /// Obtains a reference to the grid.
   const std::shared_ptr<MeshContinuum> GetGrid() const;
 
+  /// Get pointer to carriers.
+  inline void* GetCarrier(std::uint32_t idx) { return carriers_.at(idx); }
+
+  /// Get pointer to pinners.
+  inline void* GetPinner(std::uint32_t idx) { return pinners_.at(idx); }
+
   /// Obtains a reference to the spatial discretization.
-  const class SpatialDiscretization& GetSpatialDiscretization() const;
+  const SpatialDiscretization& GetSpatialDiscretization() const;
 
   /// Returns read-only access to the unit cell matrices.
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
@@ -213,40 +220,6 @@ public:
   /// Initializes default materials and physics materials.
   void InitializeMaterials();
 
-  /// Initializes the Within-Group DSA solver.
-  void InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
-
-  /**
-   * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
-   * DOFs needed by WGDSA.
-   */
-  std::vector<double> WGSCopyOnlyPhi0(const LBSGroupset& groupset,
-                                      const std::vector<double>& phi_in);
-
-  /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
-  void GSProjectBackPhi0(const LBSGroupset& groupset,
-                         const std::vector<double>& input,
-                         std::vector<double>& output);
-
-  /// Assembles a delta-phi vector on the first moment.
-  void AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                   const std::vector<double>& phi_in,
-                                   std::vector<double>& delta_phi_local);
-
-  /// DAssembles a delta-phi vector on the first moment.
-  void DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                      const std::vector<double>& delta_phi_local,
-                                      std::vector<double>& ref_phi_new);
-
-  /// Assembles a delta-phi vector on the first moment.
-  void AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                   const std::vector<double>& phi_in,
-                                   std::vector<double>& delta_phi_local);
-
-  /// DAssembles a delta-phi vector on the first moment.
-  void DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                      const std::vector<double>& delta_phi_local,
-                                      std::vector<double>& ref_phi_new);
   bool TriggerRestartDump()
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
@@ -290,7 +263,7 @@ public:
    *
    * @note This does nothing for diffusion-based solvers.
    */
-  virtual void ReorientAdjointSolution(){};
+  virtual void ReorientAdjointSolution() {};
 
 protected:
   /// Performs general input checks before initialization continues.
@@ -307,7 +280,7 @@ protected:
   void InitializeGroupsets();
 
   /// Computes the number of moments for the given mesher types
-  void ComputeNumberOfMoments();
+  void ValidateAndComputeScatteringMoments();
 
   /// Initializes parallel arrays.
   virtual void InitializeParrays();
@@ -319,14 +292,18 @@ protected:
 
   virtual void InitializeSolverSchemes();
 
-  virtual void InitializeWGSSolvers(){};
+  virtual void InitializeWGSSolvers() {};
 
-  /// Initializes the Within-Group DSA solver.
-  void InitTGDSA(LBSGroupset& groupset);
+  /// Initializes data carriers to GPUs and memory pinner.
+  void InitializeGPUExtras();
+
+  /// Reset data carriers to null and unpin memory.
+  void ResetGPUCarriers();
 
   LBSOptions options_;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
+  size_t scattering_order_ = 0;
   size_t num_precursors_ = 0;
   size_t max_precursors_per_material_ = 0;
 
@@ -339,7 +316,7 @@ protected:
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
 
   std::shared_ptr<MeshContinuum> grid_;
-  std::shared_ptr<opensn::SpatialDiscretization> discretization_ = nullptr;
+  std::shared_ptr<SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
   std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
@@ -352,7 +329,7 @@ protected:
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
-  opensn::UnknownManager flux_moments_uk_man_;
+  UnknownManager flux_moments_uk_man_;
 
   size_t max_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
@@ -375,11 +352,23 @@ protected:
   /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
 
-  /// Cleans up memory consuming items.
-  static void CleanUpWGDSA(LBSGroupset& groupset);
+  /**
+   * @brief Data carriers for necessary data to run the sweep on GPU.
+   * @details These objects manage GPU memory allocation automatically, organize cross-section,
+   * outflow, and mesh data into contiguous memory on the CPU, and handle copying it to the GPU.
+   *
+   * There are 3 carriers, respectively for cross sections, outflow and mesh.
+   */
+  std::array<void*, 3> carriers_ = {nullptr, nullptr, nullptr};
 
-  /// Cleans up memory consuming items.
-  static void CleanUpTGDSA(LBSGroupset& groupset);
+  /// Memory pinner for source moments and destination phi.
+  std::array<void*, 2> pinners_ = {nullptr, nullptr};
+
+  /// Flag indicating if GPU acceleration is enabled.
+  bool use_gpus_;
+
+  /// Checks if the current CPU is associated with any GPU.
+  static void CheckCapableDevices();
 
 public:
   static std::map<std::string, uint64_t> supported_boundary_names;

@@ -52,6 +52,8 @@ public:
   std::string wgdsa_string;
   std::string tgdsa_string;
 
+  void* quad_carrier = nullptr;
+
   std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
   std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
 
@@ -73,13 +75,15 @@ public:
 
   LBSGroupset();
 
-  /// Computes the discrete to moment operator.
-  void BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type);
-
-  /// Computes the moment to discrete operator.
-  void BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type);
-
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
+
+  /// Initialize carrier for copying quadrature data to GPU.
+  void InitializeGPUCarriers();
+
+  /// Delete carrier and deallocate memory on GPU.
+  void ResetGPUCarriers();
+
+  ~LBSGroupset();
 
 private:
   void Init(int id);

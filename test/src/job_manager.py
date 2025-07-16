@@ -300,7 +300,7 @@ def BuildSearchHierarchyForTests(argv):
             if argv.engine == "jupyter":
                 file_name = ConvertNbToScript(os.path.join(dir_path, file_name))
             base_name, extension = os.path.splitext(file_name)
-            if extension == ".lua" or extension == ".py":
+            if extension == ".py":
                 abs_dir_path = os.path.abspath(dir_path) + "/"
                 if abs_dir_path not in test_hierarchy:
                     test_hierarchy[abs_dir_path] = [file_name]

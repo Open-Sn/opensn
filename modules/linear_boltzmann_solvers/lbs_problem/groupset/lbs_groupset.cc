@@ -157,7 +157,7 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSP
   }
 
   // Add quadrature
-  quadrature = params.GetParamValue<std::shared_ptr<AngularQuadrature>>("angular_quadrature");
+  quadrature = params.GetSharedPtrParam<AngularQuadrature>("angular_quadrature");
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");
@@ -203,42 +203,21 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSP
   tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
+#ifndef __OPENSN_USE_CUDA__
 void
-LBSGroupset::BuildDiscMomOperator(unsigned int scattering_order, GeometryType geometry_type)
+LBSGroupset::InitializeGPUCarriers()
 {
-  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
-      geometry_type == GeometryType::ONED_SPHERICAL)
-  {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order);
-  }
-  else if (geometry_type == GeometryType::TWOD_CARTESIAN or
-           geometry_type == GeometryType::TWOD_CYLINDRICAL)
-  {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order);
-  }
-  else if (geometry_type == GeometryType::THREED_CARTESIAN)
-  {
-    quadrature->BuildDiscreteToMomentOperator(scattering_order);
-  }
 }
 
 void
-LBSGroupset::BuildMomDiscOperator(unsigned int scattering_order, GeometryType geometry_type)
+LBSGroupset::ResetGPUCarriers()
 {
-  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
-      geometry_type == GeometryType::ONED_SPHERICAL)
-  {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order);
-  }
-  else if (geometry_type == GeometryType::TWOD_CARTESIAN or
-           geometry_type == GeometryType::TWOD_CYLINDRICAL)
-  {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order);
-  }
-  else if (geometry_type == GeometryType::THREED_CARTESIAN)
-  {
-    quadrature->BuildMomentToDiscreteOperator(scattering_order);
-  }
+}
+#endif // __OPENSN_USE_CUDA__
+
+LBSGroupset::~LBSGroupset()
+{
+  ResetGPUCarriers();
 }
 
 } // namespace opensn

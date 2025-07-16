@@ -22,7 +22,7 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
     from pyopensn.fieldfunc import FieldFunctionGridBased
     from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.settings import EnableCaliper
+    from pyopensn.context import EnableCaliper
     from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature3DXYZ(4, 8)
+    pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=0)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -101,8 +101,8 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_upscatter},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "verbose_ags_iterations": True,
             "max_ags_iterations": 30,
             "ags_tolerance": 1.0e-6,

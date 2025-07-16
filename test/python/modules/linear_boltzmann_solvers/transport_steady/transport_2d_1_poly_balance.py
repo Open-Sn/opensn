@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Setup Physics
     fac = 1
-    pquad = GLCProductQuadrature2DXY(6 * fac, 16 * fac)
+    pquad = GLCProductQuadrature2DXY(n_polar=6 * fac, n_azimuthal=16 * fac, scattering_order=0)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1], "xs": xs_1g},
         ],
+        scattering_order=0,
         options={
-            "scattering_order": 0,
             "volumetric_sources": [mg_src0, mg_src1],
         },
     )

@@ -60,17 +60,25 @@ LBSProblem::GetInputParameters()
   params.LinkParameterToBlock("groupsets", "LBSGroupset");
 
   params.AddRequiredParameterArray("xs_map",
-                                   "Cross-section map from block IDs to corss-section objects.");
+                                   "Cross-section map from block IDs to cross-section objects.");
+
+  params.AddRequiredParameter<size_t>("scattering_order",
+                                      "The level of harmonic expansion for the scattering source.");
 
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
 
+  params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
+
   return params;
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
-  : Problem(params), grid_(params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh"))
+  : Problem(params),
+    scattering_order_(params.GetParamValue<size_t>("scattering_order")),
+    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
+    use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -104,9 +112,19 @@ LBSProblem::LBSProblem(const InputParameters& params)
     const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
     block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     const auto& block_ids = block_ids_param.GetVectorValue<int>();
-    auto xs = xs_entry_pars.GetParamValue<std::shared_ptr<MultiGroupXS>>("xs");
+    auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
+  }
+  // Check system for GPU acceleration
+  if (use_gpus_)
+  {
+#ifdef __OPENSN_USE_CUDA__
+    CheckCapableDevices();
+#else
+    throw std::invalid_argument(
+      "GPU support was requested, but OpenSn was built without CUDA enabled.\n");
+#endif // __OPENSN_USE_CUDA__
   }
 
   // Options
@@ -441,8 +459,6 @@ LBSProblem::GetOptionsBlock()
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
                               "is supported");
-  params.AddOptionalParameter(
-    "scattering_order", 1, "Defines the level of harmonic expansion for the scattering source.");
   params.AddOptionalParameter("max_mpi_message_size",
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
@@ -637,9 +653,6 @@ LBSProblem::SetOptions(const InputParameters& input)
         options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
     }
 
-    else if (spec.GetName() == "scattering_order")
-      options_.scattering_order = spec.GetValue<int>();
-
     else if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
@@ -828,7 +841,7 @@ LBSProblem::Initialize()
   InitializeMaterials();
   InitializeSpatialDiscretization();
   InitializeGroupsets();
-  ComputeNumberOfMoments();
+  ValidateAndComputeScatteringMoments();
   InitializeParrays();
   InitializeBoundaries();
 
@@ -839,6 +852,8 @@ LBSProblem::Initialize()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
+
+  InitializeGPUExtras();
 }
 
 void
@@ -892,7 +907,7 @@ LBSProblem::PrintSimHeader()
   {
     std::stringstream outstr;
     outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
-           << "Scattering order    : " << options_.scattering_order << "\n"
+           << "Scattering order    : " << scattering_order_ << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
 
@@ -952,14 +967,6 @@ LBSProblem::InitializeMaterials()
   for (auto [blk_id, mat] : block_id_to_xs_map_)
   {
     mat->SetAdjointMode(options_.adjoint);
-
-    // Check number of moments
-    if (block_id_to_xs_map_[blk_id]->GetScatteringOrder() < options_.scattering_order)
-    {
-      log.Log0Warning() << __FUNCTION__ << ": Cross-sections on block \"" << blk_id
-                        << "\" has a lower scattering order (" << mat->GetScatteringOrder() << ") "
-                        << "than the simulation (" << options_.scattering_order << ").";
-    }
 
     OpenSnLogicalErrorIf(mat->GetNumGroups() < groups_.size(),
                          "Cross-sections on block \"" + std::to_string(blk_id) +
@@ -1084,15 +1091,15 @@ LBSProblem::ComputeUnitIntegrals()
           IntV_shapeI_shapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
             fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp); // M-matrix
-        }                                                        // for qp
-      }                                                          // for j
+        } // for qp
+      } // for j
 
       for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) +=
           swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
-    }   // for i
+    } // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
@@ -1115,15 +1122,15 @@ LBSProblem::ComputeUnitIntegrals()
                                                fe_srf_data.ShapeValue(i, qp) *
                                                fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
-        }   // for j
+        } // for j
 
         for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) +=
             swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
-      }   // for i
-    }     // for f
+      } // for i
+    } // for f
 
     return UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
                             IntV_shapeI_gradshapeJ,
@@ -1176,25 +1183,76 @@ LBSProblem::InitializeGroupsets()
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
 
-    groupset.BuildDiscMomOperator(options_.scattering_order, options_.geometry_type);
-    groupset.BuildMomDiscOperator(options_.scattering_order, options_.geometry_type);
+    if (use_gpus_)
+      groupset.InitializeGPUCarriers();
   } // for groupset
 }
 
 void
-LBSProblem::ComputeNumberOfMoments()
+LBSProblem::ValidateAndComputeScatteringMoments()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::ComputeNumberOfMoments");
+  /*
+    lfs: Legendre order used in the flux solver
+    lxs: Legendre order used in the cross-section library
+    laq: Legendre order supported by the angular quadrature
+  */
+
+  int lfs = scattering_order_;
+  if (lfs < 0)
+    throw std::invalid_argument("LBSProblem: Scattering order must be >= 0");
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetMomentToHarmonicsIndexMap() !=
-        groupsets_[0].quadrature->GetMomentToHarmonicsIndexMap())
-      throw std::logic_error("LBSProblem: Moment-to-Harmonics mapping differs between groupsets");
+    if (groupsets_[gs].quadrature->GetScatteringOrder() !=
+        groupsets_[0].quadrature->GetScatteringOrder())
+      throw std::logic_error("LBSProblem: Number of scattering moments differs between groupsets");
+  int laq = groupsets_[0].quadrature->GetScatteringOrder();
 
-  num_moments_ = (int)groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap().size();
+  for (auto [blk_id, mat] : block_id_to_xs_map_)
+  {
+    int lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
 
-  if (num_moments_ == 0)
-    throw std::logic_error("LBSProblem: Unable to infer number of moments from angular quadrature");
+    if (laq > lxs)
+    {
+      log.Log0Warning()
+        << "The quadrature set(s) supports more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+
+    if (lfs < lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with fewer scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+    else if (lfs > lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+  }
+
+  if (lfs < laq)
+  {
+    log.Log0Warning() << "Using fewer rows/columns of angular matrices (M, D) than the quadrature "
+                      << "supports" << std::endl;
+  }
+  else if (lfs > laq)
+    throw std::logic_error(
+      "LBSProblem: Solver requires more flux moments than the angular quadrature supports");
+
+  // Compute number of solver moments.
+  auto geometry_type = options_.geometry_type;
+  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
+      geometry_type == GeometryType::ONED_SPHERICAL or
+      geometry_type == GeometryType::TWOD_CYLINDRICAL)
+  {
+    num_moments_ = lfs + 1;
+  }
+  else if (geometry_type == GeometryType::TWOD_CARTESIAN)
+    num_moments_ = ((lfs + 1) * (lfs + 2)) / 2;
+  else if (geometry_type == GeometryType::THREED_CARTESIAN)
+    num_moments_ = (lfs + 1) * (lfs + 1);
 }
 
 void
@@ -1419,7 +1477,7 @@ LBSProblem::InitializeFieldFunctions()
 
       phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
     } // for m
-  }   // for g
+  } // for g
 
   // Initialize power generation field function
   if (options_.power_field_function_on)
@@ -1542,7 +1600,7 @@ LBSProblem::InitializeBoundaries()
           G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
       }
     } // non-defaulted
-  }   // for bndry id
+  } // for bndry id
 }
 
 void
@@ -1568,355 +1626,23 @@ LBSProblem::InitializeSolverSchemes()
   ags_solver_->SetTolerance(options_.ags_tolerance);
 }
 
+#ifndef __OPENSN_USE_CUDA__
 void
-LBSProblem::InitWGDSA(LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
+LBSProblem::InitializeGPUExtras()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::InitWGDSA");
-
-  if (groupset.apply_wgdsa)
-  {
-    // Make UnknownManager
-    const size_t num_gs_groups = groupset.groups.size();
-    opensn::UnknownManager uk_man;
-    uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
-
-    // Make boundary conditions
-    auto bcs = TranslateBCs(sweep_boundaries_, vaccum_bcs_are_dirichlet);
-
-    // Make xs map
-    auto matid_2_mgxs_map =
-      PackGroupsetXS(block_id_to_xs_map_, groupset.groups.front().id, groupset.groups.back().id);
-
-    // Create solver
-    const auto& sdm = *discretization_;
-
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_WGDSA"),
-                                                       sdm,
-                                                       uk_man,
-                                                       bcs,
-                                                       matid_2_mgxs_map,
-                                                       unit_cell_matrices_,
-                                                       false,
-                                                       true);
-    ParameterBlock block;
-
-    solver->options.residual_tolerance = groupset.wgdsa_tol;
-    solver->options.max_iters = groupset.wgdsa_max_iters;
-    solver->options.verbose = groupset.wgdsa_verbose;
-    solver->options.additional_options_string = groupset.wgdsa_string;
-
-    solver->Initialize();
-
-    std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
-
-    solver->AssembleAand_b(dummy_rhs);
-
-    groupset.wgdsa_solver = solver;
-  }
 }
 
 void
-LBSProblem::CleanUpWGDSA(LBSGroupset& groupset)
+LBSProblem::ResetGPUCarriers()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::CleanUpWGDSA");
-
-  if (groupset.apply_wgdsa)
-    groupset.wgdsa_solver = nullptr;
-}
-
-std::vector<double>
-LBSProblem::WGSCopyOnlyPhi0(const LBSGroupset& groupset, const std::vector<double>& phi_in)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::WGSCopyOnlyPhi0");
-
-  const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-
-      double* output_mapped = &output_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
-      for (size_t g = 0; g < gss; ++g)
-      {
-        output_mapped[g] = phi_in_mapped[g];
-      } // for g
-    }   // for node
-  }     // for cell
-
-  return output_phi_local;
 }
 
 void
-LBSProblem::GSProjectBackPhi0(const LBSGroupset& groupset,
-                              const std::vector<double>& input,
-                              std::vector<double>& output)
+LBSProblem::CheckCapableDevices()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::GSProjectBackPhi0");
-
-  const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-
-      const double* input_mapped = &input[dphi_map];
-      double* output_mapped = &output[phi_map];
-
-      for (int g = 0; g < gss; ++g)
-        output_mapped[g] = input_mapped[g];
-    } // for dof
-  }   // for cell
 }
 
-void
-LBSProblem::AssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                        const std::vector<double>& phi_in,
-                                        std::vector<double>& delta_phi_local)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::AssembleWGDSADeltaPhiVector");
-
-  const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  delta_phi_local.clear();
-  delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = block_id_to_xs_map_[cell.block_id]->GetSigmaSGtoG();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-
-      double* delta_phi_mapped = &delta_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
-      for (size_t g = 0; g < gss; ++g)
-      {
-        delta_phi_mapped[g] = sigma_s[gsi + g] * phi_in_mapped[g];
-      } // for g
-    }   // for node
-  }     // for cell
-}
-
-void
-LBSProblem::DisAssembleWGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                           const std::vector<double>& delta_phi_local,
-                                           std::vector<double>& ref_phi_new)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::DisAssembleWGDSADeltaPhiVector");
-
-  const auto& sdm = *discretization_;
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-
-      const double* delta_phi_mapped = &delta_phi_local[dphi_map];
-      double* phi_new_mapped = &ref_phi_new[phi_map];
-
-      for (int g = 0; g < gss; ++g)
-        phi_new_mapped[g] += delta_phi_mapped[g];
-    } // for dof
-  }   // for cell
-}
-
-void
-LBSProblem::InitTGDSA(LBSGroupset& groupset)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::InitTGDSA");
-
-  if (groupset.apply_tgdsa)
-  {
-    // Make UnknownManager
-    const auto& uk_man = discretization_->UNITARY_UNKNOWN_MANAGER;
-
-    // Make boundary conditions
-    auto bcs = TranslateBCs(sweep_boundaries_);
-
-    // Make TwoGridInfo
-    for (const auto& mat_id_xs_pair : block_id_to_xs_map_)
-    {
-      const auto& mat_id = mat_id_xs_pair.first;
-      const auto& xs = mat_id_xs_pair.second;
-
-      TwoGridCollapsedInfo tginfo = MakeTwoGridCollapsedInfo(*xs, EnergyCollapseScheme::JFULL);
-
-      groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
-        std::make_pair(mat_id, std::move(tginfo)));
-    }
-
-    // Make xs map
-    std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
-    for (const auto& matid_xs_pair : block_id_to_xs_map_)
-    {
-      const auto& mat_id = matid_xs_pair.first;
-
-      const auto& tg_info = groupset.tg_acceleration_info_.map_mat_id_2_tginfo.at(mat_id);
-
-      matid_2_mgxs_map.insert(std::make_pair(
-        mat_id, Multigroup_D_and_sigR{{tg_info.collapsed_D}, {tg_info.collapsed_sig_a}}));
-    }
-
-    // Create solver
-    const auto& sdm = *discretization_;
-
-    auto solver = std::make_shared<DiffusionMIPSolver>(std::string(GetName() + "_TGDSA"),
-                                                       sdm,
-                                                       uk_man,
-                                                       bcs,
-                                                       matid_2_mgxs_map,
-                                                       unit_cell_matrices_,
-                                                       false,
-                                                       true);
-
-    solver->options.residual_tolerance = groupset.tgdsa_tol;
-    solver->options.max_iters = groupset.tgdsa_max_iters;
-    solver->options.verbose = groupset.tgdsa_verbose;
-    solver->options.additional_options_string = groupset.tgdsa_string;
-
-    solver->Initialize();
-
-    std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
-
-    solver->AssembleAand_b(dummy_rhs);
-
-    groupset.tgdsa_solver = solver;
-  }
-}
-
-void
-LBSProblem::CleanUpTGDSA(LBSGroupset& groupset)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::CleanUpTGDSA");
-
-  if (groupset.apply_tgdsa)
-    groupset.tgdsa_solver = nullptr;
-}
-
-void
-LBSProblem::AssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                        const std::vector<double>& phi_in,
-                                        std::vector<double>& delta_phi_local)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::AssembleTGDSADeltaPhiVector");
-
-  const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  delta_phi_local.clear();
-  delta_phi_local.assign(local_node_count_, 0.0);
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& S = block_id_to_xs_map_[cell.block_id]->GetTransferMatrix(0);
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
-
-      double& delta_phi_mapped = delta_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
-      for (size_t g = 0; g < gss; ++g)
-      {
-        double R_g = 0.0;
-        for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
-
-        delta_phi_mapped += R_g;
-      } // for g
-    }   // for node
-  }     // for cell
-}
-
-void
-LBSProblem::DisAssembleTGDSADeltaPhiVector(const LBSGroupset& groupset,
-                                           const std::vector<double>& delta_phi_local,
-                                           std::vector<double>& ref_phi_new)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::DisAssembleTGDSADeltaPhiVector");
-
-  const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  const int gsi = groupset.groups.front().id;
-  const size_t gss = groupset.groups.size();
-
-  const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
-
-  for (const auto& cell : grid_->local_cells)
-  {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
-
-    const auto& xi_g = map_mat_id_2_tginfo.at(cell.block_id).spectrum;
-
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
-
-      const double delta_phi_mapped = delta_phi_local[dphi_map];
-      double* phi_new_mapped = &ref_phi_new[phi_map];
-
-      for (int g = 0; g < gss; ++g)
-        phi_new_mapped[g] += delta_phi_mapped * xi_g[gsi + g];
-    } // for dof
-  }   // for cell
-}
+#endif // __OPENSN_USE_CUDA__
 
 std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()
@@ -1966,7 +1692,7 @@ LBSProblem::UpdateFieldFunctions()
 
         data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
-    }   // for cell
+    } // for cell
 
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
@@ -2008,7 +1734,7 @@ LBSProblem::UpdateFieldFunctions()
         data_vector_local[imapA] = nodal_power;
         local_total_power += nodal_power * Vi(i);
       } // for node
-    }   // for cell
+    } // for cell
 
     if (options_.power_normalization > 0.0)
     {
@@ -2068,9 +1794,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
-      }   // for cell
-    }     // for g
-  }       // for m
+      } // for cell
+    } // for g
+  } // for m
 }
 
 double
@@ -2115,7 +1841,7 @@ LBSProblem::ComputeFissionProduction(const std::vector<double>& phi)
             local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
-  }   // for cell
+  } // for cell
 
   // Allreduce global production
   double global_production = 0.0;
@@ -2158,7 +1884,7 @@ LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
       for (size_t g = first_grp; g <= last_grp; ++g)
         local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
     } // for node
-  }   // for cell
+  } // for cell
 
   // Allreduce global production
   double global_fission_rate = 0.0;
@@ -2206,9 +1932,14 @@ LBSProblem::ComputePrecursors()
           precursor_new_local_[dof] +=
             coeff * nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
       } // for node i
-    }   // for precursor j
+    } // for precursor j
 
   } // for cell
+}
+
+LBSProblem::~LBSProblem()
+{
+  ResetGPUCarriers();
 }
 
 } // namespace opensn
