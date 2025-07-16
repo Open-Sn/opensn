@@ -171,7 +171,7 @@ public:
    * Communicate the current ghost entries, if applicable, to all other processes to update the
    * locally stored ghost data.
    */
-  virtual void CommunicateGhostEntries(){};
+  virtual void CommunicateGhostEntries() {};
 
   virtual ~ParallelVector() = default;
 

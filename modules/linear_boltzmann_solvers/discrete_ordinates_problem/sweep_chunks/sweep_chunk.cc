@@ -25,9 +25,9 @@ SweepChunk::ZeroDestinationPhi()
         {
           (destination_phi_)[mapping + g] = 0.0;
         } // for g
-      }   // for moment
-    }     // for dof
-  }       // for cell
+      } // for moment
+    } // for dof
+  } // for cell
 }
 
 } // namespace opensn

@@ -464,15 +464,18 @@ WrapLBS(py::module& slv)
         The spatial mesh.
     num_groups : int
         The total number of energy groups.
-    groupsets : list of dict
+    groupsets : List[Dict], default=[]
         A list of input parameter blocks, each block provides the iterative properties for a
         groupset.
-    xs_map : list of dict
+    xs_map : List[Dict], default=[]
         A list of mappings from block ids to cross-section definitions.
-    options : dict, optional
+    options : Dict, default={}
         A block of optional configuration parameters. See `SetOptions` for available settings.
-    sweep_type : str, optional
+    sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
+    use_gpus : bool, default=False
+        A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
+        supported.
     )"
   );
   do_problem.def(

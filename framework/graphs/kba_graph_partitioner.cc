@@ -77,7 +77,7 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
         prev_value = cut_value;
       }
     } // for cut value
-  }   // for each coordinate
+  } // for each coordinate
 }
 
 std::vector<int64_t>

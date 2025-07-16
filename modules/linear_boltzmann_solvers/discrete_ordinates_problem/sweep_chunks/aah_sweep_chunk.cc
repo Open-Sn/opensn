@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
-
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -20,7 +19,12 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                              const LBSGroupset& groupset,
                              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                              int num_moments,
-                             int max_num_cell_dofs)
+                             int max_num_cell_dofs,
+                             DiscreteOrdinatesProblem& problem,
+                             size_t max_level_size,
+                             size_t max_groupset_size,
+                             size_t max_angleset_size,
+                             bool use_gpus)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -32,12 +36,26 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
                groupset,
                xs,
                num_moments,
-               max_num_cell_dofs)
+               max_num_cell_dofs),
+    problem_(problem),
+    max_level_size_(max_level_size),
+    use_gpus_(use_gpus)
 {
+  if (use_gpus_)
+    CreateDeviceLevelVector();
 }
 
 void
 AAHSweepChunk::Sweep(AngleSet& angle_set)
+{
+  if (use_gpus_)
+    GPUSweep(angle_set);
+  else
+    CPUSweep(angle_set);
+}
+
+void
+AAHSweepChunk::CPUSweep(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("AAHSweepChunk::Sweep");
 
@@ -83,7 +101,7 @@ AAHSweepChunk::Sweep(AngleSet& angle_set)
     // Loop over angles in set (as = angleset, ss = subset)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
-    const std::vector<size_t>& as_angle_indices = angle_set.GetAngleIndices();
+    const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
@@ -155,8 +173,8 @@ AAHSweepChunk::Sweep(AngleSet& angle_set)
             for (int gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
-        }   // for face node i
-      }     // for f
+        } // for face node i
+      } // for f
 
       // Looping over groups, assembling mass terms
       for (int gsg = 0; gsg < gs_size; ++gsg)
@@ -268,9 +286,32 @@ AAHSweepChunk::Sweep(AngleSet& angle_set)
               psi[gsg] = b[gsg](i);
           }
         } // for fi
-      }   // for face
-    }     // for angleset/subset
-  }       // for cell
+      } // for face
+    } // for angleset/subset
+  } // for cell
+}
+
+#ifndef __OPENSN_USE_CUDA__
+void
+AAHSweepChunk::GPUSweep(AngleSet& angle_set)
+{
+  throw std::runtime_error("OpenSn was not compiled with CUDA.\n");
+}
+
+void
+AAHSweepChunk::CreateDeviceLevelVector()
+{
+}
+
+void
+AAHSweepChunk::DestroyDeviceLevelVector()
+{
+}
+#endif // __OPENSN_USE_CUDA__
+
+AAHSweepChunk::~AAHSweepChunk()
+{
+  DestroyDeviceLevelVector();
 }
 
 } // namespace opensn

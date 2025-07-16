@@ -109,7 +109,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         for (size_t qp : qp_data.GetQuadraturePointIndices())
           cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
-    }   // continuous kernels
+    } // continuous kernels
 
     const size_t num_faces = cell.faces.size();
     for (size_t f = 0; f < num_faces; ++f)
@@ -165,7 +165,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
             MatSetValue(A, imap, jpmap, -aij, ADD_VALUES);
           } // for fj
-        }   // for fi
+        } // for fi
 
         // Assemble gradient terms
         // For the following comments we use the notation:
@@ -197,7 +197,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
             MatSetValue(A, imap, jpmap, -aij, ADD_VALUES);
           } // for fj
-        }   // for i
+        } // for i
 
         // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
         for (int fi = 0; fi < num_face_nodes; ++fi)
@@ -225,7 +225,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
             MatSetValue(A, immap, jmap, aij, ADD_VALUES);
             MatSetValue(A, ipmap, jmap, -aij, ADD_VALUES);
           } // for j
-        }   // for fi
+        } // for fi
 
       } // internal face
       else
@@ -261,7 +261,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
             MatSetValue(A, imap, jmmap, aij, ADD_VALUES);
             VecSetValue(b, imap, aij_bc_value, ADD_VALUES);
           } // for fj
-        }   // for fi
+        } // for fi
 
         // Assemble gradient terms
         // For the following comments we use the notation:
@@ -287,9 +287,9 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
             MatSetValue(A, imap, jmap, aij, ADD_VALUES);
             VecSetValue(b, imap, aij_bc_value, ADD_VALUES);
           } // for fj
-        }   // for i
-      }     // boundary face
-    }       // for face
+        } // for i
+      } // boundary face
+    } // for face
 
     // Develop node mapping
     std::vector<int64_t> imap(num_nodes, 0); // node-mapping
@@ -304,7 +304,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
 
       VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
     } // for i
-  }   // for cell
+  } // for cell
 
   opensn::log.Log() << "Global assembly";
 

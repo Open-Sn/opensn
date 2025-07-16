@@ -95,7 +95,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
         for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
           cell_rhs(i) += 1.0 * shape[i][qp] * JxW[qp];
       } // for i
-    }   // continuous kernels
+    } // continuous kernels
 
     // Apply dirichlet BCs
     for (auto i : bndry_nodes)
@@ -117,7 +117,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
 
       VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
     } // for i
-  }   // for cell
+  } // for cell
 
   opensn::log.Log() << "Global assembly";
 

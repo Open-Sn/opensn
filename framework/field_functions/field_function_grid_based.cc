@@ -181,10 +181,10 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 
             local_point_value[c] += dof_value * shape_values(j);
           } // for node i
-        }   // for component c
-      }     // if inside cell
-    }       // for cell
-  }         // if in bounding box
+        } // for component c
+      } // if inside cell
+    } // for cell
+  } // if in bounding box
 
   // Communicate number of point hits
   size_t global_num_point_hits;
@@ -314,7 +314,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
       point_data->AddArray(point_array);
       cell_data->AddArray(cell_array);
     } // for component
-  }   // for ff_ptr
+  } // for ff_ptr
 
   WritePVTUFiles(ugrid, file_base_name);
 

@@ -36,14 +36,14 @@ ReflectingBoundary::PsiOutgoing(uint64_t cell_local_id,
 }
 
 void
-ReflectingBoundary::UpdateAnglesReadyStatus(const std::vector<size_t>& angles)
+ReflectingBoundary::UpdateAnglesReadyStatus(const std::vector<std::uint32_t>& angles)
 {
   for (const size_t n : angles)
     angle_readyflags_[reflected_anglenum_[n]] = true;
 }
 
 bool
-ReflectingBoundary::CheckAnglesReadyStatus(const std::vector<size_t>& angles)
+ReflectingBoundary::CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles)
 {
   if (opposing_reflected_)
     return true;

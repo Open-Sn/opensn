@@ -1,0 +1,70 @@
+Language:        Cpp
+BasedOnStyle:  LLVM
+
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  PadOperators:    false
+AlignOperands:   AlignAfterOperator
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakTemplateDeclarations: true
+AttributeMacros:
+  - __host__
+  - __device__
+  - __global__
+  - __shared__
+  - __managed__
+BraceWrapping:
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakAfterAttributes: Always
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterComma
+ColumnLimit:     120
+ConstructorInitializerIndentWidth: 0
+ContinuationIndentWidth: 4
+IncludeBlocks:   Preserve
+IncludeCategories:
+  - Regex:           '^<ext/.*\.h>'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*\.h>'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'
+    Priority:        3
+    SortPriority:    0
+    CaseSensitive:   false
+IndentWidth:     4
+IndentCaseBlocks:    false
+IndentCaseLabels:    true
+InsertBraces:    true
+InsertNewlineAtEOF: true
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: false
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+PackConstructorInitializers: NextLine
+PenaltyBreakAssignment: 40
+PenaltyExcessCharacter: 100
+PointerAlignment: Middle
+ReferenceAlignment: Middle
+RemoveBracesLLVM: false
+RequiresClausePosition: OwnLine
+SpaceAfterCStyleCast: true
+SpaceBeforeCaseColon: true
+SpaceAroundPointerQualifiers: Both
+SpacesBeforeTrailingComments: 2
+SpacesInLineCommentPrefix:
+  Minimum:         1
+  Maximum:         1
+Standard:        c++20

@@ -145,7 +145,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
       if (std::fabs(xk[k] - xold) < tol)
         break;
     } // for iteration
-  }   // for k
+  } // for k
 
   std::stable_sort(xk.begin(), xk.end());
 

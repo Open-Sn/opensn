@@ -69,13 +69,16 @@ LBSProblem::GetInputParameters()
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
 
+  params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
+
   return params;
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
     scattering_order_(params.GetParamValue<size_t>("scattering_order")),
-    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh"))
+    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
+    use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Make groups
   const size_t num_groups = params.GetParamValue<size_t>("num_groups");
@@ -112,6 +115,16 @@ LBSProblem::LBSProblem(const InputParameters& params)
     auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
+  }
+  // Check system for GPU acceleration
+  if (use_gpus_)
+  {
+#ifdef __OPENSN_USE_CUDA__
+    CheckCapableDevices();
+#else
+    throw std::invalid_argument(
+      "GPU support was requested, but OpenSn was built without CUDA enabled.\n");
+#endif // __OPENSN_USE_CUDA__
   }
 
   // Options
@@ -839,6 +852,8 @@ LBSProblem::Initialize()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
+
+  InitializeGPUExtras();
 }
 
 void
@@ -1076,15 +1091,15 @@ LBSProblem::ComputeUnitIntegrals()
           IntV_shapeI_shapeJ(i, j) +=
             swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) *
             fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp); // M-matrix
-        }                                                        // for qp
-      }                                                          // for j
+        } // for qp
+      } // for j
 
       for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
       {
         IntV_shapeI(i) +=
           swf(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       } // for qp
-    }   // for i
+    } // for i
 
     //  surface integrals
     for (size_t f = 0; f < cell_num_faces; ++f)
@@ -1107,15 +1122,15 @@ LBSProblem::ComputeUnitIntegrals()
                                                fe_srf_data.ShapeValue(i, qp) *
                                                fe_srf_data.ShapeGrad(j, qp) * fe_srf_data.JxW(qp);
           } // for qp
-        }   // for j
+        } // for j
 
         for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
         {
           IntS_shapeI[f](i) +=
             swf(fe_srf_data.QPointXYZ(qp)) * fe_srf_data.ShapeValue(i, qp) * fe_srf_data.JxW(qp);
         } // for qp
-      }   // for i
-    }     // for f
+      } // for i
+    } // for f
 
     return UnitCellMatrices{IntV_gradshapeI_gradshapeJ,
                             IntV_shapeI_gradshapeJ,
@@ -1167,6 +1182,9 @@ LBSProblem::InitializeGroupsets()
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
+
+    if (use_gpus_)
+      groupset.InitializeGPUCarriers();
   } // for groupset
 }
 
@@ -1459,7 +1477,7 @@ LBSProblem::InitializeFieldFunctions()
 
       phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
     } // for m
-  }   // for g
+  } // for g
 
   // Initialize power generation field function
   if (options_.power_field_function_on)
@@ -1582,7 +1600,7 @@ LBSProblem::InitializeBoundaries()
           G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
       }
     } // non-defaulted
-  }   // for bndry id
+  } // for bndry id
 }
 
 void
@@ -1607,6 +1625,24 @@ LBSProblem::InitializeSolverSchemes()
   }
   ags_solver_->SetTolerance(options_.ags_tolerance);
 }
+
+#ifndef __OPENSN_USE_CUDA__
+void
+LBSProblem::InitializeGPUExtras()
+{
+}
+
+void
+LBSProblem::ResetGPUCarriers()
+{
+}
+
+void
+LBSProblem::CheckCapableDevices()
+{
+}
+
+#endif // __OPENSN_USE_CUDA__
 
 std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()
@@ -1656,7 +1692,7 @@ LBSProblem::UpdateFieldFunctions()
 
         data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
-    }   // for cell
+    } // for cell
 
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
@@ -1698,7 +1734,7 @@ LBSProblem::UpdateFieldFunctions()
         data_vector_local[imapA] = nodal_power;
         local_total_power += nodal_power * Vi(i);
       } // for node
-    }   // for cell
+    } // for cell
 
     if (options_.power_normalization > 0.0)
     {
@@ -1758,9 +1794,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
-      }   // for cell
-    }     // for g
-  }       // for m
+      } // for cell
+    } // for g
+  } // for m
 }
 
 double
@@ -1805,7 +1841,7 @@ LBSProblem::ComputeFissionProduction(const std::vector<double>& phi)
             local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
-  }   // for cell
+  } // for cell
 
   // Allreduce global production
   double global_production = 0.0;
@@ -1848,7 +1884,7 @@ LBSProblem::ComputeFissionRate(const std::vector<double>& phi)
       for (size_t g = first_grp; g <= last_grp; ++g)
         local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
     } // for node
-  }   // for cell
+  } // for cell
 
   // Allreduce global production
   double global_fission_rate = 0.0;
@@ -1896,9 +1932,14 @@ LBSProblem::ComputePrecursors()
           precursor_new_local_[dof] +=
             coeff * nu_delayed_sigma_f[g] * phi_new_local_[uk_map + g] * node_V_fraction;
       } // for node i
-    }   // for precursor j
+    } // for precursor j
 
   } // for cell
+}
+
+LBSProblem::~LBSProblem()
+{
+  ResetGPUCarriers();
 }
 
 } // namespace opensn
