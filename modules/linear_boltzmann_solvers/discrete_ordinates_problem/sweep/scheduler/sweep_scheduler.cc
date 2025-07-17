@@ -181,18 +181,17 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoFIFO");
 
   // Loop over AngleSetGroups
-  AngleSetStatus completion_status = AngleSetStatus::NOT_FINISHED;
-  while (completion_status == AngleSetStatus::NOT_FINISHED)
+  bool finished = false;
+  while (not finished)
   {
-    completion_status = AngleSetStatus::FINISHED;
+    finished = true;
 
     for (auto& angle_set_group : angle_agg_.angle_set_groups)
       for (auto& angle_set : angle_set_group.GetAngleSets())
       {
-        const auto angle_set_status =
-          angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-        if (angle_set_status == AngleSetStatus::NOT_FINISHED)
-          completion_status = AngleSetStatus::NOT_FINISHED;
+        AngleSetStatus status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+        if (status != AngleSetStatus::FINISHED)
+          finished = false;
       } // for angleset
   } // while not finished
 
