@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
-#include "framework/math/linear_solver/petsc_linear_solver.h"
+#include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include <memory>
 #include <vector>
 #include <functional>

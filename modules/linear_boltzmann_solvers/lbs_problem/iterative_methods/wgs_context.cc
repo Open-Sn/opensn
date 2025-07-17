@@ -15,7 +15,7 @@ WGSContext::WGSContext(LBSProblem& lbs_problem,
                        SourceFlags lhs_scope,
                        SourceFlags rhs_scope,
                        bool log_info)
-  : LinearSolverContext(),
+  : LinearSystemContext(),
     lbs_problem(lbs_problem),
     groupset(groupset),
     set_source_function(set_source_function),
