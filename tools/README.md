@@ -3,7 +3,6 @@
 This `tools` directory contains various tools for use by both developers and users.
 
 Files located at the root of `tools`:
-- `configure_dependencies.py`: Script for installing OpenSn dependencies
 - `Dockerfile`: A docker container definition file used to create an OpenSn image with a Ubuntu 24.04 base.
 
 ### Tools for Developer
