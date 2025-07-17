@@ -314,4 +314,182 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   opensn::mpi_comm.barrier();
 }
 
+std::vector<double>
+ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
+               const unsigned int groupset_id,
+               const uint64_t boundary_id)
+{
+  CALI_CXX_MARK_SCOPE("ComputeLeakage");
+
+  // Perform checks
+  OpenSnInvalidArgumentIf(groupset_id < 0 or groupset_id >= do_problem.GetGroupsets().size(),
+                          "Invalid groupset id.");
+  OpenSnLogicalErrorIf(not do_problem.GetOptions().save_angular_flux,
+                       "The option `save_angular_flux` must be set to `true` in order "
+                       "to compute outgoing currents.");
+
+  const auto& grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
+  const auto& groupset = do_problem.GetGroupsets().at(groupset_id);
+  const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
+  const auto& psi_new_local = do_problem.GetPsiNewLocal();
+  const auto& psi_uk_man = groupset.psi_uk_man_;
+  const auto& quadrature = groupset.quadrature;
+
+  const auto num_gs_angles = quadrature->omegas.size();
+  const auto num_gs_groups = groupset.groups.size();
+
+  const auto gsi = groupset.groups.front().id;
+  const auto gsf = groupset.groups.back().id;
+
+  // Start integration
+  std::vector<double> local_leakage(num_gs_groups, 0.0);
+  for (const auto& cell : grid->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& fe_values = unit_cell_matrices[cell.local_id];
+
+    unsigned int f = 0;
+    for (const auto& face : cell.faces)
+    {
+      if (not face.has_neighbor and face.neighbor_id == boundary_id)
+      {
+        const auto& int_f_shape_i = fe_values.intS_shapeI[f];
+        const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+        for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+        {
+          const auto i = cell_mapping.MapFaceNode(f, fi);
+          for (unsigned int n = 0; n < num_gs_angles; ++n)
+          {
+            const auto& omega = quadrature->omegas[n];
+            const auto& weight = quadrature->weights[n];
+            const auto mu = omega.Dot(face.normal);
+            if (mu > 0.0)
+            {
+              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+              {
+                const auto g = gsg + gsi;
+                const auto imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, g);
+                const auto psi = psi_new_local[groupset_id][imap];
+                local_leakage[gsg] += weight * mu * psi * int_f_shape_i(i);
+              } // for g
+            } // outgoing
+          } // for n
+        } // for face node
+      } // if right bndry
+      ++f;
+    } // for face
+  } // for cell
+
+  // Communicate to obtain global leakage
+  std::vector<double> global_leakage(num_gs_groups, 0.0);
+  mpi_comm.all_reduce(
+    local_leakage.data(), num_gs_groups, global_leakage.data(), mpi::op::sum<double>());
+
+  return global_leakage;
+}
+
+std::map<uint64_t, std::vector<double>>
+ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
+{
+  CALI_CXX_MARK_SCOPE("ComputeLeakage");
+
+  // Perform checks
+  OpenSnLogicalErrorIf(not do_problem.GetOptions().save_angular_flux,
+                       "The option `save_angular_flux` must be set to `true` in order "
+                       "to compute outgoing currents.");
+
+  const auto& grid = do_problem.GetGrid();
+  const auto unique_bids = grid->GetUniqueBoundaryIDs();
+  for (const auto& bid : boundary_ids)
+  {
+    const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);
+    OpenSnInvalidArgumentIf(it == unique_bids.end(),
+                            "Boundary ID " + std::to_string(bid) + "not found on grid.");
+  }
+
+  const auto num_groups = do_problem.GetNumGroups();
+  // Initialize local mapping
+  std::map<uint64_t, std::vector<double>> local_leakage;
+  for (const auto& bid : boundary_ids)
+    local_leakage[bid].assign(num_groups, 0.0);
+
+  const auto& sdm = do_problem.GetSpatialDiscretization();
+  const auto& groupsets = do_problem.GetGroupsets();
+  const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
+  const auto& psi_new_local = do_problem.GetPsiNewLocal();
+  // Go through groupsets
+  for (unsigned int gs = 0; gs < groupsets.size(); ++gs)
+  {
+    const auto& groupset = groupsets.at(gs);
+    const auto& psi_uk_man = groupset.psi_uk_man_;
+    const auto& quadrature = groupset.quadrature;
+
+    const auto num_gs_angles = quadrature->omegas.size();
+    const auto num_gs_groups = groupset.groups.size();
+    const auto first_gs_group = groupset.groups.front().id;
+
+    const auto& psi_gs = psi_new_local[gs];
+
+    // Loop over cells for integration
+    for (const auto& cell : grid->local_cells)
+    {
+      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& fe_values = unit_cell_matrices.at(cell.local_id);
+
+      unsigned int f = 0;
+      for (const auto& face : cell.faces)
+      {
+        // If face is on the specified boundary...
+        const auto it = std::find(boundary_ids.begin(), boundary_ids.end(), face.neighbor_id);
+        if (not face.has_neighbor and it != boundary_ids.end())
+        {
+          auto& bndry_leakage = local_leakage[face.neighbor_id];
+          const auto& int_f_shape_i = fe_values.intS_shapeI[f];
+          const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+          for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+          {
+            const auto i = cell_mapping.MapFaceNode(f, fi);
+            for (unsigned int n = 0; n < num_gs_angles; ++n)
+            {
+              const auto& omega = quadrature->omegas[n];
+              const auto& weight = quadrature->weights[n];
+              const auto mu = omega.Dot(face.normal);
+              if (mu <= 0.0)
+                continue;
+
+              const auto coeff = weight * mu * int_f_shape_i(i);
+              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+              {
+                const auto g = first_gs_group + gsg;
+                const auto imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, gsg);
+                bndry_leakage[g] += coeff * psi_gs[imap];
+              } // for groupset group gsg
+            } // for angle n
+          } // for face index fi
+        } // if face on desired boundary
+        ++f;
+      } // for face
+    } // for cell
+  } // for groupset gs
+
+  // Serialize the data
+  std::vector<double> local_data;
+  for (const auto& [bid, bndry_leakage] : local_leakage)
+    for (const auto& val : bndry_leakage)
+      local_data.emplace_back(val);
+
+  // Communicate the data
+  std::vector<double> global_data(local_data.size());
+  mpi_comm.all_reduce(
+    local_data.data(), local_data.size(), global_data.data(), mpi::op::sum<double>());
+
+  // Unpack the data
+  std::map<uint64_t, std::vector<double>> global_leakage;
+  for (unsigned int b = 0; b < boundary_ids.size(); ++b)
+    for (unsigned int g = 0; g < num_groups; ++g)
+      global_leakage[boundary_ids[b]].push_back(global_data[b * num_groups + g]);
+  return global_leakage;
+}
+
 } // namespace opensn

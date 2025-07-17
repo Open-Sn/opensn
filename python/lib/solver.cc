@@ -510,7 +510,7 @@ WrapLBS(py::module& slv)
         bndry_ids = self.GetGrid()->GetUniqueBoundaryIDs();
       }
       // compute the leakage
-      std::map<std::uint64_t, std::vector<double>> leakage = self.ComputeLeakage(bndry_ids);
+      std::map<std::uint64_t, std::vector<double>> leakage = ComputeLeakage(self, bndry_ids);
       // convert result to native Python
       py::dict result;
       for (const auto& [bndry_id, gr_wise_leakage] : leakage)
