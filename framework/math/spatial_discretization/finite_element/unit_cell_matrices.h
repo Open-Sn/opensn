@@ -1,0 +1,34 @@
+// SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "framework/data_types/dense_matrix.h"
+#include "framework/data_types/vector3.h"
+#include "framework/math/geometry.h"
+#include "framework/mesh/cell/cell.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/mesh/mesh.h"
+
+namespace opensn
+{
+
+struct UnitCellMatrices
+{
+  DenseMatrix<double> intV_gradshapeI_gradshapeJ;
+  DenseMatrix<Vector3> intV_shapeI_gradshapeJ;
+  DenseMatrix<double> intV_shapeI_shapeJ;
+  Vector<double> intV_shapeI;
+
+  std::vector<DenseMatrix<double>> intS_shapeI_shapeJ;
+  std::vector<DenseMatrix<Vector3>> intS_shapeI_gradshapeJ;
+  std::vector<Vector<double>> intS_shapeI;
+};
+
+/// Compute unit cell matrices for a given cell
+UnitCellMatrices
+ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
+                         const Cell& cell,
+                         const CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);
+
+} // namespace opensn
