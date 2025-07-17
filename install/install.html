@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation guide &mdash; OpenSn  documentation</title>
+  <title>OpenSn Installation &mdash; OpenSn  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Easy Install using built-in CMake script" href="easy_install.html" />
+    <link rel="next" title="Theory Manual" href="../theory/index.html" />
     <link rel="prev" title="Quick Install Guide" href="index.html" /> 
 </head>
 
@@ -48,14 +48,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Quick Install Guide</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Installation guide</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">OpenSn Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#install-development-tools">Install Development Tools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#install-petsc">Install PETSc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#install-vtk">Install VTK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#install-caliper">Install Caliper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#install-boost">Install Boost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#create-virtual-environment">Create virtual environment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clone-opensn">Clone OpenSn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configure-and-build-opensn">Configure and build OpenSn</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#console-application">Console application</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module">Module</a></li>
@@ -65,7 +61,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#build-documentation">Build documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="easy_install.html">Easy Install using built-in CMake script</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -89,7 +84,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Quick Install Guide</a></li>
-      <li class="breadcrumb-item active">Installation guide</li>
+      <li class="breadcrumb-item active">OpenSn Installation</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -98,42 +93,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation-guide">
-<h1>Installation guide<a class="headerlink" href="#installation-guide" title="Link to this heading"></a></h1>
-<p>These instructions provide setup guidance for both Linux (tested on Ubuntu
-22.04.4 LTS) and macOS. While most steps are similar across platforms, some
-adjustments may be needed depending on your specific OS version or
-configuration.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>These instructions assume you are using the bash shell. If you use a
-different shell (e.g., zsh, fish), commands may require slight
-modifications.</p></li>
-<li><p>Some steps require administrative privileges and the use of sudo. If you
-do not have such privileges, please consult your system administrator.</p></li>
-</ul>
-</div>
+  <section id="opensn-installation">
+<h1>OpenSn Installation<a class="headerlink" href="#opensn-installation" title="Link to this heading"></a></h1>
 <section id="install-development-tools">
 <h2>Install Development Tools<a class="headerlink" href="#install-development-tools" title="Link to this heading"></a></h2>
 <p>The following packages are required for <strong>OpenSn</strong> installation and development:</p>
 <ol class="arabic simple">
-<li><p>A recent version of <code class="docutils literal notranslate"><span class="pre">clang++</span></code>/<code class="docutils literal notranslate"><span class="pre">g++</span></code> that supports C++17</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gfortran</span></code> (required by the BLAS component of PETSc)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">flex</span></code> and <code class="docutils literal notranslate"><span class="pre">bison</span></code> (required by the PTSCOTCH component of PETSc)</p></li>
+<li><p>A recent version of <code class="docutils literal notranslate"><span class="pre">clang++</span></code>/<code class="docutils literal notranslate"><span class="pre">g++</span></code> that supports C++20</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flex</span></code> (required by the PTSCOTCH component of PETSc)</p></li>
 <li><p>Python3 v3.9+ and <code class="docutils literal notranslate"><span class="pre">pip</span></code> (required by PETSc and OpenSn)</p></li>
 <li><p>Git version control system</p></li>
-<li><p>CMake v3.12+</p></li>
+<li><p>CMake v3.20.2+</p></li>
 <li><p>MPI (OpenMPI, MPICH, and MVAPICH have been tested)</p></li>
-<li><p>HDF5</p></li>
-<li><p>Doxygen (required for generating the OpenSn documentation)</p></li>
+<li><p>PETSc 3.17.0, Boost 1.86+, HDF5 1.14+, VTK 9.3.0+, Caliper 2.10+</p></li>
+<li><p>pybind11 installed via <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
+<li><p>Pandoc and Doxygen (required for generating the OpenSn documentation)</p></li>
 </ol>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-0">
 Linux (Ubuntu)</label><div class="sd-tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>gfortran<span class="w"> </span>python3-dev<span class="w"> </span>python3-pip<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>bison<span class="w"> </span>libhdf5-mpi-dev<span class="w"> </span>doxygen
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>python3-dev<span class="w"> </span>python3-pip<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>doxygen<span class="w"> </span>pandoc
 <span class="nb">export</span><span class="w"> </span><span class="nv">NPROC</span><span class="o">=</span><span class="k">$(</span>nproc<span class="k">)</span>
 </pre></div>
 </div>
@@ -141,151 +122,11 @@ Linux (Ubuntu)</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-1">
 macOS</label><div class="sd-tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>python<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>open-mpi<span class="w"> </span>flex<span class="w"> </span>bison<span class="w"> </span>hdf5-mpi<span class="w"> </span>doxygen
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>python<span class="w"> </span>git<span class="w"> </span>cmake<span class="w"> </span>open-mpi<span class="w"> </span>flex<span class="w"> </span>doxygen<span class="w"> </span>pandoc
 <span class="nb">export</span><span class="w"> </span><span class="nv">NPROC</span><span class="o">=</span><span class="k">$(</span>sysctl<span class="w"> </span>-n<span class="w"> </span>hw.ncpu<span class="k">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-</section>
-<section id="install-petsc">
-<h2>Install PETSc<a class="headerlink" href="#install-petsc" title="Link to this heading"></a></h2>
-<p>The current supported version is <a class="reference external" href="https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz">PETSc version 3.23.0+</a>.</p>
-<p>In a scratch directory, install <strong>PETSc</strong> using the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz
-tar<span class="w"> </span>-xvzf<span class="w"> </span>petsc-3.23.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>petsc-3.23.0
-</pre></div>
-</div>
-<p>To configure <strong>PETSc</strong> with the required build options, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./configure<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--prefix<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--download-hypre<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--with-ssl<span class="o">=</span><span class="m">0</span><span class="w"> </span>--with-debugging<span class="o">=</span><span class="m">0</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--with-pic<span class="o">=</span><span class="m">1</span><span class="w"> </span>--with-fc<span class="o">=</span><span class="m">0</span><span class="w"> </span>--with-shared-libraries<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--download-f2cblaslapack<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--download-metis<span class="o">=</span><span class="m">1</span><span class="w"> </span>--download-parmetis<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--download-superlu_dist<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--download-ptscotch<span class="o">=</span><span class="m">1</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--with-cxx-dialect<span class="o">=</span>C++11<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>--with-64-bit-indices<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">CC</span><span class="o">=</span>mpicc<span class="w"> </span><span class="nv">CXX</span><span class="o">=</span>mpicxx<span class="w"> </span><span class="nv">FC</span><span class="o">=</span>mpifort<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">COPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">CXXOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">FOPTFLAGS</span><span class="o">=</span><span class="s1">&#39;-O3&#39;</span><span class="w">  </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">PETSC_DIR</span><span class="o">=</span><span class="nv">$PWD</span>
-</pre></div>
-</div>
-<p>If the configuration fails, consult <strong>PETSc</strong>’s user documentation.</p>
-<p>Follow the <strong>PETSc</strong> build prompts to complete the <strong>PETSc</strong> installation.</p>
-<p>After a successful install, export these environment variables every time a new
-terminal is opened for launching applications with PETSc:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PETSC_ROOT</span><span class="o">=</span><span class="s2">&quot;/path/to/dependencies/directory&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PETSC_ROOT</span><span class="si">}</span><span class="s2">/lib</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="s2">&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="install-vtk">
-<h2>Install VTK<a class="headerlink" href="#install-vtk" title="Link to this heading"></a></h2>
-<p>Download <a class="reference external" href="https://www.vtk.org/files/release/9.3/VTK-9.3.0.tar.gz">VTK 9.3.0</a> into a
-suitable location.</p>
-<p>Run the following to configure, build, and install:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
-cmake<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DBUILD_SHARED_LIBS<span class="o">=</span>ON<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_USE_MPI<span class="o">=</span>ON<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_GROUP_ENABLE_StandAlone<span class="o">=</span>WANT<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_GROUP_ENABLE_Rendering<span class="o">=</span>DONT_WANT<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_GROUP_ENABLE_Imaging<span class="o">=</span>DONT_WANT<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_GROUP_ENABLE_Web<span class="o">=</span>DONT_WANT<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_GROUP_ENABLE_Qt<span class="o">=</span>DONT_WANT<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DVTK_MODULE_USE_EXTERNAL_VTK_hdf5<span class="o">=</span>ON<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>..
-make<span class="w"> </span>-j<span class="nv">$NPROC</span>
-make<span class="w"> </span>install
-</pre></div>
-</div>
-<p>After a successful install, export these environment variables every time a new
-terminal is opened for launching applications with VTK:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VTK_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/dependencies/directory&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">VTK_DIR</span><span class="si">}</span><span class="s2">/lib</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="s2">&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="install-caliper">
-<h2>Install Caliper<a class="headerlink" href="#install-caliper" title="Link to this heading"></a></h2>
-<p>In a scratch directory, install <strong>Caliper</strong> using the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://github.com/LLNL/Caliper/archive/refs/tags/v2.10.0.tar.gz
-tar<span class="w"> </span>-xvzf<span class="w"> </span>v2.10.0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>Caliper-2.10.0
-mkdir<span class="w"> </span>build
-<span class="nb">cd</span><span class="w"> </span>build
-cmake
-<span class="w">    </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DWITH_MPI<span class="o">=</span>ON<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DWITH_KOKKOS<span class="o">=</span>OFF<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>-DWITH_GOTCHA<span class="o">=</span>OFF<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>..
-make<span class="w"> </span>-j<span class="nv">$NPROC</span>
-make<span class="w"> </span>install
-</pre></div>
-</div>
-<p>After a successful install, export these environment variables every time a new
-terminal is opened for launching applications with <strong>Caliper</strong>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CALIPER_DIR</span><span class="o">=</span><span class="s2">&quot;/path/to/dependencies/directory&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CMAKE_PREFIX_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CALIPER_DIR</span><span class="si">}</span><span class="s2">/lib</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="p">:+:</span><span class="si">${</span><span class="nv">CMAKE_PREFIX_PATH</span><span class="si">}}</span><span class="s2">&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="install-boost">
-<h2>Install Boost<a class="headerlink" href="#install-boost" title="Link to this heading"></a></h2>
-<p>In a scratch directory, install <strong>Boost</strong> using the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz
-tar<span class="w"> </span>-xvzf<span class="w"> </span>boost_1_86_0.tar.gz
-<span class="nb">cd</span><span class="w"> </span>boost_1_86_0
-</pre></div>
-</div>
-<p>Next, bootstrap the build system using:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./bootstrap.sh<span class="w"> </span>--prefix<span class="o">=</span>/path/to/dependencies/directory<span class="w"> </span>--with-toolset<span class="o">=</span>gcc
-</pre></div>
-</div>
-<p>Build and install with:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./b2<span class="w"> </span>install<span class="w"> </span>-j<span class="nv">$NPROC</span><span class="w"> </span>--prefix<span class="o">=</span>/path/to/dependencies/directory
-</pre></div>
-</div>
-<p>After a successful install, export these environment variables every time a new
-terminal is opened for launching applications with Boost:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">Boost_ROOT</span><span class="o">=</span>/path/to/dependencies/directory
-<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$Boost_ROOT</span>/lib:<span class="nv">$LD_LIBRARY_PATH</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">C_INCLUDE_PATH</span><span class="o">=</span><span class="nv">$BOOST_ROOT</span>/include:<span class="nv">$C_INCLUDE_PATH</span>
-</pre></div>
-</div>
-</section>
-<section id="create-virtual-environment">
-<h2>Create virtual environment<a class="headerlink" href="#create-virtual-environment" title="Link to this heading"></a></h2>
-<p>It is recommended to install the Python interface of OpenSn within a virtual
-environment rather than using the system-wide Python installation.</p>
-<p>To create a virtual environment named <code class="docutils literal notranslate"><span class="pre">opensn_env</span></code> in
-<code class="docutils literal notranslate"><span class="pre">/path/to/dependencies/directory</span></code>, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/dependencies/directory
-python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>opensn_env
-</pre></div>
-</div>
-<p>To activate the virtual environment for the shell, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/path/to/dependencies/directory/opensn_env/bin/activate
-</pre></div>
-</div>
-<p>To deactivate the virtual environment, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>deactivate
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>By default, Python searches for a package in the system-wide location first.
-In case of multiple installations of the same package, change <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>
-before importing.</p>
 </div>
 </section>
 <section id="clone-opensn">
@@ -301,6 +142,19 @@ first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
 </div>
 <p>To clone your fork of <strong>OpenSn</strong>:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;username&gt;/opensn.git
+</pre></div>
+</div>
+</section>
+<section id="install-dependencies">
+<h2>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading"></a></h2>
+<p>Dependencies can be installed to <code class="docutils literal notranslate"><span class="pre">/path/to/dependencies/directory</span></code> with CMake
+as follows:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_deps<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build_deps
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
+<span class="w">    </span>/path/to/opensn/tools/dependencies
+make<span class="w"> </span>-j
+<span class="nb">cd</span><span class="w"> </span>..
+rm<span class="w"> </span>-rf<span class="w"> </span>build_deps
 </pre></div>
 </div>
 </section>
@@ -354,8 +208,7 @@ the Python module can be used in scripts that incorporate other tasks using
 </section>
 <section id="run-regression-tests">
 <h2>Run regression tests<a class="headerlink" href="#run-regression-tests" title="Link to this heading"></a></h2>
-<p>To verify that the implementation is fully compatible with the current API of
-the code, run the test scripts:</p>
+<p>Run the regression tests to verify your installation:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/path/to/opensn
 test/run_tests<span class="w"> </span>-d<span class="w"> </span>test/python<span class="w"> </span>-j<span class="nv">$NPROC</span><span class="w"> </span>-v<span class="w"> </span><span class="m">1</span><span class="w"> </span>-w<span class="w"> </span><span class="m">3</span>
 </pre></div>
@@ -395,7 +248,7 @@ opening <code class="docutils literal notranslate"><span class="pre">build/doc/h
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Quick Install Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="easy_install.html" class="btn btn-neutral float-right" title="Easy Install using built-in CMake script" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../theory/index.html" class="btn btn-neutral float-right" title="Theory Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
