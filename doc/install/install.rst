@@ -64,6 +64,7 @@ as follows:
    mkdir build_deps && cd build_deps
    cmake -DCMAKE_INSTALL_PREFIX=/path/to/dependencies/directory  \
        /path/to/opensn/tools/dependencies
+   make -j
    cd ..
    rm -rf build_deps
 
