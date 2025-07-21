@@ -3,20 +3,20 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caliper/cali.h"
 
 namespace opensn
 {
 
-WGSContext::WGSContext(LBSProblem& lbs_problem,
+WGSContext::WGSContext(DiscreteOrdinatesProblem& do_problem,
                        LBSGroupset& groupset,
                        const SetSourceFunction& set_source_function,
                        SourceFlags lhs_scope,
                        SourceFlags rhs_scope,
                        bool log_info)
   : LinearSolverContext(),
-    lbs_problem(lbs_problem),
+    do_problem(do_problem),
     groupset(groupset),
     set_source_function(set_source_function),
     lhs_src_scope(lhs_scope),
@@ -36,12 +36,12 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 
   // Copy krylov action_vector into local
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-    lbs_problem, groupset, action_vector, PhiSTLOption::PHI_OLD);
+    do_problem, groupset, action_vector, PhiSTLOption::PHI_OLD);
 
   // Setting the source using updated phi_old
-  auto& q_moments_local = lbs_problem.GetQMomentsLocal();
+  auto& q_moments_local = do_problem.GetQMomentsLocal();
   q_moments_local.assign(q_moments_local.size(), 0.0);
-  set_source_function(groupset, q_moments_local, lbs_problem.GetPhiOldLocal(), lhs_src_scope);
+  set_source_function(groupset, q_moments_local, do_problem.GetPhiOldLocal(), lhs_src_scope);
 
   // Apply transport operator
   gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);
@@ -50,8 +50,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   // We copy the STL data to the operating vector
   // petsc_phi_delta first because it's already sized.
   // pc_output is not necessarily initialized yet.
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-    lbs_problem, groupset, action, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, action, PhiSTLOption::PHI_NEW);
 
   // Computing action
   // A  = [I - DLinvMS]

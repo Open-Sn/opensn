@@ -18,7 +18,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto& diff_solver = nl_context_ptr->diff_solver;
 
-  auto& lbs_problem = nl_context_ptr->lbs_problem;
+  auto& lbs_problem = nl_context_ptr->do_problem;
   auto& groupsets = lbs_problem.GetGroupsets();
   auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
   auto& front_gs = groupsets.front();

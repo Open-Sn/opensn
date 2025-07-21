@@ -80,6 +80,6 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
         }
     )
-    k_solver = PowerIterationKEigenSolver(lbs_problem=phys)
+    k_solver = PowerIterationKEigenSolver(do_problem=phys)
     k_solver.Initialize()
     k_solver.Execute()
