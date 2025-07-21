@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
 
@@ -10,16 +10,16 @@ namespace opensn
 {
 
 void
-TGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset)
+TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("TGDSA::Init");
 
   if (groupset.apply_tgdsa)
   {
-    const auto& sdm = lbs_problem.GetSpatialDiscretization();
+    const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
-    const auto& block_id_to_xs_map = lbs_problem.GetMatID2XSMap();
-    const auto& sweep_boundaries = lbs_problem.GetSweepBoundaries();
+    const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+    const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
     // Make boundary conditions
     auto bcs = TranslateBCs(sweep_boundaries);
@@ -49,8 +49,8 @@ TGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset)
     }
 
     // Create solver
-    const auto lbs_name = lbs_problem.GetName();
-    const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+    const auto lbs_name = do_problem.GetName();
+    const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
     auto solver = std::make_shared<DiffusionMIPSolver>(std::string(lbs_name + "_TGDSA"),
                                                        sdm,
                                                        uk_man,
@@ -76,22 +76,22 @@ TGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset)
 }
 
 void
-TGDSA::AssembleDeltaPhiVector(LBSProblem& lbs_problem,
+TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               const LBSGroupset& groupset,
                               const std::vector<double>& phi_in,
                               std::vector<double>& delta_phi_local)
 {
   CALI_CXX_MARK_SCOPE("TGDSA::AssembleDeltaPhiVector");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
-  const auto& block_id_to_xs_map = lbs_problem.GetMatID2XSMap();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
-  auto local_node_count = lbs_problem.GetLocalNodeCount();
+  auto local_node_count = do_problem.GetLocalNodeCount();
   delta_phi_local.clear();
   delta_phi_local.assign(local_node_count, 0.0);
 
@@ -123,16 +123,16 @@ TGDSA::AssembleDeltaPhiVector(LBSProblem& lbs_problem,
 }
 
 void
-TGDSA::DisassembleDeltaPhiVector(LBSProblem& lbs_problem,
+TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  const LBSGroupset& groupset,
                                  const std::vector<double>& delta_phi_local,
                                  std::vector<double>& ref_phi_new)
 {
   CALI_CXX_MARK_SCOPE("TGDSA::DisassembleDeltaPhiVector");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();

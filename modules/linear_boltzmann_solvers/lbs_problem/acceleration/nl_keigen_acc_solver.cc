@@ -93,25 +93,25 @@ NLKEigenDiffSolver::PostSolveCallback()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
-  auto& lbs_problem = nl_context_ptr->lbs_problem;
-  auto& groupsets = lbs_problem.GetGroupsets();
+  auto& do_problem = nl_context_ptr->do_problem;
+  auto& groupsets = do_problem.GetGroupsets();
   auto& front_gs = groupsets.front();
 
-  auto& phi_old_local = lbs_problem.GetPhiOldLocal();
-  auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  auto& phi_old_local = do_problem.GetPhiOldLocal();
+  auto& phi_new_local = do_problem.GetPhiNewLocal();
 
   auto delta_phi = nl_context_ptr->PhiVecToSTLVec(x_);
   auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1;
 
   auto phi_lp1_temp = phi_lph_ip1 + delta_phi;
-  WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, phi_lp1_temp, phi_new_local);
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_problem, front_gs, phi_new_local, phi_old_local);
+  WGDSA::GSProjectBackPhi0(do_problem, front_gs, phi_lp1_temp, phi_new_local);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem, front_gs, phi_new_local, phi_old_local);
 
   // Compute final k_eff
   double k_eff = nl_context_ptr->kresid_func_context.k_eff;
 
-  const double production = ComputeFissionProduction(lbs_problem, phi_old_local);
-  LBSVecOps::ScalePhiVector(lbs_problem, PhiSTLOption::PHI_OLD, k_eff / production);
+  const double production = ComputeFissionProduction(do_problem, phi_old_local);
+  LBSVecOps::ScalePhiVector(do_problem, PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);

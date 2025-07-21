@@ -13,7 +13,7 @@ namespace opensn
 
 struct SweepWGSContext : public WGSContext
 {
-  SweepWGSContext(DiscreteOrdinatesProblem& lbs_problem,
+  SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                   LBSGroupset& groupset,
                   const SetSourceFunction& set_source_function,
                   SourceFlags lhs_scope,

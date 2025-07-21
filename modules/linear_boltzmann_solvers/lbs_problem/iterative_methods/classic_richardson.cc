@@ -35,42 +35,42 @@ ClassicRichardson::Solve()
   gs_context_ptr->PreSetupCallback();
 
   auto& groupset = gs_context_ptr->groupset;
-  auto& lbs_problem = gs_context_ptr->lbs_problem;
-  auto& phi_old = lbs_problem.GetPhiOldLocal();
-  auto& phi_new = lbs_problem.GetPhiNewLocal();
+  auto& do_problem = gs_context_ptr->do_problem;
+  auto& phi_old = do_problem.GetPhiOldLocal();
+  auto& phi_new = do_problem.GetPhiNewLocal();
   const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
-  saved_q_moments_local_ = lbs_problem.GetQMomentsLocal();
+  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
   psi_old_.resize(groupset.angle_agg->GetNumDelayedAngularDOFs().first, 0.0);
 
   double pw_phi_change_prev = 1.0;
   bool converged = false;
   for (int k = 0; k < groupset.max_iterations; ++k)
   {
-    lbs_problem.GetQMomentsLocal() = saved_q_moments_local_;
-    gs_context_ptr->set_source_function(groupset, lbs_problem.GetQMomentsLocal(), phi_old, scope);
+    do_problem.GetQMomentsLocal() = saved_q_moments_local_;
+    gs_context_ptr->set_source_function(groupset, do_problem.GetQMomentsLocal(), phi_old, scope);
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Apply WGDSA
     if (groupset.apply_wgdsa)
     {
       std::vector<double> delta_phi;
-      WGDSA::AssembleDeltaPhiVector(lbs_problem, groupset, phi_new - phi_old, delta_phi);
+      WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new - phi_old, delta_phi);
       groupset.wgdsa_solver->Assemble_b(delta_phi);
       groupset.wgdsa_solver->Solve(delta_phi);
-      WGDSA::DisassembleDeltaPhiVector(lbs_problem, groupset, delta_phi, phi_new);
+      WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi, phi_new);
     }
 
     // Apply TGDSA
     if (groupset.apply_tgdsa)
     {
       std::vector<double> delta_phi;
-      TGDSA::AssembleDeltaPhiVector(lbs_problem, groupset, phi_new - phi_old, delta_phi);
+      TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new - phi_old, delta_phi);
       groupset.tgdsa_solver->Assemble_b(delta_phi);
       groupset.tgdsa_solver->Solve(delta_phi);
-      TGDSA::DisassembleDeltaPhiVector(lbs_problem, groupset, delta_phi, phi_new);
+      TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi, phi_new);
     }
 
-    double pw_phi_change = ComputePointwisePhiChange(lbs_problem, groupset.id);
+    double pw_phi_change = ComputePointwisePhiChange(do_problem, groupset.id);
     double rho = (k == 0) ? 0.0 : sqrt(pw_phi_change / pw_phi_change_prev);
     pw_phi_change_prev = pw_phi_change;
 
@@ -85,7 +85,7 @@ ClassicRichardson::Solve()
     else
     {
       LBSVecOps::GSScopedCopyPrimarySTLvectors(
-        lbs_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+        do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
       groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi_new_);
       psi_old_ = psi_new_;
     }
@@ -107,7 +107,7 @@ ClassicRichardson::Solve()
       log.Log() << iter_stats.str();
   }
 
-  lbs_problem.GetQMomentsLocal() = saved_q_moments_local_;
+  do_problem.GetQMomentsLocal() = saved_q_moments_local_;
 
   gs_context_ptr->PostSolveCallback();
 }
