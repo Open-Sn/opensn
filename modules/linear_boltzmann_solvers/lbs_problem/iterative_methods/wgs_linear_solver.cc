@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_convergence_test.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -135,9 +135,9 @@ WGSLinearSolver::SetInitialGuess()
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset;
-  auto& lbs_problem = gs_context_ptr->lbs_problem;
+  auto& do_problem = gs_context_ptr->do_problem;
 
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_problem, groupset, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
   VecNorm(x_, NORM_2, &init_guess_norm);
@@ -158,13 +158,13 @@ WGSLinearSolver::SetRHS()
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset;
-  auto& lbs_problem = gs_context_ptr->lbs_problem;
+  auto& do_problem = gs_context_ptr->do_problem;
 
   if (gs_context_ptr->log_info)
     log.Log() << program_timer.GetTimeString() << " Computing b";
 
   // SetSource for RHS
-  saved_q_moments_local_ = lbs_problem.GetQMomentsLocal();
+  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
 
   const bool single_richardson =
     groupset.iterative_method == LinearSolver::IterativeMethod::PETSC_RICHARDSON and
@@ -174,13 +174,13 @@ WGSLinearSolver::SetRHS()
   {
     const auto scope = gs_context_ptr->rhs_src_scope | ZERO_INCOMING_DELAYED_PSI;
     gs_context_ptr->set_source_function(
-      groupset, lbs_problem.GetQMomentsLocal(), lbs_problem.GetPhiOldLocal(), scope);
+      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Assemble PETSc vector
-    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_problem, groupset, b_, PhiSTLOption::PHI_NEW);
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, b_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
     VecNorm(b_, NORM_2, &context_ptr_->rhs_norm);
@@ -202,13 +202,13 @@ WGSLinearSolver::SetRHS()
   {
     const auto scope = gs_context_ptr->rhs_src_scope | gs_context_ptr->lhs_src_scope;
     gs_context_ptr->set_source_function(
-      groupset, lbs_problem.GetQMomentsLocal(), lbs_problem.GetPhiOldLocal(), scope);
+      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Assemble PETSc vector
-    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(lbs_problem, groupset, x_, PhiSTLOption::PHI_NEW);
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
     VecNorm(x_, NORM_2, &context_ptr_->rhs_norm);
@@ -247,13 +247,13 @@ WGSLinearSolver::PostSolveCallback()
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
 
   auto& groupset = gs_context_ptr->groupset;
-  auto& lbs_problem = gs_context_ptr->lbs_problem;
+  auto& do_problem = gs_context_ptr->do_problem;
 
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(lbs_problem, groupset, x_, PhiSTLOption::PHI_NEW);
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(lbs_problem, groupset, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
   // Restore saved q_moms
-  lbs_problem.GetQMomentsLocal() = saved_q_moments_local_;
+  do_problem.GetQMomentsLocal() = saved_q_moments_local_;
 
   // Context specific callback
   gs_context_ptr->PostSolveCallback();

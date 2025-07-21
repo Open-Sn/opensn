@@ -95,7 +95,7 @@ if __name__ == "__main__":
     )
 
     k_solver = NonLinearKEigenSolver(
-        lbs_problem=phys,
+        do_problem=phys,
         nl_max_its=500,
         nl_abs_tol=1.0e-8,
     )

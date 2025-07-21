@@ -9,24 +9,25 @@
 namespace opensn
 {
 
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 class SpatialDiscretization;
 
 class WGDSA
 {
 public:
   /// Initializes the Within-Group DSA solver.
-  static void
-  Init(LBSProblem& lbs_problem, LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet = true);
+  static void Init(DiscreteOrdinatesProblem& do_problem,
+                   LBSGroupset& groupset,
+                   bool vaccum_bcs_are_dirichlet = true);
 
   /// Assembles a delta-phi vector on the first moment.
-  static void AssembleDeltaPhiVector(LBSProblem& lbs_problem,
+  static void AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                      const LBSGroupset& groupset,
                                      const std::vector<double>& phi_in,
                                      std::vector<double>& delta_phi_local);
 
   /// Disassembles a delta-phi vector on the first moment.
-  static void DisassembleDeltaPhiVector(LBSProblem& lbs_problem,
+  static void DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                         const LBSGroupset& groupset,
                                         const std::vector<double>& delta_phi_local,
                                         std::vector<double>& ref_phi_new);
@@ -38,12 +39,12 @@ public:
    * Creates a vector from a lbs primary stl vector where only the scalar moments are mapped to the
    * DOFs needed by WGDSA.
    */
-  static std::vector<double> WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
+  static std::vector<double> WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
                                              const LBSGroupset& groupset,
                                              const std::vector<double>& phi_in);
 
   /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
-  static void GSProjectBackPhi0(LBSProblem& lbs_problem,
+  static void GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
                                 const LBSGroupset& groupset,
                                 const std::vector<double>& input,
                                 std::vector<double>& output);

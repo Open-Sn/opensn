@@ -14,11 +14,11 @@ namespace opensn
 {
 
 class LBSGroupset;
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 
 struct WGSContext : public LinearSolverContext
 {
-  WGSContext(LBSProblem& lbs_problem,
+  WGSContext(DiscreteOrdinatesProblem& do_problem,
              LBSGroupset& groupset,
              const SetSourceFunction& set_source_function,
              SourceFlags lhs_scope,
@@ -45,7 +45,7 @@ struct WGSContext : public LinearSolverContext
 
   virtual void PostSolveCallback() {};
 
-  LBSProblem& lbs_problem;
+  DiscreteOrdinatesProblem& do_problem;
   LBSGroupset& groupset;
   const SetSourceFunction& set_source_function;
   SourceFlags lhs_src_scope;

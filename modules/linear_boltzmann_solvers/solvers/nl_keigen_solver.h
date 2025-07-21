@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_solver.h"
 #include <petscsnes.h>
 
@@ -14,7 +14,7 @@ namespace opensn
 class NonLinearKEigenSolver : public Solver
 {
 private:
-  std::shared_ptr<LBSProblem> lbs_problem_;
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
 
