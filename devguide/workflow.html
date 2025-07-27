@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer Workflow &mdash; OpenSn  documentation</title>
+  <title>Developer Workflow &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -57,7 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#create-a-branch">Create a Branch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#create-a-commit">Create a Commit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sending-a-pull-request">Sending a Pull Request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fixing-your-branch">Fixing your branch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixing-your-branch">Fixing Your Branch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#updating-your-branch">Updating Your Branch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#squashing-commits">Squashing Commits</a></li>
 </ul>
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="py_bindings.html">Binding C++ classes to Python</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
 </ul>
 
         </div>
@@ -92,24 +93,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="developer-workflow">
+  <section id="developer-workflow">
 <h1>Developer Workflow<a class="headerlink" href="#developer-workflow" title="Link to this heading"></a></h1>
-<p>To participate in the OpenSn development, you will need to fork the upstream repo on GitHub.
-Go to <a class="reference external" href="https://github.com/Open-Sn/opensn">OpenSn repo on GitHub</a> and <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo">create your personal fork</a>.</p>
-<p>Then, clone the fork to the machine where you will be developing:</p>
+<p>To participate in the OpenSn development, you will need to fork the upstream
+repository on GitHub.  Visit the
+<a class="reference external" href="https://github.com/Open-Sn/opensn">OpenSn repo on GitHub</a> and
+<a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo">create your personal fork</a>.</p>
+<p>Then, clone the fork onto the machine where you will be developing:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:&lt;username&gt;/opensn.git
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">&lt;username&gt;</span></code> is your GitHub username.
-This, assumes, you <a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">set up your SSH keys for accessing GitHub</a>.</p>
-<p>Your fork will be referred to as <code class="docutils literal notranslate"><span class="pre">origin</span></code> (both in the git commands and in the text below).
-Also set up an <code class="docutils literal notranslate"><span class="pre">upstream</span></code> remote for pulling changes from the upstream repo you forked from.</p>
+(This assumes you have
+<a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">set up your SSH keys for accessing GitHub</a>.)</p>
+<p>Your fork will be referred to as <code class="docutils literal notranslate"><span class="pre">origin</span></code> (both in the <em>git</em> commands and
+in the text below).  Also set up an <code class="docutils literal notranslate"><span class="pre">upstream</span></code> remote for pulling changes
+from the upstream repo you forked from:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>git@github.com:Open-Sn/opensn.git
 </pre></div>
 </div>
-<p>OpenSn development uses pull request workflow which is common on GitHub.
-This means all development is done on so-called feature branches.
-Do <strong>not</strong> develop on the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, you will most likely create problems for yourself down the road.</p>
+<p>OpenSn development uses the pull-request workflow that is common on GitHub.
+This means <strong>all development is done on feature branches</strong>.
+Do <strong>not</strong> develop on the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch—you will most likely create problems
+for yourself down the road.</p>
 <div class="admonition-attention admonition">
 <p class="admonition-title">Attention</p>
 <p>Do <strong>NOT</strong> merge <code class="docutils literal notranslate"><span class="pre">main</span></code> into your feature branch.</p>
@@ -117,15 +123,19 @@ Do <strong>not</strong> develop on the <code class="docutils literal notranslate
 <section id="formating">
 <h2>Formating<a class="headerlink" href="#formating" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>C++ code should be formatted according to our <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> choices, found in
-<a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.clang-format">the .clang_format</a> file in the repository root.</p></li>
-<li><p>Python linting and style guide checking is performed using <a class="reference external" href="https://flake8.pycqa.org/en/latest/index.html">flake8</a>
-and our style guide configuration is found in the <a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.flake8">.flake8</a> file in the repository root.</p></li>
+<li><p><strong>C++</strong> code should be formatted according to our <em>clang-format</em> choices
+found in the
+<a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.clang-format">.clang_format</a>
+file at the repository root.</p></li>
+<li><p><strong>Python</strong> linting and style-guide checking is performed with <code class="docutils literal notranslate"><span class="pre">flake8</span></code>;
+our configuration lives in
+<a class="reference external" href="https://github.com/Open-Sn/opensn/blob/main/.flake8">.flake8</a>
+at the repository root.</p></li>
 </ul>
 </section>
 <section id="create-a-branch">
 <h2>Create a Branch<a class="headerlink" href="#create-a-branch" title="Link to this heading"></a></h2>
-<p>First, make sure you do not have any local changes:</p>
+<p>First, make sure you have no local changes:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>status
 On<span class="w"> </span>branch<span class="w"> </span>main
 Your<span class="w"> </span>branch<span class="w"> </span>is<span class="w"> </span>up<span class="w"> </span>to<span class="w"> </span>date<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;origin/main&#39;</span>.
@@ -138,211 +148,222 @@ nothing<span class="w"> </span>to<span class="w"> </span>commit,<span class="w">
 Switched<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>branch<span class="w"> </span><span class="s1">&#39;&lt;branch name&gt;&#39;</span>
 </pre></div>
 </div>
-<p>Some tips on naming your branch:</p>
+<p>Tips for naming your branch:</p>
 <ul class="simple">
 <li><p>Use lower-case letters.</p></li>
 <li><p>Dashes (<code class="docutils literal notranslate"><span class="pre">-</span></code>) work better than underscores (<code class="docutils literal notranslate"><span class="pre">_</span></code>).</p></li>
 <li><p>If working on an issue, you can name your branch <code class="docutils literal notranslate"><span class="pre">issue/&lt;issue</span> <span class="pre">number&gt;</span></code>.</p></li>
 </ul>
-<p><strong>Useful commands:</strong></p>
+<p><strong>Useful commands</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 58.3%" />
+<col style="width: 41.7%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="head text-left"><p>Action</p></th>
-<th class="head text-left"><p>git command</p></th>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>git command</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>To get a list of branches</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">-a</span></code></p></td>
+<tr class="row-even"><td><p>Get a list of branches</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span> <span class="pre">-a</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To see your active branch</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code></p></td>
+<tr class="row-odd"><td><p>See your active branch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="create-a-commit">
 <h2>Create a Commit<a class="headerlink" href="#create-a-commit" title="Link to this heading"></a></h2>
-<p>In git, you have to stage your changes first.
-Then you check in those changes locally, and it will form a commit (also referred to as a patch).
-Every commit has a SHA1 hash which uniquely identifies it in the repository.
-Here is an example:</p>
+<p>In <em>git</em> you must <strong>stage</strong> your changes first.
+Then you commit those changes locally, creating a <em>commit</em> (also called a
+<em>patch</em>).  Every commit has a SHA-1 hash that uniquely identifies it.</p>
+<p>Example commit header:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>commit<span class="w"> </span>&lt;SHA1&gt;
 Author:<span class="w"> </span>A.<span class="w"> </span>U.<span class="w"> </span>Thor<span class="w"> </span>&lt;a.u.thor@somewhere.com&gt;
 Date:<span class="w">   </span>&lt;Date&gt;
 </pre></div>
 </div>
-<p><strong>Useful commands:</strong></p>
+<p><strong>Useful commands</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 68.8%" />
+<col style="width: 31.2%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="head text-left"><p>Action</p></th>
-<th class="head text-left"><p>git command</p></th>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>git command</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>To add (stage) a new file</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">&lt;file&gt;</span></code></p></td>
+<tr class="row-even"><td><p>Add (stage) a new file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">&lt;file&gt;</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To add (stage) modification on a file</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">&lt;file&gt;</span></code></p></td>
+<tr class="row-odd"><td><p>Add modifications on a file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">&lt;file&gt;</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>To add all new files and local changes</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-A</span></code></p></td>
+<tr class="row-even"><td><p>Add all new files and local changes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-A</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To add only modified files</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-u</span></code></p></td>
+<tr class="row-odd"><td><p>Add only modified files</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-u</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>To move a file</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">mv</span> <span class="pre">&lt;source&gt;</span> <span class="pre">&lt;destination&gt;</span></code></p></td>
+<tr class="row-even"><td><p>Move a file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">mv</span> <span class="pre">&lt;source&gt;</span> <span class="pre">&lt;destination&gt;</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To remove a file</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rm</span> <span class="pre">&lt;file&gt;</span></code></p></td>
+<tr class="row-odd"><td><p>Remove a file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rm</span> <span class="pre">&lt;file&gt;</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>To see the status (staged, unstaged changes and non-tracked files)</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code></p></td>
+<tr class="row-even"><td><p>See status (staged, unstaged, untracked)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To commit locally</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code></p></td>
+<tr class="row-odd"><td><p>Commit locally</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code></p></td>
 </tr>
 </tbody>
 </table>
-<p>The commit message should have this format:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Short<span class="w"> </span>description<span class="w"> </span><span class="o">(</span>up<span class="w"> </span>to<span class="w"> </span><span class="m">70</span><span class="w"> </span>chars<span class="o">)</span>
-&lt;empty<span class="w"> </span>line&gt;
-Detailed<span class="w"> </span>description.<span class="w"> </span>List<span class="w"> </span>as<span class="w"> </span>much<span class="w"> </span>useful<span class="w"> </span>and<span class="w"> </span>relevant<span class="w"> </span>information<span class="w"> </span>as<span class="w"> </span>possible.
-This<span class="w"> </span>can<span class="w"> </span>have<span class="w"> </span>multiple<span class="w"> </span>lines<span class="w"> </span>and<span class="w"> </span>even<span class="w"> </span>paragraphs.
+<p>Commit-message template:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Short description (up to 70 chars)
+
+Detailed description.  List as much useful and relevant
+information as possible.  This can span multiple lines
+and even paragraphs.
 </pre></div>
 </div>
-<p>The detailed description will help a) the reviewer, b) in future when we forget what we did and will need to look it up.
-Even though the detailed description is optional, it is <em>highly</em> recommended that you take the time to write it.</p>
-<p><strong>Tips for creating commits:</strong></p>
+<p>Tips for commits:</p>
 <ul class="simple">
-<li><p>You want your commits to be as small as possible, so they are easier (and therefore faster) to review.</p></li>
-<li><p>Stay on one topic per commit.</p></li>
-<li><p>Try <strong>not</strong> to do multiple things in one commit.</p></li>
-<li><p>Do a series of patches rather than one big patch.</p></li>
+<li><p>Keep commits small—easier and faster to review.</p></li>
+<li><p>Stick to <strong>one topic per commit</strong>.</p></li>
+<li><p>Avoid doing multiple things in one commit.</p></li>
+<li><p>Prefer a series of small patches over one large patch.</p></li>
 </ul>
-<p><strong>Useful commands:</strong></p>
+<p>More handy commands:</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 64.3%" />
+<col style="width: 35.7%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="head text-left"><p>Action</p></th>
-<th class="head text-left"><p>git command</p></th>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>git command</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>To see what files have changed</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code></p></td>
+<tr class="row-even"><td><p>See what files have changed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To look at list of commits</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code></p></td>
+<tr class="row-odd"><td><p>List commits</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p>To look at code changes made in commits</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">-p</span></code></p></td>
+<tr class="row-even"><td><p>Show code changes in commits</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">-p</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>To see local changes that were not staged yet</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p></td>
+<tr class="row-odd"><td><p>Show local changes not yet staged</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="sending-a-pull-request">
 <h2>Sending a Pull Request<a class="headerlink" href="#sending-a-pull-request" title="Link to this heading"></a></h2>
-<p>When you think you are finished with your branch, send your changes for review.</p>
-<p>Push the branch into your fork on GitHub</p>
+<p>When you think you are finished with your branch, send your changes for
+review.</p>
+<p>Push the branch to your fork on GitHub:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;branch<span class="w"> </span>name&gt;
 Enumerating<span class="w"> </span>objects:<span class="w"> </span><span class="m">38</span>,<span class="w"> </span><span class="k">done</span>.
 Counting<span class="w"> </span>objects:<span class="w"> </span><span class="m">100</span>%<span class="w"> </span><span class="o">(</span><span class="m">38</span>/38<span class="o">)</span>,<span class="w"> </span><span class="k">done</span>.
-Delta<span class="w"> </span>compression<span class="w"> </span>using<span class="w"> </span>up<span class="w"> </span>to<span class="w"> </span><span class="m">16</span><span class="w"> </span>threads
-Compressing<span class="w"> </span>objects:<span class="w"> </span><span class="m">100</span>%<span class="w"> </span><span class="o">(</span><span class="m">32</span>/32<span class="o">)</span>,<span class="w"> </span><span class="k">done</span>.
-Writing<span class="w"> </span>objects:<span class="w"> </span><span class="m">100</span>%<span class="w"> </span><span class="o">(</span><span class="m">32</span>/32<span class="o">)</span>,<span class="w"> </span><span class="m">10</span>.37<span class="w"> </span>KiB<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">5</span>.19<span class="w"> </span>MiB/s,<span class="w"> </span><span class="k">done</span>.
-Total<span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="o">(</span>delta<span class="w"> </span><span class="m">13</span><span class="o">)</span>,<span class="w"> </span>reused<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>delta<span class="w"> </span><span class="m">0</span><span class="o">)</span>
-remote:<span class="w"> </span>Resolving<span class="w"> </span>deltas:<span class="w"> </span><span class="m">100</span>%<span class="w"> </span><span class="o">(</span><span class="m">4</span>/4<span class="o">)</span>,<span class="w"> </span>completed<span class="w"> </span>with<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>objects.
-To<span class="w"> </span>github.com:&lt;username&gt;/opensn.git
-+<span class="w"> </span>fffea64..f1b3ad0<span class="w"> </span>&lt;branch<span class="w"> </span>name&gt;<span class="w"> </span>-&gt;<span class="w"> </span>&lt;branch<span class="w"> </span>name&gt;
+...
 </pre></div>
 </div>
 <ol class="arabic simple">
-<li><p>Go to <code class="docutils literal notranslate"><span class="pre">http://github.com/&lt;username&gt;/opensn.git</span></code></p></li>
-<li><p><a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">Create a pull request</a> to <code class="docutils literal notranslate"><span class="pre">main</span></code> branch</p></li>
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">https://github.com/&lt;username&gt;/opensn.git</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">Create a pull request</a>
+targeting the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch.</p></li>
 </ol>
-<p>At this point, someone will review your branch and possibly leave comments on what to fix.
-Otherwise, your branch will be merged.
-You will get a notification (email) in both cases.
-If your branch was merged, you should go update your <code class="docutils literal notranslate"><span class="pre">main</span></code> branch by pulling from the <code class="docutils literal notranslate"><span class="pre">upstream</span></code></p>
+<p>Someone will review your branch and may leave comments; otherwise, it will be
+merged. You’ll receive an email notification either way.</p>
+<p>If your branch is merged, update your <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>main
 $<span class="w"> </span>git<span class="w"> </span>pull<span class="w"> </span>upstream<span class="w"> </span>main
 </pre></div>
 </div>
-<p>and you can delete your local branch with:</p>
+<p>Then delete your local branch:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>&lt;branch<span class="w"> </span>name&gt;
 </pre></div>
 </div>
 </section>
 <section id="fixing-your-branch">
-<h2>Fixing your branch<a class="headerlink" href="#fixing-your-branch" title="Link to this heading"></a></h2>
-<p>The easiest way how to fix your branch is by using fixup commits (see <a class="reference external" href="https://technosorcery.net/blog/2010/02/fun-with-the-upcoming-1-7-release-of-git-rebase---interactive---autosquash/">fun with autosquash</a>).</p>
-<ol class="arabic">
-<li><p>Go patch by patch and fix the code according to the reviewer comments.</p></li>
-<li><p>Stage your changes. Typically <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-u</span></code> will do.</p></li>
-<li><p>Do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--fixup=&lt;commit&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;commit&gt;</span></code> is the SHA1 hash of the patch you are fixing.</p>
-<p>Alternatively, you can use the aliases mentioned in the article.</p>
-</li>
-<li><p>Continue until all is fixed.</p></li>
-<li><p>Now, do <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rebase</span> <span class="pre">--interactive</span> <span class="pre">--autosquash</span> <span class="pre">main</span></code>. This will open an editor. Save the file you see. Quit the editor, and let git do the hard work.</p></li>
-<li><p>If all went right, you will have your branch fixed. You can look at it by: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">-p</span></code>.</p></li>
-<li><p>Push your fixed up branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">-f</span></code></p></li>
+<h2>Fixing Your Branch<a class="headerlink" href="#fixing-your-branch" title="Link to this heading"></a></h2>
+<p>The easiest way to fix your branch is with <em>fixup</em> commits (see
+<a class="reference external" href="https://technosorcery.net/blog/2010/02/fun-with-the-upcoming-1-7-release-of-git-rebase---interactive---autosquash/">fun with autosquash</a>):</p>
+<ol class="arabic simple">
+<li><p>Go patch-by-patch and fix code according to reviewer comments.</p></li>
+<li><p>Stage your changes (typically <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">add</span> <span class="pre">-u</span></code>).</p></li>
+<li><p>Commit with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--fixup=&lt;commit&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;commit&gt;</span></code> is the
+SHA-1 of the patch you are fixing.</p></li>
+<li><p>Repeat until everything is fixed.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rebase</span> <span class="pre">--interactive</span> <span class="pre">--autosquash</span> <span class="pre">main</span></code>.  Save and quit the
+editor; <em>git</em> will do the rest.</p></li>
+<li><p>Verify with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span> <span class="pre">-p</span></code>.</p></li>
+<li><p>Push the updated branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">-f</span></code></p></li>
 </ol>
-<p><strong>Useful commands:</strong></p>
+<p><strong>Useful commands</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 66.7%" />
+<col style="width: 33.3%" />
+</colgroup>
 <thead>
-<tr class="row-odd"><th class="head text-left"><p>Action</p></th>
-<th class="head text-left"><p>git command</p></th>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>git command</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-left"><p>Create a fixup patch</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--fixup=&lt;sha1&gt;</span></code></p></td>
+<tr class="row-even"><td><p>Create a fixup patch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--fixup=&lt;sha1&gt;</span></code></p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p>Add staged changes to the top-most commit</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--amend</span> <span class="pre">--no-edit</span></code></p></td>
+<tr class="row-odd"><td><p>Add staged changes to the top-most commit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--amend</span> <span class="pre">--no-edit</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="updating-your-branch">
 <h2>Updating Your Branch<a class="headerlink" href="#updating-your-branch" title="Link to this heading"></a></h2>
-<p>If you wish to use the latest <code class="docutils literal notranslate"><span class="pre">main</span></code> branch (assuming it changed since you started your branch), you will have to rebase your branch on top of it, i.e.:</p>
+<p>If you need the latest <code class="docutils literal notranslate"><span class="pre">main</span></code> (and it has changed since you started your
+branch), rebase your branch on top of it:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>main
 $<span class="w"> </span>git<span class="w"> </span>pull<span class="w"> </span>upstream<span class="w"> </span>main
 $<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>&lt;my-branch-name&gt;
 $<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </span>main
 </pre></div>
 </div>
-<p>Note: You will most likely run into conflicts that you will have to resolve.</p>
+<p><em>Note</em>: You will likely encounter conflicts that you must resolve.</p>
 </section>
 <section id="squashing-commits">
 <h2>Squashing Commits<a class="headerlink" href="#squashing-commits" title="Link to this heading"></a></h2>
-<p>If you are told to squash your commits, do:</p>
+<p>If asked to squash your commits:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>main
 </pre></div>
 </div>
-<p>This will open an editor with a list of commits.
-Change <code class="docutils literal notranslate"><span class="pre">pick</span></code> to <code class="docutils literal notranslate"><span class="pre">f</span></code> for all but the first commit. It should look like this:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pick<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Short<span class="w"> </span>description
-f<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Some<span class="w"> </span>description
-f<span class="w"> </span>&lt;sha1&gt;<span class="w"> </span>Some<span class="w"> </span>other<span class="w"> </span>description
+<p>Your editor opens with a list of commits—change <code class="docutils literal notranslate"><span class="pre">pick</span></code> to <code class="docutils literal notranslate"><span class="pre">f</span></code> (fixup) for
+all but the first commit, e.g.:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pick &lt;sha1&gt; Short description
+f &lt;sha1&gt; Some description
+f &lt;sha1&gt; Some other description
 </pre></div>
 </div>
-<p>Save the file and quit the editor.
-Git will squash all commits into one.</p>
-<p>You can edit the commit message if you want to by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--amend</span></code>.
-Then push the changes to your fork:</p>
+<p>Save and quit; <em>git</em> squashes the commits into one.</p>
+<p>You may edit the commit message with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">--amend</span></code> and then push:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>-f
 </pre></div>
 </div>
 <div class="admonition-attention admonition">
 <p class="admonition-title">Attention</p>
-<p>This assumes you followed this guide and worked in your branch <code class="docutils literal notranslate"><span class="pre">branch</span> <span class="pre">name</span></code> and not in <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
+<p>This assumes you followed this guide and worked in your branch
+<code class="docutils literal notranslate"><span class="pre">branch</span> <span class="pre">name</span></code> and <strong>not</strong> in <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p>
 </div>
 </section>
 </section>

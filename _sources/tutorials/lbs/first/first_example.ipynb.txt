@@ -103,7 +103,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "##### Disable colorized output."
+    "### Disable colorized output"
    ]
   },
   {

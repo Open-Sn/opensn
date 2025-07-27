@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coding Standards &mdash; OpenSn  documentation</title>
+  <title>Coding Standards &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l2"><a class="reference internal" href="py_bindings.html">Binding C++ classes to Python</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
 </ul>
 
         </div>
@@ -106,15 +107,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="coding-standards">
+  <section id="coding-standards">
 <h1>Coding Standards<a class="headerlink" href="#coding-standards" title="Link to this heading"></a></h1>
 <p>This page describes the coding standard of OpenSn.</p>
 <section id="file-names">
 <h2>File names<a class="headerlink" href="#file-names" title="Link to this heading"></a></h2>
-<p>Directory and file names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">some_directory</span><span class="o">/</span><span class="n">file_name1</span><span class="o">.</span><span class="n">ext</span>
-<span class="n">some_directory</span><span class="o">/</span><span class="n">file_name2</span><span class="o">.</span><span class="n">ext</span>
-<span class="n">some_other_directory</span><span class="o">/</span><span class="n">another_file</span>
+<p>Directory and file names should use <cite>snake</cite> style (see <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Naming Conventions</span></a>).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>some_directory/file_name1.ext
+some_directory/file_name2.ext
+some_other_directory/another_file
 </pre></div>
 </div>
 </section>
@@ -122,26 +123,23 @@
 <h2>C++ conventions<a class="headerlink" href="#c-conventions" title="Link to this heading"></a></h2>
 <section id="macros">
 <h3>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h3>
-<p>Macro names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> case, macro parameters should
-use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style</p>
+<p>Macro names should use <cite>Pascal</cite> style, macro parameters should use <cite>snake</cite> style (see <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Naming Conventions</span></a>).</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define MacroDefinition(macro_parameter)</span>
 </pre></div>
 </div>
 </section>
 <section id="namespaces">
 <h3>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h3>
-<p>Namespace names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
-<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">ns_one</span><span class="w"> </span><span class="p">{</span>
-
+<p>Namespace names should use <cite>snake</cite> style.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">ns_one</span><span class="w"> </span><span class="p">{</span>
 <span class="p">...</span>
-
-<span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// ns_one</span>
 </pre></div>
 </div>
 </section>
 <section id="enums">
 <h3>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h3>
-<p>Enum names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style, enum values upper case.</p>
+<p>Enum names should use <cite>Pascal</cite> style, enum values upper case.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">OurEnumType</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">ENUM_VALUE_1</span><span class="p">,</span>
 <span class="w">  </span><span class="n">ENUM_VALUE_2</span><span class="p">,</span>
@@ -159,11 +157,11 @@ use <a class="reference internal" href="#naming-conventions"><span class="std st
 </section>
 <section id="classes-and-structs">
 <h3>Classes and Structs<a class="headerlink" href="#classes-and-structs" title="Link to this heading"></a></h3>
-<p>Class names should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style.
-Member variables should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.
-Private and protected member variables should have trailing <code class="docutils literal notranslate"><span class="pre">_</span></code> (underscore).
-Member functions should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Pascal</span></a> style.
-Member function parameters should use <a class="reference internal" href="#naming-conventions"><span class="std std-ref">snake</span></a> style.</p>
+<p>Class names should use <cite>Pascal</cite> style.
+Member variables should use <cite>snake</cite> style.
+Private and protected member variables should have trailing underscores (<cite>_</cite>).
+Member functions should use <cite>Pascal</cite> style.
+Member function parameters should use <cite>snake</cite> style.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ThisIsAClassName</span><span class="w"> </span><span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">public_member_var</span><span class="p">;</span>
@@ -190,7 +188,7 @@ Member function parameters should use <a class="reference internal" href="#namin
 </section>
 <section id="getters-and-setters">
 <h3>Getters and Setters<a class="headerlink" href="#getters-and-setters" title="Link to this heading"></a></h3>
-<p>Getters should use the <code class="docutils literal notranslate"><span class="pre">Get</span></code> prefix and setters should use the <code class="docutils literal notranslate"><span class="pre">Set</span></code> prefix.</p>
+<p>Getters should use the <cite>Get</cite> prefix and setters should use the <cite>Set</cite> prefix.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
@@ -217,20 +215,17 @@ Examples: <code class="docutils literal notranslate"><span class="pre">1234.12</
 <section id="pointers">
 <h3>Pointers<a class="headerlink" href="#pointers" title="Link to this heading"></a></h3>
 <p>Shared pointers (<code class="docutils literal notranslate"><span class="pre">std::shared</span></code>) are preferred over raw pointers.
-Exception to this rule is when the code interacts with a 3rd party library like PETSc where
-shared pointers simply don’t exist.</p>
+Exception to this rule is when the code interacts with a 3rd party library like PETSc where shared pointers simply don’t exist.</p>
 </section>
 <section id="conditionals">
 <h3>Conditionals<a class="headerlink" href="#conditionals" title="Link to this heading"></a></h3>
-<p>A space should be used after the keyword in a conditional statement. There
-is no space inside parentheses. The statement block should not be enclosed
-in braces if the condition fits on a single line.</p>
+<p>A space should be used after the keyword in a conditional statement.
+There is no space inside parentheses. The statement block should not be enclosed in braces if the condition fits on a single line.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
 <span class="w">  </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>If the condition spans multiple lines, the statement block may be enclosed in
-braces for clarity.</p>
+<p>If the condition spans multiple lines, the statement block may be enclosed in braces for clarity.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">none_of</span><span class="p">(</span><span class="n">my_container</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
 <span class="w">                 </span><span class="n">my_container</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
 <span class="w">                 </span><span class="p">[](</span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}))</span>
@@ -285,13 +280,12 @@ and <code class="docutils literal notranslate"><span class="pre">/**</span> <spa
 </section>
 <section id="command-line-parameters">
 <h2>Command-line parameters<a class="headerlink" href="#command-line-parameters" title="Link to this heading"></a></h2>
-<p>Command line parameters used by the OpenSn binary or any OpenSn script should use
-<a class="reference internal" href="#naming-conventions"><span class="std std-ref">kebab</span></a> style.</p>
+<p>Command line parameters used by the OpenSn binary or any OpenSn script should use <cite>kebab</cite> style (see <a class="reference internal" href="#naming-conventions"><span class="std std-ref">Naming Conventions</span></a>).</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <section id="naming-conventions">
-<h3>Naming Conventions<a class="headerlink" href="#naming-conventions" title="Link to this heading"></a></h3>
+<span id="id1"></span><h3>Naming Conventions<a class="headerlink" href="#naming-conventions" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Snake style: <code class="docutils literal notranslate"><span class="pre">this_is_snake_style</span></code></p></li>
 <li><p>Kebab style: <code class="docutils literal notranslate"><span class="pre">this-is-kebab-style</span></code></p></li>
