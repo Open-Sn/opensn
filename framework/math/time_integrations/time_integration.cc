@@ -10,14 +10,14 @@ namespace opensn
 InputParameters
 TimeIntegration::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddRequiredParameter<int>("method", "Integer representing time stepping scheme");
 
   return params;
 }
 
-TimeIntegration::TimeIntegration(const InputParameters& params) : Object(params)
+TimeIntegration::TimeIntegration(const InputParameters& params)
 {
   const int method_option = params.GetParamValue<int>("method");
   if (method_option == static_cast<int>(SteppingMethod::EXPLICIT_EULER))

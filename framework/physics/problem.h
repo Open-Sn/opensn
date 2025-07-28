@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
-#include "framework/parameters/parameter_block.h"
+#include "framework/parameters/input_parameters.h"
 #include <iostream>
 #include <utility>
 
@@ -13,7 +12,7 @@ namespace opensn
 class FieldFunctionGridBased;
 class TimeStepper;
 
-class Problem : public Object
+class Problem
 {
 public:
   explicit Problem(std::string name);

@@ -9,12 +9,12 @@ namespace opensn
 InputParameters
 GraphPartitioner::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   return params;
 }
 
-GraphPartitioner::GraphPartitioner(const InputParameters& params) : Object(params)
+GraphPartitioner::GraphPartitioner(const InputParameters& params)
 {
 }
 

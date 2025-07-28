@@ -12,7 +12,7 @@ OpenSnRegisterObjectInNamespace(logvol, SphereLogicalVolume);
 InputParameters
 SphereLogicalVolume::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddOptionalParameter("r", 1.0, "Radius of the sphere.");
   params.AddOptionalParameter("x", 0.0, "X-location of the volume.");

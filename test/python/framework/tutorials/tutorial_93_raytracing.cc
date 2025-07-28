@@ -7,6 +7,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/field_functions/field_function_grid_based.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "test/python/src/bindings.h"
 

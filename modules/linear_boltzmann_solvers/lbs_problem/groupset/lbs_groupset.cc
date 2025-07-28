@@ -17,7 +17,7 @@ OpenSnRegisterObjectParametersOnlyInNamespace(lbs, LBSGroupset);
 InputParameters
 LBSGroupset::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("Input Parameters for groupsets.");
 
@@ -125,7 +125,6 @@ LBSGroupset::LBSGroupset(int id)
 }
 
 LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSProblem& lbs_problem)
-  : Object(params)
 {
   Init(id);
 

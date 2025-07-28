@@ -3,6 +3,7 @@
 
 #include "framework/post_processors/cell_volume_integral_post_processor.h"
 #include "framework/event_system/event.h"
+#include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
@@ -37,8 +38,10 @@ std::shared_ptr<CellVolumeIntegralPostProcessor>
 CellVolumeIntegralPostProcessor::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<CellVolumeIntegralPostProcessor>("post::CellVolumeIntegralPostProcessor",
-                                                         params);
+  auto pps = factory.Create<CellVolumeIntegralPostProcessor>(
+    "post::CellVolumeIntegralPostProcessor", params);
+  postprocessor_stack.push_back(pps);
+  return pps;
 }
 
 CellVolumeIntegralPostProcessor::CellVolumeIntegralPostProcessor(const InputParameters& params)

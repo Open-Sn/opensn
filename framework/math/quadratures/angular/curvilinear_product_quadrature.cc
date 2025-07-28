@@ -3,6 +3,7 @@
 
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <algorithm>
 #include <limits>

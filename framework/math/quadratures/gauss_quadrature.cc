@@ -10,7 +10,7 @@ namespace opensn
 InputParameters
 GaussQuadrature::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("Base class for Gauss quadratures");
 

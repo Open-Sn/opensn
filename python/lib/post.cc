@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/runtime.h"
 #include "framework/event_system/event.h"
 #include "framework/logging/log.h"
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"

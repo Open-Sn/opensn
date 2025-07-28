@@ -6,6 +6,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include <numeric>
 
 namespace opensn
@@ -16,7 +17,7 @@ OpenSnRegisterObjectInNamespace(lbs, PointSource);
 InputParameters
 PointSource::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("A multi-group isotropic point source.");
   params.SetClassName("Point Source");
@@ -36,8 +37,7 @@ PointSource::Create(const ParameterBlock& params)
 }
 
 PointSource::PointSource(const InputParameters& params)
-  : Object(params),
-    location_(params.GetParamVectorValue<double>("location")),
+  : location_(params.GetParamVectorValue<double>("location")),
     strength_(params.GetParamVectorValue<double>("strength"))
 {
   if (std::all_of(strength_.begin(), strength_.end(), [](double x) { return x == 0.0; }))

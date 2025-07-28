@@ -14,7 +14,6 @@ class TransientSolver : public Solver
 {
 protected:
   std::shared_ptr<LBSProblem> lbs_problem_;
-  std::shared_ptr<TimeIntegration> time_integration_;
 
 public:
   static InputParameters GetInputParameters();

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/math.h"
+#include "framework/runtime.h"
 #include <cassert>
 
 namespace opensn

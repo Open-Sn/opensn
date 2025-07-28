@@ -10,7 +10,7 @@ namespace opensn
 InputParameters
 TimeStepper::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddOptionalParameter("dt", 0.01, "Initial timestep to use");
   params.AddOptionalParameter("time", 0.0, "Initial time");
@@ -30,8 +30,7 @@ TimeStepper::GetInputParameters()
 }
 
 TimeStepper::TimeStepper(const InputParameters& params)
-  : Object(params),
-    dt_(params.GetParamValue<double>("dt")),
+  : dt_(params.GetParamValue<double>("dt")),
     time_(params.GetParamValue<double>("time")),
     t_index_(params.GetParamValue<size_t>("time_index")),
 

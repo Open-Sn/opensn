@@ -12,7 +12,6 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/utils/utils.h"
-#include "framework/object.h"
 
 namespace opensn
 {
@@ -21,7 +20,7 @@ class DiffusionMIPSolver;
 class LBSProblem;
 
 /// Group set functioning as a collection of groups
-class LBSGroupset : public Object
+class LBSGroupset
 {
 public:
   int id;

@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/hdf_utils.h"
 

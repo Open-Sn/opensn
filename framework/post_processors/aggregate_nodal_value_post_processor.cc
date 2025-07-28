@@ -3,6 +3,7 @@
 
 #include "framework/post_processors/aggregate_nodal_value_post_processor.h"
 #include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -36,8 +37,10 @@ std::shared_ptr<AggregateNodalValuePostProcessor>
 AggregateNodalValuePostProcessor::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<AggregateNodalValuePostProcessor>("post::AggregateNodalValuePostProcessor",
-                                                          params);
+  auto pps = factory.Create<AggregateNodalValuePostProcessor>(
+    "post::AggregateNodalValuePostProcessor", params);
+  postprocessor_stack.push_back(pps);
+  return pps;
 }
 
 AggregateNodalValuePostProcessor::AggregateNodalValuePostProcessor(const InputParameters& params)
