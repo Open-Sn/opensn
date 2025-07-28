@@ -2,13 +2,8 @@ FROM ubuntu:24.04
 
 ARG NUM_CORES=1
 
-ENV CC=/usr/bin/mpicc
-ENV CXX=/usr/bin/mpicxx
-ENV FC=/usr/bin/mpifort
-
 RUN apt update -y && \
     apt-get install -y build-essential \
-    gfortran \
     python3-dev \
     python3-pip \
     python3-venv \
@@ -16,10 +11,9 @@ RUN apt update -y && \
     cmake \
     libopenmpi-dev \
     flex \
-    bison \
-    libhdf5-mpi-dev \
     doxygen \
     pybind11-dev \
+    pandoc \
     curl
 
 RUN python3 -m venv /venv && \
@@ -29,10 +23,17 @@ RUN python3 -m venv /venv && \
 ENV PATH="/venv/bin:$PATH"
 
 RUN cd /opensn/tools && \
-    mkdir dependencies && \
-    python3 configure_dependencies.py -d dependencies -j ${NUM_CORES}
+    mkdir build_deps && \
+    cd build_deps && \
+    cmake -DCMAKE_INSTALL_PREFIX=../tpls ../dependencies && \
+    make -j ${NUM_CORES} && \
+    cd .. && \
+    rm -rf build_deps
 
-ENV CMAKE_PREFIX_PATH=/opensn/tools/dependencies
+RUN cd /opensn/doc && \
+    pip install -r requirements.txt
+
+ENV CMAKE_PREFIX_PATH=/opensn/tools/tpls
 
 RUN cd /opensn && \
     mkdir -p build && \
@@ -44,6 +45,6 @@ RUN cd /opensn && \
     pip install .
 
 # Common Python packages for data analysis and visualization
-RUN pip install matplotlib pandas numpy ipython jupyter
+RUN pip install matplotlib pandas numpy scipy ipython jupyter
 
 RUN mkdir /work
