@@ -78,7 +78,7 @@ if __name__ == "__main__":
         },
     )
     k_solver = PowerIterationKEigenSolver(
-        do_problem=phys,
+        problem=phys,
         k_tol=1e-6,
     )
     k_solver.Initialize()
