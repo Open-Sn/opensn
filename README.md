@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Open-Sn/opensn/badge.svg)](https://coveralls.io/github/Open-Sn/opensn)
 
 <p align="center">
-  <img src="doc/images/CoolPics/banner.png" width="700">
+  <img src="doc/source/gallery/images/CoolPics/banner.png" width="700">
 </p>
 
 # OpenSn #
@@ -14,9 +14,5 @@ Texas A&M University as part of a research study on massively parallel
 algorithms for modeling and simulation. The main physics modules 
 of OpenSn deal with solving the linear Boltzmann equation and 
 diffusion-reaction physics.
-
-Please visit the links below where you will find:
-
-- [Simulation Gallery](doc/gallery.md)
 
 For help, please post on our [Discussions](https://github.com/Open-Sn/openSn/discussions) page.
