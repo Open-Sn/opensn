@@ -22,7 +22,7 @@ NonLinearKEigenSolver::GetInputParameters()
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("do_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -55,7 +55,7 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
   : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("do_problem")),
+    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),

@@ -28,7 +28,7 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("do_problem",
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
@@ -48,7 +48,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("do_problem"))),
+    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("problem"))),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
