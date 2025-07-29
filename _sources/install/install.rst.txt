@@ -12,7 +12,7 @@ The following packages are required for **OpenSn** installation and development:
 4. Git version control system
 5. CMake v3.20.2+
 6. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
-7. PETSc 3.17.0, Boost 1.86+, HDF5 1.14+, VTK 9.3.0+, Caliper 2.10+
+7. PETSc 3.17.0+, Boost 1.86+, HDF5 1.14+, VTK 9.3.0+, Caliper 2.10+
 8. pybind11 installed via ``pip``
 9. Pandoc and Doxygen (required for generating the OpenSn documentation)
 
