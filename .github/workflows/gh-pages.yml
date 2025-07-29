@@ -16,11 +16,11 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14 doxygen/1.13.2 pandoc/3.6.4
-          mkdir build && cd build
-          cmake -DOPENSN_WITH_DOCS=ON -DOPENSN_WITH_PYTHON_MODULE=ON ..
-          make -j __init__ doc
+          python3 setup.py build_ext --inplace
+          cd doc
+          make html
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: ${{ github.workspace }}/build/doc/html
+          folder: ${{ github.workspace }}/doc/build/html

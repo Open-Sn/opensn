@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.2)
+cmake_minimum_required(VERSION 3.25.2)
 
 project(opensn
     VERSION 0.0.1
@@ -41,16 +41,11 @@ if (OPENSN_WITH_CUDA)
     message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
     enable_language(CUDA)
 endif()
-option(OPENSN_WITH_DOCS "Enable documentation" OFF)
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
 
 if(OPENSN_WITH_PYTHON_MODULE)
     set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
-endif()
-
-if (OPENSN_WITH_DOCS AND NOT OPENSN_WITH_PYTHON_MODULE)
-    message(FATAL_ERROR "Python module is required to build documentation!")
 endif()
 
 # dependencies
@@ -153,6 +148,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-sign-compare")
     list(APPEND OPENSN_CXX_FLAGS "-Wno-psabi")
+    list(APPEND OPENSN_CXX_FLAGS "-Wno-deprecated-declarations")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
     list(APPEND OPENSN_CXX_FLAGS "-fp-model=precise")
 else()
@@ -174,6 +170,7 @@ add_library(libopensn SHARED ${LIBOPENSN_SRCS})
 
 if (OPENSN_WITH_CUDA)
     target_compile_options(libopensncuda PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
+    target_compile_features(libopensncuda PUBLIC cuda_std_20)
     target_compile_definitions(libopensncuda PRIVATE __OPENSN_USE_CUDA__)
     target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
     set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -213,6 +210,7 @@ if (OPENSN_WITH_CUDA)
       $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
   )
+  target_link_libraries(libopensncuda PRIVATE MPI::MPI_CXX)
 endif()
 
 target_link_libraries(libopensn
@@ -261,10 +259,6 @@ if(OPENSN_WITH_PYTHON)
 endif()
 
 configure_file(config.h.in config.h)
-
-if(OPENSN_WITH_DOCS)
-    add_subdirectory(doc)
-endif()
 
 # install
 configure_package_config_file(
