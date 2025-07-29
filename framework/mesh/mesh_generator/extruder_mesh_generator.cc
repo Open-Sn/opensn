@@ -3,6 +3,7 @@
 
 #include "framework/mesh/mesh_generator/extruder_mesh_generator.h"
 #include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 
 namespace opensn

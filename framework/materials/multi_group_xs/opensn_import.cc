@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <numeric>
 

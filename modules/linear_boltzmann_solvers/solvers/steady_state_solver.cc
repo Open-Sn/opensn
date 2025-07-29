@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/runtime.h"
 #include "caliper/cali.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <memory>

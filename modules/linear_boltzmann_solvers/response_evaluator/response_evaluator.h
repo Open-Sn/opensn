@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <memory>
 
 namespace opensn
@@ -52,7 +52,7 @@ namespace opensn
  *    end
  * \endcode
  */
-class ResponseEvaluator : public Object
+class ResponseEvaluator
 {
 private:
   using FluxMomentBuffer = std::vector<double>;

@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 
 namespace opensn
 {
 
-class PETScNonLinearSolverOptions : public Object
+class PETScNonLinearSolverOptions
 {
 public:
   explicit PETScNonLinearSolverOptions(const InputParameters& params);

@@ -21,7 +21,7 @@ int VolumetricSource::next_id_ = 0;
 InputParameters
 VolumetricSource::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("General implementation of an arbitrary multi-group "
                                "volumetric source. Currently, only isotropic volumetric "

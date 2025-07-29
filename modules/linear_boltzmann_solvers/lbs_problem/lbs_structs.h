@@ -8,6 +8,7 @@
 #include <functional>
 #include <chrono>
 #include <map>
+#include <filesystem>
 
 namespace opensn
 {

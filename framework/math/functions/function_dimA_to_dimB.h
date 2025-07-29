@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <functional>
 
 namespace opensn
@@ -12,7 +12,7 @@ namespace opensn
 using ScalarScalarFunction = std::function<double(double)>;
 using ScalarXYZTFunction = std::function<double(double, double, double, double)>;
 
-class FunctionDimAToDimB : public Object
+class FunctionDimAToDimB
 {
 private:
   const size_t input_dimension_;

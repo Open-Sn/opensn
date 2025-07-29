@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/math/math_time_stepping.h"
 
 namespace opensn
 {
 
-class TimeIntegration : public Object
+class TimeIntegration
 {
 private:
   SteppingMethod method_;

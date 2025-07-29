@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
-#include "framework/object.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/utils/utils.h"
 #include <memory>
@@ -20,11 +19,11 @@
  * \note Remember to include the header "framework/object_factory.h".*/
 #define OpenSnRegisterObjectInNamespace(namespace_name, object_name)                               \
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name)
 
 #define OpenSnRegisterObject(object_name)                                                          \
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#object_name)
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#object_name)
 
 /**
  * Macro for registering an object alias within the ObjectFactory
@@ -38,7 +37,7 @@
  */
 #define OpenSnRegisterObjectAliasInNamespace(namespace_name, alias, object_name)                   \
   static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name, Object>(#namespace_name, #object_name)
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name)
 
 /**
  * Macro for registering an object (parameters only) within the
@@ -63,22 +62,16 @@
 namespace opensn
 {
 
-class Object;
-
 /// Singleton object for handling the registration and making of `Object`s.
 class ObjectFactory
 {
 public:
-  using ObjectPtr = std::shared_ptr<Object>;
-
   using ObjectGetInParamsFunc = InputParameters (*)();
-  using ObjectConstructorFunc = ObjectPtr (*)(const InputParameters&);
 
   /// Structure storing the entities necessary for creating an object
   struct ObjectRegistryEntry
   {
     ObjectGetInParamsFunc get_in_params_func = nullptr;
-    ObjectConstructorFunc constructor_func = nullptr;
   };
 
   // Deleted copy, move constructors and copy assignment operator
@@ -95,13 +88,13 @@ public:
   /// Checks if the object registry has a specific text key.
   bool RegistryHasKey(const std::string& key) const;
 
-  template <typename T, typename base_T>
+  template <typename T>
   static char AddObjectToRegistry(const std::string& namespace_name, const std::string& object_name)
   {
-    return AddObjectToRegistry<T, base_T>(namespace_name + "::" + object_name);
+    return AddObjectToRegistry<T>(namespace_name + "::" + object_name);
   }
 
-  template <typename T, typename base_T>
+  template <typename T>
   static char AddObjectToRegistry(const std::string& object_name)
   {
     auto& object_maker = GetInstance();
@@ -111,7 +104,6 @@ public:
 
     ObjectRegistryEntry reg_entry;
     reg_entry.get_in_params_func = &CallGetInputParamsFunction<T>;
-    reg_entry.constructor_func = &CallObjectConstructor<T, base_T>;
     object_maker.object_registry_.insert(std::make_pair(name, reg_entry));
 
     return 0;
@@ -161,18 +153,6 @@ public:
     return 0;
   }
 
-  /**
-   * Makes an object with the given parameters and places on the global object stack. Returns a
-   * handle to the object. The object type is obtained from a string parameter name `obj_type`.
-   */
-  size_t MakeRegisteredObject(const ParameterBlock& params) const;
-
-  /**
-   * Makes an object with the given parameters and places on the global object stack. Returns a
-   * handle to the object.
-   */
-  size_t MakeRegisteredObjectOfType(const std::string& type, const ParameterBlock& params) const;
-
   template <class TYPE>
   std::shared_ptr<TYPE> Create(const std::string& type, const ParameterBlock& params) const
   {
@@ -180,7 +160,7 @@ public:
       throw std::logic_error("No registered type \"" + type + "\" found.");
 
     auto object_entry = object_registry_.at(type);
-    if (not object_entry.constructor_func)
+    if (not object_entry.get_in_params_func)
       throw std::runtime_error(
         "Object is not constructable since it has no registered constructor");
 
@@ -189,7 +169,6 @@ public:
     input_params.SetErrorOriginScope(type);
     input_params.AssignParameters(params);
     auto obj = std::make_shared<TYPE>(input_params);
-    obj->PushOntoStack(obj);
     return obj;
   }
 

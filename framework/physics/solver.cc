@@ -14,7 +14,7 @@ namespace opensn
 InputParameters
 Solver::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -44,9 +44,7 @@ Solver::Solver(std::string name)
 }
 
 Solver::Solver(const InputParameters& params)
-  : Object(params),
-    timestepper_(InitTimeStepper(params)),
-    name_(params.GetParamValue<std::string>("name"))
+  : timestepper_(InitTimeStepper(params)), name_(params.GetParamValue<std::string>("name"))
 {
 }
 
@@ -85,8 +83,6 @@ Solver::InitTimeStepper(const InputParameters& params)
     valid_params.AssignParameters(custom_params);
 
     auto stepper = std::make_shared<ConstantTimeStepper>(valid_params);
-    object_stack.push_back(stepper);
-    stepper->SetStackID(object_stack.size() - 1);
 
     return stepper;
   }

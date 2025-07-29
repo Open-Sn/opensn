@@ -14,7 +14,7 @@ namespace opensn
 InputParameters
 Problem::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -28,8 +28,7 @@ Problem::Problem(std::string name) : name_(std::move(name))
 {
 }
 
-Problem::Problem(const InputParameters& params)
-  : Object(params), name_(params.GetParamValue<std::string>("name"))
+Problem::Problem(const InputParameters& params) : name_(params.GetParamValue<std::string>("name"))
 {
 }
 

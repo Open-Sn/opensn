@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/mesh/mesh.h"
 
@@ -11,7 +11,7 @@ namespace opensn
 {
 class Cell;
 
-class FieldFunction : public Object
+class FieldFunction
 {
 public:
   static InputParameters GetInputParameters();
@@ -29,9 +29,6 @@ public:
 
   /// Returns a reference to the unknown manager that can be with spatial discretizations.
   const UnknownManager& GetUnknownManager() const { return unknown_manager_; }
-
-  /// Overrides the stack placement so that field functions go to the field function stack.
-  void PushOntoStack(std::shared_ptr<Object> new_object) override;
 
   /// Evaluate the field function on a given cell, at a given position, for the given component.
   virtual double Evaluate(const Cell& cell, const Vector3& position, int component) const

@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
-#include "framework/parameters/parameter_block.h"
+#include "framework/parameters/input_parameters.h"
 #include <iostream>
 #include <utility>
 
@@ -17,7 +16,7 @@ class TimeStepper;
  * \defgroup SolverBase Base class for all solvers
  * \ingroup doc_PhysicsSolver
  */
-class Solver : public Object
+class Solver
 {
 public:
   /// Returns the input parameters.

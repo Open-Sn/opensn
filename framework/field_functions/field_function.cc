@@ -3,6 +3,7 @@
 
 #include "framework/field_functions/field_function.h"
 #include "framework/logging/log_exceptions.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {
@@ -10,7 +11,7 @@ namespace opensn
 InputParameters
 FieldFunction::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddRequiredParameter<std::string>("name", "The field function name.");
   params.AddOptionalParameter(
@@ -29,8 +30,7 @@ FieldFunction::GetInputParameters()
 }
 
 FieldFunction::FieldFunction(const InputParameters& params)
-  : Object(params),
-    name_(params.GetParamValue<std::string>("name")),
+  : name_(params.GetParamValue<std::string>("name")),
     unknown_(
       (params.GetParamValue<std::string>("unknown_type") == "Scalar") ? Unknown(UnknownType::SCALAR)
       : (params.GetParamValue<std::string>("unknown_type") == "Vector2")
@@ -47,17 +47,6 @@ FieldFunction::FieldFunction(const InputParameters& params)
 FieldFunction::FieldFunction(std::string name, Unknown unknown)
   : name_(std::move(name)), unknown_(std::move(unknown)), unknown_manager_({unknown_})
 {
-}
-
-void
-FieldFunction::PushOntoStack(std::shared_ptr<Object> new_object)
-{
-  auto ff_ptr = std::dynamic_pointer_cast<FieldFunction>(new_object);
-
-  OpenSnLogicalErrorIf(not ff_ptr, "Bad trouble when casting object to field function");
-
-  field_function_stack.push_back(ff_ptr);
-  new_object->SetStackID(field_function_stack.size() - 1);
 }
 
 } // namespace opensn

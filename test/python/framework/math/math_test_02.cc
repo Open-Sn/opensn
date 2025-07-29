@@ -3,6 +3,7 @@
 
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "test/python/src/bindings.h"
 

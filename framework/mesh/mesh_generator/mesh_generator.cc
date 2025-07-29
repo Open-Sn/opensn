@@ -14,8 +14,7 @@
 namespace opensn
 {
 MeshGenerator::MeshGenerator(const InputParameters& params)
-  : Object(params),
-    scale_(params.GetParamValue<double>("scale")),
+  : scale_(params.GetParamValue<double>("scale")),
     replicated_(params.GetParamValue<bool>("replicated_mesh"))
 {
   // Convert input handles
@@ -224,7 +223,7 @@ OpenSnRegisterObjectInNamespace(mesh, MeshGenerator);
 InputParameters
 MeshGenerator::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("The base class for all mesh generators");
   params.SetDocGroup("doc_MeshGenerators");

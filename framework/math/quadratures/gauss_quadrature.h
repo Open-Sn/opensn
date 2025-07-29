@@ -5,13 +5,13 @@
 
 #include "framework/math/quadratures/quadrature_order.h"
 #include "framework/data_types/vector3.h"
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <vector>
 
 namespace opensn
 {
 
-class GaussQuadrature : public Object
+class GaussQuadrature
 {
 protected:
   std::pair<double, double> range_;
@@ -19,8 +19,7 @@ protected:
   QuadratureOrder order_;
 
   explicit GaussQuadrature(const InputParameters& params)
-    : Object(params),
-      range_({0, 0}),
+    : range_({0, 0}),
       verbose_(params.GetParamValue<bool>("verbose")),
       order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
   {

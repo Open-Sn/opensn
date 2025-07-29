@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <vector>
 #include <iostream>
 
@@ -25,7 +25,7 @@ class LBSProblem;
  * The flexibility of this object allows for its use as a standard volumetric source or as
  * a volumetric response function for adjoint calculations.
  */
-class VolumetricSource : public Object
+class VolumetricSource
 {
 public:
   explicit VolumetricSource(const InputParameters& params);

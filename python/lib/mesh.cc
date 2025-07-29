@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/runtime.h"
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/graphs/kba_graph_partitioner.h"
 #include "framework/graphs/linear_graph_partitioner.h"

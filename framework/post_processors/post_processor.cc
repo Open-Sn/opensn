@@ -6,7 +6,7 @@
 #include "framework/event_system/event_subscriber.h"
 #include "framework/event_system/event.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
+#include "framework/runtime.h"
 #include <inttypes.h>
 
 namespace opensn
@@ -15,7 +15,7 @@ namespace opensn
 InputParameters
 PostProcessor::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("Base class for Post-Processors. For more general"
                                "information see \\ref doc_PostProcessors");
@@ -60,8 +60,7 @@ PostProcessor::GetInputParameters()
 }
 
 PostProcessor::PostProcessor(const InputParameters& params, PPType type)
-  : Object(params),
-    name_(params.GetParamValue<std::string>("name")),
+  : name_(params.GetParamValue<std::string>("name")),
     subscribed_events_for_execution_(params.GetParamVectorValue<std::string>("execute_on")),
     subscribed_events_for_printing_(params.GetParamVectorValue<std::string>("print_on")),
     type_(type),
@@ -113,24 +112,6 @@ size_t
 PostProcessor::GetNumericPrecision() const
 {
   return print_precision_;
-}
-
-void
-PostProcessor::PushOntoStack(std::shared_ptr<Object> new_object)
-{
-
-  auto pp_ptr = std::dynamic_pointer_cast<PostProcessor>(new_object);
-  OpenSnLogicalErrorIf(not pp_ptr, "Failure to cast new object to PostProcessor");
-
-  postprocessor_stack.push_back(pp_ptr);
-  new_object->SetStackID(postprocessor_stack.size() - 1);
-
-  auto new_subscriber = std::dynamic_pointer_cast<EventSubscriber>(pp_ptr);
-
-  OpenSnLogicalErrorIf(not new_subscriber, "Failure to cast PostProcessor to EventSubscriber");
-
-  auto& publisher = PhysicsEventPublisher::GetInstance();
-  publisher.AddSubscriber(new_subscriber);
 }
 
 void

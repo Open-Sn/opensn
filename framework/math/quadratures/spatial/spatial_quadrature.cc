@@ -9,7 +9,7 @@ namespace opensn
 InputParameters
 SpatialQuadrature::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
 
   params.SetGeneralDescription("Base class for spatial quadratures");
 

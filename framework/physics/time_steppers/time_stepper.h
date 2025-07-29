@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
+#include <string>
+#include <cstddef>
 
 namespace opensn
 {
@@ -16,9 +18,11 @@ enum class TimeStepStatus
 };
 
 /// Base class for all timestep controllers.
-class TimeStepper : public Object
+class TimeStepper
 {
 public:
+  virtual ~TimeStepper() = default;
+
   /// Overridable method to get the timestep size.
   double GetTimeStepSize() const;
 

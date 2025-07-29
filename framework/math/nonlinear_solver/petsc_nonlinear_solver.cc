@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
+#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"
 
