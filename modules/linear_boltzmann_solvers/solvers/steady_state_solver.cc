@@ -25,7 +25,7 @@ SteadyStateSolver::GetInputParameters()
                                "across-groupset (AGS) solver.");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   return params;
 }
@@ -38,7 +38,7 @@ SteadyStateSolver::Create(const ParameterBlock& params)
 }
 
 SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
-  : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem"))
+  : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
 }
 

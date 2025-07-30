@@ -28,7 +28,7 @@ ResponseEvaluator::GetInputParameters()
     "and arbitrary forward sources.");
   params.SetDocGroup("LBSUtilities");
 
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem",
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "A handle to an existing LBS problem.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
@@ -45,7 +45,7 @@ ResponseEvaluator::Create(const ParameterBlock& params)
 }
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
-  : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem"))
+  : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
   if (params.IsParameterValid("options"))
   {

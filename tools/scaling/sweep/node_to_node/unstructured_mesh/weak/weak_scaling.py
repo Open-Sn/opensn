@@ -67,6 +67,6 @@ phys = DiscreteOrdinatesProblem(
         "scattering_order": 0,
     }
 )
-ss_solver = SteadyStateSolver(lbs_problem=phys)
+ss_solver = SteadyStateSolver(problem=phys)
 ss_solver.Initialize()
 ss_solver.Execute()
