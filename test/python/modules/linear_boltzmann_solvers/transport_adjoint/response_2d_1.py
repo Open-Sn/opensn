@@ -117,7 +117,7 @@ if __name__ == "__main__":
     )
 
     # Forward solve
-    ss_solver = SteadyStateSolver(lbs_problem=phys)
+    ss_solver = SteadyStateSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     phys.WriteFluxMoments("adjoint_2d_1")
 
     # Create response evaluator and evaluate response
-    evaluator = ResponseEvaluator(lbs_problem=phys)
+    evaluator = ResponseEvaluator(problem=phys)
     evaluator.SetOptions(
         buffers=[{'name': 'buff', 'file_prefixes': {'flux_moments': 'adjoint_2d_1'}}],
         sources={'material': [{'block_id': 2, 'strength': [3.0]}]}

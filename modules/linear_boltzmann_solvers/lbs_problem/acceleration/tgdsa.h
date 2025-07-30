@@ -9,23 +9,23 @@
 namespace opensn
 {
 
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 class SpatialDiscretization;
 
 class TGDSA
 {
 public:
   /// Initializes the Two-Grid DSA solver.
-  static void Init(LBSProblem& lbs_problem, LBSGroupset& groupset);
+  static void Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset);
 
   /// Assembles a delta-phi vector on the first moment.
-  static void AssembleDeltaPhiVector(LBSProblem& lbs_problem,
+  static void AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                      const LBSGroupset& groupset,
                                      const std::vector<double>& phi_in,
                                      std::vector<double>& delta_phi_local);
 
   /// Disassembles a delta-phi vector on the first moment.
-  static void DisassembleDeltaPhiVector(LBSProblem& lbs_problem,
+  static void DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                         const LBSGroupset& groupset,
                                         const std::vector<double>& delta_phi_local,
                                         std::vector<double>& ref_phi_new);

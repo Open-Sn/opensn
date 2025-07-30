@@ -30,6 +30,9 @@ public:
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
   void Initialize() override;
 
+  /// Returns the sweep boundaries as a read only reference
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
+
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 
@@ -39,6 +42,8 @@ public:
 protected:
   explicit DiscreteOrdinatesProblem(const std::string& name,
                                     std::shared_ptr<MeshContinuum> grid_ptr);
+
+  void InitializeBoundaries() override;
 
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;
@@ -75,6 +80,7 @@ protected:
 
   std::vector<size_t> verbose_sweep_angles_;
   const std::string sweep_type_;
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
   /// Max level size.
   std::size_t max_level_size_ = 0;
