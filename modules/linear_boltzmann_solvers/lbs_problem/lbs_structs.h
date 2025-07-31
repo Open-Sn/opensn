@@ -5,6 +5,7 @@
 
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/math.h"
+#include "framework/math/geometry.h"
 #include <functional>
 #include <chrono>
 #include <map>
@@ -24,36 +25,6 @@ enum class SolverType
   DIFFUSION_DFEM = 2,
   DIFFUSION_CFEM = 3,
 };
-
-enum class GeometryType
-{
-  NO_GEOMETRY_SET = 0,
-  ONED_SLAB = 1,
-  ONED_CYLINDRICAL = 2,
-  ONED_SPHERICAL = 3,
-  TWOD_CARTESIAN = 4,
-  TWOD_CYLINDRICAL = 5,
-  THREED_CARTESIAN = 6
-};
-
-inline CoordinateSystemType
-MapGeometryTypeToCoordSys(const GeometryType gtype)
-{
-  switch (gtype)
-  {
-    case GeometryType::ONED_SLAB:
-    case GeometryType::TWOD_CARTESIAN:
-    case GeometryType::THREED_CARTESIAN:
-      return CoordinateSystemType::CARTESIAN;
-    case GeometryType::ONED_SPHERICAL:
-      return CoordinateSystemType::SPHERICAL;
-    case GeometryType::ONED_CYLINDRICAL:
-    case GeometryType::TWOD_CYLINDRICAL:
-      return CoordinateSystemType::CYLINDRICAL;
-    default:
-      return CoordinateSystemType::CARTESIAN;
-  }
-}
 
 enum class AngleAggregationType
 {
@@ -317,18 +288,6 @@ public:
   }
 
   void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
-};
-
-struct UnitCellMatrices
-{
-  DenseMatrix<double> intV_gradshapeI_gradshapeJ;
-  DenseMatrix<Vector3> intV_shapeI_gradshapeJ;
-  DenseMatrix<double> intV_shapeI_shapeJ;
-  Vector<double> intV_shapeI;
-
-  std::vector<DenseMatrix<double>> intS_shapeI_shapeJ;
-  std::vector<DenseMatrix<Vector3>> intS_shapeI_gradshapeJ;
-  std::vector<Vector<double>> intS_shapeI;
 };
 
 } // namespace opensn
