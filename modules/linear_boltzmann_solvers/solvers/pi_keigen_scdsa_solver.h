@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
+#include "modules/diffusion/diffusion.h"
 
 namespace opensn
 {

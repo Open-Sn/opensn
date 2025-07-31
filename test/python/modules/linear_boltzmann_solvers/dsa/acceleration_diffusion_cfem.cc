@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include "modules/diffusion/diffusion_pwlc_solver.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/runtime.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include "test/python/src/bindings.h"
 
 using namespace opensn;

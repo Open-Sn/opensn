@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
 
 namespace opensn
