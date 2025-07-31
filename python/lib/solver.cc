@@ -3,7 +3,6 @@
 
 #include "python/lib/py_wrappers.h"
 #include "framework/runtime.h"
-#include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
@@ -83,34 +82,22 @@ WrapSolver(py::module& slv)
   );
   solver.def(
     "Initialize",
-    [](Solver & self)
-    {
-      PhysicsEventPublisher::GetInstance().SolverInitialize(self);
-    },
+    &Solver::Initialize,
     "Initialize the solver."
   );
   solver.def(
     "Execute",
-    [](Solver & self)
-    {
-      PhysicsEventPublisher::GetInstance().SolverExecute(self);
-    },
+    &Solver::Execute,
     "Execute the solver."
   );
   solver.def(
     "Step",
-    [](Solver & self)
-    {
-      PhysicsEventPublisher::GetInstance().SolverStep(self);
-    },
+    &Solver::Step,
     "Step the solver."
   );
   solver.def(
     "Advance",
-    [](Solver & self)
-    {
-      PhysicsEventPublisher::GetInstance().SolverAdvance(self);
-    },
+    &Solver::Advance,
     "Advance time values function."
   );
   // clang-format on
