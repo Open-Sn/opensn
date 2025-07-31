@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/runtime.h"
-#include "framework/event_system/system_wide_event_publisher.h"
-#include "framework/post_processors/post_processor.h"
-#include "framework/event_system/event.h"
 #include "framework/math/math.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
@@ -46,8 +43,6 @@ Initialize()
 
   CALI_MARK_BEGIN(opensn::program.c_str());
 
-  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramStart"));
-
   // Disable internal HDF error reporting
   H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
@@ -57,8 +52,6 @@ Initialize()
 void
 Finalize()
 {
-  SystemWideEventPublisher::GetInstance().PublishEvent(Event("ProgramExecuted"));
-
   field_func_interpolation_stack.clear();
   multigroup_xs_stack.clear();
   field_function_stack.clear();
