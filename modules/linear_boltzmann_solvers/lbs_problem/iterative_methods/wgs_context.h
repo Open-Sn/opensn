@@ -16,7 +16,7 @@ namespace opensn
 class LBSGroupset;
 class LBSProblem;
 
-struct WGSContext : public LinearSolverContext
+struct WGSContext : public LinearSystemContext
 {
   WGSContext(LBSProblem& lbs_problem,
              LBSGroupset& groupset,
