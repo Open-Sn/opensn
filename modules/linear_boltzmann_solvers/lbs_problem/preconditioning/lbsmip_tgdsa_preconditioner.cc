@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
 
 namespace opensn
 {

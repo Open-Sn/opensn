@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"

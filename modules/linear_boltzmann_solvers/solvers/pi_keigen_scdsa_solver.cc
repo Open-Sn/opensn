@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_scdsa_solver.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
+#include "modules/diffusion/diffusion_pwlc_solver.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/object_factory.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <iomanip>
 #include <memory>

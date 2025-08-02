@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
+#include "modules/diffusion/diffusion.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {

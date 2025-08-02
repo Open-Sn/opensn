@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
 #include <petscsnes.h>
 
 namespace opensn
