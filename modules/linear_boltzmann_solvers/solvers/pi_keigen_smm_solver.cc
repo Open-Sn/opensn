@@ -3,15 +3,16 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_smm_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/diffusion/diffusion_pwlc_solver.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/object_factory.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
@@ -853,29 +854,8 @@ PowerIterationKEigenSMMSolver::ComputeAuxiliaryUnitCellMatrices()
 {
   const auto& discretization = lbs_problem_->GetSpatialDiscretization();
 
-  // Spatial weight functions
-  struct SpatialWeightFunction
-  {
-    virtual ~SpatialWeightFunction() = default;
-    virtual double operator()(const Vector3& p) const { return 1.0; }
-  };
-
-  struct CylindricalWeightFunction : public SpatialWeightFunction
-  {
-    double operator()(const Vector3& p) const override { return p[0]; }
-  };
-
-  struct SphericalWeightFunction : public SpatialWeightFunction
-  {
-    double operator()(const Vector3& p) const override { return p[2] * p[2]; }
-  };
-
-  auto swf = std::make_shared<SpatialWeightFunction>();
-  const auto geom_type = lbs_problem_->GetOptions().geometry_type;
-  if (geom_type == GeometryType::ONED_SPHERICAL)
-    swf = std::make_shared<SphericalWeightFunction>();
-  else if (geom_type == GeometryType::TWOD_CYLINDRICAL)
-    swf = std::make_shared<CylindricalWeightFunction>();
+  auto swf =
+    SpatialWeightFunction::FromCoordinateType(lbs_problem_->GetGrid()->GetCoordinateSystem());
 
   // Compute integrals
   const auto num_local_cells = lbs_problem_->GetGrid()->local_cells.size();

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
+#include "modules/diffusion/diffusion.h"
 #include "framework/math/functions/function.h"
 
 namespace opensn
