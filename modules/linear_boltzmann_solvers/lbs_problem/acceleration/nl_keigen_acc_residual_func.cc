@@ -18,13 +18,13 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto& diff_solver = nl_context_ptr->diff_solver;
 
-  auto& lbs_problem = nl_context_ptr->lbs_problem;
-  auto& groupsets = lbs_problem.GetGroupsets();
-  auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
+  auto& do_problem = nl_context_ptr->do_problem;
+  auto& groupsets = do_problem.GetGroupsets();
+  auto active_set_source_function = do_problem.GetActiveSetSourceFunction();
   auto& front_gs = groupsets.front();
 
-  auto& q_moments_local = lbs_problem.GetQMomentsLocal();
-  auto& phi_old_local = lbs_problem.GetPhiOldLocal();
+  auto& q_moments_local = do_problem.GetQMomentsLocal();
+  auto& phi_old_local = do_problem.GetPhiOldLocal();
   auto phi_temp = phi_old_local;
 
   const auto& phi_l = nl_context_ptr->phi_l;
@@ -54,38 +54,37 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   };
 
   auto SetPhi0FissionSource =
-    [&front_gs, &lbs_problem, &phi_temp, &SetLBSFissionSource, &q_moments_local](
+    [&front_gs, &do_problem, &phi_temp, &SetLBSFissionSource, &q_moments_local](
       const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
 
     SetLBSFissionSource(phi_temp, q_moments_local);
 
-    auto output = WGDSA::WGSCopyOnlyPhi0(lbs_problem, front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(do_problem, front_gs, q_moments_local);
     return output;
   };
 
   auto SetPhi0ScatterSource =
-    [&front_gs, &lbs_problem, &phi_temp, &SetLBSScatterSource, &q_moments_local](
+    [&front_gs, &do_problem, &phi_temp, &SetLBSScatterSource, &q_moments_local](
       const std::vector<double>& input, bool suppress_wgs)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
 
     SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
 
-    auto output = WGDSA::WGSCopyOnlyPhi0(lbs_problem, front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(do_problem, front_gs, q_moments_local);
     return output;
   };
 
-  auto Phi0FissionProdL2Norm =
-    [&front_gs, &lbs_problem, &phi_temp](const std::vector<double>& input)
+  auto Phi0FissionProdL2Norm = [&front_gs, &do_problem, &phi_temp](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(lbs_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
 
-    return ComputeFissionProduction(lbs_problem, phi_temp);
+    return ComputeFissionProduction(do_problem, phi_temp);
   };
 
   // Business end

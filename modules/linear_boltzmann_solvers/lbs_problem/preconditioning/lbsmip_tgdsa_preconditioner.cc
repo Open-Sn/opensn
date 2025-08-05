@@ -5,8 +5,10 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
 {
@@ -20,11 +22,11 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   auto gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
-  LBSProblem& solver = gs_context_ptr->lbs_problem;
+  DiscreteOrdinatesProblem& solver = gs_context_ptr->do_problem;
   LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_delta = gs_context_ptr->lbs_problem.GetPhiNewLocal();
+  auto& phi_delta = gs_context_ptr->do_problem.GetPhiNewLocal();
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
 
   // Apply TGDSA

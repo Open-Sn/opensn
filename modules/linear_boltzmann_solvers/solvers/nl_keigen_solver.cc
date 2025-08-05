@@ -22,7 +22,7 @@ NonLinearKEigenSolver::GetInputParameters()
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -55,8 +55,8 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
   : Solver(params),
-    lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem")),
-    nl_context_(std::make_shared<NLKEigenAGSContext>(lbs_problem_)),
+    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
+    nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
@@ -79,32 +79,32 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 void
 NonLinearKEigenSolver::Initialize()
 {
-  lbs_problem_->Initialize();
+  do_problem_->Initialize();
 }
 
 void
 NonLinearKEigenSolver::Execute()
 {
   if (reset_phi0_)
-    LBSVecOps::SetPhiVectorScalarValues(*lbs_problem_, PhiSTLOption::PHI_OLD, 1.0);
+    LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
   if (num_initial_power_its_ > 0)
   {
     double k_eff = 1.0;
     PowerIterationKEigenSolver(
-      *lbs_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
+      *do_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
   }
 
   nl_solver_.Setup();
   nl_solver_.Solve();
 
-  if (lbs_problem_->GetOptions().use_precursors)
+  if (do_problem_->GetOptions().use_precursors)
   {
-    ComputePrecursors(*lbs_problem_);
-    Scale(lbs_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
+    ComputePrecursors(*do_problem_);
+    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
-  lbs_problem_->UpdateFieldFunctions();
+  do_problem_->UpdateFieldFunctions();
 
   log.Log() << "LinearBoltzmann::NonLinearKEigenvalueSolver execution completed\n\n";
 }

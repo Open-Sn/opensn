@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include <petscsnes.h>
@@ -15,7 +15,7 @@ namespace opensn
 struct NLKEigenDiffContext : public NonLinearSolverContext
 {
   DiffusionMIPSolver& diff_solver;
-  LBSProblem& lbs_problem;
+  DiscreteOrdinatesProblem& do_problem;
   int verbosity_level;
   KResidualFunctionContext kresid_func_context;
 
@@ -28,10 +28,10 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   double k_l = 1.0;
 
   explicit NLKEigenDiffContext(DiffusionMIPSolver& diff_solver,
-                               LBSProblem& lbs_problem,
+                               DiscreteOrdinatesProblem& do_problem,
                                int verbosity_level)
     : diff_solver(diff_solver),
-      lbs_problem(lbs_problem),
+      do_problem(do_problem),
       verbosity_level(verbosity_level),
       kresid_func_context({diff_solver.GetName(), 1.0}),
       diff_num_local_dofs(diff_solver.GetNumPhiIterativeUnknowns().first)

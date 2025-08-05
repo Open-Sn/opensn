@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
 
@@ -10,7 +10,9 @@ namespace opensn
 {
 
 void
-WGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset, bool vaccum_bcs_are_dirichlet)
+WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
+            LBSGroupset& groupset,
+            bool vaccum_bcs_are_dirichlet)
 {
   CALI_CXX_MARK_SCOPE("WGDSA::Init");
 
@@ -22,23 +24,23 @@ WGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset, bool vaccum_bcs_are_
     uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
     // Make boundary conditions
-    auto sweep_boundaries = lbs_problem.GetSweepBoundaries();
+    auto sweep_boundaries = do_problem.GetSweepBoundaries();
     auto bcs = TranslateBCs(sweep_boundaries, vaccum_bcs_are_dirichlet);
 
     // Make xs map
-    auto block_id_to_xs_map = lbs_problem.GetMatID2XSMap();
+    auto block_id_to_xs_map = do_problem.GetMatID2XSMap();
     auto matid_2_mgxs_map =
       PackGroupsetXS(block_id_to_xs_map, groupset.groups.front().id, groupset.groups.back().id);
 
     // Create solver
-    const auto& sdm = lbs_problem.GetSpatialDiscretization();
-    auto lbs_name = lbs_problem.GetName();
+    const auto& sdm = do_problem.GetSpatialDiscretization();
+    auto lbs_name = do_problem.GetName();
     auto solver = std::make_shared<DiffusionMIPSolver>(std::string(lbs_name + "_WGDSA"),
                                                        sdm,
                                                        uk_man,
                                                        bcs,
                                                        matid_2_mgxs_map,
-                                                       lbs_problem.GetUnitCellMatrices(),
+                                                       do_problem.GetUnitCellMatrices(),
                                                        false,
                                                        true);
     ParameterBlock block;
@@ -59,18 +61,18 @@ WGDSA::Init(LBSProblem& lbs_problem, LBSGroupset& groupset, bool vaccum_bcs_are_
 }
 
 void
-WGDSA::AssembleDeltaPhiVector(LBSProblem& lbs_problem,
+WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               const LBSGroupset& groupset,
                               const std::vector<double>& phi_in,
                               std::vector<double>& delta_phi_local)
 {
   CALI_CXX_MARK_SCOPE("WGDSA::AssembleDeltaPhiVector");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
-  const auto& block_id_to_xs_map = lbs_problem.GetMatID2XSMap();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
@@ -101,17 +103,17 @@ WGDSA::AssembleDeltaPhiVector(LBSProblem& lbs_problem,
 }
 
 void
-WGDSA::DisassembleDeltaPhiVector(LBSProblem& lbs_problem,
+WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  const LBSGroupset& groupset,
                                  const std::vector<double>& delta_phi_local,
                                  std::vector<double>& ref_phi_new)
 {
   CALI_CXX_MARK_SCOPE("WGDSA::DisassembleDeltaPhiVector");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
@@ -145,16 +147,16 @@ WGDSA::CleanUp(LBSGroupset& groupset)
 }
 
 std::vector<double>
-WGDSA::WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
+WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
                        const LBSGroupset& groupset,
                        const std::vector<double>& phi_in)
 {
   CALI_CXX_MARK_SCOPE("WGDSA::WGSCopyOnlyPhi0");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
@@ -185,17 +187,17 @@ WGDSA::WGSCopyOnlyPhi0(LBSProblem& lbs_problem,
 }
 
 void
-WGDSA::GSProjectBackPhi0(LBSProblem& lbs_problem,
+WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
                          const LBSGroupset& groupset,
                          const std::vector<double>& input,
                          std::vector<double>& output)
 {
   CALI_CXX_MARK_SCOPE("WGDSA::GSProjectBackPhi0");
 
-  const auto grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto grid = do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem.GetUnknownManager();
+  const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();

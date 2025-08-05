@@ -9,14 +9,14 @@
 namespace opensn
 {
 
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 class AGSSolver;
 class LinearSolver;
 
 class PowerIterationKEigenSolver : public Solver
 {
 protected:
-  std::shared_ptr<LBSProblem> lbs_problem_;
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 
   size_t max_iters_;
   double k_eff_;

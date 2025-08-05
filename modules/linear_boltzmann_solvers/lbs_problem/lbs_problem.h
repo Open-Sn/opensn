@@ -193,9 +193,6 @@ public:
   /// Read access to the cell-wise densities.
   const std::vector<double>& GetDensitiesLocal() const;
 
-  /// Returns the sweep boundaries as a read only reference
-  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
-
   SetSourceFunction GetActiveSetSourceFunction() const;
 
   std::shared_ptr<AGSSolver> GetAGSSolver();
@@ -275,8 +272,8 @@ protected:
 
   void InitializeFieldFunctions();
 
-  /// Initializes transport related boundaries.
-  void InitializeBoundaries();
+  /// Initializes boundaries.
+  virtual void InitializeBoundaries() {}
 
   virtual void InitializeSolverSchemes();
 
@@ -314,7 +311,6 @@ protected:
   std::vector<CellLBSView> cell_transport_views_;
 
   std::map<uint64_t, BoundaryPreference> boundary_preferences_;
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
   UnknownManager flux_moments_uk_man_;
 

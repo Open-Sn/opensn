@@ -86,7 +86,7 @@ if __name__ == "__main__":
         sweep_type="CBC",
     )
     k_solver = NonLinearKEigenSolver(
-        lbs_problem=phys,
+        problem=phys,
         nl_max_its=kes_max_iterations,
         nl_abs_tol=kes_tolerance,
     )
