@@ -6,6 +6,7 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include "test/python/src/bindings.h"
 
 using namespace opensn;

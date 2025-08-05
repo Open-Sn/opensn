@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/runtime.h"
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"

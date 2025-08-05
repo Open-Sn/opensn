@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/event_system/event_subscriber.h"
 
 namespace opensn
@@ -26,7 +26,7 @@ enum class PPNumericFormat : int
 };
 
 /// Base class for all post-processors/
-class PostProcessor : public Object, public EventSubscriber
+class PostProcessor : public EventSubscriber
 {
 public:
   struct TimeHistoryEntry
@@ -50,12 +50,6 @@ public:
 
   /// Returns the numeric precision of the post-processor for printing.
   size_t GetNumericPrecision() const;
-
-  /**
-   * Calls the base Object's method and adds a subscription to `opensn::PhysicsEventPublisher`
-   * singleton.
-   */
-  void PushOntoStack(std::shared_ptr<Object> new_object) override;
 
   void ReceiveEventUpdate(const Event& event) override;
 

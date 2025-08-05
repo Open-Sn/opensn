@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/runtime.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <pybind11/stl.h>
 #include <memory>

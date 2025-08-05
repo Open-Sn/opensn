@@ -5,23 +5,25 @@
 
 #include "framework/data_types/vector3.h"
 #include "framework/logging/log.h"
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <array>
 
 namespace opensn
 {
 
 /// Class for defining base logical volumes.
-class LogicalVolume : public Object
+class LogicalVolume
 {
 public:
+  virtual ~LogicalVolume() = default;
+
   static InputParameters GetInputParameters();
 
   /// Logical operation for surface mesh.
   virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:
-  explicit LogicalVolume() : Object() {}
+  explicit LogicalVolume() {}
   explicit LogicalVolume(const InputParameters& parameters);
 };
 

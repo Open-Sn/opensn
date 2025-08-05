@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/object.h"
 #include "framework/data_types/vector3.h"
 #include <functional>
 

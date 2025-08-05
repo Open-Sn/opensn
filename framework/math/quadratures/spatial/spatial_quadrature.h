@@ -5,21 +5,20 @@
 
 #include "framework/math/quadratures/quadrature_order.h"
 #include "framework/mesh/mesh.h"
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <vector>
 
 namespace opensn
 {
 
-class SpatialQuadrature : public Object
+class SpatialQuadrature
 {
 protected:
   bool verbose_;
   QuadratureOrder order_;
 
   explicit SpatialQuadrature(const InputParameters& params)
-    : Object(params),
-      verbose_(params.GetParamValue<bool>("verbose")),
+    : verbose_(params.GetParamValue<bool>("verbose")),
       order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
   {
   }

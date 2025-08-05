@@ -5,7 +5,7 @@
 
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <utility>
 
 namespace opensn
@@ -28,7 +28,7 @@ class LBSProblem;
  * \vec{s}. \f] This can be solved for the coefficients via
  * \f[ \vec{s} = S M^{-1} \vec{b}(x_0). \f].
  */
-class PointSource : public Object
+class PointSource
 {
 public:
   /// An encapsulation of subscriber cell data for defining point source contributions.

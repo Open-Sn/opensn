@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
@@ -32,13 +32,14 @@ class MeshContinuum;
  * creates the real mesh can be hooked up to a partitioner that can also be
  * designed to be pluggable.
  */
-class MeshGenerator : public Object
+class MeshGenerator
 {
 public:
   /// Final execution step.
   virtual std::shared_ptr<MeshContinuum> Execute();
 
   explicit MeshGenerator(const InputParameters& params);
+  virtual ~MeshGenerator() = default;
 
   /**
    * Virtual method to generate the unpartitioned mesh for the next step.

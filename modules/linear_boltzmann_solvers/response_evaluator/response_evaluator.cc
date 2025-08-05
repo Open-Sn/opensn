@@ -8,6 +8,7 @@
 #include "framework/physics/solver.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
+#include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 

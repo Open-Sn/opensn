@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/object_factory.h"
 
 namespace opensn
 {

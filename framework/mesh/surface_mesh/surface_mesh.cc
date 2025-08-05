@@ -21,7 +21,7 @@ OpenSnRegisterObjectInNamespace(mesh, SurfaceMesh);
 InputParameters
 SurfaceMesh::GetInputParameters()
 {
-  InputParameters params = Object::GetInputParameters();
+  InputParameters params;
   return params;
 }
 
@@ -32,7 +32,7 @@ SurfaceMesh::Create(const ParameterBlock& params)
   return factory.Create<SurfaceMesh>("mesh::SurfaceMesh", params);
 }
 
-SurfaceMesh::SurfaceMesh(const InputParameters& params) : Object(params)
+SurfaceMesh::SurfaceMesh(const InputParameters& params)
 {
 }
 

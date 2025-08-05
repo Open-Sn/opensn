@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/object.h"
+#include "framework/parameters/input_parameters.h"
 #include <cstdio>
 #include <vector>
 
@@ -19,7 +19,7 @@ struct Edge;
  * This class facilitates many functions within the mesh environment including logically determining
  * volumes.
  */
-class SurfaceMesh : public Object
+class SurfaceMesh
 {
 public:
   explicit SurfaceMesh(const InputParameters& params);
@@ -42,7 +42,7 @@ public:
   const std::vector<Face>& GetTriangles() const { return faces_; }
 
   SurfaceMesh();
-  ~SurfaceMesh() override;
+  ~SurfaceMesh();
 
   friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& dt);
 

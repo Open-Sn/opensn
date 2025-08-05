@@ -3,9 +3,9 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "caliper/cali.h"
 
 namespace opensn
