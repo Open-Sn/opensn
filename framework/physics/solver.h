@@ -45,30 +45,11 @@ public:
   /// Generalized query for information supporting varying returns.
   virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
 
-  /**
-   * \addtogroup SolverBase
-   *
-   * \section Properties Properties that can be set via
-   * `SetProperties`
-   * \copydoc opensn::Solver::SetProperties
-   *
-   * Base solver settable properties:
-   * - `dt`, Timestep size
-   * - `time`, Current time
-   */
-  virtual void SetProperties(const ParameterBlock& params);
-
   /// PreCheck call to GetInfo.
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
-protected:
-  std::shared_ptr<TimeStepper> timestepper_ = nullptr;
-
 private:
   const std::string name_;
-
-private:
-  static std::shared_ptr<TimeStepper> InitTimeStepper(const InputParameters& params);
 };
 
 } // namespace opensn
