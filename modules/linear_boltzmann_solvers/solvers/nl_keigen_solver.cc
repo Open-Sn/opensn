@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/power_iteration_keigen.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
+#include "framework/field_functions/field_function_grid_based.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -17,12 +18,11 @@ OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigenSolver);
 InputParameters
 NonLinearKEigenSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = KEigenSolver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -54,8 +54,7 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 }
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
+  : KEigenSolver(params),
     nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
@@ -80,6 +79,7 @@ void
 NonLinearKEigenSolver::Initialize()
 {
   do_problem_->Initialize();
+  InitializePowerFieldFunction();
 }
 
 void
@@ -105,6 +105,7 @@ NonLinearKEigenSolver::Execute()
   }
 
   do_problem_->UpdateFieldFunctions();
+  UpdatePowerFieldFunctions();
 
   log.Log() << "LinearBoltzmann::NonLinearKEigenvalueSolver execution completed\n\n";
 }

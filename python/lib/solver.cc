@@ -169,13 +169,6 @@ WrapLBS(py::module& slv)
     py::arg("only_scalar_flux") = true
   );
   lbs_problem.def(
-    "GetPowerFieldFunction",
-    &LBSProblem::GetPowerFieldFunction,
-    R"(
-    Returns the power generation field function, if enabled.
-    )"
-  );
-  lbs_problem.def(
     "SetOptions",
     [](LBSProblem& self, py::kwargs& params)
     {
@@ -224,9 +217,6 @@ WrapLBS(py::module& slv)
         Type of convergence check for AGS iterations.
     verbose_ags_iterations: bool, default=True
         Flag to control verbosity of across-groupset iterations.
-    power_field_function_on: bool, default=False
-        Flag to control the creation of the power generation field function. If set to ``True``, a
-        field function will be created with the general name ``<solver_name>_power_generation``.
     power_default_kappa: float, default=3.20435e-11
         Default ``kappa`` value (Energy released per fission) to use for power generation when cross
         sections do not have ``kappa`` values. Default corresponds to 200 MeV per fission.
@@ -616,6 +606,32 @@ WrapSteadyState(py::module& slv)
   // clang-format on
 }
 
+// Wrap k-eigen solver
+void
+WrapKEigen(py::module& slv)
+{
+  // clang-format off
+  // non-linear k-eigen solver
+  auto k_eigen_solver = py::class_<KEigenSolver, std::shared_ptr<KEigenSolver>,
+                                   Solver>(
+    slv,
+    "KEigenSolver",
+    R"(
+    k-eigenvalue solver.
+
+    Wrapper of :cpp:class:`opensn::KEigenSolver`.
+    )"
+  );
+  k_eigen_solver.def(
+    "GetPowerFieldFunction",
+    &KEigenSolver::GetPowerFieldFunction,
+    R"(
+    Returns the power generation field function, if enabled.
+    )"
+  );
+  // clang-format on
+}
+
 // Wrap non-linear k-eigen solver
 void
 WrapNLKEigen(py::module& slv)
@@ -623,7 +639,7 @@ WrapNLKEigen(py::module& slv)
   // clang-format off
   // non-linear k-eigen solver
   auto non_linear_k_eigen_solver = py::class_<NonLinearKEigenSolver, std::shared_ptr<NonLinearKEigenSolver>,
-                                              Solver>(
+                                              KEigenSolver>(
     slv,
     "NonLinearKEigenSolver",
     R"(
@@ -689,7 +705,7 @@ WrapPIteration(py::module& slv)
   // clang-format off
   // power iteration k-eigen solver
   auto pi_k_eigen_solver = py::class_<PowerIterationKEigenSolver, std::shared_ptr<PowerIterationKEigenSolver>,
-                                      Solver>(
+                                      KEigenSolver>(
     slv,
     "PowerIterationKEigenSolver",
     R"(
@@ -852,6 +868,7 @@ py_solver(py::module& pyopensn)
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);
+  WrapKEigen(slv);
   WrapNLKEigen(slv);
   WrapPIteration(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);

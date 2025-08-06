@@ -253,6 +253,12 @@ LBSProblem::GetSpatialDiscretization() const
   return *discretization_;
 }
 
+SpatialDiscretization&
+LBSProblem::GetSpatialDiscretization()
+{
+  return *discretization_;
+}
+
 const std::vector<UnitCellMatrices>&
 LBSProblem::GetUnitCellMatrices() const
 {
@@ -427,15 +433,6 @@ LBSProblem::MapPhiFieldFunction(size_t g, size_t m) const
   return phi_field_functions_local_map_.at({g, m});
 }
 
-std::shared_ptr<FieldFunctionGridBased>
-LBSProblem::GetPowerFieldFunction() const
-{
-  OpenSnLogicalErrorIf(not options_.power_field_function_on,
-                       "Called when options_.power_field_function_on == false");
-
-  return field_functions_[power_gen_fieldfunc_local_handle_];
-}
-
 InputParameters
 LBSProblem::GetOptionsBlock()
 {
@@ -485,11 +482,6 @@ LBSProblem::GetOptionsBlock()
                               "`\"l2\"` and '\"pointwise\"'");
   params.AddOptionalParameter(
     "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
-  params.AddOptionalParameter("power_field_function_on",
-                              false,
-                              "Flag to control the creation of the power generation field "
-                              "function. If set to `true` then a field function will be created "
-                              "with the general name <solver_name>_power_generation`.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
@@ -697,9 +689,6 @@ LBSProblem::SetOptions(const InputParameters& input)
 
     else if (spec.GetName() == "verbose_outer_iterations")
       options_.verbose_outer_iterations = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "power_field_function_on")
-      options_.power_field_function_on = spec.GetValue<bool>();
 
     else if (spec.GetName() == "power_default_kappa")
       options_.power_default_kappa = spec.GetValue<double>();
@@ -1356,28 +1345,6 @@ LBSProblem::InitializeFieldFunctions()
       phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
     } // for m
   } // for g
-
-  // Initialize power generation field function
-  if (options_.power_field_function_on)
-  {
-    std::string prefix;
-    if (options_.field_function_prefix_option == "prefix")
-    {
-      prefix = options_.field_function_prefix;
-      if (not prefix.empty())
-        prefix += "_";
-    }
-    if (options_.field_function_prefix_option == "solver_name")
-      prefix = GetName() + "_";
-
-    auto power_ff = std::make_shared<FieldFunctionGridBased>(
-      prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
-
-    field_function_stack.push_back(power_ff);
-    field_functions_.push_back(power_ff);
-
-    power_gen_fieldfunc_local_handle_ = field_functions_.size() - 1;
-  }
 }
 
 void
@@ -1474,59 +1441,6 @@ LBSProblem::UpdateFieldFunctions()
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
   }
-
-  // Update power generation
-  if (options_.power_field_function_on)
-  {
-    std::vector<double> data_vector_local(local_node_count_, 0.0);
-
-    double local_total_power = 0.0;
-    for (const auto& cell : grid_->local_cells)
-    {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
-
-      const auto& xs = block_id_to_xs_map_.at(cell.block_id);
-
-      if (not xs->IsFissionable())
-        continue;
-
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const int64_t imapA = sdm.MapDOFLocal(cell, i);
-        const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
-
-        double nodal_power = 0.0;
-        for (size_t g = 0; g < groups_.size(); ++g)
-        {
-          const double sigma_fg = xs->GetSigmaFission()[g];
-          // const double kappa_g = xs->Kappa()[g];
-          const double kappa_g = options_.power_default_kappa;
-
-          nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
-        } // for g
-
-        data_vector_local[imapA] = nodal_power;
-        local_total_power += nodal_power * Vi(i);
-      } // for node
-    } // for cell
-
-    if (options_.power_normalization > 0.0)
-    {
-      double global_total_power;
-      mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
-
-      Scale(data_vector_local, options_.power_normalization / global_total_power);
-    }
-
-    const size_t ff_index = power_gen_fieldfunc_local_handle_;
-
-    auto& ff_ptr = field_functions_.at(ff_index);
-    ff_ptr->UpdateFieldVector(data_vector_local);
-
-  } // if power enabled
 }
 
 void

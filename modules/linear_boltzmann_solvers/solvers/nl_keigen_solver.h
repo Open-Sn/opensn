@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_solver.h"
 #include <petscsnes.h>
@@ -11,10 +11,9 @@
 namespace opensn
 {
 
-class NonLinearKEigenSolver : public Solver
+class NonLinearKEigenSolver : public KEigenSolver
 {
 private:
-  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
 

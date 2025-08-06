@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
@@ -14,10 +14,9 @@ class DiscreteOrdinatesKEigenAcceleration;
 class AGSSolver;
 class LinearSolver;
 
-class PowerIterationKEigenSolver : public Solver
+class PowerIterationKEigenSolver : public KEigenSolver
 {
 protected:
-  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
 
   size_t max_iters_;
