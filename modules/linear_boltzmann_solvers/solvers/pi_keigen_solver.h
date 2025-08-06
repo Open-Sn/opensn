@@ -10,6 +10,7 @@ namespace opensn
 {
 
 class DiscreteOrdinatesProblem;
+class DiscreteOrdinatesKEigenAcceleration;
 class AGSSolver;
 class LinearSolver;
 
@@ -17,6 +18,7 @@ class PowerIterationKEigenSolver : public Solver
 {
 protected:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
+  const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
 
   size_t max_iters_;
   double k_eff_;
@@ -44,7 +46,6 @@ public:
   /// Return the current k-eigenvalue
   double GetEigenvalue() const { return k_eff_; }
 
-protected:
   /// Combines function calls to set fission source.
   void SetLBSFissionSource(const std::vector<double>& input, bool additive);
 

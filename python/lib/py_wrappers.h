@@ -228,6 +228,7 @@ void WrapLBS(py::module& slv);
 void WrapSteadyState(py::module& slv);
 void WrapNLKEigen(py::module& slv);
 void WrapPIteration(py::module& slv);
+void WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv);
 
 /// Wrap the source components of OpenSn.
 void py_source(py::module& pyopensn);
