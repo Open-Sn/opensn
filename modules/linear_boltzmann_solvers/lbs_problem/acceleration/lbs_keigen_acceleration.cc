@@ -176,8 +176,8 @@ LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& inpu
           cont_input[dof_cfem_map] += phi_value;
           cont_input_ctr[dof_cfem_map] += 1.0;
         } // for component c
-      }   // for unknown u
-    }     // for node i
+      } // for unknown u
+    } // for node i
 
     for (const auto& face : cell.faces)
       if (face.has_neighbor)
@@ -218,9 +218,9 @@ LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& inpu
             cont_input_ctr[dof_cfem_map] += 1.0;
           }
         } // for component
-      }   // for unknown
-    }     // for node i
-  }       // for ghost cell
+      } // for unknown
+    } // for node i
+  } // for ghost cell
 
   // Compute nodal averages
   {
@@ -250,9 +250,9 @@ LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& inpu
 
           output[dof_dfem_map] = phi_value;
         } // for component c
-      }   // for unknown u
-    }     // for node i
-  }       // for local cell
+      } // for unknown u
+    } // for node i
+  } // for local cell
 }
 
 void
@@ -288,7 +288,7 @@ LBSKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
       const auto output_begin = phi_local.begin() + diff_phi_map;
       std::copy_n(input_begin, gss, output_begin);
     } // for node
-  }   // for cell
+  } // for cell
 
   if (pwlc_ptr_)
     copy_only_phi0_tmp_.clear();
@@ -327,7 +327,7 @@ LBSKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
       const auto output_begin = output.begin() + lbs_phi_map;
       std::copy_n(input_begin, gss, output_begin);
     } // for dof
-  }   // for cell
+  } // for cell
 }
 
 } // namespace opensn
