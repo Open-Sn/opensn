@@ -60,7 +60,7 @@ if __name__ == "__main__":
     )
 
     scdsa = SCDSAAcceleration(
-        lbs_problem=phys,
+        problem=phys,
         sdm="pwld"
     )
     k_solver = PowerIterationKEigenSolver(

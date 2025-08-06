@@ -20,7 +20,8 @@ LBSKEigenAcceleration::GetInputParameters()
     "A text name to associate with the acceleration solver. This name will be used in status "
     "messages and verbose iterative convergence monitors.");
 
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("lbs_problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
+                                                        "An existing discrete ordinates problem");
   params.AddOptionalParameter("l_abs_tol", 1.0e-10, "Absolute residual tolerance");
   params.AddOptionalParameter("max_iters", 100, "Maximum allowable iterations");
   params.AddOptionalParameter("verbose", false, "If true, enables verbose output");
@@ -39,7 +40,7 @@ LBSKEigenAcceleration::GetInputParameters()
 }
 
 LBSKEigenAcceleration::LBSKEigenAcceleration(const InputParameters& params)
-  : do_problem_(*params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("lbs_problem")),
+  : do_problem_(*params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
     max_iters_(params.GetParamValue<int>("max_iters")),
     verbose_(params.GetParamValue<bool>("verbose")),

@@ -137,7 +137,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_smm":
         smm = SMMAcceleration(
-            lbs_problem=phys,
+            problem=phys,
             verbose=True,
             pi_k_tol=1.0e-8,
             pi_max_its=30,
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_smm_pwld":
         smm = SMMAcceleration(
-            lbs_problem=phys,
+            problem=phys,
             verbose=True,
             pi_k_tol=1.0e-8,
             pi_max_its=30,

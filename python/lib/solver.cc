@@ -723,8 +723,8 @@ WrapPIteration(py::module& slv)
 
     Parameters
     ----------
-    lbs_problem: pyopensn.solver.LBSProblem
-        Existing LBSProblem instance.
+    problem: pyopensn.solver.LBSProblem
+        Existing DiscreteOrdinatesProblem instance.
     lbs_acceleration: pyopensn.solver.LBSKEigenAcceleration
         Optional LBSKEigenAcceleration instance for acceleration.
     max_iters: int, default = 1000
@@ -788,8 +788,8 @@ WrapLBSKEigenAcceleration(py::module& slv)
 
     Parameters
     ----------
-    lbs_problem: pyopensn.solver.LBSProblem
-        Existing LBSProblem instance.
+    problem: pyopensn.solver.LBSProblem
+        Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, defauilt=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
@@ -833,8 +833,8 @@ WrapLBSKEigenAcceleration(py::module& slv)
 
     Parameters
     ----------
-    lbs_problem: pyopensn.solver.LBSProblem
-        Existing LBSProblem instance.
+    problem: pyopensn.solver.LBSProblem
+        Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, defauilt=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
