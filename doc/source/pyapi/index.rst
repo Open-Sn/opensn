@@ -329,8 +329,31 @@ Power iteration solver
    :template: python.rst
 
    solver.PowerIterationKEigenSolver
-   solver.PowerIterationKEigenSCDSASolver TODO FIX ME
-   solver.PowerIterationKEigenSMMSolver TODO FIX ME
+
+
+Acceleration methods
+--------------------
+
+Discrete ordinates k-eigen acceleration base class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   solver.LBSKEigenAcceleration
+
+Discrete ordinates k-eigen acceleration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   solver.SCDSAAcceleration
+   solver.SMMAcceleration
 
 
 Post-processors
