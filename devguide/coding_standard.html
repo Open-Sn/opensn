@@ -130,7 +130,22 @@ some_other_directory/another_file
 </section>
 <section id="namespaces">
 <h3>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h3>
-<p>Namespace names should use <cite>snake</cite> style.</p>
+<p>The topmost namespace is <code class="docutils literal notranslate"><span class="pre">opensn</span></code>. We allow exactly two levels of namespaces:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span><span class="w"> </span><span class="p">{</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">solver_impl</span><span class="w"> </span><span class="p">{</span>
+<span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// solver_impl</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// opensn</span>
+</pre></div>
+</div>
+<p>Do <strong>not</strong> introduce additional namespace levels. If you need further subdivision, refactor by:</p>
+<ul class="simple">
+<li><p>Splitting into separate libraries/modules.</p></li>
+<li><p>Moving related code into classes or subdirectories.</p></li>
+</ul>
+<p>Namespace names should use <cite>snake</cite> style:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">ns_one</span><span class="w"> </span><span class="p">{</span>
 <span class="p">...</span>
 <span class="p">}</span><span class="w"> </span><span class="c1">// ns_one</span>
