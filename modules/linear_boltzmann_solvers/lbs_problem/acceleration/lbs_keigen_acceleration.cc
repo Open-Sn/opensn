@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
+#include "framework/runtime.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "modules/diffusion/diffusion.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
 
 namespace opensn
@@ -12,7 +13,7 @@ namespace opensn
 InputParameters
 LBSKEigenAcceleration::GetInputParameters()
 {
-  auto params = Object::GetInputParameters();
+  InputParameters params;
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -38,29 +39,28 @@ LBSKEigenAcceleration::GetInputParameters()
 }
 
 LBSKEigenAcceleration::LBSKEigenAcceleration(const InputParameters& params)
-  : Object(params),
-    lbs_problem_(*params.GetSharedPtrParam<Problem, LBSProblem>("lbs_problem")),
+  : do_problem_(*params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("lbs_problem")),
     l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
     max_iters_(params.GetParamValue<int>("max_iters")),
     verbose_(params.GetParamValue<bool>("verbose")),
     petsc_options_(params.GetParamValue<std::string>("petsc_options")),
     pi_max_its_(params.GetParamValue<int>("pi_max_its")),
     pi_k_tol_(params.GetParamValue<double>("pi_k_tol")),
-    groupsets_(lbs_problem_.GetGroupsets()),
+    groupsets_(do_problem_.GetGroupsets()),
     front_gs_(groupsets_.front()),
-    q_moments_local_(lbs_problem_.GetQMomentsLocal()),
-    phi_old_local_(lbs_problem_.GetPhiOldLocal()),
-    phi_new_local_(lbs_problem_.GetPhiNewLocal()),
+    q_moments_local_(do_problem_.GetQMomentsLocal()),
+    phi_old_local_(do_problem_.GetPhiOldLocal()),
+    phi_new_local_(do_problem_.GetPhiNewLocal()),
     name_(params.GetParamValue<std::string>("name"))
 {
-  if (lbs_problem_.GetGroupsets().size() != 1)
+  if (do_problem_.GetGroupsets().size() != 1)
     throw std::logic_error(
       "LBS acceleration schemes are only implemented for problems with a single groupset.");
 
   // If using the AAH solver with one sweep, a few iterations need to be done
   // to get rid of the junk in the unconverged lagged angular fluxes.  Five
   // sweeps is a guess at how many initial sweeps are necessary.
-  if (const auto do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem_))
+  if (const auto do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&do_problem_))
     if (do_problem->GetSweepType() == "AAH" and front_gs_.max_iterations == 1)
       throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
                              "the presence of lagged angular fluxes.  Multiple sweeps are "
@@ -120,18 +120,18 @@ LBSKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
 void
 LBSKEigenAcceleration::InitializeLinearContinuous()
 {
-  const auto& sdm = lbs_problem_.GetSpatialDiscretization();
+  const auto& sdm = do_problem_.GetSpatialDiscretization();
   pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
-  ghost_info_ = MakePWLDGhostInfo(*pwlc_ptr_, lbs_problem_.GetUnknownManager());
+  ghost_info_ = MakePWLDGhostInfo(*pwlc_ptr_, do_problem_.GetUnknownManager());
 }
 
 void
 LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& input,
                                                  std::vector<double>& output) const
 {
-  const auto& pwld_sdm = lbs_problem_.GetSpatialDiscretization();
+  const auto& pwld_sdm = do_problem_.GetSpatialDiscretization();
   const auto& pwlc_sdm = diffusion_solver_->GetSpatialDiscretization();
-  const auto& uk_man = lbs_problem_.GetUnknownManager();
+  const auto& uk_man = do_problem_.GetUnknownManager();
 
   const auto& vgc = ghost_info_.vector_ghost_communicator;
   const auto& dfem_dof_global2local_map = ghost_info_.ghost_global_id_2_local_map;
@@ -258,10 +258,10 @@ void
 LBSKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
                                     std::vector<double>& phi_local)
 {
-  const auto& lbs_sdm = lbs_problem_.GetSpatialDiscretization();
+  const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem_.GetUnknownManager();
+  const auto& phi_uk_man = do_problem_.GetUnknownManager();
   const int gsi = front_gs_.groups.front().id;
   const size_t gss = front_gs_.groups.size();
   const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
@@ -274,7 +274,7 @@ LBSKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
   phi_local.resize(diff_num_local_dofs);
   std::fill(phi_local.begin(), phi_local.end(), 0.0);
 
-  for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
+  for (const auto& cell : do_problem_.GetGrid()->local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -297,10 +297,10 @@ void
 LBSKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
                                        std::vector<double>& output) const
 {
-  const auto& lbs_sdm = lbs_problem_.GetSpatialDiscretization();
+  const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = lbs_problem_.GetUnknownManager();
+  const auto& phi_uk_man = do_problem_.GetUnknownManager();
   const int gsi = front_gs_.groups.front().id;
   const size_t gss = front_gs_.groups.size();
   const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
@@ -313,7 +313,7 @@ LBSKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
     output.resize(output_size, 0.0);
   OpenSnLogicalErrorIf(output.size() != output_size, "Output vector size mismatch");
 
-  for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
+  for (const auto& cell : do_problem_.GetGrid()->local_cells)
   {
     const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();

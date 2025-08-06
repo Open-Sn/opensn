@@ -1,15 +1,17 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 #include "framework/object_factory.h"
-#include "framework/math/parallel_vector/ghosted_parallel_stl_vector.h"
-#include "framework/math/parallel_vector/parallel_stl_vector.h"
+#include "framework/runtime.h"
+#include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
+#include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
+#include "modules/diffusion/diffusion_pwlc_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/smm_acceleration.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 
 namespace opensn
@@ -40,21 +42,21 @@ SMMAcceleration::Create(const ParameterBlock& params)
 SMMAcceleration::SMMAcceleration(const InputParameters& params)
   : LBSKEigenAcceleration(params),
     sdm_(params.GetParamValue<std::string>("sdm")),
-    psi_new_local_(lbs_problem_.GetPsiNewLocal()),
+    psi_new_local_(do_problem_.GetPsiNewLocal()),
     dimension_(0)
 {
-  lbs_problem_.GetOptions().save_angular_flux = true;
+  do_problem_.GetOptions().save_angular_flux = true;
 }
 
 void
 SMMAcceleration::Initialize()
 {
-  const auto& sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto num_groups = lbs_problem_.GetNumGroups();
+  const auto& sdm = do_problem_.GetSpatialDiscretization();
+  const auto num_groups = do_problem_.GetNumGroups();
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Specialized SMM data
-  dimension_ = lbs_problem_.GetGrid()->GetDimension();
+  dimension_ = do_problem_.GetGrid()->GetDimension();
   ComputeAuxiliaryUnitCellMatrices();
   ComputeBoundaryFactors();
 
@@ -76,16 +78,16 @@ SMMAcceleration::Initialize()
   UnknownManager diff_uk_man;
   diff_uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
-  for (const auto& [bid, bc] : lbs_problem_.GetBoundaryPreferences())
+  for (const auto& [bid, bc] : do_problem_.GetBoundaryPreferences())
     if ((bc.type == LBSBoundaryType::ISOTROPIC) or (bc.type == LBSBoundaryType::ARBITRARY))
       throw std::logic_error("Only vacuum and reflective boundaries are valid for "
                              "k-eigenvalue problems.");
 
-  const auto bcs = TranslateBCs(lbs_problem_.GetSweepBoundaries(), false);
+  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), false);
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
-    lbs_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    do_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -95,7 +97,7 @@ SMMAcceleration::Initialize()
                                                              diff_uk_man,
                                                              bcs,
                                                              xs_map,
-                                                             lbs_problem_.GetUnitCellMatrices(),
+                                                             do_problem_.GetUnitCellMatrices(),
                                                              true,
                                                              verbose_);
   else
@@ -104,7 +106,7 @@ SMMAcceleration::Initialize()
                                                               diff_uk_man,
                                                               bcs,
                                                               xs_map,
-                                                              lbs_problem_.GetUnitCellMatrices(),
+                                                              do_problem_.GetUnitCellMatrices(),
                                                               true,
                                                               verbose_);
 
@@ -157,7 +159,7 @@ SMMAcceleration::PostPowerIteration()
   // Start diffusion power iterations
   double lambda = solver_->GetEigenvalue();
   double lambda_old = solver_->GetEigenvalue();
-  double F0_old = lbs_problem_.ComputeFissionProduction(phi_new_local_);
+  double F0_old = ComputeFissionProduction(do_problem_, phi_new_local_);
 
   for (int m = 0; m < pi_max_its_; ++m)
   {
@@ -190,7 +192,7 @@ SMMAcceleration::PostPowerIteration()
     // diffusion solution back to the transport discretization.
     std::vector<double> phi;
     ProjectBackPhi0(phi0_, phi);
-    const double F0 = lbs_problem_.ComputeFissionProduction(phi);
+    const double F0 = ComputeFissionProduction(do_problem_, phi);
     lambda = F0 / F0_old * lambda_old;
 
     // Check for convergence
@@ -211,11 +213,11 @@ SMMAcceleration::PostPowerIteration()
 
   ProjectBackPhi0(phi0_, phi_new_local_);
 
-  const double production = lbs_problem_.ComputeFissionProduction(phi_new_local_);
-  LBSVecOps::ScalePhiVector(lbs_problem_, PhiSTLOption::PHI_NEW, lambda / production);
+  const double production = ComputeFissionProduction(do_problem_, phi_new_local_);
+  LBSVecOps::ScalePhiVector(do_problem_, PhiSTLOption::PHI_NEW, lambda / production);
 
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_problem_, front_gs_, phi_new_local_, phi_old_local_);
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(lbs_problem_, front_gs_, phi_new_local_, phi_ell_);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, front_gs_, phi_new_local_, phi_old_local_);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, front_gs_, phi_new_local_, phi_ell_);
 
   return lambda;
 }
@@ -223,7 +225,7 @@ SMMAcceleration::PostPowerIteration()
 void
 SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
 {
-  const auto& discretization = lbs_problem_.GetSpatialDiscretization();
+  const auto& discretization = do_problem_.GetSpatialDiscretization();
 
   // Spatial weight functions
   struct SpatialWeightFunction
@@ -243,16 +245,16 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
   };
 
   auto swf = std::make_shared<SpatialWeightFunction>();
-  const auto geom_type = lbs_problem_.GetOptions().geometry_type;
+  const auto geom_type = do_problem_.GetOptions().geometry_type;
   if (geom_type == GeometryType::ONED_SPHERICAL)
     swf = std::make_shared<SphericalWeightFunction>();
   else if (geom_type == GeometryType::TWOD_CYLINDRICAL)
     swf = std::make_shared<CylindricalWeightFunction>();
 
   // Compute integrals
-  const auto num_local_cells = lbs_problem_.GetGrid()->local_cells.size();
+  const auto num_local_cells = do_problem_.GetGrid()->local_cells.size();
   K_tensor_matrices_.resize(num_local_cells);
-  for (const auto& cell : lbs_problem_.GetGrid()->local_cells)
+  for (const auto& cell : do_problem_.GetGrid()->local_cells)
   {
     const auto& cell_mapping = discretization.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -281,13 +283,13 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
 void
 SMMAcceleration::ComputeBoundaryFactors()
 {
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto& pwld = lbs_problem_.GetSpatialDiscretization();
-  const auto num_groupsets = lbs_problem_.GetGroupsets().size();
+  const auto& grid = do_problem_.GetGrid();
+  const auto& pwld = do_problem_.GetSpatialDiscretization();
+  const auto num_groupsets = do_problem_.GetGroupsets().size();
 
   // Loop over groupsets
   int gs = 0;
-  for (const auto& groupset : lbs_problem_.GetGroupsets())
+  for (const auto& groupset : do_problem_.GetGroupsets())
   {
     const auto& quad = groupset.quadrature;
     const auto num_gs_dirs = quad->omegas.size();
@@ -328,9 +330,9 @@ SMMAcceleration::ComputeBoundaryFactors()
 void
 SMMAcceleration::AssembleDiffusionBCs() const
 {
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto& pwld = lbs_problem_.GetSpatialDiscretization();
-  const auto& unit_cell_matrices = lbs_problem_.GetUnitCellMatrices();
+  const auto& grid = do_problem_.GetGrid();
+  const auto& pwld = do_problem_.GetSpatialDiscretization();
+  const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
@@ -400,9 +402,9 @@ SMMAcceleration::AssembleDiffusionBCs() const
 void
 SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 {
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto& pwld = lbs_problem_.GetSpatialDiscretization();
-  const auto& transport_views = lbs_problem_.GetCellTransportViews();
+  const auto& grid = do_problem_.GetGrid();
+  const auto& pwld = do_problem_.GetSpatialDiscretization();
+  const auto& transport_views = do_problem_.GetCellTransportViews();
 
   // Create a local tensor vector, set it to zero
   auto local_tensors = tensors_->MakeLocalVector();
@@ -411,7 +413,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 
   // Loop over groupsets
   int gs = 0;
-  for (const auto& groupset : lbs_problem_.GetGroupsets())
+  for (const auto& groupset : do_problem_.GetGroupsets())
   {
     const auto& psi_uk_man = groupset.psi_uk_man_;
     const auto& quad = groupset.quadrature;
@@ -475,7 +477,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
             const auto bfac = bndry_factors_[imap][gs];
 
             // Reset boundary closures
-            betas_[imap].assign(lbs_problem_.GetNumGroups(), 0.0);
+            betas_[imap].assign(do_problem_.GetNumGroups(), 0.0);
             auto& beta = betas_[imap];
 
             // Compute the boundary closure
@@ -511,10 +513,10 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 std::vector<double>
 SMMAcceleration::ComputeSourceCorrection() const
 {
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto& pwld = lbs_problem_.GetSpatialDiscretization();
-  const auto& matid_to_xs_map = lbs_problem_.GetMatID2XSMap();
-  const auto& unit_cell_matrices = lbs_problem_.GetUnitCellMatrices();
+  const auto& grid = do_problem_.GetGrid();
+  const auto& pwld = do_problem_.GetSpatialDiscretization();
+  const auto& matid_to_xs_map = do_problem_.GetMatID2XSMap();
+  const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
@@ -531,7 +533,7 @@ SMMAcceleration::ComputeSourceCorrection() const
   // Build the source
   for (const auto& cell : grid->local_cells)
   {
-    const auto& rho = lbs_problem_.GetDensitiesLocal()[cell.local_id];
+    const auto& rho = do_problem_.GetDensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto nodes = cell_mapping.GetNodeLocations();
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -760,7 +762,7 @@ SMMAcceleration::SetNodalDiffusionFissionSource(const std::vector<double>& phi0,
   out.resize(phi.size());
   std::fill(out.begin(), out.end(), 0.0);
 
-  auto fn = lbs_problem_.GetActiveSetSourceFunction();
+  auto fn = do_problem_.GetActiveSetSourceFunction();
   fn(front_gs_, out, phi, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 }
 
@@ -784,7 +786,7 @@ SMMAcceleration::SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
   out.resize(phi.size());
   std::fill(out.begin(), out.end(), 0.0);
 
-  auto fn = lbs_problem_.GetActiveSetSourceFunction();
+  auto fn = do_problem_.GetActiveSetSourceFunction();
   fn(front_gs_,
      out,
      phi,
@@ -794,10 +796,10 @@ SMMAcceleration::SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
 std::vector<double>
 SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
 {
-  const auto& grid = lbs_problem_.GetGrid();
-  const auto& pwld = lbs_problem_.GetSpatialDiscretization();
-  const auto& uk_man = lbs_problem_.GetUnknownManager();
-  const auto& unit_cell_matrices = lbs_problem_.GetUnitCellMatrices();
+  const auto& grid = do_problem_.GetGrid();
+  const auto& pwld = do_problem_.GetSpatialDiscretization();
+  const auto& uk_man = do_problem_.GetUnknownManager();
+  const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();

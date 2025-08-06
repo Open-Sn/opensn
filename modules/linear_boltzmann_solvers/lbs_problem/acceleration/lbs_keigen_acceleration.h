@@ -4,12 +4,11 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
-#include "framework/object.h"
 
 namespace opensn
 {
 class DiffusionSolver;
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 class LBSGroupset;
 class PowerIterationKEigenSolver;
 class SpatialDiscretization;
@@ -19,7 +18,7 @@ class VectorGhostCommunicator;
 /**
  * Base class for LBS acceleration methods.
  */
-class LBSKEigenAcceleration : public Object
+class LBSKEigenAcceleration
 {
 public:
   static InputParameters GetInputParameters();
@@ -98,8 +97,8 @@ protected:
   /// Copies back only the scalar moments to a lbs primary flux vector.
   void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
 
-  /// The associated LBS problem
-  LBSProblem& lbs_problem_;
+  /// The associated DiscreteOrdinatesProblem problem
+  DiscreteOrdinatesProblem& do_problem_;
 
   /// Absolute residual tolerance from parameters
   const double l_abs_tol_;

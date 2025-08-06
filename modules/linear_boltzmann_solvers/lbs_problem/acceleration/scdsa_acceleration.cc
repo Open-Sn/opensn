@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/object_factory.h"
+#include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/runtime.h"
+#include "modules/diffusion/diffusion_mip_solver.h"
+#include "modules/diffusion/diffusion_pwlc_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "framework/math/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/object_factory.h"
-
 namespace opensn
 {
 OpenSnRegisterObjectInNamespace(lbs, SCDSAAcceleration);
@@ -42,7 +43,7 @@ SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
 void
 SCDSAAcceleration::Initialize()
 {
-  front_wgs_solver_ = lbs_problem_.GetWGSSolvers().at(front_gs_.id);
+  front_wgs_solver_ = do_problem_.GetWGSSolvers().at(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
@@ -52,15 +53,15 @@ SCDSAAcceleration::Initialize()
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
   // Make boundary conditions
-  const auto bcs = TranslateBCs(lbs_problem_.GetSweepBoundaries(), true);
+  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), true);
 
   // Make xs map
   const auto matid_2_mgxs_map = PackGroupsetXS(
-    lbs_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    do_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
-  const auto& sdm = lbs_problem_.GetSpatialDiscretization();
-  const auto& unit_cell_matrices = lbs_problem_.GetUnitCellMatrices();
+  const auto& sdm = do_problem_.GetSpatialDiscretization();
+  const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   if (sdm_ == "pwld")
   {
@@ -165,7 +166,7 @@ SCDSAAcceleration::PostPowerIteration()
   SetLBSScatterSourcePhi0(phi0_star_ - phi0_ell_, false);
   CopyOnlyPhi0(q_moments_local_, Ss0_res_);
 
-  double production_k = lbs_problem_.ComputeFissionProduction(phi_new_local_);
+  double production_k = ComputeFissionProduction(do_problem_, phi_new_local_);
 
   for (auto& vec : {&epsilon_k_, &epsilon_kp1_})
   {
@@ -201,7 +202,7 @@ SCDSAAcceleration::PostPowerIteration()
 
     ProjectBackPhi0(epsilon_kp1_ + phi0_star_, phi_old_local_);
 
-    const double production_kp1 = lbs_problem_.ComputeFissionProduction(phi_old_local_);
+    const double production_kp1 = ComputeFissionProduction(do_problem_, phi_old_local_);
 
     lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
@@ -220,7 +221,7 @@ SCDSAAcceleration::PostPowerIteration()
 
   ProjectBackPhi0(epsilon_kp1_ + phi0_star_, phi_new_local_);
   LBSVecOps::GSScopedCopyPrimarySTLvectors(
-    lbs_problem_, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+    do_problem_, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
   return lambda_kp1;
 }

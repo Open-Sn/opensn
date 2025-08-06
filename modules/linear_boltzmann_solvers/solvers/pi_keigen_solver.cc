@@ -1,18 +1,17 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
-
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include <iomanip>
 #include "sys/stat.h"
 
@@ -31,7 +30,6 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
-  params.AddOptionalParameter<std::shared_ptr<LBSAcceleration>>(
   params.AddOptionalParameter<std::shared_ptr<LBSKEigenAcceleration>>(
     "lbs_acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
