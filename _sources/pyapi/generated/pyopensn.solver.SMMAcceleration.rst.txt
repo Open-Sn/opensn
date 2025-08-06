@@ -1,0 +1,9 @@
+﻿pyopensn.solver.SMMAcceleration
+===============================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: SMMAcceleration
+   :special-members: __init__
+   :members:
+   :inherited-members:

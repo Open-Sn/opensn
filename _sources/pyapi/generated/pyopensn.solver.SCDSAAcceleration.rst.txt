@@ -1,0 +1,9 @@
+﻿pyopensn.solver.SCDSAAcceleration
+=================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: SCDSAAcceleration
+   :special-members: __init__
+   :members:
+   :inherited-members:

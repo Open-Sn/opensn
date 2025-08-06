@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyopensn.context.SetCaliperConfig &mdash; OpenSn 0.0.1 documentation</title>
+  <title>pyopensn.solver.SMMAcceleration &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -23,8 +23,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.context.EnableCaliper" href="pyopensn.context.EnableCaliper.html" />
-    <link rel="prev" title="pyopensn.context.EnablePETScErrorHandler" href="pyopensn.context.EnablePETScErrorHandler.html" /> 
+    <link rel="next" title="pyopensn.post.PostProcessor" href="pyopensn.post.PostProcessor.html" />
+    <link rel="prev" title="pyopensn.solver.SCDSAAcceleration" href="pyopensn.solver.SCDSAAcceleration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,18 +61,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#problem">Problem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#solvers">Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-k-eigen-acceleration-base-class">Discrete ordinates k-eigen acceleration base class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#discrete-ordinates-k-eigen-acceleration">Discrete ordinates k-eigen acceleration</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.SCDSAAcceleration.html">pyopensn.solver.SCDSAAcceleration</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.SMMAcceleration</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#post-processors">Post-processors</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#settings">Settings</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../index.html#logs">Logs</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html#caliper-configuration">Caliper configuration</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.context.SetCaliperConfig</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.context.EnableCaliper.html">pyopensn.context.EnableCaliper</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#argument-vector">Argument vector</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
@@ -94,7 +93,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
-      <li class="breadcrumb-item active">pyopensn.context.SetCaliperConfig</li>
+      <li class="breadcrumb-item active">pyopensn.solver.SMMAcceleration</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -103,19 +102,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyopensn-context-setcaliperconfig">
-<h1>pyopensn.context.SetCaliperConfig<a class="headerlink" href="#pyopensn-context-setcaliperconfig" title="Link to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="pyopensn.context.SetCaliperConfig">
-<span class="sig-prename descclassname"><span class="pre">pyopensn.context.</span></span><span class="sig-name descname"><span class="pre">SetCaliperConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'runtime-report(calc.inclusive=true),max_column_width=80'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.context.SetCaliperConfig" title="Link to this definition"></a></dt>
-<dd><p>Set configuration to the Caliper manager.</p>
-<p>This function can only be called before using <a class="reference internal" href="pyopensn.context.EnableCaliper.html#pyopensn.context.EnableCaliper" title="pyopensn.context.EnableCaliper"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyopensn.context.EnableCaliper()</span></code></a>. Note
-that this function does not start the Caliper manager immediately.</p>
+  <section id="pyopensn-solver-smmacceleration">
+<h1>pyopensn.solver.SMMAcceleration<a class="headerlink" href="#pyopensn-solver-smmacceleration" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopensn.solver.SMMAcceleration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">SMMAcceleration</span></span><a class="headerlink" href="#pyopensn.solver.SMMAcceleration" title="Link to this definition"></a></dt>
+<dd><p>SCDSA acceleration scheme to be used the power iteration k-eigenvalue solver.</p>
+<p>Wrapper of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::SMMAcceleration</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.SMMAcceleration.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.SMMAcceleration" title="pyopensn.solver.SMMAcceleration"><span class="pre">pyopensn.solver.SMMAcceleration</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.SMMAcceleration.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct a SMM acceleration solver for LBS.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> (<em>str</em><em>, </em><em>default='runtime-report</em><em>(</em><em>calc.inclusive=true</em><em>)</em><em>,</em><em>max_column_width=80'</em>) – Configuration.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><em>pyopensn.solver.LBSProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
+<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>defauilt=1.0e-10</em>) – Absolute residual tolerance.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum allowable iterations.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, enables verbose output.</p></li>
+<li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;ssss&quot;</em>) – Additional PETSc options.</p></li>
+<li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Maximum allowable iterations for inner power iterations.</p></li>
+<li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – k-eigenvalue tolerance for the inner power iterations.</p></li>
+<li><p><strong>sdm</strong> (<em>str</em><em>, </em><em>default=&quot;pwld&quot;</em>) – <dl class="simple">
+<dt>Spatial discretization method to use for the diffusion solver. Valid choices are:</dt><dd><ul>
+<li><p>’pwld’ : Piecewise Linear Discontinuous</p></li>
+<li><p>’pwlc’ : Piecewise Linear Continuous</p></li>
+</ul>
 </dd>
 </dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -124,8 +144,8 @@ that this function does not start the Caliper manager immediately.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyopensn.context.EnablePETScErrorHandler.html" class="btn btn-neutral float-left" title="pyopensn.context.EnablePETScErrorHandler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.context.EnableCaliper.html" class="btn btn-neutral float-right" title="pyopensn.context.EnableCaliper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.solver.SCDSAAcceleration.html" class="btn btn-neutral float-left" title="pyopensn.solver.SCDSAAcceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.post.PostProcessor.html" class="btn btn-neutral float-right" title="pyopensn.post.PostProcessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

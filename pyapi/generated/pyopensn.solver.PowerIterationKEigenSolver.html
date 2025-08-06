@@ -23,7 +23,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.solver.PowerIterationKEigenSCDSASolver" href="pyopensn.solver.PowerIterationKEigenSCDSASolver.html" />
+    <link rel="next" title="pyopensn.solver.SCDSAAcceleration" href="pyopensn.solver.SCDSAAcceleration.html" />
     <link rel="prev" title="pyopensn.solver.NonLinearKEigenSolver" href="pyopensn.solver.NonLinearKEigenSolver.html" /> 
 </head>
 
@@ -66,12 +66,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../index.html#non-linear-k-eigen">Non-linear k-eigen</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#power-iteration-solver">Power iteration solver</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.PowerIterationKEigenSolver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.PowerIterationKEigenSCDSASolver.html">pyopensn.solver.PowerIterationKEigenSCDSASolver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.PowerIterationKEigenSMMSolver.html">pyopensn.solver.PowerIterationKEigenSMMSolver</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#post-processors">Post-processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
 </ul>
@@ -148,7 +147,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lbs_problem</strong> (<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><em>pyopensn.solver.LBSProblem</em></a>) – Existing LBSProblem instance.</p></li>
+<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><em>pyopensn.solver.LBSProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
+<li><p><strong>acceleration</strong> (<em>pyopensn.solver.DiscreteOrdinatesKEigenAcceleration</em>) – Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default = 1000</em>) – Maximum power iterations allowed.</p></li>
 <li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the k-eigenvalue.</p></li>
 <li><p><strong>reset_solution</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, initialize flux moments to 1.0.</p></li>
@@ -167,7 +167,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="pyopensn.solver.NonLinearKEigenSolver.html" class="btn btn-neutral float-left" title="pyopensn.solver.NonLinearKEigenSolver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.solver.PowerIterationKEigenSCDSASolver.html" class="btn btn-neutral float-right" title="pyopensn.solver.PowerIterationKEigenSCDSASolver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.solver.SCDSAAcceleration.html" class="btn btn-neutral float-right" title="pyopensn.solver.SCDSAAcceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
