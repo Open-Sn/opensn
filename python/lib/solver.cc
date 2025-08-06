@@ -6,9 +6,9 @@
 #include "framework/event_system/physics_event_publisher.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/physics/solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/scdsa_acceleration.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/smm_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
@@ -725,8 +725,8 @@ WrapPIteration(py::module& slv)
     ----------
     problem: pyopensn.solver.LBSProblem
         Existing DiscreteOrdinatesProblem instance.
-    lbs_acceleration: pyopensn.solver.LBSKEigenAcceleration
-        Optional LBSKEigenAcceleration instance for acceleration.
+    acceleration: pyopensn.solver.DiscreteOrdinatesKEigenAcceleration
+        Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration.
     max_iters: int, default = 1000
         Maximum power iterations allowed.
     k_tol: float, default = 1.0e-10
@@ -749,25 +749,25 @@ WrapPIteration(py::module& slv)
 
 // Wrap LBS solver
 void
-WrapLBSKEigenAcceleration(py::module& slv)
+WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 {
   // clang-format off
-  // LBSKEigenAcceleration base
-  auto lbs_acceleration = py::class_<LBSKEigenAcceleration,
-                                     std::shared_ptr<LBSKEigenAcceleration>>(
+  // DiscreteOrdinatesKEigenAcceleration base
+  auto acceleration = py::class_<DiscreteOrdinatesKEigenAcceleration,
+                                     std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     slv,
     "LBSAccelertion",
     R"(
     Base class for LBS acceleration methods.
 
-    Wrapper of :cpp:class:`opensn::LBSKEigenAcceleration`.
+    Wrapper of :cpp:class:`opensn::DiscreteOrdinatesKEigenAcceleration`.
     )"
   );
 
   // SCDSA acceleration
   auto scdsa_acceleration = py::class_<SCDSAAcceleration,
                                        std::shared_ptr<SCDSAAcceleration>,
-                                       LBSKEigenAcceleration>(
+                                       DiscreteOrdinatesKEigenAcceleration>(
     slv,
     "SCDSAAcceleration",
     R"(
@@ -812,7 +812,7 @@ WrapLBSKEigenAcceleration(py::module& slv)
   // SMM acceleration
   auto smm_acceleration = py::class_<SMMAcceleration,
                                      std::shared_ptr<SMMAcceleration>,
-                                     LBSKEigenAcceleration>(
+                                     DiscreteOrdinatesKEigenAcceleration>(
     slv,
     "SMMAcceleration",
     R"(
@@ -867,7 +867,7 @@ py_solver(py::module& pyopensn)
   WrapSteadyState(slv);
   WrapNLKEigen(slv);
   WrapPIteration(slv);
-  WrapLBSKEigenAcceleration(slv);
+  WrapDiscreteOrdinatesKEigenAcceleration(slv);
 }
 
 } // namespace opensn

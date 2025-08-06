@@ -10,7 +10,7 @@ namespace opensn
 {
 
 class DiscreteOrdinatesProblem;
-class LBSKEigenAcceleration;
+class DiscreteOrdinatesKEigenAcceleration;
 class AGSSolver;
 class LinearSolver;
 
@@ -18,7 +18,7 @@ class PowerIterationKEigenSolver : public Solver
 {
 protected:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
-  const std::shared_ptr<LBSKEigenAcceleration> lbs_acceleration_;
+  const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
 
   size_t max_iters_;
   double k_eff_;

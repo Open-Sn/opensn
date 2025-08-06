@@ -342,7 +342,7 @@ Discrete ordinates k-eigen acceleration base class
    :nosignatures:
    :template: noinit.rst
 
-   solver.LBSKEigenAcceleration
+   solver.DiscreteOrdinatesKEigenAcceleration
 
 Discrete ordinates k-eigen acceleration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

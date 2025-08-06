@@ -18,14 +18,14 @@ class VectorGhostCommunicator;
 /**
  * Base class for LBS acceleration methods.
  */
-class LBSKEigenAcceleration
+class DiscreteOrdinatesKEigenAcceleration
 {
 public:
   static InputParameters GetInputParameters();
 
-  explicit LBSKEigenAcceleration(const InputParameters& params);
+  explicit DiscreteOrdinatesKEigenAcceleration(const InputParameters& params);
 
-  virtual ~LBSKEigenAcceleration() = default;
+  virtual ~DiscreteOrdinatesKEigenAcceleration() = default;
 
   /**
    * Public initialize method, to be called by the power iteration solver

@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/scdsa_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 namespace opensn
 {
@@ -17,7 +17,7 @@ OpenSnRegisterObjectInNamespace(lbs, SCDSAAcceleration);
 InputParameters
 SCDSAAcceleration::GetInputParameters()
 {
-  auto params = LBSKEigenAcceleration::GetInputParameters();
+  auto params = DiscreteOrdinatesKEigenAcceleration::GetInputParameters();
 
   params.AddOptionalParameter("sdm", "pwld", "Spatial discretization");
 
@@ -36,7 +36,7 @@ SCDSAAcceleration::Create(const ParameterBlock& params)
 }
 
 SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
-  : LBSKEigenAcceleration(params), sdm_(params.GetParamValue<std::string>("sdm"))
+  : DiscreteOrdinatesKEigenAcceleration(params), sdm_(params.GetParamValue<std::string>("sdm"))
 {
 }
 

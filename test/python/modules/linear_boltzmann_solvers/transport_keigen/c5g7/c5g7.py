@@ -120,7 +120,7 @@ if __name__ == "__main__":
         )
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            lbs_acceleration=scdsa,
+            acceleration=scdsa,
             k_tol=1.0e-8
         )
     elif k_method == "i_scdsa_pwlc":
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         )
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            lbs_acceleration=scdsa,
+            acceleration=scdsa,
             k_tol=1.0e-8,
         )
     elif k_method == "pi_smm":
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         )
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            lbs_acceleration=smm,
+            acceleration=smm,
             k_tol=1.0e-8
         )
     elif k_method == "pi_smm_pwld":
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         )
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            lbs_acceleration=smm,
+            acceleration=smm,
             k_tol=1.0e-8,
         )
     elif k_method == "jfnk":

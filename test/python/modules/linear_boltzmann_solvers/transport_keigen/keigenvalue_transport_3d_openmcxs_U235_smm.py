@@ -98,7 +98,7 @@ if __name__ == "__main__":
     )
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
-        lbs_acceleration=smm,
+        acceleration=smm,
         k_tol=1.0e-8,
     )
     k_solver.Initialize()

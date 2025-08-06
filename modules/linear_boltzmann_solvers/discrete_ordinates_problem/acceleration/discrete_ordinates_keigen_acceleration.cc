@@ -6,12 +6,12 @@
 #include "modules/diffusion/diffusion.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 
 namespace opensn
 {
 InputParameters
-LBSKEigenAcceleration::GetInputParameters()
+DiscreteOrdinatesKEigenAcceleration::GetInputParameters()
 {
   InputParameters params;
 
@@ -39,7 +39,8 @@ LBSKEigenAcceleration::GetInputParameters()
   return params;
 }
 
-LBSKEigenAcceleration::LBSKEigenAcceleration(const InputParameters& params)
+DiscreteOrdinatesKEigenAcceleration::DiscreteOrdinatesKEigenAcceleration(
+  const InputParameters& params)
   : do_problem_(*params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
     max_iters_(params.GetParamValue<int>("max_iters")),
@@ -70,15 +71,15 @@ LBSKEigenAcceleration::LBSKEigenAcceleration(const InputParameters& params)
 }
 
 void
-LBSKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solver)
+DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solver)
 {
   solver_ = &solver;
   Initialize();
 }
 
 std::vector<int64_t>
-LBSKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
-                                            const UnknownManager& uk_man)
+DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
+                                                          const UnknownManager& uk_man)
 {
   std::set<int64_t> ghost_ids;
   const auto& grid = *pwld.GetGrid();
@@ -94,9 +95,9 @@ LBSKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
   return {ghost_ids.begin(), ghost_ids.end()};
 }
 
-LBSKEigenAcceleration::GhostInfo
-LBSKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
-                                         const UnknownManager& uk_man)
+DiscreteOrdinatesKEigenAcceleration::GhostInfo
+DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
+                                                       const UnknownManager& uk_man)
 
 {
   const auto num_local_dofs = pwld.GetNumLocalDOFs(uk_man);
@@ -119,7 +120,7 @@ LBSKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretization& pwld,
 }
 
 void
-LBSKEigenAcceleration::InitializeLinearContinuous()
+DiscreteOrdinatesKEigenAcceleration::InitializeLinearContinuous()
 {
   const auto& sdm = do_problem_.GetSpatialDiscretization();
   pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
@@ -127,8 +128,8 @@ LBSKEigenAcceleration::InitializeLinearContinuous()
 }
 
 void
-LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& input,
-                                                 std::vector<double>& output) const
+DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& input,
+                                                               std::vector<double>& output) const
 {
   const auto& pwld_sdm = do_problem_.GetSpatialDiscretization();
   const auto& pwlc_sdm = diffusion_solver_->GetSpatialDiscretization();
@@ -256,8 +257,8 @@ LBSKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector<double>& inpu
 }
 
 void
-LBSKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
-                                    std::vector<double>& phi_local)
+DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
+                                                  std::vector<double>& phi_local)
 {
   const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
@@ -295,8 +296,8 @@ LBSKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi_in,
 }
 
 void
-LBSKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
-                                       std::vector<double>& output) const
+DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& input,
+                                                     std::vector<double>& output) const
 {
   const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();

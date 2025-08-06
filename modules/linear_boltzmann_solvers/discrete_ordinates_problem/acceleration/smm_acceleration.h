@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/lbs_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 
 namespace opensn
 {
 class DiffusionSolver;
 class GhostedParallelSTLVector;
 
-class SMMAcceleration : public LBSKEigenAcceleration
+class SMMAcceleration : public DiscreteOrdinatesKEigenAcceleration
 {
 public:
   static InputParameters GetInputParameters();
