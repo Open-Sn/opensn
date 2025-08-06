@@ -11,8 +11,7 @@
 
 OpenSn is a large-scale scientific simulation engine being developed at 
 Texas A&M University as part of a research study on massively parallel 
-algorithms for modeling and simulation. The main physics modules 
-of OpenSn deal with solving the linear Boltzmann equation and 
-diffusion-reaction physics.
+algorithms for modeling and simulation. The main physics module of
+OpenSn deals with solving the linear Boltzmann equation.
 
 For help, please post on our [Discussions](https://github.com/Open-Sn/openSn/discussions) page.

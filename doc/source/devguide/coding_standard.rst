@@ -29,7 +29,24 @@ Macro names should use `Pascal` style, macro parameters should use `snake` style
 Namespaces
 ~~~~~~~~~~
 
-Namespace names should use `snake` style.
+The topmost namespace is ``opensn``. We allow exactly two levels of namespaces:
+
+.. code-block:: c++
+
+   namespace opensn {
+
+   namespace solver_impl {
+   ...
+   } // solver_impl
+
+   } // opensn
+
+Do **not** introduce additional namespace levels. If you need further subdivision, refactor by:
+
+- Splitting into separate libraries/modules.
+- Moving related code into classes or subdirectories.
+
+Namespace names should use `snake` style:
 
 .. code-block:: c++
 
