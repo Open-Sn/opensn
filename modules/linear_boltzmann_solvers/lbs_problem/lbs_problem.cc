@@ -8,7 +8,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/time_integrations/time_integration.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/hdf_utils.h"
