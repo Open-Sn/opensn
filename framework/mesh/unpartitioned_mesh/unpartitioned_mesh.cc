@@ -214,9 +214,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
         ++num_bndry_faces;
 
   log.Log0Verbose1() << program_timer.GetTimeString()
-                     << " Number of unconnected faces "
-                        "before connectivity: "
-                     << num_bndry_faces;
+                     << " Number of unconnected faces before connectivity: " << num_bndry_faces;
 
   log.Log() << program_timer.GetTimeString() << " Establishing cell connectivity.";
 
@@ -344,7 +342,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
         if (cfvids == afvids)
         {
-          face.neighbor = adj_cell->block_id;
+          face.neighbor = adj_cell_id;
           break;
         }
       } // for adj_cell_id
