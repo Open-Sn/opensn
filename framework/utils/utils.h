@@ -117,4 +117,25 @@ ReadBinaryValue(std::ifstream& input_file)
   return value;
 }
 
+/// Check vector for all non-negative values
+inline bool
+IsNonNegative(const std::vector<double>& vec)
+{
+  return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; });
+}
+
+/// Check vector for all strictly positive values
+inline bool
+IsPositive(const std::vector<double>& vec)
+{
+  return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; });
+}
+
+/// Check vector for any non-zero values
+inline bool
+HasNonZero(const std::vector<double>& vec)
+{
+  return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });
+}
+
 } // namespace opensn

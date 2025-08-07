@@ -29,9 +29,6 @@ public:
   void
   Initialize(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
 
-  /// This method populates transport cross sections from an OpenSn cross-section file.
-  void Initialize(const std::string& file_name);
-
   /// This method populates transport cross sections from an OpenMC cross-section file.
   void
   Initialize(const std::string& file_name, const std::string& dataset_name, double temperature);
@@ -184,23 +181,7 @@ private:
 
   void TransposeTransferAndProduction();
 
-  /// Check vector for all non-negative values
-  bool IsNonNegative(const std::vector<double>& vec)
-  {
-    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x < 0.0; });
-  }
-
-  /// Check vector for all strictly positive values
-  bool IsPositive(const std::vector<double>& vec)
-  {
-    return not std::any_of(vec.begin(), vec.end(), [](double x) { return x <= 0.0; });
-  }
-
-  /// Check vector for any non-zero values
-  bool HasNonZero(const std::vector<double>& vec)
-  {
-    return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });
-  }
+  friend class XSFile;
 };
 
 } // namespace opensn

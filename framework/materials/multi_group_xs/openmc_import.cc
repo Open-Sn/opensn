@@ -5,6 +5,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/utils/utils.h"
 #include <numeric>
 #include <algorithm>
 

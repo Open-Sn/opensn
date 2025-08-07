@@ -4,6 +4,7 @@
 #include "python/lib/py_wrappers.h"
 #include "framework/runtime.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/multi_group_xs/xsfile.h"
 #include <pybind11/stl.h>
 #include <memory>
 #include <string>
@@ -61,7 +62,8 @@ WrapMultiGroupXS(py::module& xs)
     "LoadFromOpenSn",
     [](MultiGroupXS& self, const std::string& file_name)
     {
-      self.Initialize(file_name);
+      XSFile xs_file(file_name);
+      self = xs_file.Read();
     },
     py::arg("file_name"),
     R"(
