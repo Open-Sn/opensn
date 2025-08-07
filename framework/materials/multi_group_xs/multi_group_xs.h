@@ -181,7 +181,8 @@ private:
 
   void TransposeTransferAndProduction();
 
-  friend class XSFile;
+public:
+  static MultiGroupXS LoadFromOpenSn(const std::string& filename);
 };
 
 } // namespace opensn

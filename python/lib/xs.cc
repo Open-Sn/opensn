@@ -62,8 +62,7 @@ WrapMultiGroupXS(py::module& xs)
     "LoadFromOpenSn",
     [](MultiGroupXS& self, const std::string& file_name)
     {
-      XSFile xs_file(file_name);
-      self = xs_file.Read();
+      self = MultiGroupXS::LoadFromOpenSn(file_name);
     },
     py::arg("file_name"),
     R"(

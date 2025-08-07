@@ -112,8 +112,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  XSFile xs_file("xs_graphite_pure.xs");
-  MultiGroupXS xs = xs_file.Read();
+  MultiGroupXS xs = MultiGroupXS::LoadFromOpenSn("xs_graphite_pure.xs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);

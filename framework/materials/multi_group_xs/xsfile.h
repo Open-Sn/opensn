@@ -4,10 +4,14 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <vector>
 #include <string>
+#include <fstream>
 
 namespace opensn
 {
 
+/**
+ * Class for reading cross-section data from a native OpenSn file.
+ */
 class XSFile
 {
 public:
@@ -19,7 +23,31 @@ public:
   XSFile(const std::string& file_name);
 
   /// Read the file
-  MultiGroupXS Read();
+  void Read();
+
+  std::string file_name_;
+  std::ifstream file_;
+  size_t num_groups_;
+  size_t scattering_order_;
+  size_t num_precursors_;
+  std::vector<MultiGroupXS::Precursor> precursors_;
+  std::vector<double> inv_velocity_;
+  std::vector<double> e_bounds_;
+  std::vector<double> sigma_t_;
+  std::vector<double> sigma_a_;
+  std::vector<double> sigma_f_;
+  std::vector<double> nu_;
+  std::vector<double> nu_prompt_;
+  std::vector<double> nu_delayed_;
+  std::vector<double> beta_;
+  std::vector<double> chi_prompt_;
+  std::vector<double> nu_sigma_f_;
+  std::vector<double> chi_;
+  std::vector<double> decay_constants_;
+  std::vector<double> fractional_yields_;
+  std::vector<std::vector<double>> emission_spectra_;
+  std::vector<SparseMatrix> transfer_matrices_;
+  std::vector<std::vector<double>> production_matrix_;
 
 private:
   /// Reading group structure data.
@@ -56,8 +84,6 @@ private:
                             std::ifstream& file,
                             std::istringstream& line_stream,
                             size_t& line_number);
-
-  std::string file_name_;
 };
 
 } // namespace opensn

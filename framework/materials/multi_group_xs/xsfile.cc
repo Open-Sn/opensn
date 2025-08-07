@@ -5,41 +5,28 @@
 #include "framework/utils/utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include <fstream>
 
 namespace opensn
 {
 
-XSFile::XSFile(const std::string& file_name) : file_name_(file_name)
+XSFile::XSFile(const std::string& file_name)
+  : file_name_(file_name),
+    file_(file_name),
+    num_groups_(0),
+    scattering_order_(0),
+    num_precursors_(0)
 {
+  OpenSnLogicalErrorIf(not file_.is_open(),
+                       "Failed to open cross-section file " + file_name_ + ".");
+  opensn::log.Log() << "Reading OpenSn cross-section file \"" << file_name_ << "\"\n";
 }
 
-MultiGroupXS
+void
 XSFile::Read()
 {
-  MultiGroupXS mgxs;
-
-  // Open OpenSn XS file
-  std::ifstream file;
-  file.open(file_name_);
-  OpenSnLogicalErrorIf(not file.is_open(), "Failed to open cross-section file " + file_name_ + ".");
-  opensn::log.Log() << "Reading OpenSn cross-section file \"" << file_name_ << "\"\n";
-
-  // Read the OpenSn XS file
-  // TODO: Determine whether or not to allow specification of a
-  //       data block without any data. Currently, if a data block
-  //       is specified and no values are present, the std::any_of
-  //       checks will evaluate false if expected data is not present.
-
-  std::vector<double> decay_constants;
-  std::vector<double> fractional_yields;
-  std::vector<std::vector<double>> emission_spectra;
-  std::vector<double> nu, nu_prompt, nu_delayed, beta;
-  std::vector<double> chi_prompt;
-
   std::string word, line;
   size_t line_number = 0;
-  while (std::getline(file, line))
+  while (std::getline(file_, line))
   {
     std::istringstream line_stream(line);
     line_stream >> word;
@@ -50,7 +37,7 @@ XSFile::Read()
       int n_groups;
       line_stream >> n_groups;
       OpenSnLogicalErrorIf(n_groups <= 0, "The number of energy groups must be positive.");
-      mgxs.num_groups_ = n_groups;
+      num_groups_ = n_groups;
     }
 
     // Parse the number of scattering moments
@@ -59,7 +46,7 @@ XSFile::Read()
       int n_moments;
       line_stream >> n_moments;
       OpenSnLogicalErrorIf(n_moments < 0, "The number of scattering moments must be non-negative.");
-      mgxs.scattering_order_ = std::max(0, n_moments - 1);
+      scattering_order_ = std::max(0, n_moments - 1);
     }
 
     // Parse the number of precursors species
@@ -69,8 +56,8 @@ XSFile::Read()
       line_stream >> n_prec;
       OpenSnLogicalErrorIf(n_prec < 0,
                            "The number of delayed neutron precursors must be non-negative.");
-      mgxs.num_precursors_ = n_prec;
-      mgxs.precursors_.resize(mgxs.num_precursors_);
+      num_precursors_ = n_prec;
+      precursors_.resize(num_precursors_);
     }
 
     // Parse nuclear data
@@ -78,7 +65,7 @@ XSFile::Read()
     {
       auto& ln = line_number;
       auto& ls = line_stream;
-      auto& f = file;
+      auto& f = file_;
       auto& fw = word;
 
       //
@@ -86,22 +73,22 @@ XSFile::Read()
       //
 
       if (fw == "GROUP_STRUCTURE_BEGIN")
-        ReadGroupStructure("GROUP_STRUCTURE", mgxs.e_bounds_, mgxs.num_groups_, f, ls, ln);
+        ReadGroupStructure("GROUP_STRUCTURE", e_bounds_, num_groups_, f, ls, ln);
       if (fw == "INV_VELOCITY_BEGIN")
       {
-        Read1DData("INV_VELOCITY", mgxs.inv_velocity_, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsPositive(mgxs.inv_velocity_),
+        Read1DData("INV_VELOCITY", inv_velocity_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsPositive(inv_velocity_),
                              "Only positive inverse velocity values are permitted.");
       }
-      if (fw == "VELOCITY_BEGIN" and mgxs.inv_velocity_.empty())
+      if (fw == "VELOCITY_BEGIN" and inv_velocity_.empty())
       {
-        Read1DData("VELOCITY", mgxs.inv_velocity_, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsPositive(mgxs.inv_velocity_),
+        Read1DData("VELOCITY", inv_velocity_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsPositive(inv_velocity_),
                              "Only positive velocity values are permitted.");
 
         // Compute inverse velocity
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
-          mgxs.inv_velocity_[g] = 1.0 / mgxs.inv_velocity_[g];
+        for (size_t g = 0; g < num_groups_; ++g)
+          inv_velocity_[g] = 1.0 / inv_velocity_[g];
       }
 
       //
@@ -110,42 +97,42 @@ XSFile::Read()
 
       if (fw == "SIGMA_T_BEGIN")
       {
-        Read1DData("SIGMA_T", mgxs.sigma_t_, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_t_),
+        Read1DData("SIGMA_T", sigma_t_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
                              "Only non-negative total cross-section values are permitted.");
       } // if sigma_t
 
       if (fw == "SIGMA_A_BEGIN")
       {
-        Read1DData("SIGMA_A", mgxs.sigma_a_, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_a_),
+        Read1DData("SIGMA_A", sigma_a_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_a_),
                              "Only non-negative absorption cross-section values are permitted.");
       } // if sigma_a
 
       if (fw == "SIGMA_F_BEGIN")
       {
-        Read1DData("SIGMA_F", mgxs.sigma_f_, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_f_),
+        Read1DData("SIGMA_F", sigma_f_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
                              "Only non-negative fission cross-section values are permitted.");
-        if (not HasNonZero(mgxs.sigma_f_))
+        if (not HasNonZero(sigma_f_))
         {
           log.Log0Warning() << "The fission cross section specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          mgxs.sigma_f_.clear();
+          sigma_f_.clear();
         }
       } // if sigma_f
 
       if (fw == "NU_SIGMA_F_BEGIN")
       {
-        Read1DData("NU_SIGMA_F", mgxs.nu_sigma_f_, mgxs.num_groups_, f, ls, ln);
+        Read1DData("NU_SIGMA_F", nu_sigma_f_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(
-          not IsNonNegative(mgxs.nu_sigma_f_),
+          not IsNonNegative(nu_sigma_f_),
           "Only non-negative total fission multiplication cross-section values are permitted.");
-        if (not HasNonZero(mgxs.nu_sigma_f_))
+        if (not HasNonZero(nu_sigma_f_))
         {
           log.Log0Warning() << "The production cross section specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          mgxs.nu_sigma_f_.clear();
+          nu_sigma_f_.clear();
         }
       } // if nu_sigma_f
 
@@ -155,84 +142,85 @@ XSFile::Read()
 
       if (fw == "NU_BEGIN")
       {
-        Read1DData("NU", nu, mgxs.num_groups_, f, ls, ln);
+        Read1DData("NU", nu_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(
-          not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 or x > 1.0; }),
+          not std::all_of(nu_.begin(), nu_.end(), [](double x) { return x == 0.0 or x > 1.0; }),
           "Total fission neutron yield values must be either zero, or greater than one.");
-        if (not HasNonZero(nu))
+        if (not HasNonZero(nu_))
         {
           log.Log0Warning() << "The total fission neutron yield specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          nu.clear();
+          nu_.clear();
         }
 
         // Compute prompt/delayed nu, if needed
-        if (mgxs.num_precursors_ > 0 and not nu.empty() and not beta.empty() and
-            nu_prompt.empty() and nu_delayed.empty())
+        if (num_precursors_ > 0 and not nu_.empty() and not beta_.empty() and nu_prompt_.empty() and
+            nu_delayed_.empty())
         {
-          nu_prompt.assign(mgxs.num_groups_, 0.0);
-          nu_delayed.assign(mgxs.num_groups_, 0.0);
-          for (size_t g = 0; g < mgxs.num_groups_; ++g)
+          nu_prompt_.assign(num_groups_, 0.0);
+          nu_delayed_.assign(num_groups_, 0.0);
+          for (size_t g = 0; g < num_groups_; ++g)
           {
-            nu_prompt[g] = (1.0 - beta[g]) * nu[g];
-            nu_delayed[g] = beta[g] * nu[g];
+            nu_prompt_[g] = (1.0 - beta_[g]) * nu_[g];
+            nu_delayed_[g] = beta_[g] * nu_[g];
           }
         }
       } // if nu
 
       if (fw == "NU_PROMPT_BEGIN")
       {
-        Read1DData("NU_PROMPT", nu_prompt, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not std::all_of(nu_prompt.begin(),
-                                             nu_prompt.end(),
+        Read1DData("NU_PROMPT", nu_prompt_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not std::all_of(nu_prompt_.begin(),
+                                             nu_prompt_.end(),
                                              [](double x) { return x == 0.0 or x > 1.0; }),
                              "Average prompt fission neutron yield values must be either zero, "
                              "or greater than one.");
-        if (not HasNonZero(nu_prompt))
+        if (not HasNonZero(nu_prompt_))
         {
           log.Log0Warning() << "The prompt fission neutron yield specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          nu_prompt.clear();
+          nu_prompt_.clear();
         }
       } // if nu_prompt
 
       if (fw == "NU_DELAYED_BEGIN")
       {
-        Read1DData("NU_DELAYED", nu_delayed, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not IsNonNegative(nu_delayed),
+        Read1DData("NU_DELAYED", nu_delayed_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsNonNegative(nu_delayed_),
                              "Average delayed fission neutron yield values "
                              "must be non-negative.");
-        if (not HasNonZero(nu_delayed))
+        if (not HasNonZero(nu_delayed_))
         {
           log.Log0Warning() << "The delayed fission neutron yield specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          nu_prompt.clear();
+          nu_prompt_.clear();
         }
       } // if nu_delayed
 
       if (fw == "BETA_BEGIN")
       {
-        Read1DData("BETA", beta, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(
-          not std::all_of(beta.begin(), beta.end(), [](double x) { return x >= 0.0 and x <= 1.0; }),
-          "Delayed neutron fraction values must be in the range [0.0, 1.0].");
-        if (not HasNonZero(beta))
+        Read1DData("BETA", beta_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not std::all_of(beta_.begin(),
+                                             beta_.end(),
+                                             [](double x) { return x >= 0.0 and x <= 1.0; }),
+                             "Delayed neutron fraction values must be in the range [0.0, 1.0].");
+        if (not HasNonZero(beta_))
         {
           log.Log0Warning() << "The delayed neutron fraction specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          beta.clear();
+          beta_.clear();
         }
 
         // Compute prompt/delayed nu, if needed
-        if (mgxs.num_precursors_ > 0 and not nu.empty() and not beta.empty() and
-            nu_prompt.empty() and nu_delayed.empty())
+        if (num_precursors_ > 0 and not nu_.empty() and not beta_.empty() and nu_prompt_.empty() and
+            nu_delayed_.empty())
         {
-          nu_prompt.assign(mgxs.num_groups_, 0.0);
-          nu_delayed.assign(mgxs.num_groups_, 0.0);
-          for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
+          nu_prompt_.assign(num_groups_, 0.0);
+          nu_delayed_.assign(num_groups_, 0.0);
+          for (unsigned int g = 0; g < num_groups_; ++g)
           {
-            nu_prompt[g] = (1.0 - beta[g]) * nu[g];
-            nu_delayed[g] = beta[g] * nu[g];
+            nu_prompt_[g] = (1.0 - beta_[g]) * nu_[g];
+            nu_delayed_[g] = beta_[g] * nu_[g];
           }
         }
       } // if beta
@@ -243,65 +231,63 @@ XSFile::Read()
 
       if (fw == "CHI_BEGIN")
       {
-        Read1DData("CHI", mgxs.chi_, mgxs.num_groups_, f, ls, ln);
+        Read1DData("CHI", chi_, num_groups_, f, ls, ln);
         OpenSnLogicalErrorIf(
-          not HasNonZero(mgxs.chi_),
+          not HasNonZero(chi_),
           "The steady-state fission spectrum must have at least one non-zero value.");
-        OpenSnLogicalErrorIf(not IsNonNegative(mgxs.chi_),
+        OpenSnLogicalErrorIf(not IsNonNegative(chi_),
                              "The steady-state fission spectrum must be non-negative.");
 
         // Normalizing
-        const auto sum = std::accumulate(mgxs.chi_.begin(), mgxs.chi_.end(), 0.0);
-        std::transform(mgxs.chi_.begin(),
-                       mgxs.chi_.end(),
-                       mgxs.chi_.begin(),
-                       [sum](double& x) { return x / sum; });
+        const auto sum = std::accumulate(chi_.begin(), chi_.end(), 0.0);
+        std::transform(
+          chi_.begin(), chi_.end(), chi_.begin(), [sum](double& x) { return x / sum; });
       } // if chi
 
       if (fw == "CHI_PROMPT_BEGIN")
       {
-        Read1DData("CHI_PROMPT", chi_prompt, mgxs.num_groups_, f, ls, ln);
-        OpenSnLogicalErrorIf(not HasNonZero(chi_prompt),
+        Read1DData("CHI_PROMPT", chi_prompt_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not HasNonZero(chi_prompt_),
                              "The prompt fission spectrum must have at least one non-zero value.");
-        OpenSnLogicalErrorIf(not IsNonNegative(chi_prompt),
+        OpenSnLogicalErrorIf(not IsNonNegative(chi_prompt_),
                              "The prompt fission spectrum must be non-negative.");
 
         // Normalizing
-        const auto sum = std::accumulate(chi_prompt.begin(), chi_prompt.end(), 0.0);
-        std::transform(chi_prompt.begin(),
-                       chi_prompt.end(),
-                       chi_prompt.begin(),
+        const auto sum = std::accumulate(chi_prompt_.begin(), chi_prompt_.end(), 0.0);
+        std::transform(chi_prompt_.begin(),
+                       chi_prompt_.end(),
+                       chi_prompt_.begin(),
                        [sum](double& x) { return x / sum; });
 
       } // if prompt chi
 
-      if (mgxs.num_precursors_ > 0 and fw == "CHI_DELAYED_BEGIN")
+      if (num_precursors_ > 0 and fw == "CHI_DELAYED_BEGIN")
       {
         // TODO: Should the be flipped to PRECURSOR_G_VAL?
         Read2DData("CHI_DELAYED",
                    "G_PRECURSOR_VAL",
-                   emission_spectra,
-                   mgxs.num_precursors_,
-                   mgxs.num_groups_,
+                   emission_spectra_,
+                   num_precursors_,
+                   num_groups_,
                    f,
                    ls,
                    ln);
 
-        for (size_t j = 0; j < mgxs.num_precursors_; ++j)
+        for (size_t j = 0; j < num_precursors_; ++j)
         {
-          OpenSnLogicalErrorIf(not HasNonZero(emission_spectra[j]),
+          OpenSnLogicalErrorIf(not HasNonZero(emission_spectra_[j]),
                                "Delayed emission spectrum for precursor " + std::to_string(j) +
                                  " must have at least one non-zero value.");
-          OpenSnLogicalErrorIf(not IsNonNegative(emission_spectra[j]),
+          OpenSnLogicalErrorIf(not IsNonNegative(emission_spectra_[j]),
                                "Delayed emission spectrum for precursor " + std::to_string(j) +
                                  " must be non-negative.");
 
           // normalizing
           const auto sum =
-            std::accumulate(emission_spectra[j].begin(), emission_spectra[j].end(), 0.0);
-          std::transform(emission_spectra[j].begin(),
-                         emission_spectra[j].end(),
-                         emission_spectra[j].begin(),
+            std::accumulate(emission_spectra_[j].begin(), emission_spectra_[j].end(), 0.0);
+          std::transform(emission_spectra_[j].begin(),
+                         emission_spectra_[j].end(),
+                         emission_spectra_[j].begin(),
                          [sum](double& x) { return x / sum; });
         }
       } // if delayed chi
@@ -310,33 +296,33 @@ XSFile::Read()
       // Read delayed neutron precursor data
       //
 
-      if (mgxs.num_precursors_ > 0)
+      if (num_precursors_ > 0)
       {
         if (fw == "PRECURSOR_DECAY_CONSTANTS_BEGIN")
         {
-          Read1DData("PRECURSOR_DECAY_CONSTANTS", decay_constants, mgxs.num_precursors_, f, ls, ln);
-          OpenSnLogicalErrorIf(not IsPositive(decay_constants),
+          Read1DData("PRECURSOR_DECAY_CONSTANTS", decay_constants_, num_precursors_, f, ls, ln);
+          OpenSnLogicalErrorIf(not IsPositive(decay_constants_),
                                "Delayed neutron precursor decay constants must be positive.");
         } // if decay constants
 
         if (fw == "PRECURSOR_FRACTIONAL_YIELDS_BEGIN")
         {
-          Read1DData(
-            "PRECURSOR_FRACTIONAL_YIELDS", fractional_yields, mgxs.num_precursors_, f, ls, ln);
+          Read1DData("PRECURSOR_FRACTIONAL_YIELDS", fractional_yields_, num_precursors_, f, ls, ln);
           OpenSnLogicalErrorIf(
-            not HasNonZero(fractional_yields),
+            not HasNonZero(fractional_yields_),
             "Delayed neutron precursor fractional yields must contain at least one non-zero.");
           OpenSnLogicalErrorIf(
-            not std::all_of(fractional_yields.begin(),
-                            fractional_yields.end(),
+            not std::all_of(fractional_yields_.begin(),
+                            fractional_yields_.end(),
                             [](double x) { return x >= 0.0 and x <= 1.0; }),
             "Delayed neutron precursor fractional yields must be in the range [0.0, 1.0].");
 
           // Normalizing
-          const auto sum = std::accumulate(fractional_yields.begin(), fractional_yields.end(), 0.0);
-          std::transform(fractional_yields.begin(),
-                         fractional_yields.end(),
-                         fractional_yields.begin(),
+          const auto sum =
+            std::accumulate(fractional_yields_.begin(), fractional_yields_.end(), 0.0);
+          std::transform(fractional_yields_.begin(),
+                         fractional_yields_.end(),
+                         fractional_yields_.begin(),
                          [sum](double& x) { return x / sum; });
         } // if precursor yield
       }
@@ -346,20 +332,15 @@ XSFile::Read()
       //
 
       if (fw == "TRANSFER_MOMENTS_BEGIN")
-        ReadTransferMatrices("TRANSFER_MOMENTS",
-                             mgxs.transfer_matrices_,
-                             mgxs.scattering_order_ + 1,
-                             mgxs.num_groups_,
-                             f,
-                             ls,
-                             ln);
+        ReadTransferMatrices(
+          "TRANSFER_MOMENTS", transfer_matrices_, scattering_order_ + 1, num_groups_, f, ls, ln);
 
       if (fw == "PRODUCTION_MATRIX_BEGIN")
         Read2DData("PRODUCTION_MATRIX",
                    "GPRIME_G_VAL",
-                   mgxs.production_matrix_,
-                   mgxs.num_groups_,
-                   mgxs.num_groups_,
+                   production_matrix_,
+                   num_groups_,
+                   num_groups_,
                    f,
                    ls,
                    ln);
@@ -388,189 +369,6 @@ XSFile::Read()
 
     word = "";
   } // while not EOF, read each lines
-  file.close();
-
-  if (mgxs.sigma_a_.empty())
-    mgxs.ComputeAbsorption();
-  mgxs.ComputeDiffusionParameters();
-
-  //
-  // Compute and check fission data
-  //
-
-  // Determine if the material is fissionable
-  mgxs.is_fissionable_ = not mgxs.sigma_f_.empty() or not mgxs.nu_sigma_f_.empty() or
-                         not mgxs.production_matrix_.empty();
-
-  // Check and set the fission data
-  if (mgxs.is_fissionable_)
-  {
-    // Check vector data inputs
-    if (mgxs.production_matrix_.empty())
-    {
-      // Check for non-delayed fission neutron yield data
-      OpenSnLogicalErrorIf(nu.empty() and nu_prompt.empty(),
-                           "Either the total or prompt fission neutron yield must be specified "
-                           "for fissionable materials.");
-      OpenSnLogicalErrorIf(not nu.empty() and not nu_prompt.empty(),
-                           "Ambiguous fission neutron yield. Only one of the total and prompt "
-                           "fission neutron yield should be specified.");
-
-      // Check for fission spectrum data
-      OpenSnLogicalErrorIf(mgxs.chi_.empty() and chi_prompt.empty(),
-                           "Either the steady-state or prompt fission spectrum must be specified "
-                           "for fissionable materials.");
-      OpenSnLogicalErrorIf(not mgxs.chi_.empty() and not chi_prompt.empty(),
-                           "Ambiguous fission spectrum data. Only one of the steady-state and "
-                           "prompt fission spectrum should be specified.");
-
-      // Check for compatibility
-      if ((not nu.empty() and mgxs.chi_.empty()) or (nu.empty() and not mgxs.chi_.empty()) or
-          (not nu_prompt.empty() and chi_prompt.empty()) or
-          (nu_prompt.empty() and not chi_prompt.empty()))
-        OpenSnLogicalError(
-          "Ambiguous fission data. Either the total fission neutron yield with the "
-          "steady-state fission spectrum or the prompt fission neutron yield with "
-          "the prompt fission spectrum should be specified.");
-
-      // Initialize total fission neutron yield from prompt
-      if (not nu_prompt.empty())
-        nu = nu_prompt;
-
-      // Check delayed neutron data
-      if (mgxs.num_precursors_ > 0)
-      {
-        // Check that decay data was specified
-        OpenSnLogicalErrorIf(
-          decay_constants.empty(),
-          "Precursor decay constants are required when precursors are specified.");
-
-        // Check that yield data was specified
-        OpenSnLogicalErrorIf(fractional_yields.empty(),
-                             "Precursor yields are required when precursors are specified.");
-
-        // Check that prompt data was specified
-        OpenSnLogicalErrorIf(chi_prompt.empty() or nu_prompt.empty(),
-                             "Both the prompt fission spectrum and prompt fission neutron yield "
-                             "must be specified when delayed neutron precursors are specified.");
-
-        // Check that delayed neutron production and emission spectra were specified
-        OpenSnLogicalErrorIf(nu_delayed.empty() or
-                               std::any_of(emission_spectra.begin(),
-                                           emission_spectra.end(),
-                                           [](const std::vector<double>& x) { return x.empty(); }),
-                             "Both the delay emission spectra and delayed fission neutron yield "
-                             "must be specified when precursors are specified.");
-
-        // Add delayed fission neutron yield to total
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
-          nu[g] += nu_delayed[g];
-
-        // Add data to precursor structs
-        for (size_t j = 0; j < mgxs.num_precursors_; ++j)
-        {
-          mgxs.precursors_[j].decay_constant = decay_constants[j];
-          mgxs.precursors_[j].fractional_yield = fractional_yields[j];
-          mgxs.precursors_[j].emission_spectrum = emission_spectra[j];
-        }
-      }
-
-      // Compute fission cross section
-      if (mgxs.sigma_f_.empty() and not mgxs.nu_sigma_f_.empty())
-      {
-        mgxs.sigma_f_ = mgxs.nu_sigma_f_;
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
-          if (mgxs.nu_sigma_f_[g] > 0.0)
-            mgxs.sigma_f_[g] /= nu[g];
-      }
-
-      // Compute total production cross section
-      mgxs.nu_sigma_f_ = mgxs.sigma_f_;
-      for (size_t g = 0; g < mgxs.num_groups_; ++g)
-        mgxs.nu_sigma_f_[g] *= nu[g];
-
-      // Compute prompt production cross section
-      if (not nu_prompt.empty())
-      {
-        mgxs.nu_prompt_sigma_f_ = mgxs.sigma_f_;
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
-          mgxs.nu_prompt_sigma_f_[g] *= nu_prompt[g];
-      }
-
-      // Compute delayed production cross section
-      if (not nu_delayed.empty())
-      {
-        mgxs.nu_delayed_sigma_f_ = mgxs.sigma_f_;
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
-          mgxs.nu_delayed_sigma_f_[g] *= nu_delayed[g];
-      }
-
-      // Compute production matrix
-      const auto fis_spec = not chi_prompt.empty() ? chi_prompt : mgxs.chi_;
-      const auto nu_sigma_f = not nu_prompt.empty() ? mgxs.nu_prompt_sigma_f_ : mgxs.nu_sigma_f_;
-
-      mgxs.production_matrix_.resize(mgxs.num_groups_);
-      for (size_t g = 0; g < mgxs.num_groups_; ++g)
-        for (size_t gp = 0.0; gp < mgxs.num_groups_; ++gp)
-          mgxs.production_matrix_[g].push_back(fis_spec[g] * nu_sigma_f[gp]);
-    } // if production_matrix empty
-
-    else
-    {
-      // TODO: Develop an implementation for multi-particle delayed neutron data.
-      //       The primary challenge in this is that different precursor species exist for
-      //       neutron-induced fission than for photo-fission.
-
-      OpenSnLogicalErrorIf(mgxs.num_precursors_ > 0,
-                           "Currently, production matrix specification is not allowed when "
-                           "delayed neutrons are present.");
-
-      // Check for fission cross sections
-      OpenSnLogicalErrorIf(mgxs.sigma_f_.empty(),
-                           "When a production matrix is specified, it must "
-                           "be accompanied with a fission cross section.");
-
-      // Compute production cross section
-      mgxs.nu_sigma_f_.assign(mgxs.num_groups_, 0.0);
-      for (size_t g = 0; g < mgxs.num_groups_; ++g)
-        for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
-          mgxs.nu_sigma_f_[gp] += mgxs.production_matrix_[g][gp];
-
-      // Check for reasonable fission neutron yield
-      nu = mgxs.nu_sigma_f_;
-      for (size_t g = 0; g < mgxs.num_groups_; ++g)
-        if (mgxs.sigma_f_[g] > 0.0)
-          nu[g] /= mgxs.sigma_f_[g];
-
-      OpenSnLogicalErrorIf(
-        not IsNonNegative(nu),
-        "The production matrix implies an invalid negative average fission neutron yield.");
-      OpenSnLogicalErrorIf(
-        not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 and x > 1.0; }),
-        "Incompatible fission data encountered. The computed nu is not either zero or "
-        "greater than one.");
-
-      if (std::any_of(nu.begin(), nu.end(), [](double x) { return x > 8.0; }))
-        log.Log0Warning() << "A computed nu of greater than 8.0 was encountered. ";
-    }
-
-    OpenSnLogicalErrorIf(
-      mgxs.sigma_f_.empty(),
-      "Fissionable materials are required to have a defined fission cross section.");
-  } // if fissionable
-
-  // Clear fission data if not fissionable
-  else
-  {
-    mgxs.sigma_f_.clear();
-    mgxs.nu_sigma_f_.clear();
-    mgxs.nu_prompt_sigma_f_.clear();
-    mgxs.nu_delayed_sigma_f_.clear();
-    mgxs.production_matrix_.clear();
-    mgxs.precursors_.clear();
-  } // if not fissionable
-
-  return mgxs;
 }
 
 void
