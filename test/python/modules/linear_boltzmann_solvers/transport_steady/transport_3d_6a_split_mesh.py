@@ -20,7 +20,6 @@ if "opensn_console" not in globals():
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
-    from pyopensn.post import CellVolumeIntegralPostProcessor
 
 if __name__ == "__main__":
 

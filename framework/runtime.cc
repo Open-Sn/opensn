@@ -28,7 +28,6 @@ std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolatio
 std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
-std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 
 int
 Initialize()
@@ -56,7 +55,6 @@ Finalize()
   multigroup_xs_stack.clear();
   field_function_stack.clear();
   sdm_stack.clear();
-  postprocessor_stack.clear();
 
   // Flush standard streams
   std::cout.flush();

@@ -26,7 +26,6 @@ class FieldFunction;
 class SpatialDiscretization;
 class Timer;
 class Logger;
-class PostProcessor;
 
 extern mpi::Communicator mpi_comm;
 extern Logger& log;
@@ -42,7 +41,6 @@ extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_inter
 extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
-extern std::vector<std::shared_ptr<PostProcessor>> postprocessor_stack;
 
 /// Initializes all necessary items
 int Initialize();

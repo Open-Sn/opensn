@@ -22,7 +22,6 @@ namespaces to organize related functionality:
 - ``logvol`` — for logical volumes
 - ``mesh`` — for mesh-related functionality
 - ``math`` — for math-related functionality
-- ``post`` — for post-processing
 - ``response`` — for response evaluator
 - ``settings`` — for changing program parameters (accessible only through the module)
 - ``solver`` — for solvers
