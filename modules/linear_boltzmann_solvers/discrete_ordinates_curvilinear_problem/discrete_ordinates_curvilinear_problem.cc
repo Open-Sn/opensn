@@ -35,6 +35,9 @@ DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
 std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>
 DiscreteOrdinatesCurvilinearProblem::Create(const ParameterBlock& params)
 {
+  log.Log0Warning()
+    << "The curvilinear discrete-ordinates problem type is experimental. USE WITH CAUTION!"
+    << std::endl;
   auto& factory = opensn::ObjectFactory::GetInstance();
   return factory.Create<DiscreteOrdinatesCurvilinearProblem>(
     "lbs::DiscreteOrdinatesCurvilinearProblem", params);
