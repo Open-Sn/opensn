@@ -4,8 +4,6 @@
 """
 3D Transport test with split-mesh + 2D ortho mesh + extruded mesh.
 SDM: PWLD
-Test: Max-value1=6.55387e+00
-      Max-value2=1.02940e+00
 """
 
 import os
@@ -70,6 +68,8 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
+    vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
+
     # Cross sections
     num_groups = 21
     xs_graphite = MultiGroupXS()
@@ -104,7 +104,6 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_graphite},
         ],
         scattering_order=1,
-        sweep_type="CBC",
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
@@ -120,19 +119,22 @@ if __name__ == "__main__":
     # Get field functions
     fflist = phys.GetScalarFieldFunctionList()
 
-    pp1 = CellVolumeIntegralPostProcessor(
-        name="max-grp0",
-        field_function=fflist[0],
-        compute_volume_average=True,
-        print_numeric_format="scientific"
-    )
+    ffi1 = FieldFunctionInterpolationVolume()
+    ffi1.SetOperationType("max")
+    ffi1.SetLogicalVolume(vol0)
+    ffi1.AddFieldFunction(fflist[0])
+    ffi1.Initialize()
+    ffi1.Execute()
+    maxval = ffi1.GetValue()
+    if rank == 0:
+        print(f"Max-value-0={maxval:.5e}")
 
-    pp2 = CellVolumeIntegralPostProcessor(
-        name="max-grp19",
-        field_function=fflist[19],
-        compute_volume_average=True,
-        print_numeric_format="scientific"
-    )
-
-    pp1.Execute()
-    pp2.Execute()
+    ffi1 = FieldFunctionInterpolationVolume()
+    ffi1.SetOperationType("max")
+    ffi1.SetLogicalVolume(vol0)
+    ffi1.AddFieldFunction(fflist[19])
+    ffi1.Initialize()
+    ffi1.Execute()
+    maxval = ffi1.GetValue()
+    if rank == 0:
+        print(f"Max-value-19={maxval:.5e}")

@@ -587,18 +587,36 @@
     "weight_class": "intermediate",
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "max-grp0(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-0=",
         "wordnum": 4,
-        "gold": 0.1131566,
-        "abs_tol": 1e-06
+        "goldvalue": 5.15248e-01,
+        "abs_tol": 1e-05
       },
       {
-        "type": "FloatCompare",
-        "key": "max-grp19(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-19=",
         "wordnum": 4,
-        "gold": 0.0007340585,
-        "abs_tol": 1e-09
+        "goldvalue": 1.45034e-03,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 7,
+        "gold": 2048
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 8,
+        "gold": 2118
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 9,
+        "gold": 1983
       }
     ]
   },
@@ -609,18 +627,36 @@
     "weight_class": "intermediate",
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "max-grp0(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-0=",
         "wordnum": 4,
-        "gold": 0.1131566,
-        "abs_tol": 1e-06
+        "goldvalue": 5.15248e-01,
+        "abs_tol": 1e-05
       },
       {
-        "type": "FloatCompare",
-        "key": "max-grp19(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-19=",
         "wordnum": 4,
-        "gold": 0.0007340585,
-        "abs_tol": 1e-09
+        "goldvalue": 1.45034e-03,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 7,
+        "gold": 2048
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 8,
+        "gold": 2082
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 9,
+        "gold": 1994
       }
     ]
   },
@@ -631,18 +667,36 @@
     "weight_class": "intermediate",
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "max-grp0(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-0=",
         "wordnum": 4,
-        "gold": 0.1131566,
-        "abs_tol": 1e-06
+        "goldvalue": 5.15248e-01,
+        "abs_tol": 1e-05
       },
       {
-        "type": "FloatCompare",
-        "key": "max-grp19(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-19=",
         "wordnum": 4,
-        "gold": 0.0007340585,
-        "abs_tol": 1e-09
+        "goldvalue": 1.45034e-03,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 7,
+        "gold": 2048
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 8,
+        "gold": 2118
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 9,
+        "gold": 1983
       }
     ]
   },
@@ -653,18 +707,36 @@
     "weight_class": "intermediate",
     "checks": [
       {
-        "type": "FloatCompare",
-        "key": "max-grp0(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-0=",
         "wordnum": 4,
-        "gold": 0.1131566,
-        "abs_tol": 1e-06
+        "goldvalue": 5.15248e-01,
+        "abs_tol": 1e-05
       },
       {
-        "type": "FloatCompare",
-        "key": "max-grp19(latest)",
+        "type": "KeyValuePair",
+        "key": "Max-value-19=",
         "wordnum": 4,
-        "gold": 0.0007340585,
-        "abs_tol": 1e-09
+        "goldvalue": 1.45034e-03,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 7,
+        "gold": 2048
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 8,
+        "gold": 2082
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Local cell count",
+        "wordnum": 9,
+        "gold": 1994
       }
     ]
   },

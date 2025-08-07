@@ -212,11 +212,6 @@ void WrapGraphPartitioner(py::module& mesh);
 void py_response(py::module& pyopensn);
 void WrapResEval(py::module& response);
 
-/// Wrap the post-processing components of OpenSn (unfinished).
-void py_post(py::module& pyopensn);
-void WrapPostProcessor(py::module& post);
-void WrapPrinter(py::module& post);
-
 /// Wrap the settings components of OpenSn
 void py_settings(py::module& pyopensn);
 
