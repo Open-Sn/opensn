@@ -130,6 +130,59 @@ DiscreteOrdinatesProblem::GetSweepBoundaries() const
 {
   return sweep_boundaries_;
 }
+std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiNewLocal()
+{
+  return psi_new_local_;
+}
+
+const std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiNewLocal() const
+{
+  return psi_new_local_;
+}
+
+void
+DiscreteOrdinatesProblem::SetOptions(const InputParameters& input)
+{
+  auto params = LBSProblem::GetOptionsBlock();
+  params.AssignParameters(input);
+
+  if (params.IsParameterValid("adjoint"))
+  {
+    const bool adjoint = params.GetParamValue<bool>("adjoint");
+    if (adjoint != options_.adjoint)
+    {
+      options_.adjoint = adjoint;
+
+      // If a discretization exists, the solver has already been initialized.
+      // Reinitialize the materials to obtain the appropriate xs and clear the
+      // sources to prepare for defining the adjoint problem
+      if (discretization_)
+      {
+        // The materials are reinitialized here to ensure that the proper cross sections
+        // are available to the solver. Because an adjoint solve requires volumetric or
+        // point sources, the material-based sources are not set within the initialize routine.
+        InitializeMaterials();
+
+        // Forward and adjoint sources are fundamentally different, so any existing sources
+        // should be cleared and reset through options upon changing modes.
+        point_sources_.clear();
+        volumetric_sources_.clear();
+        boundary_preferences_.clear();
+
+        // Set all solutions to zero.
+        phi_old_local_.assign(phi_old_local_.size(), 0.0);
+        phi_new_local_.assign(phi_new_local_.size(), 0.0);
+        for (auto& psi : psi_new_local_)
+          psi.assign(psi.size(), 0.0);
+        precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
+      }
+    }
+  }
+
+  LBSProblem::SetOptions(params);
+}
 
 void
 DiscreteOrdinatesProblem::Initialize()
@@ -140,6 +193,18 @@ DiscreteOrdinatesProblem::Initialize()
 
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
+
+  // Setup groupset psi vectors
+  psi_new_local_.clear();
+  for (auto& groupset : groupsets_)
+  {
+    psi_new_local_.emplace_back();
+    if (options_.save_angular_flux)
+    {
+      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+      psi_new_local_.back().assign(num_ang_unknowns, 0.0);
+    }
+  }
 
   const auto grid_dim = grid_->GetDimension();
   for (auto& groupset : groupsets_)
