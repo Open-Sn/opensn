@@ -61,6 +61,7 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   console.BindModule(WrapSolver);
   console.BindModule(WrapLBS);
   console.BindModule(WrapSteadyState);
+  console.BindModule(WrapKEigen);
   console.BindModule(WrapNLKEigen);
   console.BindModule(WrapPIteration);
   console.BindModule(WrapDiscreteOrdinatesKEigenAcceleration);

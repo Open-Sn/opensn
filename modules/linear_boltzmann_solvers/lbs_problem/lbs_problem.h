@@ -130,6 +130,9 @@ public:
   /// Obtains a reference to the spatial discretization.
   const SpatialDiscretization& GetSpatialDiscretization() const;
 
+  /// Obtains a writable reference to the spatial discretization.
+  SpatialDiscretization& GetSpatialDiscretization();
+
   /// Returns read-only access to the unit cell matrices.
   const std::vector<UnitCellMatrices>& GetUnitCellMatrices() const;
 
@@ -209,9 +212,6 @@ public:
 
   /// Gets the local handle of a flux-moment based field function.
   size_t MapPhiFieldFunction(size_t g, size_t m) const;
-
-  /// Returns the power generation field function, if enabled.
-  std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
 
   void Initialize() override;
 
@@ -330,7 +330,6 @@ protected:
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
-  size_t power_gen_fieldfunc_local_handle_ = 0;
 
   /// Time integration parameter meant to be set by an executor
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;

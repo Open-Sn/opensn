@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include <iomanip>
+#include "modules/linear_boltzmann_solvers/solvers/keigen_solver.h"
 #include "sys/stat.h"
 
 namespace opensn
@@ -23,13 +24,11 @@ OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
 InputParameters
 PowerIterationKEigenSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = KEigenSolver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
-                                                        "An existing discrete ordinates problem");
   params.AddOptionalParameter<std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     "acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
@@ -48,8 +47,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 }
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("problem"))),
+  : KEigenSolver(params),
     acceleration_(
       params.GetSharedPtrParam<DiscreteOrdinatesKEigenAcceleration>("acceleration", false)),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
@@ -69,6 +67,7 @@ void
 PowerIterationKEigenSolver::Initialize()
 {
   do_problem_->Initialize();
+  InitializePowerFieldFunction();
 
   auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
@@ -200,6 +199,7 @@ PowerIterationKEigenSolver::Execute()
   }
 
   do_problem_->UpdateFieldFunctions();
+  UpdatePowerFieldFunctions();
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
