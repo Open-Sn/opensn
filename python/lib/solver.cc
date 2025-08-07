@@ -558,6 +558,9 @@ WrapLBS(py::module& slv)
       }
         ),
     R"(
+    .. warning::
+       DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
+
     Construct a discrete ordinates problem for curvilinear geometry.
 
     Parameters
