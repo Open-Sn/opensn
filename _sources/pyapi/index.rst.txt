@@ -356,43 +356,6 @@ Discrete ordinates k-eigen acceleration
    solver.SMMAcceleration
 
 
-Post-processors
----------------
-
-Base class
-^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: noinit.rst
-
-   post.PostProcessor
-
-Post-processor
-^^^^^^^^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: python.rst
-
-   post.SolverInfoPostProcessor
-   post.AggregateNodalValuePostProcessor
-   post.CellVolumeIntegralPostProcessor
-
-Printer
-^^^^^^^
-
-.. autosummary::
-   :toctree: generated
-   :nosignatures:
-   :template: python.rst
-
-   post.Print
-   post.SetPrinterOptions
-
-
 Settings
 --------
 

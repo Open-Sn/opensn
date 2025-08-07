@@ -1,6 +1,0 @@
-﻿pyopensn.post.Print
-===================
-
-.. currentmodule:: pyopensn.post
-
-.. autofunction:: Print

@@ -1,6 +1,0 @@
-﻿pyopensn.post.SetPrinterOptions
-===============================
-
-.. currentmodule:: pyopensn.post
-
-.. autofunction:: SetPrinterOptions
