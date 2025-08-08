@@ -192,7 +192,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
 
     ff->UpdateFieldVector(field);
 
-    FieldFunctionGridBased::ExportMultipleToVTK("ZSDM_Test", {ff});
+    FieldFunctionGridBased::ExportMultipleToPVTU("ZSDM_Test", {ff});
   }
 }
 

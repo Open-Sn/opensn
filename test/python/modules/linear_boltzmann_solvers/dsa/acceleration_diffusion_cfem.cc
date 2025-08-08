@@ -92,7 +92,7 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(x_vector);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_92b_DSA_PWLC", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_92b_DSA_PWLC", {ff});
 }
 
 } // namespace unit_tests

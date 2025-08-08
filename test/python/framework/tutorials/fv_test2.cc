@@ -136,7 +136,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(field);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut2_FV", {ff});
 
   // Make ghosted vectors
   std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
@@ -201,7 +201,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
 
   ff_grad->UpdateFieldVector(grad_phi);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut2_FV_grad", {ff_grad});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut2_FV_grad", {ff_grad});
 }
 
 } // namespace unit_tests

@@ -326,7 +326,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
-  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_93", const_ff_list);
+  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_93", const_ff_list);
 }
 
 } // namespace unit_tests

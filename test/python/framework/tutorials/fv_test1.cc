@@ -137,7 +137,7 @@ SimTest01_FV(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(field);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut1_FV", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut1_FV", {ff});
 }
 
 } // namespace unit_tests

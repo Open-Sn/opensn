@@ -72,10 +72,10 @@ WrapFieldFunctionGridBased(py::module& ffunc)
       {
         cpp_ff_list.push_back(item.cast<std::shared_ptr<const FieldFunctionGridBased>>());
       }
-      FieldFunctionGridBased::ExportMultipleToVTK(base_name, cpp_ff_list);
+      FieldFunctionGridBased::ExportMultipleToPVTU(base_name, cpp_ff_list);
     },
     R"(
-      Export a list of "field function grid based" to VTK format.
+      Export a list of "field function grid based" to parallel VTU format.
 
       Parameters
       ----------
