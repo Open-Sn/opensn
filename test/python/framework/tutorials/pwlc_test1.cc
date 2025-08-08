@@ -164,7 +164,7 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(field);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut3_PWLC", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut3_PWLC", {ff});
 }
 
 } // namespace unit_tests

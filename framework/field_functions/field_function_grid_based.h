@@ -79,10 +79,10 @@ private:
   const BoundingBox local_grid_bounding_box_;
 
 public:
-  /// Export multiple field functions to VTK.
+  /// Export multiple field functions to PVTU.
   static void
-  ExportMultipleToVTK(const std::string& file_base_name,
-                      const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list);
+  ExportMultipleToPVTU(const std::string& file_base_name,
+                       const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list);
 
 private:
   /// Static method for making the GetSpatialDiscretization for the constructors.

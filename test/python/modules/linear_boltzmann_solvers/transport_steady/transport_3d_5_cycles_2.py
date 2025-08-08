@@ -114,11 +114,11 @@ if __name__ == "__main__":
 
     if globals().get('master_export', False) is True:
         # Export all phi values
-        vtk_basename = "trqnsport_3d_5_2_cycles_phi"
-        vtk_export_list = []
+        basename = "trqnsport_3d_5_2_cycles_phi"
+        export_list = []
         for i in range(num_groups):
-            vtk_export_list.append(fflist[i][0])
-        FieldFunctionGridBased.ExportMultipleToVTK(vtk_export_list, vtk_basename)
+            export_list.append(fflist[i][0])
+        FieldFunctionGridBased.ExportMultipleToPVTU(export_list, basename)
         # Export phi for group 0 only
-        vtk_basename = "transport_3d_5_2_cyles_phi_g0"
-        FieldFunctionGridBased.ExportMultipleToVTK([fflist[0][0]], vtk_basename)
+        basename = "transport_3d_5_2_cyles_phi_g0"
+        FieldFunctionGridBased.ExportMultipleToPVTU([fflist[0][0]], basename)
