@@ -180,7 +180,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(field);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("CodeTut4_PWLC", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut4_PWLC", {ff});
 
   // Compute error
   // First get ghosted values

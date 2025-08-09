@@ -317,7 +317,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
 
   phi_ff->UpdateFieldVector(m0_phi);
 
-  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_06_WDD", {phi_ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_06_WDD", {phi_ff});
 }
 
 double

@@ -221,12 +221,12 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
 }
 
 void
-FieldFunctionGridBased::ExportMultipleToVTK(
+FieldFunctionGridBased::ExportMultipleToPVTU(
   const std::string& file_base_name,
   const std::vector<std::shared_ptr<const FieldFunctionGridBased>>& ff_list)
 {
-  const std::string fname = "FieldFunctionGridBased::ExportMultipleToVTK";
-  log.Log() << "Exporting field functions to VTK with file base \"" << file_base_name << "\"";
+  const std::string fname = "FieldFunctionGridBased::ExportMultipleToPVTU";
+  log.Log() << "Exporting field functions to PVTU with file base \"" << file_base_name << "\"";
 
   if (ff_list.empty())
     throw std::logic_error(fname + ": Cannot be used with empty field-function"
@@ -318,7 +318,7 @@ FieldFunctionGridBased::ExportMultipleToVTK(
 
   WritePVTUFiles(ugrid, file_base_name);
 
-  log.Log() << "Done exporting field functions to VTK.";
+  log.Log() << "Done exporting field functions to PVTU.";
   opensn::mpi_comm.barrier();
 }
 

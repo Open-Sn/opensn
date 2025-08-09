@@ -88,7 +88,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   auto ff =
     std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, OneDofPerNode.unknowns.front());
   ff->UpdateFieldVector(x_vector);
-  FieldFunctionGridBased::ExportMultipleToVTK("SimTest_92a_DSA", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_92a_DSA", {ff});
 
   // Compute error
   // First get ghosted values
