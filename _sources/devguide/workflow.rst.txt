@@ -39,7 +39,7 @@ Formating
 * **C++** code should be formatted according to our *clang-format* choices
   found in the
   `\.clang\_format <https://github.com/Open-Sn/opensn/blob/main/.clang-format>`_
-  file at the repository root.
+  file at the repository root. We use **clang-format 19.x** to enforce code style.
 
 * **Python** linting and style-guide checking is performed with ``flake8``;
   our configuration lives in
