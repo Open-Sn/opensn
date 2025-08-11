@@ -13,11 +13,11 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
+#include "modules/solver.h"
 #include <memory>
 #include <stdexcept>
 #include <string>

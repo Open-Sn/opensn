@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/solver.h"
+#include "modules/solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
