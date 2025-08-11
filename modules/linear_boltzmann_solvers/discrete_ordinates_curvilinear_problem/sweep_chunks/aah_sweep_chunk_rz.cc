@@ -42,7 +42,7 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum> grid,
     normal_vector_boundary_()
 {
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<CurvilinearQuadrature>(groupset_.quadrature);
+    std::dynamic_pointer_cast<CurvilinearProductQuadrature>(groupset_.quadrature);
 
   if (curvilinear_product_quadrature == nullptr)
     throw std::invalid_argument("D_DO_RZ_SteadyState::SweepChunkPWL::SweepChunkPWL : "
@@ -87,7 +87,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto curvilinear_product_quadrature =
-    std::dynamic_pointer_cast<opensn::CurvilinearQuadrature>(groupset_.quadrature);
+    std::dynamic_pointer_cast<opensn::CurvilinearProductQuadrature>(groupset_.quadrature);
 
   // Loop over each cell
   const auto& spds = angle_set.GetSPDS();

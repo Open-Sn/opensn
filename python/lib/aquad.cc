@@ -205,32 +205,32 @@ WrapProductQuadrature(py::module& aquad)
   // clang-format on
 }
 
-// Wrap curvilinear quadrature
+// Wrap curvilinear product quadrature
 void
-WrapCurvilinearQuadrature(py::module& aquad)
+WrapCurvilinearProductQuadrature(py::module& aquad)
 {
   // clang-format off
-  // curvilinear quadrature
-  auto curvilinear_quadrature = py::class_<CurvilinearQuadrature,
-                                           std::shared_ptr<CurvilinearQuadrature>,
-                                           ProductQuadrature>(
+  // curvilinear product quadrature
+  auto curvilinear_product_quadrature = py::class_<CurvilinearProductQuadrature,
+                                                   std::shared_ptr<CurvilinearProductQuadrature>,
+                                                   ProductQuadrature>(
     aquad,
-    "CurvilinearQuadrature",
+    "CurvilinearPrductQuadrature",
     R"(
-    Curvilinear quadrature.
+    Curvilinear product quadrature.
 
-    Wrapper of :cpp:class:`opensn::CurvilinearQuadrature`.
+    Wrapper of :cpp:class:`opensn::CurvilinearProductQuadrature`.
     )"
   );
 
-  // Gauss-Legendre-Chebyshev 2D RZ curvilinear quadrature
+  // Gauss-Legendre-Chebyshev 2D RZ curvilinear product quadrature
   auto curvilinear_quadrature_glc_2d_rz = py::class_<GLCProductQuadrature2DRZ,
                                                      std::shared_ptr<GLCProductQuadrature2DRZ>,
-                                                     CurvilinearQuadrature>(
+                                                     CurvilinearProductQuadrature>(
     aquad,
     "GLCProductQuadrature2DRZ",
     R"(
-    Gauss-Legendre-Chebyshev quadrature for 2D, RZ geometry.
+    Gauss-Legendre-Chebyshev product quadrature for 2D, RZ geometry.
 
     Wrapper of :cpp:class:`opensn::GLCProductQuadrature2DRZ`.
     )"
@@ -341,7 +341,7 @@ py_aquad(py::module& pyopensn)
   WrapQuadraturePointPhiTheta(aquad);
   WrapQuadrature(aquad);
   WrapProductQuadrature(aquad);
-  WrapCurvilinearQuadrature(aquad);
+  WrapCurvilinearProductQuadrature(aquad);
   WrapSLDFESQuadrature(aquad);
 }
 

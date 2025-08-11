@@ -13,7 +13,7 @@ namespace opensn
  * Base class for curvilinear angular quadratures (product angular quadratures with additional
  * direction-dependent parameters).
  */
-class CurvilinearQuadrature : public ProductQuadrature
+class CurvilinearProductQuadrature : public ProductQuadrature
 {
 protected:
   /// Factor to account for angular diamond differencing.
@@ -25,7 +25,7 @@ protected:
    */
   std::vector<double> fac_streaming_operator_;
 
-  CurvilinearQuadrature(int dimension, int scattering_order)
+  CurvilinearProductQuadrature(int dimension, int scattering_order)
     : ProductQuadrature(dimension, scattering_order)
   {
   }
@@ -35,10 +35,10 @@ public:
 
   const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
 
-  virtual ~CurvilinearQuadrature() = default;
+  virtual ~CurvilinearProductQuadrature() = default;
 };
 
-class GLCProductQuadrature2DRZ : public CurvilinearQuadrature
+class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
 {
 private:
   /**
@@ -63,7 +63,7 @@ public:
   void MakeHarmonicIndices();
 };
 
-class GLProductQuadrature1DSpherical : public CurvilinearQuadrature
+class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
 private:
   /// Initialize with one-dimensional quadrature.
