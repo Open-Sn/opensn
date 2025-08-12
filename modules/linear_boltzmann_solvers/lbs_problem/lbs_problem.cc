@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
@@ -385,7 +385,7 @@ LBSProblem::GetActiveSetSourceFunction() const
   return active_set_source_function_;
 }
 
-std::shared_ptr<AGSSolver>
+std::shared_ptr<AGSLinearSolver>
 LBSProblem::GetAGSSolver()
 {
   return ags_solver_;
@@ -1395,7 +1395,7 @@ LBSProblem::InitializeSolverSchemes()
 
   InitializeWGSSolvers();
 
-  ags_solver_ = std::make_shared<AGSSolver>(*this, wgs_solvers_);
+  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
   if (groupsets_.size() == 1)
   {
     ags_solver_->SetMaxIterations(1);

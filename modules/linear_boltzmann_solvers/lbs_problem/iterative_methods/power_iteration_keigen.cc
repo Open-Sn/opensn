@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/runtime.h"

@@ -18,14 +18,22 @@ enum class ResidualScaleType
 
 struct LinearSolverContext
 {
+  virtual int MatrixAction(Mat& matrix, Vec& vector, Vec& action) { return 0; }
+
+  virtual ~LinearSolverContext() = default;
+};
+
+struct LinearSystemContext : public LinearSolverContext
+{
   double rhs_norm = 0.0;
   double rhs_preconditioned_norm = 0.0;
   double custom_residual_scale = 1.0;
   ResidualScaleType residual_scale_type = ResidualScaleType::NONE;
+};
 
-  virtual int MatrixAction(Mat& matrix, Vec& vector, Vec& action) { return 0; }
-
-  virtual ~LinearSolverContext() = default;
+struct LinearEigenContext : public LinearSolverContext
+{
+  double eigenvalue = 0.0;
 };
 
 } // namespace opensn
