@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/physics/solver.h"
+#include "modules/solver.h"
 
 namespace opensn
 {

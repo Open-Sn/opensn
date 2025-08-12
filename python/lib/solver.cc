@@ -4,7 +4,6 @@
 #include "python/lib/py_wrappers.h"
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/physics/solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
@@ -16,6 +15,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
+#include "modules/solver.h"
 #include <pybind11/numpy.h>
 #include <algorithm>
 #include <cstddef>
