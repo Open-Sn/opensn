@@ -409,7 +409,6 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
   // Create a local tensor vector, set it to zero
   auto local_tensors = tensors_->MakeLocalVector();
   local_tensors.assign(local_tensors.size(), 0.0);
-  std::cerr << psi.size() << std::endl;
 
   // Loop over groupsets
   int gs = 0;
