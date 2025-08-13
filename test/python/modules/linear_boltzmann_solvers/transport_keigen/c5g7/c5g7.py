@@ -57,7 +57,6 @@ if __name__ == "__main__":
     xss[6].LoadFromOpenSn("materials/XS_fission_chamber.xs")
 
     num_groups = xss[0].num_groups
-    print("Num groups: ", num_groups)
 
     # Create materials
     xs_map = []
@@ -113,6 +112,7 @@ if __name__ == "__main__":
         )
     elif k_method == "pi_scdsa":
         scdsa = SCDSAAcceleration(
+            problem=phys,
             sdm="pwld",
             verbose=True,
             pi_k_tol=1.0e-8,
@@ -125,6 +125,7 @@ if __name__ == "__main__":
         )
     elif k_method == "i_scdsa_pwlc":
         scdsa = SCDSAAcceleration(
+            problem=phys,
             sdm="pwlc",
             verbose=True,
             pi_k_tol=1.0e-8,
