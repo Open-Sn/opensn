@@ -51,7 +51,7 @@ job_name = "strong_scaling"
 opensn_binary = "/path/to/opensn"
 
 # Path to the Gmsh binary
-gmsh_binary = "gmsh"
+gmsh_binary = "/path/to/gmsh"
 
 # Node counts
 nnodes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]

@@ -11,7 +11,7 @@ def run_gmsh(gmsh_binary, geo_filename, divisor, nnodes, ntasks):
 
 def update_input_file(input_filename, nnodes, ntasks):
     """Update the filename in the input file and create a new input file for each node count."""
-    updated_filename = f"weak_scaling_{nnodes}n.lua"
+    updated_filename = f"weak_scaling_{nnodes}n.py"
     print(f"Generating input file {updated_filename}")
 
     with open(input_filename, "r") as file:
@@ -19,8 +19,8 @@ def update_input_file(input_filename, nnodes, ntasks):
 
     with open(updated_filename, "w") as file:
         for line in content:
-            if line.strip().startswith('filename="meshfile"'):
-                file.write(f'filename="{nnodes}n_{ntasks}rpn.msh"\n')
+            if line.strip().startswith('FromFileMeshGenerator(filename="meshfile")'):
+                file.write(f'        FromFileMeshGenerator(filename="{nnodes}n_{ntasks}rpn.msh")\n')
             else:
                 file.write(line)
 
@@ -37,7 +37,7 @@ def create_slurm_file(job_name, opensn_binary, nnodes, ntasks):
 #SBATCH --ntasks-per-node={ntasks}
 #SBATCH --time=01:00:00
 
-srun {opensn_binary} -i weak_scaling_{nnodes}n.lua
+srun {opensn_binary} -i weak_scaling_{nnodes}n.py
 """
     with open(slurm_filename, "w") as slurm_file:
         slurm_file.write(slurm_content)
@@ -64,7 +64,7 @@ def generate_files_for_scaling_study(opensn_binary, gmsh_binary, input_filename,
 geo_filename = "cube.geo"
 
 # Name of the base OpenSn input file for this study
-input_filename = "weak_scaling.lua"
+input_filename = "weak_scaling.py"
 
 # Name of the job to include in job scripts
 job_name = "weak_scaling"
@@ -73,7 +73,7 @@ job_name = "weak_scaling"
 opensn_binary = "/path/to/opensn"
 
 # Path to the Gmsh binary
-gmsh_binary = "gmsh"
+gmsh_binary = "/path/to/gmsh"
 
 # Node counts
 nnodes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]

@@ -19,9 +19,10 @@ if "opensn_console" not in globals():
     from pyopensn.mat import SetProperty, ISOTROPIC_MG_SOURCE, FROM_ARRAY
     from pyopensn import mat, materials
 
-Ng = 64          # Number of energy groups
-Npolar = 14      # Number of polar angles
-Nazimuthal = 32  # Number of azimuthal angles
+n_g = 64              # Number of energy groups
+n_polar = 14          # Number of polar angles
+n_azimuthal = 32      # Number of azimuthal angles
+scattering_order = 0  # Scattering order
 
 # Mesh
 meshgen = DistributedMeshGenerator(
@@ -36,19 +37,21 @@ xs_diag = MultiGroupXS()
 xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
 
 # Boundary conditions
-bsrc = [0.0 for _ in range(Ng)]
-bsrc[0] = 1.0 / (4.0 * math.pi)
+bsrc = [0.0 for _ in range(n_g)]
+bsrc[0] = 1.0
 
 # Angular quadrature
-pquad = GLCProductQuadrature3DXYZ(Npolar, Nazimuthal)
+pquad = GLCProductQuadrature3DXYZ(n_polar=n_polar,
+                                  n_azimuthal=n_azimuthal,
+                                  scattering_order=scattering_order)
 
 # Solver
 phys = DiscreteOrdinatesProblem(
     mesh=grid,
-    num_groups=Ng,
+    num_groups=n_g,
     groupsets=[
         {
-            "groups_from_to": (0, Ng - 1),
+            "groups_from_to": (0, n_g - 1),
             "angular_quadrature": pquad,
             "angle_aggregation_type": "single",
             "angle_aggregation_num_subsets": 1,
@@ -60,11 +63,11 @@ phys = DiscreteOrdinatesProblem(
     xs_map=[
         {"block_ids": [1], "xs": xs_diag},
     ],
+    scattering_order=scattering_order,
     options={
         "boundary_conditions": [
             {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
         ],
-        "scattering_order": 0,
     }
 )
 ss_solver = SteadyStateSolver(problem=phys)
