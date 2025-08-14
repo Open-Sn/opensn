@@ -43,7 +43,7 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def(
     "CreateSimpleOneGroup",
     [](MultiGroupXS& self, double sigma_t, double c) {
-      self.Initialize(sigma_t, c);
+      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c);
     },
     R"(
     Create a one-group cross section.

@@ -8,18 +8,20 @@
 namespace opensn
 {
 
-void
-MultiGroupXS::Initialize(double sigma_t, double c)
+MultiGroupXS
+MultiGroupXS::CreateSimpleOneGroup(double sigma_t, double c)
 {
-  Reset();
+  MultiGroupXS mgxs;
 
-  num_groups_ = 1;
-  sigma_t_.resize(num_groups_, sigma_t);
-  sigma_a_.resize(num_groups_, sigma_t * (1.0 - c));
-  transfer_matrices_.emplace_back(num_groups_, num_groups_);
-  auto& S = transfer_matrices_.back();
-  S.SetDiagonal(std::vector<double>(num_groups_, sigma_t * c));
-  ComputeDiffusionParameters();
+  mgxs.num_groups_ = 1;
+  mgxs.sigma_t_.resize(mgxs.num_groups_, sigma_t);
+  mgxs.sigma_a_.resize(mgxs.num_groups_, sigma_t * (1.0 - c));
+  mgxs.transfer_matrices_.emplace_back(mgxs.num_groups_, mgxs.num_groups_);
+  auto& S = mgxs.transfer_matrices_.back();
+  S.SetDiagonal(std::vector<double>(mgxs.num_groups_, sigma_t * c));
+  mgxs.ComputeDiffusionParameters();
+
+  return mgxs;
 }
 
 void

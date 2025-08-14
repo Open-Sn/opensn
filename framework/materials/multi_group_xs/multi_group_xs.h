@@ -22,9 +22,6 @@ public:
   {
   }
 
-  /// Makes a simple material with a 1-group cross-section set.
-  void Initialize(double sigma_t, double c);
-
   /// Populates the cross section from a combination of others.
   void
   Initialize(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
@@ -182,6 +179,8 @@ private:
   void TransposeTransferAndProduction();
 
 public:
+  /// Makes a simple material with a 1-group cross-section set.
+  static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
 };
 
