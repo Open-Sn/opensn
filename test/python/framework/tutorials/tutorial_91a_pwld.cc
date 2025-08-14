@@ -3,6 +3,7 @@
 
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/materials/multi_group_xs/xsfile.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -97,8 +98,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  MultiGroupXS xs;
-  xs.Initialize("xs_graphite_pure.xs");
+  MultiGroupXS xs = MultiGroupXS::LoadFromOpenSn("xs_graphite_pure.xs");
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);
