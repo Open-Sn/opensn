@@ -65,6 +65,9 @@ public:
   /// Returns the number of groups for the solver. This will only be non-zero after initialization.
   size_t GetNumGroups() const;
 
+  /// Returns the scattering order for the solver. This will only be non-zero after initialization.
+  size_t GetScatteringOrder() const;
+
   /**
    * Returns the number of precursors for the solver. This will only be non-zero after
    * initialization.

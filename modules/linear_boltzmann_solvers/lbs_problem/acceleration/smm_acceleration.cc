@@ -35,6 +35,7 @@ SMMAcceleration::GetInputParameters()
 std::shared_ptr<SMMAcceleration>
 SMMAcceleration::Create(const ParameterBlock& params)
 {
+  log.Log0Warning() << "SMM acceleration is experimental. USE WITH CAUTION!" << std::endl;
   auto& factory = opensn::ObjectFactory::GetInstance();
   return factory.Create<SMMAcceleration>("lbs::SMMAcceleration", params);
 }
@@ -45,6 +46,8 @@ SMMAcceleration::SMMAcceleration(const InputParameters& params)
     psi_new_local_(do_problem_.GetPsiNewLocal()),
     dimension_(0)
 {
+  if (do_problem_.GetScatteringOrder() != 0)
+    throw std::runtime_error("SMM acceleration is only supported with P0 scattering");
   do_problem_.GetOptions().save_angular_flux = true;
 }
 

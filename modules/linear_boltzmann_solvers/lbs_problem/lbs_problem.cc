@@ -155,6 +155,12 @@ LBSProblem::GetNumGroups() const
 }
 
 size_t
+LBSProblem::GetScatteringOrder() const
+{
+  return scattering_order_;
+}
+
+size_t
 LBSProblem::GetNumPrecursors() const
 {
   return num_precursors_;

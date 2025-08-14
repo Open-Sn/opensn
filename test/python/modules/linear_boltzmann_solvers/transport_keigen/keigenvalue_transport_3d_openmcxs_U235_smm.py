@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 "angular_quadrature": GLCProductQuadrature3DXYZ(
                     n_polar=2,
                     n_azimuthal=4,
-                    scattering_order=1
+                    scattering_order=0
                 ),
                 "inner_linear_method": "classic_richardson",
                 "l_max_its": 2,
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_u235},
         ],
-        scattering_order=1,
+        scattering_order=0,
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
