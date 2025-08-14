@@ -9,6 +9,7 @@ Test: Max-value=1.01701e-04 and 9.14681e-06
 
 import os
 import sys
+import glob
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -131,3 +132,11 @@ if __name__ == "__main__":
     maxval = curffi.GetValue()
     if rank == 0:
         print(f"Max-value2={maxval:.5e}")
+
+    # Clean up moment files
+    if rank == 0:
+        for file in glob.glob('Qmoms*.h5'):
+            try:
+                os.remove(file)
+            except FileNotFoundError:
+                pass
