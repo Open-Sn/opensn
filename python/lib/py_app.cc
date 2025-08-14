@@ -10,6 +10,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include "cxxopts/cxxopts.h"
+#include "slepc.h"
 #include "petsc.h"
 #include <string>
 
@@ -61,6 +62,7 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   console.BindModule(WrapSolver);
   console.BindModule(WrapLBS);
   console.BindModule(WrapSteadyState);
+  console.BindModule(WrapSLEPcKEigen);
   console.BindModule(WrapNLKEigen);
   console.BindModule(WrapPIteration);
   console.BindModule(WrapDiscreteOrdinatesKEigenAcceleration);
@@ -72,7 +74,7 @@ PyApp::InitPETSc(int argc, char** argv)
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
   if (!allow_petsc_error_handler_)
     PetscOptionsInsertString(nullptr, "-no_signal_handler");
-  PetscCall(PetscInitialize(&argc, &argv, nullptr, nullptr));
+  PetscCall(SlepcInitialize(&argc, &argv, nullptr, nullptr));
   return 0;
 }
 
@@ -98,7 +100,7 @@ PyApp::Run(int argc, char** argv)
     console.ExecuteFile(opensn::input_path.string());
     opensn::Finalize();
 
-    PetscFinalize();
+    SlepcFinalize();
 
     if (opensn::mpi_comm.rank() == 0)
     {

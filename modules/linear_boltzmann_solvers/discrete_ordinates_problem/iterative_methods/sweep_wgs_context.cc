@@ -3,12 +3,12 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
-#include "framework/runtime.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/logging/log.h"
-#include <petscksp.h>
+#include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <petscksp.h>
 #include <iomanip>
 
 namespace opensn
@@ -31,20 +31,6 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                     *groupset.angle_agg,
                     *sweep_chunk)
 {
-}
-
-void
-SweepWGSContext::PreSetupCallback()
-{
-  CALI_CXX_MARK_SCOPE("SweepWGSContext::PreSetupCallback");
-
-  if (log_info)
-    log.Log() << "\n\n"
-              << "********** Solving groupset " << groupset.id << " with "
-              << LinearSolver::IterativeMethodName(groupset.iterative_method) << ".\n\n"
-              << "Quadrature number of angles: " << groupset.quadrature->abscissae.size() << "\n"
-              << "Groups " << groupset.groups.front().id << " " << groupset.groups.back().id
-              << "\n\n";
 }
 
 void
@@ -130,9 +116,9 @@ SweepWGSContext::PostSolveCallback()
   // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
   // Krylov methods to recover the actual solution (this includes all of the PETSc methods
   // currently used in OpenSn).
-  if (groupset.iterative_method == LinearSolver::IterativeMethod::PETSC_GMRES or
-      groupset.iterative_method == LinearSolver::IterativeMethod::PETSC_BICGSTAB or
-      (groupset.iterative_method == LinearSolver::IterativeMethod::PETSC_RICHARDSON and
+  if (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
+      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB or
+      (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
        groupset.max_iterations > 1))
   {
     const auto scope = lhs_src_scope | rhs_src_scope;
