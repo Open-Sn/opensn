@@ -883,7 +883,7 @@ LBSProblem::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
+    outstr << "\nInitializing LBS SteadyStateSourceSolver with name: " << GetName() << "\n\n"
            << "Scattering order    : " << scattering_order_ << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;

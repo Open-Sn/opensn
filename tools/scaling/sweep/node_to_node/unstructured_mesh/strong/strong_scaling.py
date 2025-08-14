@@ -70,6 +70,6 @@ phys = DiscreteOrdinatesProblem(
         ],
     }
 )
-ss_solver = SteadyStateSolver(problem=phys)
+ss_solver = SteadyStateSourceSolver(problem=phys)
 ss_solver.Initialize()
 ss_solver.Execute()

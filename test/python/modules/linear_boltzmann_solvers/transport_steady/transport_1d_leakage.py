@@ -17,7 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
 
 if __name__ == "__main__":
     # Check number of processors
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         },
     )
 
-    ss_solver = SteadyStateSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys)
     # Solve the problem
     ss_solver.Initialize()
     ss_solver.Execute()
