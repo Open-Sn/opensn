@@ -22,10 +22,6 @@ public:
   {
   }
 
-  /// Populates the cross section from a combination of others.
-  void
-  Initialize(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
-
   /// A struct containing data for a delayed neutron precursor.
   struct Precursor
   {
@@ -181,6 +177,9 @@ public:
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS
   LoadFromOpenMC(const std::string& filename, const std::string& dataset_name, double temperature);
+  /// Populates the cross section from a combination of others.
+  static MultiGroupXS
+  Combine(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
 };
 
 } // namespace opensn

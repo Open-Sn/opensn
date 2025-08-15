@@ -104,7 +104,7 @@ WrapMultiGroupXS(py::module& xs)
     "Combine",
     [](MultiGroupXS& self, const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations)
     {
-      self.Initialize(combinations);
+      self = MultiGroupXS::Combine(combinations);
     },
     R"(
     Combine cross-section
