@@ -92,10 +92,10 @@ if __name__ == "__main__":
             {"block_ids": [0, 1], "xs": xs_1g},
         ],
         scattering_order=1,
+        boundary_conditions=[
+            {"name": "zmax", "type": "isotropic", "group_strength": bsrc},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "zmax", "type": "isotropic", "group_strength": bsrc},
-            ],
             "volumetric_sources": [mg_src1, mg_src2],
             "save_angular_flux": True,
             # restart_writes_enabled = True,

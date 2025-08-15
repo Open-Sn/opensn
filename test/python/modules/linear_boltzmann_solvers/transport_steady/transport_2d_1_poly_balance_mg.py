@@ -87,14 +87,14 @@ if __name__ == "__main__":
             {"block_ids": [0, 1], "xs": xs_3_170},
         ],
         scattering_order=0,
+        boundary_conditions=[
+            {
+                "name": "xmin",
+                "type": "isotropic",
+                "group_strength": bsrc,
+            },
+        ],
         options={
-            "boundary_conditions": [
-                {
-                    "name": "xmin",
-                    "type": "isotropic",
-                    "group_strength": bsrc,
-                },
-            ],
             "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,

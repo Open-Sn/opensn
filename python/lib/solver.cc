@@ -190,8 +190,6 @@ WrapLBS(py::module& slv)
     ----------
     spatial_discretization: str, default='pwld'
         What spatial discretization to use. Currently only ``pwld`` is supported.
-    scattering_order: int, default=1
-        The level of harmonic expansion for the scattering source.
     max_mpi_message_size: int default=32768
         The maximum MPI message size used during sweeps.
     restart_writes_enabled: bool, default=False
@@ -239,11 +237,6 @@ WrapLBS(py::module& slv)
     field_function_prefix: str, default=''
         Prefix to use on all field functions. By default, this is empty. If specified, flux moments
         are exported as ``prefix_phi_gXXX_mYYY``.
-    boundary_conditions: List[Dict], default=[]
-        A list containing tables for each boundary specification.
-    clear_boundary_conditions: bool, default=False
-        Clears all boundary conditions. If no additional boundary conditions are supplied, all
-        boundaries become vacuum.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     clear_point_sources: bool, default=False
@@ -459,6 +452,10 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : List[Dict], default=[]
         A list of mappings from block ids to cross-section definitions.
+    scattering_order: int, default=0
+        The level of harmonic expansion for the scattering source.
+    boundary_conditions: List[Dict], default=[]
+        A list containing tables for each boundary specification.
     options : Dict, default={}
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, default="AAH"
@@ -576,6 +573,10 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions.
+    scattering_order: int, default=0
+        The level of harmonic expansion for the scattering source.
+    boundary_conditions: List[Dict], default=[]
+        A list containing tables for each boundary specification.
     options : dict, optional
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, optional

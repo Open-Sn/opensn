@@ -44,14 +44,12 @@ if __name__ == "__main__":
         ],
         xs_map=xs_map,
         scattering_order=2,
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-            ],
-
             "use_precursors": False,
-
             "verbose_inner_iterations": True,
             "verbose_outer_iterations": True,
             "save_angular_flux": True,

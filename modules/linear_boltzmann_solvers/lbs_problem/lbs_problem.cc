@@ -59,6 +59,10 @@ LBSProblem::GetInputParameters()
   params.AddRequiredParameter<size_t>("scattering_order",
                                       "The level of harmonic expansion for the scattering source.");
 
+  params.AddOptionalParameterArray(
+    "boundary_conditions", {}, "An array containing tables for each boundary specification.");
+  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
+
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
@@ -110,6 +114,24 @@ LBSProblem::LBSProblem(const InputParameters& params)
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
   }
+
+  // Initialize boundary conditions
+  if (params.Has("boundary_conditions"))
+  {
+    auto& bcs = params.GetParam("boundary_conditions");
+    bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
+    {
+      auto bndry_params = GetBoundaryOptionsBlock();
+      bndry_params.AssignParameters(bcs.GetParam(b));
+      SetBoundaryOptions(bndry_params);
+    }
+
+    // If a discretization exists, initialize the boundaries.
+    if (discretization_)
+      InitializeBoundaries();
+  }
+
   // Check system for GPU acceleration
   if (use_gpus_)
   {
@@ -448,7 +470,6 @@ LBSProblem::GetOptionsBlock()
   InputParameters params;
 
   params.SetGeneralDescription("Set options from a large list of parameters");
-  params.SetDocGroup("LBSUtilities");
   params.AddOptionalParameter("spatial_discretization",
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
@@ -520,9 +541,6 @@ LBSProblem::GetOptionsBlock()
                               "as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
                               "group number and `YYY` is the zero padded 3 digit moment. The "
                               "underscore after \"prefix\" is added automatically.");
-  params.AddOptionalParameterArray(
-    "boundary_conditions", {}, "An array containing tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
   params.AddOptionalParameter("clear_boundary_conditions",
                               false,
                               "Clears all boundary conditions. If no additional boundary "
@@ -548,8 +566,7 @@ LBSProblem::GetBoundaryOptionsBlock()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
-  params.SetDocGroup("LBSUtilities");
+  params.SetGeneralDescription("Set options for boundary conditions.");
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
@@ -720,21 +737,6 @@ LBSProblem::SetOptions(const InputParameters& input)
 
     else if (spec.GetName() == "field_function_prefix")
       options_.field_function_prefix = spec.GetValue<std::string>();
-
-    else if (spec.GetName() == "boundary_conditions")
-    {
-      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
-      {
-        auto bndry_params = GetBoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
-        SetBoundaryOptions(bndry_params);
-      }
-
-      // If a discretization exists, initialize the boundaries.
-      if (discretization_)
-        InitializeBoundaries();
-    }
 
     else if (spec.GetName() == "point_sources")
     {

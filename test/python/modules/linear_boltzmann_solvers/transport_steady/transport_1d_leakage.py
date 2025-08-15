@@ -65,14 +65,14 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs1g},
         ],
         scattering_order=0,
+        boundary_conditions=[
+            {
+                "name": "zmin",
+                "type": "isotropic",
+                "group_strength": bsrc,
+            },
+        ],
         options={
-            "boundary_conditions": [
-                {
-                    "name": "zmin",
-                    "type": "isotropic",
-                    "group_strength": bsrc,
-                },
-            ],
             "save_angular_flux": True,
         },
     )
