@@ -78,7 +78,6 @@ if __name__ == "__main__":
         xs_map=xs_map,
         scattering_order=0,
         options={
-            "spatial_discretization": "pwld",
             "boundary_conditions": [
                 {"name": "zmin", "type": "vacuum"},
                 {"name": "zmax", "type": "vacuum"}
