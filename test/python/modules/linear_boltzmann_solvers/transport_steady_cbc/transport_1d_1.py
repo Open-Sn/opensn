@@ -93,12 +93,12 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
+        boundary_conditions=[
+            {"name": "zmin", "type": "isotropic", "group_strength": bsrc},
+        ],
         scattering_order=5,
         volumetric_sources=[mg_src],
         options={
-            "boundary_conditions": [
-                {"name": "zmin", "type": "isotropic", "group_strength": bsrc},
-            ],
             "max_ags_iterations": 1,
             "save_angular_flux": True
         },

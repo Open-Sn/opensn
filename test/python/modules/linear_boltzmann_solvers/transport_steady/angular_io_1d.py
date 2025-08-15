@@ -78,11 +78,11 @@ if __name__ == "__main__":
     solver_dict["xs_map"] = xs_map
     solver_dict["scattering_order"] = 0
     solver_dict["volumetric_sources"] = [src0, src1]
+    solver_dict["boundary_conditions"] = [
+        {"name": "zmin", "type": "vacuum"},
+        {"name": "zmax", "type": "vacuum"}
+    ]
     solver_dict["options"] = {
-        "boundary_conditions": [
-            {"name": "zmin", "type": "vacuum"},
-            {"name": "zmax", "type": "vacuum"}
-        ],
         "save_angular_flux": True,
     }
 

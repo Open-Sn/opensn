@@ -66,16 +66,16 @@ if __name__ == "__main__":
         ],
         scattering_order=0,
         volumetric_sources=[mg_src],
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "xmax", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+            {"name": "ymax", "type": "reflecting"},
+            {"name": "zmin", "type": "reflecting"},
+            {"name": "zmax", "type": "reflecting"},
+        ],
         options={
             "save_angular_flux": True,
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "xmax", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-                {"name": "ymax", "type": "reflecting"},
-                {"name": "zmin", "type": "reflecting"},
-                {"name": "zmax", "type": "reflecting"},
-            ],
         },
         sweep_type="CBC"
     )

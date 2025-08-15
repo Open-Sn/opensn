@@ -63,15 +63,15 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_fuel_g2},
         ],
         scattering_order=1,
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "xmax", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+            {"name": "ymax", "type": "reflecting"},
+            {"name": "zmin", "type": "reflecting"},
+            {"name": "zmax", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "xmax", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-                {"name": "ymax", "type": "reflecting"},
-                {"name": "zmin", "type": "reflecting"},
-                {"name": "zmax", "type": "reflecting"},
-            ],
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,
