@@ -104,7 +104,6 @@ OrthogonalMeshGenerator::GetInputParameters()
   InputParameters params = MeshGenerator::GetInputParameters();
 
   params.SetGeneralDescription("Creates orthogonal meshes.");
-  params.SetDocGroup("doc_MeshGenerators");
 
   params.AddRequiredParameterArray("node_sets",
                                    "Sets of nodes per dimension. Node values "

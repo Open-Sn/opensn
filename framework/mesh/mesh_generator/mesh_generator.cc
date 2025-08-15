@@ -226,7 +226,6 @@ MeshGenerator::GetInputParameters()
   InputParameters params;
 
   params.SetGeneralDescription("The base class for all mesh generators");
-  params.SetDocGroup("doc_MeshGenerators");
 
   params.AddOptionalParameter("scale", 1.0, "Uniform scale to apply to the mesh after reading.");
 

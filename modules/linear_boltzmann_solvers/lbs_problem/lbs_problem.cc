@@ -448,7 +448,6 @@ LBSProblem::GetOptionsBlock()
   InputParameters params;
 
   params.SetGeneralDescription("Set options from a large list of parameters");
-  params.SetDocGroup("LBSUtilities");
   params.AddOptionalParameter("spatial_discretization",
                               "pwld",
                               "What spatial discretization to use. Currently only `\"pwld\"` "
@@ -549,7 +548,6 @@ LBSProblem::GetBoundaryOptionsBlock()
   InputParameters params;
 
   params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
-  params.SetDocGroup("LBSUtilities");
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");

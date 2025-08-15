@@ -66,7 +66,6 @@ DistributedMeshGenerator::GetInputParameters()
   params.SetGeneralDescription(
     "Generates and partitions the mesh on location 0. The partitioned mesh is "
     "broadcast to all other locations.");
-  params.SetDocGroup("doc_MeshGenerators");
 
   return params;
 }

@@ -20,7 +20,6 @@ NonLinearKEigenSolver::GetInputParameters()
   InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
-  params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 

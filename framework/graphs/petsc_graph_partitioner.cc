@@ -18,7 +18,6 @@ PETScGraphPartitioner::GetInputParameters()
   InputParameters params = GraphPartitioner::GetInputParameters();
 
   params.SetGeneralDescription("PETSc based partitioning");
-  params.SetDocGroup("Graphs");
 
   params.AddOptionalParameter("type", "parmetis", "The type of PETSc partitioner");
 

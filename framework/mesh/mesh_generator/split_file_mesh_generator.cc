@@ -334,7 +334,6 @@ SplitFileMeshGenerator::GetInputParameters()
     "Generates the mesh only on location 0, thereafter partitions the mesh"
     " but instead of broadcasting the mesh to other locations it creates binary"
     " mesh files for each location.");
-  params.SetDocGroup("doc_MeshGenerators");
 
   params.AddOptionalParameter("num_partitions",
                               0,

@@ -20,7 +20,6 @@ KBAGraphPartitioner::GetInputParameters()
 
   params.SetGeneralDescription("Koch, Baker and Alcouffe based partitioning. "
                                "This is an overlayed ortho-grid based partitioner");
-  params.SetDocGroup("Graphs");
 
   params.AddOptionalParameter("nx", 1, "The number of partitions in x");
   params.AddOptionalParameter("ny", 1, "The number of partitions in y");
