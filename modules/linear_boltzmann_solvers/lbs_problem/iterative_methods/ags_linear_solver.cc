@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -14,9 +14,9 @@ namespace opensn
 {
 
 void
-AGSSolver::Solve()
+AGSLinearSolver::Solve()
 {
-  CALI_CXX_MARK_SCOPE("AGSSolver::Solve");
+  CALI_CXX_MARK_SCOPE("AGSLinearSolver::Solve");
 
   std::fill(phi_old_.begin(), phi_old_.end(), 0.0);
 

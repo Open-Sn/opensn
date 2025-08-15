@@ -19,8 +19,9 @@
 namespace opensn
 {
 
-ClassicRichardson::ClassicRichardson(const std::shared_ptr<WGSContext>& gs_context_ptr)
-  : LinearSolver(LinearSolver::IterativeMethod::CLASSIC_RICHARDSON, gs_context_ptr)
+ClassicRichardson::ClassicRichardson(const std::shared_ptr<WGSContext>& gs_context_ptr,
+                                     bool verbose = true)
+  : LinearSystemSolver(IterativeMethod::CLASSIC_RICHARDSON, gs_context_ptr), verbose_(verbose)
 {
 }
 
@@ -90,21 +91,24 @@ ClassicRichardson::Solve()
       psi_old_ = psi_new_;
     }
 
-    std::stringstream iter_stats;
-    iter_stats << program_timer.GetTimeString() << " WGS groups [" << groupset.groups.front().id
-               << "-" << groupset.groups.back().id << "]:"
-               << " Iteration = " << std::left << std::setw(5) << k
-               << " Point-wise change = " << std::left << std::setw(14) << pw_phi_change
-               << " Spectral-radius estimate = " << std::left << std::setw(10) << rho;
-
-    if (converged)
+    if (verbose_)
     {
-      iter_stats << " CONVERGED";
-      log.Log() << iter_stats.str();
-      break;
+      std::stringstream iter_stats;
+      iter_stats << program_timer.GetTimeString() << " WGS groups [" << groupset.groups.front().id
+                 << "-" << groupset.groups.back().id << "]:"
+                 << " Iteration = " << std::left << std::setw(5) << k
+                 << " Point-wise change = " << std::left << std::setw(14) << pw_phi_change
+                 << " Spectral-radius estimate = " << std::left << std::setw(10) << rho;
+
+      if (converged)
+      {
+        iter_stats << " CONVERGED";
+        log.Log() << iter_stats.str();
+        break;
+      }
+      else
+        log.Log() << iter_stats.str();
     }
-    else
-      log.Log() << iter_stats.str();
   }
 
   do_problem.GetQMomentsLocal() = saved_q_moments_local_;

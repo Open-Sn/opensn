@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_residual_func.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_residual_func.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
