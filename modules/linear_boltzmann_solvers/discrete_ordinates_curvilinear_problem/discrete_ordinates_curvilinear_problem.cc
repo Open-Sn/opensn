@@ -25,7 +25,6 @@ DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
     "Solver for Discrete Ordinates in cylindrical and spherical coordinates");
 
   params.SetClassName("DiscreteOrdinatesCurvilinearProblem");
-  params.SetDocGroup("lbs__LBSSolver");
 
   params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesCurvilinearProblem");
 

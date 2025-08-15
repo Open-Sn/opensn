@@ -26,8 +26,6 @@ FieldFunctionGridBased::GetInputParameters()
 {
   InputParameters params = FieldFunction::GetInputParameters();
 
-  params.SetDocGroup("DocFieldFunction");
-
   params.AddOptionalParameter("discretization", "FV", "The spatial discretization type to be used");
   params.AddOptionalParameter(
     "coord_sys", "cartesian", "Coordinate system to apply to element mappings");

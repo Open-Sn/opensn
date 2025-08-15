@@ -73,7 +73,6 @@ FromFileMeshGenerator::GetInputParameters()
   InputParameters params = MeshGenerator::GetInputParameters();
 
   params.SetGeneralDescription("Generator for loading an unpartitioned mesh from a file.");
-  params.SetDocGroup("doc_MeshGenerators");
 
   params.AddRequiredParameter<std::string>("filename", "Path to the file.");
   params.AddOptionalParameter("block_id_fieldname",

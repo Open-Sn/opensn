@@ -25,7 +25,6 @@ ResponseEvaluator::GetInputParameters()
   params.SetGeneralDescription(
     "A utility class for evaluating responses using precomputed adjoint solutions "
     "and arbitrary forward sources.");
-  params.SetDocGroup("LBSUtilities");
 
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "A handle to an existing LBS problem.");
@@ -60,7 +59,6 @@ ResponseEvaluator::GetOptionsBlock()
   InputParameters params;
   params.SetGeneralDescription("A block of options for the response evaluator for adding adjoint "
                                "buffers and defining forward sources.");
-  params.SetDocGroup("LBSResponseEvaluator");
 
   params.AddOptionalParameterArray(
     "buffers", {}, "An array of tables containing adjoint buffer specifications.");
@@ -111,7 +109,6 @@ ResponseEvaluator::GetBufferOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("Options for adding adjoint buffers to the response evaluator.");
-  params.SetDocGroup("LBSResponseEvaluator");
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -155,7 +152,6 @@ ResponseEvaluator::GetSourceOptionsBlock()
 {
   InputParameters params;
   params.SetGeneralDescription("A table of various forward source specifications.");
-  params.SetDocGroup("LBSResponseEvaluator");
 
   params.AddOptionalParameterArray(
     "material", {}, "An array of tables containing material source specifications.");
@@ -237,7 +233,6 @@ ResponseEvaluator::GetMaterialSourceOptionsBlock()
   InputParameters params;
   params.SetGeneralDescription(
     "Options for adding material-based forward sources to the response evaluator.");
-  params.SetDocGroup("LBSResponseEvaluator");
 
   params.AddRequiredParameter<int>("block_id", "The block id the source belongs to.");
   params.AddRequiredParameterArray("strength", "The group-wise material source strength.");

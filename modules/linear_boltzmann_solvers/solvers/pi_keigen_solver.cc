@@ -26,7 +26,6 @@ PowerIterationKEigenSolver::GetInputParameters()
   InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
-  params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");

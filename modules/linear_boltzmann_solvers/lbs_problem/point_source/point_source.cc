@@ -21,7 +21,6 @@ PointSource::GetInputParameters()
 
   params.SetGeneralDescription("A multi-group isotropic point source.");
   params.SetClassName("Point Source");
-  params.SetDocGroup("LBSUtilities");
 
   params.AddRequiredParameterArray("location", "The (x, y, z) coordinate of the point source.");
   params.AddRequiredParameterArray("strength", "The group-wise point source strength");

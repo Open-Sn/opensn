@@ -23,7 +23,6 @@ SteadyStateSolver::GetInputParameters()
 
   params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
                                "across-groupset (AGS) solver.");
-  params.SetDocGroup("LBSExecutors");
   params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 

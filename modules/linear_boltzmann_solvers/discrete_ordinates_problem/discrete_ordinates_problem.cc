@@ -50,7 +50,6 @@ DiscreteOrdinatesProblem::GetInputParameters()
   InputParameters params = LBSProblem::GetInputParameters();
 
   params.SetClassName("DiscreteOrdinatesProblem");
-  params.SetDocGroup("lbs__LBSSolver");
 
   params.ChangeExistingParamToOptional("name", "LBSDiscreteOrdinatesProblem");
 

@@ -58,8 +58,6 @@ BooleanLogicalVolumeArgumentPair()
 {
   InputParameters params;
 
-  params.SetDocGroup("mesh__BooleanLogicalVolume");
-
   params.AddRequiredParameter<bool>(
     "op",
     "Boolean value indicating the volume sense. True means inside, False means "

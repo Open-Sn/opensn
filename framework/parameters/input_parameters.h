@@ -73,7 +73,6 @@ public:
   std::string GetGeneralDescription() const { return general_description_; }
 
   /// Space separated list of doxygen group names to which this documentation should belong.
-  void SetDocGroup(const std::string& doc_group) { doc_group_ = doc_group; }
 
   /// Sets a link to the documentation of a different object.
   void LinkParameterToBlock(const std::string& param_name, const std::string& block_name);

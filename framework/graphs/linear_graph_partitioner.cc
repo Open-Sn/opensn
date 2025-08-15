@@ -23,7 +23,6 @@ LinearGraphPartitioner::GetInputParameters()
     "Orthogonal meshes can produce decent partitioning but for unstructured grids it can be pretty "
     "bad. It partitions cells based on their linear index \"global_id\" instead of actually "
     "working with the graph.");
-  params.SetDocGroup("Graphs");
 
   params.AddOptionalParameter("all_to_rank",
                               -1,

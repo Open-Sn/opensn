@@ -13,7 +13,6 @@ PiecewiseLinear1D::GetInputParameters()
   InputParameters params = FunctionDimAToDimB::GetInputParameters();
 
   params.SetGeneralDescription("Piecewise linear function");
-  params.SetDocGroup("DocMathFunctions");
 
   params.AddRequiredParameterArray("x_values", "The x-values used in the interpolation function.");
   params.AddRequiredParameterArray("y_values", "The x-values used in the interpolation function.");

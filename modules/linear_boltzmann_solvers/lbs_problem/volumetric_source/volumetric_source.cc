@@ -27,7 +27,6 @@ VolumetricSource::GetInputParameters()
                                "volumetric source. Currently, only isotropic volumetric "
                                "sources are allowed.");
   params.SetClassName("Volumetric Source");
-  params.SetDocGroup("LBSUtilities");
 
   params.AddOptionalParameterArray(
     "block_ids",
