@@ -590,21 +590,21 @@ WrapSteadyState(py::module& slv)
 {
   // clang-format off
   // steady state solver
-  auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>,
+  auto steady_state_solver = py::class_<SteadyStateSourceSolver, std::shared_ptr<SteadyStateSourceSolver>,
                                         Solver>(
     slv,
-    "SteadyStateSolver",
+    "SteadyStateSourceSolver",
     R"(
     Steady state solver.
 
-    Wrapper of :cpp:class:`opensn::SteadyStateSolver`.
+    Wrapper of :cpp:class:`opensn::SteadyStateSourceSolver`.
     )"
   );
   steady_state_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return SteadyStateSolver::Create(kwargs_to_param_block(params));
+        return SteadyStateSourceSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(

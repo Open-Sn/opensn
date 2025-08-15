@@ -308,7 +308,7 @@ Steady state solver
    :nosignatures:
    :template: python.rst
 
-   solver.SteadyStateSolver
+   solver.SteadyStateSourceSolver
 
 Non-linear k-eigen
 ^^^^^^^^^^^^^^^^^^
