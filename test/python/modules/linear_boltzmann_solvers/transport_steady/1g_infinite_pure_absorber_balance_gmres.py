@@ -68,15 +68,15 @@ if __name__ == "__main__":
             }
         ],
         scattering_order=1,
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "xmax", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+            {"name": "ymax", "type": "reflecting"},
+            {"name": "zmin", "type": "reflecting"},
+            {"name": "zmax", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "xmax", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-                {"name": "ymax", "type": "reflecting"},
-                {"name": "zmin", "type": "reflecting"},
-                {"name": "zmax", "type": "reflecting"},
-            ],
             "volumetric_sources": [mg_src],
         }
     )

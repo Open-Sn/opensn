@@ -70,11 +70,11 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xss["1"]},
         ],
         scattering_order=2,
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-            ],
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,

@@ -84,12 +84,12 @@ if __name__ == "__main__":
             {"block_ids": [0, 1], "xs": xs_graphite},
         ],
         scattering_order=1,
+        boundary_conditions=[
+            {"name": "zmin",
+             "type": "isotropic",
+             "group_strength": bsrc},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "zmin",
-                 "type": "isotropic",
-                 "group_strength": bsrc},
-            ],
             "volumetric_sources": [mg_src0, mg_src1],
         },
     )
