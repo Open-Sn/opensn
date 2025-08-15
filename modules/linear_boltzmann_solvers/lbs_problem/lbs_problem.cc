@@ -638,14 +638,7 @@ LBSProblem::SetOptions(const InputParameters& input)
   {
     const auto& spec = params.GetParam(p);
 
-    if (spec.GetName() == "spatial_discretization")
-    {
-      auto sdm_name = spec.GetValue<std::string>();
-      if (sdm_name == "pwld")
-        options_.sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
-    }
-
-    else if (spec.GetName() == "max_mpi_message_size")
+    if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
     else if (spec.GetName() == "restart_writes_enabled")
@@ -870,9 +863,6 @@ LBSProblem::PerformInputChecks()
     }
     ++grpset_counter;
   }
-
-  if (options_.sd_type == SpatialDiscretizationType::UNDEFINED)
-    throw std::runtime_error("LBSProblem:: Invalid spatial discretization method");
 
   if (grid_ == nullptr)
     throw std::runtime_error("LBSProblem: Invalid grid");

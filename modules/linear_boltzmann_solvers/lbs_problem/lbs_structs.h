@@ -172,7 +172,6 @@ using SetSourceFunction = std::function<void(const LBSGroupset& groupset,
 struct LBSOptions
 {
   GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
-  SpatialDiscretizationType sd_type = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;
   int max_mpi_message_size = 32768;
 
   bool restart_writes_enabled = false;

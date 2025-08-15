@@ -188,8 +188,6 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    spatial_discretization: str, default='pwld'
-        What spatial discretization to use. Currently only ``pwld`` is supported.
     scattering_order: int, default=1
         The level of harmonic expansion for the scattering source.
     max_mpi_message_size: int default=32768

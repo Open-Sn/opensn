@@ -66,7 +66,6 @@ if __name__ == "__main__":
         ],
         scattering_order=0,
         options={
-            "spatial_discretization": "pwld",
             "save_angular_flux": True,
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
