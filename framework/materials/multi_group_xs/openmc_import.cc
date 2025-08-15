@@ -12,12 +12,12 @@
 namespace opensn
 {
 
-void
-MultiGroupXS::Initialize(const std::string& file_name,
-                         const std::string& dataset_name,
-                         double temperature)
+MultiGroupXS
+MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
+                             const std::string& dataset_name,
+                             double temperature)
 {
-  Reset();
+  MultiGroupXS mgxs;
 
   // Open file
   hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -36,30 +36,30 @@ MultiGroupXS::Initialize(const std::string& file_name,
   log.Log() << "Reading OpenMC cross-section file \"" << file_name << "\"\n";
 
   // Number of groups
-  if (not H5ReadAttribute<size_t>(file, "energy_groups", num_groups_))
+  if (not H5ReadAttribute<size_t>(file, "energy_groups", mgxs.num_groups_))
     throw std::runtime_error("Failure reading \"energy_groups\" from " + file_name);
 
   // Group structure
-  H5ReadDataset1D<double>(file, "/group structure", e_bounds_);
-  std::reverse(e_bounds_.begin(), e_bounds_.end());
+  H5ReadDataset1D<double>(file, "/group structure", mgxs.e_bounds_);
+  std::reverse(mgxs.e_bounds_.begin(), mgxs.e_bounds_.end());
 
   // Temperature
   log.Log0() << file_name + " cross-section data evaluated at " << temperature << "K\n";
-  temperature_ = temperature;
+  mgxs.temperature_ = temperature;
 
   // Base path
   std::stringstream ss;
-  ss << std::fixed << std::setprecision(0) << temperature_ << "K";
+  ss << std::fixed << std::setprecision(0) << mgxs.temperature_ << "K";
   std::string path = "/" + dataset_name + "/" + ss.str() + "/";
   if (!H5Has(file, path))
   {
     throw std::runtime_error("Could not find dataset " + dataset_name + "/" + ss.str() + " in " +
                              file_name);
   }
-  temperature_ = temperature;
+  mgxs.temperature_ = temperature;
 
   // Scattering order
-  if (not H5ReadGroupAttribute<size_t>(file, dataset_name, "order", scattering_order_))
+  if (not H5ReadGroupAttribute<size_t>(file, dataset_name, "order", mgxs.scattering_order_))
     throw std::runtime_error("Failure reading \"order\" from " + file_name);
 
   // Scattering shape
@@ -69,17 +69,18 @@ MultiGroupXS::Initialize(const std::string& file_name,
     throw std::runtime_error(file_name + " has an unsupported scatter shape");
 
   // Number of precursors
-  num_precursors_ = 0;
+  mgxs.num_precursors_ = 0;
 
   // Inverse velocity
-  H5ReadDataset1D<double>(file, path + "inverse-velocity", inv_velocity_);
-  OpenSnLogicalErrorIf(not IsNonNegative(inv_velocity_),
+  H5ReadDataset1D<double>(file, path + "inverse-velocity", mgxs.inv_velocity_);
+  OpenSnLogicalErrorIf(not IsNonNegative(mgxs.inv_velocity_),
                        "Only positive inverse velocity values are permitted.");
 
   // Total
-  H5ReadDataset1D<double>(file, path + "total", sigma_t_);
-  OpenSnLogicalErrorIf(sigma_t_.empty(), "\"total\" data block not found in " + file_name + ".");
-  OpenSnLogicalErrorIf(not IsNonNegative(sigma_t_),
+  H5ReadDataset1D<double>(file, path + "total", mgxs.sigma_t_);
+  OpenSnLogicalErrorIf(mgxs.sigma_t_.empty(),
+                       "\"total\" data block not found in " + file_name + ".");
+  OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_t_),
                        "Only non-negative total cross-section values are permitted.");
 
   // Absorption
@@ -92,78 +93,80 @@ MultiGroupXS::Initialize(const std::string& file_name,
   // uses.
   if (H5Has(file, path + "scatter_data/scatter_matrix"))
   {
-    transfer_matrices_.assign(scattering_order_ + 1, SparseMatrix(num_groups_, num_groups_));
+    mgxs.transfer_matrices_.assign(mgxs.scattering_order_ + 1,
+                                   SparseMatrix(mgxs.num_groups_, mgxs.num_groups_));
     std::vector<double> flat_scatter_matrix;
     H5ReadDataset1D<double>(file, path + "scatter_data/scatter_matrix", flat_scatter_matrix);
     std::vector<int> g_min, g_max;
     H5ReadDataset1D<int>(file, path + "scatter_data/g_min", g_min);
     H5ReadDataset1D<int>(file, path + "scatter_data/g_max", g_max);
     int fidx = 0;
-    for (int gp = 0; gp < num_groups_; ++gp)
+    for (int gp = 0; gp < mgxs.num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
-        for (int n = 0; n < scattering_order_ + 1; ++n, ++fidx)
-          transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);
+        for (int n = 0; n < mgxs.scattering_order_ + 1; ++n, ++fidx)
+          mgxs.transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);
   }
 
-  if (sigma_a_.empty())
-    ComputeAbsorption();
-  ComputeDiffusionParameters();
+  if (mgxs.sigma_a_.empty())
+    mgxs.ComputeAbsorption();
+  mgxs.ComputeDiffusionParameters();
 
   // Is fissionable?
-  H5ReadGroupAttribute<bool>(file, dataset_name, "fissionable", is_fissionable_);
-  if (is_fissionable_)
+  H5ReadGroupAttribute<bool>(file, dataset_name, "fissionable", mgxs.is_fissionable_);
+  if (mgxs.is_fissionable_)
   {
     // Fission
-    H5ReadDataset1D<double>(file, path + "fission", sigma_f_);
-    OpenSnLogicalErrorIf(sigma_f_.empty(),
+    H5ReadDataset1D<double>(file, path + "fission", mgxs.sigma_f_);
+    OpenSnLogicalErrorIf(mgxs.sigma_f_.empty(),
                          "\"fission\" data block not found in " + file_name + ".");
-    OpenSnLogicalErrorIf(not IsNonNegative(sigma_f_),
+    OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_f_),
                          "Only non-negative fission cross-section values are permitted.");
-    if (not HasNonZero(sigma_f_))
+    if (not HasNonZero(mgxs.sigma_f_))
     {
       log.Log0Warning() << "The fission cross section specified in "
                         << "\"" << file_name << "\" is uniformly zero... Clearing it.";
-      sigma_f_.clear();
+      mgxs.sigma_f_.clear();
     }
 
     // Nu-Fission
-    H5ReadDataset1D<double>(file, path + "nu-fission", nu_sigma_f_);
-    OpenSnLogicalErrorIf(nu_sigma_f_.empty(),
+    H5ReadDataset1D<double>(file, path + "nu-fission", mgxs.nu_sigma_f_);
+    OpenSnLogicalErrorIf(mgxs.nu_sigma_f_.empty(),
                          "\"nu-fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(
-      not IsNonNegative(nu_sigma_f_),
+      not IsNonNegative(mgxs.nu_sigma_f_),
       "Only non-negative total fission multiplication cross-section values are permitted.");
-    if (not HasNonZero(nu_sigma_f_))
+    if (not HasNonZero(mgxs.nu_sigma_f_))
     {
       log.Log0Warning() << "The production cross section specified in "
                         << "\"" << file_name << "\" is uniformly zero... Clearing it.";
-      nu_sigma_f_.clear();
+      mgxs.nu_sigma_f_.clear();
     }
 
     // Chi
-    H5ReadDataset1D<double>(file, path + "chi", chi_);
-    OpenSnLogicalErrorIf(chi_.empty(), "\"chi\" data block not found in " + file_name + ".");
-    OpenSnLogicalErrorIf(not HasNonZero(chi_),
+    H5ReadDataset1D<double>(file, path + "chi", mgxs.chi_);
+    OpenSnLogicalErrorIf(mgxs.chi_.empty(), "\"chi\" data block not found in " + file_name + ".");
+    OpenSnLogicalErrorIf(not HasNonZero(mgxs.chi_),
                          "Steady-state fission spectrum must have at least one non-zero value.");
-    OpenSnLogicalErrorIf(not IsNonNegative(chi_),
+    OpenSnLogicalErrorIf(not IsNonNegative(mgxs.chi_),
                          "Steady-state fission spectrum must be non-negative.");
     // Normalizing
-    const auto sum = std::accumulate(chi_.begin(), chi_.end(), 0.0);
-    std::transform(chi_.begin(), chi_.end(), chi_.begin(), [sum](double& x) { return x / sum; });
+    const auto sum = std::accumulate(mgxs.chi_.begin(), mgxs.chi_.end(), 0.0);
+    std::transform(
+      mgxs.chi_.begin(), mgxs.chi_.end(), mgxs.chi_.begin(), [sum](double& x) { return x / sum; });
 
     // Nu (computed)
-    auto nu = nu_sigma_f_;
-    for (size_t g = 0; g < num_groups_; ++g)
-      if (sigma_f_[g] > 0.0)
-        nu[g] /= sigma_f_[g];
+    auto nu = mgxs.nu_sigma_f_;
+    for (size_t g = 0; g < mgxs.num_groups_; ++g)
+      if (mgxs.sigma_f_[g] > 0.0)
+        nu[g] /= mgxs.sigma_f_[g];
 
     // Production matrix (computed)
-    if (production_matrix_.empty())
+    if (mgxs.production_matrix_.empty())
     {
-      production_matrix_.resize(num_groups_, std::vector<double>(num_groups_));
-      for (size_t gp = 0; gp < num_groups_; ++gp)
-        for (size_t g = 0; g < num_groups_; ++g)
-          production_matrix_[g][gp] = chi_[g] * nu_sigma_f_[gp];
+      mgxs.production_matrix_.resize(mgxs.num_groups_, std::vector<double>(mgxs.num_groups_));
+      for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
+        for (size_t g = 0; g < mgxs.num_groups_; ++g)
+          mgxs.production_matrix_[g][gp] = mgxs.chi_[g] * mgxs.nu_sigma_f_[gp];
 
       OpenSnLogicalErrorIf(
         not IsNonNegative(nu),
@@ -181,15 +184,17 @@ MultiGroupXS::Initialize(const std::string& file_name,
   else
   {
     // Clear fission data if not fissionable
-    sigma_f_.clear();
-    nu_sigma_f_.clear();
-    nu_prompt_sigma_f_.clear();
-    nu_delayed_sigma_f_.clear();
-    production_matrix_.clear();
-    precursors_.clear();
+    mgxs.sigma_f_.clear();
+    mgxs.nu_sigma_f_.clear();
+    mgxs.nu_prompt_sigma_f_.clear();
+    mgxs.nu_delayed_sigma_f_.clear();
+    mgxs.production_matrix_.clear();
+    mgxs.precursors_.clear();
   }
 
   H5Fclose(file);
+
+  return mgxs;
 }
 
 } // namespace opensn

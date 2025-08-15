@@ -136,7 +136,7 @@ WrapMultiGroupXS(py::module& xs)
     [](MultiGroupXS& self, const std::string& file_name, const std::string& dataset_name,
        double temperature)
     {
-      self.Initialize(file_name, dataset_name, temperature);
+      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature);
     },
     "Load multi-group cross sections from an OpenMC cross-section file.",
     py::arg("file_name"),
