@@ -43,7 +43,7 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def(
     "CreateSimpleOneGroup",
     [](MultiGroupXS& self, double sigma_t, double c) {
-      self.Initialize(sigma_t, c);
+      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c);
     },
     R"(
     Create a one-group cross section.
@@ -104,7 +104,7 @@ WrapMultiGroupXS(py::module& xs)
     "Combine",
     [](MultiGroupXS& self, const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations)
     {
-      self.Initialize(combinations);
+      self = MultiGroupXS::Combine(combinations);
     },
     R"(
     Combine cross-section
@@ -136,7 +136,7 @@ WrapMultiGroupXS(py::module& xs)
     [](MultiGroupXS& self, const std::string& file_name, const std::string& dataset_name,
        double temperature)
     {
-      self.Initialize(file_name, dataset_name, temperature);
+      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature);
     },
     "Load multi-group cross sections from an OpenMC cross-section file.",
     py::arg("file_name"),
