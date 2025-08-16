@@ -57,7 +57,7 @@ WrapResEval(py::module& response)
     Parameters
     ----------
     buffer_name: str
-        ???
+        Adjoint buffer name
     )",
     py::arg("buffer_name")
   );
@@ -96,7 +96,7 @@ WrapResEval(py::module& response)
       self.SetBufferOptions(input);
     },
     R"(
-    ???
+    Add adjoint buffers from the options block to the response evaluator.
     )"
   );
   res_eval.def(
@@ -108,7 +108,7 @@ WrapResEval(py::module& response)
       self.SetSourceOptions(input);
     },
     R"(
-    ???
+    Add forward sources from the options block to the response evaluator.
     )"
   );
   // clang-format on
