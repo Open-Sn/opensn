@@ -15,7 +15,7 @@ WGSContext::WGSContext(DiscreteOrdinatesProblem& do_problem,
                        SourceFlags lhs_scope,
                        SourceFlags rhs_scope,
                        bool log_info)
-  : LinearSolverContext(),
+  : LinearSystemContext(),
     do_problem(do_problem),
     groupset(groupset),
     set_source_function(set_source_function),

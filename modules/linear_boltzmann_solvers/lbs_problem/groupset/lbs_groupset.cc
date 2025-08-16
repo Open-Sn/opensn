@@ -96,7 +96,7 @@ LBSGroupset::Init(int aid)
   quadrature = nullptr;
   angle_agg = nullptr;
   master_num_ang_subsets = 1;
-  iterative_method = LinearSolver::IterativeMethod::PETSC_RICHARDSON;
+  iterative_method = LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON;
   angleagg_method = AngleAggregationType::POLAR;
   residual_tolerance = 1.0e-6;
   max_iterations = 200;
@@ -172,13 +172,13 @@ LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSP
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
   if (inner_linear_method == "classic_richardson")
-    iterative_method = LinearSolver::IterativeMethod::CLASSIC_RICHARDSON;
+    iterative_method = LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON;
   else if (inner_linear_method == "petsc_richardson")
-    iterative_method = LinearSolver::IterativeMethod::PETSC_RICHARDSON;
+    iterative_method = LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON;
   else if (inner_linear_method == "petsc_gmres")
-    iterative_method = LinearSolver::IterativeMethod::PETSC_GMRES;
+    iterative_method = LinearSystemSolver::IterativeMethod::PETSC_GMRES;
   else if (inner_linear_method == "petsc_bicgstab")
-    iterative_method = LinearSolver::IterativeMethod::PETSC_BICGSTAB;
+    iterative_method = LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB;
 
   gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
   allow_cycles = params.GetParamValue<bool>("allow_cycles");

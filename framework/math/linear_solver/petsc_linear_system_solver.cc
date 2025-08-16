@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/math/linear_solver/petsc_linear_solver.h"
+#include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "framework/runtime.h"
 
 namespace opensn
 {
 
-PETScLinearSolver::PETScLinearSolver(IterativeMethod iterative_method,
-                                     std::shared_ptr<LinearSolverContext> context_ptr)
-  : LinearSolver(iterative_method, context_ptr),
+PETScLinearSolver::PETScLinearSolver(IterativeMethod method,
+                                     std::shared_ptr<LinearSystemContext> context_ptr)
+  : LinearSystemSolver(method, context_ptr),
     A_(nullptr),
     b_(nullptr),
     x_(nullptr),
@@ -82,34 +82,25 @@ PETScLinearSolver::Setup()
     return;
 
   PreSetupCallback();
-
   KSPCreate(opensn::mpi_comm, &ksp_);
-
-  const auto petsc_iterative_method = PETScIterativeMethodName(iterative_method_);
+  const auto petsc_iterative_method = PETScIterativeMethodName();
   KSPSetType(ksp_, petsc_iterative_method.c_str());
-
   ApplyToleranceOptions();
-
-  if (iterative_method_ == IterativeMethod::PETSC_GMRES)
+  if (method_ == IterativeMethod::PETSC_GMRES)
   {
     KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval);
     KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance);
   }
-
   KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
-
   SetOptions();
-
   SetSolverContext();
   SetConvergenceTest();
   SetMonitor();
-
   SetSystemSize();
   SetSystem();
-
   SetPreconditioner();
-
   PostSetupCallback();
+
   system_set_ = true;
 }
 
@@ -135,9 +126,9 @@ PETScLinearSolver::Solve()
 }
 
 std::string
-PETScLinearSolver::PETScIterativeMethodName(opensn::LinearSolver::IterativeMethod iterative_method)
+PETScLinearSolver::PETScIterativeMethodName()
 {
-  switch (iterative_method)
+  switch (method_)
   {
     case IterativeMethod::NONE:
       return "preonly";
@@ -148,14 +139,14 @@ PETScLinearSolver::PETScIterativeMethodName(opensn::LinearSolver::IterativeMetho
     case IterativeMethod::PETSC_BICGSTAB:
       return "bcgs";
     default:
-      throw std::runtime_error("Cannot get a PETSc option name for a non-PETSc iterative method.");
+      throw std::runtime_error("Unsupported PETSc iterative method.");
   }
 }
 
 int
 PETScLinearSolver::LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
-  LinearSolverContext* context;
+  LinearSystemContext* context;
   MatShellGetContext(matrix, &context);
 
   context->MatrixAction(matrix, vector, action);

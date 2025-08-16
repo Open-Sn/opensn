@@ -21,8 +21,6 @@ struct SweepWGSContext : public WGSContext
                   bool log_info,
                   std::shared_ptr<SweepChunk> sweep_chunk);
 
-  void PreSetupCallback() override;
-
   void SetPreconditioner(KSP& solver) override;
 
   std::pair<int64_t, int64_t> GetSystemSize() override;

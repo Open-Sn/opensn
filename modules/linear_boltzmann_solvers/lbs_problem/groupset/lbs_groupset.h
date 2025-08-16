@@ -9,7 +9,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
-#include "framework/math/linear_solver/linear_solver.h"
+#include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/utils/utils.h"
 
@@ -32,7 +32,7 @@ public:
 
   int master_num_ang_subsets;
 
-  LinearSolver::IterativeMethod iterative_method;
+  LinearSystemSolver::IterativeMethod iterative_method;
   AngleAggregationType angleagg_method;
   double residual_tolerance;
   int max_iterations;

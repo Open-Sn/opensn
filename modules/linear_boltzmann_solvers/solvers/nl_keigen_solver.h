@@ -5,7 +5,7 @@
 
 #include "modules/solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nl_keigen_ags_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h"
 #include <petscsnes.h>
 
 namespace opensn

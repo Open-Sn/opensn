@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/utils/timer.h"
 #include <vector>
 
@@ -11,11 +12,12 @@ namespace opensn
 {
 
 /**Solver for Across-Groupset (AGS) solves.*/
-class AGSSolver
+class AGSLinearSolver : public LinearSystemSolver
 {
 public:
-  AGSSolver(LBSProblem& lbs_problem, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
-    : lbs_problem_(lbs_problem),
+  AGSLinearSolver(LBSProblem& lbs_problem, std::vector<std::shared_ptr<LinearSolver>> wgs_solvers)
+    : LinearSystemSolver(IterativeMethod::CLASSIC_RICHARDSON, nullptr),
+      lbs_problem_(lbs_problem),
       wgs_solvers_(std::move(wgs_solvers)),
       phi_old_(lbs_problem.GetPhiOldLocal().size()),
       max_iterations_(100),
@@ -24,9 +26,9 @@ public:
   {
   }
 
-  ~AGSSolver() {}
+  ~AGSLinearSolver() override {}
 
-  void Solve();
+  void Solve() override;
 
   bool IsVerbose() const { return verbose_; }
 
