@@ -188,8 +188,6 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    scattering_order: int, default=1
-        The level of harmonic expansion for the scattering source.
     max_mpi_message_size: int default=32768
         The maximum MPI message size used during sweeps.
     restart_writes_enabled: bool, default=False
@@ -457,6 +455,8 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : List[Dict], default=[]
         A list of mappings from block ids to cross-section definitions.
+    scattering_order: int, default=0
+        The level of harmonic expansion for the scattering source.
     options : Dict, default={}
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, default="AAH"
@@ -574,6 +574,8 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions.
+    scattering_order: int, default=0
+        The level of harmonic expansion for the scattering source.
     options : dict, optional
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, optional
@@ -759,7 +761,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     slv,
     "SCDSAAcceleration",
     R"(
-    SCDSA acceleration scheme to be used the power iteration k-eigenvalue solver.
+    Construct an SCDSA accelerator for the power iteration k-eigenvalue solver.
 
     Wrapper of :cpp:class:`opensn::SCDSAAcceleration`.
     )"
@@ -772,7 +774,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
       }
     ),
     R"(
-    Construct a SCDSA acceleration solver for LBS.
+    SCDSA acceleration for the power iteration k-eigenvalue solver.
 
     Parameters
     ----------
@@ -804,7 +806,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     slv,
     "SMMAcceleration",
     R"(
-    SCDSA acceleration scheme to be used the power iteration k-eigenvalue solver.
+    Construct an SMM accelerator for the power iteration k-eigenvalue solver.
 
     Wrapper of :cpp:class:`opensn::SMMAcceleration`.
     )"
@@ -817,7 +819,10 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
       }
     ),
     R"(
-    Construct a SMM acceleration solver for LBS.
+    SMM acceleration for the power iteration k-eigenvalue solver.
+    .. warning::
+       SMM acceleration is **experimental** and should be used with caution!
+       SMM accleration only supports problems with isotropic scattering.
 
     Parameters
     ----------

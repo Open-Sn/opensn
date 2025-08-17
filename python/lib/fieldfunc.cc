@@ -117,14 +117,14 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "Initialize",
     &FieldFunctionInterpolation::Initialize,
     R"(
-    ???
+    Initialize field function interpolator.
     )"
   );
   field_func_interp.def(
     "Execute",
     &FieldFunctionInterpolation::Execute,
     R"(
-    ???
+    Execute field function interpolator.
     )"
   );
   field_func_interp.def(
@@ -176,8 +176,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     ffunc,
     "FieldFunctionInterpolationPoint",
     R"(
-    Line based interpolation function.
-    ??? (same docuumentation as FieldFunctionInterpolationLine)
+    Interpolate the field function at a point.
 
     Wrapper of :cpp:class:`opensn::FieldFunctionInterpolationPoint`.
     )"
@@ -195,7 +194,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "GetPointValue",
     &FieldFunctionInterpolationPoint::GetPointValue,
     R"(
-    ???
+    Get the value of the field function interpolation at the specified point.
     )"
   );
 
@@ -310,12 +309,13 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
       self.SetOperationFunction(function);
     },
     R"(
-    ???
+    Set the field function operation type to a custom scalar material function.
 
     Parameters
     ----------
     function: Callable[[float, int], float]
-        ???
+        A scalar material function that takes the field function value (float) and the
+        block id (int) as parameters and returns a double.
     )",
     py::arg("function")
   );
@@ -323,7 +323,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "GetValue",
     &FieldFunctionInterpolationVolume::GetValue,
     R"(
-    ???
+    Returns the value of the field function interpolation.
     )"
   );
   // clang-format on
