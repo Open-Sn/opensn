@@ -284,7 +284,6 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scattering_order</strong> (<em>int</em><em>, </em><em>default=1</em>) – The level of harmonic expansion for the scattering source.</p></li>
 <li><p><strong>max_mpi_message_size</strong> (<em>int default=32768</em>) – The maximum MPI message size used during sweeps.</p></li>
 <li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.</p></li>
 <li><p><strong>write_delayed_psi_to_restart</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag that controls writing of delayed angular fluxes to restarts.</p></li>
@@ -357,6 +356,7 @@ boundaries become vacuum.</p></li>
 <li><p><strong>groupsets</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of input parameter blocks, each block provides the iterative properties for a
 groupset.</p></li>
 <li><p><strong>xs_map</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of mappings from block ids to cross-section definitions.</p></li>
+<li><p><strong>scattering_order</strong> (<em>int</em><em>, </em><em>default=0</em>) – The level of harmonic expansion for the scattering source.</p></li>
 <li><p><strong>options</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – A block of optional configuration parameters. See <cite>SetOptions</cite> for available settings.</p></li>
 <li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>default=&quot;AAH&quot;</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.</p></li>
 <li><p><strong>use_gpus</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag specifying whether GPU acceleration is used for the sweep. Currently, only <code class="docutils literal notranslate"><span class="pre">AAH</span></code> is
