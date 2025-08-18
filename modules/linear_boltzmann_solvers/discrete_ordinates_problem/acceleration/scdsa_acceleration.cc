@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #include "framework/object_factory.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/runtime.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "modules/diffusion/diffusion_pwlc_solver.h"
@@ -76,7 +77,9 @@ SCDSAAcceleration::Initialize()
   }
   else
   {
-    InitializeLinearContinuous();
+    const auto& sdm = do_problem_.GetSpatialDiscretization();
+    pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
+    ghost_info_ = MakePWLDGhostInfo(*pwlc_ptr_, do_problem_.GetUnknownManager());
     diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_WGDSA"),
                                                               *pwlc_ptr_,
                                                               uk_man,

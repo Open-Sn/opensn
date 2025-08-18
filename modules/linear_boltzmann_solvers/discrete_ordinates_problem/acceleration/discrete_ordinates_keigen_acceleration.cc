@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 #include "framework/runtime.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/diffusion/diffusion.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
@@ -117,14 +116,6 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretizati
     ghost_global_to_local_map[ghost_id] = static_cast<int64_t>(num_local_dofs + k++);
 
   return {vec_ghost_comm, ghost_global_to_local_map};
-}
-
-void
-DiscreteOrdinatesKEigenAcceleration::InitializeLinearContinuous()
-{
-  const auto& sdm = do_problem_.GetSpatialDiscretization();
-  pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
-  ghost_info_ = MakePWLDGhostInfo(*pwlc_ptr_, do_problem_.GetUnknownManager());
 }
 
 void
