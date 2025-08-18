@@ -5,6 +5,7 @@
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "modules/diffusion/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -65,7 +66,10 @@ SMMAcceleration::Initialize()
 
   // Create PWLC structure, if needed
   if (sdm_ == "pwlc")
-    InitializeLinearContinuous();
+  {
+    pwlc_ptr_ = PieceWiseLinearContinuous::New(do_problem_.GetGrid());
+    ghost_info_ = MakePWLDGhostInfo(sdm, do_problem_.GetUnknownManager());
+  }
 
   // Create tensor structure
   for (int g = 0; g < num_groups; ++g)

@@ -82,8 +82,6 @@ protected:
   static GhostInfo MakePWLDGhostInfo(const SpatialDiscretization& pwld,
                                      const UnknownManager& uk_man);
 
-  void InitializeLinearContinuous();
-
   /**
    * Takes an input vector that is the local version of a PWLD discrete space and then
    * makes it continuous by applying nodal averages.
