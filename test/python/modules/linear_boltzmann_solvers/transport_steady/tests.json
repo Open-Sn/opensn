@@ -947,5 +947,18 @@
         "gold": "\"wrong-parameter\""
       }
     ]
+  },
+  {
+    "file": "wrong_parameter_type.py",
+    "comment": "Check that supplying an incorrect parameter type reports an error",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "Invalid parameter type \"BOOLEAN\"",
+        "wordnum": 10,
+        "gold": "\"max_mpi_message_size\"."
+      }
+    ]
   }
 ]
