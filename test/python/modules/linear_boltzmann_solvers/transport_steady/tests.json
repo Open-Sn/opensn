@@ -934,5 +934,18 @@
         "abs_tol": 0.0001
       }
     ]
+  },
+  {
+    "file": "wrong_parameter.py",
+    "comment": "Check that supplying a non-existent parameter reports an error",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "**** ERROR ****  Invalid param",
+        "wordnum": 6,
+        "gold": "\"wrong-parameter\""
+      }
+    ]
   }
 ]
