@@ -448,10 +448,6 @@ LBSProblem::GetOptionsBlock()
   InputParameters params;
 
   params.SetGeneralDescription("Set options from a large list of parameters");
-  params.AddOptionalParameter("spatial_discretization",
-                              "pwld",
-                              "What spatial discretization to use. Currently only `\"pwld\"` "
-                              "is supported");
   params.AddOptionalParameter("max_mpi_message_size",
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
@@ -533,7 +529,6 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
   params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
-  params.ConstrainParameterRange("spatial_discretization", AllowableRangeList::New({"pwld"}));
   params.ConstrainParameterRange("ags_convergence_check",
                                  AllowableRangeList::New({"l2", "pointwise"}));
   params.ConstrainParameterRange("field_function_prefix_option",
