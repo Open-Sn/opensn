@@ -25,10 +25,6 @@ ClassicRichardson::ClassicRichardson(const std::shared_ptr<WGSContext>& gs_conte
 {
 }
 
-ClassicRichardson::~ClassicRichardson()
-{
-}
-
 void
 ClassicRichardson::Solve()
 {

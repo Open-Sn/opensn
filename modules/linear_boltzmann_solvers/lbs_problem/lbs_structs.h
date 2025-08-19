@@ -45,7 +45,7 @@ enum class LBSBoundaryType
 
 struct BoundaryPreference
 {
-  LBSBoundaryType type;
+  LBSBoundaryType type = LBSBoundaryType::VACUUM;
   std::vector<double> isotropic_mg_source;
   std::string source_function;
 };

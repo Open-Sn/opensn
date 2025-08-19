@@ -53,7 +53,7 @@ private:
   /// Reading group structure data.
   void ReadGroupStructure(const std::string& keyword,
                           std::vector<double>& destination,
-                          const size_t n_grps,
+                          size_t n_grps,
                           std::ifstream& file,
                           std::istringstream& line_stream,
                           size_t& line_number);
@@ -61,7 +61,7 @@ private:
   /// Lambda for reading vector data.
   void Read1DData(const std::string& keyword,
                   std::vector<double>& destination,
-                  const size_t n_entries,
+                  size_t n_entries,
                   std::ifstream& file,
                   std::istringstream& line_stream,
                   size_t& line_number);
@@ -70,8 +70,8 @@ private:
   void Read2DData(const std::string& keyword,
                   const std::string& entry_prefix,
                   std::vector<std::vector<double>>& destination,
-                  const size_t n_rows,
-                  const size_t n_cols,
+                  size_t n_rows,
+                  size_t n_cols,
                   std::ifstream& file,
                   std::istringstream& line_stream,
                   size_t& line_number);
@@ -79,8 +79,8 @@ private:
   /// Lambda for reading transfer matrix data.
   void ReadTransferMatrices(const std::string& keyword,
                             std::vector<SparseMatrix>& destination,
-                            const size_t n_moms,
-                            const size_t n_grps,
+                            size_t n_moms,
+                            size_t n_grps,
                             std::ifstream& file,
                             std::istringstream& line_stream,
                             size_t& line_number);

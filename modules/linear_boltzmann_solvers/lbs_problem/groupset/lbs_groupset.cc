@@ -114,21 +114,22 @@ LBSGroupset::Init(int aid)
   tgdsa_solver = nullptr;
 }
 
-LBSGroupset::LBSGroupset()
+LBSGroupset::LBSGroupset() // NOLINT(cppcoreguidelines-pro-type-member-init)
 {
   Init(-1);
 };
 
-LBSGroupset::LBSGroupset(int id)
+LBSGroupset::LBSGroupset(int id) // NOLINT(cppcoreguidelines-pro-type-member-init)
 {
   Init(id);
 }
 
-LBSGroupset::LBSGroupset(const InputParameters& params, const int id, const LBSProblem& lbs_problem)
+LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
+  const InputParameters& params,
+  const int id,
+  const LBSProblem& lbs_problem)
 {
   Init(id);
-
-  const std::string fname = __FUNCTION__;
 
   // Add groups
   const auto groups_from_to = params.GetParamVectorValue<size_t>("groups_from_to");

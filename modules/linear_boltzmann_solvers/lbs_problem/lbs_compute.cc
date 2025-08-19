@@ -16,11 +16,11 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionProduction");
 
-  auto& groups = lbs_problem.GetGroups();
-  auto& grid = lbs_problem.GetGrid();
-  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
-  auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  auto& options = lbs_problem.GetOptions();
+  const auto& groups = lbs_problem.GetGroups();
+  const auto& grid = lbs_problem.GetGrid();
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  const auto& options = lbs_problem.GetOptions();
 
   const int first_grp = groups.front().id;
   const int last_grp = groups.back().id;
@@ -48,10 +48,10 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
-      for (size_t g = first_grp; g <= last_grp; ++g)
+      for (auto g = first_grp; g <= last_grp; ++g)
       {
         const auto& prod = F[g];
-        for (size_t gp = 0; gp <= last_grp; ++gp)
+        for (auto gp = 0; gp <= last_grp; ++gp)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options.use_precursors)
@@ -73,10 +73,10 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionRate");
 
-  auto& groups = lbs_problem.GetGroups();
-  auto& grid = lbs_problem.GetGrid();
-  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
-  auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  const auto& groups = lbs_problem.GetGroups();
+  const auto& grid = lbs_problem.GetGrid();
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
 
   const int first_grp = groups.front().id;
   const int last_grp = groups.back().id;
@@ -98,13 +98,13 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
 
     // Loop over nodes
     const int num_nodes = transport_view.GetNumNodes();
-    for (int i = 0; i < num_nodes; ++i)
+    for (auto i = 0; i < num_nodes; ++i)
     {
       const size_t uk_map = transport_view.MapDOF(i, 0, 0);
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
-      for (size_t g = first_grp; g <= last_grp; ++g)
+      for (auto g = first_grp; g <= last_grp; ++g)
         local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
     } // for node
   } // for cell
@@ -126,10 +126,10 @@ ComputePrecursors(LBSProblem& lbs_problem)
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
 
-  auto& grid = lbs_problem.GetGrid();
-  auto& groups = lbs_problem.GetGroups();
-  auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& grid = lbs_problem.GetGrid();
+  const auto& groups = lbs_problem.GetGroups();
+  const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
   // Loop over cells
@@ -173,15 +173,15 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
 
   opensn::mpi_comm.barrier();
 
-  auto& grid_ = do_problem.GetGrid();
-  auto& discretization_ = do_problem.GetSpatialDiscretization();
+  const auto& grid_ = do_problem.GetGrid();
+  const auto& discretization_ = do_problem.GetSpatialDiscretization();
   auto& phi_new_local_ = do_problem.GetPhiNewLocal();
   auto& groupsets_ = do_problem.GetGroupsets();
   auto& q_moments_local_ = do_problem.GetQMomentsLocal();
   auto active_set_source_fn = do_problem.GetActiveSetSourceFunction();
-  auto& cell_transport_views_ = do_problem.GetCellTransportViews();
-  auto& unit_cell_matrices_ = do_problem.GetUnitCellMatrices();
-  auto& sweep_boundaries_ = do_problem.GetSweepBoundaries();
+  const auto& cell_transport_views_ = do_problem.GetCellTransportViews();
+  const auto& unit_cell_matrices_ = do_problem.GetUnitCellMatrices();
+  const auto& sweep_boundaries_ = do_problem.GetSweepBoundaries();
   const auto num_groups_ = do_problem.GetNumGroups();
 
   // Get material source
@@ -196,7 +196,11 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
                          phi_new_local_,
                          APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
                            APPLY_WGS_FISSION_SOURCES);
-    LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem, groupset, q_moments_local_, mat_src);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors( // NOLINT(readability-suspicious-call-argument)
+      do_problem,
+      groupset,
+      q_moments_local_,
+      mat_src);
   }
 
   // Compute absorption, material-source and in-flow
@@ -227,7 +231,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
 
         if (bndry->IsReflecting())
         {
-          for (int g = 0; g < num_groups_; ++g)
+          for (size_t g = 0; g < num_groups_; ++g)
             local_in_flow += transport_view.GetOutflow(f, g);
         }
         else
@@ -262,16 +266,16 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
     } // for f
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
-    for (int f = 0; f < cell.faces.size(); ++f)
-      for (int g = 0; g < num_groups_; ++g)
+    for (size_t f = 0; f < cell.faces.size(); ++f)
+      for (size_t g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
 
     // Absorption and sources
     const auto& xs = transport_view.GetXS();
     const auto& sigma_a = xs.GetSigmaAbsorption();
-    for (int i = 0; i < num_nodes; ++i)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
-      for (int g = 0; g < num_groups_; ++g)
+      for (size_t g = 0; g < num_groups_; ++g)
       {
         size_t imap = transport_view.MapDOF(i, 0, g);
         double phi_0g = phi_new_local_[imap];
@@ -340,7 +344,6 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto num_gs_groups = groupset.groups.size();
 
   const auto gsi = groupset.groups.front().id;
-  const auto gsf = groupset.groups.back().id;
 
   // Start integration
   std::vector<double> local_leakage(num_gs_groups, 0.0);

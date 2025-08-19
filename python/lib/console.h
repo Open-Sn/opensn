@@ -32,11 +32,11 @@ public:
 
   static void BindModule(std::function<void(py::module&)> bind_function);
 
-private:
   Console() noexcept = default;
   Console(const Console&) = delete;
   Console& operator=(const Console&) = delete;
 
+private:
   std::vector<std::string> command_buffer_;
 };
 

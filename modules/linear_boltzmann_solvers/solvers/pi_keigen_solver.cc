@@ -115,7 +115,7 @@ PowerIterationKEigenSolver::Execute()
   double k_eff_change = 1.0;
 
   // Start power iterations
-  int nit = 0;
+  size_t nit = 0;
   bool converged = false;
   while (nit < max_iters_)
   {
@@ -251,7 +251,7 @@ PowerIterationKEigenSolver::ReadRestartData()
 
     // Read psi
     int gs_id = 0;
-    for (auto gs : groupsets)
+    for (const auto& gs : groupsets)
     {
       if (gs.angle_agg)
       {
@@ -259,7 +259,7 @@ PowerIterationKEigenSolver::ReadRestartData()
         if (H5Has(file, name))
         {
           std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file, name.c_str(), psi);
+          success &= H5ReadDataset1D<double>(file, name, psi);
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         }
       }
@@ -300,7 +300,7 @@ PowerIterationKEigenSolver::WriteRestartData()
     if (options.write_delayed_psi_to_restart)
     {
       int gs_id = 0;
-      for (auto gs : do_problem_->GetGroupsets())
+      for (const auto& gs : do_problem_->GetGroupsets())
       {
         if (gs.angle_agg)
         {

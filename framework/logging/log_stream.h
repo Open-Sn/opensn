@@ -34,24 +34,36 @@ public:
   LogStream(const LogStream&) = delete;
   LogStream& operator=(const LogStream&) = delete;
 
-  ~LogStream()
+  ~LogStream() noexcept override
   {
     if (dummy_)
       return;
 
-    std::string content = this->str();
-    if (content.empty())
-      return;
+    try
+    {
+      std::string content = this->str();
+      if (content.empty())
+        return;
 
-    std::istringstream iss(content);
-    std::string line;
-    std::string oline;
-    std::string reset_str = use_color_ ? StringStreamColor(StringStreamColorCode::RESET) : "";
-    while (std::getline(iss, line))
-      oline += log_header_ + line + reset_str + "\n";
+      std::istringstream iss(content);
+      std::string line;
+      std::string oline;
+      std::string reset_str = use_color_ ? StringStreamColor(StringStreamColorCode::RESET) : "";
+      while (std::getline(iss, line))
+      {
+        oline += log_header_;
+        oline += line;
+        oline += reset_str;
+        oline += "\n";
+      }
 
-    if (!oline.empty())
-      *log_stream_ << oline << std::flush;
+      if (!oline.empty())
+        *log_stream_ << oline << std::flush;
+    }
+    catch (...) // NOLINT(bugprone-empty-catch)
+    {
+      // No exceptions escape the destructor...
+    }
   }
 };
 
@@ -59,11 +71,11 @@ struct DummyStream : public std::ostream
 {
   struct DummyStreamBuffer : std::streambuf
   {
-    virtual int overflow(int c) { return c; };
+    int overflow(int c) override { return c; };
   } buffer;
 
   DummyStream() : std::ostream(&buffer) {}
-  ~DummyStream() {}
+  ~DummyStream() override = default;
 };
 
 } // namespace opensn

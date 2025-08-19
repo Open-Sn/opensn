@@ -24,11 +24,11 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
     uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
     // Make boundary conditions
-    auto sweep_boundaries = do_problem.GetSweepBoundaries();
+    const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
     auto bcs = TranslateBCs(sweep_boundaries, vaccum_bcs_are_dirichlet);
 
     // Make xs map
-    auto block_id_to_xs_map = do_problem.GetMatID2XSMap();
+    const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
     auto matid_2_mgxs_map =
       PackGroupsetXS(block_id_to_xs_map, groupset.groups.front().id, groupset.groups.back().id);
 
@@ -131,7 +131,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
 
-      for (int g = 0; g < gss; ++g)
+      for (size_t g = 0; g < gss; ++g)
         phi_new_mapped[g] += delta_phi_mapped[g];
     }
   }
@@ -215,7 +215,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];
 
-      for (int g = 0; g < gss; ++g)
+      for (size_t g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
   } // for cell

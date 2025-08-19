@@ -14,7 +14,7 @@ namespace opensn
 {
 
 PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
-  const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order)
+  const std::shared_ptr<MeshContinuum>& grid, QuadratureOrder q_order)
   : PieceWiseLinearBase(grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
 {
   CreateCellMappings();
@@ -22,7 +22,7 @@ PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
 }
 
 std::shared_ptr<PieceWiseLinearDiscontinuous>
-PieceWiseLinearDiscontinuous::New(const std::shared_ptr<MeshContinuum> grid,
+PieceWiseLinearDiscontinuous::New(const std::shared_ptr<MeshContinuum>& grid,
                                   QuadratureOrder q_order)
 
 {

@@ -179,9 +179,9 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-          for (int i = 0; i < num_nodes; ++i)
+          for (size_t i = 0; i < num_nodes; ++i)
           {
-            for (int fj = 0; fj < num_face_nodes; ++fj)
+            for (size_t fj = 0; fj < num_face_nodes; ++fj)
             {
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
@@ -197,11 +197,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           } // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
-          for (int fi = 0; fi < num_face_nodes; ++fi)
+          for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const int im = cell_mapping.MapFaceNode(f, fi); // i-minus
 
-            for (int j = 0; j < num_nodes; ++j)
+            for (size_t j = 0; j < num_nodes; ++j)
             {
               Vector3 vec_aij;
               for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
@@ -333,7 +333,6 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
                 for (size_t fj = 0; fj < num_face_nodes; ++fj)
                 {
                   const int j = cell_mapping.MapFaceNode(f, fj);
-                  const int64_t jr = sdm_.MapDOF(cell, j, uk_man_, 0, g);
 
                   double aij = 0.0;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
@@ -714,9 +713,9 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           // Dk = 0.5* n dot nabla bk
 
           // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
-          for (int i = 0; i < num_nodes; ++i)
+          for (size_t i = 0; i < num_nodes; ++i)
           {
-            for (int fj = 0; fj < num_face_nodes; ++fj)
+            for (size_t fj = 0; fj < num_face_nodes; ++fj)
             {
               const int jm = cell_mapping.MapFaceNode(f, fj); // j-minus
 
@@ -728,11 +727,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           } // for i
 
           // 0.5*D* n dot (b_i^+ - b_i^-)*nabla b_j^-
-          for (int fi = 0; fi < num_face_nodes; ++fi)
+          for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const int im = cell_mapping.MapFaceNode(f, fi); // i-minus
 
-            for (int j = 0; j < num_nodes; ++j)
+            for (size_t j = 0; j < num_nodes; ++j)
             {
               const double aij = -0.5 * Dg * n_f.Dot(intS_shapeI_gradshapeJ(im, j));
 

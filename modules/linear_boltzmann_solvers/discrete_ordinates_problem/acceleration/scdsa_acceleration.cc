@@ -171,7 +171,7 @@ SCDSAAcceleration::PostPowerIteration()
 
   double production_k = ComputeFissionProduction(do_problem_, phi_new_local_);
 
-  for (auto& vec : {&epsilon_k_, &epsilon_kp1_})
+  for (const auto& vec : {&epsilon_k_, &epsilon_kp1_})
   {
     vec->resize(phi0_star_.size());
     std::fill(vec->begin(), vec->end(), 0.0);
@@ -180,7 +180,7 @@ SCDSAAcceleration::PostPowerIteration()
   double lambda_k = solver_->GetEigenvalue();
   double lambda_kp1 = lambda_k;
 
-  for (size_t k = 0; k < pi_max_its_; ++k)
+  for (int k = 0; k < pi_max_its_; ++k)
   {
     ProjectBackPhi0(epsilon_k_ + phi0_star_, phi_temp_);
     solver_->SetLBSFissionSource(phi_temp_, false);

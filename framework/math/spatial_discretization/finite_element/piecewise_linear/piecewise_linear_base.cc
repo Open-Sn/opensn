@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<MeshContinuum> grid,
+PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<MeshContinuum>& grid,
                                          QuadratureOrder q_order,
                                          SpatialDiscretizationType sdm_type)
   : FiniteElementBase(grid, sdm_type, q_order),

@@ -99,12 +99,11 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = object_name;
-    object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
+    object_maker.AssertRegistryKeyAvailable(object_name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
     reg_entry.get_in_params_func = &CallGetInputParamsFunction<T>;
-    object_maker.object_registry_.insert(std::make_pair(name, reg_entry));
+    object_maker.object_registry_.insert(std::make_pair(object_name, reg_entry));
 
     return 0;
   }
@@ -121,12 +120,11 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = object_name;
-    object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
+    object_maker.AssertRegistryKeyAvailable(object_name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
     reg_entry.get_in_params_func = &CallGetInputParamsFunction<T>;
-    object_maker.object_registry_.insert(std::make_pair(name, reg_entry));
+    object_maker.object_registry_.insert(std::make_pair(object_name, reg_entry));
 
     return 0;
   }
@@ -143,12 +141,11 @@ public:
   {
     auto& object_maker = GetInstance();
 
-    const std::string name = block_name;
-    object_maker.AssertRegistryKeyAvailable(name, __PRETTY_FUNCTION__);
+    object_maker.AssertRegistryKeyAvailable(block_name, __PRETTY_FUNCTION__);
 
     ObjectRegistryEntry reg_entry;
     reg_entry.get_in_params_func = syntax_function;
-    object_maker.object_registry_.insert(std::make_pair(name, reg_entry));
+    object_maker.object_registry_.insert(std::make_pair(block_name, reg_entry));
 
     return 0;
   }

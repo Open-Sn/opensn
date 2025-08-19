@@ -15,7 +15,7 @@ class LinearSolver
 {
 public:
   explicit LinearSolver(std::shared_ptr<LinearSolverContext> context_ptr)
-    : context_ptr_(context_ptr)
+    : context_ptr_(std::move(context_ptr))
   {
   }
 

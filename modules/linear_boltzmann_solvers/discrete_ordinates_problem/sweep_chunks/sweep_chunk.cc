@@ -21,7 +21,7 @@ SweepChunk::ZeroDestinationPhi()
       for (int m = 0; m < num_moments_; ++m)
       {
         const auto mapping = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; ++g)
+        for (size_t g = 0; g < gss; ++g)
         {
           (destination_phi_)[mapping + g] = 0.0;
         } // for g

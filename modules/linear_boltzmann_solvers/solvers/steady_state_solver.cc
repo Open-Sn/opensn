@@ -90,7 +90,7 @@ SteadyStateSolver::ReadRestartData()
 
     // Read psi
     int gs_id = 0;
-    for (auto gs : groupsets)
+    for (const auto& gs : groupsets)
     {
       if (gs.angle_agg)
       {
@@ -98,7 +98,7 @@ SteadyStateSolver::ReadRestartData()
         if (H5Has(file, name))
         {
           std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file, name.c_str(), psi);
+          success &= H5ReadDataset1D<double>(file, name, psi);
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         }
       }
@@ -135,7 +135,7 @@ SteadyStateSolver::WriteRestartData()
     if (options.write_delayed_psi_to_restart)
     {
       int gs_id = 0;
-      for (auto gs : lbs_problem_->GetGroupsets())
+      for (const auto& gs : lbs_problem_->GetGroupsets())
       {
         if (gs.angle_agg)
         {

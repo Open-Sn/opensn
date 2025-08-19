@@ -30,7 +30,7 @@ public:
 
   int GetMaxBufferMessages() const override;
 
-  void SetMaxBufferMessages(int new_max) override;
+  void SetMaxBufferMessages(int count) override;
 
   AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) override;
 

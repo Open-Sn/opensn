@@ -9,7 +9,6 @@
 #include "framework/data_types/vector.h"
 #include "framework/data_types/dense_matrix.h"
 #include <cmath>
-#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -20,7 +19,6 @@ namespace opensn
 {
 class SparseMatrix;
 class UnknownManager;
-class SpatialDiscretization;
 class SpatialDiscretization_FV;
 class SpatialDiscretization_PWLD;
 class SpatialDiscretization_PWLC;

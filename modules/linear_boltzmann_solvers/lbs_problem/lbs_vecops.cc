@@ -9,21 +9,21 @@ namespace opensn
 
 template <typename Functor>
 int
-LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor&& func)
+LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor func)
 {
   CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
 
-  auto& grid = lbs_problem.GetGrid();
-  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& grid = lbs_problem.GetGrid();
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
   int64_t idx = -1;
   for (const auto& cell : grid->local_cells)
   {
-    auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (int m = 0; m < num_moments; ++m)
+      for (size_t m = 0; m < num_moments; ++m)
       {
         size_t mapped_idx = transport_view.MapDOF(i, m, gsi);
         for (int g = 0; g < gss; ++g)
@@ -44,10 +44,10 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  auto& grid = lbs_problem.GetGrid();
-  auto& groups = lbs_problem.GetGroups();
-  auto& sdm = lbs_problem.GetSpatialDiscretization();
-  auto& unknown_manager = lbs_problem.GetUnknownManager();
+  const auto& grid = lbs_problem.GetGrid();
+  const auto& groups = lbs_problem.GetGroups();
+  const auto& sdm = lbs_problem.GetSpatialDiscretization();
+  const auto& unknown_manager = lbs_problem.GetUnknownManager();
 
   const size_t first_grp = groups.front().id;
   const size_t final_grp = groups.back().id;
@@ -199,11 +199,11 @@ LBSVecOps::GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
     (src == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
   auto& dest_phi =
     (dest == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
-  int64_t index = GroupsetScopedCopy(lbs_problem,
-                                     groupset.groups.front().id,
-                                     groupset.groups.size(),
-                                     [&](int64_t idx, size_t mapped_idx)
-                                     { dest_phi[mapped_idx] = src_phi[mapped_idx]; });
+  GroupsetScopedCopy(lbs_problem,
+                     groupset.groups.front().id,
+                     groupset.groups.size(),
+                     [&](int64_t idx, size_t mapped_idx)
+                     { dest_phi[mapped_idx] = src_phi[mapped_idx]; });
   if (groupset.angle_agg)
   {
     if (src == PhiSTLOption::PHI_NEW and dest == PhiSTLOption::PHI_OLD)

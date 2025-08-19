@@ -88,7 +88,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
 
-  const int gsi = groupset.groups.front().id;
+  const size_t gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   auto local_node_count = do_problem.GetLocalNodeCount();
@@ -154,7 +154,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       const double delta_phi_mapped = delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
 
-      for (int g = 0; g < gss; ++g)
+      for (size_t g = 0; g < gss; ++g)
         phi_new_mapped[g] += delta_phi_mapped * xi_g[gsi + g];
     }
   }

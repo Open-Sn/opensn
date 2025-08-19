@@ -21,7 +21,7 @@ struct NLKEigenAGSContext : public NonLinearSolverContext
 
   std::vector<int> groupset_ids;
 
-  explicit NLKEigenAGSContext(std::shared_ptr<LBSProblem> lbs_problem)
+  explicit NLKEigenAGSContext(const std::shared_ptr<LBSProblem>& lbs_problem)
     : lbs_problem(lbs_problem), kresid_func_context({lbs_problem->GetName(), 1.0})
   {
   }

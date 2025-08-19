@@ -19,7 +19,7 @@ struct SweepWGSContext : public WGSContext
                   SourceFlags lhs_scope,
                   SourceFlags rhs_scope,
                   bool log_info,
-                  std::shared_ptr<SweepChunk> sweep_chunk);
+                  std::shared_ptr<SweepChunk> swp_chnk);
 
   void SetPreconditioner(KSP& solver) override;
 

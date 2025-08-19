@@ -192,7 +192,7 @@ public:
 
   /// Makes a ParameterBlock and adds it to the sub-parameters list.
   template <typename T>
-  void AddParameter(const std::string& name, T value)
+  void AddParameter(const std::string& name, const T& value)
   {
     AddParameter(ParameterBlock(name, value));
   }

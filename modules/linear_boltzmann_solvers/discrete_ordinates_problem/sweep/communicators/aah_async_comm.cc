@@ -92,7 +92,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   preloc_msg_data_.resize(num_dependencies);
   preloc_msg_received_.resize(num_dependencies);
 
-  for (auto i = 0; i < num_dependencies; ++i)
+  for (size_t i = 0; i < num_dependencies; ++i)
   {
     size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
@@ -121,7 +121,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   delayed_preloc_msg_data_.resize(num_delayed_dependencies);
   delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
-  for (auto i = 0; i < num_delayed_dependencies; ++i)
+  for (size_t i = 0; i < num_delayed_dependencies; ++i)
   {
     size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
@@ -153,7 +153,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   size_t total_deploc_messages = 0;
   deploc_msg_data_.resize(num_successors);
 
-  for (auto i = 0; i < num_successors; ++i)
+  for (size_t i = 0; i < num_successors; ++i)
   {
     size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
     auto [message_count, message_size] = message_count_and_size(num_unknowns);
@@ -219,10 +219,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     }
   }
 
-  if (not all_messages_received)
-    return false;
-
-  return true;
+  return all_messages_received;
 }
 
 AngleSetStatus

@@ -31,7 +31,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolationLine() {}
+  ~FieldFunctionInterpolationLine() override = default;
 
   int& GetNumberOfPoints() { return number_of_points_; }
 
@@ -53,7 +53,7 @@ public:
 
   void SetOperationType(FieldFunctionInterpolationOperation type) { op_type_ = type; }
 
-  double GetOpValue() { return op_value_; }
+  double GetOpValue() const { return op_value_; }
 
   void ExportToCSV(std::string base_name) const override;
 

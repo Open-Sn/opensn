@@ -12,7 +12,7 @@ namespace opensn
 {
 
 PetscErrorCode
-KEigenSNESMonitor(SNES, PetscInt iter, PetscReal rnorm, void* ctx)
+KEigenSNESMonitor(SNES /*unused*/, PetscInt iter, PetscReal rnorm, void* ctx)
 {
   auto& residual_context = *(KResidualFunctionContext*)ctx;
 
