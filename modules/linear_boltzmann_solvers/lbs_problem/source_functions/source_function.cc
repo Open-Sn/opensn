@@ -93,7 +93,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
           // Apply fixed sources
           if (apply_fixed_src_)
-            rhs += this->AddSourceMoments();
+            rhs += FixedSourceMoments();
 
           // Apply scattering sources
           if (ell < S.size())
@@ -145,7 +145,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 }
 
 double
-SourceFunction::AddSourceMoments() const
+SourceFunction::FixedSourceMoments() const
 {
   return fixed_src_moments_[g_];
 }

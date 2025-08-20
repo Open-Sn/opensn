@@ -62,7 +62,7 @@ public:
                           const std::vector<double>& phi,
                           SourceFlags source_flags);
 
-  virtual double AddSourceMoments() const;
+  virtual double FixedSourceMoments() const;
 
   using PrecursorList = std::vector<MultiGroupXS::Precursor>;
   /// Adds delayed particle precursor sources.
