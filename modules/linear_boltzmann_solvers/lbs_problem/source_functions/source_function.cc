@@ -130,7 +130,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 rhs += rho * F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += this->AddDelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
+              rhs += DelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
           }
 
           // Add to destination vector
@@ -151,10 +151,10 @@ SourceFunction::FixedSourceMoments() const
 }
 
 double
-SourceFunction::AddDelayedFission(const PrecursorList& precursors,
-                                  const double& rho,
-                                  const std::vector<double>& nu_delayed_sigma_f,
-                                  const double* phi) const
+SourceFunction::DelayedFission(const PrecursorList& precursors,
+                               const double& rho,
+                               const std::vector<double>& nu_delayed_sigma_f,
+                               const double* phi) const
 {
   double value = 0.0;
   if (apply_ags_fission_src_)
