@@ -21,10 +21,9 @@ WrapFinalize(py::module& context)
   // finalize
   context.def(
     "Finalize",
-    [](void)
+    []()
     {
-      delete PyEnv::p_default_env;
-      PyEnv::p_default_env = nullptr;
+      PyEnv::p_default_env.reset();
     },
     R"(
     Finalize OpenSn context.

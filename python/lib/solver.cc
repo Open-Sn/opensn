@@ -504,7 +504,7 @@ WrapLBS(py::module& slv)
       {
         py::array_t<double> np_vector = py::array_t<double>(gr_wise_leakage.size());
         py::buffer_info buffer = np_vector.request();
-        double* np_vector_data = static_cast<double*>(buffer.ptr);
+        auto np_vector_data = static_cast<double*>(buffer.ptr);
         std::copy(gr_wise_leakage.begin(), gr_wise_leakage.end(), np_vector_data);
         result[allowed_bd_ids.at(bndry_id).data()] = np_vector;
       }
