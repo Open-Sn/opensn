@@ -746,9 +746,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
   auto acceleration = py::class_<DiscreteOrdinatesKEigenAcceleration,
                                      std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     slv,
-    "LBSAccelertion",
+    "DiscreteOrdinatesKEigenAcceleration",
     R"(
-    Base class for LBS acceleration methods.
+    Base class for discrete ordinates k-eigenvalue acceleration methods.
 
     Wrapper of :cpp:class:`opensn::DiscreteOrdinatesKEigenAcceleration`.
     )"
