@@ -67,7 +67,7 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
 }
 
 int
-PyApp::InitPETSc(int argc, char** argv)
+PyApp::InitPETSc(int argc, char** argv) const
 {
   PetscOptionsInsertString(nullptr, "-error_output_stderr");
   if (!allow_petsc_error_handler_)

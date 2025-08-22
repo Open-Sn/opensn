@@ -13,7 +13,7 @@ namespace opensn
 PyEnv::PyEnv()
 {
   // check if environment is already initialized
-  if (PyEnv::p_default_env != nullptr)
+  if (PyEnv::p_default_env)
   {
     return;
   }
@@ -52,6 +52,6 @@ PyEnv::~PyEnv()
   cali_mgr.flush();
 }
 
-PyEnv* PyEnv::p_default_env = nullptr;
+std::unique_ptr<PyEnv> PyEnv::p_default_env{};
 
 } // namespace opensn

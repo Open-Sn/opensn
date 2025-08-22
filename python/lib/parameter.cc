@@ -55,7 +55,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   if (py::isinstance<py::dict>(obj))
   {
     ParameterBlock main(key);
-    py::dict dict_obj = obj.cast<py::dict>();
+    auto dict_obj = obj.cast<py::dict>();
     for (auto [key, value] : dict_obj)
     {
       main.AddParameter(pyobj_to_param_block(key.cast<std::string>(), value.cast<py::object>()));
