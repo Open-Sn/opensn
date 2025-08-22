@@ -1,9 +1,0 @@
-﻿pyopensn.solver.SteadyStateSolver
-=================================
-
-.. currentmodule:: pyopensn.solver
-
-.. autoclass:: SteadyStateSolver
-   :special-members: __init__
-   :members:
-   :inherited-members:
