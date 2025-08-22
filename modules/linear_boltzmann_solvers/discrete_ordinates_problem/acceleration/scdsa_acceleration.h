@@ -20,10 +20,10 @@ public:
 
   explicit SCDSAAcceleration(const InputParameters& params);
 
-  void Initialize() override final;
-  void PreExecute() override final;
-  void PrePowerIteration() override final;
-  double PostPowerIteration() override final;
+  void Initialize() final;
+  void PreExecute() final;
+  void PrePowerIteration() final;
+  double PostPowerIteration() final;
 
 private:
   /// Spatial discretization method, from parameters

@@ -73,7 +73,7 @@ public:
 
 private:
   template <typename Functor>
-  static int GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor&& func);
+  static int GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor func);
 };
 
 } // namespace opensn

@@ -45,7 +45,7 @@ public:
                          Unknown unknown,
                          double field_value);
 
-  virtual ~FieldFunctionGridBased() = default;
+  ~FieldFunctionGridBased() override = default;
 
   /// Returns the spatial discretization method.
   const SpatialDiscretization& GetSpatialDiscretization() const;

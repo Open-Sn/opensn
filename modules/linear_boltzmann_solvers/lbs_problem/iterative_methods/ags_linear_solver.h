@@ -26,7 +26,7 @@ public:
   {
   }
 
-  ~AGSLinearSolver() override {}
+  ~AGSLinearSolver() override = default;
 
   void Solve() override;
 
@@ -34,16 +34,16 @@ public:
 
   void SetVerbosity(bool verbose) { verbose_ = verbose; }
 
-  double GetTolerance() { return tolerance_; }
+  double GetTolerance() const { return tolerance_; }
 
   void SetTolerance(double tolerance) { tolerance_ = tolerance; }
 
-  int GetMaxIterations() { return max_iterations_; }
+  int GetMaxIterations() const { return max_iterations_; }
 
   void SetMaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
 
 private:
-  LBSProblem& lbs_problem_;
+  LBSProblem& lbs_problem_; // NOLINT(clang-diagnostic-unused-private-field)
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
   std::vector<double> phi_old_;
   int max_iterations_;

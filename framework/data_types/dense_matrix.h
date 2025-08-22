@@ -22,7 +22,7 @@ public:
    * \param rows Number of rows
    * \param cols Number of columns
    */
-  DenseMatrix(unsigned int rows, unsigned int cols) : NDArray<TYPE, 2>({rows, cols}) {}
+  DenseMatrix(size_t rows, size_t cols) : NDArray<TYPE, 2>({rows, cols}) {}
 
   /**
    * Create a dense matrix with specified number of rows and columns and initialize the element to a
@@ -32,16 +32,16 @@ public:
    * \param cols Number of columns
    * \param intitial_value Value to initialize the matrix elements with
    */
-  DenseMatrix(unsigned int rows, unsigned int cols, TYPE intitial_value)
+  DenseMatrix(size_t rows, size_t cols, TYPE intitial_value)
     : NDArray<TYPE, 2>({rows, cols}, intitial_value)
   {
   }
 
   /// Return the number of rows
-  unsigned int Rows() const { return this->dimension()[0]; }
+  size_t Rows() const { return this->dimension()[0]; }
 
   /// Return the number of columns
-  unsigned int Columns() const { return this->dimension()[1]; }
+  size_t Columns() const { return this->dimension()[1]; }
 
   /// Set the elements of the matrix to a specified value
   void Set(TYPE val) { this->set(val); }
@@ -58,7 +58,7 @@ public:
   void SetRow(int row, const Vector<TYPE>& values)
   {
     assert(Columns() == values.Rows());
-    for (unsigned int i = 0; i < Columns(); ++i)
+    for (size_t i = 0; i < Columns(); ++i)
       (*this)(row, i) = values(i);
   }
 
@@ -330,11 +330,11 @@ SubMatrix(const DenseMatrix<TYPE>& A, const size_t r, const size_t c)
   assert((r >= 0) and (r < rows) and (c >= 0) and (c < cols));
 
   DenseMatrix<TYPE> B(rows - 1, cols - 1);
-  for (auto i = 0, ii = 0; i < rows; ++i)
+  for (size_t i = 0, ii = 0; i < rows; ++i)
   {
     if (i != r)
     {
-      for (auto j = 0, jj = 0; j < cols; ++j)
+      for (size_t j = 0, jj = 0; j < cols; ++j)
       {
         if (j != c)
         {
@@ -398,18 +398,18 @@ Determinant(const DenseMatrix<TYPE>& A)
 /// Gauss Elimination without pivoting.
 template <typename TYPE>
 void
-GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
+GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, size_t n)
 {
   // Forward elimination
   for (auto i = 0; i < n - 1; ++i)
   {
     auto bi = b(i);
     auto factor = 1.0 / A(i, i);
-    for (auto j = i + 1; j < n; ++j)
+    for (size_t j = i + 1; j < n; ++j)
     {
       auto val = A(j, i) * factor;
       b(j) -= val * bi;
-      for (auto k = i + 1; k < n; ++k)
+      for (size_t k = i + 1; k < n; ++k)
         A(j, k) -= val * A(i, k);
     }
   }
@@ -418,7 +418,7 @@ GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, unsigned int n)
   for (int i = n - 1; i >= 0; --i)
   {
     auto bi = b(i);
-    for (auto j = i + 1; j < n; ++j)
+    for (size_t j = i + 1; j < n; ++j)
       bi -= A(i, j) * b(j);
     b(i) = bi / A(i, i);
   }

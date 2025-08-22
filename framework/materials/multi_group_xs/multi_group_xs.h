@@ -36,7 +36,7 @@ public:
    * @note Scaling factors do not compound. Each time this routine is called, the cross sections
    *       are scaled by the ratio of the argument and the existing scaling factor.
    */
-  void SetScalingFactor(const double factor);
+  void SetScalingFactor(double factor);
 
   /**
    * Exports the cross-section information to OpenSn format.
@@ -46,7 +46,7 @@ public:
    *        1/k_{eff} \f$. Generally, this is done to create exactly critical cross sections for a
    *        transient initial condition.
    */
-  void ExportToOpenSnXSFile(const std::string& file_name, const double fission_scaling = 1.0) const;
+  void ExportToOpenSnXSFile(const std::string& file_name, double fission_scaling = 1.0) const;
 
   size_t GetNumGroups() const { return num_groups_; }
 

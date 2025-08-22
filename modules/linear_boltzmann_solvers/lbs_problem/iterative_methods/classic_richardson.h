@@ -26,7 +26,7 @@ public:
    */
   explicit ClassicRichardson(const std::shared_ptr<WGSContext>& gs_context_ptr, bool verbose);
 
-  ~ClassicRichardson() override;
+  ~ClassicRichardson() override = default;
 
   void Solve() override;
 

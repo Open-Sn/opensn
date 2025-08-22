@@ -154,7 +154,7 @@ WrapSysArgv(py::module& context)
           continue;
         }
         // cast argument to string
-        std::string arg = sys_argv[i_arg].cast<std::string>();
+        auto arg = sys_argv[i_arg].cast<std::string>();
         // color
         if (arg == "-c" || arg == "--suppress-color")
         {
@@ -164,14 +164,14 @@ WrapSysArgv(py::module& context)
         // verbosity
         if (arg == "-v" || arg == "--verbose")
         {
-          std::string next_arg = sys_argv[++i_arg].cast<std::string>();
+          auto next_arg = sys_argv[++i_arg].cast<std::string>();
           log.SetVerbosity(std::atoi(next_arg.c_str()));
           continue;
         }
         // caliper
         if (arg == "--caliper")
         {
-          std::string next_arg = sys_argv[++i_arg].cast<std::string>();
+          auto next_arg = sys_argv[++i_arg].cast<std::string>();
           use_caliper = true;
           cali_config = next_arg;
           cali_mgr.add(cali_config.c_str());
@@ -189,7 +189,7 @@ WrapSysArgv(py::module& context)
         // execute Python statement
         if (arg == "--py")
         {
-          std::string next_arg = sys_argv[++i_arg].cast<std::string>();
+          auto next_arg = sys_argv[++i_arg].cast<std::string>();
           try
           {
             py::exec(next_arg);

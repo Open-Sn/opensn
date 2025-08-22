@@ -84,7 +84,7 @@ struct SubSetInfo
 std::vector<SubSetInfo> MakeSubSets(size_t num_items, size_t desired_num_subsets);
 
 /// Popular and fast djb2a hashing algorithm.
-inline constexpr uint32_t
+constexpr uint32_t
 hash_djb2a(const std::string_view sv)
 {
   uint32_t hash{5381};
@@ -94,7 +94,7 @@ hash_djb2a(const std::string_view sv)
   return hash;
 }
 
-inline constexpr uint32_t
+constexpr uint32_t
 operator""_hash(const char* str, size_t len)
 {
   return hash_djb2a(std::string_view{str, len});

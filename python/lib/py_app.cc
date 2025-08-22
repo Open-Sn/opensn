@@ -30,40 +30,40 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
 
   console.BindBarrier(comm);
 
-  console.BindModule(WrapYlm);
-  console.BindModule(WrapVector3);
-  console.BindModule(WrapFunctors);
+  Console::BindModule(WrapYlm);
+  Console::BindModule(WrapVector3);
+  Console::BindModule(WrapFunctors);
 
-  console.BindModule(WrapQuadraturePointPhiTheta);
-  console.BindModule(WrapQuadrature);
-  console.BindModule(WrapProductQuadrature);
-  console.BindModule(WrapCurvilinearProductQuadrature);
-  console.BindModule(WrapSLDFESQuadrature);
+  Console::BindModule(WrapQuadraturePointPhiTheta);
+  Console::BindModule(WrapQuadrature);
+  Console::BindModule(WrapProductQuadrature);
+  Console::BindModule(WrapCurvilinearProductQuadrature);
+  Console::BindModule(WrapSLDFESQuadrature);
 
-  console.BindModule(WrapMesh);
-  console.BindModule(WrapMeshGenerator);
-  console.BindModule(WrapGraphPartitioner);
+  Console::BindModule(WrapMesh);
+  Console::BindModule(WrapMeshGenerator);
+  Console::BindModule(WrapGraphPartitioner);
 
-  console.BindModule(WrapLogicalVolume);
+  Console::BindModule(WrapLogicalVolume);
 
-  console.BindModule(WrapPointSource);
-  console.BindModule(WrapVolumetricSource);
+  Console::BindModule(WrapPointSource);
+  Console::BindModule(WrapVolumetricSource);
 
-  console.BindModule(WrapMultiGroupXS);
+  Console::BindModule(WrapMultiGroupXS);
 
-  console.BindModule(WrapFieldFunction);
-  console.BindModule(WrapFieldFunctionGridBased);
-  console.BindModule(WrapFieldFunctionInterpolation);
+  Console::BindModule(WrapFieldFunction);
+  Console::BindModule(WrapFieldFunctionGridBased);
+  Console::BindModule(WrapFieldFunctionInterpolation);
 
-  console.BindModule(WrapResEval);
+  Console::BindModule(WrapResEval);
 
-  console.BindModule(WrapProblem);
-  console.BindModule(WrapSolver);
-  console.BindModule(WrapLBS);
-  console.BindModule(WrapSteadyState);
-  console.BindModule(WrapNLKEigen);
-  console.BindModule(WrapPIteration);
-  console.BindModule(WrapDiscreteOrdinatesKEigenAcceleration);
+  Console::BindModule(WrapProblem);
+  Console::BindModule(WrapSolver);
+  Console::BindModule(WrapLBS);
+  Console::BindModule(WrapSteadyState);
+  Console::BindModule(WrapNLKEigen);
+  Console::BindModule(WrapPIteration);
+  Console::BindModule(WrapDiscreteOrdinatesKEigenAcceleration);
 }
 
 int

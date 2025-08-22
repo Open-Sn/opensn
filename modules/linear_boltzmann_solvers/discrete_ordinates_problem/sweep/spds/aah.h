@@ -19,13 +19,10 @@ public:
    * \param grid The grid on which the sweep is performed.
    * \param allow_cycles Whether cycles are allowed in the local and global swepp dependency graphs.
    */
-  AAH_SPDS(int id,
-           const Vector3& omega,
-           const std::shared_ptr<MeshContinuum> grid,
-           bool allow_cycles);
+  AAH_SPDS(int id, const Vector3& omega, std::shared_ptr<MeshContinuum> grid, bool allow_cycles);
 
   /// Returns the id of this SPDS.
-  int GetId() { return id_; }
+  int GetId() const { return id_; }
 
   /// Return the levelized global sweep TDG.
   const std::vector<STDG>& GetGlobalSweepPlanes() const { return global_sweep_planes_; }

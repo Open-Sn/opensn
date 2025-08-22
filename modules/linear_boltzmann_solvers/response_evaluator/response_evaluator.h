@@ -71,10 +71,10 @@ public:
   void SetOptions(const InputParameters& params);
 
   static InputParameters GetBufferOptionsBlock();
-  void SetBufferOptions(const InputParameters& params);
+  void SetBufferOptions(const InputParameters& input);
 
   static InputParameters GetSourceOptionsBlock();
-  void SetSourceOptions(const InputParameters& params);
+  void SetSourceOptions(const InputParameters& input);
 
   static InputParameters GetMaterialSourceOptionsBlock();
   void SetMaterialSourceOptions(const InputParameters& params);

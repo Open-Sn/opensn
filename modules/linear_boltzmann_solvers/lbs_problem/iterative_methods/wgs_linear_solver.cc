@@ -60,17 +60,17 @@ WGSLinearSolver::SetSystem()
   if (IsSystemSet())
     return;
 
-  x_ = CreateVector(static_cast<int64_t>(num_local_dofs_), static_cast<int64_t>(num_global_dofs_));
+  x_ = CreateVector(num_local_dofs_, num_global_dofs_);
 
   VecSet(x_, 0.0);
   VecDuplicate(x_, &b_);
 
   // Create the matrix-shell
   MatCreateShell(opensn::mpi_comm,
-                 static_cast<int64_t>(num_local_dofs_),
-                 static_cast<int64_t>(num_local_dofs_),
-                 static_cast<int64_t>(num_global_dofs_),
-                 static_cast<int64_t>(num_global_dofs_),
+                 num_local_dofs_,
+                 num_local_dofs_,
+                 num_global_dofs_,
+                 num_global_dofs_,
                  &(*context_ptr_),
                  &A_);
 

@@ -25,7 +25,7 @@ class CellFace;
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
+void UploadCellGeometryDiscontinuous(std::shared_ptr<MeshContinuum> grid,
                                      const Cell& cell,
                                      int64_t& node_counter,
                                      vtkNew<vtkPoints>& points,
@@ -90,7 +90,7 @@ std::vector<int> BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
  * Uploads vertices and cells to an unstructured grid. This routine also uploads cell block ids
  * (sub-domain ids) and partition ids.
  */
-vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid,
+vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(std::shared_ptr<MeshContinuum> grid,
                                                        bool discontinuous = true);
 
 /**

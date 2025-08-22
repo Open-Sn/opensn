@@ -11,16 +11,16 @@ namespace opensn
 {
 
 AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data)
-  : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
+  : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
+    common_data_(common_data),
+    delayed_local_psi_Gn_block_strideG_(common_data_.delayed_local_psi_Gn_block_stride_ *
+                                        num_groups_)
 {
   CALI_CXX_MARK_SCOPE("AAH_FLUDS::AAH_FLUDS");
 
   // Adjusting for different group aggregate
-  for (auto& val : common_data_.local_psi_n_block_stride_)
+  for (const auto& val : common_data_.local_psi_n_block_stride_)
     local_psi_Gn_block_strideG_.push_back(val * num_groups_);
-
-  delayed_local_psi_Gn_block_strideG_ =
-    common_data_.delayed_local_psi_Gn_block_stride_ * num_groups_;
 }
 
 double*
@@ -242,7 +242,7 @@ AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
   delayed_prelocI_outgoing_psi_old_.clear();
   delayed_prelocI_outgoing_psi_old_.resize(num_loc_deps);
 
-  for (int prelocI = 0; prelocI < num_loc_deps; ++prelocI)
+  for (size_t prelocI = 0; prelocI < num_loc_deps; ++prelocI)
   {
     const int num_nodes = common_data_.delayed_prelocI_face_dof_count_[prelocI];
 

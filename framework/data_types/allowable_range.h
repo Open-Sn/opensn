@@ -74,13 +74,13 @@ public:
   template <typename T>
   static std::shared_ptr<AllowableRangeList> New(const std::initializer_list<T>& raw_list)
   {
-    return std::shared_ptr<AllowableRangeList>{new AllowableRangeList(raw_list)};
+    return std::make_shared<AllowableRangeList>(raw_list);
   }
 
   template <typename T>
   static std::shared_ptr<AllowableRangeList> New(const std::vector<T>& raw_list)
   {
-    return std::shared_ptr<AllowableRangeList>{new AllowableRangeList(raw_list)};
+    return std::make_shared<AllowableRangeList>(raw_list);
   }
 
 protected:
@@ -120,8 +120,7 @@ public:
   template <typename T>
   static std::shared_ptr<AllowableRangeLowLimit> New(const T& low_value, bool low_closed = true)
   {
-    return std::shared_ptr<AllowableRangeLowLimit>{
-      new AllowableRangeLowLimit(low_value, low_closed)};
+    return std::make_shared<AllowableRangeLowLimit>(low_value, low_closed);
   }
 
 protected:
@@ -162,8 +161,7 @@ public:
   template <typename T>
   static std::shared_ptr<AllowableRangeHighLimit> New(const T& hi_value, bool hi_closed = true)
   {
-    return std::shared_ptr<AllowableRangeHighLimit>{
-      new AllowableRangeHighLimit(hi_value, hi_closed)};
+    return std::make_shared<AllowableRangeHighLimit>(hi_value, hi_closed);
   }
 
 protected:
@@ -208,8 +206,7 @@ public:
   static std::shared_ptr<AllowableRangeLowHighLimit>
   New(const T& low_value, const T& hi_value, bool low_closed = true, bool hi_closed = true)
   {
-    return std::shared_ptr<AllowableRangeLowHighLimit>{
-      new AllowableRangeLowHighLimit(low_value, hi_value, low_closed, hi_closed)};
+    return std::make_shared<AllowableRangeLowHighLimit>(low_value, hi_value, low_closed, hi_closed);
   }
 
 protected:

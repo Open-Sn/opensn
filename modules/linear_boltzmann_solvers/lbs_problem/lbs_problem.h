@@ -41,7 +41,7 @@ public:
 
   LBSProblem& operator=(const LBSProblem&) = delete;
 
-  virtual ~LBSProblem();
+  ~LBSProblem() override;
 
   /// Returns a reference to the solver options.
   LBSOptions& GetOptions();
@@ -55,7 +55,7 @@ public:
 
   static InputParameters GetXSMapEntryBlock();
 
-  void SetOptions(const InputParameters& params);
+  void SetOptions(const InputParameters& input);
 
   void SetBoundaryOptions(const InputParameters& params);
 
@@ -122,13 +122,13 @@ public:
   const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
 
   /// Obtains a reference to the grid.
-  const std::shared_ptr<MeshContinuum> GetGrid() const;
+  std::shared_ptr<MeshContinuum> GetGrid() const;
 
   /// Get pointer to carriers.
-  inline void* GetCarrier(std::uint32_t idx) { return carriers_.at(idx); }
+  void* GetCarrier(std::uint32_t idx) { return carriers_.at(idx); }
 
   /// Get pointer to pinners.
-  inline void* GetPinner(std::uint32_t idx) { return pinners_.at(idx); }
+  void* GetPinner(std::uint32_t idx) { return pinners_.at(idx); }
 
   /// Obtains a reference to the spatial discretization.
   const SpatialDiscretization& GetSpatialDiscretization() const;
@@ -221,7 +221,7 @@ public:
   /// Initializes default materials and physics materials.
   void InitializeMaterials();
 
-  bool TriggerRestartDump()
+  bool TriggerRestartDump() const
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
       return false;

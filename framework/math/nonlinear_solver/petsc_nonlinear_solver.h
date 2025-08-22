@@ -22,7 +22,7 @@ public:
     std::shared_ptr<NonLinearSolverContext> context_ptr,
     const InputParameters& params = PETScNonLinearSolverOptions::GetInputParameters());
 
-  virtual ~PETScNonLinearSolver();
+  ~PETScNonLinearSolver() override;
 
   PETScNonLinearSolverOptions& GetToleranceOptions() { return options_; }
 
@@ -32,9 +32,9 @@ public:
 
   std::string GetConvergedReasonString() const;
 
-  virtual void Setup();
+  void Setup() override;
 
-  virtual void Solve();
+  void Solve() override;
 
 protected:
   bool IsSystemSet() const { return system_set_; }

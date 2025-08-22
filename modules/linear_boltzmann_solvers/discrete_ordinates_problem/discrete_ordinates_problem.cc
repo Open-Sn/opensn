@@ -55,7 +55,7 @@ DiscreteOrdinatesProblem::GetInputParameters()
 
   params.AddOptionalParameterArray(
     "directions_sweep_order_to_print",
-    std::vector<size_t>(),
+    std::vector<int>(),
     "List of direction id's for which sweep ordering info is to be printed.");
 
   params.AddOptionalParameter(
@@ -75,7 +75,7 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
   : LBSProblem(params),
-    verbose_sweep_angles_(params.GetParamVectorValue<size_t>("directions_sweep_order_to_print")),
+    verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
   if (use_gpus_ && sweep_type_ == "CBC")
@@ -288,7 +288,7 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
         // Max level size
         const auto& spds = angleset->GetSPDS();
         const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
-        for (auto& level : levelized_spls)
+        for (const auto& level : levelized_spls)
           max_level_size_ = std::max(max_level_size_, level.size());
 
         // Max angleset size
@@ -345,14 +345,14 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
 
       // Go through angles until all are paired
       std::set<size_t> visited;
-      for (int idir = 0; idir < num_gs_angles; ++idir)
+      for (size_t idir = 0; idir < num_gs_angles; ++idir)
       {
         // Skip if already encountered
         if (visited.count(idir) > 0)
           continue;
 
         bool found = true;
-        for (int jdir = 0; jdir < num_gs_angles; ++jdir)
+        for (size_t jdir = 0; jdir < num_gs_angles; ++jdir)
         {
           // Angles are opposite if their sum is zero
           const auto sum = grid_->GetDimension() == 1
@@ -395,7 +395,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
         // of the even/odd nature of the spherical harmonics, i.e.
         // Y_{\ell,m}(-\Omega) = (-1)^\ell Y_{\ell,m}(\Omega), the flux
         // moments must be multiplied by (-1)^\ell.
-        for (int imom = 0; imom < num_moments_; ++imom)
+        for (size_t imom = 0; imom < num_moments_; ++imom)
         {
           const auto& ell = moment_map[imom].ell;
           const auto dof_map = transport_view.MapDOF(i, imom, 0);
@@ -416,7 +416,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
               std::make_pair(discretization_->MapDOFLocal(cell, i, uk_man, idir, 0),
                              discretization_->MapDOFLocal(cell, i, uk_man, jdir, 0));
 
-            for (int gsg = 0; gsg < num_gs_groups; ++gsg)
+            for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
               std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);
           }
         }
@@ -549,6 +549,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       int spds_id = global_edges_to_remove[offset++];
       int num_edges = global_edges_to_remove[offset++];
       std::vector<int> edges;
+      edges.reserve(num_edges);
       for (auto i = 0; i < num_edges; ++i)
         edges.emplace_back(global_edges_to_remove[offset++]);
 
@@ -579,7 +580,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       {
         for (const auto& spds : quadrature.second)
         {
-          for (const size_t dir_id : verbose_sweep_angles_)
+          for (const int dir_id : verbose_sweep_angles_)
           {
             auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
             if (aah_spds->GetId() == dir_id)

@@ -19,7 +19,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& function_context = *((KResidualFunctionContext*)ctx);
 
   NLKEigenAGSContext* nl_context_ptr;
-  SNESGetApplicationContext(snes, &nl_context_ptr);
+  SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
   const auto& phi_old_local = lbs_problem->GetPhiOldLocal();

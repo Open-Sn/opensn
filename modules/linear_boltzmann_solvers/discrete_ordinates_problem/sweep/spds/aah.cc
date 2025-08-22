@@ -40,8 +40,8 @@ AAH_SPDS::AAH_SPDS(int id,
   // Create local cell graph
   Graph local_cell_graph(num_loc_cells);
 
-  for (auto c = 0; c < num_loc_cells; ++c)
-    for (auto& successor : cell_successors[c])
+  for (size_t c = 0; c < num_loc_cells; ++c)
+    for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_cell_graph);
 
   // Remove cycles
@@ -54,7 +54,7 @@ AAH_SPDS::AAH_SPDS(int id,
 
   // Generate topological ordering
   spls_.clear();
-  boost::topological_sort(local_cell_graph, std::back_inserter(spls_));
+  boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
   std::reverse(spls_.begin(), spls_.end());
   if (spls_.empty())
   {
@@ -160,7 +160,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
 
   // Generate topological ordering
   std::vector<size_t> global_linear_sweep_order;
-  boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order));
+  boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
   std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
   if (global_linear_sweep_order.empty())
   {

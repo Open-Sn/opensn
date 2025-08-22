@@ -35,7 +35,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolationVolume() {}
+  ~FieldFunctionInterpolationVolume() override = default;
 
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logical_volume_; }
 
@@ -49,10 +49,7 @@ public:
 
   double GetValue() const { return op_value_; }
 
-  inline void SetOperationFunction(const ScalarMaterialFunction& function)
-  {
-    oper_function_ = function;
-  }
+  void SetOperationFunction(const ScalarMaterialFunction& function) { oper_function_ = function; }
 
   void Initialize() override;
 
