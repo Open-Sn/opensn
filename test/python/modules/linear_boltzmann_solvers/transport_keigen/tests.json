@@ -212,6 +212,19 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_2g_exo_pyramid.py",
+    "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.929337,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_2g_exo_hex.py",
     "comment": "3D_2G Infinite medium testing hex elements of EXODUSII; should agree with the wedge model",
     "num_procs": 1,
