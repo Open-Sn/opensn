@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
 
 if __name__ == "__main__":
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     )
 
     # Initialize and execute solver
-    ss_solver = SteadyStateSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
 

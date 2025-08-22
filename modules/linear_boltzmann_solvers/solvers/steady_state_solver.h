@@ -10,13 +10,13 @@ namespace opensn
 
 class LBSProblem;
 
-class SteadyStateSolver : public Solver
+class SteadyStateSourceSolver : public Solver
 {
 protected:
   std::shared_ptr<LBSProblem> lbs_problem_;
 
 public:
-  explicit SteadyStateSolver(const InputParameters& params);
+  explicit SteadyStateSourceSolver(const InputParameters& params);
 
   void Initialize() override;
 
@@ -25,7 +25,7 @@ public:
 public:
   static InputParameters GetInputParameters();
 
-  static std::shared_ptr<SteadyStateSolver> Create(const ParameterBlock& params);
+  static std::shared_ptr<SteadyStateSourceSolver> Create(const ParameterBlock& params);
 
 private:
   bool ReadRestartData();
