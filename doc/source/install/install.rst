@@ -161,8 +161,8 @@ Then, from your ``build`` directory, generate the documentation with:
 
 .. code-block:: shell
 
-   cd build
-   make doc
+   cd doc
+   make html
 
 Once the build process is complete, you can view the generated documentation by
-opening ``build/doc/html/index.html`` in your preferred web browser.
+opening ``doc/html/index.html`` in your preferred web browser.
