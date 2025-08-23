@@ -62,7 +62,7 @@ Product quadratures
    :template: noinit.rst
 
    aquad.ProductQuadrature
-   aquad.CurvilinearQuadrature
+   aquad.CurvilinearProductQuadrature
 
 .. autosummary::
    :toctree: generated

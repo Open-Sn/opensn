@@ -1,0 +1,8 @@
+﻿pyopensn.solver.DiscreteOrdinatesKEigenAcceleration
+===================================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: DiscreteOrdinatesKEigenAcceleration
+   :members:
+   :inherited-members:

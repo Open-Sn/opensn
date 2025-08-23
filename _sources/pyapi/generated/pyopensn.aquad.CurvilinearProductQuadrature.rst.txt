@@ -1,0 +1,8 @@
+﻿pyopensn.aquad.CurvilinearProductQuadrature
+===========================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: CurvilinearProductQuadrature
+   :members:
+   :inherited-members:
