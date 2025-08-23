@@ -215,7 +215,7 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
                                                    std::shared_ptr<CurvilinearProductQuadrature>,
                                                    ProductQuadrature>(
     aquad,
-    "CurvilinearPrductQuadrature",
+    "CurvilinearProductQuadrature",
     R"(
     Curvilinear product quadrature.
 
