@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a314e3bf1b467cff4ed3195442a549642:
+
+Template Function opensn::ReadBinaryValue
+=========================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ReadBinaryValue(std::ifstream&)
+   :project: opensn

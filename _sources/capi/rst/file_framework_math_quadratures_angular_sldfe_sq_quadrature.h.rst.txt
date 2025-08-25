@@ -1,0 +1,76 @@
+
+.. _file_framework_math_quadratures_angular_sldfe_sq_quadrature.h:
+
+File sldfe_sq_quadrature.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/sldfe_sq_quadrature.h``)
+-------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_sldfe_sq_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/data_types/dense_matrix.h`` (:ref:`file_framework_data_types_dense_matrix.h`)
+
+- ``framework/data_types/matrix3x3.h`` (:ref:`file_framework_data_types_matrix3x3.h`)
+
+- ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
+
+- ``framework/math/quadratures/gausslegendre_quadrature.h`` (:ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__SimplifiedLDFESQ`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_base_functor`
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_function_weight_from_rho`
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_spherical_quadrilateral`
+
+- :ref:`exhale_class_classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature`
+

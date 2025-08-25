@@ -1,0 +1,23 @@
+.. _dir_modules_diffusion:
+
+
+Directory diffusion
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules>` (``modules``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/diffusion``
+
+
+Files
+-----
+
+- :ref:`file_modules_diffusion_diffusion.h`
+- :ref:`file_modules_diffusion_diffusion_mip_solver.h`
+- :ref:`file_modules_diffusion_diffusion_pwlc_solver.h`
+
+

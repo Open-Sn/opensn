@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_angle_set_group:
+
+Class AngleSetGroup
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AngleSetGroup
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

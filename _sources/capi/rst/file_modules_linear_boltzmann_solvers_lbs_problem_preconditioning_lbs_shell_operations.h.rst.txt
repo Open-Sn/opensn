@@ -1,0 +1,58 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h:
+
+File lbs_shell_operations.h
+===========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_preconditioning>` (``modules/linear_boltzmann_solvers/lbs_problem/preconditioning``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h``)
+----------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`)
+
+- ``petscksp.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a1f82ae57c3fa533fa44a3cf862856ef1`
+
+- :ref:`exhale_function_namespaceopensn_1a496bae21bc918b6ecff05d55e85b9ce4`
+
+- :ref:`exhale_function_namespaceopensn_1a3e878b4075afbcf9ca067b992d0a59f3`
+

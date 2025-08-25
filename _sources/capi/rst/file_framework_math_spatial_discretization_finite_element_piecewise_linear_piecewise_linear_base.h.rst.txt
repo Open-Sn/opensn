@@ -1,0 +1,66 @@
+
+.. _file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h:
+
+File piecewise_linear_base.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_spatial_discretization_finite_element_piecewise_linear>` (``framework/math/spatial_discretization/finite_element/piecewise_linear``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_base.h``)
+--------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/spatial/line_quadrature.h`` (:ref:`file_framework_math_quadratures_spatial_line_quadrature.h`)
+
+- ``framework/math/quadratures/spatial/tetrahedra_quadrature.h`` (:ref:`file_framework_math_quadratures_spatial_tetrahedra_quadrature.h`)
+
+- ``framework/math/quadratures/spatial/triangle_quadrature.h`` (:ref:`file_framework_math_quadratures_spatial_triangle_quadrature.h`)
+
+- ``framework/math/spatial_discretization/finite_element/finite_element_base.h`` (:ref:`file_framework_math_spatial_discretization_finite_element_finite_element_base.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_continuous.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_discontinuous.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_piece_wise_linear_base`
+

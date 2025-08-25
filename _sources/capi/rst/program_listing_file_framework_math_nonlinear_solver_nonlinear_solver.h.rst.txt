@@ -1,0 +1,48 @@
+
+.. _program_listing_file_framework_math_nonlinear_solver_nonlinear_solver.h:
+
+Program Listing for File nonlinear_solver.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_nonlinear_solver_nonlinear_solver.h>` (``framework/math/nonlinear_solver/nonlinear_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
+   #include <string>
+   #include <memory>
+   
+   namespace opensn
+   {
+   
+   /// Implementation of a general non-linear solver.
+   class NonLinearSolver
+   {
+   public:
+     explicit NonLinearSolver(std::string solver_name,
+                              std::shared_ptr<NonLinearSolverContext> context_ptr)
+       : solver_name_(std::move(solver_name)), context_ptr_(context_ptr)
+     {
+     }
+   
+     virtual ~NonLinearSolver() = default;
+   
+     std::shared_ptr<NonLinearSolverContext> GetContext() { return context_ptr_; }
+   
+     virtual void Setup() {}
+   
+     virtual void Solve() = 0;
+   
+   protected:
+     const std::string solver_name_;
+     std::shared_ptr<NonLinearSolverContext> context_ptr_;
+   };
+   
+   } // namespace opensn

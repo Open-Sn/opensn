@@ -1,0 +1,76 @@
+
+.. _file_framework_data_types_allowable_range.h:
+
+File allowable_range.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/allowable_range.h``)
+-------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_allowable_range.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``framework/data_types/varying.h`` (:ref:`file_framework_data_types_varying.h`)
+
+- ``sstream``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_parameters_input_parameters.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_allowable_range`
+
+- :ref:`exhale_class_classopensn_1_1_allowable_range_high_limit`
+
+- :ref:`exhale_class_classopensn_1_1_allowable_range_list`
+
+- :ref:`exhale_class_classopensn_1_1_allowable_range_low_high_limit`
+
+- :ref:`exhale_class_classopensn_1_1_allowable_range_low_limit`
+

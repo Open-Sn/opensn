@@ -1,0 +1,46 @@
+
+.. _program_listing_file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h:
+
+Program Listing for File piecewise_linear_base.h
+================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h>` (``framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_base.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/spatial_discretization/finite_element/finite_element_base.h"
+   #include "framework/math/quadratures/spatial/line_quadrature.h"
+   #include "framework/math/quadratures/spatial/triangle_quadrature.h"
+   #include "framework/math/quadratures/spatial/tetrahedra_quadrature.h"
+   
+   namespace opensn
+   {
+   
+   /**
+    * Base class for PieceWiseLinear based discretization.
+    *
+    * \ingroup doc_SpatialDiscretization
+    */
+   class PieceWiseLinearBase : public FiniteElementBase
+   {
+   protected:
+     /// Constructor
+     explicit PieceWiseLinearBase(const std::shared_ptr<MeshContinuum>& grid,
+                                  QuadratureOrder q_order,
+                                  SpatialDiscretizationType sdm_type);
+   
+     LineQuadrature line_quad_order_arbitrary_;
+     TriangleQuadrature tri_quad_order_arbitrary_;
+     TetrahedraQuadrature tet_quad_order_arbitrary_;
+   
+     void CreateCellMappings();
+   };
+   
+   } // namespace opensn

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a4370cfd213e9e69d9d8f10c5c6c7aec9:
+
+Function opensn::CheckPlaneLineIntersect
+========================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckPlaneLineIntersect(const Vector3&, const Vector3&, const Vector3&, const Vector3&, Vector3&, std::pair<double, double> *)
+   :project: opensn

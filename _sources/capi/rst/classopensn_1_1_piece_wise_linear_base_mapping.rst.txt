@@ -1,0 +1,34 @@
+.. _exhale_class_classopensn_1_1_piece_wise_linear_base_mapping:
+
+Class PieceWiseLinearBaseMapping
+================================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::CellMapping`` (:ref:`exhale_class_classopensn_1_1_cell_mapping`)
+
+
+Derived Types
+*************
+
+- ``public opensn::PieceWiseLinearPolygonMapping`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_polygon_mapping`)
+- ``public opensn::PieceWiseLinearPolyhedronMapping`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_polyhedron_mapping`)
+- ``public opensn::PieceWiseLinearSlabMapping`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_slab_mapping`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PieceWiseLinearBaseMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,58 @@
+
+.. _file_framework_materials_multi_group_xs_xsfile.h:
+
+File xsfile.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_materials_multi_group_xs>` (``framework/materials/multi_group_xs``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/materials/multi_group_xs/xsfile.h``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_materials_multi_group_xs_xsfile.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
+
+- ``fstream``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_x_s_file`
+

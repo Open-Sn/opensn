@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_multigroup___d__and__sig_r:
+
+Struct Multigroup_D_and_sigR
+============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Multigroup_D_and_sigR
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

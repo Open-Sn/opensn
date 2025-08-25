@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad0c00d88888a00738dc5fa25ba3e15b1:
+
+Template Function opensn::Subtract(const Vector<TYPE>&, const Vector<TYPE>&)
+============================================================================
+
+- Defined in :ref:`file_framework_data_types_vector.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Subtract(const Vector<TYPE>&, const Vector<TYPE>&)
+   :project: opensn

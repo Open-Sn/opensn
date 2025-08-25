@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_r_c_c_logical_volume:
+
+Class RCCLogicalVolume
+======================
+
+- Defined in :ref:`file_framework_mesh_logical_volume_rcc_logical_volume.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LogicalVolume`` (:ref:`exhale_class_classopensn_1_1_logical_volume`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::RCCLogicalVolume
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

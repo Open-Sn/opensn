@@ -1,0 +1,64 @@
+
+.. _file_framework_graphs_graph_partitioner.h:
+
+File graph_partitioner.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_graphs>` (``framework/graphs``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/graphs/graph_partitioner.h``)
+-----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_graphs_graph_partitioner.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_graphs_kba_graph_partitioner.h`
+
+- :ref:`file_framework_graphs_linear_graph_partitioner.h`
+
+- :ref:`file_framework_graphs_petsc_graph_partitioner.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_graph_partitioner`
+

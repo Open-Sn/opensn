@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_split_file_mesh_generator_1_1_split_mesh_info:
+
+Struct SplitFileMeshGenerator::SplitMeshInfo
+============================================
+
+- Defined in :ref:`file_framework_mesh_mesh_generator_split_file_mesh_generator.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_split_file_mesh_generator`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SplitFileMeshGenerator::SplitMeshInfo
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

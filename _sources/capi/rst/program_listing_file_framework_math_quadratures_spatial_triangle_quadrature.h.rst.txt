@@ -1,0 +1,30 @@
+
+.. _program_listing_file_framework_math_quadratures_spatial_triangle_quadrature.h:
+
+Program Listing for File triangle_quadrature.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_quadratures_spatial_triangle_quadrature.h>` (``framework/math/quadratures/spatial/triangle_quadrature.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/quadratures/spatial/spatial_quadrature.h"
+   
+   namespace opensn
+   {
+   
+   /// Initializes quadratures for use on triangles.
+   class TriangleQuadrature : public SpatialQuadrature
+   {
+   public:
+     explicit TriangleQuadrature(QuadratureOrder order);
+   };
+   
+   } // namespace opensn

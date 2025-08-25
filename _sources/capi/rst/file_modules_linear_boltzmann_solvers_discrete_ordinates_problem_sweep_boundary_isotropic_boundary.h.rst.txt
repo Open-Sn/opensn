@@ -1,0 +1,60 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_isotropic_boundary.h:
+
+File isotropic_boundary.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h``)
+----------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_isotropic_boundary.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``limits``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_isotropic_boundary`
+

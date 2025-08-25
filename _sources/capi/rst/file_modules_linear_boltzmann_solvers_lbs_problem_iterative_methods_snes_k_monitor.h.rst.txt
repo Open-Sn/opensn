@@ -1,0 +1,54 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h:
+
+File snes_k_monitor.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h``)
+------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``petscsnes.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9e6155be12fe5f986b713995396f9ce9`
+
+- :ref:`exhale_function_namespaceopensn_1a448dab141b0b0db91c6c927f20286041`
+

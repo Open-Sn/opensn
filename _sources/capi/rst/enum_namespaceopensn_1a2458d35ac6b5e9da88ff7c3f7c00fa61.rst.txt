@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a2458d35ac6b5e9da88ff7c3f7c00fa61:
+
+Enum BoundaryID
+===============
+
+- Defined in :ref:`file_framework_mesh_mesh.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::BoundaryID
+   :project: opensn

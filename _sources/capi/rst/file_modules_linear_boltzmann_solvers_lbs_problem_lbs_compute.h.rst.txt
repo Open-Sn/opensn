@@ -1,0 +1,66 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h:
+
+File lbs_compute.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9acf489324751a3f667a593d348fe4e5`
+
+- :ref:`exhale_function_namespaceopensn_1a21e5d619af536033b843a74678414013`
+
+- :ref:`exhale_function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd`
+
+- :ref:`exhale_function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73`
+
+- :ref:`exhale_function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02`
+
+- :ref:`exhale_function_namespaceopensn_1af6184d19080033614eaed52625ebfdac`
+

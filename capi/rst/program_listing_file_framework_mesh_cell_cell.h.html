@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File cell.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File cell.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-cell-h">
+<span id="program-listing-file-framework-mesh-cell-cell-h"></span><h1>Program Listing for File cell.h<a class="headerlink" href="#program-listing-for-file-cell-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_mesh_cell_cell.h.html#file-framework-mesh-cell-cell-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/mesh/cell/cell.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/byte_array.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+
+<span class="c1">// Appending cell types to namespace</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">CellType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">GHOST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">SLAB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+
+<span class="w">  </span><span class="n">TRIANGLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">QUADRILATERAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">POLYGON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+
+<span class="w">  </span><span class="n">TETRAHEDRON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
+<span class="w">  </span><span class="n">HEXAHEDRON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">  </span><span class="n">WEDGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span>
+<span class="w">  </span><span class="n">PYRAMID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">  </span><span class="n">POLYHEDRON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+
+<span class="w">  </span><span class="n">POINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span>
+<span class="p">};</span>
+
+<span class="c1">/// Provides the text name associated with a cell type.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">CellTypeName</span><span class="p">(</span><span class="n">CellType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * In this paradigm a face is an object which largely is considered to be planar (meaning all the</span>
+<span class="cm"> * vertices lay in the same plane).</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CellFace</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Determines the neighbor&#39;s partition and whether it&#39;s local or not.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsNeighborLocal</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Determines the neighbor&#39;s partition.</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNeighborPartitionID</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Determines the neighbor&#39;s local id.</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetNeighborLocalID</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Determines the neighbor&#39;s associated face.</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNeighborAdjacentFaceIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Computes the geometric info on the face.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeGeometricInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Serializes a face into a vector of bytes.</span>
+<span class="w">  </span><span class="n">ByteArray</span><span class="w"> </span><span class="nf">Serialize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Deserializes a face from a set of raw data</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CellFace</span><span class="w"> </span><span class="nf">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Provides string information of the face.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ToString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Flag indicating whether face has a neighbor</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// If face has neighbor, contains the global_id, otherwise, contains boundary_id.</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">neighbor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// The average/geometric normal</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The face centroid</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">centroid</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The area of the face</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// A list of the vertices</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_ids</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeGeometricInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">/// Generic mesh cell object</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cell</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">Cell</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Cell</span><span class="p">(</span><span class="n">Cell</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">Cell</span><span class="p">(</span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_type</span><span class="p">,</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_sub_type</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">Cell</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">CellType</span><span class="w"> </span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">cell_type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">CellType</span><span class="w"> </span><span class="nf">GetSubType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">cell_sub_type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Computes the geometric info on the cell.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeGeometricInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Serializes a cell into a vector of bytes.</span>
+<span class="w">  </span><span class="n">ByteArray</span><span class="w"> </span><span class="nf">Serialize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Deserializes a cell from a vector of bytes.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Cell</span><span class="w"> </span><span class="nf">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Provides string information of the cell.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ToString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">partition_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">block_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">centroid</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_ids</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFace</span><span class="o">&gt;</span><span class="w"> </span><span class="n">faces</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Primary type, i.e. SLAB, POLYGON, POLYHEDRON</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_type_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Subtype i.e. SLAB, QUADRILATERAL, HEXAHEDRON</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_sub_type_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry:
+
+Struct ObjectFactory::ObjectRegistryEntry
+=========================================
+
+- Defined in :ref:`file_framework_object_factory.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_object_factory`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::ObjectFactory::ObjectRegistryEntry
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

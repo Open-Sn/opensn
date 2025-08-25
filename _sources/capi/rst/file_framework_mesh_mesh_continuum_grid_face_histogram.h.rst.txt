@@ -1,0 +1,54 @@
+
+.. _file_framework_mesh_mesh_continuum_grid_face_histogram.h:
+
+File grid_face_histogram.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_mesh_continuum>` (``framework/mesh/mesh_continuum``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_continuum/grid_face_histogram.h``)
+--------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_continuum_grid_face_histogram.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_grid_face_histogram`
+

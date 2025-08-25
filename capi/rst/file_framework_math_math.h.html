@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File math.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File math.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-math-h">
+<span id="file-framework-math-math-h"></span><h1>File math.h<a class="headerlink" href="#file-math-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_framework_math.html#dir-framework-math"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/math</span></code>)</p>
+<nav class="contents local" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-framework-math-math-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">framework/math/math.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id5">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id6">Functions</a></p></li>
+<li><p><a class="reference internal" href="#typedefs" id="id7">Typedefs</a></p></li>
+</ul>
+</nav>
+<section id="definition-framework-math-math-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">framework/math/math.h</span></code>)<a class="headerlink" href="#definition-framework-math-math-h" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_framework_math_math.h.html">Program Listing for File math.h</a></li>
+</ul>
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cstdio</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cstring</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/data_types/dense_matrix.h</span></code> (<a class="reference internal" href="file_framework_data_types_dense_matrix.h.html#file-framework-data-types-dense-matrix-h"><span class="std std-ref">File dense_matrix.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/data_types/vector.h</span></code> (<a class="reference internal" href="file_framework_data_types_vector.h.html#file-framework-data-types-vector-h"><span class="std std-ref">File vector.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/math/quadratures/angular/angular_quadrature.h</span></code> (<a class="reference internal" href="file_framework_math_quadratures_angular_angular_quadrature.h.html#file-framework-math-quadratures-angular-angular-quadrature-h"><span class="std std-ref">File angular_quadrature.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/math/quadratures/spatial/spatial_quadrature.h</span></code> (<a class="reference internal" href="file_framework_math_quadratures_spatial_spatial_quadrature.h.html#file-framework-math-quadratures-spatial-spatial-quadrature-h"><span class="std std-ref">File spatial_quadrature.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/math/unknown_manager/unknown_manager.h</span></code> (<a class="reference internal" href="file_framework_math_unknown_manager_unknown_manager.h.html#file-framework-math-unknown-manager-unknown-manager-h"><span class="std std-ref">File unknown_manager.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fstream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">iostream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">memory</span></code> (<a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-memory-pinner-h"><span class="std std-ref">File memory_pinner.h</span></a>)</p></li>
+</ul>
+</section>
+<section id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_framework_data_types_parallel_vector_parallel_stl_vector.h.html#file-framework-data-types-parallel-vector-parallel-stl-vector-h"><span class="std std-ref">File parallel_stl_vector.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_data_types_parallel_vector_parallel_vector.h.html#file-framework-data-types-parallel-vector-parallel-vector-h"><span class="std std-ref">File parallel_vector.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_data_types_sparse_matrix_sparse_matrix.h.html#file-framework-data-types-sparse-matrix-sparse-matrix-h"><span class="std std-ref">File sparse_matrix.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_math_quadratures_angular_sldfe_sq_quadrature.h.html#file-framework-math-quadratures-angular-sldfe-sq-quadrature-h"><span class="std std-ref">File sldfe_sq_quadrature.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_math_spatial_discretization_finite_element_finite_element_data.h.html#file-framework-math-spatial-discretization-finite-element-finite-element-data-h"><span class="std std-ref">File finite_element_data.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_math_spatial_discretization_spatial_discretization.h.html#file-framework-math-spatial-discretization-spatial-discretization-h"><span class="std std-ref">File spatial_discretization.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_isotropic_boundary.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-boundary-isotropic-boundary-h"><span class="std std-ref">File isotropic_boundary.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_vacuum_boundary.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-boundary-vacuum-boundary-h"><span class="std std-ref">File vacuum_boundary.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-structs-h"><span class="std std-ref">File lbs_structs.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-point-source-point-source-h"><span class="std std-ref">File point_source.h</span></a></p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_opensn.html#namespace-opensn"><span class="std std-ref">Namespace opensn</span></a></p></li>
+</ul>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_namespaceopensn_1a2bc625d5a3bcad808cdb614d13f73457.html#exhale-enum-namespaceopensn-1a2bc625d5a3bcad808cdb614d13f73457"><span class="std std-ref">Enum NormType</span></a></p></li>
+<li><p><a class="reference internal" href="enum_namespaceopensn_1a356b9456219fe48b0b5b49b7cbe37ef3.html#exhale-enum-namespaceopensn-1a356b9456219fe48b0b5b49b7cbe37ef3"><span class="std std-ref">Enum SpatialDiscretizationType</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_namespaceopensn_1aa83a904d5c173c8c54fb7c3128cd91d3.html#exhale-function-namespaceopensn-1aa83a904d5c173c8c54fb7c3128cd91d3"><span class="std std-ref">Function opensn::ComputeL2Change</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1ebff20284e4a2c5ec6d247084c1c10c.html#exhale-function-namespaceopensn-1a1ebff20284e4a2c5ec6d247084c1c10c"><span class="std std-ref">Function opensn::ComputePointwiseChange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221.html#exhale-function-namespaceopensn-1a7ceed89aee4a14a696ee2ffe7a165221"><span class="std std-ref">Function opensn::Dot(const std::vector&lt;double&gt;&amp;, const std::vector&lt;double&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3.html#exhale-function-namespaceopensn-1af44db9c1ce3bab159ed7d936f147e4f3"><span class="std std-ref">Function opensn::Factorial</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a8eb2c0e27bee677a06aeb140fc102158.html#exhale-function-namespaceopensn-1a8eb2c0e27bee677a06aeb140fc102158"><span class="std std-ref">Function opensn::L1Norm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ab32620964e0bc997f9352c15a1eb1d11.html#exhale-function-namespaceopensn-1ab32620964e0bc997f9352c15a1eb1d11"><span class="std std-ref">Function opensn::L2Norm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a98e45257ee2b7f693350fc34c1012398.html#exhale-function-namespaceopensn-1a98e45257ee2b7f693350fc34c1012398"><span class="std std-ref">Function opensn::LInfNorm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3880dc1e4b645868a2463712ac49a973.html#exhale-function-namespaceopensn-1a3880dc1e4b645868a2463712ac49a973"><span class="std std-ref">Function opensn::LpNorm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a6f9e8940eed9b16b67d28537ab0a97da.html#exhale-function-namespaceopensn-1a6f9e8940eed9b16b67d28537ab0a97da"><span class="std std-ref">Function opensn::Mult(const std::vector&lt;double&gt;&amp;, const double&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a07aba420cd3748e54b438bbd25d762f9.html#exhale-function-namespaceopensn-1a07aba420cd3748e54b438bbd25d762f9"><span class="std std-ref">Function opensn::OmegaToPhiThetaSafe</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a6bd2666bac9065dd9be419de32751538.html#exhale-function-namespaceopensn-1a6bd2666bac9065dd9be419de32751538"><span class="std std-ref">Function opensn::operator+</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0.html#exhale-function-namespaceopensn-1a82d9ea81b6e836be4901504d07e88ee0"><span class="std std-ref">Function opensn::operator-</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594.html#exhale-function-namespaceopensn-1a1c36c8d4ab7c73dd14d760aa62e10594"><span class="std std-ref">Function opensn::PrintVector</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817.html#exhale-function-namespaceopensn-1a66d063a5930d52b5e36dfb7571799817"><span class="std std-ref">Function opensn::SampleCDF</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676.html#exhale-function-namespaceopensn-1a1bea552a3cd9dec00e2872622a33d676"><span class="std std-ref">Function opensn::Scale(std::vector&lt;double&gt;&amp;, const double&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61.html#exhale-function-namespaceopensn-1a29b56d0fb78a6d7899dfcc7f7209bb61"><span class="std std-ref">Function opensn::Set</span></a></p></li>
+</ul>
+</section>
+<section id="typedefs">
+<h2>Typedefs<a class="headerlink" href="#typedefs" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="typedef_namespaceopensn_1aeb154be38822e4985fc82f625f079c27.html#exhale-typedef-namespaceopensn-1aeb154be38822e4985fc82f625f079c27"><span class="std std-ref">Typedef opensn::MatVec3</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

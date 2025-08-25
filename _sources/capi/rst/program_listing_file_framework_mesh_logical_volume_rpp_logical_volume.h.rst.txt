@@ -1,0 +1,52 @@
+
+.. _program_listing_file_framework_mesh_logical_volume_rpp_logical_volume.h:
+
+Program Listing for File rpp_logical_volume.h
+=============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_logical_volume_rpp_logical_volume.h>` (``framework/mesh/logical_volume/rpp_logical_volume.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/logical_volume/logical_volume.h"
+   
+   namespace opensn
+   {
+   
+   /// Rectangular Parallel Piped (RPP) logical volume
+   class RPPLogicalVolume : public LogicalVolume
+   {
+     enum CornerName
+     {
+       XMIN = 0,
+       XMAX = 1,
+       YMIN = 2,
+       YMAX = 3,
+       ZMIN = 4,
+       ZMAX = 5
+     };
+   
+   public:
+     explicit RPPLogicalVolume(const InputParameters& params);
+   
+     bool Inside(const Vector3& point) const override;
+   
+   protected:
+     double xmin_, xmax_;
+     double ymin_, ymax_;
+     double zmin_, zmax_;
+     bool infx_, infy_, infz_;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<RPPLogicalVolume> Create(const ParameterBlock& params);
+   };
+   
+   } // namespace opensn

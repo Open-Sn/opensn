@@ -1,0 +1,33 @@
+.. _exhale_class_classopensn_1_1_piece_wise_linear_base:
+
+Class PieceWiseLinearBase
+=========================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::FiniteElementBase`` (:ref:`exhale_class_classopensn_1_1_finite_element_base`)
+
+
+Derived Types
+*************
+
+- ``public opensn::PieceWiseLinearContinuous`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_continuous`)
+- ``public opensn::PieceWiseLinearDiscontinuous`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_discontinuous`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PieceWiseLinearBase
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

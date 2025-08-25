@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File matrix3x3.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File matrix3x3.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-matrix3x3-h">
+<span id="program-listing-file-framework-data-types-matrix3x3-h"></span><h1>Program Listing for File matrix3x3.h<a class="headerlink" href="#program-listing-for-file-matrix3x3-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_data_types_matrix3x3.h.html#file-framework-data-types-matrix3x3-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/data_types/matrix3x3.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cmath&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sstream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Matrix3x3</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// Storage for matrix elements</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vals</span><span class="p">{</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Produces a rotation matrix with a reference vector rotated from the</span>
+<span class="cm">   * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.</span>
+<span class="cm">   *</span>
+<span class="cm">   * By default a rotation matrix that creates no rotation is</span>
+<span class="cm">   * the identity matrix. Such a matrix can be defined from basis vectors</span>
+<span class="cm">   * following the notion that the &quot;up-vector&quot; is \f$\hat{k}\f$,</span>
+<span class="cm">   * this is also called the normal vector \f$\hat{n}\f$.</span>
+<span class="cm">   * The tangent vector is \f$\hat{i}\f$, denoted with \f$\hat{t}\f$.</span>
+<span class="cm">   * And the bi-norm vector is \f$\hat{j}\f$, denoted with \f$\hat{b}\f$.</span>
+<span class="cm">   *</span>
+<span class="cm">   * By specifying only the normal vector we can compute a simple pitch based</span>
+<span class="cm">   * rotation matrix. The supplied vector is therefore the new normal-vector,</span>
+<span class="cm">   * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,</span>
+<span class="cm">   * and the bi-norm vector is computed as</span>
+<span class="cm">   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="nf">MakeRotationMatrixFromVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">khat</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9999999</span><span class="p">)</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">-0.9999999</span><span class="p">)</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">tangent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">khat</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">binorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">tangent</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
+
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">);</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binorm</span><span class="p">);</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Matrix addition operator</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span>
+<span class="w">      </span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">vals</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">plus</span><span class="o">&lt;&gt;</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Matrix subtraction operator</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="k">operator</span><span class="o">-</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span>
+<span class="w">      </span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">vals</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">minus</span><span class="o">&lt;&gt;</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Matrix scalar multiplication operator</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span>
+<span class="w">      </span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">vals</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">vals</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="p">[</span><span class="n">scalar</span><span class="p">](</span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">scalar</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// In-place scalar multiplication operator</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">*=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scalar</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">vals</span><span class="p">)</span>
+<span class="w">      </span><span class="n">val</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">scalar</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Matrix multiply with vector.</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">i_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">vec</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">z</span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">o_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">        </span><span class="n">o_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">GetIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i_vec</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Vector3</span><span class="p">(</span><span class="n">o_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">o_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">o_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Set value at row i and column j.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetIJ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Add value to value at row i and column j.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddIJ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Obtain a copy of the value at row i and column j.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetIJ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Set row i using a vector.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetRowIVec</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Set column j using a vector.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetColJVec</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Sets the diagonal of the matrix.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">a00</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a11</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a22</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a00</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a11</span><span class="p">;</span>
+<span class="w">    </span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a22</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get the determinant using specified row [default:0].</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">Det</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">det</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">sign</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">      </span><span class="n">det</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">sign</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">GetIJ</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">MinorIJ</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">det</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get the minor value associated with row ir and column jr.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">MinorIJ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">ir</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">jr</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">{};</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ir</span><span class="p">)</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">jr</span><span class="p">)</span>
+<span class="w">          </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">];</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Compute the matrix transpose.</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">Transpose</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="n">vals</span><span class="p">[</span><span class="n">j</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">];</span><span class="w"> </span><span class="c1">// Swap row and column</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Compute the matrix inverse.</span>
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">Inverse</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">oM</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">oMT</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Compute matrix of minors</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">        </span><span class="n">oM</span><span class="p">.</span><span class="n">SetIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">MinorIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// Compute matrix of cofactors</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sign</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">oM</span><span class="p">.</span><span class="n">SetIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">oM</span><span class="p">.</span><span class="n">GetIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">sign</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Compute the transpose</span>
+<span class="w">    </span><span class="n">oMT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oM</span><span class="p">.</span><span class="n">Transpose</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Get determinant</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">det</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Det</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">det</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Matrix is singular and cannot be inverted.&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">oMT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">det</span><span class="p">);</span><span class="w"> </span><span class="c1">// Multiply by reciprocal of determinant</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Print the matrix as a string.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">PrintStr</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;[&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">GetIJ</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">        </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s"> &quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">else</span>
+<span class="w">        </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

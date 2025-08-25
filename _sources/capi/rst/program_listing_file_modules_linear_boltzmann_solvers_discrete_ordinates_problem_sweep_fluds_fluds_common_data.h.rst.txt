@@ -1,0 +1,62 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h:
+
+Program Listing for File fluds_common_data.h
+============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <vector>
+   #include <cstdint>
+   
+   namespace opensn
+   {
+   
+   class SPDS;
+   
+   struct FaceNodalMapping
+   {
+     /// Face index on the neighbor cell.
+     const int associated_face_;
+     /// Face-node index on the neighbor face.
+     const std::vector<short> face_node_mapping_;
+     /// Cell-node index on the neighbor cell.
+     const std::vector<short> cell_node_mapping_;
+   
+     FaceNodalMapping(int adj_face_idx,
+                      const std::vector<short>& node_mapping,
+                      const std::vector<short>& cell_node_mapping)
+       : associated_face_(adj_face_idx),
+         face_node_mapping_(node_mapping),
+         cell_node_mapping_(cell_node_mapping)
+     {
+     }
+   };
+   using CellFaceNodalMapping = std::vector<FaceNodalMapping>;
+   
+   class FLUDSCommonData
+   {
+   public:
+     explicit FLUDSCommonData(const SPDS& spds,
+                              const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
+   
+     virtual ~FLUDSCommonData() = default;
+   
+     const SPDS& GetSPDS() const;
+     const FaceNodalMapping& GetFaceNodalMapping(uint64_t cell_local_id, unsigned int face_id) const;
+   
+   protected:
+     const SPDS& spds_;
+     const std::vector<CellFaceNodalMapping>& grid_nodal_mappings_;
+   };
+   
+   } // namespace opensn

@@ -1,0 +1,41 @@
+
+.. _program_listing_file_framework_graphs_graph_partitioner.h:
+
+Program Listing for File graph_partitioner.h
+============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_graphs_graph_partitioner.h>` (``framework/graphs/graph_partitioner.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/parameters/input_parameters.h"
+   #include <vector>
+   
+   namespace opensn
+   {
+   struct Vector3;
+   
+   /// Abstract base class for all partitioners
+   class GraphPartitioner
+   {
+   public:
+     virtual ~GraphPartitioner() = default;
+   
+     /// Given a graph. Returns the partition ids of each row in the graph.
+     virtual std::vector<int64_t> Partition(const std::vector<std::vector<uint64_t>>& graph,
+                                            const std::vector<Vector3>& centroids,
+                                            int number_of_parts) = 0;
+   
+   protected:
+     static InputParameters GetInputParameters();
+     explicit GraphPartitioner(const InputParameters& params);
+   };
+   
+   } // namespace opensn

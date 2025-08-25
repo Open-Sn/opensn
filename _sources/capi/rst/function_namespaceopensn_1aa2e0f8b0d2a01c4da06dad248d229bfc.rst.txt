@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aa2e0f8b0d2a01c4da06dad248d229bfc:
+
+Function opensn::CheckPlaneTetIntersect
+=======================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckPlaneTetIntersect(const Vector3&, const Vector3&, const std::vector<Vector3>&)
+   :project: opensn

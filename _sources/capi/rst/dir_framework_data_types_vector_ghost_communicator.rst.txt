@@ -1,0 +1,21 @@
+.. _dir_framework_data_types_vector_ghost_communicator:
+
+
+Directory vector_ghost_communicator
+===================================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/data_types/vector_ghost_communicator``
+
+
+Files
+-----
+
+- :ref:`file_framework_data_types_vector_ghost_communicator_vector_ghost_communicator.h`
+
+

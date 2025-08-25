@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1ac6fbe4eb58362a1ed9253c55863b9b84:
+
+Variable opensn::program_timer
+==============================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::program_timer
+   :project: opensn

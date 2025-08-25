@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad602f7fa66a81755aa650856acefe62d:
+
+Function opensn::GetVersionStr
+==============================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetVersionStr()
+   :project: opensn

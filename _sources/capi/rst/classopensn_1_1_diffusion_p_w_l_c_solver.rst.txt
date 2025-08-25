@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_diffusion_p_w_l_c_solver:
+
+Class DiffusionPWLCSolver
+=========================
+
+- Defined in :ref:`file_modules_diffusion_diffusion_pwlc_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::DiffusionSolver`` (:ref:`exhale_class_classopensn_1_1_diffusion_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DiffusionPWLCSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,21 @@
+.. _dir_modules_linear_boltzmann_solvers_response_evaluator:
+
+
+Directory response_evaluator
+============================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers>` (``modules/linear_boltzmann_solvers``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/response_evaluator``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+
+

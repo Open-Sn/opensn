@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_piece_wise_linear_discontinuous:
+
+Class PieceWiseLinearDiscontinuous
+==================================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_discontinuous.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::PieceWiseLinearBase`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_base`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PieceWiseLinearDiscontinuous
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

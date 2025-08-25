@@ -1,0 +1,60 @@
+
+.. _file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h:
+
+File legendrepoly.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular_legendre_poly>` (``framework/math/quadratures/angular/legendre_poly``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/legendre_poly/legendrepoly.h``)
+--------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h.rst
+
+
+
+
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206`
+
+- :ref:`exhale_function_namespaceopensn_1a62afe87b20f8ccbee179c2308bb71865`
+
+- :ref:`exhale_function_namespaceopensn_1a0ee4f0c9b61cbf92dc64bdd5e614ff44`
+
+- :ref:`exhale_function_namespaceopensn_1a8e566822007fc6871847100faeeb69df`
+
+- :ref:`exhale_function_namespaceopensn_1aee53a203d4364157c1ebe6d3bac18e3f`
+

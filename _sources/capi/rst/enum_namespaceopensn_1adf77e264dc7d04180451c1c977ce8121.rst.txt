@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121:
+
+Enum GeometryType
+=================
+
+- Defined in :ref:`file_framework_math_geometry.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::GeometryType
+   :project: opensn

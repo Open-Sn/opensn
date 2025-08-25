@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_sparse_matrix_1_1_const_entry_reference:
+
+Struct SparseMatrix::ConstEntryReference
+========================================
+
+- Defined in :ref:`file_framework_data_types_sparse_matrix_sparse_matrix.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_sparse_matrix`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SparseMatrix::ConstEntryReference
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

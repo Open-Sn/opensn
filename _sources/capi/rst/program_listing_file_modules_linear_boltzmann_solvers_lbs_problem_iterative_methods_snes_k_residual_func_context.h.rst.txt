@@ -1,0 +1,29 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h:
+
+Program Listing for File snes_k_residual_func_context.h
+=======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <string>
+   
+   namespace opensn
+   {
+   
+   struct KResidualFunctionContext
+   {
+     std::string solver_name;
+     double k_eff = 1.0;
+   };
+   
+   } // namespace opensn

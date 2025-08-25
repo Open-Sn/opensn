@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1c1246623d517531a8809a3d3b9353cf:
+
+Function opensn::PackGroupsetXS
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>&, int, int)
+   :project: opensn

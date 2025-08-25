@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_n_d_array_1_1bool__pack:
+
+Template Struct NDArray::bool_pack
+==================================
+
+- Defined in :ref:`file_framework_data_types_ndarray.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_n_d_array`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::NDArray::bool_pack
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

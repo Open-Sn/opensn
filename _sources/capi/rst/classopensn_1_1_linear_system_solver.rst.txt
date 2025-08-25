@@ -1,0 +1,34 @@
+.. _exhale_class_classopensn_1_1_linear_system_solver:
+
+Class LinearSystemSolver
+========================
+
+- Defined in :ref:`file_framework_math_linear_solver_linear_system_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LinearSolver`` (:ref:`exhale_class_classopensn_1_1_linear_solver`)
+
+
+Derived Types
+*************
+
+- ``public opensn::AGSLinearSolver`` (:ref:`exhale_class_classopensn_1_1_a_g_s_linear_solver`)
+- ``public opensn::ClassicRichardson`` (:ref:`exhale_class_classopensn_1_1_classic_richardson`)
+- ``public opensn::PETScLinearSolver`` (:ref:`exhale_class_classopensn_1_1_p_e_t_sc_linear_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LinearSystemSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

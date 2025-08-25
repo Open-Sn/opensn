@@ -1,0 +1,42 @@
+.. _exhale_class_classopensn_1_1_parameter_block:
+
+Class ParameterBlock
+====================
+
+- Defined in :ref:`file_framework_parameters_parameter_block.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_class_classopensn_1_1_parameter_block_1_1_const_iterator`
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_bool`
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_float`
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_integer`
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_string`
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_user_data`
+- :ref:`exhale_class_classopensn_1_1_parameter_block_1_1_iterator`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::InputParameters`` (:ref:`exhale_class_classopensn_1_1_input_parameters`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ParameterBlock
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

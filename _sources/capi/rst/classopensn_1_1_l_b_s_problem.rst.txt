@@ -1,0 +1,32 @@
+.. _exhale_class_classopensn_1_1_l_b_s_problem:
+
+Class LBSProblem
+================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Problem`` (:ref:`exhale_class_classopensn_1_1_problem`)
+
+
+Derived Type
+************
+
+- ``public opensn::DiscreteOrdinatesProblem`` (:ref:`exhale_class_classopensn_1_1_discrete_ordinates_problem`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LBSProblem
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

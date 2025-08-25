@@ -1,0 +1,31 @@
+.. _dir_framework:
+
+
+Directory framework
+===================
+
+
+*Directory path:* ``framework``
+
+Subdirectories
+--------------
+
+- :ref:`dir_framework_data_types`
+- :ref:`dir_framework_field_functions`
+- :ref:`dir_framework_graphs`
+- :ref:`dir_framework_logging`
+- :ref:`dir_framework_materials`
+- :ref:`dir_framework_math`
+- :ref:`dir_framework_mesh`
+- :ref:`dir_framework_mpi`
+- :ref:`dir_framework_parameters`
+- :ref:`dir_framework_utils`
+
+
+Files
+-----
+
+- :ref:`file_framework_object_factory.h`
+- :ref:`file_framework_runtime.h`
+
+

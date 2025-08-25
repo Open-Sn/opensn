@@ -1,0 +1,24 @@
+.. _dir_framework_math_quadratures_spatial:
+
+
+Directory spatial
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures>` (``framework/math/quadratures``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/quadratures/spatial``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_quadratures_spatial_line_quadrature.h`
+- :ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`
+- :ref:`file_framework_math_quadratures_spatial_tetrahedra_quadrature.h`
+- :ref:`file_framework_math_quadratures_spatial_triangle_quadrature.h`
+
+

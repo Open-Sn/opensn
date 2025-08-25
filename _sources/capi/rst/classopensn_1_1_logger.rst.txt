@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_logger:
+
+Class Logger
+============
+
+- Defined in :ref:`file_framework_logging_log.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Logger
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

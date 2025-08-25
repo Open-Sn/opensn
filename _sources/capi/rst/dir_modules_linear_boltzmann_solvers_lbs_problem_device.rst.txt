@@ -1,0 +1,29 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_device:
+
+
+Directory device
+================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/device``
+
+Subdirectories
+--------------
+
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_carrier`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_view`
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_storage.h`
+
+

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_vertex_properties:
+
+Struct VertexProperties
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::VertexProperties
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

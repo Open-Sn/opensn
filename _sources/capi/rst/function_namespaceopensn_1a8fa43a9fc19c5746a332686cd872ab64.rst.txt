@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64:
+
+Function opensn::SetBlockIDArrays
+=================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SetBlockIDArrays(std::vector<vtkUGridPtrAndName>&)
+   :project: opensn

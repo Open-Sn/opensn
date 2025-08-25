@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a19f6a7bd61ad8f047880c359ed46e469:
+
+Enum UnknownType
+================
+
+- Defined in :ref:`file_framework_math_unknown_manager_unknown_manager.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::UnknownType
+   :project: opensn

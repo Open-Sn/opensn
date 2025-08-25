@@ -1,0 +1,56 @@
+
+.. _file_framework_mesh_surface_mesh_surface_mesh.h:
+
+File surface_mesh.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_surface_mesh>` (``framework/mesh/surface_mesh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/surface_mesh/surface_mesh.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_surface_mesh_surface_mesh.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdio``
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_surface_mesh`
+

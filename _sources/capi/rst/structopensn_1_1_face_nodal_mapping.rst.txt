@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_face_nodal_mapping:
+
+Struct FaceNodalMapping
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::FaceNodalMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

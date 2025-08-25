@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_outflow_carrier:
+
+Class OutflowCarrier
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Carrier`` (:ref:`exhale_class_classopensn_1_1_carrier`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::OutflowCarrier
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_field_function_interpolation_point:
+
+Class FieldFunctionInterpolationPoint
+=====================================
+
+- Defined in :ref:`file_framework_field_functions_interpolation_ffinter_point.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::FieldFunctionInterpolation`` (:ref:`exhale_class_classopensn_1_1_field_function_interpolation`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FieldFunctionInterpolationPoint
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

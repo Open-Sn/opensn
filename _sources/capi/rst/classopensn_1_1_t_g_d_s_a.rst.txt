@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_t_g_d_s_a:
+
+Class TGDSA
+===========
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::TGDSA
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

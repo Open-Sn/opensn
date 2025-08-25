@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_vertex_handler:
+
+Class VertexHandler
+===================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VertexHandler
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

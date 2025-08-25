@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab32d603f7c5294257889a6a95f28e9ce:
+
+Function opensn::CopySTLvectorToVec
+===================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CopySTLvectorToVec(const std::vector<double>&, Vec, size_t)
+   :project: opensn

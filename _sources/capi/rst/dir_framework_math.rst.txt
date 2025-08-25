@@ -1,0 +1,36 @@
+.. _dir_framework_math:
+
+
+Directory math
+==============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math``
+
+Subdirectories
+--------------
+
+- :ref:`dir_framework_math_functions`
+- :ref:`dir_framework_math_linear_solver`
+- :ref:`dir_framework_math_nonlinear_solver`
+- :ref:`dir_framework_math_petsc_utils`
+- :ref:`dir_framework_math_quadratures`
+- :ref:`dir_framework_math_random_number_generation`
+- :ref:`dir_framework_math_spatial_discretization`
+- :ref:`dir_framework_math_unknown_manager`
+
+
+Files
+-----
+
+- :ref:`file_framework_math_geometry.h`
+- :ref:`file_framework_math_math.h`
+- :ref:`file_framework_math_math_time_stepping.h`
+- :ref:`file_framework_math_spatial_weight_function.h`
+
+

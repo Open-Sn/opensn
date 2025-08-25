@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a0ea5e75edd022fcd106d2037520000a5:
+
+Function opensn::FindHighestDimension
+=====================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FindHighestDimension(std::vector<vtkUGridPtrAndName>&)
+   :project: opensn

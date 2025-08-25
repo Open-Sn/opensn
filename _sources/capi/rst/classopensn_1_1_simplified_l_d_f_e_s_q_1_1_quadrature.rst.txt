@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature:
+
+Class Quadrature
+================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::AngularQuadrature`` (:ref:`exhale_class_classopensn_1_1_angular_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SimplifiedLDFESQ::Quadrature
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

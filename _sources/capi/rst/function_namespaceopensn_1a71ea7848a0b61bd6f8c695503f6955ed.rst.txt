@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a71ea7848a0b61bd6f8c695503f6955ed:
+
+Specialized Template Function opensn::H5ReadAttribute< bool >
+=============================================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5ReadAttribute< bool >(hid_t, const std::string&, bool&)
+   :project: opensn

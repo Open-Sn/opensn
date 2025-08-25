@@ -1,0 +1,96 @@
+
+.. _file_framework_parameters_parameter_block.h:
+
+File parameter_block.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_parameters>` (``framework/parameters``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/parameters/parameter_block.h``)
+-------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_parameters_parameter_block.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/varying.h`` (:ref:`file_framework_data_types_varying.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_parameters_input_parameters.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_bool`
+
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_float`
+
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_integer`
+
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_string`
+
+- :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_user_data`
+
+- :ref:`exhale_class_classopensn_1_1_parameter_block`
+
+- :ref:`exhale_class_classopensn_1_1_parameter_block_1_1_const_iterator`
+
+- :ref:`exhale_class_classopensn_1_1_parameter_block_1_1_iterator`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a05f2bd4e18caaed618352dd6b880f07f`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136`
+

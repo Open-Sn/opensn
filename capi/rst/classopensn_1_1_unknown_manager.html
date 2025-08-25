@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class UnknownManager &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class UnknownManager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-unknownmanager">
+<span id="exhale-class-classopensn-1-1-unknown-manager"></span><h1>Class UnknownManager<a class="headerlink" href="#class-unknownmanager" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_math_unknown_manager_unknown_manager.h.html#file-framework-math-unknown-manager-unknown-manager-h"><span class="std std-ref">File unknown_manager.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManagerE">
+<span class="target" id="classopensn_1_1_unknown_manager"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManagerE" title="Link to this definition"></a><br /></dt>
+<dd><p>General object for the management of unknowns in mesh-based mathematical model. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14UnknownManagerE18UnknownStorageType">
+<span class="target" id="classopensn_1_1_unknown_manager_1afc5f3e54a43ce6899dd2663720f7c750"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storage_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageType5NODALE" title="opensn::UnknownStorageType::NODAL"><span class="n"><span class="pre">NODAL</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerE18UnknownStorageType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14UnknownManagerENSt16initializer_listINSt4pairI11UnknownTypejEEEE18UnknownStorageType">
+<span class="target" id="classopensn_1_1_unknown_manager_1a765d45c49a61765cf6236b686c1b8ced"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="enum_namespaceopensn_1a19f6a7bd61ad8f047880c359ed46e469.html#_CPPv4N6opensn11UnknownTypeE" title="opensn::UnknownType"><span class="n"><span class="pre">UnknownType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_info_list</span></span>, <a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storage_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageType5NODALE" title="opensn::UnknownStorageType::NODAL"><span class="n"><span class="pre">NODAL</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerENSt16initializer_listINSt4pairI11UnknownTypejEEEE18UnknownStorageType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14UnknownManagerERKNSt6vectorI7UnknownEE18UnknownStorageType">
+<span class="target" id="classopensn_1_1_unknown_manager_1ae736a4bbec15bec7679234b263512948"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_unknown.html#_CPPv4N6opensn7UnknownE" title="opensn::Unknown"><span class="n"><span class="pre">Unknown</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_info_list</span></span>, <a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storage_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageType5NODALE" title="opensn::UnknownStorageType::NODAL"><span class="n"><span class="pre">NODAL</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerERKNSt6vectorI7UnknownEE18UnknownStorageType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14UnknownManagerENSt16initializer_listI7UnknownEE18UnknownStorageType">
+<span class="target" id="classopensn_1_1_unknown_manager_1a8ce92802e77871d0bb093cc108066c9c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_unknown.html#_CPPv4N6opensn7UnknownE" title="opensn::Unknown"><span class="n"><span class="pre">Unknown</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknowns</span></span>, <a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storage_type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageType5NODALE" title="opensn::UnknownStorageType::NODAL"><span class="n"><span class="pre">NODAL</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerENSt16initializer_listI7UnknownEE18UnknownStorageType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14UnknownManagerERK14UnknownManager">
+<span class="target" id="classopensn_1_1_unknown_manager_1a56060160b50eab576def61a1f0bbad87"></span><span class="sig-name descname"><span class="n"><span class="pre">UnknownManager</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerERK14UnknownManager" title="opensn::UnknownManager::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14UnknownManagerERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManageraSERK14UnknownManager">
+<span class="target" id="classopensn_1_1_unknown_manager_1a42b4adb98954798459f839716f2e4eb6"></span><a class="reference internal" href="#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManageraSERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14UnknownManager19GetNumberOfUnknownsEv">
+<span class="target" id="classopensn_1_1_unknown_manager_1a1cdbadc251235382bb3d827afb66f51b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumberOfUnknowns</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14UnknownManager19GetNumberOfUnknownsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14UnknownManager10GetUnknownE6size_t">
+<span class="target" id="classopensn_1_1_unknown_manager_1a29811ec2fbed5d44a4fa39f0bb78e49d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown.html#_CPPv4N6opensn7UnknownE" title="opensn::Unknown"><span class="n"><span class="pre">Unknown</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetUnknown</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14UnknownManager10GetUnknownE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager17SetDOFStorageTypeEK18UnknownStorageType">
+<span class="target" id="classopensn_1_1_unknown_manager_1ac64f873bd32c19f0c5cef8699eb98f64"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDOFStorageType</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storage_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager17SetDOFStorageTypeEK18UnknownStorageType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14UnknownManager17GetDOFStorageTypeEv">
+<span class="target" id="classopensn_1_1_unknown_manager_1acea596ffff5a797dcecb5c8fd39f8bfe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDOFStorageType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14UnknownManager17GetDOFStorageTypeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager5ClearEv">
+<span class="target" id="classopensn_1_1_unknown_manager_1a9008ff0b85ccc7fa7880d035aa60e2ab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager5ClearEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager10AddUnknownE11UnknownTypej">
+<span class="target" id="classopensn_1_1_unknown_manager_1aa54248cc93fdf9cf78f3541e73b7bee6"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddUnknown</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_namespaceopensn_1a19f6a7bd61ad8f047880c359ed46e469.html#_CPPv4N6opensn11UnknownTypeE" title="opensn::UnknownType"><span class="n"><span class="pre">UnknownType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">unk_type</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimension</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager10AddUnknownE11UnknownTypej" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds an unknown to the manager. This method will figure out where the last unknown ends and where to begin the next one. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14UnknownManager10MapUnknownEij">
+<span class="target" id="classopensn_1_1_unknown_manager_1a3f6b6330d00fe7cd9c319fae72154a20"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapUnknown</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">component</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14UnknownManager10MapUnknownEij" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps the unknown’s component within the storage of a node. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14UnknownManager28GetTotalUnknownStructureSizeEv">
+<span class="target" id="classopensn_1_1_unknown_manager_1a1a44ce652aea32fb99bd6862097f8733"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTotalUnknownStructureSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14UnknownManager28GetTotalUnknownStructureSizeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Determines the total number of components over all unknowns. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager32SetUnknownNumOffBlockConnectionsEii">
+<span class="target" id="classopensn_1_1_unknown_manager_1a1845ddfa0640f83fbee98e9cc8b2a3b9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetUnknownNumOffBlockConnections</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_conn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager32SetUnknownNumOffBlockConnectionsEii" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the number of off block connections for the given unknown. All the components will be set to the same amount. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager41SetUnknownComponentNumOffBlockConnectionsEiji">
+<span class="target" id="classopensn_1_1_unknown_manager_1a86e81053b5ae9610eaa309077704b998"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetUnknownComponentNumOffBlockConnections</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">component</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_conn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager41SetUnknownComponentNumOffBlockConnectionsEiji" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the number of off block connections for the given unknown-component pair. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager14SetUnknownNameEiRKNSt6stringE">
+<span class="target" id="classopensn_1_1_unknown_manager_1a79e702bd398b6811d6ac6b09f8e70375"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetUnknownName</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unk_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager14SetUnknownNameEiRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets a unk_name for the indicated unknown. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager23SetUnknownComponentNameEijRKNSt6stringE">
+<span class="target" id="classopensn_1_1_unknown_manager_1a339447dae315c1f768a00892e6853142"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetUnknownComponentName</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">component</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">component_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager23SetUnknownComponentNameEijRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the component_name to be associated with each component of the unknown. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManagerD0Ev">
+<span class="target" id="classopensn_1_1_unknown_manager_1aebdf366825246fab260ac4bfea46db91"></span><span class="sig-name descname"><span class="n"><span class="pre">~UnknownManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManagerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager8unknownsE">
+<span class="target" id="classopensn_1_1_unknown_manager_1af4d8024851e60d98a38a38387cdcd5b4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_unknown.html#_CPPv4N6opensn7UnknownE" title="opensn::Unknown"><span class="n"><span class="pre">Unknown</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unknowns</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager8unknownsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager16dof_storage_typeE">
+<span class="target" id="classopensn_1_1_unknown_manager_1a3dd55c4099914ad288cd39212865c71d"></span><a class="reference internal" href="enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff.html#_CPPv4N6opensn18UnknownStorageTypeE" title="opensn::UnknownStorageType"><span class="n"><span class="pre">UnknownStorageType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dof_storage_type</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager16dof_storage_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14UnknownManager24GetUnitaryUnknownManagerEv">
+<span class="target" id="classopensn_1_1_unknown_manager_1a20befd20da9d707b99647a13d524b291"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetUnitaryUnknownManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14UnknownManager24GetUnitaryUnknownManagerEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

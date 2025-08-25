@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_p_e_t_sc_non_linear_solver_options:
+
+Class PETScNonLinearSolverOptions
+=================================
+
+- Defined in :ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PETScNonLinearSolverOptions
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

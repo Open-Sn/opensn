@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_mesh_view:
+
+Struct MeshView
+===============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_mesh_view.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::MeshView
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

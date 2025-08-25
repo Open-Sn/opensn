@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_flood_face:
+
+Struct FloodFace
+================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::FloodFace
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

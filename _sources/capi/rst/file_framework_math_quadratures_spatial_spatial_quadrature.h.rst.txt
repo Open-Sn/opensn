@@ -1,0 +1,72 @@
+
+.. _file_framework_math_quadratures_spatial_spatial_quadrature.h:
+
+File spatial_quadrature.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_spatial>` (``framework/math/quadratures/spatial``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/spatial/spatial_quadrature.h``)
+------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_spatial_spatial_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/quadrature_order.h`` (:ref:`file_framework_math_quadratures_quadrature_order.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_quadratures_spatial_line_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_spatial_tetrahedra_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_spatial_triangle_quadrature.h`
+
+- :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_spatial_quadrature`
+

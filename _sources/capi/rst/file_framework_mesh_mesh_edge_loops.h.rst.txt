@@ -1,0 +1,46 @@
+
+.. _file_framework_mesh_mesh_edge_loops.h:
+
+File mesh_edge_loops.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh>` (``framework/mesh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_edge_loops.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_edge_loops.h.rst
+
+
+
+
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_edge`
+

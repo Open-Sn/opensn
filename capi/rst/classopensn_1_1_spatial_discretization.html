@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class SpatialDiscretization &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class SpatialDiscretization</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-spatialdiscretization">
+<span id="exhale-class-classopensn-1-1-spatial-discretization"></span><h1>Class SpatialDiscretization<a class="headerlink" href="#class-spatialdiscretization" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_math_spatial_discretization_spatial_discretization.h.html#file-framework-math-spatial-discretization-spatial-discretization-h"><span class="std std-ref">File spatial_discretization.h</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="derived-types">
+<h3>Derived Types<a class="headerlink" href="#derived-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::FiniteElementBase</span></code> (<a class="reference internal" href="classopensn_1_1_finite_element_base.html#exhale-class-classopensn-1-1-finite-element-base"><span class="std std-ref">Class FiniteElementBase</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::FiniteVolume</span></code> (<a class="reference internal" href="classopensn_1_1_finite_volume.html#exhale-class-classopensn-1-1-finite-volume"><span class="std std-ref">Class FiniteVolume</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretizationE">
+<span class="target" id="classopensn_1_1_spatial_discretization"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SpatialDiscretization</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretizationE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_finite_element_base.html#classopensn_1_1_finite_element_base"><span class="std std-ref">opensn::FiniteElementBase</span></a>, <a class="reference internal" href="classopensn_1_1_finite_volume.html#classopensn_1_1_finite_volume"><span class="std std-ref">opensn::FiniteVolume</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization21SpatialWeightFunctionE">
+<span class="target" id="classopensn_1_1_spatial_discretization_1ab9a355205587e79256903efe53007a99"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SpatialWeightFunction</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization21SpatialWeightFunctionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization31MakeCellInternalAndBndryNodeIDsERK4Cell">
+<span class="target" id="classopensn_1_1_spatial_discretization_1adf045efa7d0040aa6e28adecee9d1faa"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeCellInternalAndBndryNodeIDs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization31MakeCellInternalAndBndryNodeIDsERK4Cell" title="Link to this definition"></a><br /></dt>
+<dd><p>Utility method for getting node indices seperately for domain internal local nodes, and boundary nodes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization14GetCellMappingERK4Cell">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a5f0ae4a1e6508791af1e9573a7950ba9"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingE" title="opensn::CellMapping"><span class="n"><span class="pre">CellMapping</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellMapping</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization14GetCellMappingERK4Cell" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization7GetTypeEv">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a902c40cd6a1408fc1ff023fca6f8be95"></span><a class="reference internal" href="enum_namespaceopensn_1a356b9456219fe48b0b5b49b7cbe37ef3.html#_CPPv4N6opensn25SpatialDiscretizationTypeE" title="opensn::SpatialDiscretizationType"><span class="n"><span class="pre">SpatialDiscretizationType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization7GetTypeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization7GetGridEv">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a476c9f28e771929ec0f1a382a991a605"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGrid</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization7GetGridEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the reference grid on which this discretization is based. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization20BuildSparsityPatternERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1af8b7d034a8c6b8ddff34b36f938ba56a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildSparsityPattern</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">nodal_nnz_in_diag</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">nodal_nnz_off_diag</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization20BuildSparsityPatternERNSt6vectorI7int64_tEERNSt6vectorI7int64_tEERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager. The modified vectors are: <code class="docutils literal notranslate"><span class="pre">nodal_nnz_in_diag</span></code> which specifies for each row the number of non-zeros in the local diagonal block, <code class="docutils literal notranslate"><span class="pre">nodal_nnz_off_diag</span></code> which specifies for each row the number of non-zeros in the off-diagonal block. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization6MapDOFERK4CelljRK14UnknownManagerjj">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a614e44887c13de3f043eaff0f18c9e78"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapDOF</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">component</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization6MapDOFERK4CelljRK14UnknownManagerjj" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps the global address of a degree of freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization11MapDOFLocalERK4CelljRK14UnknownManagerjj">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a5fe57dcfbe70021b0895268951978f64"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapDOFLocal</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">unknown_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">component</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization11MapDOFLocalERK4CelljRK14UnknownManagerjj" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps the local address of a degree of freedom. This can include ghost entries if the specific discretization has any. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization6MapDOFERK4Cellj">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a84fff618c1a0cd35a3a96499cefec232"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapDOF</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization6MapDOFERK4Cellj" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps the local address of a degree of freedom. This can include ghost entries if the specific discretization has any. Default structure here is a single scalar unknown. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization11MapDOFLocalERK4Cellj">
+<span class="target" id="classopensn_1_1_spatial_discretization_1ad10546b2416a8756daae1d4420907a2d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapDOFLocal</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization11MapDOFLocalERK4Cellj" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps the local address of a degree of freedom. This can include ghost entries if the specific discretization has any. Default structure here is a single scalar unknown. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization16GetNumLocalNodesEv">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a855bcb7da380f18f59d4909fbd89a7ad"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumLocalNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization16GetNumLocalNodesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the number of local nodes used in this discretization. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization17GetNumGlobalNodesEv">
+<span class="target" id="classopensn_1_1_spatial_discretization_1aa04075b296431fb821c7c23716b0f418"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumGlobalNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization17GetNumGlobalNodesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the number of global nodes used in this discretization. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization15GetNumLocalDOFsERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a53eeebd428600853c3bbbabf334cc0d5"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumLocalDOFs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization15GetNumLocalDOFsERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>For the unknown structure in the unknown manager, returns the number of local degrees-of-freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization16GetNumGlobalDOFsERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a4c3adaa11211f93f63e0a46e1a661a77"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumGlobalDOFs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization16GetNumGlobalDOFsERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>For the unknown structure in the unknown manager, returns the number of global degrees-of-freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization15GetNumGhostDOFsERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1aa8369e01ef80e236a50618c082bbfa33"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumGhostDOFs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization15GetNumGhostDOFsERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>For the unknown structure in the unknown manager, returns the number of ghost degrees-of-freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization18GetGhostDOFIndicesERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a3f366c3f3933fe793578becda84bc60c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGhostDOFIndices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization18GetGhostDOFIndicesERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>For the unknown structure in the unknown manager, returns the global IDs of all the ghost degrees-of-freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization23GetNumLocalAndGhostDOFsERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1af67ded767957329940c04c7ad4d8e686"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumLocalAndGhostDOFs</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization23GetNumLocalAndGhostDOFsERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>For the unknown structure in the unknown manager, returns the number of local- and ghost degrees-of-freedom. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization15GetCellNumNodesERK4Cell">
+<span class="target" id="classopensn_1_1_spatial_discretization_1aa861d1c9a87162bedf9bda641bd4b4d1"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCellNumNodes</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization15GetCellNumNodesERK4Cell" title="Link to this definition"></a><br /></dt>
+<dd><p>For the given cell, returns the number of relevant nodes. The same can be achieved by retrieving the cell-to-element mapping first. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization20GetCellNodeLocationsERK4Cell">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a4615471cedda60862e0a09cc0ccb5f95"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellNodeLocations</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization20GetCellNodeLocationsERK4Cell" title="Link to this definition"></a><br /></dt>
+<dd><p>For the given cell, returns a reference to the relevant node locations. The same can be achieved by retrieving the cell-to-element mapping first. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization28MakeInternalFaceNodeMappingsEd">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a00322dc02f9ba1b7b6d62b08a74a1937"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeInternalFaceNodeMappings</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-12</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization28MakeInternalFaceNodeMappingsEd" title="Link to this definition"></a><br /></dt>
+<dd><p>For each cell, for each face of that cell, for each node on that face, maps to which local node on the adjacent cell that node position corresponds.</p>
+<p>
+For example consider two adjacent quadrilaterals.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="n">o</span><span class="o">--------</span><span class="n">o</span><span class="o">--------</span><span class="n">o</span>                       <span class="n">o</span><span class="o">--------</span><span class="n">o</span>
+<span class="o">*</span> <span class="o">|</span><span class="mi">3</span>      <span class="mi">2</span><span class="o">|</span><span class="mi">3</span>      <span class="mi">2</span><span class="o">|</span>                       <span class="o">|</span>    <span class="mi">2</span>   <span class="o">|</span>
+<span class="o">*</span> <span class="o">|</span>  <span class="mi">101</span>   <span class="o">|</span>   <span class="mi">102</span>  <span class="o">|</span> <span class="p">,</span> <span class="n">face</span> <span class="n">ids</span> <span class="k">for</span> <span class="n">both</span><span class="p">:</span>  <span class="o">|</span><span class="mi">3</span>      <span class="mi">1</span><span class="o">|</span>
+<span class="o">*</span> <span class="o">|</span><span class="mi">0</span>      <span class="mi">1</span><span class="o">|</span><span class="mi">0</span>      <span class="mi">1</span><span class="o">|</span>                       <span class="o">|</span>    <span class="mi">0</span>   <span class="o">|</span>
+<span class="o">*</span> <span class="n">o</span><span class="o">--------</span><span class="n">o</span><span class="o">--------</span><span class="n">o</span>                       <span class="n">o</span><span class="o">--------</span><span class="n">o</span>
+<span class="o">*</span> <span class="n">internal</span> <span class="n">face</span> <span class="k">for</span> <span class="n">cell</span> <span class="mi">101</span> <span class="ow">is</span> <span class="n">face</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ccw</span> <span class="n">orientated</span>
+<span class="o">*</span> <span class="o">--</span><span class="n">o</span>
+<span class="o">*</span>  <span class="mi">1</span><span class="o">|</span>
+<span class="o">*</span>   <span class="o">|</span>
+<span class="o">*</span>  <span class="mi">0</span><span class="o">|</span>
+<span class="o">*</span> <span class="o">--</span><span class="n">o</span>
+<span class="o">*</span> <span class="n">internal</span> <span class="n">face</span> <span class="k">for</span> <span class="n">cell</span> <span class="mi">102</span> <span class="ow">is</span> <span class="n">face</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="n">ccw</span> <span class="n">orientated</span>
+<span class="o">*</span> <span class="n">o</span><span class="o">-</span>
+<span class="o">*</span> <span class="o">|</span><span class="mi">0</span>
+<span class="o">*</span> <span class="o">|</span>
+<span class="o">*</span> <span class="o">|</span><span class="mi">1</span>
+<span class="o">*</span> <span class="n">o</span><span class="o">-</span>
+<span class="o">*</span>
+<span class="o">*</span> <span class="n">mapping</span><span class="p">[</span><span class="mi">101</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="o">*</span> <span class="n">mapping</span><span class="p">[</span><span class="mi">101</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="o">*</span>
+<span class="o">*</span> <span class="n">mapping</span><span class="p">[</span><span class="mi">102</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="o">*</span> <span class="n">mapping</span><span class="p">[</span><span class="mi">102</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">*</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tolerance</strong> – double. Tolerance to use to determine if two node locations are equal. [Default: 1.0e-12]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization26CopyVectorWithUnknownScopeERKNSt6vectorIdEERNSt6vectorIdEERK14UnknownManagerjRK14UnknownManagerj">
+<span class="target" id="classopensn_1_1_spatial_discretization_1ae56bef328df1aba68c786d339c5dfaf5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyVectorWithUnknownScope</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">from_vector</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to_vector</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">from_vec_uk_structure</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_vec_uk_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to_vec_uk_structure</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_vec_uk_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization26CopyVectorWithUnknownScopeERKNSt6vectorIdEERNSt6vectorIdEERK14UnknownManagerjRK14UnknownManagerj" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy part of vector A to vector B. Suppose vector A’s entries are managed <code class="docutils literal notranslate"><a class="reference internal" href="classopensn_1_1_unknown_manager.html#classopensn_1_1_unknown_manager"><span class="std std-ref"><span class="pre">UnknownManager</span></span></a></code> A (<code class="docutils literal notranslate"><span class="pre">uk_manA</span></code>) and that the entries of the vector B are managed by <code class="docutils literal notranslate"><a class="reference internal" href="classopensn_1_1_unknown_manager.html#classopensn_1_1_unknown_manager"><span class="std std-ref"><span class="pre">UnknownManager</span></span></a></code> B (<code class="docutils literal notranslate"><span class="pre">uk_manB</span></code>). This function copies the entries associated with an unknown with id <code class="docutils literal notranslate"><span class="pre">uk_id_A</span></code> in <code class="docutils literal notranslate"><span class="pre">uk_manA</span></code> from vector A to vector B such that the entries in vector B are aligned with the entries of an unknown with id <code class="docutils literal notranslate"><span class="pre">uk_id_B</span></code> in <code class="docutils literal notranslate"><span class="pre">uk_manB</span></code>. All the components are copied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_vector</strong> – <a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> to copy from. </p></li>
+<li><p><strong>to_vector</strong> – <a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> to copy to. </p></li>
+<li><p><strong>from_vec_uk_structure</strong> – <a class="reference internal" href="classopensn_1_1_unknown.html#classopensn_1_1_unknown"><span class="std std-ref">Unknown</span></a> manager for vector A. </p></li>
+<li><p><strong>from_vec_uk_id</strong> – Unknown-id in unknown manager A. </p></li>
+<li><p><strong>to_vec_uk_structure</strong> – <a class="reference internal" href="classopensn_1_1_unknown.html#classopensn_1_1_unknown"><span class="std std-ref">Unknown</span></a> manager for vector B. </p></li>
+<li><p><strong>to_vec_uk_id</strong> – Unknown-id in unknown manager B. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization19LocalizePETScVectorE3VecRNSt6vectorIdEERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a93dcfa69575fe27d9312fa0c9efa36bf"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalizePETScVector</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">petsc_vector</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">local_vector</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization19LocalizePETScVectorE3VecRNSt6vectorIdEERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>Develops a localized view of a petsc vector. Each spatial discretization can have a specialization of this method. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization29LocalizePETScVectorWithGhostsE3VecRNSt6vectorIdEERK14UnknownManager">
+<span class="target" id="classopensn_1_1_spatial_discretization_1ae014134171f07a02753579ae92015644"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalizePETScVectorWithGhosts</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">petsc_vector</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">local_vector</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">unknown_manager</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization29LocalizePETScVectorWithGhostsE3VecRNSt6vectorIdEERK14UnknownManager" title="Link to this definition"></a><br /></dt>
+<dd><p>Develops a localized view of a petsc vector. Each spatial discretization can have a specialization of this method. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21SpatialDiscretization27GetSpatialWeightingFunctionEv">
+<span class="target" id="classopensn_1_1_spatial_discretization_1abc15eb9ea06ccf4dd723e545dcf4d4e5"></span><a class="reference internal" href="#_CPPv4N6opensn21SpatialDiscretization21SpatialWeightFunctionE" title="opensn::SpatialDiscretization::SpatialWeightFunction"><span class="n"><span class="pre">SpatialWeightFunction</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSpatialWeightingFunction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21SpatialDiscretization27GetSpatialWeightingFunctionEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the spatial weighting function appropriate to the discretization’s coordinate system. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretizationD0Ev">
+<span class="target" id="classopensn_1_1_spatial_discretization_1aa0ff6e041955c0c4cd66b08eca31cced"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretizationD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization23UNITARY_UNKNOWN_MANAGERE">
+<span class="target" id="classopensn_1_1_spatial_discretization_1ab12eca8a03872f367affb4e3359f4d74"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UNITARY_UNKNOWN_MANAGER</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization23UNITARY_UNKNOWN_MANAGERE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization30CartesianSpatialWeightFunctionERK7Vector3">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a7acb2b41e9fe64414838552d647f06e7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CartesianSpatialWeightFunction</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization30CartesianSpatialWeightFunctionERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Cartesian coordinate system spatial weighting function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization34CylindricalRZSpatialWeightFunctionERK7Vector3">
+<span class="target" id="classopensn_1_1_spatial_discretization_1abf2bcf2f51140fb9344a373f49c33ad1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CylindricalRZSpatialWeightFunction</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization34CylindricalRZSpatialWeightFunctionERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Cylindrical coordinate system (RZ) spatial weighting function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization32Spherical1DSpatialWeightFunctionERK7Vector3">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a7052bcf79dfa5f818c65f1eeeaaf4ffd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Spherical1DSpatialWeightFunction</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization32Spherical1DSpatialWeightFunctionERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Spherical coordinate system (1D Spherical) spatial weighting function. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization21SpatialDiscretizationENSt10shared_ptrI13MeshContinuumEE25SpatialDiscretizationType">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a987cdb7308072e7d8079674ac47a367c"></span><span class="sig-name descname"><span class="n"><span class="pre">SpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid</span></span>, <a class="reference internal" href="enum_namespaceopensn_1a356b9456219fe48b0b5b49b7cbe37ef3.html#_CPPv4N6opensn25SpatialDiscretizationTypeE" title="opensn::SpatialDiscretizationType"><span class="n"><span class="pre">SpatialDiscretizationType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sdm_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization21SpatialDiscretizationENSt10shared_ptrI13MeshContinuumEE25SpatialDiscretizationType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization5grid_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a49ed48126e9477bacf9d25cdbbbedb40"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">grid_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization5grid_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization14cell_mappings_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a3d3b2f9b323193628b186dfae2e36575"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingE" title="opensn::CellMapping"><span class="n"><span class="pre">CellMapping</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_mappings_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization14cell_mappings_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization17nb_cell_mappings_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a90ac740a2bebb228935fee4987b1fc99"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingE" title="opensn::CellMapping"><span class="n"><span class="pre">CellMapping</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nb_cell_mappings_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization17nb_cell_mappings_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization20local_block_address_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1adfa7c5643f2c9f478ddd65c2f7619857"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_block_address_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization20local_block_address_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization19locJ_block_address_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a249d0ceafb745b8b83ff2ff5bca25f34"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">locJ_block_address_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization19locJ_block_address_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization16locJ_block_size_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a1fa9570bda68d2e5eff37fc69075f1c7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">locJ_block_size_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization16locJ_block_size_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization22local_base_block_size_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a4258bb2e6e895135bf299a6d26c4801c"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_base_block_size_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization22local_base_block_size_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21SpatialDiscretization23global_base_block_size_E">
+<span class="target" id="classopensn_1_1_spatial_discretization_1a1d9eb1fe5716025abfa09a37cc46ee5f"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">global_base_block_size_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn21SpatialDiscretization23global_base_block_size_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

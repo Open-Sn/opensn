@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a703e5131681f614ca92f0f305d5f0f03:
+
+Typedef opensn::vtkUGridPtrAndName
+==================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::vtkUGridPtrAndName
+   :project: opensn

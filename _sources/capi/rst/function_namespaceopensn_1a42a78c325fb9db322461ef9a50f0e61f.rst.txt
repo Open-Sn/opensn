@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a42a78c325fb9db322461ef9a50f0e61f:
+
+Function opensn::LowerCase
+==========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::LowerCase(const std::string&)
+   :project: opensn

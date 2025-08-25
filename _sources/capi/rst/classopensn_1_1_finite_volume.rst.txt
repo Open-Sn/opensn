@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_finite_volume:
+
+Class FiniteVolume
+==================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_volume_finite_volume.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SpatialDiscretization`` (:ref:`exhale_class_classopensn_1_1_spatial_discretization`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FiniteVolume
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

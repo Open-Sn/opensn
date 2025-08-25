@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a533a5f72b6b44523f2b5feecf759fb48:
+
+Variable opensn::field_function_stack
+=====================================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::field_function_stack
+   :project: opensn

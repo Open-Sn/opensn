@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Struct Vector3 &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Struct Vector3</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="struct-vector3">
+<span id="exhale-struct-structopensn-1-1-vector3"></span><h1>Struct Vector3<a class="headerlink" href="#struct-vector3" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_data_types_vector3.h.html#file-framework-data-types-vector3-h"><span class="std std-ref">File vector3.h</span></a></p></li>
+</ul>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3E">
+<span class="target" id="structopensn_1_1_vector3"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vector3</span></span></span><a class="headerlink" href="#_CPPv4N6opensn7Vector3E" title="Link to this definition"></a><br /></dt>
+<dd><p>General 3-element vector structure. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector37Vector3Ev">
+<span class="target" id="structopensn_1_1_vector3_1a204cd6f297c86ff778e611a3f950bb35"></span><span class="sig-name descname"><span class="n"><span class="pre">Vector3</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn7Vector37Vector3Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Default constructor: initializes to (0, 0, 0). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector37Vector3Eddd">
+<span class="target" id="structopensn_1_1_vector3_1a3e6188040f08aa713e4a403f87d11ab0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vector3</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector37Vector3Eddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor where <span class="math notranslate nohighlight">\( \vec{x}=[a,b,c] \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector37Vector3ENSt16initializer_listIdEE">
+<span class="target" id="structopensn_1_1_vector3_1a49db3a2e47c2ebba8a4dd4e35127246f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vector3</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector37Vector3ENSt16initializer_listIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor where <span class="math notranslate nohighlight">\( \vec{x}=\{a,b,c\} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector37Vector3ERKNSt6vectorIdEE">
+<span class="target" id="structopensn_1_1_vector3_1a73ea5e8163893d44d4a70ccca0c5a124"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vector3</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector37Vector3ERKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor where <span class="math notranslate nohighlight">\( \vec{x}=\{a,b,c\} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3plERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a9d6dd32c5b2f4dd3f11d27ccd7badd74"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3plERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Component-wise addition of two vectors. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} + \vec{y} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3pLERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1abf972c031300aa65dc8afd32f91623a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3pLERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>In-place component-wise addition of two vectors. <span class="math notranslate nohighlight">\( \vec{x} = \vec{x} + \vec{y} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector37ShiftedEd">
+<span class="target" id="structopensn_1_1_vector3_1a8f19be0f3e9a8c1ffe5e6904e80fb2c2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shifted</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector37ShiftedEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Component-wise shift by scalar-value. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} + \alpha \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector35ShiftEd">
+<span class="target" id="structopensn_1_1_vector3_1a273c44bb281611a371a034ca6173f5ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">Shift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector35ShiftEd" title="Link to this definition"></a><br /></dt>
+<dd><p>In-place component-wise shift by scalar value. <span class="math notranslate nohighlight">\( \vec{x} = \vec{x} + \alpha \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3miERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a6863a85e6f753485a23d225cf307b550"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3miERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Component-wise subtraction of two vectors. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} - \vec{y} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3mIERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a9b8ee7d5139eedea2a0e8fe48836e6e7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3mIERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>In-place component-wise subtraction. <span class="math notranslate nohighlight">\( \vec{x} = \vec{x} - \vec{y} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3mlEd">
+<span class="target" id="structopensn_1_1_vector3_1a442f07c35ed4c99fed0b6e5214fd8024"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3mlEd" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> component-wise multiplication by scalar. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} \alpha \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3mLEd">
+<span class="target" id="structopensn_1_1_vector3_1a7b5722164a792e959f9214bb6c8a4eb6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*=</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3mLEd" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> in-place component-wise multiplication by scalar. <span class="math notranslate nohighlight">\( \vec{x} = \vec{x} \alpha \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3mlERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1ac4d0a454663d33932806ff51041cd970"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3mlERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> component-wise multiplication. <span class="math notranslate nohighlight">\( w_i = x_i y_i \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3mLERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a071228667cb3d4e9e7a811fc8176c8f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3mLERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> in-place component-wise multiplication. <span class="math notranslate nohighlight">\( x_i = x_i y_i \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3dvEd">
+<span class="target" id="structopensn_1_1_vector3_1ae7da6bd24679cc046122c6a136fd8bac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3dvEd" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> component-wise division by scalar. <span class="math notranslate nohighlight">\( w_i = \frac{x_i}{\alpha} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3dVEd">
+<span class="target" id="structopensn_1_1_vector3_1a631cbe598d3a90e0a63a0752bcc24d86"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/=</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3dVEd" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> in-place component-wise division by scalar. <span class="math notranslate nohighlight">\( x_i = \frac{x_i}{\alpha} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3dvERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a2910b84daee0996a8e8b93ae0f79ff7f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3dvERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> component-wise division. <span class="math notranslate nohighlight">\( w_i = \frac{x_i}{y_i} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3dVERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1a563d8419d76c2249c22f8d070c10d2ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">/=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3dVERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> in-place component-wise division. <span class="math notranslate nohighlight">\( x_i = \frac{x_i}{y_i} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector3ixE6size_t">
+<span class="target" id="structopensn_1_1_vector3_1af491f4e44fec846a4dbe1544b3b4aac2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector3ixE6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a copy of the value at the given index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector3clE6size_t">
+<span class="target" id="structopensn_1_1_vector3_1aa56492bb1f44ee2846e6ac665b441a3e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector3clE6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a reference of the value at the given index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector35CrossERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1ac4c6834cb3838fd97ca282a7c68cd470"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Cross</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector35CrossERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> cross-product. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} \times \vec{y} \)</span></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector33DotERK7Vector3">
+<span class="target" id="structopensn_1_1_vector3_1aca6f17fe333462fde37a4a1faeeba743"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Dot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">that</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector33DotERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_vector.html#classopensn_1_1_vector"><span class="std std-ref">Vector</span></a> dot-product. <span class="math notranslate nohighlight">\( \vec{w} = \vec{x} \bullet \vec{y} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector34NormEv">
+<span class="target" id="structopensn_1_1_vector3_1a0c5f51b08fc0fdad398ead0d2c00d900"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Norm</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector34NormEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the L2-norm of the vector. Otherwise known as the length of a 3D vector. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector310NormSquareEv">
+<span class="target" id="structopensn_1_1_vector3_1aa90705a8161015950b405d1ee721a084"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NormSquare</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector310NormSquareEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the square of the L2-norm of the vector. Less expensive than a proper L2-norm. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector39NormalizeEv">
+<span class="target" id="structopensn_1_1_vector3_1a5a073191f315346729f876d8f05c70fb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Normalize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector39NormalizeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Normalizes the vector in-place. <span class="math notranslate nohighlight">\( \vec{x} = \frac{\vec{x}}{||x||_2} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector310NormalizedEv">
+<span class="target" id="structopensn_1_1_vector3_1a0e142514e340db50881f9953f25b349a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Normalized</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector310NormalizedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a normalized version of the vector. <span class="math notranslate nohighlight">\( \vec{w} = \frac{\vec{x}}{||x||_2} \)</span>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector320InverseZeroIfSmallerEd">
+<span class="target" id="structopensn_1_1_vector3_1a025d0c2e5b4652fd186bc9b3836a49ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InverseZeroIfSmaller</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector320InverseZeroIfSmallerEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Inverse components, setting zero if below tolerance. </p>
+<p>Returns a vector v^* where each element is inverted provided that it is greater than the given tolerance, otherwise the offending entry is set to 0.0. <span class="math notranslate nohighlight">\( w_i = \frac{1.0}{x_i} \)</span></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector319InverseOneIfSmallerEd">
+<span class="target" id="structopensn_1_1_vector3_1a0420a7aa24290a05925bd978abf8118e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InverseOneIfSmaller</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector319InverseOneIfSmallerEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Inverse components, setting one if below tolerance. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector37InverseEv">
+<span class="target" id="structopensn_1_1_vector3_1a2e1533f3729684aa705856b13cd9e269"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Inverse</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector37InverseEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Inverts each component without checking for division by zero. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector35PrintEv">
+<span class="target" id="structopensn_1_1_vector3_1ae3fdac7664df345e99cd56b7177bbee4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Print</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector35PrintEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Prints the vector to std::cout. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector38PrintStrEv">
+<span class="target" id="structopensn_1_1_vector3_1abb7bf7ffcaee36d686e4ada07e333096"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintStr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector38PrintStrEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the vector as a string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn7Vector314AbsoluteEqualsERK7Vector3Kd">
+<span class="target" id="structopensn_1_1_vector3_1afb9b9e60b9bd52d44999dff70fe32e27"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AbsoluteEquals</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tol</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.e-6</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn7Vector314AbsoluteEqualsERK7Vector3Kd" title="Link to this definition"></a><br /></dt>
+<dd><p>Absolute equality check with another point. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector31xE">
+<span class="target" id="structopensn_1_1_vector3_1a762051534c585dd22f4cb5dbda4a9afe"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N6opensn7Vector31xE" title="Link to this definition"></a><br /></dt>
+<dd><p>X-component of the vector. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector31yE">
+<span class="target" id="structopensn_1_1_vector3_1ad4807190c2e4c3caad53a892a005d999"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N6opensn7Vector31yE" title="Link to this definition"></a><br /></dt>
+<dd><p>Y-component of the vector. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector31zE">
+<span class="target" id="structopensn_1_1_vector3_1a75cc997b44b238ecd1f30ed8610e7549"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">z</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N6opensn7Vector31zE" title="Link to this definition"></a><br /></dt>
+<dd><p>Z-component of the vector. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn7Vector34SizeEv">
+<span class="target" id="structopensn_1_1_vector3_1ab5792d31a9e089e7c9745cf580d3240a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn7Vector34SizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

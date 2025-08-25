@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a482a4c0110d25c36cc8f18c1096e4ff8:
+
+Enum FieldFunctionInterpolationProperty
+=======================================
+
+- Defined in :ref:`file_framework_field_functions_interpolation_ffinterpolation.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::FieldFunctionInterpolationProperty
+   :project: opensn

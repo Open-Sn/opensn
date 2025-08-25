@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a96c2eeb2c8b472b24980f1cc1f70ac64:
+
+Variable opensn::field_func_interpolation_stack
+===============================================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::field_func_interpolation_stack
+   :project: opensn

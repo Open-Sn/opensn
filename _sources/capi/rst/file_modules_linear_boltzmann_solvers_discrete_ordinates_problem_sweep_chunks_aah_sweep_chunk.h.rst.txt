@@ -1,0 +1,69 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h:
+
+File aah_sweep_chunk.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h``)
+-----------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``cmath``
+
+- ``cstdint``
+
+- ``framework/math/spatial_discretization/spatial_discretization.h`` (:ref:`file_framework_math_spatial_discretization_spatial_discretization.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1aa180315c1dc1ad3d5e6f0c2e822d385d`
+

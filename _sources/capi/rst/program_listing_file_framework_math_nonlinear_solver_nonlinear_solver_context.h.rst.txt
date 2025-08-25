@@ -1,0 +1,26 @@
+
+.. _program_listing_file_framework_math_nonlinear_solver_nonlinear_solver_context.h:
+
+Program Listing for File nonlinear_solver_context.h
+===================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_nonlinear_solver_nonlinear_solver_context.h>` (``framework/math/nonlinear_solver/nonlinear_solver_context.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   namespace opensn
+   {
+   
+   struct NonLinearSolverContext
+   {
+     virtual ~NonLinearSolverContext() = default;
+   };
+   
+   } // namespace opensn

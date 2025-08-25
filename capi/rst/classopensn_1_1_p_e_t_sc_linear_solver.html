@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class PETScLinearSolver &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class PETScLinearSolver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-petsclinearsolver">
+<span id="exhale-class-classopensn-1-1-p-e-t-sc-linear-solver"></span><h1>Class PETScLinearSolver<a class="headerlink" href="#class-petsclinearsolver" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_math_linear_solver_petsc_linear_system_solver.h.html#file-framework-math-linear-solver-petsc-linear-system-solver-h"><span class="std std-ref">File petsc_linear_system_solver.h</span></a></p></li>
+</ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options.html#exhale-struct-structopensn-1-1-p-e-t-sc-linear-solver-1-1-tolerance-options"><span class="std std-ref">Struct PETScLinearSolver::ToleranceOptions</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::LinearSystemSolver</span></code> (<a class="reference internal" href="classopensn_1_1_linear_system_solver.html#exhale-class-classopensn-1-1-linear-system-solver"><span class="std std-ref">Class LinearSystemSolver</span></a>)</p></li>
+</ul>
+</section>
+<section id="derived-type">
+<h3>Derived Type<a class="headerlink" href="#derived-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::WGSLinearSolver</span></code> (<a class="reference internal" href="classopensn_1_1_w_g_s_linear_solver.html#exhale-class-classopensn-1-1-w-g-s-linear-solver"><span class="std std-ref">Class WGSLinearSolver</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolverE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PETScLinearSolver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_linear_system_solver.html#_CPPv4N6opensn18LinearSystemSolverE" title="opensn::LinearSystemSolver"><span class="n"><span class="pre">LinearSystemSolver</span></span></a><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolverE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_w_g_s_linear_solver.html#classopensn_1_1_w_g_s_linear_solver"><span class="std std-ref">opensn::WGSLinearSolver</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver17PETScLinearSolverE15IterativeMethodNSt10shared_ptrI19LinearSystemContextEE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a781ee953f972ab4e1c118574628c7be1"></span><span class="sig-name descname"><span class="n"><span class="pre">PETScLinearSolver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IterativeMethod</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_linear_system_context.html#_CPPv4N6opensn19LinearSystemContextE" title="opensn::LinearSystemContext"><span class="n"><span class="pre">LinearSystemContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">context_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver17PETScLinearSolverE15IterativeMethodNSt10shared_ptrI19LinearSystemContextEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolverD0Ev">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1aa7bdae1ff7f2397878aff618d1c95dab"></span><span class="sig-name descname"><span class="n"><span class="pre">~PETScLinearSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolverD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver19GetToleranceOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a0d2b700ab624dfa2e9ee7292acc51590"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptionsE" title="opensn::PETScLinearSolver::ToleranceOptions"><span class="n"><span class="pre">ToleranceOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetToleranceOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver19GetToleranceOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver21ApplyToleranceOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1ac63929131a610d6e6389eeded95ebe14"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApplyToleranceOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver21ApplyToleranceOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver26SetKSPSolveSuppressionFlagEb">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1ae75534d9785faf45829380f5a91a54f8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetKSPSolveSuppressionFlag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">flag</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver26SetKSPSolveSuppressionFlagEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets a flag to suppress the KSPSolve() method from being called. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17PETScLinearSolver26GetKSPSolveSuppressionFlagEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1af6601d2f67962b68ccde6e3df21d00d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetKSPSolveSuppressionFlag</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17PETScLinearSolver26GetKSPSolveSuppressionFlagEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver5SetupEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a174b56ee7cb9c32c0e88371608462af4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Setup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver5SetupEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Set up the linaer solver. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver5SolveEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a6caead25c52a317641d16add2518a27e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solve</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver5SolveEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Solve the system. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver17tolerance_optionsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a364351d58935cc918b2d51911f7989df"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6opensn17PETScLinearSolverE" title="opensn::PETScLinearSolver"><span class="n"><span class="pre">PETScLinearSolver</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptionsE" title="opensn::PETScLinearSolver::ToleranceOptions"><span class="n"><span class="pre">ToleranceOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tolerance_options</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver17tolerance_optionsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17PETScLinearSolver11IsSystemSetEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1afda9c2d21a0ab16b0290bdf839a09762"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsSystemSet</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17PETScLinearSolver11IsSystemSetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16PreSetupCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1af83db09b87634be1f98946c285cf54d9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreSetupCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16PreSetupCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver10SetOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a95ebb622235fdcebde8705fb5bfc3694"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver10SetOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16SetSolverContextEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a81c0ae3079923ed022ffa2d926927bc1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSolverContext</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16SetSolverContextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver18SetConvergenceTestEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1ad8f349a57281157a09063c1ff47b48c2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetConvergenceTest</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver18SetConvergenceTestEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver10SetMonitorEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1adc2c2a5a0b94f1269ff149e1dc6ba8df"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetMonitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver10SetMonitorEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver17SetPreconditionerEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a410bd4a7b296bbbb229f951ec29fc516"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPreconditioner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver17SetPreconditionerEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver13SetSystemSizeEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1af8c0ed771cf9af31ae53cf0f9c6d5416"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSystemSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver13SetSystemSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver9SetSystemEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1abc94bfa92649b5969c49682cd96d1ec7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSystem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver9SetSystemEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver17PostSetupCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a535fcab27a249a16e48c5f4fda525423"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostSetupCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver17PostSetupCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16PreSolveCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1aa9bf77a30cd832b70538eeb450423282"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreSolveCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16PreSolveCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver15SetInitialGuessEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1aeab65fe9fd78c67b3ea6cf3f4b29f90f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetInitialGuess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver15SetInitialGuessEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver6SetRHSEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a795a2c6f747477bdfab37a3c2dbb0556"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetRHS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver6SetRHSEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver17PostSolveCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a5a4d7bd3ba060e35da0da3908dafef1a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostSolveCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver17PostSolveCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver2A_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a9fbb900289d8ad2666982923f6557252"></span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">A_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver2A_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver2b_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a85f73634e77eccb0ee3800b54dba32ac"></span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">b_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver2b_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver2x_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a925524d0d8194bcb76761f5eddc6ec3d"></span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver2x_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver4ksp_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1ab573e78cfd0b187ea098462d48b996ac"></span><span class="n"><span class="pre">KSP</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ksp_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver4ksp_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver15num_local_dofs_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a91620f9c5597ad792644c32687f541a3"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_local_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver15num_local_dofs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16num_global_dofs_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a3081d993377940526e7eacacb7022283"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_global_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16num_global_dofs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-static-functions">Protected Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver24LinearSolverMatrixActionE3Mat3Vec3Vec">
+<span class="target" id="classopensn_1_1_p_e_t_sc_linear_solver_1a209a76676f3e2e19ea992786167cf68f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LinearSolverMatrixAction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">matrix</span></span>, <span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vector</span></span>, <span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">action</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver24LinearSolverMatrixActionE3Mat3Vec3Vec" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptionsE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToleranceOptions</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptionsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions17residual_relativeE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1aa6364b4a4c2d4e075f2f6b2ba92bcf03"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">residual_relative</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-50</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions17residual_relativeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions17residual_absoluteE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1a31a4af574b65a636ca39f8fa51ade89b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">residual_absolute</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-6</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions17residual_absoluteE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions19residual_divergenceE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1a08e279338544e0fd7b652a2ffbb49d22"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">residual_divergence</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e6</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions19residual_divergenceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions18maximum_iterationsE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1ae340543958911b7ae885ab969a3bc0d7"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maximum_iterations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions18maximum_iterationsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions22gmres_restart_intervalE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1aa652e04c96d65ce8d238d7d98a4461fe"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gmres_restart_interval</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions22gmres_restart_intervalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions25gmres_breakdown_toleranceE">
+<span class="target" id="structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options_1a959d6b7897a65ac5f24d8f4fb8cad52b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gmres_breakdown_tolerance</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e6</span></span><a class="headerlink" href="#_CPPv4N6opensn17PETScLinearSolver16ToleranceOptions25gmres_breakdown_toleranceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

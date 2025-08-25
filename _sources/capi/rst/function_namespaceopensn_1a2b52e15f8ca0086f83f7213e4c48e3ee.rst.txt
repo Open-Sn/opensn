@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2b52e15f8ca0086f83f7213e4c48e3ee:
+
+Template Function opensn::Scaled(const Vector<TYPE>&, TYPE)
+===========================================================
+
+- Defined in :ref:`file_framework_data_types_vector.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Scaled(const Vector<TYPE>&, TYPE)
+   :project: opensn

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1af6184d19080033614eaed52625ebfdac:
+
+Function opensn::ComputePrecursors
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputePrecursors(LBSProblem&)
+   :project: opensn

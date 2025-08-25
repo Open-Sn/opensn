@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a767a3047554fa01ccc00ef1cd66e13a2:
+
+Function opensn::MapGeometryTypeToCoordSys
+==========================================
+
+- Defined in :ref:`file_framework_math_geometry.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MapGeometryTypeToCoordSys(const GeometryType)
+   :project: opensn

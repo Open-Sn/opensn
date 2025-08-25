@@ -1,0 +1,183 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File dense_matrix.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File dense_matrix.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-dense-matrix-h">
+<span id="file-framework-data-types-dense-matrix-h"></span><h1>File dense_matrix.h<a class="headerlink" href="#file-dense-matrix-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_framework_data_types.html#dir-framework-data-types"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/data_types</span></code>)</p>
+<nav class="contents local" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-framework-data-types-dense-matrix-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">framework/data_types/dense_matrix.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id5">Classes</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id6">Functions</a></p></li>
+</ul>
+</nav>
+<section id="definition-framework-data-types-dense-matrix-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">framework/data_types/dense_matrix.h</span></code>)<a class="headerlink" href="#definition-framework-data-types-dense-matrix-h" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_framework_data_types_dense_matrix.h.html">Program Listing for File dense_matrix.h</a></li>
+</ul>
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/data_types/ndarray.h</span></code> (<a class="reference internal" href="file_framework_data_types_ndarray.h.html#file-framework-data-types-ndarray-h"><span class="std std-ref">File ndarray.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/data_types/vector.h</span></code> (<a class="reference internal" href="file_framework_data_types_vector.h.html#file-framework-data-types-vector-h"><span class="std std-ref">File vector.h</span></a>)</p></li>
+</ul>
+</section>
+<section id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_framework_math_math.h.html#file-framework-math-math-h"><span class="std std-ref">File math.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_math_quadratures_angular_sldfe_sq_quadrature.h.html#file-framework-math-quadratures-angular-sldfe-sq-quadrature-h"><span class="std std-ref">File sldfe_sq_quadrature.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h.html#file-framework-math-spatial-discretization-finite-element-unit-cell-matrices-h"><span class="std std-ref">File unit_cell_matrices.h</span></a></p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_opensn.html#namespace-opensn"><span class="std std-ref">Namespace opensn</span></a></p></li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="classopensn_1_1_dense_matrix.html#exhale-class-classopensn-1-1-dense-matrix"><span class="std std-ref">Template Class DenseMatrix</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_namespaceopensn_1af306a78772d819be3c1ee3fd5cab48ed.html#exhale-function-namespaceopensn-1af306a78772d819be3c1ee3fd5cab48ed"><span class="std std-ref">Template Function opensn::Add(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65.html#exhale-function-namespaceopensn-1a42728ba3cf18aa0e98f4997376672d65"><span class="std std-ref">Template Function opensn::Determinant</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a91dce05acc78a5b020a13d3f8641368b.html#exhale-function-namespaceopensn-1a91dce05acc78a5b020a13d3f8641368b"><span class="std std-ref">Template Function opensn::GaussElimination</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc.html#exhale-function-namespaceopensn-1a18b5e25b2eb4c7f42b6018278d5073dc"><span class="std std-ref">Template Function opensn::Inverse</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f.html#exhale-function-namespaceopensn-1a95d6f66ba869623b59a1a1b78148d94f"><span class="std std-ref">Template Function opensn::InverseGEPivoting</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a970db0121bb18a47a1400ae6630e8b89.html#exhale-function-namespaceopensn-1a970db0121bb18a47a1400ae6630e8b89"><span class="std std-ref">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const TYPE)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1abd3fa1f9d91fc4c479aa1e5bb9cf00b7.html#exhale-function-namespaceopensn-1abd3fa1f9d91fc4c479aa1e5bb9cf00b7"><span class="std std-ref">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const Vector&lt;TYPE&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1aab3c67d40e6e55826ed11805f566756f.html#exhale-function-namespaceopensn-1aab3c67d40e6e55826ed11805f566756f"><span class="std std-ref">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545.html#exhale-function-namespaceopensn-1ae36300f028cd3cfe090d42aa14566545"><span class="std std-ref">Template Function opensn::PowerIteration</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1aea72142b190ab466352b392df242bcde.html#exhale-function-namespaceopensn-1aea72142b190ab466352b392df242bcde"><span class="std std-ref">Template Function opensn::Scale(DenseMatrix&lt;TYPE&gt;&amp;, TYPE)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b.html#exhale-function-namespaceopensn-1af19640fd7bf1b121d528bd8ff125963b"><span class="std std-ref">Template Function opensn::Scaled(const DenseMatrix&lt;TYPE&gt;&amp;, TYPE)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a2089fb72f7703c7ce8dba7fb6d654dc1.html#exhale-function-namespaceopensn-1a2089fb72f7703c7ce8dba7fb6d654dc1"><span class="std std-ref">Template Function opensn::SubMatrix</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a9703a3c5ab99e86885289ed9122e096d.html#exhale-function-namespaceopensn-1a9703a3c5ab99e86885289ed9122e096d"><span class="std std-ref">Template Function opensn::Subtract(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813.html#exhale-function-namespaceopensn-1a1c4ba3e9e83c916abb606d0d44847813"><span class="std std-ref">Template Function opensn::SwapRows</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0.html#exhale-function-namespaceopensn-1a011ab6fa829baf57968f74b833b3fed0"><span class="std std-ref">Template Function opensn::Transpose</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

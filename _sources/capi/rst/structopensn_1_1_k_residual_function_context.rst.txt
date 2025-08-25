@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_k_residual_function_context:
+
+Struct KResidualFunctionContext
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::KResidualFunctionContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

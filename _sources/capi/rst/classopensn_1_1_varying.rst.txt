@@ -1,0 +1,36 @@
+.. _exhale_class_classopensn_1_1_varying:
+
+Class Varying
+=============
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_bool`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_byte_array`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_float`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_integer`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_signed_integer`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_string`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_unsigned_integer`
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_user_data`
+- :ref:`exhale_class_classopensn_1_1_varying_1_1_varying_arbitrary_type`
+- :ref:`exhale_class_classopensn_1_1_varying_1_1_varying_type`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Varying
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

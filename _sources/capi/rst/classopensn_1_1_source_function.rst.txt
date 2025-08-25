@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_source_function:
+
+Class SourceFunction
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::TransientSourceFunction`` (:ref:`exhale_class_classopensn_1_1_transient_source_function`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SourceFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

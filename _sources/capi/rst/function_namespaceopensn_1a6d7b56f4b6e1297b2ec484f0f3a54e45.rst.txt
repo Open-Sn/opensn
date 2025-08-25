@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6d7b56f4b6e1297b2ec484f0f3a54e45:
+
+Function opensn::NLKEigenResidualFunction
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::NLKEigenResidualFunction(SNES, Vec, Vec, void *)
+   :project: opensn

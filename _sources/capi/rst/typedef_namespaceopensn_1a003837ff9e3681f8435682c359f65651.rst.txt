@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a003837ff9e3681f8435682c359f65651:
+
+Typedef opensn::ScalarScalarFunction
+====================================
+
+- Defined in :ref:`file_framework_math_functions_function_dimA_to_dimB.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::ScalarScalarFunction
+   :project: opensn

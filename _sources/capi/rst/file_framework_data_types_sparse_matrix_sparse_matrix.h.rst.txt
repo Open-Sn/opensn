@@ -1,0 +1,72 @@
+
+.. _file_framework_data_types_sparse_matrix_sparse_matrix.h:
+
+File sparse_matrix.h
+====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types_sparse_matrix>` (``framework/data_types/sparse_matrix``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/sparse_matrix/sparse_matrix.h``)
+-------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_sparse_matrix_sparse_matrix.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_sparse_matrix_1_1_const_entry_reference`
+
+- :ref:`exhale_struct_structopensn_1_1_sparse_matrix_1_1_entry_reference`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_entries_iterator`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_row_iterator_context`
+
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator`
+

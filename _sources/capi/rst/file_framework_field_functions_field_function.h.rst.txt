@@ -1,0 +1,62 @@
+
+.. _file_framework_field_functions_field_function.h:
+
+File field_function.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_field_functions>` (``framework/field_functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/field_functions/field_function.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_field_functions_field_function.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/unknown_manager/unknown_manager.h`` (:ref:`file_framework_math_unknown_manager_unknown_manager.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_field_functions_field_function_grid_based.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_field_function`
+

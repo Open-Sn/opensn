@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a28b6bfe059ce5b9026c51d2d6e823da7:
+
+Typedef opensn::CompactCellView
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aah_fluds_common_data.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::CompactCellView
+   :project: opensn

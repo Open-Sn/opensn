@@ -1,0 +1,27 @@
+.. _exhale_struct_structopensn_1_1_linear_solver_context:
+
+Struct LinearSolverContext
+==========================
+
+- Defined in :ref:`file_framework_math_linear_solver_linear_solver_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::LinearEigenContext`` (:ref:`exhale_struct_structopensn_1_1_linear_eigen_context`)
+- ``public opensn::LinearSystemContext`` (:ref:`exhale_struct_structopensn_1_1_linear_system_context`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::LinearSolverContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,98 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h:
+
+File lbs_problem.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``any``
+
+- ``chrono``
+
+- ``framework/math/linear_solver/linear_solver.h`` (:ref:`file_framework_math_linear_solver_linear_solver.h`)
+
+- ``framework/math/spatial_discretization/finite_element/unit_cell_matrices.h`` (:ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`)
+
+- ``framework/math/spatial_discretization/spatial_discretization.h`` (:ref:`file_framework_math_spatial_discretization_spatial_discretization.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source_volumetric_source.h`)
+
+- ``modules/problem.h`` (:ref:`file_modules_problem.h`)
+
+- ``petscksp.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_l_b_s_problem`
+

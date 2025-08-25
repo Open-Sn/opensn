@@ -1,0 +1,54 @@
+
+.. _file_framework_data_types_range.h:
+
+File range.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/range.h``)
+---------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_range.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``type_traits``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1aedd0f5ead795b19fced71e8a58ebf554`
+

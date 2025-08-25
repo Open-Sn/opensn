@@ -1,0 +1,21 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods:
+
+
+Directory iterative_methods
+===========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h`
+
+

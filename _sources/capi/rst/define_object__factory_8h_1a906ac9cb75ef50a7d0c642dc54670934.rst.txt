@@ -1,0 +1,14 @@
+.. _exhale_define_object__factory_8h_1a906ac9cb75ef50a7d0c642dc54670934:
+
+Define OpenSnRegisterObjectInNamespace
+======================================
+
+- Defined in :ref:`file_framework_object_factory.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnRegisterObjectInNamespace
+   :project: opensn

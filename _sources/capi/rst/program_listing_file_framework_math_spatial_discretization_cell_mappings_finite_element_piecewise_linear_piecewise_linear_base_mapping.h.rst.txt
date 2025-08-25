@@ -1,0 +1,55 @@
+
+.. _program_listing_file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h:
+
+Program Listing for File piecewise_linear_base_mapping.h
+========================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h>` (``framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/mesh.h"
+   #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
+   #include <utility>
+   
+   namespace opensn
+   {
+   
+   /**
+    * Base class for all cell piece-wise linear cell-mappings.
+    *
+    * \ingroup doc_CellMappings
+    */
+   class PieceWiseLinearBaseMapping : public CellMapping
+   {
+   protected:
+   public:
+     /// Constructor.
+     PieceWiseLinearBaseMapping(std::shared_ptr<MeshContinuum> grid,
+                                const Cell& cell,
+                                size_t num_nodes,
+                                std::vector<std::vector<int>> face_node_mappings);
+   
+   protected:
+     static std::vector<Vector3> GetVertexLocations(const std::shared_ptr<MeshContinuum>& grid,
+                                                    const Cell& cell);
+   
+     /**
+      * This section just determines a mapping of face dofs to cell dofs. This is pretty simple since
+      * we can just loop over each face dof then subsequently loop over cell dofs, if the face dof node
+      * index equals the cell dof node index then the mapping is assigned.
+      *
+      * This mapping is not used by any of the methods in  this class but is used by methods requiring
+      * the surface integrals of the shape functions.
+      */
+     static std::vector<std::vector<int>> MakeFaceNodeMapping(const Cell& cell);
+   };
+   
+   } // namespace opensn

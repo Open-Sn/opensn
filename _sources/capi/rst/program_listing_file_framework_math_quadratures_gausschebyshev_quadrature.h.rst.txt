@@ -1,0 +1,41 @@
+
+.. _program_listing_file_framework_math_quadratures_gausschebyshev_quadrature.h:
+
+Program Listing for File gausschebyshev_quadrature.h
+====================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_quadratures_gausschebyshev_quadrature.h>` (``framework/math/quadratures/gausschebyshev_quadrature.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/quadratures/gauss_quadrature.h"
+   #include "framework/object_factory.h"
+   
+   namespace opensn
+   {
+   
+   class GaussChebyshevQuadrature : public GaussQuadrature
+   {
+   private:
+     /**
+      * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of
+      * desired quadrature points.
+      */
+     void Initialize(unsigned int N);
+   
+   public:
+     /**
+      * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of
+      * desired quadrature points. The order of the quadrature will be 2N-1.
+      */
+     explicit GaussChebyshevQuadrature(unsigned int N, bool verbose = false);
+   };
+   
+   } // namespace opensn

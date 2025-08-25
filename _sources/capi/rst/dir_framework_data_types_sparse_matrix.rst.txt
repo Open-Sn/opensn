@@ -1,0 +1,21 @@
+.. _dir_framework_data_types_sparse_matrix:
+
+
+Directory sparse_matrix
+=======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/data_types/sparse_matrix``
+
+
+Files
+-----
+
+- :ref:`file_framework_data_types_sparse_matrix_sparse_matrix.h`
+
+

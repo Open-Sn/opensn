@@ -1,0 +1,30 @@
+.. _exhale_class_classopensn_1_1_mesh_generator:
+
+Class MeshGenerator
+===================
+
+- Defined in :ref:`file_framework_mesh_mesh_generator_mesh_generator.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::DistributedMeshGenerator`` (:ref:`exhale_class_classopensn_1_1_distributed_mesh_generator`)
+- ``public opensn::ExtruderMeshGenerator`` (:ref:`exhale_class_classopensn_1_1_extruder_mesh_generator`)
+- ``public opensn::FromFileMeshGenerator`` (:ref:`exhale_class_classopensn_1_1_from_file_mesh_generator`)
+- ``public opensn::OrthogonalMeshGenerator`` (:ref:`exhale_class_classopensn_1_1_orthogonal_mesh_generator`)
+- ``public opensn::SplitFileMeshGenerator`` (:ref:`exhale_class_classopensn_1_1_split_file_mesh_generator`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::MeshGenerator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

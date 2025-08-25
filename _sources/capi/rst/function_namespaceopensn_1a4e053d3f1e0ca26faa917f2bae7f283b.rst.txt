@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a4e053d3f1e0ca26faa917f2bae7f283b:
+
+Function opensn::UploadFaceGeometry
+===================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::UploadFaceGeometry(const CellFace&, const std::vector<uint64_t>&, vtkNew<vtkUnstructuredGrid>&)
+   :project: opensn

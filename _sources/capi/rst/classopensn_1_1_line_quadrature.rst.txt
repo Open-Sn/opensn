@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_line_quadrature:
+
+Class LineQuadrature
+====================
+
+- Defined in :ref:`file_framework_math_quadratures_spatial_line_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SpatialQuadrature`` (:ref:`exhale_class_classopensn_1_1_spatial_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LineQuadrature
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

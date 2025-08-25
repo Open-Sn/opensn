@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_cell_mapping:
+
+Class CellMapping
+=================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::FiniteVolumeMapping`` (:ref:`exhale_class_classopensn_1_1_finite_volume_mapping`)
+- ``public opensn::PieceWiseLinearBaseMapping`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_base_mapping`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CellMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1aba8fba6785de64e8218089045f8675b7:
+
+Variable opensn::suppress_color
+===============================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::suppress_color
+   :project: opensn

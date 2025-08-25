@@ -1,0 +1,44 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h:
+
+Program Listing for File nonlinear_keigen_ags_context.h
+=======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_context.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+   #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h"
+   #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
+   #include <vector>
+   #include <cstdint>
+   
+   namespace opensn
+   {
+   
+   class LBSProblem;
+   
+   struct NLKEigenAGSContext : public NonLinearSolverContext
+   {
+     std::shared_ptr<LBSProblem> lbs_problem;
+     KResidualFunctionContext kresid_func_context;
+   
+     std::vector<int> groupset_ids;
+   
+     explicit NLKEigenAGSContext(const std::shared_ptr<LBSProblem>& lbs_problem)
+       : lbs_problem(lbs_problem), kresid_func_context({lbs_problem->GetName(), 1.0})
+     {
+     }
+   
+     ~NLKEigenAGSContext() override = default;
+   };
+   
+   } // namespace opensn

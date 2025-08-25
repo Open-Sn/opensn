@@ -1,0 +1,41 @@
+
+.. _program_listing_file_framework_math_random_number_generation_random_number_generator.h:
+
+Program Listing for File random_number_generator.h
+==================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_random_number_generation_random_number_generator.h>` (``framework/math/random_number_generation/random_number_generator.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <random>
+   
+   namespace opensn
+   {
+   
+   /// Random number generator based on threefry
+   class RandomNumberGenerator
+   {
+   private:
+     std::mt19937_64 mt1993764_generator_;
+     std::uniform_real_distribution<double> distribution_;
+   
+   public:
+     /// Default constructor. Seeds the generator with a zero.
+     RandomNumberGenerator();
+   
+     /// Constructor where a seed is supplied.
+     RandomNumberGenerator(int seed);
+   
+     /// Generates a random number with the default distribution.
+     double Rand();
+   };
+   
+   } // namespace opensn

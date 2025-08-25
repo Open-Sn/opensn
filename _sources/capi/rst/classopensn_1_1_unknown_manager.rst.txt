@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_unknown_manager:
+
+Class UnknownManager
+====================
+
+- Defined in :ref:`file_framework_math_unknown_manager_unknown_manager.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::UnknownManager
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

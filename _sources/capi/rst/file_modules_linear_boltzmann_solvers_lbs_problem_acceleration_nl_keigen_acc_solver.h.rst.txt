@@ -1,0 +1,56 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h:
+
+File nl_keigen_acc_solver.h
+===========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration>` (``modules/linear_boltzmann_solvers/lbs_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_solver.h``)
+-------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/nonlinear_solver/petsc_nonlinear_solver.h`` (:ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`)
+
+- ``petscsnes.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_n_l_k_eigen_diff_solver`
+

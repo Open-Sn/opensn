@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File hdf_utils.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File hdf_utils.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-hdf-utils-h">
+<span id="program-listing-file-framework-utils-hdf-utils-h"></span><h1>Program Listing for File hdf_utils.h<a class="headerlink" href="#program-listing-for-file-hdf-utils-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_utils_hdf_utils.h.html#file-framework-utils-hdf-utils-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/utils/hdf_utils.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">hid_t</span><span class="w"> </span><span class="n">get_datatype</span><span class="p">();</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_CHAR</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_SCHAR</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_UCHAR</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">short</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_SHORT</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_USHORT</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_INT</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_UINT</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">long</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_LONG</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_ULONG</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_LLONG</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_ULLONG</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_FLOAT</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">hid_t</span>
+<span class="n">get_datatype</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">H5T_NATIVE_DOUBLE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5Has</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">H5Lexists</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5CreateGroup</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">H5Gcreate2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span>
+<span class="n">H5WriteDataset1D</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">hsize_t</span><span class="w"> </span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">maxdims</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">  </span><span class="n">maxdims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">dataspace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Screate_simple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">dim</span><span class="p">,</span><span class="w"> </span><span class="n">maxdims</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dataspace</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Dcreate2</span><span class="p">(</span>
+<span class="w">      </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">dataspace</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dataset</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Dwrite</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">H5S_ALL</span><span class="p">,</span><span class="w"> </span><span class="n">H5S_ALL</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">data</span><span class="p">())</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="n">H5Dclose</span><span class="p">(</span><span class="n">dataset</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">H5Sclose</span><span class="p">(</span><span class="n">dataspace</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span>
+<span class="n">H5CreateAttribute</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">dataspace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Screate</span><span class="p">(</span><span class="n">H5S_SCALAR</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dataspace</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">H5Acreate2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">dataspace</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">attribute</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Awrite</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="n">H5Aclose</span><span class="p">(</span><span class="n">attribute</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">H5Sclose</span><span class="p">(</span><span class="n">dataspace</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span>
+<span class="n">H5ReadDataset1D</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Dopen2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dataset</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">dataspace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Dget_space</span><span class="p">(</span><span class="n">dataset</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dataspace</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">hsize_t</span><span class="w"> </span><span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Sget_simple_extent_dims</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">data</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Dread</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">H5S_ALL</span><span class="p">,</span><span class="w"> </span><span class="n">H5S_ALL</span><span class="p">,</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">data</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="n">data</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="w">          </span><span class="n">data</span><span class="p">.</span><span class="n">shrink_to_fit</span><span class="p">();</span>
+<span class="w">          </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">H5Sclose</span><span class="p">(</span><span class="n">dataspace</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">H5Dclose</span><span class="p">(</span><span class="n">dataset</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aexists</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">()))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Aopen</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">attribute</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">H5Aget_storage_size</span><span class="p">(</span><span class="n">attribute</span><span class="p">));</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+<span class="w">          </span><span class="n">data</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_elements</span><span class="p">);</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aread</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">data</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">          </span><span class="p">{</span>
+<span class="w">            </span><span class="n">data</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="w">            </span><span class="n">data</span><span class="p">.</span><span class="n">shrink_to_fit</span><span class="p">();</span>
+<span class="w">            </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">H5Aclose</span><span class="p">(</span><span class="n">attribute</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span>
+<span class="n">H5ReadAttribute</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aexists</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">()))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Aopen</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">attribute</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aread</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="w"> </span><span class="n">get_datatype</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="n">H5Aclose</span><span class="p">(</span><span class="n">attribute</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5ReadAttribute</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aexists</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">()))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Aopen</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">attribute</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">H5Aget_storage_size</span><span class="p">(</span><span class="n">attribute</span><span class="p">));</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">hid_t</span><span class="w"> </span><span class="n">string_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Tcopy</span><span class="p">(</span><span class="n">H5T_C_S1</span><span class="p">);</span>
+<span class="w">        </span><span class="n">H5Tset_size</span><span class="p">(</span><span class="n">string_type</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buffer</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aread</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="w"> </span><span class="n">string_type</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="n">data</span><span class="p">())</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buffer</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+<span class="w">          </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">H5Aclose</span><span class="p">(</span><span class="n">attribute</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5ReadAttribute</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aexists</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">()))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Aopen</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">attribute</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">H5Aread</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span><span class="w"> </span><span class="n">H5T_NATIVE_INT</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="n">H5Aclose</span><span class="p">(</span><span class="n">attribute</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">bool</span>
+<span class="n">H5ReadGroupAttribute</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">group_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Gopen2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">group_id</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5ReadAttribute</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="n">H5Gclose</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5ReadGroupAttribute</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">group_id</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Gopen2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">group_id</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5ReadAttribute</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="n">H5Gclose</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="n">H5ReadGroupAttribute</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">group_id</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5Gopen2</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">group_id</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="n">H5P_DEFAULT</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">H5I_INVALID_HID</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">H5ReadAttribute</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="n">H5Gclose</span><span class="p">(</span><span class="n">group</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

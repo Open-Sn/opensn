@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a88407f2ba56e0cfaa2207937ef84a206:
+
+Template Function opensn::H5WriteDataset1D
+==========================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5WriteDataset1D(hid_t, const std::string&, std::vector<T>)
+   :project: opensn

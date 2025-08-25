@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_ray_tracer_output_information:
+
+Struct RayTracerOutputInformation
+=================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::RayTracerOutputInformation
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

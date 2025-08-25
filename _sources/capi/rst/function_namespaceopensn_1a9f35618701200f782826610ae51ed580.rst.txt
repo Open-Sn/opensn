@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9f35618701200f782826610ae51ed580:
+
+Function opensn::KSPMonitorRelativeToRHS
+========================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::KSPMonitorRelativeToRHS(KSP, PetscInt, PetscReal, void *)
+   :project: opensn

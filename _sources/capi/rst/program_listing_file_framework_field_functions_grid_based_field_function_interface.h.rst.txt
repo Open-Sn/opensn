@@ -1,0 +1,41 @@
+
+.. _program_listing_file_framework_field_functions_grid_based_field_function_interface.h:
+
+Program Listing for File grid_based_field_function_interface.h
+==============================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_field_functions_grid_based_field_function_interface.h>` (``framework/field_functions/grid_based_field_function_interface.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/field_functions/field_function_interface.h"
+   
+   namespace opensn
+   {
+   
+   class FieldFunctionGridBased;
+   
+   /**
+    * Interface class to add a dependency on a logical volume. Two things need to
+    * be done to use this interface. 1) Derive from it. 2) Add its parameters to
+    * the child class. Now it will require a handle to a GridBasedFieldFunction in
+    * the input language.
+    */
+   class GridBasedFieldFunctionInterface : public FieldFunctionInterface
+   {
+   public:
+     static InputParameters GetInputParameters();
+   
+     explicit GridBasedFieldFunctionInterface(const InputParameters& params);
+   
+     std::shared_ptr<FieldFunctionGridBased> GetGridBasedFieldFunction() const;
+   };
+   
+   } // namespace opensn

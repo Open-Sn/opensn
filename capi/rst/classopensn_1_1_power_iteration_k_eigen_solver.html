@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class PowerIterationKEigenSolver &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class PowerIterationKEigenSolver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-poweriterationkeigensolver">
+<span id="exhale-class-classopensn-1-1-power-iteration-k-eigen-solver"></span><h1>Class PowerIterationKEigenSolver<a class="headerlink" href="#class-poweriterationkeigensolver" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h.html#file-modules-linear-boltzmann-solvers-solvers-pi-keigen-solver-h"><span class="std std-ref">File pi_keigen_solver.h</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::Solver</span></code> (<a class="reference internal" href="classopensn_1_1_solver.html#exhale-class-classopensn-1-1-solver"><span class="std std-ref">Class Solver</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolverE">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PowerIterationKEigenSolver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_solver.html#_CPPv4N6opensn6SolverE" title="opensn::Solver"><span class="n"><span class="pre">Solver</span></span></a><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolverE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver26PowerIterationKEigenSolverERK15InputParameters">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1afa78bc3824d2de5b2ec1568e9eac2403"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PowerIterationKEigenSolver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver26PowerIterationKEigenSolverERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver10InitializeEv">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1ae1805ba33d60677c860e05264919691f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver10InitializeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Initialize function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver7ExecuteEv">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a55334b6c80f60bb2777807190cfd1bcf"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver7ExecuteEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Execution function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn26PowerIterationKEigenSolver13GetEigenvalueEv">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1aacc9e8de66de3a23426b6ae40cddac52"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetEigenvalue</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn26PowerIterationKEigenSolver13GetEigenvalueEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the current k-eigenvalue. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver19SetLBSFissionSourceERKNSt6vectorIdEEb">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a90cb3c1f9ac5585378c33c28a5756e4f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetLBSFissionSource</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">input</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">additive</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver19SetLBSFissionSourceERKNSt6vectorIdEEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Combines function calls to set fission source. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver19SetLBSScatterSourceERKNSt6vectorIdEEbb">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1ad4f21eeb762e9d9fd84f342c02851134"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetLBSScatterSource</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">input</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">additive</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">suppress_wg_scat</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver19SetLBSScatterSourceERKNSt6vectorIdEEbb" title="Link to this definition"></a><br /></dt>
+<dd><p>Combines function calls to set scattering source source. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver18GetInputParametersEv">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a8051f35f74be0c1ec95699958931e97f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver6CreateERK14ParameterBlock">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1aef721ac74e34f7df488a547cbba12f6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn26PowerIterationKEigenSolverE" title="opensn::PowerIterationKEigenSolver"><span class="n"><span class="pre">PowerIterationKEigenSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver6CreateERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver11do_problem_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a483248759caf0af517cf42f097ff28ca"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">do_problem_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver11do_problem_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver13acceleration_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a37a4a9002ed6bb3b599714858701c97b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAccelerationE" title="opensn::DiscreteOrdinatesKEigenAcceleration"><span class="n"><span class="pre">DiscreteOrdinatesKEigenAcceleration</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">acceleration_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver13acceleration_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver10max_iters_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a1faba7b8a3c522acab802ac362ef2c68"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_iters_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver10max_iters_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver6k_eff_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1abb18fe7650188a6104a6fff742c42a70"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k_eff_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver6k_eff_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver12k_tolerance_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1aeaaf17d620fb553f239cb1d085988040"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">k_tolerance_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver12k_tolerance_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver7F_prev_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a19ab97720a9588f0428caae16cfecc6c"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F_prev_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver7F_prev_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver11reset_phi0_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a8a344bed41ea2fec5f1e87a37e231f7b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset_phi0_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver11reset_phi0_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver16q_moments_local_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1afd70e79ce79ff80f51658874a1b25113"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">q_moments_local_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver16q_moments_local_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver14phi_old_local_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a37e3765d6c37ee676e58e81046ed3176"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">phi_old_local_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver14phi_old_local_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver14phi_new_local_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1ab2c2457fe928703d142f9ce7841f44e3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">phi_new_local_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver14phi_new_local_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver10groupsets_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1ab6393a8b1beceeb4f32eb6fafdcb60a1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">groupsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver10groupsets_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver11ags_solver_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a53be8ac6c43debd5fc9dc39ab48a2a19"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_a_g_s_linear_solver.html#_CPPv4N6opensn15AGSLinearSolverE" title="opensn::AGSLinearSolver"><span class="n"><span class="pre">AGSLinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ags_solver_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver11ags_solver_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver27active_set_source_function_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a37384a6adfa30026ca116e168dfe2a30"></span><a class="reference internal" href="typedef_namespaceopensn_1aafd494a5bc37e5f11c981a72b1d55a57.html#_CPPv4N6opensn17SetSourceFunctionE" title="opensn::SetSourceFunction"><span class="n"><span class="pre">SetSourceFunction</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">active_set_source_function_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver27active_set_source_function_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver9front_gs_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1afab179c95d59f1a8dde54efa760a40e5"></span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">front_gs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver9front_gs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver17front_wgs_solver_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1a7de57aa3e8d24d0bd3593b0d4f9e8d2a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_linear_solver.html#_CPPv4N6opensn12LinearSolverE" title="opensn::LinearSolver"><span class="n"><span class="pre">LinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front_wgs_solver_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver17front_wgs_solver_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolver18front_wgs_context_E">
+<span class="target" id="classopensn_1_1_power_iteration_k_eigen_solver_1ae0923cb8ec367e635e9d2353e4ac9982"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_w_g_s_context.html#_CPPv4N6opensn10WGSContextE" title="opensn::WGSContext"><span class="n"><span class="pre">WGSContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front_wgs_context_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26PowerIterationKEigenSolver18front_wgs_context_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source:
+
+
+Directory volumetric_source
+===========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/volumetric_source``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source_volumetric_source.h`
+
+

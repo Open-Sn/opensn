@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_non_linear_solver:
+
+Class NonLinearSolver
+=====================
+
+- Defined in :ref:`file_framework_math_nonlinear_solver_nonlinear_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::PETScNonLinearSolver`` (:ref:`exhale_class_classopensn_1_1_p_e_t_sc_non_linear_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::NonLinearSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

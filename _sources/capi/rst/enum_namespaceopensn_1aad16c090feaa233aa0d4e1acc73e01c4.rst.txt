@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1aad16c090feaa233aa0d4e1acc73e01c4:
+
+Enum AngleSetStatus
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::AngleSetStatus
+   :project: opensn

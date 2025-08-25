@@ -1,0 +1,66 @@
+
+.. _file_framework_math_quadratures_gauss_quadrature.h:
+
+File gauss_quadrature.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures>` (``framework/math/quadratures``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/gauss_quadrature.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_gauss_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``framework/math/quadratures/quadrature_order.h`` (:ref:`file_framework_math_quadratures_quadrature_order.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_quadratures_gausschebyshev_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_gauss_quadrature`
+

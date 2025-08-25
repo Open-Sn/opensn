@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_global_cell_handler:
+
+Class GlobalCellHandler
+=======================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GlobalCellHandler
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

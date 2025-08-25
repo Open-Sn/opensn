@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a7572f9c25cdcbb4dd7c3f787f4d7ad3c:
+
+Variable opensn::sdm_stack
+==========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::sdm_stack
+   :project: opensn

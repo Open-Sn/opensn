@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_parallel_vector:
+
+Class ParallelVector
+====================
+
+- Defined in :ref:`file_framework_data_types_parallel_vector_parallel_vector.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::ParallelSTLVector`` (:ref:`exhale_class_classopensn_1_1_parallel_s_t_l_vector`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ParallelVector
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

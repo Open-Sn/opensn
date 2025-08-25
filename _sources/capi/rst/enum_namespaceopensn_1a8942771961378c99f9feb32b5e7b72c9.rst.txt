@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a8942771961378c99f9feb32b5e7b72c9:
+
+Enum ResidualScaleType
+======================
+
+- Defined in :ref:`file_framework_math_linear_solver_linear_solver_context.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::ResidualScaleType
+   :project: opensn

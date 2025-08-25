@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1acd8e4e1145d66a401858a4c4a6436e89:
+
+Variable opensn::WHITESPACE
+===========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::WHITESPACE
+   :project: opensn

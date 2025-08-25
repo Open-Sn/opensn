@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f:
+
+Template Function opensn::InverseGEPivoting
+===========================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::InverseGEPivoting(const DenseMatrix<TYPE>&)
+   :project: opensn

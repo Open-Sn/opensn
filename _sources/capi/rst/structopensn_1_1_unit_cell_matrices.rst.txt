@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_unit_cell_matrices:
+
+Struct UnitCellMatrices
+=======================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::UnitCellMatrices
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

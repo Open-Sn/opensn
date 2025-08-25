@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1ae619abc2491074c99ce1498a6497e676:
+
+Enum EnergyCollapseScheme
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::EnergyCollapseScheme
+   :project: opensn

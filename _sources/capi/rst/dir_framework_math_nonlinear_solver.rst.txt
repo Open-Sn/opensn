@@ -1,0 +1,24 @@
+.. _dir_framework_math_nonlinear_solver:
+
+
+Directory nonlinear_solver
+==========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/nonlinear_solver``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_nonlinear_solver_nonlinear_solver.h`
+- :ref:`file_framework_math_nonlinear_solver_nonlinear_solver_context.h`
+- :ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver.h`
+- :ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h`
+
+

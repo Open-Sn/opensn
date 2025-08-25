@@ -1,0 +1,28 @@
+.. _exhale_class_classopensn_1_1_mesh_mapping:
+
+Class MeshMapping
+=================
+
+- Defined in :ref:`file_framework_mesh_mesh_mapping_mesh_mapping.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_mapping_1_1_coarse_mapping`
+- :ref:`exhale_struct_structopensn_1_1_mesh_mapping_1_1_fine_mapping`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::MeshMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

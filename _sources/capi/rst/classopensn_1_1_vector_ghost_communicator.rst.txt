@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_vector_ghost_communicator:
+
+Class VectorGhostCommunicator
+=============================
+
+- Defined in :ref:`file_framework_data_types_vector_ghost_communicator_vector_ghost_communicator.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_vector_ghost_communicator_1_1_cached_parallel_data`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VectorGhostCommunicator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aa83a904d5c173c8c54fb7c3128cd91d3:
+
+Function opensn::ComputeL2Change
+================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeL2Change(std::vector<double>&, std::vector<double>&)
+   :project: opensn

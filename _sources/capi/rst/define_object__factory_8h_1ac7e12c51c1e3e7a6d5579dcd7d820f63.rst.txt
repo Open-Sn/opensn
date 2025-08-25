@@ -1,0 +1,14 @@
+.. _exhale_define_object__factory_8h_1ac7e12c51c1e3e7a6d5579dcd7d820f63:
+
+Define OpenSnRegisterObject
+===========================
+
+- Defined in :ref:`file_framework_object_factory.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnRegisterObject
+   :project: opensn

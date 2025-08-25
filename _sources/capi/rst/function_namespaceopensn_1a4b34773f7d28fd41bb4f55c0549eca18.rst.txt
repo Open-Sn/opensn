@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a4b34773f7d28fd41bb4f55c0549eca18:
+
+Function opensn::AssertReadableFile
+===================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::AssertReadableFile(const std::string&)
+   :project: opensn

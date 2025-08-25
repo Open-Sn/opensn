@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1device__dbg_1aa10f2e97df02fe8354e60cfe6b02ee9d:
+
+Function opensn::device_dbg::PrintQuadratureOnDevice
+====================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::device_dbg::PrintQuadratureOnDevice(QuadratureCarrier&)
+   :project: opensn

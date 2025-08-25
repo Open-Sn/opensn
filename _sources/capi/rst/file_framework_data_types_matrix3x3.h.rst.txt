@@ -1,0 +1,70 @@
+
+.. _file_framework_data_types_matrix3x3.h:
+
+File matrix3x3.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/matrix3x3.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_matrix3x3.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``cmath``
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``sstream``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_polygon_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_polyhedron_mapping.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_matrix3x3`
+

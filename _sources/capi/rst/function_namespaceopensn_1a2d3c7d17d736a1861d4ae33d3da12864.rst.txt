@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2d3c7d17d736a1861d4ae33d3da12864:
+
+Function opensn::StringRTrim
+============================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StringRTrim(const std::string&)
+   :project: opensn

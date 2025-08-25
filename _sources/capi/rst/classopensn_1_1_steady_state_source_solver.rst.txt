@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_steady_state_source_solver:
+
+Class SteadyStateSourceSolver
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SteadyStateSourceSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

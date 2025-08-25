@@ -1,0 +1,54 @@
+
+.. _program_listing_file_framework_mesh_mesh.h:
+
+Program Listing for File mesh.h
+===============================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_mesh.h>` (``framework/mesh/mesh.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <cstddef>
+   
+   namespace opensn
+   {
+   
+   enum CoordinateSystemType : int
+   {
+     UNDEFINED = 0,
+     CARTESIAN = 1,
+     CYLINDRICAL = 2,
+     SPHERICAL = 3,
+   };
+   
+   enum MeshType : int
+   {
+     ORTHOGONAL,
+     UNSTRUCTURED
+   };
+   
+   enum BoundaryID : int
+   {
+     XMIN = 0,
+     XMAX = 1,
+     YMIN = 2,
+     YMAX = 3,
+     ZMIN = 4,
+     ZMAX = 5
+   };
+   
+   struct OrthoMeshAttributes
+   {
+     size_t Nx = 0;
+     size_t Ny = 0;
+     size_t Nz = 0;
+   };
+   
+   } // namespace opensn

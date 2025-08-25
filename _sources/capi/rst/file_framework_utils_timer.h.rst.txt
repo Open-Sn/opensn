@@ -1,0 +1,67 @@
+
+.. _file_framework_utils_timer.h:
+
+File timer.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/timer.h``)
+----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_timer.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``chrono``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_timer`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7`
+

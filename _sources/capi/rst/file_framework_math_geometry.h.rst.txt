@@ -1,0 +1,67 @@
+
+.. _file_framework_math_geometry.h:
+
+File geometry.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/geometry.h``)
+------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_geometry.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a767a3047554fa01ccc00ef1cd66e13a2`
+

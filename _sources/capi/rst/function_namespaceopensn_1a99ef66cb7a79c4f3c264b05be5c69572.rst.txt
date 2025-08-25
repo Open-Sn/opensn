@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572:
+
+Function opensn::TranslateBCs
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&, bool)
+   :project: opensn

@@ -1,0 +1,79 @@
+
+.. _file_framework_field_functions_interpolation_ffinterpolation.h:
+
+File ffinterpolation.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_field_functions_interpolation>` (``framework/field_functions/interpolation``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/field_functions/interpolation/ffinterpolation.h``)
+--------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_field_functions_interpolation_ffinterpolation.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_line.h`
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_point.h`
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_volume.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_field_function_interpolation`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a7fb60c5a0aa3e3652e44907021fa19ea`
+
+- :ref:`exhale_enum_namespaceopensn_1a482a4c0110d25c36cc8f18c1096e4ff8`
+
+- :ref:`exhale_enum_namespaceopensn_1aba1a0522f5ba1fa6e03e601c3212372b`
+

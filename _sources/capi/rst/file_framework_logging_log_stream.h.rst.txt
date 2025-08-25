@@ -1,0 +1,66 @@
+
+.. _file_framework_logging_log_stream.h:
+
+File log_stream.h
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_logging>` (``framework/logging``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/logging/log_stream.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_logging_log_stream.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``iostream``
+
+- ``sstream``
+
+- ``stringstream_color.h`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_logging_log.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_dummy_stream`
+
+- :ref:`exhale_struct_structopensn_1_1_dummy_stream_1_1_dummy_stream_buffer`
+
+- :ref:`exhale_class_classopensn_1_1_log_stream`
+

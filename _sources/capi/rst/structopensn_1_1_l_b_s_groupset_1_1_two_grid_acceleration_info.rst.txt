@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_l_b_s_groupset_1_1_two_grid_acceleration_info:
+
+Struct LBSGroupset::TwoGridAccelerationInfo
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_l_b_s_groupset`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::LBSGroupset::TwoGridAccelerationInfo
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

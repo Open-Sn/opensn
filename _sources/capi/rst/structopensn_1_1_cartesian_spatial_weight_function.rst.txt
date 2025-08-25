@@ -1,0 +1,33 @@
+.. _exhale_struct_structopensn_1_1_cartesian_spatial_weight_function:
+
+Struct CartesianSpatialWeightFunction
+=====================================
+
+- Defined in :ref:`file_framework_math_spatial_weight_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SpatialWeightFunction`` (:ref:`exhale_struct_structopensn_1_1_spatial_weight_function`)
+
+
+Derived Types
+*************
+
+- ``public opensn::CylindricalSpatialWeightFunction`` (:ref:`exhale_struct_structopensn_1_1_cylindrical_spatial_weight_function`)
+- ``public opensn::SphericalSpatialWeightFunction`` (:ref:`exhale_struct_structopensn_1_1_spherical_spatial_weight_function`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::CartesianSpatialWeightFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

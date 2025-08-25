@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a09c0dff065711e5f707227d9aca35e80:
+
+Function opensn::PrintSweepOrdering
+===================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PrintSweepOrdering(SPDS *, std::shared_ptr<MeshContinuum>)
+   :project: opensn

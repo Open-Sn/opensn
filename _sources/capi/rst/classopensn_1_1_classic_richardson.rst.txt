@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_classic_richardson:
+
+Class ClassicRichardson
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LinearSystemSolver`` (:ref:`exhale_class_classopensn_1_1_linear_system_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ClassicRichardson
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

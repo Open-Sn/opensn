@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File lbs_structs.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File lbs_structs.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-lbs-structs-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-lbs-structs-h"></span><h1>Program Listing for File lbs_structs.h<a class="headerlink" href="#program-listing-for-file-lbs-structs-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-structs-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/materials/multi_group_xs/multi_group_xs.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/math.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">DirIDs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">///&lt; Direction-IDs</span>
+<span class="k">using</span><span class="w"> </span><span class="n">UniqueSOGroupings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DirIDs</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">DirIDToSOMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SolverType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">DISCRETE_ORDINATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">DIFFUSION_DFEM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">DIFFUSION_CFEM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AngleAggregationType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">UNDEFINED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">SINGLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">POLAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">AZIMUTHAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">LBSBoundaryType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">VACUUM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">     </span><span class="c1">///&lt; Zero for all angles, space</span>
+<span class="w">  </span><span class="n">ISOTROPIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">  </span><span class="c1">///&lt; One value for all angles, homogenous in space</span>
+<span class="w">  </span><span class="n">REFLECTING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="c1">///&lt; Reflecting boundary condition about a normal</span>
+<span class="w">  </span><span class="n">ARBITRARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w">   </span><span class="c1">///&lt; Complex different for each angle and face node</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">BoundaryPreference</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">LBSBoundaryType</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LBSBoundaryType</span><span class="o">::</span><span class="n">VACUUM</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">isotropic_mg_source</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">source_function</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="nc">SourceType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">APPLY_FIXED_SOURCES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">  </span><span class="n">APPLY_WGS_SCATTER_SOURCES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">  </span><span class="n">APPLY_AGS_SCATTER_SOURCES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">  </span><span class="n">APPLY_WGS_FISSION_SOURCES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span>
+<span class="w">  </span><span class="n">APPLY_AGS_FISSION_SOURCES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span>
+<span class="w">  </span><span class="n">SUPPRESS_WG_SCATTER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ZERO_INCOMING_DELAYED_PSI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span>
+<span class="p">};</span>
+
+<span class="c1">/// SourceFlags is a combination of `SourceType`s</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SourceFlags</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// Create an empty `SourceFlags`</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">flags_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Create `SourceFlags` from a `SourceType`</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param type Type to set in the `SourceFlags`</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">flags_</span><span class="p">(</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Add flags using the `|=` operator</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param type Type to set</span>
+<span class="cm">   * \return Combination of our types and new `type`</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">flags_</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Add source using the `|=` operator</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param src Source to add</span>
+<span class="cm">   * \return Combination of our types and new types from `src`</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourceFlags</span><span class="o">&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">flags_</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">src</span><span class="p">.</span><span class="n">flags_</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Test is there are any types set</span>
+<span class="cm">   * \return `true` if there are no types set, `false` otherwise</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">Empty</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">flags_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Unset a type</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param type Type to unset</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Unset</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">flags_</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="n">type</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Test if type is set using the `&amp;` operator</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param type Type to test</span>
+<span class="cm">   * \return `true` if `type` is set, `false` otherwise</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&amp;</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourceType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">flags_</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Combination of `SourceFlags`</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">flags_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Operator to join individual `SourceFlags`s using the `|` operator</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param s1 First source</span>
+<span class="cm"> * \param s2 Second source</span>
+<span class="cm"> * \return Source with types from both sources</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">SourceFlags</span>
+<span class="k">operator</span><span class="o">|</span><span class="p">(</span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">s2</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">s2</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">src</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Two `SourceType`s get combined into `SourceFlags`</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param f1 First source type</span>
+<span class="cm"> * \param f2 Second source type</span>
+<span class="cm"> * \return Source with both types set</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">SourceFlags</span>
+<span class="k">operator</span><span class="o">|</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">f1</span><span class="p">,</span><span class="w"> </span><span class="n">SourceType</span><span class="w"> </span><span class="n">f2</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">src</span><span class="p">;</span>
+<span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">f1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">f2</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">src</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PhiSTLOption</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">PHI_OLD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">PHI_NEW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span><span class="p">;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                                             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">source_flags</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="c1">/// Struct for storing LBS options.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">LBSOptions</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="n">geometry_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GeometryType</span><span class="o">::</span><span class="n">NO_GEOMETRY_SET</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32768</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">restart_writes_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">write_delayed_psi_to_restart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">read_restart_path</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">write_restart_path</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">time_point</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_restart_write_time</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="w"> </span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_precursors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_src_moments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">save_angular_flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_inner_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_ags_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_outer_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">ags_pointwise_convergence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_ags_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">ags_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-6</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">power_field_function_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">power_default_kappa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.20435e-11</span><span class="p">;</span><span class="w"> </span><span class="c1">// 200MeV to Joule</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">power_normalization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">field_function_prefix_option</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;prefix&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">field_function_prefix</span><span class="p">;</span><span class="w"> </span><span class="c1">// Default is empty</span>
+
+<span class="w">  </span><span class="n">LBSOptions</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Transport view of a cell</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CellLBSView</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">phi_address_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_grps_moms_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">*</span><span class="w"> </span><span class="n">xs_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">volume_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_local_flags_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_locality_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">neighbor_cell_ptrs_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">CellLBSView</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">phi_address</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">int</span><span class="w"> </span><span class="n">num_nodes</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">int</span><span class="w"> </span><span class="n">num_moments</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">int</span><span class="w"> </span><span class="n">num_faces</span><span class="p">,</span>
+<span class="w">              </span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_mapping</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">double</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span>
+<span class="w">              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">face_local_flags</span><span class="p">,</span>
+<span class="w">              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">face_locality</span><span class="p">,</span>
+<span class="w">              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">*&gt;&amp;</span><span class="w"> </span><span class="n">neighbor_cell_ptrs</span><span class="p">,</span>
+<span class="w">              </span><span class="kt">bool</span><span class="w"> </span><span class="n">cell_on_boundary</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">phi_address_</span><span class="p">(</span><span class="n">phi_address</span><span class="p">),</span>
+<span class="w">      </span><span class="n">num_nodes_</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">),</span>
+<span class="w">      </span><span class="n">num_groups_</span><span class="p">(</span><span class="n">num_groups</span><span class="p">),</span>
+<span class="w">      </span><span class="n">num_grps_moms_</span><span class="p">(</span><span class="n">num_groups</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_moments</span><span class="p">),</span>
+<span class="w">      </span><span class="n">xs_</span><span class="p">(</span><span class="o">&amp;</span><span class="n">xs_mapping</span><span class="p">),</span>
+<span class="w">      </span><span class="n">volume_</span><span class="p">(</span><span class="n">volume</span><span class="p">),</span>
+<span class="w">      </span><span class="n">face_local_flags_</span><span class="p">(</span><span class="n">face_local_flags</span><span class="p">),</span>
+<span class="w">      </span><span class="n">face_locality_</span><span class="p">(</span><span class="n">face_locality</span><span class="p">),</span>
+<span class="w">      </span><span class="n">neighbor_cell_ptrs_</span><span class="p">(</span><span class="n">neighbor_cell_ptrs</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cell_on_boundary</span><span class="p">)</span>
+<span class="w">      </span><span class="n">outflow_</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_faces</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">MapDOF</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">moment</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">grp</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">phi_address_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_grps_moms_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">num_groups_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">moment</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">grp</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetXS</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">xs_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsFaceLocal</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">face_local_flags_</span><span class="p">[</span><span class="n">f</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">FaceLocality</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">face_locality_</span><span class="p">[</span><span class="n">f</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">*</span><span class="w"> </span><span class="n">FaceNeighbor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">neighbor_cell_ptrs_</span><span class="p">[</span><span class="n">f</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">GetNumNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_nodes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetVolume</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">volume_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ZeroOutflow</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">size</span><span class="p">())</span>
+<span class="w">      </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddOutflow</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">intS_mu_psi</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">        </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span><span class="n">num_groups_</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">size</span><span class="p">())</span>
+<span class="w">        </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">intS_mu_psi</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetOutflow</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">size</span><span class="p">())</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">outflow_</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">g</span><span class="p">];</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ReassignXS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">xs_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">xs</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

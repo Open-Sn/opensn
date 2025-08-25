@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_function_weight_from_rho:
+
+Struct FunctionWeightFromRho
+============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SimplifiedLDFESQ::FunctionWeightFromRho
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

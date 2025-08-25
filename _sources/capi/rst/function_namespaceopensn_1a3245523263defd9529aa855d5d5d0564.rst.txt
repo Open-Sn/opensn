@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3245523263defd9529aa855d5d5d0564:
+
+Function opensn::CheckPointInTriangle
+=====================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckPointInTriangle(const Vector3&, const Vector3&, const Vector3&, const Vector3&, const Vector3&)
+   :project: opensn

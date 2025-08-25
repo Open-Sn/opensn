@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_volumetric_source:
+
+Class VolumetricSource
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source_volumetric_source.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VolumetricSource
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1ad68991c35026374cafaed8fb496b25ca:
+
+Variable opensn::use_caliper
+============================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::use_caliper
+   :project: opensn

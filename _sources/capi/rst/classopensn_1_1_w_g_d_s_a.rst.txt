@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_w_g_d_s_a:
+
+Class WGDSA
+===========
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_wgdsa.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::WGDSA
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

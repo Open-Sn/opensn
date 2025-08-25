@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3e878b4075afbcf9ca067b992d0a59f3:
+
+Function opensn::WGDSA_TGDSA_PreConditionerMult2
+================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::WGDSA_TGDSA_PreConditionerMult2(WGSContext&, Vec, Vec)
+   :project: opensn

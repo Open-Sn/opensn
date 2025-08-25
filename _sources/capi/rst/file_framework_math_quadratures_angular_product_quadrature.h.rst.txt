@@ -1,0 +1,68 @@
+
+.. _file_framework_math_quadratures_angular_product_quadrature.h:
+
+File product_quadrature.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/product_quadrature.h``)
+------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_product_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_quadratures_angular_curvilinear_product_quadrature.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_g_l_c_product_quadrature2_d_x_y`
+
+- :ref:`exhale_class_classopensn_1_1_g_l_c_product_quadrature3_d_x_y_z`
+
+- :ref:`exhale_class_classopensn_1_1_g_l_product_quadrature1_d_slab`
+
+- :ref:`exhale_class_classopensn_1_1_product_quadrature`
+

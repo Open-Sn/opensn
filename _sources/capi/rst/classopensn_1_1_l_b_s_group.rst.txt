@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_l_b_s_group:
+
+Class LBSGroup
+==============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LBSGroup
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

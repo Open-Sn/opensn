@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_function_dim_a_to_dim_b:
+
+Class FunctionDimAToDimB
+========================
+
+- Defined in :ref:`file_framework_math_functions_function_dimA_to_dimB.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::PiecewiseLinear1D`` (:ref:`exhale_class_classopensn_1_1_piecewise_linear1_d`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FunctionDimAToDimB
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

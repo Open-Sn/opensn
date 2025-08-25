@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab32620964e0bc997f9352c15a1eb1d11:
+
+Function opensn::L2Norm
+=======================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::L2Norm(const std::vector<double>&)
+   :project: opensn

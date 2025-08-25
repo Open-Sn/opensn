@@ -1,0 +1,52 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h:
+
+File smm_acceleration.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h``)
+------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_s_m_m_acceleration`
+

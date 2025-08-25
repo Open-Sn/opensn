@@ -1,0 +1,68 @@
+
+.. _file_framework_data_types_byte_array.h:
+
+File byte_array.h
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/byte_array.h``)
+--------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_byte_array.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``cstring``
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_mesh_cell_cell.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_byte_array`
+

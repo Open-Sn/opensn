@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_vector3:
+
+Struct Vector3
+==============
+
+- Defined in :ref:`file_framework_data_types_vector3.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Vector3
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

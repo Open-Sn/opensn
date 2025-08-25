@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options:
+
+Struct PETScLinearSolver::ToleranceOptions
+==========================================
+
+- Defined in :ref:`file_framework_math_linear_solver_petsc_linear_system_solver.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_p_e_t_sc_linear_solver`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::PETScLinearSolver::ToleranceOptions
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

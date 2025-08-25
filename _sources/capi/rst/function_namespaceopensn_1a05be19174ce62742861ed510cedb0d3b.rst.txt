@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a05be19174ce62742861ed510cedb0d3b:
+
+Function opensn::CheckLineIntersectStrip
+========================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckLineIntersectStrip(const Vector3&, const Vector3&, const Vector3&, const Vector3&, const Vector3&, Vector3&, double *)
+   :project: opensn

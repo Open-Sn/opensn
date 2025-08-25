@@ -1,0 +1,109 @@
+
+.. _file_framework_runtime.h:
+
+File runtime.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/runtime.h``)
+------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_runtime.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``caliper/cali-manager.h``
+
+- ``filesystem``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``mpicpp-lite/mpicpp-lite.h``
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_mpi_mpi_comm_set.h`
+
+- :ref:`file_framework_mpi_mpi_utils.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a0fb0f6840b04038a08db15f956fd891d`
+
+- :ref:`exhale_function_namespaceopensn_1ad602f7fa66a81755aa650856acefe62d`
+
+- :ref:`exhale_function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1a93c8c67e4b87eaeee3918094537103c1`
+
+- :ref:`exhale_variable_namespaceopensn_1a99745646867c77a0acbcdb81b78612b9`
+
+- :ref:`exhale_variable_namespaceopensn_1a96c2eeb2c8b472b24980f1cc1f70ac64`
+
+- :ref:`exhale_variable_namespaceopensn_1a533a5f72b6b44523f2b5feecf759fb48`
+
+- :ref:`exhale_variable_namespaceopensn_1a003f0f0d5097c689b4920a514cee5bce`
+
+- :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`
+
+- :ref:`exhale_variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9`
+
+- :ref:`exhale_variable_namespaceopensn_1a5be514f37be476f5acb1f73690d294f3`
+
+- :ref:`exhale_variable_namespaceopensn_1af3fecae321821ae5515300eb3f508615`
+
+- :ref:`exhale_variable_namespaceopensn_1ac6fbe4eb58362a1ed9253c55863b9b84`
+
+- :ref:`exhale_variable_namespaceopensn_1a7572f9c25cdcbb4dd7c3f787f4d7ad3c`
+
+- :ref:`exhale_variable_namespaceopensn_1aba8fba6785de64e8218089045f8675b7`
+
+- :ref:`exhale_variable_namespaceopensn_1ad68991c35026374cafaed8fb496b25ca`
+

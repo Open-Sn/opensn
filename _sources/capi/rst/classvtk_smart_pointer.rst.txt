@@ -1,0 +1,17 @@
+.. _exhale_class_classvtk_smart_pointer:
+
+Template Class vtkSmartPointer
+==============================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: vtkSmartPointer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,58 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h:
+
+File angle_set_group.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h``)
+--------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_angle_set_group`
+

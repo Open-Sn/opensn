@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22:
+
+Function opensn::IsNonNegative
+==============================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::IsNonNegative(const std::vector<double>&)
+   :project: opensn

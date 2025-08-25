@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_from_file_mesh_generator:
+
+Class FromFileMeshGenerator
+===========================
+
+- Defined in :ref:`file_framework_mesh_mesh_generator_from_file_mesh_generator.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::MeshGenerator`` (:ref:`exhale_class_classopensn_1_1_mesh_generator`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FromFileMeshGenerator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

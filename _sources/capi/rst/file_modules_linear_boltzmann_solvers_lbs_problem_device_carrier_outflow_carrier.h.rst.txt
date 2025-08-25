@@ -1,0 +1,64 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h:
+
+File outflow_carrier.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_device_carrier>` (``modules/linear_boltzmann_solvers/lbs_problem/device/carrier``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h``)
+----------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_carrier.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_outflow_carrier`
+

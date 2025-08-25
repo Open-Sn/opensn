@@ -1,0 +1,66 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h:
+
+File point_source.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_point_source>` (``modules/linear_boltzmann_solvers/lbs_problem/point_source``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h``)
+-----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``utility``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_point_source_1_1_subscriber`
+
+- :ref:`exhale_class_classopensn_1_1_point_source`
+

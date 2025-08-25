@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1c7469e26d640f176a31bf4a2e1a5dd4:
+
+Function opensn::CreateSquareMatrix(int64_t, int64_t)
+=====================================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateSquareMatrix(int64_t, int64_t)
+   :project: opensn

@@ -1,0 +1,48 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h:
+
+Program Listing for File steady_state_solver.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h>` (``modules/linear_boltzmann_solvers/solvers/steady_state_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/solver.h"
+   
+   namespace opensn
+   {
+   
+   class LBSProblem;
+   
+   class SteadyStateSourceSolver : public Solver
+   {
+   protected:
+     std::shared_ptr<LBSProblem> lbs_problem_;
+   
+   public:
+     explicit SteadyStateSourceSolver(const InputParameters& params);
+   
+     void Initialize() override;
+   
+     void Execute() override;
+   
+   public:
+     static InputParameters GetInputParameters();
+   
+     static std::shared_ptr<SteadyStateSourceSolver> Create(const ParameterBlock& params);
+   
+   private:
+     bool ReadRestartData();
+   
+     bool WriteRestartData();
+   };
+   
+   } // namespace opensn

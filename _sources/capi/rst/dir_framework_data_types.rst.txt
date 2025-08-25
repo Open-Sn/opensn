@@ -1,0 +1,36 @@
+.. _dir_framework_data_types:
+
+
+Directory data_types
+====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/data_types``
+
+Subdirectories
+--------------
+
+- :ref:`dir_framework_data_types_parallel_vector`
+- :ref:`dir_framework_data_types_sparse_matrix`
+- :ref:`dir_framework_data_types_vector_ghost_communicator`
+
+
+Files
+-----
+
+- :ref:`file_framework_data_types_allowable_range.h`
+- :ref:`file_framework_data_types_byte_array.h`
+- :ref:`file_framework_data_types_dense_matrix.h`
+- :ref:`file_framework_data_types_matrix3x3.h`
+- :ref:`file_framework_data_types_ndarray.h`
+- :ref:`file_framework_data_types_range.h`
+- :ref:`file_framework_data_types_varying.h`
+- :ref:`file_framework_data_types_vector.h`
+- :ref:`file_framework_data_types_vector3.h`
+
+

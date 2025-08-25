@@ -1,0 +1,70 @@
+
+.. _file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h:
+
+File cell_mapping.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_spatial_discretization_cell_mappings>` (``framework/math/spatial_discretization/cell_mappings``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/spatial_discretization/cell_mappings/cell_mapping.h``)
+-----------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
+
+- ``functional``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_volume_finite_volume_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_cell_mapping`
+

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2385799c61ab105543d6b9154a007104:
+
+Function opensn::ConsolidateGridBlocks
+======================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>&, const std::string&)
+   :project: opensn

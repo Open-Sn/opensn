@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360:
+
+Template Function opensn::Dot(const Vector<TYPE>&, const Vector<TYPE>&)
+=======================================================================
+
+- Defined in :ref:`file_framework_data_types_vector.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Dot(const Vector<TYPE>&, const Vector<TYPE>&)
+   :project: opensn

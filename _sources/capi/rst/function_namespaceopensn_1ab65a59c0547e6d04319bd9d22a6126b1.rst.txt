@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab65a59c0547e6d04319bd9d22a6126b1:
+
+Function opensn::CreateVector(int64_t, int64_t)
+===============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateVector(int64_t, int64_t)
+   :project: opensn

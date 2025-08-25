@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003:
+
+Template Function opensn::Add(const Vector<TYPE>&, const Vector<TYPE>&)
+=======================================================================
+
+- Defined in :ref:`file_framework_data_types_vector.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Add(const Vector<TYPE>&, const Vector<TYPE>&)
+   :project: opensn

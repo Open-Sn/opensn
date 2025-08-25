@@ -1,0 +1,42 @@
+.. _exhale_class_classopensn_1_1_p_e_t_sc_linear_solver:
+
+Class PETScLinearSolver
+=======================
+
+- Defined in :ref:`file_framework_math_linear_solver_petsc_linear_system_solver.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LinearSystemSolver`` (:ref:`exhale_class_classopensn_1_1_linear_system_solver`)
+
+
+Derived Type
+************
+
+- ``public opensn::WGSLinearSolver`` (:ref:`exhale_class_classopensn_1_1_w_g_s_linear_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PETScLinearSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

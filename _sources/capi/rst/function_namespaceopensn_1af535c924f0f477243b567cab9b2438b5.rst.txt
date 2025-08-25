@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1af535c924f0f477243b567cab9b2438b5:
+
+Function opensn::StringUpToFirstReverse
+=======================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StringUpToFirstReverse(const std::string&, const std::string&)
+   :project: opensn

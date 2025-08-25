@@ -1,0 +1,26 @@
+.. _exhale_struct_structopensn_1_1is__shared__ptr:
+
+Template Struct is_shared_ptr
+=============================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::false_type``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::is_shared_ptr
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

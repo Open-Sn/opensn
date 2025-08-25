@@ -1,0 +1,51 @@
+
+.. _program_listing_file_framework_math_linear_solver_linear_solver_context.h:
+
+Program Listing for File linear_solver_context.h
+================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_linear_solver_linear_solver_context.h>` (``framework/math/linear_solver/linear_solver_context.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <petscksp.h>
+   
+   namespace opensn
+   {
+   
+   enum class ResidualScaleType
+   {
+     NONE = 0,
+     RHS_NORM = 1,
+     RHS_PRECONDITIONED_NORM = 2,
+     CUSTOM_SCALE = 3
+   };
+   
+   struct LinearSolverContext
+   {
+     virtual int MatrixAction(Mat& matrix, Vec& vector, Vec& action) { return 0; }
+   
+     virtual ~LinearSolverContext() = default;
+   };
+   
+   struct LinearSystemContext : public LinearSolverContext
+   {
+     double rhs_norm = 0.0;
+     double rhs_preconditioned_norm = 0.0;
+     double custom_residual_scale = 1.0;
+     ResidualScaleType residual_scale_type = ResidualScaleType::NONE;
+   };
+   
+   struct LinearEigenContext : public LinearSolverContext
+   {
+     double eigenvalue = 0.0;
+   };
+   
+   } // namespace opensn

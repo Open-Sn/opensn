@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_field_function_grid_based:
+
+Class FieldFunctionGridBased
+============================
+
+- Defined in :ref:`file_framework_field_functions_field_function_grid_based.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::FieldFunction`` (:ref:`exhale_class_classopensn_1_1_field_function`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FieldFunctionGridBased
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,52 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h:
+
+File nonlinear_keigen_ags_residual_func.h
+=========================================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_residual_func.h``)
+--------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``petscsnes.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a6d7b56f4b6e1297b2ec484f0f3a54e45`
+

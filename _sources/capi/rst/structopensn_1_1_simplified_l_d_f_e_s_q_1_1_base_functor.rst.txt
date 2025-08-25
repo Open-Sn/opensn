@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_base_functor:
+
+Struct BaseFunctor
+==================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SimplifiedLDFESQ::BaseFunctor
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

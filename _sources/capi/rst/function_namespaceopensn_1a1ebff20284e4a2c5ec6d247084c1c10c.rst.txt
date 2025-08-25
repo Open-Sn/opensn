@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1ebff20284e4a2c5ec6d247084c1c10c:
+
+Function opensn::ComputePointwiseChange
+=======================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputePointwiseChange(std::vector<double>&, std::vector<double>&)
+   :project: opensn

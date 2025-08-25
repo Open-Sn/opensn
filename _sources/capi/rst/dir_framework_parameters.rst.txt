@@ -1,0 +1,22 @@
+.. _dir_framework_parameters:
+
+
+Directory parameters
+====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/parameters``
+
+
+Files
+-----
+
+- :ref:`file_framework_parameters_input_parameters.h`
+- :ref:`file_framework_parameters_parameter_block.h`
+
+

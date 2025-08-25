@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_surface_mesh_logical_volume:
+
+Class SurfaceMeshLogicalVolume
+==============================
+
+- Defined in :ref:`file_framework_mesh_logical_volume_surface_mesh_logical_volume.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LogicalVolume`` (:ref:`exhale_class_classopensn_1_1_logical_volume`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SurfaceMeshLogicalVolume
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

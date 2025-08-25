@@ -1,0 +1,90 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h:
+
+File acceleration.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration>` (``modules/linear_boltzmann_solvers/lbs_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h``)
+-----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_diffusion_diffusion.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_boundary_condition`
+
+- :ref:`exhale_struct_structopensn_1_1_multigroup___d__and__sig_r`
+
+- :ref:`exhale_struct_structopensn_1_1_two_grid_collapsed_info`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a3b629b63839bb305ccac869491a1d815`
+
+- :ref:`exhale_enum_namespaceopensn_1ae619abc2491074c99ce1498a6497e676`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a08a0e125f82faceba37bfbf70ba2953e`
+
+- :ref:`exhale_function_namespaceopensn_1a1c1246623d517531a8809a3d3b9353cf`
+
+- :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
+

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9acf489324751a3f667a593d348fe4e5:
+
+Function opensn::ComputeBalance
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeBalance(DiscreteOrdinatesProblem&)
+   :project: opensn

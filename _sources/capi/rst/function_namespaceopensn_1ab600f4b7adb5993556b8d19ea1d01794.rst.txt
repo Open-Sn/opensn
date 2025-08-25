@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794:
+
+Function opensn::GetPETScConvergedReasonstring
+==============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetPETScConvergedReasonstring(KSPConvergedReason)
+   :project: opensn

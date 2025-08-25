@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3:
+
+Function opensn::Factorial
+==========================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Factorial(int)
+   :project: opensn

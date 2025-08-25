@@ -1,0 +1,40 @@
+
+.. _program_listing_file_framework_mesh_logical_volume_sphere_logical_volume.h:
+
+Program Listing for File sphere_logical_volume.h
+================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_logical_volume_sphere_logical_volume.h>` (``framework/mesh/logical_volume/sphere_logical_volume.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/logical_volume/logical_volume.h"
+   
+   namespace opensn
+   {
+   
+   /// Spherical logical volume.
+   class SphereLogicalVolume : public LogicalVolume
+   {
+   public:
+     explicit SphereLogicalVolume(const InputParameters& params);
+   
+     bool Inside(const Vector3& point) const override;
+   
+   protected:
+     double r_;
+     double x0_, y0_, z0_;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<SphereLogicalVolume> Create(const ParameterBlock& params);
+   };
+   
+   } // namespace opensn

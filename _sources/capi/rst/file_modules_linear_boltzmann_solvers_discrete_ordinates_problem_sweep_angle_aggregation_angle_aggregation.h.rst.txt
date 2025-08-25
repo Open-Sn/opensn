@@ -1,0 +1,70 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h:
+
+File angle_aggregation.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h``)
+------------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_sweep_scheduler.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_angle_aggregation`
+

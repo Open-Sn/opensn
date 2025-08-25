@@ -1,0 +1,77 @@
+
+.. _file_framework_math_linear_solver_linear_solver_context.h:
+
+File linear_solver_context.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_linear_solver>` (``framework/math/linear_solver``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/linear_solver/linear_solver_context.h``)
+---------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_linear_solver_linear_solver_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``petscksp.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_linear_solver_linear_eigen_solver.h`
+
+- :ref:`file_framework_math_linear_solver_linear_solver.h`
+
+- :ref:`file_framework_math_linear_solver_linear_system_solver.h`
+
+- :ref:`file_framework_math_linear_solver_petsc_linear_system_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_linear_eigen_context`
+
+- :ref:`exhale_struct_structopensn_1_1_linear_solver_context`
+
+- :ref:`exhale_struct_structopensn_1_1_linear_system_context`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a8942771961378c99f9feb32b5e7b72c9`
+

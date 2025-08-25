@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_byte_array:
+
+Class ByteArray
+===============
+
+- Defined in :ref:`file_framework_data_types_byte_array.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ByteArray
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

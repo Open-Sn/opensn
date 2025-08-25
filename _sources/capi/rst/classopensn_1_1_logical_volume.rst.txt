@@ -1,0 +1,30 @@
+.. _exhale_class_classopensn_1_1_logical_volume:
+
+Class LogicalVolume
+===================
+
+- Defined in :ref:`file_framework_mesh_logical_volume_logical_volume.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::BooleanLogicalVolume`` (:ref:`exhale_class_classopensn_1_1_boolean_logical_volume`)
+- ``public opensn::RCCLogicalVolume`` (:ref:`exhale_class_classopensn_1_1_r_c_c_logical_volume`)
+- ``public opensn::RPPLogicalVolume`` (:ref:`exhale_class_classopensn_1_1_r_p_p_logical_volume`)
+- ``public opensn::SphereLogicalVolume`` (:ref:`exhale_class_classopensn_1_1_sphere_logical_volume`)
+- ``public opensn::SurfaceMeshLogicalVolume`` (:ref:`exhale_class_classopensn_1_1_surface_mesh_logical_volume`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LogicalVolume
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

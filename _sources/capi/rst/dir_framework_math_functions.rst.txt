@@ -1,0 +1,23 @@
+.. _dir_framework_math_functions:
+
+
+Directory functions
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/functions``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_functions_function.h`
+- :ref:`file_framework_math_functions_function_dimA_to_dimB.h`
+- :ref:`file_framework_math_functions_piecewise_linear_1d.h`
+
+

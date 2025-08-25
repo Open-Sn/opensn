@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File unknown_manager.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File unknown_manager.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-unknown-manager-h">
+<span id="program-listing-file-framework-math-unknown-manager-unknown-manager-h"></span><h1>Program Listing for File unknown_manager.h<a class="headerlink" href="#program-listing-for-file-unknown-manager-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_math_unknown_manager_unknown_manager.h.html#file-framework-math-unknown-manager-unknown-manager-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/math/unknown_manager/unknown_manager.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="c1">/// Different types of variables.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UnknownType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">SCALAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VECTOR_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VECTOR_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">VECTOR_N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">TENSOR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+<span class="p">};</span>
+
+<span class="c1">/// Nodal variable storage format.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UnknownStorageType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">NODAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="c1">/// Basic class for an variable.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Unknown</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownType</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_components</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">map_begin</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">component_names</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">num_off_block_connections</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">Unknown</span><span class="p">(</span><span class="n">UnknownType</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_components</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">type</span><span class="p">(</span><span class="n">type</span><span class="p">),</span>
+<span class="w">      </span><span class="n">num_components</span><span class="p">((</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UnknownType</span><span class="o">::</span><span class="n">SCALAR</span><span class="p">)</span><span class="w">     </span><span class="o">?</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">                     </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UnknownType</span><span class="o">::</span><span class="n">VECTOR_2</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">                     </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UnknownType</span><span class="o">::</span><span class="n">VECTOR_3</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">                                                       </span><span class="o">:</span><span class="w"> </span><span class="n">num_components</span><span class="p">),</span>
+<span class="w">      </span><span class="n">map_begin</span><span class="p">(</span><span class="n">map_begin</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">component_names</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_components</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">());</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_components</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+
+<span class="w">      </span><span class="kt">char</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+<span class="w">      </span><span class="n">snprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; %03d&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+<span class="w">      </span><span class="n">component_names</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buffer</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">num_off_block_connections</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_components</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GetMap</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">UnknownType</span><span class="o">::</span><span class="no">SCALAR</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">component_number</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_components</span><span class="p">)</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Attempting to access component &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">component_number</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="s">&quot;&gt;=1&quot;</span>
+<span class="w">                                  </span><span class="s">&quot; for a SCALAR unknown.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">UnknownType</span><span class="o">::</span><span class="no">VECTOR_2</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">component_number</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_components</span><span class="p">)</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Attempting to access component &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">component_number</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="s">&quot;&gt;=2&quot;</span>
+<span class="w">                                  </span><span class="s">&quot; for a VECTOR_2 unknown.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">component_number</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">UnknownType</span><span class="o">::</span><span class="no">VECTOR_3</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">component_number</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_components</span><span class="p">)</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Attempting to access component &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">component_number</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="s">&quot;&gt;=3&quot;</span>
+<span class="w">                                  </span><span class="s">&quot; for a VECTOR_3 unknown.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">component_number</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">UnknownType</span><span class="o">::</span><span class="no">VECTOR_N</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">component_number</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_components</span><span class="p">)</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;Attempting to access component &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">component_number</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">            </span><span class="s">&quot;&gt;=&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">num_components</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; for a VECTOR_N unknown.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">component_number</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">UnknownType</span><span class="o">::</span><span class="no">TENSOR</span><span class="p">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">component_number</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_components</span><span class="p">)</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Attempting to access component &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">component_number</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="s">&quot;&gt;=&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">num_components</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; for a TENSOR unknown.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">map_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">component_number</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">map_value</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GetMapEnd</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">map_begin</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">num_components</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GetNumComponents</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_components</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">/// General object for the management of unknowns in mesh-based mathematical model.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownManager</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Unknown</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unknowns</span><span class="p">;</span>
+<span class="w">  </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Constructors</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">UnknownManager</span><span class="p">(</span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnknownStorageType</span><span class="o">::</span><span class="n">NODAL</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">(</span><span class="n">storage_type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">UnknownManager</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">UnknownType</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">unknown_info_list</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnknownStorageType</span><span class="o">::</span><span class="n">NODAL</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">(</span><span class="n">storage_type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uk_info</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unknown_info_list</span><span class="p">)</span>
+<span class="w">      </span><span class="n">AddUnknown</span><span class="p">(</span><span class="n">uk_info</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">uk_info</span><span class="p">.</span><span class="n">second</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">UnknownManager</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Unknown</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">unknown_info_list</span><span class="p">,</span>
+<span class="w">                          </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnknownStorageType</span><span class="o">::</span><span class="n">NODAL</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">(</span><span class="n">storage_type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unknown_info_list</span><span class="p">)</span>
+<span class="w">      </span><span class="n">AddUnknown</span><span class="p">(</span><span class="n">uk</span><span class="p">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">uk</span><span class="p">.</span><span class="n">num_components</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">UnknownManager</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">Unknown</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unknowns</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnknownStorageType</span><span class="o">::</span><span class="n">NODAL</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">(</span><span class="n">storage_type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">uk_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">unknowns</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">AddUnknown</span><span class="p">(</span><span class="n">uk</span><span class="p">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">uk</span><span class="p">.</span><span class="n">num_components</span><span class="p">);</span>
+<span class="w">      </span><span class="n">SetUnknownName</span><span class="p">(</span><span class="n">uk_id</span><span class="p">,</span><span class="w"> </span><span class="n">uk</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
+<span class="w">      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">comp_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comp_name</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">uk</span><span class="p">.</span><span class="n">component_names</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SetUnknownComponentName</span><span class="p">(</span><span class="n">uk_id</span><span class="p">,</span><span class="w"> </span><span class="n">comp_id</span><span class="p">,</span><span class="w"> </span><span class="n">comp_name</span><span class="p">);</span>
+<span class="w">        </span><span class="o">++</span><span class="n">comp_id</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="o">++</span><span class="n">uk_id</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">UnknownManager</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">  </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Utilities</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">UnknownManager</span><span class="w"> </span><span class="nf">GetUnitaryUnknownManager</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">UnknownManager</span><span class="p">({</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">UnknownType</span><span class="o">::</span><span class="n">SCALAR</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumberOfUnknowns</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">unknowns</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Unknown</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetUnknown</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">unknowns</span><span class="p">[</span><span class="n">id</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDOFStorageType</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="n">storage_type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">storage_type</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">UnknownStorageType</span><span class="w"> </span><span class="nf">GetDOFStorageType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">dof_storage_type</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Clear</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">unknowns</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds an unknown to the manager. This method will figure out where the last unknown ends and</span>
+<span class="cm">   * where to begin the next one.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">AddUnknown</span><span class="p">(</span><span class="n">UnknownType</span><span class="w"> </span><span class="n">unk_type</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Maps the unknown&#39;s component within the storage of a node.</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">MapUnknown</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Determines the total number of components over all unknowns.</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetTotalUnknownStructureSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Sets the number of off block connections for the given unknown. All the components will be set</span>
+<span class="cm">   * to the same amount.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUnknownNumOffBlockConnections</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_conn</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Sets the number of off block connections for the given unknown-component pair.</span>
+<span class="w">  </span><span class="kt">void</span>
+<span class="w">  </span><span class="nf">SetUnknownComponentNumOffBlockConnections</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_conn</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Sets a unk_name for the indicated unknown</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUnknownName</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unk_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Sets the component_name to be associated with each component of the unknown.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUnknownComponentName</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span>
+<span class="w">                               </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">component_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">UnknownManager</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

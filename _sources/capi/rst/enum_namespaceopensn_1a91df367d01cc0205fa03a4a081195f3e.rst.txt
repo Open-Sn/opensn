@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a91df367d01cc0205fa03a4a081195f3e:
+
+Enum StringStreamColorCode
+==========================
+
+- Defined in :ref:`file_framework_logging_stringstream_color.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::StringStreamColorCode
+   :project: opensn

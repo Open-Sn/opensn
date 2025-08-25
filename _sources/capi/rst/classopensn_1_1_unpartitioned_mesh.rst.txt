@@ -1,0 +1,30 @@
+.. _exhale_class_classopensn_1_1_unpartitioned_mesh:
+
+Class UnpartitionedMesh
+=======================
+
+- Defined in :ref:`file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_bound_box`
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell`
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face`
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_options`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::UnpartitionedMesh
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

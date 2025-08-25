@@ -1,0 +1,96 @@
+
+.. _file_framework_mesh_cell_cell.h:
+
+File cell.h
+===========
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_cell>` (``framework/mesh/cell``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/cell/cell.h``)
+-------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_cell_cell.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``framework/data_types/byte_array.h`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``tuple``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_slab_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_volume_finite_volume_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+- :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
+
+- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h`
+
+- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h`
+
+- :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+- :ref:`file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_cell`
+
+- :ref:`exhale_class_classopensn_1_1_cell_face`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a710a6656bcc3d8df1f70994d9cede737`
+

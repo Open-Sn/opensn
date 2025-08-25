@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a689545ba1e4b5ee77aff4d480844a91c:
+
+Function opensn::GetBlocksOfDesiredDimension
+============================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetBlocksOfDesiredDimension(std::vector<vtkUGridPtrAndName>&, int)
+   :project: opensn

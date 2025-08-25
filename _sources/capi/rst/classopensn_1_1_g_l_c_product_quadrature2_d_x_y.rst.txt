@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_g_l_c_product_quadrature2_d_x_y:
+
+Class GLCProductQuadrature2DXY
+==============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_product_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::ProductQuadrature`` (:ref:`exhale_class_classopensn_1_1_product_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GLCProductQuadrature2DXY
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

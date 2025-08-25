@@ -1,0 +1,32 @@
+.. _exhale_class_classopensn_1_1_varying_1_1_varying_type:
+
+Class Varying::VaryingType
+==========================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Nested Relationships
+--------------------
+
+This class is a nested type of :ref:`exhale_class_classopensn_1_1_varying`.
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::Varying::VaryingArbitraryType< T >`` (:ref:`exhale_class_classopensn_1_1_varying_1_1_varying_arbitrary_type`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Varying::VaryingType
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

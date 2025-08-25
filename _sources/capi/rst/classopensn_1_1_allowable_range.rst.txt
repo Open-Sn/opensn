@@ -1,0 +1,29 @@
+.. _exhale_class_classopensn_1_1_allowable_range:
+
+Class AllowableRange
+====================
+
+- Defined in :ref:`file_framework_data_types_allowable_range.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::AllowableRangeHighLimit`` (:ref:`exhale_class_classopensn_1_1_allowable_range_high_limit`)
+- ``public opensn::AllowableRangeList`` (:ref:`exhale_class_classopensn_1_1_allowable_range_list`)
+- ``public opensn::AllowableRangeLowHighLimit`` (:ref:`exhale_class_classopensn_1_1_allowable_range_low_high_limit`)
+- ``public opensn::AllowableRangeLowLimit`` (:ref:`exhale_class_classopensn_1_1_allowable_range_low_limit`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AllowableRange
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

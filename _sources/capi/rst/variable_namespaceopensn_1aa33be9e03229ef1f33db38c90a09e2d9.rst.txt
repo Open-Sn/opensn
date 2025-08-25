@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9:
+
+Variable opensn::mpi_comm
+=========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::mpi_comm
+   :project: opensn

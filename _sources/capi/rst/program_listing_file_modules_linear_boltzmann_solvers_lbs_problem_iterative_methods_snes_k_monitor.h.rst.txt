@@ -1,0 +1,26 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h:
+
+Program Listing for File snes_k_monitor.h
+=========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <petscsnes.h>
+   
+   namespace opensn
+   {
+   
+   PetscErrorCode KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void*);
+   PetscErrorCode KEigenKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*);
+   
+   } // namespace opensn

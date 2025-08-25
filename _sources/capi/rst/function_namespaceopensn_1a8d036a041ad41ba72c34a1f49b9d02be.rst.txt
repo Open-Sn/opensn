@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be:
+
+Function opensn::CreateCommonKrylovSolverSetup
+==============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateCommonKrylovSolverSetup(Mat, const std::string&, const std::string&, const std::string&, double, double, int64_t)
+   :project: opensn

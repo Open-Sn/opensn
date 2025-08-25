@@ -1,0 +1,226 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class CellFace &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class CellFace</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-cellface">
+<span id="exhale-class-classopensn-1-1-cell-face"></span><h1>Class CellFace<a class="headerlink" href="#class-cellface" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_mesh_cell_cell.h.html#file-framework-mesh-cell-cell-h"><span class="std std-ref">File cell.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFaceE">
+<span class="target" id="classopensn_1_1_cell_face"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CellFace</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFaceE" title="Link to this definition"></a><br /></dt>
+<dd><p>In this paradigm a face is an object which largely is considered to be planar (meaning all the vertices lay in the same plane). </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace15IsNeighborLocalEPK13MeshContinuum">
+<span class="target" id="classopensn_1_1_cell_face_1a4fc05e20a1eeb319dacd79cc565e7ff0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsNeighborLocal</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace15IsNeighborLocalEPK13MeshContinuum" title="Link to this definition"></a><br /></dt>
+<dd><p>Determines the neighbor’s partition and whether it’s local or not. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace22GetNeighborPartitionIDEPK13MeshContinuum">
+<span class="target" id="classopensn_1_1_cell_face_1ae70f8cda3b16fda991a332cbf1ea759b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNeighborPartitionID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace22GetNeighborPartitionIDEPK13MeshContinuum" title="Link to this definition"></a><br /></dt>
+<dd><p>Determines the neighbor’s partition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace18GetNeighborLocalIDEPK13MeshContinuum">
+<span class="target" id="classopensn_1_1_cell_face_1a4e482ec7e66f5f3f3d92fc256efadb3a"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNeighborLocalID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace18GetNeighborLocalIDEPK13MeshContinuum" title="Link to this definition"></a><br /></dt>
+<dd><p>Determines the neighbor’s local id. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace28GetNeighborAdjacentFaceIndexEPK13MeshContinuum">
+<span class="target" id="classopensn_1_1_cell_face_1a738ad9516d79598ea8bb659204c5fcc4"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNeighborAdjacentFaceIndex</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace28GetNeighborAdjacentFaceIndexEPK13MeshContinuum" title="Link to this definition"></a><br /></dt>
+<dd><p>Determines the neighbor’s associated face. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace20ComputeGeometricInfoEPK13MeshContinuumRK4Cell">
+<span class="target" id="classopensn_1_1_cell_face_1ab2d18032e0e8cff522571742afa5b875"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeGeometricInfo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8CellFace20ComputeGeometricInfoEPK13MeshContinuumRK4Cell" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the geometric info on the face. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace9SerializeEv">
+<span class="target" id="classopensn_1_1_cell_face_1aba02bd6c3e833d27ce0735ce39306a7d"></span><a class="reference internal" href="classopensn_1_1_byte_array.html#_CPPv4N6opensn9ByteArrayE" title="opensn::ByteArray"><span class="n"><span class="pre">ByteArray</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Serialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace9SerializeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Serializes a face into a vector of bytes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8CellFace8ToStringEv">
+<span class="target" id="classopensn_1_1_cell_face_1a2557d4ad5a5581f0906c1a778a523893"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8CellFace8ToStringEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Provides string information of the face. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace20ComputeGeometricInfoEPK13MeshContinuumRK4Cellj">
+<span class="target" id="classopensn_1_1_cell_face_1af728cbf0f9bb17504472762a34a87597"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeGeometricInfo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8CellFace20ComputeGeometricInfoEPK13MeshContinuumRK4Cellj" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace12has_neighborE">
+<span class="target" id="classopensn_1_1_cell_face_1a1847cc77d865f2e149c51747121c8817"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_neighbor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace12has_neighborE" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating whether face has a neighbor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace11neighbor_idE">
+<span class="target" id="classopensn_1_1_cell_face_1a096ff2599af9c4587fc4abcfe53fb098"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">neighbor_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace11neighbor_idE" title="Link to this definition"></a><br /></dt>
+<dd><p>If face has neighbor, contains the global_id, otherwise, contains boundary_id. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace6normalE">
+<span class="target" id="classopensn_1_1_cell_face_1a70456486a89ec7d160e09282606cde22"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">normal</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace6normalE" title="Link to this definition"></a><br /></dt>
+<dd><p>The average/geometric normal. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace8centroidE">
+<span class="target" id="classopensn_1_1_cell_face_1a2f72fc2aabb5e6727ebe9239d6a505d3"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace8centroidE" title="Link to this definition"></a><br /></dt>
+<dd><p>The face centroid. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace4areaE">
+<span class="target" id="classopensn_1_1_cell_face_1ac3ebcb9fbb2376f63d8a821c3ae5e89d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">area</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace4areaE" title="Link to this definition"></a><br /></dt>
+<dd><p>The area of the face. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace10vertex_idsE">
+<span class="target" id="classopensn_1_1_cell_face_1a0de24fbc0203f51c73a06affa4a04950"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_ids</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8CellFace10vertex_idsE" title="Link to this definition"></a><br /></dt>
+<dd><p>A list of the vertices. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8CellFace11DeSerializeERK9ByteArrayR6size_t">
+<span class="target" id="classopensn_1_1_cell_face_1afd59ed7f0c7891859bd6c79ccd8d72a2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn8CellFaceE" title="opensn::CellFace"><span class="n"><span class="pre">CellFace</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeSerialize</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_byte_array.html#_CPPv4N6opensn9ByteArrayE" title="opensn::ByteArray"><span class="n"><span class="pre">ByteArray</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">raw</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">address</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8CellFace11DeSerializeERK9ByteArrayR6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Deserializes a face from a set of raw data. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

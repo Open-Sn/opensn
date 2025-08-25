@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a08a0e125f82faceba37bfbf70ba2953e:
+
+Function opensn::MakeTwoGridCollapsedInfo
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MakeTwoGridCollapsedInfo(const MultiGroupXS&, EnergyCollapseScheme)
+   :project: opensn

@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File spatial_discretization.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File spatial_discretization.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-spatial-discretization-h">
+<span id="program-listing-file-framework-math-spatial-discretization-spatial-discretization-h"></span><h1>Program Listing for File spatial_discretization.h<a class="headerlink" href="#program-listing-for-file-spatial-discretization-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_math_spatial_discretization_spatial_discretization.h.html#file-framework-math-spatial-discretization-spatial-discretization-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/math/spatial_discretization/spatial_discretization.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/cell_mappings/cell_mapping.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/spatial/spatial_quadrature.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/unknown_manager/unknown_manager.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/cell/cell.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/math.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">UNITARY_UNKNOWN_MANAGER</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Utility method for getting node indices seperately for domain internal local nodes, and</span>
+<span class="cm">   * boundary nodes.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&gt;</span>
+<span class="w">  </span><span class="n">MakeCellInternalAndBndryNodeIDs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellMapping</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCellMapping</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">SpatialDiscretizationType</span><span class="w"> </span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the reference grid on which this discretization is based.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.</span>
+<span class="cm">   * The modified vectors are: `nodal_nnz_in_diag` which specifies for each row the number of</span>
+<span class="cm">   * non-zeros in the local diagonal block, `nodal_nnz_off_diag` which specifies for each row the</span>
+<span class="cm">   * number of non-zeros in the off-diagonal block.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildSparsityPattern</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">nodal_nnz_in_diag</span><span class="p">,</span>
+<span class="w">                                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">nodal_nnz_off_diag</span><span class="p">,</span>
+<span class="w">                                    </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Maps the global address of a degree of freedom.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="nf">MapDOF</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Maps the local address of a degree of freedom. This can include ghost entries if the specific</span>
+<span class="w">  </span><span class="c1">/// discretization has any.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="nf">MapDOFLocal</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">unknown_id</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Maps the local address of a degree of freedom. This can include ghost entries if the specific</span>
+<span class="cm">   * discretization has any. Default structure here is a single scalar unknown.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="nf">MapDOF</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Maps the local address of a degree of freedom. This can include ghost entries if the specific</span>
+<span class="cm">   * discretization has any. Default structure here is a single scalar unknown.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="nf">MapDOFLocal</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of local nodes used in this discretization.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumLocalNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of global nodes used in this discretization.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumGlobalNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the unknown structure in the unknown manager, returns the number of local</span>
+<span class="cm">   * degrees-of-freedom.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumLocalDOFs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the unknown structure in the unknown manager, returns the number of global</span>
+<span class="cm">   * degrees-of-freedom.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumGlobalDOFs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the unknown structure in the unknown manager, returns the number of ghost</span>
+<span class="cm">   * degrees-of-freedom.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumGhostDOFs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   *For the unknown structure in the unknown manager, returns the global IDs of all the ghost</span>
+<span class="cm">   * degrees-of-freedom.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGhostDOFIndices</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the unknown structure in the unknown manager, returns the number of local- and ghost</span>
+<span class="cm">   * degrees-of-freedom.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumLocalAndGhostDOFs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the given cell, returns the number of relevant nodes. The same can be achieved by</span>
+<span class="cm">   * retrieving the cell-to-element mapping first.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetCellNumNodes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For the given cell, returns a reference to the relevant node locations. The same can be</span>
+<span class="cm">   * achieved by retrieving the cell-to-element mapping first.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellNodeLocations</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * For each cell, for each face of that cell, for each node on that face, maps to which local</span>
+<span class="cm">   * node on the adjacent cell that node position corresponds.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param tolerance double. Tolerance to use to determine if two node locations are</span>
+<span class="cm">   *                            equal. [Default: 1.0e-12]</span>
+<span class="cm">   *</span>
+<span class="cm">   *  For example consider two adjacent quadrilaterals.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \verbatim</span>
+<span class="cm">   * o--------o--------o                       o--------o</span>
+<span class="cm">   * |3      2|3      2|                       |    2   |</span>
+<span class="cm">   * |  101   |   102  | , face ids for both:  |3      1|</span>
+<span class="cm">   * |0      1|0      1|                       |    0   |</span>
+<span class="cm">   * o--------o--------o                       o--------o</span>
+<span class="cm">   * internal face for cell 101 is face-1, ccw orientated</span>
+<span class="cm">   * --o</span>
+<span class="cm">   *  1|</span>
+<span class="cm">   *   |</span>
+<span class="cm">   *  0|</span>
+<span class="cm">   * --o</span>
+<span class="cm">   * internal face for cell 102 is face-3, ccw orientated</span>
+<span class="cm">   * o-</span>
+<span class="cm">   * |0</span>
+<span class="cm">   * |</span>
+<span class="cm">   * |1</span>
+<span class="cm">   * o-</span>
+<span class="cm">   *</span>
+<span class="cm">   * mapping[101][1][0] = 0</span>
+<span class="cm">   * mapping[101][1][1] = 3</span>
+<span class="cm">   *</span>
+<span class="cm">   * mapping[102][3][0] = 2</span>
+<span class="cm">   * mapping[102][3][1] = 1</span>
+<span class="cm">   * \endverbatim</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;&gt;</span>
+<span class="w">  </span><span class="n">MakeInternalFaceNodeMappings</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Copy part of vector A to vector B. Suppose vector A&#39;s entries are managed `UnknownManager` A</span>
+<span class="cm">   * (`uk_manA`) and that the entries of the vector B are managed by `UnknownManager` B (`uk_manB`).</span>
+<span class="cm">   * This function copies the entries associated with an unknown with id `uk_id_A` in `uk_manA` from</span>
+<span class="cm">   * vector A to vector B such that the entries in vector B are aligned with the entries of an</span>
+<span class="cm">   * unknown with id `uk_id_B` in `uk_manB`. All the components are copied.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param from_vector Vector to copy from.</span>
+<span class="cm">   * \param to_vector Vector to copy to.</span>
+<span class="cm">   * \param from_vec_uk_structure Unknown manager for vector A.</span>
+<span class="cm">   * \param from_vec_uk_id Unknown-id in unknown manager A.</span>
+<span class="cm">   * \param to_vec_uk_structure Unknown manager for vector B.</span>
+<span class="cm">   * \param to_vec_uk_id Unknown-id in unknown manager B.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyVectorWithUnknownScope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">from_vector</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">to_vector</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">from_vec_uk_structure</span><span class="p">,</span>
+<span class="w">                                  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">from_vec_uk_id</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">to_vec_uk_structure</span><span class="p">,</span>
+<span class="w">                                  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">to_vec_uk_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Develops a localized view of a petsc vector. Each spatial discretization can have a</span>
+<span class="cm">   * specialization of this method.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">LocalizePETScVector</span><span class="p">(</span><span class="n">Vec</span><span class="w"> </span><span class="n">petsc_vector</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">local_vector</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Develops a localized view of a petsc vector. Each spatial discretization can have a</span>
+<span class="cm">   * specialization of this method.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">LocalizePETScVectorWithGhosts</span><span class="p">(</span><span class="n">Vec</span><span class="w"> </span><span class="n">petsc_vector</span><span class="p">,</span>
+<span class="w">                                             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">local_vector</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Cartesian coordinate system spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">CartesianSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Cylindrical coordinate system (RZ) spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">CylindricalRZSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Spherical coordinate system (1D Spherical) spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">Spherical1DSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">SpatialWeightFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the spatial weighting function appropriate to the discretization&#39;s coordinate system.</span>
+<span class="w">  </span><span class="n">SpatialWeightFunction</span><span class="w"> </span><span class="nf">GetSpatialWeightingFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">SpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">SpatialDiscretization</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">SpatialDiscretizationType</span><span class="w"> </span><span class="n">sdm_type</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">CellMapping</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">cell_mappings_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">CellMapping</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">nb_cell_mappings_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_block_address_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locJ_block_address_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locJ_block_size_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_base_block_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_base_block_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretizationType</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde:
+
+Template Function opensn::Scale(DenseMatrix<TYPE>&, TYPE)
+=========================================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Scale(DenseMatrix<TYPE>&, TYPE)
+   :project: opensn

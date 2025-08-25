@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a710a6656bcc3d8df1f70994d9cede737:
+
+Function opensn::CellTypeName
+=============================
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CellTypeName(CellType)
+   :project: opensn

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1abd3fa1f9d91fc4c479aa1e5bb9cf00b7:
+
+Template Function opensn::Mult(const DenseMatrix<TYPE>&, const Vector<TYPE>&)
+=============================================================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Mult(const DenseMatrix<TYPE>&, const Vector<TYPE>&)
+   :project: opensn

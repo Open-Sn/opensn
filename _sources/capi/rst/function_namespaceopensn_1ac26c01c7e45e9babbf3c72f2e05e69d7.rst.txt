@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7:
+
+Function opensn::Sleep
+======================
+
+- Defined in :ref:`file_framework_utils_timer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Sleep(std::chrono::duration<double>)
+   :project: opensn

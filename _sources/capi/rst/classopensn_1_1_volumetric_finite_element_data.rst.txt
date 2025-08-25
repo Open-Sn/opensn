@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_volumetric_finite_element_data:
+
+Class VolumetricFiniteElementData
+=================================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_finite_element_data.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::SurfaceFiniteElementData`` (:ref:`exhale_class_classopensn_1_1_surface_finite_element_data`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VolumetricFiniteElementData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

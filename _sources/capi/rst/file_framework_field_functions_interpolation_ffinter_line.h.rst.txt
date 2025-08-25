@@ -1,0 +1,54 @@
+
+.. _file_framework_field_functions_interpolation_ffinter_line.h:
+
+File ffinter_line.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_field_functions_interpolation>` (``framework/field_functions/interpolation``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/field_functions/interpolation/ffinter_line.h``)
+-----------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_field_functions_interpolation_ffinter_line.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``framework/field_functions/interpolation/ffinterpolation.h`` (:ref:`file_framework_field_functions_interpolation_ffinterpolation.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_field_function_interpolation_line`
+

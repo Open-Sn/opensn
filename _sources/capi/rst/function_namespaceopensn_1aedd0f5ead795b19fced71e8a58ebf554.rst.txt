@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aedd0f5ead795b19fced71e8a58ebf554:
+
+Template Function opensn::Range
+===============================
+
+- Defined in :ref:`file_framework_data_types_range.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Range(T, T, D)
+   :project: opensn

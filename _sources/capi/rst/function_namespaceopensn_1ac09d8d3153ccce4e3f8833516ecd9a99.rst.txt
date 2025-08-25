@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac09d8d3153ccce4e3f8833516ecd9a99:
+
+Function opensn::hash_djb2a
+===========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::hash_djb2a(const std::string_view)
+   :project: opensn

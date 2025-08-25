@@ -1,0 +1,66 @@
+
+.. _file_modules_solver.h:
+
+File solver.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_modules>` (``modules``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/solver.h``)
+---------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``iostream``
+
+- ``utility``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_solver`
+

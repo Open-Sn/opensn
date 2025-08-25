@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face:
+
+Struct UnpartitionedMesh::LightWeightFace
+=========================================
+
+- Defined in :ref:`file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_unpartitioned_mesh`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::UnpartitionedMesh::LightWeightFace
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

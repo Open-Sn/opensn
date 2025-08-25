@@ -1,0 +1,60 @@
+
+.. _file_modules_diffusion_diffusion_mip_solver.h:
+
+File diffusion_mip_solver.h
+===========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_diffusion>` (``modules/diffusion``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/diffusion/diffusion_mip_solver.h``)
+---------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_diffusion_diffusion_mip_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/functions/function.h`` (:ref:`file_framework_math_functions_function.h`)
+
+- ``modules/diffusion/diffusion.h`` (:ref:`file_modules_diffusion_diffusion.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_diffusion_m_i_p_solver`
+

@@ -1,0 +1,68 @@
+
+.. _file_framework_data_types_parallel_vector_parallel_stl_vector.h:
+
+File parallel_stl_vector.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types_parallel_vector>` (``framework/data_types/parallel_vector``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/parallel_vector/parallel_stl_vector.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_parallel_vector_parallel_stl_vector.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``framework/data_types/parallel_vector/parallel_vector.h`` (:ref:`file_framework_data_types_parallel_vector_parallel_vector.h`)
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``mpicpp-lite/mpicpp-lite.h``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_parallel_s_t_l_vector`
+

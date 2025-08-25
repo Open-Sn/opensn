@@ -1,0 +1,69 @@
+
+.. _file_framework_math_functions_function_dimA_to_dimB.h:
+
+File function_dimA_to_dimB.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_functions>` (``framework/math/functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/functions/function_dimA_to_dimB.h``)
+-----------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_functions_function_dimA_to_dimB.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``functional``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_functions_piecewise_linear_1d.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_function_dim_a_to_dim_b`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1a003837ff9e3681f8435682c359f65651`
+
+- :ref:`exhale_typedef_namespaceopensn_1ae53af89aad1c3d272bebcbdbfff860d7`
+

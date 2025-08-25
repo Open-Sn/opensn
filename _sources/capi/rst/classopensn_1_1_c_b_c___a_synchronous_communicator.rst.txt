@@ -1,0 +1,36 @@
+.. _exhale_class_classopensn_1_1_c_b_c___a_synchronous_communicator:
+
+Class CBC_ASynchronousCommunicator
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___a_synchronous_communicator_1_1_buffer_item`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::AsynchronousCommunicator`` (:ref:`exhale_class_classopensn_1_1_asynchronous_communicator`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CBC_ASynchronousCommunicator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

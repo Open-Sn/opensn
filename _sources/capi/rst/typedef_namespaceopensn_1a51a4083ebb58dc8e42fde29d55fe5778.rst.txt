@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a51a4083ebb58dc8e42fde29d55fe5778:
+
+Typedef opensn::UniqueSOGroupings
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::UniqueSOGroupings
+   :project: opensn

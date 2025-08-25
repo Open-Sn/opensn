@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_boundary_condition:
+
+Struct BoundaryCondition
+========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::BoundaryCondition
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

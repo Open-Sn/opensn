@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_k_b_a_graph_partitioner_1_1_coordinate_info:
+
+Struct KBAGraphPartitioner::CoordinateInfo
+==========================================
+
+- Defined in :ref:`file_framework_graphs_kba_graph_partitioner.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_k_b_a_graph_partitioner`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::KBAGraphPartitioner::CoordinateInfo
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

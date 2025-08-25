@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a97d808c24531d22343e840533a950f11:
+
+Function opensn::CommunicateGhostEntries
+========================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CommunicateGhostEntries(Vec)
+   :project: opensn

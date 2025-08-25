@@ -1,0 +1,23 @@
+.. _dir_modules:
+
+
+Directory modules
+=================
+
+
+*Directory path:* ``modules``
+
+Subdirectories
+--------------
+
+- :ref:`dir_modules_diffusion`
+- :ref:`dir_modules_linear_boltzmann_solvers`
+
+
+Files
+-----
+
+- :ref:`file_modules_problem.h`
+- :ref:`file_modules_solver.h`
+
+

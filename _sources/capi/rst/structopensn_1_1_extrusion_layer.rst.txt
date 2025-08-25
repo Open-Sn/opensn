@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_extrusion_layer:
+
+Struct ExtrusionLayer
+=====================
+
+- Defined in :ref:`file_framework_mesh_mesh_generator_extruder_mesh_generator.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::ExtrusionLayer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

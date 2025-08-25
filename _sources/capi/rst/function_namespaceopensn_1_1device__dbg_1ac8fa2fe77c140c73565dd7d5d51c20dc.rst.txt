@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1device__dbg_1ac8fa2fe77c140c73565dd7d5d51c20dc:
+
+Function opensn::device_dbg::PrintTotalXSOnDevice
+=================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_xs.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::device_dbg::PrintTotalXSOnDevice(TotalXSCarrier&)
+   :project: opensn

@@ -1,0 +1,76 @@
+
+.. _file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h:
+
+File unpartitioned_mesh.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_unpartitioned_mesh>` (``framework/mesh/unpartitioned_mesh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h``)
+-----------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_mesh_io_mesh_io.h`
+
+- :ref:`file_framework_mesh_mesh_generator_mesh_generator.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_bound_box`
+
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell`
+
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face`
+
+- :ref:`exhale_struct_structopensn_1_1_unpartitioned_mesh_1_1_options`
+
+- :ref:`exhale_class_classopensn_1_1_unpartitioned_mesh`
+

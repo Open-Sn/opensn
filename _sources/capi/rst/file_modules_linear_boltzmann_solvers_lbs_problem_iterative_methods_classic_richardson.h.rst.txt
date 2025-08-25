@@ -1,0 +1,62 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h:
+
+File classic_richardson.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h``)
+----------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/linear_solver/linear_system_solver.h`` (:ref:`file_framework_math_linear_solver_linear_system_solver.h`)
+
+- ``functional``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_classic_richardson`
+

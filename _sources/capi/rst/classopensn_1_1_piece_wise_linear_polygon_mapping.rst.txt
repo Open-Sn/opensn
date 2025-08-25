@@ -1,0 +1,36 @@
+.. _exhale_class_classopensn_1_1_piece_wise_linear_polygon_mapping:
+
+Class PieceWiseLinearPolygonMapping
+===================================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_polygon_mapping.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_piece_wise_linear_polygon_mapping_1_1_f_eside__data2d`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::PieceWiseLinearBaseMapping`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_base_mapping`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PieceWiseLinearPolygonMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ae6c13df7c25e90f9bc22f343fc3dacae:
+
+Function opensn::VaryingDataTypeStringName
+==========================================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::VaryingDataTypeStringName(VaryingDataType)
+   :project: opensn

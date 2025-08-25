@@ -1,0 +1,25 @@
+.. _dir_framework_math_linear_solver:
+
+
+Directory linear_solver
+=======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/linear_solver``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_linear_solver_linear_eigen_solver.h`
+- :ref:`file_framework_math_linear_solver_linear_solver.h`
+- :ref:`file_framework_math_linear_solver_linear_solver_context.h`
+- :ref:`file_framework_math_linear_solver_linear_system_solver.h`
+- :ref:`file_framework_math_linear_solver_petsc_linear_system_solver.h`
+
+

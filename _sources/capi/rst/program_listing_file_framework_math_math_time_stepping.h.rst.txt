@@ -1,0 +1,36 @@
+
+.. _program_listing_file_framework_math_math_time_stepping.h:
+
+Program Listing for File math_time_stepping.h
+=============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_math_time_stepping.h>` (``framework/math/math_time_stepping.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <string>
+   
+   namespace opensn
+   {
+   
+   enum class SteppingMethod
+   {
+     NONE = 0,
+     EXPLICIT_EULER = 1,
+     IMPLICIT_EULER = 2,
+     CRANK_NICOLSON = 3,
+     THETA_SCHEME = 4,
+   };
+   
+   /// Returns the string name of a time stepping method.
+   std::string SteppingMethodStringName(SteppingMethod);
+   SteppingMethod SteppingMethodFromString(const std::string& name);
+   
+   } // namespace opensn

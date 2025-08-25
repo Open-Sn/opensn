@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Logger &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class Logger</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-logger">
+<span id="exhale-class-classopensn-1-1-logger"></span><h1>Class Logger<a class="headerlink" href="#class-logger" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_logging_log.h.html#file-framework-logging-log-h"><span class="std std-ref">File log.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6LoggerE">
+<span class="target" id="classopensn_1_1_logger"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Logger</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6LoggerE" title="Link to this definition"></a><br /></dt>
+<dd><p>Object for controlling logging.</p>
+<p><em>Part A: Output logs</em></p>
+<p>There are three levels of verbosity in OpenSn: Zero(Default), One and Two. These can be set on the command line via the switch -v followed by a space and the number for the verbosity (0,1 or 2).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">opensn</span> <span class="n">InputFile</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Printing a log under the auspices of a verbosity level again has numerous options. Firstly, any log can be a normal log, a warning or an error. Secondly, a log can be either location 0 or all the locations in a parallel process environment. The log option enums defined under <a class="reference internal" href="#classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81"><span class="std std-ref">LOG_LVL</span></a> are<ul class="simple">
+<li><p>LOG_0, Used only for location 0</p></li>
+<li><p>LOG_0WARNING, Warning only for location 0</p></li>
+<li><p>LOG_0ERROR, Error only for location 0</p></li>
+<li><p>LOG_0VERBOSE_0, Default verbosity level</p></li>
+<li><p>LOG_0VERBOSE_1, Used only if verbosity level equals 1</p></li>
+<li><p>LOG_0VERBOSE_2, Used only if verbosity level equals 2</p></li>
+<li><p>LOG_ALL, Verbose level 0 all locations</p></li>
+<li><p>LOG_ALLWARNING, Warning for any location</p></li>
+<li><p>LOG_ALLERROR, Error for any location</p></li>
+<li><p>LOG_ALLVERBOSE_0, Default verbosity level</p></li>
+<li><p>LOG_ALLVERBOSE_1, Used only if verbosity level equals 1</p></li>
+<li><p>LOG_ALLVERBOSE_2, Used only if verbosity level equals 2</p></li>
+</ul>
+</p>
+<p>A log can be made by first connecting code with the logger. This is done by including the log header and then defining an extern reference to the global object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;framework/logging/log.h&quot;</span>
+<span class="n">extern</span> <span class="n">Logger</span><span class="o">&amp;</span> <span class="n">opensn</span><span class="p">::</span><span class="n">log</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A log is then written inside a piece of code as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">void</span> <span class="n">PrintSomethingToLog</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">opensn</span><span class="p">::</span><span class="n">log</span><span class="o">.</span><span class="n">Log</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;This is printed on location 0 only&quot;</span><span class="p">;</span>
+  <span class="n">opensn</span><span class="p">::</span><span class="n">log</span><span class="o">.</span><span class="n">Log0Warning</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;This is a warning&quot;</span><span class="p">;</span>
+  <span class="n">opensn</span><span class="p">::</span><span class="n">log</span><span class="o">.</span><span class="n">Log0Error</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;This is an error&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="n">This</span> <span class="ow">is</span> <span class="n">printed</span> <span class="n">on</span> <span class="n">location</span> <span class="mi">0</span> <span class="n">only</span>
+<span class="o">*</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">****</span> <span class="n">WARNING</span> <span class="o">****</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">warning</span>
+<span class="o">*</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">****</span>  <span class="n">ERROR</span>  <span class="o">****</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">error</span>
+<span class="o">*</span>
+</pre></div>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVLE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_LVL</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVLE" title="Link to this definition"></a><br /></dt>
+<dd><p>Logging level. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL5LOG_0E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81af2367ce26b4ed405c029389e0aa0b9e2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL5LOG_0E" title="Link to this definition"></a><br /></dt>
+<dd><p>Used only for location 0. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL12LOG_0WARNINGE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81af7a209b80fdd739d0469002e6509a6ab"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0WARNING</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL12LOG_0WARNINGE" title="Link to this definition"></a><br /></dt>
+<dd><p>Warning only for location 0. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL10LOG_0ERRORE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81af8b85d53e0601967917ee7f9f2e13bfd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0ERROR</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL10LOG_0ERRORE" title="Link to this definition"></a><br /></dt>
+<dd><p>Error only for location 0. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_0E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a237d089c0c3c7c12fea5e80fca9b3ee1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0VERBOSE_0</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_0E" title="Link to this definition"></a><br /></dt>
+<dd><p>Default verbosity level. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_1E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a50f575c272304a8f1d8b18418751d625"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0VERBOSE_1</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_1E" title="Link to this definition"></a><br /></dt>
+<dd><p>Used only if verbosity level equals 1. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_2E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81af11f41527726738fff8449ec905141fe"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_0VERBOSE_2</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL14LOG_0VERBOSE_2E" title="Link to this definition"></a><br /></dt>
+<dd><p>Used only if verbosity level equals 2. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL7LOG_ALLE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a352930c7f046a2a2734406a2a8084f86"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALL</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL7LOG_ALLE" title="Link to this definition"></a><br /></dt>
+<dd><p>Verbose level 0 all locations. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL14LOG_ALLWARNINGE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a24dcc4411b4700634ebcb277c61128d0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALLWARNING</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL14LOG_ALLWARNINGE" title="Link to this definition"></a><br /></dt>
+<dd><p>Warning for any location. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL12LOG_ALLERRORE">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a8e162c48dba1ee0e5680cebf78429c45"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALLERROR</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL12LOG_ALLERRORE" title="Link to this definition"></a><br /></dt>
+<dd><p>Error for any location. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_0E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81aa3207fa85af57cfc687998966c1a07d7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALLVERBOSE_0</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_0E" title="Link to this definition"></a><br /></dt>
+<dd><p>Default verbosity level. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_1E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81a67bd1053e04d37df4120a3b359a7fba9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALLVERBOSE_1</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_1E" title="Link to this definition"></a><br /></dt>
+<dd><p>Used only if verbosity level equals 1. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_2E">
+<span class="target" id="classopensn_1_1_logger_1a5625f751adfa319e47c18923396ade81ac54b6a37fc207c80ce2182d7847cf119"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOG_ALLVERBOSE_2</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger7LOG_LVL16LOG_ALLVERBOSE_2E" title="Link to this definition"></a><br /></dt>
+<dd><p>Used only if verbosity level equals 2. </p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger6LoggerERK6Logger">
+<span class="target" id="classopensn_1_1_logger_1a0950b346d09cb4fc72885f5b30e5e7ff"></span><span class="sig-name descname"><span class="n"><span class="pre">Logger</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn6Logger6LoggerERK6Logger" title="opensn::Logger::Logger"><span class="n"><span class="pre">Logger</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger6LoggerERK6Logger" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6LoggeraSERK6Logger">
+<span class="target" id="classopensn_1_1_logger_1ac031f4ce3b7bdf3a70af7b48e19a1047"></span><a class="reference internal" href="#_CPPv4N6opensn6LoggerE" title="opensn::Logger"><span class="n"><span class="pre">Logger</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn6LoggerE" title="opensn::Logger"><span class="n"><span class="pre">Logger</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6opensn6LoggeraSERK6Logger" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger12SetVerbosityEi">
+<span class="target" id="classopensn_1_1_logger_1a192363b97c418ae391206d05967e0c2a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetVerbosity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger12SetVerbosityEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn6Logger12GetVerbosityEv">
+<span class="target" id="classopensn_1_1_logger_1a823312813954185283ffa1659d562427"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetVerbosity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn6Logger12GetVerbosityEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger3LogE7LOG_LVL">
+<span class="target" id="classopensn_1_1_logger_1a41f2bb57e2f48ebded06edf538b18fb7"></span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn6Logger7LOG_LVLE" title="opensn::Logger::LOG_LVL"><span class="n"><span class="pre">LOG_LVL</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn6Logger7LOG_LVL5LOG_0E" title="opensn::Logger::LOG_0"><span class="n"><span class="pre">LOG_0</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger3LogE7LOG_LVL" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger4Log0Ev">
+<span class="target" id="classopensn_1_1_logger_1a6d580f2a7fa96952da294489f32899ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger4Log0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger11Log0WarningEv">
+<span class="target" id="classopensn_1_1_logger_1a2faa50652b5b1a3d0fb2ba9fcaa1c735"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0Warning</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger11Log0WarningEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger9Log0ErrorEv">
+<span class="target" id="classopensn_1_1_logger_1ab0cf4a93ebdb73ddf1ad9b3d74268df9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0Error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger9Log0ErrorEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger12Log0Verbose0Ev">
+<span class="target" id="classopensn_1_1_logger_1a1fdf5eee70eedc0a0d3341a9e36adc7a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0Verbose0</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger12Log0Verbose0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger12Log0Verbose1Ev">
+<span class="target" id="classopensn_1_1_logger_1a79a320777b7b3d2d5eafd98524b03163"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0Verbose1</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger12Log0Verbose1Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger12Log0Verbose2Ev">
+<span class="target" id="classopensn_1_1_logger_1a6e6d65e7be82f5d537a8d0e90bbc5893"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log0Verbose2</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger12Log0Verbose2Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger6LogAllEv">
+<span class="target" id="classopensn_1_1_logger_1a8c415df3427094220dd113e364d44589"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger6LogAllEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger13LogAllWarningEv">
+<span class="target" id="classopensn_1_1_logger_1aefb0ce604ed01841b2ed43bacf15eb2f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAllWarning</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger13LogAllWarningEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger11LogAllErrorEv">
+<span class="target" id="classopensn_1_1_logger_1a48a56117fcc50ac3ed7543755999ff42"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAllError</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger11LogAllErrorEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger14LogAllVerbose0Ev">
+<span class="target" id="classopensn_1_1_logger_1a12924444d594ec8d2d41f3cda0ce7316"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAllVerbose0</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger14LogAllVerbose0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger14LogAllVerbose1Ev">
+<span class="target" id="classopensn_1_1_logger_1a3ad5ceab25bd838c663005b9ebfad4e7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAllVerbose1</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger14LogAllVerbose1Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger14LogAllVerbose2Ev">
+<span class="target" id="classopensn_1_1_logger_1ab4ad61a6273e662ca7b19579ab3120da"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_log_stream.html#_CPPv4N6opensn9LogStreamE" title="opensn::LogStream"><span class="n"><span class="pre">LogStream</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogAllVerbose2</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger14LogAllVerbose2Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger11GetInstanceEv">
+<span class="target" id="classopensn_1_1_logger_1a28d75758495ffa48e6c8585be657f84a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn6LoggerE" title="opensn::Logger"><span class="n"><span class="pre">Logger</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetInstance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6opensn6Logger11GetInstanceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

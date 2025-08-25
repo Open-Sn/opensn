@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac23ecd54e0cc0c0694dfa47a6b154e8d:
+
+Template Function opensn::H5ReadDataset1D
+=========================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5ReadDataset1D(hid_t, const std::string&, std::vector<T>&)
+   :project: opensn

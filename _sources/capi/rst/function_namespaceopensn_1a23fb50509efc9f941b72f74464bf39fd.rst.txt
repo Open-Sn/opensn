@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a23fb50509efc9f941b72f74464bf39fd:
+
+Function opensn::UpperCase
+==========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::UpperCase(const std::string&)
+   :project: opensn

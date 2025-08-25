@@ -1,0 +1,26 @@
+
+.. _namespace_opensn__SimplifiedLDFESQ:
+
+Namespace opensn::SimplifiedLDFESQ
+==================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_base_functor`
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_function_weight_from_rho`
+
+- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_spherical_quadrilateral`
+
+- :ref:`exhale_class_classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature`

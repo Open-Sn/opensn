@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_grid_face_histogram:
+
+Class GridFaceHistogram
+=======================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_face_histogram.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GridFaceHistogram
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

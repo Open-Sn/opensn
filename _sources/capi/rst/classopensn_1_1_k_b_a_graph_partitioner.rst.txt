@@ -1,0 +1,36 @@
+.. _exhale_class_classopensn_1_1_k_b_a_graph_partitioner:
+
+Class KBAGraphPartitioner
+=========================
+
+- Defined in :ref:`file_framework_graphs_kba_graph_partitioner.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_k_b_a_graph_partitioner_1_1_coordinate_info`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::GraphPartitioner`` (:ref:`exhale_class_classopensn_1_1_graph_partitioner`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::KBAGraphPartitioner
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

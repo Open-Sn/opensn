@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_timer:
+
+Class Timer
+===========
+
+- Defined in :ref:`file_framework_utils_timer.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Timer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

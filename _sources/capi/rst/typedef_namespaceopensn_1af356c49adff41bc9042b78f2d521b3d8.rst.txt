@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8:
+
+Typedef opensn::DirIDs
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::DirIDs
+   :project: opensn

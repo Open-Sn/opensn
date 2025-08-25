@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_vector_ghost_communicator_1_1_cached_parallel_data:
+
+Struct VectorGhostCommunicator::CachedParallelData
+==================================================
+
+- Defined in :ref:`file_framework_data_types_vector_ghost_communicator_vector_ghost_communicator.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_vector_ghost_communicator`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::VectorGhostCommunicator::CachedParallelData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

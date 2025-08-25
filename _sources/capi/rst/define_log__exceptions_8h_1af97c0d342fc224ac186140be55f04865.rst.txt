@@ -1,0 +1,14 @@
+.. _exhale_define_log__exceptions_8h_1af97c0d342fc224ac186140be55f04865:
+
+Define OpenSnLogicalErrorIf
+===========================
+
+- Defined in :ref:`file_framework_logging_log_exceptions.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnLogicalErrorIf
+   :project: opensn

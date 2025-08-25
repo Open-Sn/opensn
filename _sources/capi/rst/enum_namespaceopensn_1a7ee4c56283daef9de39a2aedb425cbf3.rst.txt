@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a7ee4c56283daef9de39a2aedb425cbf3:
+
+Enum SolverType
+===============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::SolverType
+   :project: opensn

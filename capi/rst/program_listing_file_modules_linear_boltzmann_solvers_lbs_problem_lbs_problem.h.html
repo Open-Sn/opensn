@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File lbs_problem.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File lbs_problem.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-lbs-problem-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-lbs-problem-h"></span><h1>Program Listing for File lbs_problem.h<a class="headerlink" href="#program-listing-for-file-lbs-problem-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-problem-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/problem.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/spatial_discretization.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/linear_solver/linear_solver.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/finite_element/unit_cell_matrices.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;any&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GridFaceHistogram</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeIntegration</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AGSLinearSolver</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WGSLinearSolver</span><span class="p">;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">WGSContext</span><span class="p">;</span>
+
+<span class="c1">/// Base class for all Linear Boltzmann Solvers.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Problem</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">LBSProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns a reference to the solver options.</span>
+<span class="w">  </span><span class="n">LBSOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOptions</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns a constant reference to the solver options.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOptions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetXSMapEntryBlock</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of moments for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumMoments</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of groups for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the scattering order for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetScatteringOrder</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the number of precursors for the solver. This will only be non-zero after</span>
+<span class="cm">   * initialization.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumPrecursors</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the maximum number of precursors defined on any material. This will only be non-zero</span>
+<span class="cm">   * after initialization.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetMaxPrecursorsPerMaterial</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds a group to the list of groups. If group id &lt; 0, the id will be logically derived from the</span>
+<span class="cm">   * list size. If &gt;= 0 the id will be set to the id specified.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGroup</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroup</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds a groupset to the list of groupsets. The groupset id will be logically derived from the</span>
+<span class="cm">   * list size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGroupset</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroupsets</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroupsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds a point source to the solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddPointSource</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">point_source</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Clears all the point sources from the solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearPointSources</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Constant accessor to the list of point sources.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetPointSources</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds a volumetric source to the solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddVolumetricSource</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">volumetric_source</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Clears all the volumetric sources from the solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearVolumetricSources</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Constant accessor to the list of volumetric sources.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetVolumetricSources</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetLastRestartTime</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns a reference to the map of material ids to XSs.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MultiGroupXS</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetMatID2XSMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Obtains a reference to the grid.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Get pointer to carriers.</span>
+<span class="w">  </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">GetCarrier</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">carriers_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get pointer to pinners.</span>
+<span class="w">  </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">GetPinner</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">pinners_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Obtains a reference to the spatial discretization.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetSpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns read-only access to the unit cell matrices.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetUnitCellMatrices</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns read-only access to the unit ghost cell matrices.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetUnitGhostCellMatrices</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns a reference to the list of local cell transport views.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellTransportViews</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/Write access to the boundary preferences.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryPreference</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaryPreferences</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Obtains a reference to the unknown manager for flux-moments.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetUnknownManager</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the local node count for the flux-moments data structures.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetLocalNodeCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the global node count for the flux-moments data structures.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetGlobalNodeCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to source moments vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetQMomentsLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to source moments vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetQMomentsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to exterior src moments vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetExtSrcMomentsLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to exterior src moments vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetExtSrcMomentsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to last updated flux vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPhiOldLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to last updated flux vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPhiOldLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to newest updated flux vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPhiNewLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to newest updated flux vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPhiNewLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to newest updated precursors vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPrecursorsNewLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to newest updated precursors vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPrecursorsNewLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to newest updated angular flux vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetPsiNewLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to newest updated angular flux vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetPsiNewLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Read/write access to the cell-wise densities.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDensitiesLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to the cell-wise densities.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDensitiesLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="nf">GetActiveSetSourceFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetAGSSolver</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetWGSSolvers</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">WGSContext</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetWGSContext</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gets the local and global number of iterative unknowns. This normally is only the flux moments,</span>
+<span class="cm">   * however, the sweep based solvers might include delayed angular fluxes in this number.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetNumPhiIterativeUnknowns</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Gets the local handle of a flux-moment based field function.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">MapPhiFieldFunction</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the power generation field function, if enabled.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPowerFieldFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Initializes default materials and physics materials.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeMaterials</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">last_restart_write_time</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateRestartWriteTime</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">options_</span><span class="p">.</span><span class="n">last_restart_write_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Makes a source-moments vector from scattering and fission based on the latest phi-solution.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MakeSourceMomentsFromPhi</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Copy relevant section of phi_old to the field functions.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateFieldFunctions</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Sets the internal phi vector to the value in the associated field function.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPhiFromFieldFunctions</span><span class="p">(</span><span class="n">PhiSTLOption</span><span class="w"> </span><span class="n">which_phi</span><span class="p">,</span>
+<span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">m_indices</span><span class="p">,</span>
+<span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">g_indices</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * A method for post-processing an adjoint solution.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @note This does nothing for diffusion-based solvers.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Performs general input checks before initialization continues.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PerformInputChecks</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Prints header information of simulation.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSpatialDiscretization</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeUnitIntegrals</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Initializes common groupset items.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGroupsets</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Computes the number of moments for the given mesher types</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAndComputeScatteringMoments</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Initializes parallel arrays.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParrays</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeFieldFunctions</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Initializes boundaries.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaries</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeWGSSolvers</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="w">  </span><span class="c1">/// Initializes data carriers to GPUs and memory pinner.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGPUExtras</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Reset data carriers to null and unpin memory.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetGPUCarriers</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">LBSOptions</span><span class="w"> </span><span class="n">options_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_moments_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">scattering_order_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_precursors_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_precursors_per_material_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroup</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groupsets_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MultiGroupXS</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">block_id_to_xs_map_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">point_sources_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">volumetric_sources_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span><span class="w"> </span><span class="n">discretization_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_nodal_mappings_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MPICommunicatorSet</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_local_comm_set_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_cell_matrices_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_ghost_cell_matrices_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_transport_views_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryPreference</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_preferences_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">flux_moments_uk_man_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_cell_dof_count_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_node_count_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_node_count_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">q_moments_local_</span><span class="p">,</span><span class="w"> </span><span class="n">ext_src_moments_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_new_local_</span><span class="p">,</span><span class="w"> </span><span class="n">phi_old_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">psi_new_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursor_new_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">densities_local_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">active_set_source_function_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_field_functions_local_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">power_gen_fieldfunc_local_handle_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Time integration parameter meant to be set by an executor</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">TimeIntegration</span><span class="o">&gt;</span><span class="w"> </span><span class="n">time_integration_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * @brief Data carriers for necessary data to run the sweep on GPU.</span>
+<span class="cm">   * @details These objects manage GPU memory allocation automatically, organize cross-section,</span>
+<span class="cm">   * outflow, and mesh data into contiguous memory on the CPU, and handle copying it to the GPU.</span>
+<span class="cm">   *</span>
+<span class="cm">   * There are 3 carriers, respectively for cross sections, outflow and mesh.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">carriers_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Memory pinner for source moments and destination phi.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pinners_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Flag indicating if GPU acceleration is enabled.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Checks if the current CPU is associated with any GPU.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckCapableDevices</span><span class="p">();</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">supported_boundary_names</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">supported_boundary_ids</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the input parameters for this object.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_x_s_view:
+
+Struct XSView
+=============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_xs_view.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::XSView
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

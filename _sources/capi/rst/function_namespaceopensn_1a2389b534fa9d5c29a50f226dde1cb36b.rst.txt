@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2389b534fa9d5c29a50f226dde1cb36b:
+
+Function opensn::StringSplit
+============================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StringSplit(const std::string&, const std::string&)
+   :project: opensn

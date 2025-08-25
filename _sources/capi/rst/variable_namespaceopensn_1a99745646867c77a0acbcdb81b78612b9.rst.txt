@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a99745646867c77a0acbcdb81b78612b9:
+
+Variable opensn::cali_mgr
+=========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::cali_mgr
+   :project: opensn

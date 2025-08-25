@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File sldfe_sq_quadrature.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File sldfe_sq_quadrature.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-sldfe-sq-quadrature-h">
+<span id="program-listing-file-framework-math-quadratures-angular-sldfe-sq-quadrature-h"></span><h1>Program Listing for File sldfe_sq_quadrature.h<a class="headerlink" href="#program-listing-for-file-sldfe-sq-quadrature-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_math_quadratures_angular_sldfe_sq_quadrature.h.html#file-framework-math-quadratures-angular-sldfe-sq-quadrature-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/math/quadratures/angular/sldfe_sq_quadrature.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/angular/angular_quadrature.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/gausslegendre_quadrature.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/dense_matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/matrix3x3.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/math.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">SimplifiedLDFESQ</span>
+<span class="p">{</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SphericalQuadrilateral</span><span class="p">;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FunctionWeightFromRho</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Quadrature</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Base Functor to inherit from to change the function to integrate in one of the integration</span>
+<span class="cm"> * utilities.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">BaseFunctor</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="kt">double</span><span class="w"> </span><span class="n">mu</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">eta</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">xi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">BaseFunctor</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace SimplifiedLDFESQ</span>
+
+<span class="c1">/// Serves as a general data structure for a spherical quadrilateral (SQ).</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SimplifiedLDFESQ</span><span class="o">::</span><span class="n">SphericalQuadrilateral</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// On square</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices_xy_tilde</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// On cube face</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices_xyz_prime</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// On unit sphere</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices_xyz</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">centroid_xyz</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">rotation_matrix</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">translation_vector</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sub_sqr_points</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sub_sqr_weights</span><span class="p">{};</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">octant_modifier</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Piecewise-linear Finite element quadrature using quadrilaterals.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplifiedLDFESQ</span><span class="o">::</span><span class="n">Quadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngularQuadrature</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">QuadraturePointOptimization</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CENTROID</span><span class="p">,</span>
+<span class="w">    </span><span class="n">EMPIRICAL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ISOLATED</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">//    MULTI_VARIATE_SECANT</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="n">QuadraturePointOptimization</span><span class="w"> </span><span class="n">qp_optimization_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuadraturePointOptimization</span><span class="o">::</span><span class="n">EMPIRICAL</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">output_filename_prefix</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Inscribed cude side length</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.57735026919</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">initial_level_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">diagonal_vertices_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SphericalQuadrilateral</span><span class="o">&gt;</span><span class="w"> </span><span class="n">initial_octant_SQs_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SphericalQuadrilateral</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deployed_SQs</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SphericalQuadrilateral</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deployed_SQs_history_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">FunctionWeightFromRho</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Quadrature</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span><span class="n">AngularQuadratureType</span><span class="o">::</span><span class="n">SLDFESQ</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">Quadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">GenerateInitialRefinement</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Generates diagonal spacings.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">GenerateDiagonalSpacings</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Generates the standard points on the reference face.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">GenerateReferenceFaceVertices</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rotation_matrix</span><span class="p">,</span>
+<span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">translation</span><span class="p">,</span>
+<span class="w">                                     </span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Develops LDFE quantities.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DevelopSQLDFEValues</span><span class="p">(</span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span><span class="w"> </span><span class="n">GaussLegendreQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">legendre</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Applies empirical quadrature point optimization.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">EmpiricalQPOptimization</span><span class="p">(</span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">GaussLegendreQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">legendre</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq_xy_tilde_centroid</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">radii_vectors_xy_tilde</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">sub_sub_sqr_areas</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">IsolatedQPOptimization</span><span class="p">(</span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">GaussLegendreQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">legendre</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq_xy_tilde_centroid</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">radii_vectors_xy_tilde</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">sub_sub_sqr_areas</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Computes the area of a cell. This routine uses Girard&#39;s theorem to get the area of a spherical</span>
+<span class="cm">   * triangle using the spherical excess.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">ComputeSphericalQuadrilateralArea</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">vertices_xyz</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Integrates shape functions to produce weights.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">IntegrateLDFEShapeFunctions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">shape_coeffs</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">legendre_qpoints</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">legendre_qweights</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Deploys the current set of SQs to all octants.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyToAllOctants</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Populates the quadrature abscissaes, weights and direction vectors.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PopulateQuadratureAbscissae</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Performs a simple Riemann integral of a base functor.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">RiemannIntegral</span><span class="p">(</span><span class="n">BaseFunctor</span><span class="o">*</span><span class="w"> </span><span class="n">F</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Ni</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20000</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Performs a quadrature integral of a base functor using the supplied SQs.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">QuadratureSSIntegral</span><span class="p">(</span><span class="n">BaseFunctor</span><span class="o">*</span><span class="w"> </span><span class="n">F</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Performs a test integration of predefined cases.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">TestIntegration</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">test_case</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">ref_solution</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">RiemannN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Prints the quadrature to file.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">PrintQuadratureToFile</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Locally refines the cells.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">LocallyRefine</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ref_dir</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">cone_size</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">dir_as_plane_normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Split a SQ.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">SphericalQuadrilateral</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SplitSQ</span><span class="p">(</span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span>
+<span class="w">                                                </span><span class="n">GaussLegendreQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">legendre</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This is a utility function that encapsulates all the necessary functionality to determine shape</span>
+<span class="cm"> * function coefficients and integrate accross a spherical quadrilateral.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SimplifiedLDFESQ</span><span class="o">::</span><span class="n">FunctionWeightFromRho</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Quadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sldfesq</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">centroid_xy_tilde</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">radii_vectors_xy_tilde</span><span class="p">;</span>
+<span class="w">  </span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rhs</span><span class="p">;</span>
+<span class="w">  </span><span class="n">DenseMatrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">;</span>
+<span class="w">  </span><span class="n">DenseMatrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A_inv</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">c_coeffs</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Legendre quadrature points</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">lqp</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Legendre quadrature weights</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">lqw</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">FunctionWeightFromRho</span><span class="p">(</span><span class="n">SimplifiedLDFESQ</span><span class="o">::</span><span class="n">Quadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sldfesq</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">centroid_xy_tilde</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">radii_vectors_xy_tilde</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">SphericalQuadrilateral</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sq</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">GaussLegendreQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">legendre_quadrature</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">sldfesq</span><span class="p">(</span><span class="n">sldfesq</span><span class="p">),</span>
+<span class="w">      </span><span class="n">centroid_xy_tilde</span><span class="p">(</span><span class="n">centroid_xy_tilde</span><span class="p">),</span>
+<span class="w">      </span><span class="n">radii_vectors_xy_tilde</span><span class="p">(</span><span class="n">radii_vectors_xy_tilde</span><span class="p">),</span>
+<span class="w">      </span><span class="n">sq</span><span class="p">(</span><span class="n">sq</span><span class="p">),</span>
+<span class="w">      </span><span class="n">A</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span>
+<span class="w">      </span><span class="n">A_inv</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">),</span>
+<span class="w">      </span><span class="n">lqp</span><span class="p">(</span><span class="n">legendre_quadrature</span><span class="p">.</span><span class="n">qpoints</span><span class="p">),</span>
+<span class="w">      </span><span class="n">lqw</span><span class="p">(</span><span class="n">legendre_quadrature</span><span class="p">.</span><span class="n">weights</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Init RHS</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">rhs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="w">      </span><span class="n">c_coeffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">);</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">        </span><span class="n">rhs</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Computes the quadrature point locations from rho, followed by the shape-function coefficients</span>
+<span class="cm">   * and then the integral of the shape function to get the weights.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rho</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Determine qpoints from rho</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">qpoints</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">xy_tilde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">centroid_xy_tilde</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rho</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">radii_vectors_xy_tilde</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">xyz_prime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sq</span><span class="p">.</span><span class="n">rotation_matrix</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">xy_tilde</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sq</span><span class="p">.</span><span class="n">translation_vector</span><span class="p">;</span>
+<span class="w">      </span><span class="n">qpoints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xyz_prime</span><span class="p">.</span><span class="n">Normalized</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Assemble A</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="n">A</span><span class="p">.</span><span class="n">SetRow</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">({</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">qpoints</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">qpoints</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">qpoints</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]}));</span>
+
+<span class="w">    </span><span class="c1">// Compute A-inverse</span>
+<span class="w">    </span><span class="n">A_inv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Inverse</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Compute coefficients</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="n">c_coeffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mult</span><span class="p">(</span><span class="n">A_inv</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">SimplifiedLDFESQ</span><span class="o">::</span><span class="n">Quadrature</span><span class="o">::</span><span class="n">IntegrateLDFEShapeFunctions</span><span class="p">(</span><span class="n">sq</span><span class="p">,</span><span class="w"> </span><span class="n">c_coeffs</span><span class="p">,</span><span class="w"> </span><span class="n">lqp</span><span class="p">,</span><span class="w"> </span><span class="n">lqw</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

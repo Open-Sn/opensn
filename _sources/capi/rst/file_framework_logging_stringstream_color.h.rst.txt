@@ -1,0 +1,67 @@
+
+.. _file_framework_logging_stringstream_color.h:
+
+File stringstream_color.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_logging>` (``framework/logging``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/logging/stringstream_color.h``)
+-------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_logging_stringstream_color.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``unistd.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_logging_log_stream.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a91df367d01cc0205fa03a4a081195f3e`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ad12401c0c7a6ca4e9c8e7e5a199eba20`
+

@@ -1,0 +1,62 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h:
+
+File discrete_ordinates_keigen_acceleration.h
+=============================================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h``)
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_scdsa_acceleration.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_k_eigen_acceleration_1_1_ghost_info`
+
+- :ref:`exhale_class_classopensn_1_1_discrete_ordinates_k_eigen_acceleration`
+

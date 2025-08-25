@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a3f993b12e1915b453f150e1c467d8d68:
+
+Enum CoordinateSystemType
+=========================
+
+- Defined in :ref:`file_framework_mesh_mesh.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::CoordinateSystemType
+   :project: opensn

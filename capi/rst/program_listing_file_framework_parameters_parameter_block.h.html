@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File parameter_block.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File parameter_block.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-parameter-block-h">
+<span id="program-listing-file-framework-parameters-parameter-block-h"></span><h1>Program Listing for File parameter_block.h<a class="headerlink" href="#program-listing-for-file-parameter-block-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_parameters_parameter_block.h.html#file-framework-parameters-parameter-block-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/parameters/parameter_block.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/varying.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ParameterBlockType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">INVALID_VALUE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">BOOLEAN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">FLOAT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">STRING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">INTEGER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="n">USER_DATA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ARRAY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">98</span><span class="p">,</span>
+<span class="w">  </span><span class="n">BLOCK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ParameterBlockTypeName</span><span class="p">(</span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterBlock</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A ParameterBlock is a conceptually simple data structure that supports a hierarchy of primitive</span>
+<span class="cm"> * parameters. There really are just 4 member variables on a ParameterBlock object, they are 1) the</span>
+<span class="cm"> * type (as an enum), 2) the name of the block, 3) a pointer to a value (which can only be a</span>
+<span class="cm"> * primitive type), and 4) a vector of child parameters.</span>
+<span class="cm"> *</span>
+<span class="cm"> * If a ParameterBlock has a primitive type, i.e., BOOLEAN, FLOAT, STRING, or INTEGER, then the</span>
+<span class="cm"> * value_ptr will contain a pointer to the value of a primitive type. Otherwise, for types ARRAY and</span>
+<span class="cm"> * BLOCK, the ParameterBlock will not have a value_ptr and instead the vector member will contain</span>
+<span class="cm"> * sub-parameters.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterBlock</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">BLOCK</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Varying</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value_ptr_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameters_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Unknown Scope&quot;</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Sets the name of the block.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetBlockName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Helpers</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsBool</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsFloat</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_floating_point_v</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsString</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsInteger</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_integral_v</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsUserData</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_pointer_v</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">is_shared_ptr_v</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">or</span>
+<span class="w">                                   </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_class_v</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">))</span><span class="w"> </span><span class="k">and</span>
+<span class="w">                                  </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// Constructors</span>
+<span class="w">  </span><span class="c1">/// Constructs an empty parameter block with the given name and type BLOCK.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Derived type constructor</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">array</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">type_</span><span class="p">(</span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">ARRAY</span><span class="p">),</span><span class="w"> </span><span class="n">name_</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">array</span><span class="p">)</span>
+<span class="w">      </span><span class="n">AddParameter</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">k</span><span class="o">++</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Constructs one of the fundamental types.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">name_</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_supported</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IsBool</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">IsFloat</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">IsString</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="w"> </span><span class="k">or</span>
+<span class="w">                                  </span><span class="n">IsInteger</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">IsUserData</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">is_supported</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Value type not supported for parameter block&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsBool</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">BOOLEAN</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsFloat</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">FLOAT</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsString</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">STRING</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsInteger</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">INTEGER</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">IsUserData</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">USER_DATA</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">value_ptr_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">Varying</span><span class="o">&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Copy constructor</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Copy assignment operator</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Move constructor</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="p">(</span><span class="n">ParameterBlock</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Move assignment operator</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">ParameterBlock</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Accessors</span>
+<span class="w">  </span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns true if the parameter block comprises a single value of any of the types BOOLEAN,</span>
+<span class="cm">   * FLOAT, STRING, INTEGER.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsScalar</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns a string version of the type.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetTypeName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Varying</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of parameters in a block. This is normally only useful for the ARRAY type.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumParameters</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the sub-parameters of this block.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetParameters</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns whether or not the block has a value. If this block has sub-parameters it should not</span>
+<span class="cm">   * have a value. This is a good way to check if the block is actually a single value because some</span>
+<span class="cm">   * Parameter blocks can be passed as empty.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Mutators</span>
+
+<span class="w">  </span><span class="c1">/// Changes the block type to array, making it accessible via integer keys.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ChangeToArray</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Sets a string to be displayed alongside exceptions that give some notion of the origin of the</span>
+<span class="w">  </span><span class="c1">/// error.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetErrorOriginScope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">scope</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Gets a string that allows error messages to print the scope of an error.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetErrorOriginScope</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">error_origin_scope_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Requirements</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Checks that the block is of the given type. If it is not it will throw an exception</span>
+<span class="cm">   * `std::logic_error`.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireBlockTypeIs</span><span class="p">(</span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireParameterBlockTypeIs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">,</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">GetParam</span><span class="p">(</span><span class="n">param_name</span><span class="p">).</span><span class="n">RequireBlockTypeIs</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Check that the parameter with the given name exists otherwise throws a `std::logic_error`.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireParameter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// utilities</span>
+
+<span class="w">  </span><span class="c1">/// Adds a parameter to the sub-parameter list.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddParameter</span><span class="p">(</span><span class="n">ParameterBlock</span><span class="w"> </span><span class="n">block</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Makes a ParameterBlock and adds it to the sub-parameters list.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddParameter</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">AddParameter</span><span class="p">(</span><span class="n">ParameterBlock</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Sorts the sub-parameter list according to name. This is useful for regression testing.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SortParameters</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns true if a parameter with the specified name is in the list of sub-parameters.</span>
+<span class="w">  </span><span class="c1">/// Otherwise, false.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Has</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Gets a parameter by name.</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetParam</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Gets a parameter by index.</span>
+<span class="w">  </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetParam</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Gets a parameter by name.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetParam</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Gets a parameter by index.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetParam</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the value of the parameter.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">T</span><span class="w"> </span><span class="n">GetValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value_ptr_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                             </span><span class="s">&quot;: Value not available for block type &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                             </span><span class="n">ParameterBlockTypeName</span><span class="p">(</span><span class="n">GetType</span><span class="p">()));</span>
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">GetValue</span><span class="p">().</span><span class="n">GetValue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exc</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;:&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">GetName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exc</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Fetches the parameter with the given name and returns it value.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">T</span><span class="w"> </span><span class="n">GetParamValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetParam</span><span class="p">(</span><span class="n">param_name</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="n">GetValue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="o">&amp;</span><span class="w"> </span><span class="n">oor</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                              </span><span class="s">&quot;: Parameter </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">param_name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s"> not present in block&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Fetches the parameter of type std::shared_ptr&lt;T&gt; with the given name and returns its value.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Will perform checking on whether or not the pointed-to-object is null (if \p check = true)</span>
+<span class="cm">   *</span>
+<span class="cm">   * The optional second template argument can be used to attempt to cast the object</span>
+<span class="cm">   * to the derived type and will throw an exception if the cast fails.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Derived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetSharedPtrParam</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_base_of_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;T is not a base of derived&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">GetParamValue</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">param_name</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                               </span><span class="s">&quot;: shared_ptr param is null&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">derived_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">dynamic_pointer_cast</span><span class="o">&lt;</span><span class="n">Derived</span><span class="o">&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">derived_value</span><span class="p">;</span>
+
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                             </span><span class="s">&quot;: Supplied object is not derived from &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">typeid</span><span class="p">(</span><span class="n">T</span><span class="p">).</span><span class="n">name</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Converts the parameters of an array-type parameter block to a vector of primitive types and</span>
+<span class="cm">   * returns it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetVectorValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GetType</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">ARRAY</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                             </span><span class="s">&quot;: Invalid type requested for parameter of type &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                             </span><span class="n">ParameterBlockTypeName</span><span class="p">(</span><span class="n">GetType</span><span class="p">()));</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">parameters_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Check the first sub-param is of the right type</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">front_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parameters_</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Check that all other parameters are of the required type</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">parameters_</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="n">GetType</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">front_param</span><span class="p">.</span><span class="n">GetType</span><span class="p">())</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">__PRETTY_FUNCTION__</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                               </span><span class="s">&quot;: Parameter </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name_</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                               </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">, cannot construct vector from block because &quot;</span>
+<span class="w">                               </span><span class="s">&quot;the sub_parameters do not all have the correct type. param-&gt;&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                               </span><span class="n">ParameterBlockTypeName</span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="n">GetType</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; vs param0-&gt;&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                               </span><span class="n">ParameterBlockTypeName</span><span class="p">(</span><span class="n">front_param</span><span class="p">.</span><span class="n">GetType</span><span class="p">()));</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parameters_</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_params</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">k</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetParam</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+<span class="w">      </span><span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="n">GetValue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Gets a vector of primitive types from an array-type parameter block specified as a parameter</span>
+<span class="w">  </span><span class="c1">/// of the current block.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetParamVectorValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetParam</span><span class="p">(</span><span class="n">param_name</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="n">GetVectorValue</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Iterator</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Iterator</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ref_block</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_id</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Iterator</span><span class="p">(</span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">block</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ref_block</span><span class="p">(</span><span class="n">block</span><span class="p">),</span><span class="w"> </span><span class="n">ref_id</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="n">Iterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Iterator</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">      </span><span class="n">ref_id</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">Iterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">ref_id</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_block</span><span class="p">.</span><span class="n">parameters_</span><span class="p">[</span><span class="n">ref_id</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Iterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_id</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Iterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_id</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">ConstIterator</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ref_block</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_id</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ConstIterator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">block</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ref_block</span><span class="p">(</span><span class="n">block</span><span class="p">),</span><span class="w"> </span><span class="n">ref_id</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="n">ConstIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">ConstIterator</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">      </span><span class="n">ref_id</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">ConstIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">ref_id</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_block</span><span class="p">.</span><span class="n">parameters_</span><span class="p">[</span><span class="n">ref_id</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ConstIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_id</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ConstIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_id</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">Iterator</span><span class="w"> </span><span class="nf">begin</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">Iterator</span><span class="w"> </span><span class="nf">end</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">parameters_</span><span class="p">.</span><span class="n">size</span><span class="p">()};</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">ConstIterator</span><span class="w"> </span><span class="nf">begin</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">ConstIterator</span><span class="w"> </span><span class="nf">end</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">parameters_</span><span class="p">.</span><span class="n">size</span><span class="p">()};</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Given a reference to a string, recursively travels the parameter tree and print values into</span>
+<span class="cm">   * the reference string.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">RecursiveDumpToString</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">outstr</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Print the block tree structure into a designated string.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RecursiveDumpToJSON</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">outstr</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+
+.. _file_framework_data_types_varying.h:
+
+File varying.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/varying.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_varying.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
+
+- ``iostream``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``type_traits``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_allowable_range.h`
+
+- :ref:`file_framework_parameters_parameter_block.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1is__shared__ptr`
+
+- :ref:`exhale_struct_structopensn_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_bool`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_byte_array`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_float`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_integer`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_signed_integer`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_string`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_unsigned_integer`
+
+- :ref:`exhale_struct_structopensn_1_1_varying_1_1_is_user_data`
+
+- :ref:`exhale_class_classopensn_1_1_varying`
+
+- :ref:`exhale_class_classopensn_1_1_varying_1_1_varying_arbitrary_type`
+
+- :ref:`exhale_class_classopensn_1_1_varying_1_1_varying_type`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a93f6bf61c8aa550e7909681c308b9ad4`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ae6c13df7c25e90f9bc22f343fc3dacae`
+
+- :ref:`exhale_function_varying_8h_1a68c1018899c9716fd16716fa46357b5c`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1a9e71974189ed8e21bae1b79f423bfdb0`
+

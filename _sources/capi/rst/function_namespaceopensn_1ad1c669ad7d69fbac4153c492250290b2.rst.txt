@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad1c669ad7d69fbac4153c492250290b2:
+
+Function opensn::CopyGlobalVecToSTLvector
+=========================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CopyGlobalVecToSTLvector(Vec, const std::vector<int64_t>&, std::vector<double>&)
+   :project: opensn

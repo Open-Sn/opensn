@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b:
+
+Function opensn::HasNonZero
+===========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::HasNonZero(const std::vector<double>&)
+   :project: opensn

@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1aeb154be38822e4985fc82f625f079c27:
+
+Typedef opensn::MatVec3
+=======================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::MatVec3
+   :project: opensn

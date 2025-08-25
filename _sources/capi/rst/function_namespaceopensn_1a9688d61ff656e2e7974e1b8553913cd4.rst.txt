@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9688d61ff656e2e7974e1b8553913cd4:
+
+Function opensn::PrepareVtkUnstructuredGrid
+===========================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PrepareVtkUnstructuredGrid(std::shared_ptr<MeshContinuum>, bool)
+   :project: opensn

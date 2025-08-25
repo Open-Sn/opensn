@@ -1,0 +1,32 @@
+.. _exhale_struct_structopensn_1_1_dummy_stream_1_1_dummy_stream_buffer:
+
+Struct DummyStream::DummyStreamBuffer
+=====================================
+
+- Defined in :ref:`file_framework_logging_log_stream.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_struct_structopensn_1_1_dummy_stream`.
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::streambuf``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DummyStream::DummyStreamBuffer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

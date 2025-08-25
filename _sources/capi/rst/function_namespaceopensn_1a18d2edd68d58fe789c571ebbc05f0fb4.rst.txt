@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a18d2edd68d58fe789c571ebbc05f0fb4:
+
+Function opensn::ComputeUnitCellIntegrals
+=========================================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeUnitCellIntegrals(const SpatialDiscretization&, const Cell&, CoordinateSystemType)
+   :project: opensn

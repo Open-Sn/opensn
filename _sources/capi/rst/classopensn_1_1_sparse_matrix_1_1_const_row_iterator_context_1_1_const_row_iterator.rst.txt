@@ -1,0 +1,23 @@
+.. _exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator:
+
+Class ConstRowIteratorContext::ConstRowIterator
+===============================================
+
+- Defined in :ref:`file_framework_data_types_sparse_matrix_sparse_matrix.h`
+
+
+Nested Relationships
+--------------------
+
+This class is a nested type of :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context`.
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

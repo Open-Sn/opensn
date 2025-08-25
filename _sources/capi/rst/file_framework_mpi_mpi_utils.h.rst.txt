@@ -1,0 +1,62 @@
+
+.. _file_framework_mpi_mpi_utils.h:
+
+File mpi_utils.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mpi>` (``framework/mpi``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mpi/mpi_utils.h``)
+------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mpi_mpi_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/runtime.h`` (:ref:`file_framework_runtime.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
+- ``type_traits``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ab8dd289d1a78eb4563bd266a07f0ac43`
+
+- :ref:`exhale_function_namespaceopensn_1ad67dbd6ce3be636e5ab212e2d951e8c1`
+

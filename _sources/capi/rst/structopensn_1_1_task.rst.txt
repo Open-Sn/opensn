@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_task:
+
+Struct Task
+===========
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Task
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

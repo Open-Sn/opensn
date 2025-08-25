@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136:
+
+Function opensn::ParameterBlockTypeName
+=======================================
+
+- Defined in :ref:`file_framework_parameters_parameter_block.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ParameterBlockTypeName(ParameterBlockType)
+   :project: opensn

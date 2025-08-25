@@ -1,0 +1,56 @@
+
+.. _file_framework_mesh_mesh_face.h:
+
+File mesh_face.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh>` (``framework/mesh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_face.h``)
+-------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_face.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_face`
+
+- :ref:`exhale_struct_structopensn_1_1_poly_face`
+

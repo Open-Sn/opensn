@@ -1,0 +1,37 @@
+.. _exhale_class_classopensn_1_1_discrete_ordinates_k_eigen_acceleration:
+
+Class DiscreteOrdinatesKEigenAcceleration
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_k_eigen_acceleration_1_1_ghost_info`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::SCDSAAcceleration`` (:ref:`exhale_class_classopensn_1_1_s_c_d_s_a_acceleration`)
+- ``public opensn::SMMAcceleration`` (:ref:`exhale_class_classopensn_1_1_s_m_m_acceleration`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DiscreteOrdinatesKEigenAcceleration
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

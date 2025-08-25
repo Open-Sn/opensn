@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545:
+
+Template Function opensn::PowerIteration
+========================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PowerIteration(const DenseMatrix<TYPE>&, Vector<TYPE>&, int, double)
+   :project: opensn

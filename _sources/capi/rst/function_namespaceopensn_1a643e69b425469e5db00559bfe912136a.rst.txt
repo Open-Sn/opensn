@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a643e69b425469e5db00559bfe912136a:
+
+Specialized Template Function opensn::get_datatype< signed char >
+=================================================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::get_datatype< signed char >()
+   :project: opensn

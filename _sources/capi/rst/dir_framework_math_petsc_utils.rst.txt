@@ -1,0 +1,21 @@
+.. _dir_framework_math_petsc_utils:
+
+
+Directory petsc_utils
+=====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/petsc_utils``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8979e15cdd9c55b55be98f01fcc2e0fc:
+
+Function opensn::CreateVectorWithGhosts
+=======================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateVectorWithGhosts(int64_t, int64_t, int64_t, const std::vector<int64_t>&)
+   :project: opensn

@@ -1,0 +1,22 @@
+.. _dir_framework_mpi:
+
+
+Directory mpi
+=============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/mpi``
+
+
+Files
+-----
+
+- :ref:`file_framework_mpi_mpi_comm_set.h`
+- :ref:`file_framework_mpi_mpi_utils.h`
+
+

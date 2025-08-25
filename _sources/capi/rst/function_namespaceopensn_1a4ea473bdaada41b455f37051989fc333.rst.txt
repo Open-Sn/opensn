@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a4ea473bdaada41b455f37051989fc333:
+
+Template Function opensn::VectorListHas
+=======================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::VectorListHas(const std::vector<T>&, const B&)
+   :project: opensn

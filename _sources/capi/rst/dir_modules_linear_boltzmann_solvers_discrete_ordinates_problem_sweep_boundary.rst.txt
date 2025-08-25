@@ -1,0 +1,24 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary:
+
+
+Directory boundary
+==================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_isotropic_boundary.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_reflecting_boundary.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_vacuum_boundary.h`
+
+

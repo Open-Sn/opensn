@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_sweep_scheduler:
+
+Class SweepScheduler
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_sweep_scheduler.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_sweep_scheduler_1_1_rule_values`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SweepScheduler
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

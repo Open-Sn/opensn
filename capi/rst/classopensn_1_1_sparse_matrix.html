@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class SparseMatrix &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class SparseMatrix</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-sparsematrix">
+<span id="exhale-class-classopensn-1-1-sparse-matrix"></span><h1>Class SparseMatrix<a class="headerlink" href="#class-sparsematrix" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_data_types_sparse_matrix_sparse_matrix.h.html#file-framework-data-types-sparse-matrix-sparse-matrix-h"><span class="std std-ref">File sparse_matrix.h</span></a></p></li>
+</ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_sparse_matrix_1_1_const_entry_reference.html#exhale-struct-structopensn-1-1-sparse-matrix-1-1-const-entry-reference"><span class="std std-ref">Struct SparseMatrix::ConstEntryReference</span></a></p></li>
+<li><p><a class="reference internal" href="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context.html#exhale-class-classopensn-1-1-sparse-matrix-1-1-const-row-iterator-context"><span class="std std-ref">Class SparseMatrix::ConstRowIteratorContext</span></a></p></li>
+<li><p><a class="reference internal" href="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator.html#exhale-class-classopensn-1-1-sparse-matrix-1-1-const-row-iterator-context-1-1-const-row-iterator"><span class="std std-ref">Class ConstRowIteratorContext::ConstRowIterator</span></a></p></li>
+<li><p><a class="reference internal" href="classopensn_1_1_sparse_matrix_1_1_entries_iterator.html#exhale-class-classopensn-1-1-sparse-matrix-1-1-entries-iterator"><span class="std std-ref">Class SparseMatrix::EntriesIterator</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_sparse_matrix_1_1_entry_reference.html#exhale-struct-structopensn-1-1-sparse-matrix-1-1-entry-reference"><span class="std std-ref">Struct SparseMatrix::EntryReference</span></a></p></li>
+<li><p><a class="reference internal" href="classopensn_1_1_sparse_matrix_1_1_row_iterator_context.html#exhale-class-classopensn-1-1-sparse-matrix-1-1-row-iterator-context"><span class="std std-ref">Class SparseMatrix::RowIteratorContext</span></a></p></li>
+<li><p><a class="reference internal" href="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator.html#exhale-class-classopensn-1-1-sparse-matrix-1-1-row-iterator-context-1-1-row-iterator"><span class="std std-ref">Class RowIteratorContext::RowIterator</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrixE">
+<span class="target" id="classopensn_1_1_sparse_matrix"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SparseMatrix</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrixE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sparse matrix utility. This is a basic CSR type sparse matrix which allows efficient matrix storage and multiplication. It is not intended for solving linear systems (use PETSc for that instead). It was originally developed for the transfer matrices of transport cross sections. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix12SparseMatrixE6size_t6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a535396a488a8708dc231e4c66dae050c"></span><span class="sig-name descname"><span class="n"><span class="pre">SparseMatrix</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_rows</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix12SparseMatrixE6size_t6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor with number of rows and columns constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix12SparseMatrixERK12SparseMatrix">
+<span class="target" id="classopensn_1_1_sparse_matrix_1af77b6a2c55e91b3a092e1c27b5381b24"></span><span class="sig-name descname"><span class="n"><span class="pre">SparseMatrix</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix12SparseMatrixERK12SparseMatrix" title="opensn::SparseMatrix::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">matrix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix12SparseMatrixERK12SparseMatrix" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix10GetNumRowsEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a4079400531e3d2b163f3fcc3da5f3940"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumRows</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix10GetNumRowsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix10GetNumColsEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a1cb333babc458fb33f8afa6bfdef2bf5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumCols</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix10GetNumColsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix6InsertE6size_t6size_td">
+<span class="target" id="classopensn_1_1_sparse_matrix_1ab05318dee39f1abb5f4507f6067e0b6e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Insert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix6InsertE6size_t6size_td" title="Link to this definition"></a><br /></dt>
+<dd><p>Inserts a value into the matrix. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix9InsertAddE6size_t6size_td">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a41afeeee24d638b0ce587c84b939b197"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InsertAdd</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix9InsertAddE6size_t6size_td" title="Link to this definition"></a><br /></dt>
+<dd><p>Inserts-Adds a value into the matrix with duplicate check. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix10GetValueIJE6size_t6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1ae40766d79a46a609472a24a559939e6e"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetValueIJ</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">j</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix10GetValueIJE6size_t6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the value in the matrix at the given location. This is a rather inefficient routine. Use the columns and values rather than directly this function. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix11SetDiagonalERKNSt6vectorIdEE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a09240952c73483fdfdec7efd6b8f9409"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDiagonal</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">diag</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix11SetDiagonalERKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the diagonal of the matrix using a vector. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix8CompressEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a4389c358873bca05d9db255d1d705c69"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Compress</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix8CompressEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Sorts the column indices of each row for faster lookup. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix8PrintStrEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a5935e8066f7a3acc4bcf108d1b221720"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintStr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix8PrintStrEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Prints the sparse matrix to string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrixD0Ev">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a07ae8e49118cd7d3836110757b7d7344"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SparseMatrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrixD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix3RowE6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a96f7ec312e4584b2203b26c8ffdffeef"></span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContextE" title="opensn::SparseMatrix::RowIteratorContext"><span class="n"><span class="pre">RowIteratorContext</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Row</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix3RowE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix3RowE6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a0478624d1b77441b6e9c730f6d251f47"></span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContextE" title="opensn::SparseMatrix::ConstRowIteratorContext"><span class="n"><span class="pre">ConstRowIteratorContext</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Row</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix3RowE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix5beginEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a7dc88282c5cf58c80e66b9ff36f110ad"></span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix5beginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix3endEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a8c740f56185edd4836d82734d65f0339"></span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix3endEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix12rowI_indicesE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1a47fb3f9ee9e244efd1c23bd2f073e7ec"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rowI_indices</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix12rowI_indicesE" title="Link to this definition"></a><br /></dt>
+<dd><p>rowI_indices[i] is a vector indices j for the non-zero columns. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix11rowI_valuesE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1aab9d4232806c65cb1c56d93f3b91ee89"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rowI_values</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix11rowI_valuesE" title="Link to this definition"></a><br /></dt>
+<dd><p>rowI_values[i] corresponds to column indices and contains the non-zero value. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix19ConstEntryReferenceE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_const_entry_reference"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstEntryReference</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReferenceE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix19ConstEntryReference19ConstEntryReferenceERK6size_tRK6size_tRKd">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_const_entry_reference_1a77ccca933c5e245e29601413d4aa2c70"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstEntryReference</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">row_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">column_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReference19ConstEntryReferenceERK6size_tRK6size_tRKd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix19ConstEntryReference9row_indexE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_const_entry_reference_1abc4e95ec1784111ba6d07b4c1b50724e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">row_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReference9row_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix19ConstEntryReference12column_indexE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_const_entry_reference_1a2b681551aeb143d36526115b9928b290"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">column_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReference12column_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix19ConstEntryReference5valueE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_const_entry_reference_1a7721bd8bb4798395b348e7acf4b3f378"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">value</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReference5valueE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContextE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstRowIteratorContext</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContextE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext23ConstRowIteratorContextERK12SparseMatrix6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1aa88e30b43bcd3fe874355dfbd32e55ef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstRowIteratorContext</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">matrix</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref_row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext23ConstRowIteratorContextERK12SparseMatrix6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext5beginEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1a278089918e677e197ca6686c2e6f0d25"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext5beginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext3endEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1a3d03bd23467abc3a5041acefd6d2c730"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext3endEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstRowIterator</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIterator16ConstRowIteratorERK23ConstRowIteratorContext6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1aeec7c1178b389f7c65107c870b5807b5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstRowIterator</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContextE" title="opensn::SparseMatrix::ConstRowIteratorContext"><span class="n"><span class="pre">ConstRowIteratorContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref_entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIterator16ConstRowIteratorERK23ConstRowIteratorContext6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorppEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1a893e7612e00f40c1b892e61280e99357"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorppEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorppEi">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1a761679a5c4d6844ef69a3f05ef083506"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorppEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratormlEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1a6006d213b0d176fb57f882e84b52a7e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix19ConstEntryReferenceE" title="opensn::SparseMatrix::ConstEntryReference"><span class="n"><span class="pre">ConstEntryReference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratormlEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratoreqERK16ConstRowIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1a54c1c45b2755db4ceef99096f23ec69c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratoreqERK16ConstRowIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorneERK16ConstRowIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator_1a48d4cba017dd79ff33438bf18746596a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorE" title="opensn::SparseMatrix::ConstRowIteratorContext::ConstRowIterator"><span class="n"><span class="pre">ConstRowIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix23ConstRowIteratorContext16ConstRowIteratorneERK16ConstRowIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIteratorE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EntriesIterator</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="Link to this definition"></a><br /></dt>
+<dd><p>Iterator to loop over all matrix entries. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIterator15EntriesIteratorER12SparseMatrix6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1a0f2c6a940816e1915d9e487f2d39b995"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EntriesIterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIterator15EntriesIteratorER12SparseMatrix6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIterator7AdvanceEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1a8895981e4172589317505e2e3adc4086"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Advance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIterator7AdvanceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIteratorppEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1af0f05c3af540dd65cf8df93851e47d39"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorppEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIteratorppEi">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1ab1f0f86a1adb2357fe88aa91587835bf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorppEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix15EntriesIteratormlEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1a722fa4849cb7257fd5dd57f6e121525e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix14EntryReferenceE" title="opensn::SparseMatrix::EntryReference"><span class="n"><span class="pre">EntryReference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratormlEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix15EntriesIteratoreqERK15EntriesIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1a598c8bae690cd121871247f464655cae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix15EntriesIteratoreqERK15EntriesIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix15EntriesIteratorneERK15EntriesIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_entries_iterator_1a33e824310302bc9f75ae7b574779a81b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix15EntriesIteratorE" title="opensn::SparseMatrix::EntriesIterator"><span class="n"><span class="pre">EntriesIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix15EntriesIteratorneERK15EntriesIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix14EntryReferenceE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_entry_reference"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EntryReference</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix14EntryReferenceE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix14EntryReference14EntryReferenceERK6size_tRK6size_tRd">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_entry_reference_1a23d2de350d9eb58ea3a9c5ee2cfe4618"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EntryReference</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">row_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">column_id</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix14EntryReference14EntryReferenceERK6size_tRK6size_tRd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix14EntryReference9row_indexE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_entry_reference_1a66fe30b2c43146b39d2e4bd4db2487b4"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">row_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix14EntryReference9row_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix14EntryReference12column_indexE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_entry_reference_1a2f79dd03aefc71692af8d2211912baea"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">column_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix14EntryReference12column_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix14EntryReference5valueE">
+<span class="target" id="structopensn_1_1_sparse_matrix_1_1_entry_reference_1a162ff3ab1fc852f6285fd680182e0a93"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">value</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix14EntryReference5valueE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContextE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RowIteratorContext</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContextE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext18RowIteratorContextER12SparseMatrix6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1a5c4e7b6de399b7f32586e786c66ba88e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RowIteratorContext</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">matrix</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref_row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext18RowIteratorContextER12SparseMatrix6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext5beginEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1ac90fb6c2913a92478238b0e921f4e767"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext5beginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext3endEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1a81a7b58cdbd96a38e7725931a3523399"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext3endEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RowIterator</span></span></span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIterator11RowIteratorER18RowIteratorContext6size_t">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1a4ceeda7ace0e4680d81d548091c619e9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RowIterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContextE" title="opensn::SparseMatrix::RowIteratorContext"><span class="n"><span class="pre">RowIteratorContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref_entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIterator11RowIteratorER18RowIteratorContext6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorppEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1a0a961a518700c04fffc56292620c096f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorppEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorppEi">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1a05bf944f426b7e6cbecfec06efc587b3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorppEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratormlEv">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1a994d420d1fb416f519d733306451b563"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix14EntryReferenceE" title="opensn::SparseMatrix::EntryReference"><span class="n"><span class="pre">EntryReference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratormlEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix18RowIteratorContext11RowIteratoreqERK11RowIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1ac20beb03af9d706515020ea4ba7a2437"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix18RowIteratorContext11RowIteratoreqERK11RowIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12SparseMatrix18RowIteratorContext11RowIteratorneERK11RowIterator">
+<span class="target" id="classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator_1ac3440ac7b19d098c3fe6de3d62b5a870"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn12SparseMatrix18RowIteratorContext11RowIteratorE" title="opensn::SparseMatrix::RowIteratorContext::RowIterator"><span class="n"><span class="pre">RowIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12SparseMatrix18RowIteratorContext11RowIteratorneERK11RowIterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

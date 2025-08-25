@@ -1,0 +1,62 @@
+
+.. _file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h:
+
+File mesh_continuum_local_cell_handler.h
+========================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_mesh_continuum>` (``framework/mesh/mesh_continuum``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h``)
+----------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_local_cell_handler`
+
+- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_const_iterator`
+
+- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_iterator`
+

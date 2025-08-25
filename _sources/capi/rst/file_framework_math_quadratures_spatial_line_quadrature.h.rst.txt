@@ -1,0 +1,62 @@
+
+.. _file_framework_math_quadratures_spatial_line_quadrature.h:
+
+File line_quadrature.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_spatial>` (``framework/math/quadratures/spatial``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/spatial/line_quadrature.h``)
+---------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_spatial_line_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/gausslegendre_quadrature.h`` (:ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`)
+
+- ``framework/math/quadratures/spatial/spatial_quadrature.h`` (:ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_slab_mapping.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_line_quadrature`
+

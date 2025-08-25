@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_x_s_file:
+
+Class XSFile
+============
+
+- Defined in :ref:`file_framework_materials_multi_group_xs_xsfile.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::XSFile
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

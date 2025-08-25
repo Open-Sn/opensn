@@ -1,0 +1,56 @@
+
+.. _file_framework_mpi_mpi_comm_set.h:
+
+File mpi_comm_set.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mpi>` (``framework/mpi``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mpi/mpi_comm_set.h``)
+---------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mpi_mpi_comm_set.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/runtime.h`` (:ref:`file_framework_runtime.h`)
+
+- ``mpicpp-lite/mpicpp-lite.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_m_p_i_communicator_set`
+

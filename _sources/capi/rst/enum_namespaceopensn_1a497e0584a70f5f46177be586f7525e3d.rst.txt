@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d:
+
+Enum AngleAggregationType
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::AngleAggregationType
+   :project: opensn

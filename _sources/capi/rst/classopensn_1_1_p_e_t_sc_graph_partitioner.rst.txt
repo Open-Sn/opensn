@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_p_e_t_sc_graph_partitioner:
+
+Class PETScGraphPartitioner
+===========================
+
+- Defined in :ref:`file_framework_graphs_petsc_graph_partitioner.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::GraphPartitioner`` (:ref:`exhale_class_classopensn_1_1_graph_partitioner`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PETScGraphPartitioner
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

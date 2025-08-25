@@ -1,0 +1,67 @@
+
+.. _file_framework_math_math_time_stepping.h:
+
+File math_time_stepping.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/math_time_stepping.h``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_math_time_stepping.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_transient_source_function.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1af2ee27ea43824aed257552bd6da9436e`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9b23642480e712de8fab3dd0554d450f`
+
+- :ref:`exhale_function_namespaceopensn_1adaca974b8f3adffad29eca7cdcb41dd6`
+

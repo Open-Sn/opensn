@@ -1,0 +1,48 @@
+
+.. _program_listing_file_framework_math_linear_solver_linear_solver.h:
+
+Program Listing for File linear_solver.h
+========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_linear_solver_linear_solver.h>` (``framework/math/linear_solver/linear_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/linear_solver/linear_solver_context.h"
+   #include <memory>
+   
+   namespace opensn
+   {
+   
+   struct LinearSolverContext;
+   
+   class LinearSolver
+   {
+   public:
+     explicit LinearSolver(std::shared_ptr<LinearSolverContext> context_ptr)
+       : context_ptr_(std::move(context_ptr))
+     {
+     }
+   
+     virtual ~LinearSolver() = default;
+   
+     /// Set up the linaer solver
+     virtual void Setup() {}
+   
+     /// Solve the system
+     virtual void Solve() = 0;
+   
+     std::shared_ptr<LinearSolverContext> GetContext() { return context_ptr_; }
+   
+   protected:
+     std::shared_ptr<LinearSolverContext> context_ptr_;
+   };
+   
+   } // namespace opensn

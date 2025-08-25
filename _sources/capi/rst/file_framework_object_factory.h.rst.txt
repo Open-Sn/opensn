@@ -1,0 +1,85 @@
+
+.. _file_framework_object_factory.h:
+
+File object_factory.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/object_factory.h``)
+-------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_object_factory.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``framework/utils/utils.h`` (:ref:`file_framework_utils_utils.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_graphs_kba_graph_partitioner.h`
+
+- :ref:`file_framework_math_quadratures_gausschebyshev_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry`
+
+- :ref:`exhale_class_classopensn_1_1_object_factory`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_object__factory_8h_1ac7e12c51c1e3e7a6d5579dcd7d820f63`
+
+- :ref:`exhale_define_object__factory_8h_1aa89b460a2784dc3b56b9d710d577ed4f`
+
+- :ref:`exhale_define_object__factory_8h_1a906ac9cb75ef50a7d0c642dc54670934`
+
+- :ref:`exhale_define_object__factory_8h_1a0ba0a53bbc9e8864c81818b03ed85ba4`
+
+- :ref:`exhale_define_object__factory_8h_1aa681b77856f7722c574cefd8dd593759`
+

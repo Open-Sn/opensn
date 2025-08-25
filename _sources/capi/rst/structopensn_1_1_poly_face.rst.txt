@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_poly_face:
+
+Struct PolyFace
+===============
+
+- Defined in :ref:`file_framework_mesh_mesh_face.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::PolyFace
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

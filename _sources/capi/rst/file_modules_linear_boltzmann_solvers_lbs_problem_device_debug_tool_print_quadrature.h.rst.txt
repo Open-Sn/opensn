@@ -1,0 +1,54 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h:
+
+File print_quadrature.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool>` (``modules/linear_boltzmann_solvers/lbs_problem/device/debug_tool``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/device/debug_tool/print_quadrature.h``)
+--------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_quadrature_carrier.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__device_dbg`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1device__dbg_1aa10f2e97df02fe8354e60cfe6b02ee9d`
+

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_l_b_s_options:
+
+Struct LBSOptions
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::LBSOptions
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

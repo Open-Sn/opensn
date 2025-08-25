@@ -1,0 +1,26 @@
+.. _exhale_struct_structopensn_1_1_flood_cell:
+
+Struct FloodCell
+================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::vector< FloodFace >``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::FloodCell
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

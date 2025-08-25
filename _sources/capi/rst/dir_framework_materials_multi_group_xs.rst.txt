@@ -1,0 +1,22 @@
+.. _dir_framework_materials_multi_group_xs:
+
+
+Directory multi_group_xs
+========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_materials>` (``framework/materials``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/materials/multi_group_xs``
+
+
+Files
+-----
+
+- :ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`
+- :ref:`file_framework_materials_multi_group_xs_xsfile.h`
+
+

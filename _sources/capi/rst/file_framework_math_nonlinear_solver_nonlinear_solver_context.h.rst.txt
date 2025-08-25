@@ -1,0 +1,58 @@
+
+.. _file_framework_math_nonlinear_solver_nonlinear_solver_context.h:
+
+File nonlinear_solver_context.h
+===============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_nonlinear_solver>` (``framework/math/nonlinear_solver``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/nonlinear_solver/nonlinear_solver_context.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_nonlinear_solver_nonlinear_solver_context.h.rst
+
+
+
+
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_nonlinear_solver_nonlinear_solver.h`
+
+- :ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_non_linear_solver_context`
+

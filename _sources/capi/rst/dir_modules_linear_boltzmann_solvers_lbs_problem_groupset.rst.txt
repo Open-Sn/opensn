@@ -1,0 +1,22 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_groupset:
+
+
+Directory groupset
+==================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/groupset``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+

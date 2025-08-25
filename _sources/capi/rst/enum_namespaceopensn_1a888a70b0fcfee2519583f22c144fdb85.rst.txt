@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85:
+
+Enum PhiSTLOption
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::PhiSTLOption
+   :project: opensn

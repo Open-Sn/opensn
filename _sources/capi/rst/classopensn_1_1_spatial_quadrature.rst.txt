@@ -1,0 +1,28 @@
+.. _exhale_class_classopensn_1_1_spatial_quadrature:
+
+Class SpatialQuadrature
+=======================
+
+- Defined in :ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::LineQuadrature`` (:ref:`exhale_class_classopensn_1_1_line_quadrature`)
+- ``public opensn::TetrahedraQuadrature`` (:ref:`exhale_class_classopensn_1_1_tetrahedra_quadrature`)
+- ``public opensn::TriangleQuadrature`` (:ref:`exhale_class_classopensn_1_1_triangle_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SpatialQuadrature
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

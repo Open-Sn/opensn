@@ -1,0 +1,42 @@
+
+.. _program_listing_file_framework_mesh_logical_volume_logical_volume.h:
+
+Program Listing for File logical_volume.h
+=========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_logical_volume_logical_volume.h>` (``framework/mesh/logical_volume/logical_volume.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/data_types/vector3.h"
+   #include "framework/logging/log.h"
+   #include "framework/parameters/input_parameters.h"
+   #include <array>
+   
+   namespace opensn
+   {
+   
+   /// Class for defining base logical volumes.
+   class LogicalVolume
+   {
+   public:
+     virtual ~LogicalVolume() = default;
+   
+     static InputParameters GetInputParameters();
+   
+     /// Logical operation for surface mesh.
+     virtual bool Inside(const Vector3& point) const { return false; }
+   
+   protected:
+     explicit LogicalVolume() = default;
+     explicit LogicalVolume(const InputParameters& parameters);
+   };
+   
+   } // namespace opensn

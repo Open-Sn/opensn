@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_s_m_m_acceleration:
+
+Class SMMAcceleration
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::DiscreteOrdinatesKEigenAcceleration`` (:ref:`exhale_class_classopensn_1_1_discrete_ordinates_k_eigen_acceleration`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SMMAcceleration
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

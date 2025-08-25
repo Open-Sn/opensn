@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1acb70f37bd02323306b8c93c8420cd98c:
+
+Function opensn::MakeSubSets
+============================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MakeSubSets(size_t, size_t)
+   :project: opensn

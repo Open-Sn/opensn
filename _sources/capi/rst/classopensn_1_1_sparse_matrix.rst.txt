@@ -1,0 +1,33 @@
+.. _exhale_class_classopensn_1_1_sparse_matrix:
+
+Class SparseMatrix
+==================
+
+- Defined in :ref:`file_framework_data_types_sparse_matrix_sparse_matrix.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_sparse_matrix_1_1_const_entry_reference`
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context`
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_const_row_iterator_context_1_1_const_row_iterator`
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_entries_iterator`
+- :ref:`exhale_struct_structopensn_1_1_sparse_matrix_1_1_entry_reference`
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_row_iterator_context`
+- :ref:`exhale_class_classopensn_1_1_sparse_matrix_1_1_row_iterator_context_1_1_row_iterator`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SparseMatrix
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

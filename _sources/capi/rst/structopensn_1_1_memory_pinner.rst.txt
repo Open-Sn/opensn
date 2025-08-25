@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_memory_pinner:
+
+Template Struct MemoryPinner
+============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::MemoryPinner
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

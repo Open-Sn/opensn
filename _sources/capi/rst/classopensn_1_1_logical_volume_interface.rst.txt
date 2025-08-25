@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_logical_volume_interface:
+
+Class LogicalVolumeInterface
+============================
+
+- Defined in :ref:`file_framework_mesh_logical_volume_logical_volume_interface.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LogicalVolumeInterface
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

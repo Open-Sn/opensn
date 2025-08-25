@@ -1,0 +1,32 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods:
+
+
+Directory iterative_methods
+===========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_power_iteration_keigen.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_convergence_test.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h`
+
+

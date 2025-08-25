@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155:
+
+Function opensn::H5CreateGroup
+==============================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5CreateGroup(hid_t, const std::string&)
+   :project: opensn

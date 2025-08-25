@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a7f7469d315aed7045d14e59ab4443ead:
+
+Enum FaceOrientation
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::FaceOrientation
+   :project: opensn

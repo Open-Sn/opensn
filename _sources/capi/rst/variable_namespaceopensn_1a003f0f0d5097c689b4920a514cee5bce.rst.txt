@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a003f0f0d5097c689b4920a514cee5bce:
+
+Variable opensn::input_path
+===========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::input_path
+   :project: opensn

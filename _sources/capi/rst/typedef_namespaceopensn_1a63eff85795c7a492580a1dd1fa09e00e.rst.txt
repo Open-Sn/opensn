@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e:
+
+Typedef opensn::Graph
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::Graph
+   :project: opensn

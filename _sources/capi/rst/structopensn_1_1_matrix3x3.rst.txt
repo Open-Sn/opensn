@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_matrix3x3:
+
+Struct Matrix3x3
+================
+
+- Defined in :ref:`file_framework_data_types_matrix3x3.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Matrix3x3
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_function_varying_8h_1a68c1018899c9716fd16716fa46357b5c:
+
+Function operator<<
+===================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: operator<<(std::ostream&, const opensn::Varying&)
+   :project: opensn

@@ -1,0 +1,32 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep:
+
+
+Directory sweep
+===============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep``
+
+Subdirectories
+--------------
+
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler`
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds`
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+

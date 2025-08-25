@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_l_b_s_vec_ops:
+
+Class LBSVecOps
+===============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LBSVecOps
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_cell:
+
+Class Cell
+==========
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Cell
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

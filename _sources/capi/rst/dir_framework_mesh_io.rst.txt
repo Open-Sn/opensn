@@ -1,0 +1,21 @@
+.. _dir_framework_mesh_io:
+
+
+Directory io
+============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh>` (``framework/mesh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/mesh/io``
+
+
+Files
+-----
+
+- :ref:`file_framework_mesh_io_mesh_io.h`
+
+

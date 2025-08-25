@@ -1,0 +1,37 @@
+.. _exhale_class_classopensn_1_1_diffusion_solver:
+
+Class DiffusionSolver
+=====================
+
+- Defined in :ref:`file_modules_diffusion_diffusion.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_diffusion_solver_1_1_options`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::DiffusionMIPSolver`` (:ref:`exhale_class_classopensn_1_1_diffusion_m_i_p_solver`)
+- ``public opensn::DiffusionPWLCSolver`` (:ref:`exhale_class_classopensn_1_1_diffusion_p_w_l_c_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DiffusionSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

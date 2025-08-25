@@ -1,0 +1,28 @@
+.. _exhale_class_classopensn_1_1_sweep_boundary:
+
+Class SweepBoundary
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::IsotropicBoundary`` (:ref:`exhale_class_classopensn_1_1_isotropic_boundary`)
+- ``public opensn::ReflectingBoundary`` (:ref:`exhale_class_classopensn_1_1_reflecting_boundary`)
+- ``public opensn::VacuumBoundary`` (:ref:`exhale_class_classopensn_1_1_vacuum_boundary`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SweepBoundary
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

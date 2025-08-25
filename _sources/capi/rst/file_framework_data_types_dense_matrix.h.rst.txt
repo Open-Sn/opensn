@@ -1,0 +1,99 @@
+
+.. _file_framework_data_types_dense_matrix.h:
+
+File dense_matrix.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/dense_matrix.h``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_dense_matrix.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
+- ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_dense_matrix`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1af306a78772d819be3c1ee3fd5cab48ed`
+
+- :ref:`exhale_function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65`
+
+- :ref:`exhale_function_namespaceopensn_1a91dce05acc78a5b020a13d3f8641368b`
+
+- :ref:`exhale_function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc`
+
+- :ref:`exhale_function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f`
+
+- :ref:`exhale_function_namespaceopensn_1a970db0121bb18a47a1400ae6630e8b89`
+
+- :ref:`exhale_function_namespaceopensn_1abd3fa1f9d91fc4c479aa1e5bb9cf00b7`
+
+- :ref:`exhale_function_namespaceopensn_1aab3c67d40e6e55826ed11805f566756f`
+
+- :ref:`exhale_function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545`
+
+- :ref:`exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde`
+
+- :ref:`exhale_function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b`
+
+- :ref:`exhale_function_namespaceopensn_1a2089fb72f7703c7ce8dba7fb6d654dc1`
+
+- :ref:`exhale_function_namespaceopensn_1a9703a3c5ab99e86885289ed9122e096d`
+
+- :ref:`exhale_function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813`
+
+- :ref:`exhale_function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0`
+

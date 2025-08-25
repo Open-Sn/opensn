@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File diffusion.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File diffusion.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-diffusion-h">
+<span id="program-listing-file-modules-diffusion-diffusion-h"></span><h1>Program Listing for File diffusion.h<a class="headerlink" href="#program-listing-for-file-diffusion-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_diffusion_diffusion.h.html#file-modules-diffusion-diffusion-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/diffusion/diffusion.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/unknown_manager/unknown_manager.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;petscksp.h&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Vector3</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">UnitCellMatrices</span><span class="p">;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Multigroup_D_and_sigR</span><span class="p">;</span>
+
+<span class="c1">/// Generic diffusion solver for acceleration.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiffusionSolver</span>
+<span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">MatID2XSMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">Multigroup_D_and_sigR</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">uk_man_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bcs_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MatID2XSMap</span><span class="w"> </span><span class="n">mat_id_2_xs_map_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">unit_cell_matrices_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">num_local_dofs_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">num_global_dofs_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">Mat</span><span class="w"> </span><span class="n">A_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vec</span><span class="w"> </span><span class="n">rhs_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">KSP</span><span class="w"> </span><span class="n">ksp_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">requires_ghosts_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">suppress_bcs_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Options</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Residual tol. relative to rhs</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">residual_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-4</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Maximum iterations</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Verbosity flag</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// For debugging only (very expensive)</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_symmetry_check</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">additional_options_string</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">penalty_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="n">options</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">DiffusionSolver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uk_man</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bcs</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">MatID2XSMap</span><span class="w"> </span><span class="n">map_mat_id_2_xs</span><span class="p">,</span>
+<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">unit_cell_matrices</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">bool</span><span class="w"> </span><span class="n">suppress_bcs</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">bool</span><span class="w"> </span><span class="n">requires_ghosts</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns the assigned name.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the right-hand side petsc vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetRHS</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the assigned unknown structure.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBCS</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">bcs_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetUnknownStructure</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the associated spatial discretization.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetSpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetNumPhiIterativeUnknowns</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">DiffusionSolver</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Initializes the diffusion solver. This involves creating the sparse matrix with the appropriate</span>
+<span class="cm">   * sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very</span>
+<span class="cm">   * specialized parameters for Hypre&#39;s BooomerAMG. Note: `PCSetFromOptions` and `KSPSetFromOptions`</span>
+<span class="cm">   * are called at the end. Therefore, any number of additional PETSc options can be passed via the</span>
+<span class="cm">   * commandline.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AssembleAand_b</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">q_vector</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Assemble_b</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">q_vector</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Assemble_b</span><span class="p">(</span><span class="n">Vec</span><span class="w"> </span><span class="n">petsc_q_vector</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds to the right-hand side without applying spatial discretization.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToRHS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Adds to the entries into the matrix without applying spatial discretization.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToMatrix</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rows</span><span class="p">,</span>
+<span class="w">                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span>
+<span class="w">                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">vals</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Solves the system and stores the local solution in the vector provide.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param solution Vector in to which the solution will be parsed.</span>
+<span class="cm">   * \param use_initial_guess bool [Default:False] Flag, when set, will</span>
+<span class="cm">   *                 use the values of the output solution as initial guess.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Solve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">solution</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_initial_guess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Solves the system and stores the local solution in the vector provide.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param petsc_solution Vector in to which the solution will be parsed.</span>
+<span class="cm">   * \param use_initial_guess bool [Default:False] Flag, when set, will</span>
+<span class="cm">   *                 use the values of the output solution as initial guess.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Solve</span><span class="p">(</span><span class="n">Vec</span><span class="w"> </span><span class="n">petsc_solution</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_initial_guess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

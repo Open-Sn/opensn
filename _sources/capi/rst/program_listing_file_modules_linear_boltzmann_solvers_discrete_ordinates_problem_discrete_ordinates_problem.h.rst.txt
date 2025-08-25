@@ -1,0 +1,122 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h:
+
+Program Listing for File discrete_ordinates_problem.h
+=====================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+   #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+   #include <memory>
+   
+   namespace opensn
+   {
+   
+   /**
+    * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to
+    * sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver.
+    */
+   class DiscreteOrdinatesProblem : public LBSProblem
+   {
+   protected:
+     using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
+   
+   public:
+     /// Static registration based constructor.
+     explicit DiscreteOrdinatesProblem(const InputParameters& params);
+     ~DiscreteOrdinatesProblem() override;
+   
+     const std::string& GetSweepType() const { return sweep_type_; }
+   
+     std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
+     void Initialize() override;
+   
+     /// Returns the sweep boundaries as a read only reference
+     const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
+   
+     /// Reorient an adjoint solution to account for backwards streaming.
+     void ReorientAdjointSolution() override;
+   
+     /// Zeroes all the outflow data-structures required to compute balance.
+     void ZeroOutflowBalanceVars(LBSGroupset& groupset);
+   
+   protected:
+     explicit DiscreteOrdinatesProblem(const std::string& name,
+                                       std::shared_ptr<MeshContinuum> grid_ptr);
+   
+     void InitializeBoundaries() override;
+   
+     /// Initializes Within-GroupSet solvers.
+     void InitializeWGSSolvers() override;
+   
+     /**
+      * This routine initializes basic sweep datastructures that are agnostic of
+      * the number of groups and essentially the groupsets. The routine rebuilds
+      * the data structures i) `quadrature_unq_so_grouping_map_`,
+      * ii) `quadrature_spds_map_` and iii) `quadrature_fluds_templates_map_`.
+      * i) is a mapping, per quadrature, to a collection of angle-index-sets where
+      * all the angles in a particular angleset share the same sweep ordering.
+      * ii) is a mapping, per quadrature, to a collection of SPDSs where each
+      * SPDS mirrors an angle-index-set in i)
+      * iii) is again a mapping, per quadrature, to a collection of Template FLUDS
+      * where each FLUDS mirrors a SPDS in ii).
+      */
+     void InitializeSweepDataStructures();
+   
+     /// Initializes fluds_ data structures.
+     void InitFluxDataStructures(LBSGroupset& groupset);
+   
+     /// Clears all the sweep orderings for a groupset in preperation for another.
+     void ResetSweepOrderings(LBSGroupset& groupset);
+   
+     /// Sets up the sweek chunk for the given discretization method.
+     virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
+   
+     std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
+       quadrature_unq_so_grouping_map_;
+     std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>
+       quadrature_spds_map_;
+     std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::unique_ptr<FLUDSCommonData>>>
+       quadrature_fluds_commondata_map_;
+   
+     std::vector<int> verbose_sweep_angles_;
+     const std::string sweep_type_;
+     std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
+   
+     /// Max level size.
+     std::size_t max_level_size_ = 0;
+     /// Max angle-set size.
+     std::size_t max_angleset_size_ = 0;
+     /// Max group-set size.
+     std::size_t max_groupset_size_ = 0;
+   
+     std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
+   
+   protected:
+     /**
+      * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
+      * geometry into account.
+      */
+     static std::pair<UniqueSOGroupings, DirIDToSOMap>
+     AssociateSOsAndDirections(std::shared_ptr<MeshContinuum> grid,
+                               const AngularQuadrature& quadrature,
+                               AngleAggregationType agg_type,
+                               GeometryType lbs_geo_type);
+   };
+   
+   } // namespace opensn

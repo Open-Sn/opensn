@@ -10,7 +10,8 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=1c2e0e3b" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
@@ -19,6 +20,8 @@
       <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -26,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pyopensn.math.Ylm" href="generated/pyopensn.math.Ylm.html" />
-    <link rel="prev" title="5.2. Using Logical Volumes" href="../tutorials/logvol/logvol_examples.html" /> 
+    <link rel="prev" title="Typedef opensn::vtkUGridPtrAndName" href="../capi/rst/typedef_namespaceopensn_1a703e5131681f614ca92f0f305d5f0f03.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#math">Math</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#spherical-harmonics">Spherical harmonics</a><ul>
@@ -632,6 +636,11 @@
 </section>
 <section id="settings">
 <h2>Settings<a class="headerlink" href="#settings" title="Link to this heading"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Functions in this section are only available to the module mode. For the
+console mode, refer to <code class="docutils literal notranslate"><span class="pre">opensn</span> <span class="pre">--help</span></code> for more information.</p>
+</div>
 <section id="logs">
 <h3>Logs<a class="headerlink" href="#logs" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
@@ -681,7 +690,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../tutorials/logvol/logvol_examples.html" class="btn btn-neutral float-left" title="5.2. Using Logical Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../capi/rst/typedef_namespaceopensn_1a703e5131681f614ca92f0f305d5f0f03.html" class="btn btn-neutral float-left" title="Typedef opensn::vtkUGridPtrAndName" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/pyopensn.math.Ylm.html" class="btn btn-neutral float-right" title="pyopensn.math.Ylm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -1,0 +1,54 @@
+
+.. _file_framework_mesh_mesh_generator_distributed_mesh_generator.h:
+
+File distributed_mesh_generator.h
+=================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_mesh_generator>` (``framework/mesh/mesh_generator``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_generator/distributed_mesh_generator.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_generator_distributed_mesh_generator.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/mesh/mesh_generator/mesh_generator.h`` (:ref:`file_framework_mesh_mesh_generator_mesh_generator.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_distributed_mesh_generator_1_1_distributed_mesh_data`
+
+- :ref:`exhale_class_classopensn_1_1_distributed_mesh_generator`
+

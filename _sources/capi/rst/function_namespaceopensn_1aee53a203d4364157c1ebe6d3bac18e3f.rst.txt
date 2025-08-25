@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aee53a203d4364157c1ebe6d3bac18e3f:
+
+Function opensn::Ylm
+====================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Ylm(unsigned int, int, double, double)
+   :project: opensn

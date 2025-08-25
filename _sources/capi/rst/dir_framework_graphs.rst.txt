@@ -1,0 +1,24 @@
+.. _dir_framework_graphs:
+
+
+Directory graphs
+================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/graphs``
+
+
+Files
+-----
+
+- :ref:`file_framework_graphs_graph_partitioner.h`
+- :ref:`file_framework_graphs_kba_graph_partitioner.h`
+- :ref:`file_framework_graphs_linear_graph_partitioner.h`
+- :ref:`file_framework_graphs_petsc_graph_partitioner.h`
+
+

@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File field_function_grid_based.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File field_function_grid_based.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-field-function-grid-based-h">
+<span id="program-listing-file-framework-field-functions-field-function-grid-based-h"></span><h1>Program Listing for File field_function_grid_based.h<a class="headerlink" href="#program-listing-for-file-field-function-grid-based-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_field_functions_field_function_grid_based.h.html#file-framework-field-functions-field-function-grid-based-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/field_functions/field_function_grid_based.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/field_functions/field_function.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GhostedParallelSTLVector</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FieldFunction</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FFList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Creates a field function, filling it with zeros.</span>
+<span class="w">  </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">discretization_ptr</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">Unknown</span><span class="w"> </span><span class="n">unknown</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates a field function with an associated field vector. The field&#39;s data vector is set to the</span>
+<span class="cm">   * incoming field vector.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">discretization_ptr</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">Unknown</span><span class="w"> </span><span class="n">unknown</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">field_vector</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Creates a field function where all the values are assigned to the single supplied value.</span>
+<span class="w">  </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">discretization_ptr</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">Unknown</span><span class="w"> </span><span class="n">unknown</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">double</span><span class="w"> </span><span class="n">field_value</span><span class="p">);</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">FieldFunctionGridBased</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the spatial discretization method.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetSpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns a reference to the locally stored field data.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalFieldVector</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns a read-only reference to the locally stored field data.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalFieldVector</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Makes a copy of the locally stored data with ghost access.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGhostedFieldVector</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Updates the field vector with a local STL vector.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateFieldVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">field_vector</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Updates the field vector with a PETSc vector. This only operates locally.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateFieldVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field_vector</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns the component values at requested point.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPointValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Evaluates the field function, on a cell, at the specified point, for the given component.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">Evaluate</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span><span class="w"> </span><span class="n">discretization_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">GhostedParallelSTLVector</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ghosted_field_vector_</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="n">local_grid_bounding_box_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Export multiple field functions to PVTU.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span>
+<span class="w">  </span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base_name</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">ff_list</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Static method for making the GetSpatialDiscretization for the constructors.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">MakeSpatialDiscretization</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Private method for creating the field vector.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">GhostedParallelSTLVector</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">MakeFieldVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">discretization</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">uk_man</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

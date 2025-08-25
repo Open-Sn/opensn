@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_varying_1_1_is_string:
+
+Template Struct Varying::IsString
+=================================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_varying`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Varying::IsString
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

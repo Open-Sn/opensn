@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_direction_view:
+
+Struct DirectionView
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_quadrature_view.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DirectionView
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

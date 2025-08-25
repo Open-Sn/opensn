@@ -1,0 +1,27 @@
+.. _exhale_struct_structopensn_1_1_non_linear_solver_context:
+
+Struct NonLinearSolverContext
+=============================
+
+- Defined in :ref:`file_framework_math_nonlinear_solver_nonlinear_solver_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::NLKEigenAGSContext`` (:ref:`exhale_struct_structopensn_1_1_n_l_k_eigen_a_g_s_context`)
+- ``public opensn::NLKEigenDiffContext`` (:ref:`exhale_struct_structopensn_1_1_n_l_k_eigen_diff_context`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::NonLinearSolverContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

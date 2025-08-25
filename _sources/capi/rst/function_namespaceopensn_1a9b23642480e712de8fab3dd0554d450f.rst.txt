@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9b23642480e712de8fab3dd0554d450f:
+
+Function opensn::SteppingMethodFromString
+=========================================
+
+- Defined in :ref:`file_framework_math_math_time_stepping.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SteppingMethodFromString(const std::string&)
+   :project: opensn

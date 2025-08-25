@@ -1,0 +1,86 @@
+
+.. _file_framework_data_types_ndarray.h:
+
+File ndarray.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/ndarray.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_ndarray.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``cassert``
+
+- ``cstddef``
+
+- ``initializer_list``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``numeric``
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``type_traits``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_dense_matrix.h`
+
+- :ref:`file_framework_data_types_vector.h`
+
+- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_n_d_array_1_1bool__pack`
+
+- :ref:`exhale_class_classopensn_1_1_n_d_array`
+

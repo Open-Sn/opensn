@@ -1,0 +1,606 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File ndarray.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File ndarray.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-ndarray-h">
+<span id="program-listing-file-framework-data-types-ndarray-h"></span><h1>Program Listing for File ndarray.h<a class="headerlink" href="#program-listing-for-file-ndarray-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_data_types_ndarray.h.html#file-framework-data-types-ndarray-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/data_types/ndarray.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;type_traits&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cassert&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;initializer_list&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;numeric&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NDArray</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">...</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">bool_pack</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="w"> </span><span class="n">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">conjunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">bool_pack</span><span class="o">&lt;</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">U</span><span class="o">::</span><span class="n">value</span><span class="p">...</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">bool_pack</span><span class="o">&lt;</span><span class="n">U</span><span class="o">::</span><span class="n">value</span><span class="p">...,</span><span class="w"> </span><span class="nb">true</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AllIntegral</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">conjunction</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">is_integral</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span><span class="p">...</span><span class="o">&gt;::</span><span class="n">type</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an empty array.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an empty array and initializes the reference</span>
+<span class="cm">   * count to one.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="n">storage_</span><span class="p">(</span><span class="k">nullptr</span><span class="p">),</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">{},</span><span class="w"> </span><span class="n">strides_</span><span class="p">{}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an array.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::array` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an array with the specified size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an array and initializes the array.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::array` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \param value Initial element value.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an array with the specified size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ValueInitialize</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an initializer-list.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::vector` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an array with the specified size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an array. Each entry in the array is assigned the designated value.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::array` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \param value The value to assing to each element.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an array with the specified size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ValueInitialize</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an array. Each entry in the array is assigned the designated value.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::array` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \param value The value to assing to each element.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This constructor creates an array with the specified size.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Creates an array with the specified number of elements in each dimension,</span>
+<span class="cm">   * from an initializer-list. Each entry in the array is assigned the</span>
+<span class="cm">   * designated value.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims `std::initializer` list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \param value The value to assing to each element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="n">ValueInitialize</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Copy constructor</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="p">),</span>
+<span class="w">      </span><span class="n">storage_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="p">)),</span>
+<span class="w">      </span><span class="n">dimensions_</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">dimensions_</span><span class="p">),</span>
+<span class="w">      </span><span class="n">strides_</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">strides_</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size_</span><span class="p">,</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Move constructor</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="p">(</span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">size_</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="p">),</span>
+<span class="w">      </span><span class="n">storage_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">storage_</span><span class="p">)),</span>
+<span class="w">      </span><span class="n">dimensions_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">dimensions_</span><span class="p">)),</span>
+<span class="w">      </span><span class="n">strides_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">strides_</span><span class="p">))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Assign from another array.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param other The array to copy.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">&amp;</span><span class="n">other</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;</span><span class="p">(</span><span class="n">other</span><span class="p">).</span><span class="n">swap</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Move assignment operator</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">other</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="p">;</span>
+<span class="w">      </span><span class="n">dimensions_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">dimensions_</span><span class="p">);</span>
+<span class="w">      </span><span class="n">strides_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">strides_</span><span class="p">);</span>
+<span class="w">      </span><span class="n">storage_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">storage_</span><span class="p">);</span>
+<span class="w">      </span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Resizes the array with a vector.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims std::vector of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This method resizes the array to the specified number of elements. If the</span>
+<span class="cm">   * current size is equal to the new size, no memory allocation occurs.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">resize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">multiplies</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">()))</span>
+<span class="w">      </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Resizes the array with an array.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims std::array of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This method resizes the array to the specified number of elements. If the</span>
+<span class="cm">   * current size is equal to the new size, no memory allocation occurs.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">resize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">multiplies</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">()))</span>
+<span class="w">      </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Resizes the array with an initializer_list.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param dims std::initializer_list of the number of elements in each</span>
+<span class="cm">   *             dimension.</span>
+<span class="cm">   * \throw std::bad_alloc if memory allocation fails.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This method resizes the array to the specified number of elements. If the</span>
+<span class="cm">   * current size is equal to the new size, no memory allocation occurs.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">resize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SetDimensions</span><span class="p">(</span><span class="n">dims</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">multiplies</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">()))</span>
+<span class="w">      </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Accesses the specified element for an array with N dimensions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param args Indices for each dimension.</span>
+<span class="cm">   * \return Read/write reference to the element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">args</span><span class="p">...)];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">D</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Can be only used on 1-dimensional arrays&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">D</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Can be only used on 2-dimensional arrays&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Accesses the specified element for an array with N dimensions with bounds checking.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param args Indices for each dimension.</span>
+<span class="cm">   * \return Read/write reference to the element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">at</span><span class="p">(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indices</span><span class="p">[]{</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Index out of bounds.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">args</span><span class="p">...)];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Accesses the specified element for an array with N dimensions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param args Indices for each dimension.</span>
+<span class="cm">   * \return Read reference to the element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">args</span><span class="p">...)];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">D</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Can be only used on 1-dimensional arrays&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">()(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">D</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Can be only used on 2-dimensional arrays&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Accesses the specified element for an array with N dimensions with bounds checking.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param args Indices for each dimension.</span>
+<span class="cm">   * \return Read reference to the element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">at</span><span class="p">(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indices</span><span class="p">[]{</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Index out of bounds.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">[</span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">args</span><span class="p">...)];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns an iterator pointing to the beginning of the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">begin</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns a constant iterator pointing to the beginning of the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">cbegin</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns an iterator pointing to the end of the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">end</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns a constant iterator pointing to the end of the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">cend</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns the number of elements in the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns true if the array has no elements</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">size_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns a pointer to the underlying array data.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns the rank of the array.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">rank</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns the dimension of the array.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dimension</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">dimensions_</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">D</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Sets each element of the array to the specified value.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">set</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">size_</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns a linear index to the specified element with safety checks.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param args The indices of the desired element.</span>
+<span class="cm">   * \throw std::invalid_argument if the number of arguments are incorrect and</span>
+<span class="cm">   * std::out_of_range if one of the dimension-indices are out of range.</span>
+<span class="cm">   * \return Linear index to the specified element.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">MapNDtoLin</span><span class="p">(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">D</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Number of arguments &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                  </span><span class="s">&quot; not equal to rank &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">D</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indices</span><span class="p">[]{</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...};</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">(</span><span class="s">&quot;Index &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; out of range &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; must be &lt;&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">]));</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">args</span><span class="p">...);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Swap the contents of this array with another array.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param other The array to swap with.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">swap</span><span class="p">(</span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">size_</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">size_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">storage_</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">storage_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">dimensions_</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">dimensions_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">strides_</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">strides_</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetDimensions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Number of dimension parameters exceeds the rank.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetDimensions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetDimensions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">D</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;Number of dimension parameters exceeds the rank.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">dims</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">dims</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">.</span><span class="n">begin</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">strides_</span><span class="p">[</span><span class="n">D</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">size_</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="n">strides_</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">storage_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="n">size_</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ValueInitialize</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Initialize</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">fill_n</span><span class="p">(</span><span class="n">storage_</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">size_</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">__attribute__</span><span class="p">((</span><span class="n">always_inline</span><span class="p">))</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ComputeIndex</span><span class="p">(</span><span class="n">Args</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indices</span><span class="p">[]{</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...};</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span>
+<span class="w">             </span><span class="n">indices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span>
+<span class="w">             </span><span class="n">indices</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">D</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">      </span><span class="n">index</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">strides_</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="n">storage_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dimensions_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="o">&gt;</span><span class="w"> </span><span class="n">strides_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

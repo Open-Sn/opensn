@@ -1,0 +1,66 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h:
+
+File nl_keigen_acc_context.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration>` (``modules/linear_boltzmann_solvers/lbs_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_context.h``)
+--------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/nonlinear_solver/nonlinear_solver_context.h`` (:ref:`file_framework_math_nonlinear_solver_nonlinear_solver_context.h`)
+
+- ``modules/diffusion/diffusion_mip_solver.h`` (:ref:`file_modules_diffusion_diffusion_mip_solver.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h`)
+
+- ``petscsnes.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_n_l_k_eigen_diff_context`
+

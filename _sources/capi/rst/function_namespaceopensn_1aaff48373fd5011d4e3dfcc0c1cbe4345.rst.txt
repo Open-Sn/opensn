@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aaff48373fd5011d4e3dfcc0c1cbe4345:
+
+Function opensn::ComputeL2PhiChange
+===================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeL2PhiChange(LBSProblem&, std::optional<const std::reference_wrapper<std::vector<double>>>)
+   :project: opensn

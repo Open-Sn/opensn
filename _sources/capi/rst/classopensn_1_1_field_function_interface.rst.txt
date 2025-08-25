@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_field_function_interface:
+
+Class FieldFunctionInterface
+============================
+
+- Defined in :ref:`file_framework_field_functions_field_function_interface.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::GridBasedFieldFunctionInterface`` (:ref:`exhale_class_classopensn_1_1_grid_based_field_function_interface`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FieldFunctionInterface
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

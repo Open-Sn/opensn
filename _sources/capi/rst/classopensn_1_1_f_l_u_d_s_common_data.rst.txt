@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_f_l_u_d_s_common_data:
+
+Class FLUDSCommonData
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::AAH_FLUDSCommonData`` (:ref:`exhale_class_classopensn_1_1_a_a_h___f_l_u_d_s_common_data`)
+- ``public opensn::CBC_FLUDSCommonData`` (:ref:`exhale_class_classopensn_1_1_c_b_c___f_l_u_d_s_common_data`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FLUDSCommonData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

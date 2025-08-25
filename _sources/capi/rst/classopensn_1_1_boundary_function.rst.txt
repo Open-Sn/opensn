@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_boundary_function:
+
+Class BoundaryFunction
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::BoundaryFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

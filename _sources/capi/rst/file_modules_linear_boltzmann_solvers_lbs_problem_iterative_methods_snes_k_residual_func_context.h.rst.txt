@@ -1,0 +1,60 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h:
+
+File snes_k_residual_func_context.h
+===================================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h``)
+--------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_k_residual_function_context`
+

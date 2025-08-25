@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a5be514f37be476f5acb1f73690d294f3:
+
+Variable opensn::multigroup_xs_stack
+====================================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::multigroup_xs_stack
+   :project: opensn

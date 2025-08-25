@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_ortho_mesh_attributes:
+
+Struct OrthoMeshAttributes
+==========================
+
+- Defined in :ref:`file_framework_mesh_mesh.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::OrthoMeshAttributes
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_define_log__exceptions_8h_1a3e4d5719a9afedbadff14d98810593af:
+
+Define OpenSnRecoverableLogicalError
+====================================
+
+- Defined in :ref:`file_framework_logging_log_exceptions.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnRecoverableLogicalError
+   :project: opensn

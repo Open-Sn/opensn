@@ -1,0 +1,44 @@
+
+.. _program_listing_file_framework_mesh_logical_volume_surface_mesh_logical_volume.h:
+
+Program Listing for File surface_mesh_logical_volume.h
+======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_logical_volume_surface_mesh_logical_volume.h>` (``framework/mesh/logical_volume/surface_mesh_logical_volume.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/logical_volume/logical_volume.h"
+   
+   namespace opensn
+   {
+   
+   class SurfaceMesh;
+   
+   /// SurfaceMesh volume
+   class SurfaceMeshLogicalVolume : public LogicalVolume
+   {
+   public:
+     explicit SurfaceMeshLogicalVolume(const InputParameters& params);
+   
+     bool Inside(const Vector3& point) const override;
+   
+   private:
+     const std::shared_ptr<SurfaceMesh> surf_mesh_ = nullptr;
+     std::array<double, 2> xbounds_;
+     std::array<double, 2> ybounds_;
+     std::array<double, 2> zbounds_;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<SurfaceMeshLogicalVolume> Create(const ParameterBlock& params);
+   };
+   
+   } // namespace opensn

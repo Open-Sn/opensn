@@ -1,0 +1,60 @@
+
+.. _file_framework_math_spatial_weight_function.h:
+
+File spatial_weight_function.h
+==============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/spatial_weight_function.h``)
+---------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_spatial_weight_function.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_cartesian_spatial_weight_function`
+
+- :ref:`exhale_struct_structopensn_1_1_cylindrical_spatial_weight_function`
+
+- :ref:`exhale_struct_structopensn_1_1_spatial_weight_function`
+
+- :ref:`exhale_struct_structopensn_1_1_spherical_spatial_weight_function`
+

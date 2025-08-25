@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5:
+
+Function opensn::CopyVecToSTLvectorWithGhosts
+=============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CopyVecToSTLvectorWithGhosts(Vec, std::vector<double>&, size_t, bool)
+   :project: opensn

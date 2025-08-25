@@ -1,0 +1,26 @@
+.. _exhale_struct_structopensn_1_1_n_l_k_eigen_a_g_s_context:
+
+Struct NLKEigenAGSContext
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::NonLinearSolverContext`` (:ref:`exhale_struct_structopensn_1_1_non_linear_solver_context`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::NLKEigenAGSContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

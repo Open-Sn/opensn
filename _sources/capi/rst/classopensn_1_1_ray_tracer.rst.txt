@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_ray_tracer:
+
+Class RayTracer
+===============
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::RayTracer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

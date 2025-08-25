@@ -1,0 +1,52 @@
+
+.. _file_framework_math_random_number_generation_random_number_generator.h:
+
+File random_number_generator.h
+==============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_random_number_generation>` (``framework/math/random_number_generation``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/random_number_generation/random_number_generator.h``)
+----------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_random_number_generation_random_number_generator.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``random`` (:ref:`file_framework_math_random_number_generation_random_number_generator.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_random_number_generator`
+

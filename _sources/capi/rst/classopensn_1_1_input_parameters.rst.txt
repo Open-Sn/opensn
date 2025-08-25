@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_input_parameters:
+
+Class InputParameters
+=====================
+
+- Defined in :ref:`file_framework_parameters_input_parameters.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::ParameterBlock`` (:ref:`exhale_class_classopensn_1_1_parameter_block`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::InputParameters
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

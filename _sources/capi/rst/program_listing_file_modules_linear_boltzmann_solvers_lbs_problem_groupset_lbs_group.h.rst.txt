@@ -1,0 +1,32 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h:
+
+Program Listing for File lbs_group.h
+====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h>` (``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_group.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   namespace opensn
+   {
+   
+   /// Object holding a grouping.
+   class LBSGroup
+   {
+   public:
+     int id;
+   
+   public:
+     LBSGroup() : id(-1) {}
+     explicit LBSGroup(int id) : id(id) {}
+   };
+   
+   } // namespace opensn

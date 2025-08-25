@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc:
+
+Template Function opensn::Inverse
+=================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Inverse(const DenseMatrix<TYPE>&)
+   :project: opensn

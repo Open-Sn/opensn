@@ -1,0 +1,54 @@
+
+.. _file_framework_math_quadratures_gausschebyshev_quadrature.h:
+
+File gausschebyshev_quadrature.h
+================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures>` (``framework/math/quadratures``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/gausschebyshev_quadrature.h``)
+-----------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_gausschebyshev_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/gauss_quadrature.h`` (:ref:`file_framework_math_quadratures_gauss_quadrature.h`)
+
+- ``framework/object_factory.h`` (:ref:`file_framework_object_factory.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_gauss_chebyshev_quadrature`
+

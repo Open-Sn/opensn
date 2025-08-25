@@ -1,0 +1,85 @@
+
+.. _file_framework_data_types_vector.h:
+
+File vector.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/vector.h``)
+----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_vector.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cmath``
+
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
+- ``sstream``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_dense_matrix.h`
+
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_vector`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003`
+
+- :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
+
+- :ref:`exhale_function_namespaceopensn_1aaf78d2f2764a5e7e5ea187aa45f776b6`
+
+- :ref:`exhale_function_namespaceopensn_1a2b52e15f8ca0086f83f7213e4c48e3ee`
+
+- :ref:`exhale_function_namespaceopensn_1ad0c00d88888a00738dc5fa25ba3e15b1`
+
+- :ref:`exhale_function_namespaceopensn_1a5faf1e3ba2d4dbc6c7b17d8c25e990d0`
+

@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_object_factory:
+
+Class ObjectFactory
+===================
+
+- Defined in :ref:`file_framework_object_factory.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ObjectFactory
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

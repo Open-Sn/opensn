@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File distributed_mesh_generator.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File distributed_mesh_generator.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-distributed-mesh-generator-h">
+<span id="program-listing-file-framework-mesh-mesh-generator-distributed-mesh-generator-h"></span><h1>Program Listing for File distributed_mesh_generator.h<a class="headerlink" href="#program-listing-for-file-distributed-mesh-generator-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_mesh_mesh_generator_distributed_mesh_generator.h.html#file-framework-mesh-mesh-generator-distributed-mesh-generator-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/mesh/mesh_generator/distributed_mesh_generator.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_generator/mesh_generator.h&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This class is responsible for generating a mesh, partitioning it, and distributing the</span>
+<span class="cm"> * individual partitions to different MPI locations. The mesh is generated on location 0,</span>
+<span class="cm"> * partitioned into multiple parts, serialized, and distributed to all other MPI ranks.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The mesh data is serialized into a `ByteArray` for efficient MPI communication and</span>
+<span class="cm"> * deserialized at the receiving locations to reconstruct the mesh locally.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistributedMeshGenerator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">MeshGenerator</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Constructor for the DistributedMeshGenerator.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param params Input parameters for mesh generation and distribution.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DistributedMeshGenerator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Executes the mesh generation and distribution process.</span>
+<span class="cm">   *</span>
+<span class="cm">   * On location 0, the mesh is generated, partitioned, serialized, and distributed to</span>
+<span class="cm">   * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,</span>
+<span class="cm">   * and set up the local mesh.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Structure holding distributed mesh data.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This structure holds the essential information about the mesh that will be distributed</span>
+<span class="cm">   * among MPI ranks, including cells, vertices, boundary ID mappings, and mesh attributes.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">DistributedMeshData</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Dimension of the mesh (2D, 3D).</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// The coordinate system of the mesh.</span>
+<span class="w">    </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Type of mesh.</span>
+<span class="w">    </span><span class="n">MeshType</span><span class="w"> </span><span class="n">mesh_type</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Whether the mesh is extruded or not.</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">extruded</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Attributes for orthogonal mesh, if applicable.</span>
+<span class="w">    </span><span class="n">OrthoMeshAttributes</span><span class="w"> </span><span class="n">ortho_attributes</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">/// Map of cells (partition ID, cell global ID).</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">UnpartitionedMesh</span><span class="o">::</span><span class="n">LightWeightCell</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cells</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Map of vertices by global vertex ID.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Map of boundary IDs to boundary names.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_id_map</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Number of global vertices in the mesh.</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_global_vertices</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// The number of partitions for distributing the mesh.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Get the input parameters for this class.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \return Input parameters for configuring the DistributedMeshGenerator.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DistributedMeshGenerator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Serializes and distributes the mesh data to other MPI ranks.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The mesh data is serialized into a `ByteArray` and distributed via MPI. The partitioned</span>
+<span class="cm">   * mesh is sent to different ranks based on the partitioning.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param cell_pids A vector of cell partition IDs.</span>
+<span class="cm">   * \param umesh The unpartitioned mesh object containing mesh information.</span>
+<span class="cm">   * \param num_partitions The number of partitions to distribute.</span>
+<span class="cm">   * \return The serialized mesh data for location 0.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">ByteArray</span><span class="w"> </span><span class="n">DistributeSerializedMeshData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cell_pids</span><span class="p">,</span>
+<span class="w">                                                </span><span class="k">const</span><span class="w"> </span><span class="n">UnpartitionedMesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">umesh</span><span class="p">,</span>
+<span class="w">                                                </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Deserializes the mesh data from a `ByteArray`.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This function reconstructs the mesh from the serialized data received from location 0.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param serial_data The serialized mesh data in a `ByteArray`.</span>
+<span class="cm">   * \return The deserialized mesh data.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">DistributedMeshData</span><span class="w"> </span><span class="nf">DeserializeMeshData</span><span class="p">(</span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">serial_data</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Sets up the local mesh on each MPI rank from the deserialized mesh data.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The mesh is reconstructed from the deserialized mesh data on each rank. The local mesh</span>
+<span class="cm">   * is then prepared and added to the mesh stack.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param mesh_info The deserialized mesh data containing information about cells, vertices, and</span>
+<span class="cm">   * boundaries.</span>
+<span class="cm">   * \return A shared pointer to the local mesh.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SetupLocalMesh</span><span class="p">(</span><span class="n">DistributedMeshData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh_info</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

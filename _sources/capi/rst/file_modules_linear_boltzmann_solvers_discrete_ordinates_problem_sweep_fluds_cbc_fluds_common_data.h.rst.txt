@@ -1,0 +1,60 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds_common_data.h:
+
+File cbc_fluds_common_data.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h``)
+----------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds_common_data.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cinttypes``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_c_b_c___f_l_u_d_s_common_data`
+

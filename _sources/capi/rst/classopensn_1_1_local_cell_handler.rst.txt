@@ -1,0 +1,28 @@
+.. _exhale_class_classopensn_1_1_local_cell_handler:
+
+Class LocalCellHandler
+======================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_const_iterator`
+- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_iterator`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LocalCellHandler
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

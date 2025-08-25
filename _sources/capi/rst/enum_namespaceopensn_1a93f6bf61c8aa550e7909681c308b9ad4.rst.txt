@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a93f6bf61c8aa550e7909681c308b9ad4:
+
+Enum VaryingDataType
+====================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::VaryingDataType
+   :project: opensn

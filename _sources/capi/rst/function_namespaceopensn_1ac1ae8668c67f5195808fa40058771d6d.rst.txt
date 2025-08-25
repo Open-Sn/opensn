@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac1ae8668c67f5195808fa40058771d6d:
+
+Template Function opensn::H5CreateAttribute
+===========================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5CreateAttribute(hid_t, const std::string&, T&)
+   :project: opensn

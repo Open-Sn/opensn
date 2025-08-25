@@ -1,0 +1,52 @@
+
+.. _file_framework_mesh_logical_volume_sphere_logical_volume.h:
+
+File sphere_logical_volume.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_logical_volume>` (``framework/mesh/logical_volume``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/logical_volume/sphere_logical_volume.h``)
+----------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_logical_volume_sphere_logical_volume.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_sphere_logical_volume`
+

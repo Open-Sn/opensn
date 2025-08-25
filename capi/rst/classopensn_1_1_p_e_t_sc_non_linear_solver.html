@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class PETScNonLinearSolver &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class PETScNonLinearSolver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-petscnonlinearsolver">
+<span id="exhale-class-classopensn-1-1-p-e-t-sc-non-linear-solver"></span><h1>Class PETScNonLinearSolver<a class="headerlink" href="#class-petscnonlinearsolver" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_math_nonlinear_solver_petsc_nonlinear_solver.h.html#file-framework-math-nonlinear-solver-petsc-nonlinear-solver-h"><span class="std std-ref">File petsc_nonlinear_solver.h</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NonLinearSolver</span></code> (<a class="reference internal" href="classopensn_1_1_non_linear_solver.html#exhale-class-classopensn-1-1-non-linear-solver"><span class="std std-ref">Class NonLinearSolver</span></a>)</p></li>
+</ul>
+</section>
+<section id="derived-types">
+<h3>Derived Types<a class="headerlink" href="#derived-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NLKEigenDiffSolver</span></code> (<a class="reference internal" href="classopensn_1_1_n_l_k_eigen_diff_solver.html#exhale-class-classopensn-1-1-n-l-k-eigen-diff-solver"><span class="std std-ref">Class NLKEigenDiffSolver</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NLKEigenvalueAGSSolver</span></code> (<a class="reference internal" href="classopensn_1_1_n_l_k_eigenvalue_a_g_s_solver.html#exhale-class-classopensn-1-1-n-l-k-eigenvalue-a-g-s-solver"><span class="std std-ref">Class NLKEigenvalueAGSSolver</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolverE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PETScNonLinearSolver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_non_linear_solver.html#_CPPv4N6opensn15NonLinearSolverE" title="opensn::NonLinearSolver"><span class="n"><span class="pre">NonLinearSolver</span></span></a><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolverE" title="Link to this definition"></a><br /></dt>
+<dd><p>Implementation of a PETSc non-linear solver. </p>
+<p>Subclassed by <a class="reference internal" href="classopensn_1_1_n_l_k_eigen_diff_solver.html#classopensn_1_1_n_l_k_eigen_diff_solver"><span class="std std-ref">opensn::NLKEigenDiffSolver</span></a>, <a class="reference internal" href="classopensn_1_1_n_l_k_eigenvalue_a_g_s_solver.html#classopensn_1_1_n_l_k_eigenvalue_a_g_s_solver"><span class="std std-ref">opensn::NLKEigenvalueAGSSolver</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver20PETScNonLinearSolverENSt10shared_ptrI22NonLinearSolverContextEERK15InputParameters">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1ad46568f574e60c2f7350b3f1c0dc658e"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PETScNonLinearSolver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_non_linear_solver_context.html#_CPPv4N6opensn22NonLinearSolverContextE" title="opensn::NonLinearSolverContext"><span class="n"><span class="pre">NonLinearSolverContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">context_ptr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_p_e_t_sc_non_linear_solver_options.html#_CPPv4N6opensn27PETScNonLinearSolverOptionsE" title="opensn::PETScNonLinearSolverOptions"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_p_e_t_sc_non_linear_solver_options.html#_CPPv4N6opensn27PETScNonLinearSolverOptions18GetInputParametersEv" title="opensn::PETScNonLinearSolverOptions::GetInputParameters"><span class="n"><span class="pre">GetInputParameters</span></span></a><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver20PETScNonLinearSolverENSt10shared_ptrI22NonLinearSolverContextEERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolverD0Ev">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1aae3e3a805e9c5b090ae2334d8005c034"></span><span class="sig-name descname"><span class="n"><span class="pre">~PETScNonLinearSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolverD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver19GetToleranceOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a2d956bf2b3a16bdac1dbd806d2f227c4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_p_e_t_sc_non_linear_solver_options.html#_CPPv4N6opensn27PETScNonLinearSolverOptionsE" title="opensn::PETScNonLinearSolverOptions"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetToleranceOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver19GetToleranceOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver21ApplyToleranceOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a672d626bacb31972995e245b4142f848"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApplyToleranceOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver21ApplyToleranceOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20PETScNonLinearSolver11IsConvergedEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1ada099dab4a8d0245611543d9db8165ca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsConverged</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20PETScNonLinearSolver11IsConvergedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20PETScNonLinearSolver24GetConvergedReasonStringEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1af59854d866654541e711be39717ba8f5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetConvergedReasonString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20PETScNonLinearSolver24GetConvergedReasonStringEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver5SetupEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a7b04de183ffc859de226795846ace2e4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Setup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver5SetupEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver5SolveEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1abe098c47133332ff20a97076713242b0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solve</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver5SolveEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20PETScNonLinearSolver11IsSystemSetEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a23c40b672aab2de52a0884336e59285b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsSystemSet</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20PETScNonLinearSolver11IsSystemSetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver16PreSetupCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a2c01b7d250a1159296dd9645236e5246"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreSetupCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver16PreSetupCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver10SetOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a6604630b4d8c73db25f4dcde0cfed690"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver10SetOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver16SetSolverContextEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1aa855ded961ad1ff0d09121ef98717563"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSolverContext</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver16SetSolverContextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver18SetConvergenceTestEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a0128b4b7932a48f63c019098d70fdd75"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetConvergenceTest</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver18SetConvergenceTestEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver10SetMonitorEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a13dab6a675889e6bf3de73637427a262"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetMonitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver10SetMonitorEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver17SetPreconditionerEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1abc46ba7d953dc642fe868d79995cd98d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPreconditioner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver17SetPreconditionerEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver13SetSystemSizeEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1ade981f47e6003549aeffc13bbda9c8e3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSystemSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver13SetSystemSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver9SetSystemEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1aaca057c33f5e231167b35a8e0fc699f8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSystem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver9SetSystemEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver11SetFunctionEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1aaed9ed7c2c1ef56202e916a2d531f9c8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetFunction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver11SetFunctionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver11SetJacobianEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a97c53a8f644360badcc15d8803e0654f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetJacobian</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver11SetJacobianEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver17PostSetupCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1af040326d836be7df6ea96af406a7b1d2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostSetupCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver17PostSetupCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver16PreSolveCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1ab963942e445c410b18bb878f59eb91f0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreSolveCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver16PreSolveCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver15SetInitialGuessEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a2f57f72cb1e46166a5d429f4b459d9f7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetInitialGuess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver15SetInitialGuessEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver17PostSolveCallbackEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1af4a0fe39867889abd400496be09f06a8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostSolveCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver17PostSolveCallbackEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver2J_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a92e49e0bd29984c6c77613cda3a939d3"></span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">J_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver2J_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver2P_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a264ed683d76a418496f84cfe421c6567"></span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver2P_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver2r_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a57964dfaa356637891f3eed7ba00cd26"></span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">r_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver2r_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver2x_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a53bb30e65f7e25747959513976d76160"></span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver2x_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver10nl_solver_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a9a2bf87ac23739b1df0340fe4eef57c0"></span><span class="n"><span class="pre">SNES</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_solver_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver10nl_solver_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver15num_local_dofs_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a40bb8bfd84ceeb6e7710d81949d1b7fc"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_local_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver15num_local_dofs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver16num_global_dofs_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1afc3540bd148bb788add3377478a1eca5"></span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_global_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver16num_global_dofs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PETScNonLinearSolver8options_E">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_1a73941cbbce6290561682e7e1ab41b662"></span><a class="reference internal" href="classopensn_1_1_p_e_t_sc_non_linear_solver_options.html#_CPPv4N6opensn27PETScNonLinearSolverOptionsE" title="opensn::PETScNonLinearSolverOptions"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">options_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20PETScNonLinearSolver8options_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

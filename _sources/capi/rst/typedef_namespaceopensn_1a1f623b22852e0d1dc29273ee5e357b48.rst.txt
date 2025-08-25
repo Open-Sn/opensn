@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48:
+
+Typedef opensn::DirIDToSOMap
+============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::DirIDToSOMap
+   :project: opensn

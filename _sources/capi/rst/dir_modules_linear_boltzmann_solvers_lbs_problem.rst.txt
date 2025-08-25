@@ -1,0 +1,37 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem:
+
+
+Directory lbs_problem
+=====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers>` (``modules/linear_boltzmann_solvers``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem``
+
+Subdirectories
+--------------
+
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_groupset`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_io`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_point_source`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_preconditioning`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source`
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+
+

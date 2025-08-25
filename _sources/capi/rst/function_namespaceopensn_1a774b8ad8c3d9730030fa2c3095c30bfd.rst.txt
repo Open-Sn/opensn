@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd:
+
+Function opensn::ComputeFissionRate
+===================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeFissionRate(LBSProblem&, const std::vector<double>&)
+   :project: opensn

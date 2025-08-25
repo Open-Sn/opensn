@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1device__dbg_1a7a5373abc3ac6b460196ae8c0d59e6dc:
+
+Function opensn::device_dbg::PrintMeshOnDevice
+==============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_mesh.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::device_dbg::PrintMeshOnDevice(MeshCarrier&)
+   :project: opensn

@@ -1,0 +1,58 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h:
+
+File sweep_wgs_context.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h``)
+------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_sweep_scheduler.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`
+

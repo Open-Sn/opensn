@@ -1,0 +1,23 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds:
+
+
+Directory spds
+==============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_cbc.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+

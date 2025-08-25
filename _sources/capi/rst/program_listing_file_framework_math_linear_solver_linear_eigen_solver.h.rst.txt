@@ -1,0 +1,52 @@
+
+.. _program_listing_file_framework_math_linear_solver_linear_eigen_solver.h:
+
+Program Listing for File linear_eigen_solver.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_linear_solver_linear_eigen_solver.h>` (``framework/math/linear_solver/linear_eigen_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/math/linear_solver/linear_solver.h"
+   #include "framework/math/linear_solver/linear_solver_context.h"
+   
+   namespace opensn
+   {
+   
+   class LinearEigenSolver : public LinearSolver
+   {
+   public:
+     enum class IterativeMethod : int
+     {
+       POWER
+     };
+   
+     LinearEigenSolver(IterativeMethod method, std::shared_ptr<LinearEigenContext> ctx)
+       : LinearSolver(ctx), method_(method)
+     {
+     }
+   
+     std::string GetIterativeMethodName()
+     {
+       switch (method_)
+       {
+         case IterativeMethod::POWER:
+           return "POWER ITERATION";
+         default:
+           return "UNKNOWN ITERATIVE METHOD";
+       }
+     }
+   
+   protected:
+     IterativeMethod method_;
+   };
+   
+   } // namespace opensn

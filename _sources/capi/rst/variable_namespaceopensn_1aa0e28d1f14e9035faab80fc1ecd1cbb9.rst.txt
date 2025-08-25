@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9:
+
+Variable opensn::log
+====================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::log
+   :project: opensn

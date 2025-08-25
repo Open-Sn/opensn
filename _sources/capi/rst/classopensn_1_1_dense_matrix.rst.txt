@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_dense_matrix:
+
+Template Class DenseMatrix
+==========================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::NDArray< TYPE, 2 >`` (:ref:`exhale_class_classopensn_1_1_n_d_array`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DenseMatrix
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

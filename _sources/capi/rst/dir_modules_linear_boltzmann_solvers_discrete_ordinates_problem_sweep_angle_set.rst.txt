@@ -1,0 +1,24 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set:
+
+
+Directory angle_set
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_cbc_angle_set.h`
+
+

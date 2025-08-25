@@ -1,0 +1,32 @@
+.. _exhale_class_classopensn_1_1_finite_element_base:
+
+Class FiniteElementBase
+=======================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_finite_element_finite_element_base.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SpatialDiscretization`` (:ref:`exhale_class_classopensn_1_1_spatial_discretization`)
+
+
+Derived Type
+************
+
+- ``public opensn::PieceWiseLinearBase`` (:ref:`exhale_class_classopensn_1_1_piece_wise_linear_base`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FiniteElementBase
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

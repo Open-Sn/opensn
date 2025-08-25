@@ -1,0 +1,23 @@
+.. _exhale_class_classopensn_1_1_local_cell_handler_1_1_iterator:
+
+Class LocalCellHandler::Iterator
+================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h`
+
+
+Nested Relationships
+--------------------
+
+This class is a nested type of :ref:`exhale_class_classopensn_1_1_local_cell_handler`.
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LocalCellHandler::Iterator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

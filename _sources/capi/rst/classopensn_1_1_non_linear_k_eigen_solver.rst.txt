@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_non_linear_k_eigen_solver:
+
+Class NonLinearKEigenSolver
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::NonLinearKEigenSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

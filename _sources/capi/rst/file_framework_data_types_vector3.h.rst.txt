@@ -1,0 +1,103 @@
+
+.. _file_framework_data_types_vector3.h:
+
+File vector3.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types>` (``framework/data_types``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/vector3.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_vector3.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``cmath``
+
+- ``iostream``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``sstream``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_matrix3x3.h`
+
+- :ref:`file_framework_data_types_varying.h`
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_line.h`
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_point.h`
+
+- :ref:`file_framework_math_functions_function.h`
+
+- :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_gauss_quadrature.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+- :ref:`file_framework_math_spatial_weight_function.h`
+
+- :ref:`file_framework_mesh_cell_cell.h`
+
+- :ref:`file_framework_mesh_logical_volume_logical_volume.h`
+
+- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`
+
+- :ref:`file_framework_mesh_mesh_face.h`
+
+- :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_vector3`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a6bcd29e0811973aa3b4757f131127bf3`
+

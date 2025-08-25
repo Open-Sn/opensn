@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices:
+
+Struct AngularQuadrature::HarmonicIndices
+=========================================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_angular_quadrature`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AngularQuadrature::HarmonicIndices
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

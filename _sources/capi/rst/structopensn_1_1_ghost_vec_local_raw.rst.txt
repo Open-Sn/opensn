@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_ghost_vec_local_raw:
+
+Struct GhostVecLocalRaw
+=======================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::GhostVecLocalRaw
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

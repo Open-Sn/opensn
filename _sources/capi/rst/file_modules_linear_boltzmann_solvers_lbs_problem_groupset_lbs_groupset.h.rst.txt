@@ -1,0 +1,96 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h:
+
+File lbs_groupset.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_groupset>` (``modules/linear_boltzmann_solvers/lbs_problem/groupset``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h``)
+-------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/linear_solver/linear_system_solver.h`` (:ref:`file_framework_math_linear_solver_linear_system_solver.h`)
+
+- ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
+
+- ``framework/math/quadratures/angular/legendre_poly/legendrepoly.h`` (:ref:`file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h`)
+
+- ``framework/math/unknown_manager/unknown_manager.h`` (:ref:`file_framework_math_unknown_manager_unknown_manager.h`)
+
+- ``framework/utils/utils.h`` (:ref:`file_framework_utils_utils.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_group.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_discrete_ordinates_curvilinear_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_wgdsa.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_quadrature_carrier.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_l_b_s_groupset_1_1_two_grid_acceleration_info`
+
+- :ref:`exhale_class_classopensn_1_1_l_b_s_groupset`
+

@@ -1,0 +1,197 @@
+
+.. _program_listing_file_framework_materials_multi_group_xs_multi_group_xs.h:
+
+Program Listing for File multi_group_xs.h
+=========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_materials_multi_group_xs_multi_group_xs.h>` (``framework/materials/multi_group_xs/multi_group_xs.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/data_types/sparse_matrix/sparse_matrix.h"
+   
+   namespace opensn
+   {
+   
+   class MultiGroupXS
+   {
+   public:
+     MultiGroupXS()
+       : num_groups_(0),
+         scattering_order_(0),
+         num_precursors_(0),
+         is_fissionable_(false),
+         adjoint_(false),
+         scaling_factor_(1.0),
+         diffusion_initialized_(false)
+     {
+     }
+   
+     /// A struct containing data for a delayed neutron precursor.
+     struct Precursor
+     {
+       double decay_constant = 0.0;
+       double fractional_yield = 0.0;
+       std::vector<double> emission_spectrum;
+     };
+   
+     /**
+      * Scale the cross sections by the specified factor.
+      *
+      * @note Scaling factors do not compound. Each time this routine is called, the cross sections
+      *       are scaled by the ratio of the argument and the existing scaling factor.
+      */
+     void SetScalingFactor(double factor);
+   
+     /**
+      * Exports the cross-section information to OpenSn format.
+      *
+      * \param file_name The name of the file to save the cross sections to.
+      * \param fission_scaling A factor to scale fission data to. This is generally equal to \f$
+      *        1/k_{eff} \f$. Generally, this is done to create exactly critical cross sections for a
+      *        transient initial condition.
+      */
+     void ExportToOpenSnXSFile(const std::string& file_name, double fission_scaling = 1.0) const;
+   
+     size_t GetNumGroups() const { return num_groups_; }
+   
+     size_t GetScatteringOrder() const { return scattering_order_; }
+   
+     size_t GetNumPrecursors() const { return num_precursors_; }
+   
+     bool IsFissionable() const { return is_fissionable_; }
+   
+     void SetAdjointMode(bool val)
+     {
+       adjoint_ = val;
+       if (adjoint_ and transposed_transfer_matrices_.empty())
+         TransposeTransferAndProduction();
+     }
+   
+     bool GetAdjointMode() const { return adjoint_; }
+   
+     double GetScalingFactor() const { return scaling_factor_; }
+   
+     const std::vector<double>& GetSigmaTotal() const { return sigma_t_; }
+   
+     const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
+   
+     const std::vector<SparseMatrix>& GetTransferMatrices() const
+     {
+       return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
+     }
+   
+     const SparseMatrix& GetTransferMatrix(unsigned int ell) const
+     {
+       return adjoint_ ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
+     }
+   
+     const std::vector<double>& GetChi() const { return chi_; }
+   
+     const std::vector<double>& GetSigmaFission() const { return sigma_f_; }
+   
+     const std::vector<double>& GetNuSigmaF() const { return nu_sigma_f_; }
+   
+     const std::vector<double>& GetNuPromptSigmaF() const { return nu_prompt_sigma_f_; }
+   
+     const std::vector<double>& GetNuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
+   
+     const std::vector<std::vector<double>>& GetProductionMatrix() const
+     {
+       return adjoint_ ? transposed_production_matrix_ : production_matrix_;
+     }
+   
+     const std::vector<Precursor>& GetPrecursors() const { return precursors_; }
+   
+     const std::vector<double>& GetInverseVelocity() const { return inv_velocity_; }
+   
+     bool DiffusionInitialized() const { return diffusion_initialized_; }
+   
+     const std::vector<double>& GetSigmaTransport() const { return sigma_tr_; }
+   
+     const std::vector<double>& GetDiffusionCoefficient() const { return diffusion_coeff_; }
+   
+     const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }
+   
+     const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
+   
+   private:
+     /// Total number of groups
+     size_t num_groups_;
+     /// Legendre scattering order
+     size_t scattering_order_;
+     /// Number of precursors
+     size_t num_precursors_;
+     /// Is fissionable?
+     bool is_fissionable_;
+     /// Can be used for adjoint calculations
+     bool adjoint_;
+     /// An arbitrary scaling factor
+     double scaling_factor_ = 1.0;
+     /// Evaluation temperature
+     double temperature_ = 294.0;
+     /// Energy bin boundaries in MeV
+     std::vector<double> e_bounds_;
+     /// Total cross section
+     std::vector<double> sigma_t_;
+     /// Absorption cross section
+     std::vector<double> sigma_a_;
+     /// Fission cross section
+     std::vector<double> sigma_f_;
+     /// Neutron production due to fission
+     std::vector<double> nu_sigma_f_;
+     /// Neutron fission spectrum
+     std::vector<double> chi_;
+     /// Prompt neutron production due to fission
+     std::vector<double> nu_prompt_sigma_f_;
+     /// Delayed neutron production due to fission
+     std::vector<double> nu_delayed_sigma_f_;
+     /// Inverse velocity
+     std::vector<double> inv_velocity_;
+     std::vector<Precursor> precursors_;
+     /// Sparse scattering matrix
+     std::vector<SparseMatrix> transfer_matrices_;
+     std::vector<SparseMatrix> transposed_transfer_matrices_;
+     /// Total neutron production matrix
+     std::vector<std::vector<double>> production_matrix_;
+     std::vector<std::vector<double>> transposed_production_matrix_;
+   
+     // Diffusion quantities
+     bool diffusion_initialized_;
+     /// Transport cross section
+     std::vector<double> sigma_tr_;
+     /// Transport corrected diffusion coefficient
+     std::vector<double> diffusion_coeff_;
+     /// Removal cross section
+     std::vector<double> sigma_r_;
+     /// Within-group scattering cross section
+     std::vector<double> sigma_s_gtog_;
+   
+     void Reset();
+   
+     void ComputeAbsorption();
+   
+     void ComputeDiffusionParameters();
+   
+     void TransposeTransferAndProduction();
+   
+   public:
+     /// Makes a simple material with a 1-group cross-section set.
+     static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c);
+     static MultiGroupXS LoadFromOpenSn(const std::string& filename);
+     /// This method populates transport cross sections from an OpenMC cross-section file.
+     static MultiGroupXS
+     LoadFromOpenMC(const std::string& filename, const std::string& dataset_name, double temperature);
+     /// Populates the cross section from a combination of others.
+     static MultiGroupXS
+     Combine(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);
+   };
+   
+   } // namespace opensn

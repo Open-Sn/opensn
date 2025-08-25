@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a98e45257ee2b7f693350fc34c1012398:
+
+Function opensn::LInfNorm
+=========================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::LInfNorm(const std::vector<double>&)
+   :project: opensn

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_response_evaluator:
+
+Class ResponseEvaluator
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ResponseEvaluator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

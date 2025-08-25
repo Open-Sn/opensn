@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38:
+
+Function opensn::H5Has
+======================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5Has(hid_t, const std::string&)
+   :project: opensn

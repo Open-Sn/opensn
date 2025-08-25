@@ -1,0 +1,26 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration:
+
+
+Directory acceleration
+======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/acceleration``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_residual_func.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_wgdsa.h`
+
+

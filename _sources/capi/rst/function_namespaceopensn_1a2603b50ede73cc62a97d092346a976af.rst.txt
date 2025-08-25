@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af:
+
+Function opensn::Initialize
+===========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Initialize()
+   :project: opensn

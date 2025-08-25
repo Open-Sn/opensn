@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a327d93dfb09c6e4b27ff28cd3b8f1e77:
+
+Function opensn::BuildBlockCellExtents
+======================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildBlockCellExtents(std::vector<vtkUGridPtrAndName>&, int)
+   :project: opensn

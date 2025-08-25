@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File sparse_matrix.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File sparse_matrix.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-sparse-matrix-h">
+<span id="program-listing-file-framework-data-types-sparse-matrix-sparse-matrix-h"></span><h1>Program Listing for File sparse_matrix.h<a class="headerlink" href="#program-listing-for-file-sparse-matrix-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_data_types_sparse_matrix_sparse_matrix.h.html#file-framework-data-types-sparse-matrix-sparse-matrix-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/data_types/sparse_matrix/sparse_matrix.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/math.h&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Sparse matrix utility. This is a basic CSR type sparse matrix which allows efficient matrix</span>
+<span class="cm"> * storage and multiplication. It is not intended for solving linear systems (use PETSc for that</span>
+<span class="cm"> * instead). It was originally developed for the transfer matrices of transport cross sections.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SparseMatrix</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Maximum number of rows for this matrix</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row_size_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Maximum number of columns for this matrix</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col_size_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// rowI_indices[i] is a vector indices j for the non-zero columns.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">rowI_indices</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// rowI_values[i] corresponds to column indices and contains the non-zero value.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">rowI_values</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Constructor with number of rows and columns constructor.</span>
+<span class="w">  </span><span class="n">SparseMatrix</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_rows</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_cols</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Copy constructor.</span>
+<span class="w">  </span><span class="n">SparseMatrix</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SparseMatrix</span><span class="o">&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumRows</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">row_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumCols</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">col_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Inserts a value into the matrix.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Insert</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Inserts-Adds a value into the matrix with duplicate check.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InsertAdd</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the value in the matrix at the given location. This is a rather inefficient routine.</span>
+<span class="cm">   * Use the columns and values rather than directly this function.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetValueIJ</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Sets the diagonal of the matrix using a vector.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDiagonal</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">diag</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Sorts the column indices of each row for faster lookup.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Compress</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Prints the sparse matrix to string.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">PrintStr</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Constructor with number of rows constructor.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckInitialized</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">SparseMatrix</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">EntryReference</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">row_index</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">column_index</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">EntryReference</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">row_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">column_id</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">row_index</span><span class="p">(</span><span class="n">row_id</span><span class="p">),</span><span class="w"> </span><span class="n">column_index</span><span class="p">(</span><span class="n">column_id</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">ConstEntryReference</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">row_index</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">column_index</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ConstEntryReference</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">row_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">column_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">row_index</span><span class="p">(</span><span class="n">row_id</span><span class="p">),</span><span class="w"> </span><span class="n">column_index</span><span class="p">(</span><span class="n">column_id</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">RowIteratorContext</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_col_ids_</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_col_vals_</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_row_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">RowIteratorContext</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_row</span><span class="p">)</span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">ref_col_ids_</span><span class="p">(</span><span class="n">matrix</span><span class="p">.</span><span class="n">rowI_indices</span><span class="p">[</span><span class="n">ref_row</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">ref_col_vals_</span><span class="p">(</span><span class="n">matrix</span><span class="p">.</span><span class="n">rowI_values</span><span class="p">[</span><span class="n">ref_row</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">ref_row_</span><span class="p">(</span><span class="n">ref_row</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">RowIterator</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="k">private</span><span class="o">:</span>
+<span class="w">      </span><span class="n">RowIteratorContext</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context_</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_entry_</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">public</span><span class="o">:</span>
+<span class="w">      </span><span class="n">RowIterator</span><span class="p">(</span><span class="n">RowIteratorContext</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_entry</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">context_</span><span class="p">{</span><span class="n">context</span><span class="p">},</span><span class="w"> </span><span class="n">ref_entry_</span><span class="p">{</span><span class="n">ref_entry</span><span class="p">}</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">RowIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">RowIterator</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ref_entry_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">RowIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ref_entry_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">EntryReference</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">()</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_row_</span><span class="p">,</span><span class="w"> </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_col_ids_</span><span class="p">[</span><span class="n">ref_entry_</span><span class="p">],</span><span class="w"> </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_col_vals_</span><span class="p">[</span><span class="n">ref_entry_</span><span class="p">]};</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RowIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_entry_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_entry_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RowIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_entry_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_entry_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">RowIterator</span><span class="w"> </span><span class="nf">begin</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">RowIterator</span><span class="w"> </span><span class="nf">end</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">ref_col_vals_</span><span class="p">.</span><span class="n">size</span><span class="p">()};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">RowIteratorContext</span><span class="w"> </span><span class="nf">Row</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">row_id</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">ConstRowIteratorContext</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_col_ids_</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_col_vals_</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_row_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">ConstRowIteratorContext</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SparseMatrix</span><span class="o">&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_row</span><span class="p">)</span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">ref_col_ids_</span><span class="p">(</span><span class="n">matrix</span><span class="p">.</span><span class="n">rowI_indices</span><span class="p">[</span><span class="n">ref_row</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">ref_col_vals_</span><span class="p">(</span><span class="n">matrix</span><span class="p">.</span><span class="n">rowI_values</span><span class="p">[</span><span class="n">ref_row</span><span class="p">]),</span>
+<span class="w">        </span><span class="n">ref_row_</span><span class="p">(</span><span class="n">ref_row</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">ConstRowIterator</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="k">private</span><span class="o">:</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="n">ConstRowIteratorContext</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context_</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_entry_</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">public</span><span class="o">:</span>
+<span class="w">      </span><span class="n">ConstRowIterator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ConstRowIteratorContext</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_entry</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">context_</span><span class="p">(</span><span class="n">context</span><span class="p">),</span><span class="w"> </span><span class="n">ref_entry_</span><span class="p">{</span><span class="n">ref_entry</span><span class="p">}</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">ConstRowIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ConstRowIterator</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ref_entry_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">ConstRowIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ref_entry_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="n">ConstEntryReference</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">()</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_row_</span><span class="p">,</span><span class="w"> </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_col_ids_</span><span class="p">[</span><span class="n">ref_entry_</span><span class="p">],</span><span class="w"> </span><span class="n">context_</span><span class="p">.</span><span class="n">ref_col_vals_</span><span class="p">[</span><span class="n">ref_entry_</span><span class="p">]};</span>
+<span class="w">      </span><span class="p">}</span>
+
+<span class="w">      </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ConstRowIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_entry_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_entry_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ConstRowIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">ref_entry_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_entry_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">ConstRowIterator</span><span class="w"> </span><span class="nf">begin</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">ConstRowIterator</span><span class="w"> </span><span class="nf">end</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="o">*</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">ref_col_vals_</span><span class="p">.</span><span class="n">size</span><span class="p">()};</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">ConstRowIteratorContext</span><span class="w"> </span><span class="nf">Row</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">row_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Iterator to loop over all matrix entries.</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">EntriesIterator</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">SparseMatrix</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sp_matrix</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_row_</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ref_col_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">EntriesIterator</span><span class="p">(</span><span class="n">SparseMatrix</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">)</span>
+<span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">sp_matrix</span><span class="p">{</span><span class="n">context</span><span class="p">},</span><span class="w"> </span><span class="n">ref_row_</span><span class="p">{</span><span class="n">row</span><span class="p">},</span><span class="w"> </span><span class="n">ref_col_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">Advance</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">ref_col_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ref_col_</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">sp_matrix</span><span class="p">.</span><span class="n">rowI_indices</span><span class="p">[</span><span class="n">ref_row_</span><span class="p">].</span><span class="n">size</span><span class="p">())</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ref_row_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="n">ref_col_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">ref_row_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sp_matrix</span><span class="p">.</span><span class="n">row_size_</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="n">sp_matrix</span><span class="p">.</span><span class="n">rowI_indices</span><span class="p">[</span><span class="n">ref_row_</span><span class="p">].</span><span class="n">empty</span><span class="p">()))</span>
+<span class="w">          </span><span class="n">ref_row_</span><span class="o">++</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">EntriesIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">EntriesIterator</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">      </span><span class="n">Advance</span><span class="p">();</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">EntriesIterator</span><span class="w"> </span><span class="k">operator</span><span class="o">++</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">Advance</span><span class="p">();</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">EntryReference</span><span class="w"> </span><span class="k">operator</span><span class="o">*</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="n">ref_row_</span><span class="p">,</span>
+<span class="w">              </span><span class="n">sp_matrix</span><span class="p">.</span><span class="n">rowI_indices</span><span class="p">[</span><span class="n">ref_row_</span><span class="p">][</span><span class="n">ref_col_</span><span class="p">],</span>
+<span class="w">              </span><span class="n">sp_matrix</span><span class="p">.</span><span class="n">rowI_values</span><span class="p">[</span><span class="n">ref_row_</span><span class="p">][</span><span class="n">ref_col_</span><span class="p">]};</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">EntriesIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">ref_row_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_row_</span><span class="p">)</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="n">ref_col_</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_col_</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">EntriesIterator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">ref_row_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_row_</span><span class="p">)</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="n">ref_col_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">rhs</span><span class="p">.</span><span class="n">ref_col_</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">EntriesIterator</span><span class="w"> </span><span class="nf">begin</span><span class="p">();</span>
+<span class="w">  </span><span class="n">EntriesIterator</span><span class="w"> </span><span class="nf">end</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h:
+
+Program Listing for File nl_keigen_solver.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h>` (``modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/solver.h"
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+   #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h"
+   #include <petscsnes.h>
+   
+   namespace opensn
+   {
+   
+   class NonLinearKEigenSolver : public Solver
+   {
+   private:
+     std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
+     std::shared_ptr<NLKEigenAGSContext> nl_context_;
+     NLKEigenvalueAGSSolver nl_solver_;
+   
+     bool reset_phi0_;
+     int num_initial_power_its_;
+   
+   public:
+     explicit NonLinearKEigenSolver(const InputParameters& params);
+   
+     void Initialize() override;
+     void Execute() override;
+     /// Return the current k-eigenvalue
+     double GetEigenvalue() const;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<NonLinearKEigenSolver> Create(const ParameterBlock& params);
+   };
+   
+   } // namespace opensn

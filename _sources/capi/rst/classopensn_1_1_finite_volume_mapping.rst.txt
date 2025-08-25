@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_finite_volume_mapping:
+
+Class FiniteVolumeMapping
+=========================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_volume_finite_volume_mapping.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::CellMapping`` (:ref:`exhale_class_classopensn_1_1_cell_mapping`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::FiniteVolumeMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

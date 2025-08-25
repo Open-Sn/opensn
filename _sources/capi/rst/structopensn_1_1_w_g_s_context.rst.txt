@@ -1,0 +1,32 @@
+.. _exhale_struct_structopensn_1_1_w_g_s_context:
+
+Struct WGSContext
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LinearSystemContext`` (:ref:`exhale_struct_structopensn_1_1_linear_system_context`)
+
+
+Derived Type
+************
+
+- ``public opensn::SweepWGSContext`` (:ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::WGSContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

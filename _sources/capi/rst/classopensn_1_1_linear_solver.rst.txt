@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_linear_solver:
+
+Class LinearSolver
+==================
+
+- Defined in :ref:`file_framework_math_linear_solver_linear_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::LinearEigenSolver`` (:ref:`exhale_class_classopensn_1_1_linear_eigen_solver`)
+- ``public opensn::LinearSystemSolver`` (:ref:`exhale_class_classopensn_1_1_linear_system_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LinearSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

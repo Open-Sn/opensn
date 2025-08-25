@@ -1,0 +1,71 @@
+
+.. _file_framework_data_types_parallel_vector_parallel_vector.h:
+
+File parallel_vector.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_data_types_parallel_vector>` (``framework/data_types/parallel_vector``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/data_types/parallel_vector/parallel_vector.h``)
+-----------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_data_types_parallel_vector_parallel_vector.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``mpicpp-lite/mpicpp-lite.h``
+
+- ``petscvec.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_parallel_vector_parallel_stl_vector.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_parallel_vector`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1af267ae634279759f1b058fdb17b8db75`
+

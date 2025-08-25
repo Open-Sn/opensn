@@ -1,0 +1,21 @@
+.. _dir_framework_math_random_number_generation:
+
+
+Directory random_number_generation
+==================================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/random_number_generation``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_random_number_generation_random_number_generator.h`
+
+

@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class SurfaceMesh &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class SurfaceMesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-surfacemesh">
+<span id="exhale-class-classopensn-1-1-surface-mesh"></span><h1>Class SurfaceMesh<a class="headerlink" href="#class-surfacemesh" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_mesh_surface_mesh_surface_mesh.h.html#file-framework-mesh-surface-mesh-surface-mesh-h"><span class="std std-ref">File surface_mesh.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMeshE">
+<span class="target" id="classopensn_1_1_surface_mesh"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMesh</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMeshE" title="Link to this definition"></a><br /></dt>
+<dd><p>Generic surface mesh class. This class facilitates many functions within the mesh environment including logically determining volumes. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh11SurfaceMeshERK15InputParameters">
+<span class="target" id="classopensn_1_1_surface_mesh_1a64bac8b5f2c427e10796ca2b3470283d"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMesh</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh11SurfaceMeshERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn11SurfaceMesh11GetVerticesEv">
+<span class="target" id="classopensn_1_1_surface_mesh_1ac40845600b39d5fee479e4053ba0ceeb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetVertices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn11SurfaceMesh11GetVerticesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn11SurfaceMesh12GetTrianglesEv">
+<span class="target" id="classopensn_1_1_surface_mesh_1abd956feddc2dd933c61b24aba789767d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_face.html#_CPPv4N6opensn4FaceE" title="opensn::Face"><span class="n"><span class="pre">Face</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTriangles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn11SurfaceMesh12GetTrianglesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh11SurfaceMeshEv">
+<span class="target" id="classopensn_1_1_surface_mesh_1af04a4fb6e0731819935611aa9e390bcc"></span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh11SurfaceMeshEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMeshD0Ev">
+<span class="target" id="classopensn_1_1_surface_mesh_1a1bed877c6b6759b0148d308909159eac"></span><span class="sig-name descname"><span class="n"><span class="pre">~SurfaceMesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMeshD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh17ImportFromOBJFileERKNSt6stringEbRK7Vector3">
+<span class="target" id="classopensn_1_1_surface_mesh_1a47b76d88c25242fb417533c3defa4ab0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportFromOBJFile</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_poly</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">transform</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh17ImportFromOBJFileERKNSt6stringEbRK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Loads a surface mesh from a wavefront .obj file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh23ImportFromTriangleFilesEPKcb">
+<span class="target" id="classopensn_1_1_surface_mesh_1a65ea6209a4fe052304d472e0c18a3218"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportFromTriangleFiles</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_poly</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh23ImportFromTriangleFilesEPKcb" title="Link to this definition"></a><br /></dt>
+<dd><p>Loads a surface mesh from triangle’s file format. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh18ImportFromMshFilesEPKcb">
+<span class="target" id="classopensn_1_1_surface_mesh_1a5e834a130af32f758d003cbdb23d2b29"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportFromMshFiles</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">fileName</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_poly</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh18ImportFromMshFilesEPKcb" title="Link to this definition"></a><br /></dt>
+<dd><p>Loads a surface mesh from gmsh’s file format. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh26UpdateInternalConnectivityEv">
+<span class="target" id="classopensn_1_1_surface_mesh_1ac1ad4108dc00f5c40e2cf869bfe55d75"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateInternalConnectivity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh26UpdateInternalConnectivityEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs over the faces of the surfacemesh and determines neighbors. The algorithm first establishes which cells subscribe to each vertex and then loops over faces and edges. For each edge, only the subscribing faces are searched for neighbors. This routine has time complexity O(N). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh20ComputeLoadBalancingERNSt6vectorIdEERNSt6vectorIdEE">
+<span class="target" id="classopensn_1_1_surface_mesh_1a54095d098dd415a05b4280522d3a80cc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLoadBalancing</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x_cuts</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">y_cuts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh20ComputeLoadBalancingERNSt6vectorIdEERNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes load balancing parameters from a set of predictive cuts. Does not actually perform these cuts. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh18GetInputParametersEv">
+<span class="target" id="classopensn_1_1_surface_mesh_1afef103ed2218e6ecac23c696807a9aab"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh6CreateERK14ParameterBlock">
+<span class="target" id="classopensn_1_1_surface_mesh_1a61caf0143320e73f75e89aea6035cf5a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn11SurfaceMeshE" title="opensn::SurfaceMesh"><span class="n"><span class="pre">SurfaceMesh</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh6CreateERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh9vertices_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1ad6defe51a883ae4c1be691aa8542db8d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh9vertices_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh13tex_vertices_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1a12c28780835ed7c7e3b787be83c8fc4a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tex_vertices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh13tex_vertices_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Texture vertices. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh8normals_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1a3ed4bb48298b636a54e8b45529dccb52"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">normals_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh8normals_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh6faces_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1ab2c41d18fbe318ef9032e388eb4a2d41"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_face.html#_CPPv4N6opensn4FaceE" title="opensn::Face"><span class="n"><span class="pre">Face</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faces_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh6faces_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh6lines_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1a30503859180d1d4b1bc9a9bf3f46c104"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_edge.html#_CPPv4N6opensn4EdgeE" title="opensn::Edge"><span class="n"><span class="pre">Edge</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lines_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh6lines_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh11poly_faces_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1a23c0471cfca498ba0efd73be880615fe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_poly_face.html#_CPPv4N6opensn8PolyFaceE" title="opensn::PolyFace"><span class="n"><span class="pre">PolyFace</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">poly_faces_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh11poly_faces_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Polygonal faces. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh20physical_region_map_E">
+<span class="target" id="classopensn_1_1_surface_mesh_1a3d216bb667889a45fa11c2c303c4e62f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">physical_region_map_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh20physical_region_map_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMeshlsERNSt7ostreamER11SurfaceMesh">
+<span class="target" id="classopensn_1_1_surface_mesh_1a7f0e64b515c0475ad2a156f9614a454d"></span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <a class="reference internal" href="#_CPPv4N6opensn11SurfaceMeshE" title="opensn::SurfaceMesh"><span class="n"><span class="pre">SurfaceMesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">dt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMeshlsERNSt7ostreamER11SurfaceMesh" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

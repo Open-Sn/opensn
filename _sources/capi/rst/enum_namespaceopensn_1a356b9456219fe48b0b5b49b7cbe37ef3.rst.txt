@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a356b9456219fe48b0b5b49b7cbe37ef3:
+
+Enum SpatialDiscretizationType
+==============================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::SpatialDiscretizationType
+   :project: opensn

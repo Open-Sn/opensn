@@ -1,0 +1,76 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h:
+
+File wgs_context.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h``)
+---------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/linear_solver/linear_solver_context.h`` (:ref:`file_framework_math_linear_solver_linear_solver_context.h`)
+
+- ``functional``
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+- ``petscksp.h``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_w_g_s_context`
+

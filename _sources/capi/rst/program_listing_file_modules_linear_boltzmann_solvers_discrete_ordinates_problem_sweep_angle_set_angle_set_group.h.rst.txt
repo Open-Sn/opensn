@@ -1,0 +1,33 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h:
+
+Program Listing for File angle_set_group.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+   
+   namespace opensn
+   {
+   
+   /// Manages the workstages of a single angleset group.
+   class AngleSetGroup
+   {
+   private:
+     std::vector<std::shared_ptr<AngleSet>> angle_sets_;
+   
+   public:
+     std::vector<std::shared_ptr<AngleSet>>& GetAngleSets() { return angle_sets_; }
+   };
+   
+   } // namespace opensn

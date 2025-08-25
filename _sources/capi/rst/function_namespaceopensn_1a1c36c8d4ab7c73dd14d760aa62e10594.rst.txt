@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594:
+
+Function opensn::PrintVector
+============================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PrintVector(const std::vector<double>&)
+   :project: opensn

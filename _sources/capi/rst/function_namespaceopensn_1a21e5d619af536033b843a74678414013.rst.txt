@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a21e5d619af536033b843a74678414013:
+
+Function opensn::ComputeFissionProduction
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeFissionProduction(LBSProblem&, const std::vector<double>&)
+   :project: opensn

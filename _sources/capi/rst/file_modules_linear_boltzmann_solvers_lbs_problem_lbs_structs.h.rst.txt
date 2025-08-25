@@ -1,0 +1,125 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h:
+
+File lbs_structs.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem>` (``modules/linear_boltzmann_solvers/lbs_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h``)
+---------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``chrono``
+
+- ``filesystem``
+
+- ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
+
+- ``framework/math/geometry.h`` (:ref:`file_framework_math_geometry.h`)
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``functional``
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_boundary_preference`
+
+- :ref:`exhale_struct_structopensn_1_1_l_b_s_options`
+
+- :ref:`exhale_struct_structopensn_1_1_source_flags`
+
+- :ref:`exhale_class_classopensn_1_1_cell_l_b_s_view`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d`
+
+- :ref:`exhale_enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2`
+
+- :ref:`exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85`
+
+- :ref:`exhale_enum_namespaceopensn_1a7ee4c56283daef9de39a2aedb425cbf3`
+
+- :ref:`exhale_enum_namespaceopensn_1a3185218715dee0a3880722417aea275c`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
+
+- :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8`
+
+- :ref:`exhale_typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48`
+
+- :ref:`exhale_typedef_namespaceopensn_1aafd494a5bc37e5f11c981a72b1d55a57`
+
+- :ref:`exhale_typedef_namespaceopensn_1a51a4083ebb58dc8e42fde29d55fe5778`
+

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a62afe87b20f8ccbee179c2308bb71865:
+
+Function opensn::d2Legendredx2
+==============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::d2Legendredx2(int, double)
+   :project: opensn

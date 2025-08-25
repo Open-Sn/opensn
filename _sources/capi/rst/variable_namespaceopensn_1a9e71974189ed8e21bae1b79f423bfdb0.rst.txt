@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a9e71974189ed8e21bae1b79f423bfdb0:
+
+Variable opensn::is_shared_ptr_v
+================================
+
+- Defined in :ref:`file_framework_data_types_varying.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::is_shared_ptr_v
+   :project: opensn

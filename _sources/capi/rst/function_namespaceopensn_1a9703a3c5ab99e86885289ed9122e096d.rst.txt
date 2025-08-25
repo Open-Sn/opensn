@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9703a3c5ab99e86885289ed9122e096d:
+
+Template Function opensn::Subtract(const DenseMatrix<TYPE>&, const DenseMatrix<TYPE>&)
+======================================================================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Subtract(const DenseMatrix<TYPE>&, const DenseMatrix<TYPE>&)
+   :project: opensn

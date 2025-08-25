@@ -1,0 +1,26 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_xs.h:
+
+Program Listing for File print_xs.h
+===================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_xs.h>` (``modules/linear_boltzmann_solvers/lbs_problem/device/debug_tool/print_xs.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
+   
+   namespace opensn::device_dbg
+   {
+   
+   /// Print total cross section for each block ID on device.
+   void PrintTotalXSOnDevice(TotalXSCarrier& xs);
+   
+   } // namespace opensn::device_dbg

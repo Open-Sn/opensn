@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class PETScNonLinearSolverOptions &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class PETScNonLinearSolverOptions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-petscnonlinearsolveroptions">
+<span id="exhale-class-classopensn-1-1-p-e-t-sc-non-linear-solver-options"></span><h1>Class PETScNonLinearSolverOptions<a class="headerlink" href="#class-petscnonlinearsolveroptions" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h.html#file-framework-math-nonlinear-solver-petsc-nonlinear-solver-options-h"><span class="std std-ref">File petsc_nonlinear_solver_options.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptionsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptionsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions27PETScNonLinearSolverOptionsERK15InputParameters">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a731b7814490649b08d3e77e7e006c89c"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions27PETScNonLinearSolverOptionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions27PETScNonLinearSolverOptionsEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a09f41a2b9d8ca5d5af31a54b8c7af111"></span><span class="sig-name descname"><span class="n"><span class="pre">PETScNonLinearSolverOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions27PETScNonLinearSolverOptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions9nl_methodE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a5f3373e1792e41173ab4e0ad30f5fd75"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_method</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;JFNK&quot;</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions9nl_methodE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions8l_methodE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1adf043d921da2a4597999dc64c2396529"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_method</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;gmres&quot;</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions8l_methodE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions10pc_optionsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ab6ad377709234f44d733d85af85613ef"></span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pc_options</span></span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions10pc_optionsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions15petsc_snes_typeE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1af98805ca861ce60ff731c63d9d707275"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">petsc_snes_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;newtonls&quot;</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions15petsc_snes_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_rel_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a4a766b14d822c5b14e1baed68b161ab4"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_rel_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-8</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_rel_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_abs_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1aa7cd6318874f26f2a33926d25dffdf0b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_abs_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-8</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_abs_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_sol_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ae5ff270168ca7adf0d3329fe2cdaa259"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_sol_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-50</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_sol_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_max_itsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1aaef1ac17b9c7ebe80b86abf42be21c87"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_max_its</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">50</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions10nl_max_itsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions20nl_max_r_evaluationsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ab463affe30e46669ecda7c7508773a76"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nl_max_r_evaluations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions20nl_max_r_evaluationsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions23l_max_failed_iterationsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1af11299cc0747ca678df97f8918e28bca"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_max_failed_iterations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1000</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions23l_max_failed_iterationsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions9l_rel_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ad6513bce11fd78ad94899022d521ec87"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_rel_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-8</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions9l_rel_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions9l_abs_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a1eda497b9e1b78cc460a956c7e80ada2"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_abs_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-8</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions9l_abs_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions9l_div_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a8ea13fb6a51226716f3a34b76b92cb73"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_div_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e6</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions9l_div_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions9l_max_itsE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1aca4a2fa7230020e721c1b3d2e63728dd"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_max_its</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions9l_max_itsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions21l_gmres_restart_intvlE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ae76720f7f432a73ed5280cbada94b9a1"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_gmres_restart_intvl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">30</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions21l_gmres_restart_intvlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions21l_gmres_breakdown_tolE">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1a0306ce1762deb293973954fb59befaab"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">l_gmres_breakdown_tol</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e6</span></span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions21l_gmres_breakdown_tolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn27PETScNonLinearSolverOptions18GetInputParametersEv">
+<span class="target" id="classopensn_1_1_p_e_t_sc_non_linear_solver_options_1ac46f171e0f895b1942e517c90a53400c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn27PETScNonLinearSolverOptions18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

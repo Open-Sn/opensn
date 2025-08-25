@@ -1,0 +1,85 @@
+
+.. _file_framework_math_unknown_manager_unknown_manager.h:
+
+File unknown_manager.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_unknown_manager>` (``framework/math/unknown_manager``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/unknown_manager/unknown_manager.h``)
+-----------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_unknown_manager_unknown_manager.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_field_functions_field_function.h`
+
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_finite_element_base.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_volume_finite_volume.h`
+
+- :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
+
+- :ref:`file_modules_diffusion_diffusion.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_unknown`
+
+- :ref:`exhale_class_classopensn_1_1_unknown_manager`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff`
+
+- :ref:`exhale_enum_namespaceopensn_1a19f6a7bd61ad8f047880c359ed46e469`
+

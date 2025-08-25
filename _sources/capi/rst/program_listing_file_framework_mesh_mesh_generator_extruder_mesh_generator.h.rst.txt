@@ -1,0 +1,50 @@
+
+.. _program_listing_file_framework_mesh_mesh_generator_extruder_mesh_generator.h:
+
+Program Listing for File extruder_mesh_generator.h
+==================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_mesh_mesh_generator_extruder_mesh_generator.h>` (``framework/mesh/mesh_generator/extruder_mesh_generator.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/mesh/mesh_generator/mesh_generator.h"
+   
+   namespace opensn
+   {
+   
+   struct ExtrusionLayer
+   {
+     static InputParameters GetInputParameters();
+   
+     const double height;
+     const uint32_t num_sub_layers;
+   };
+   
+   class ExtruderMeshGenerator : public MeshGenerator
+   {
+   public:
+     explicit ExtruderMeshGenerator(const InputParameters& params);
+   
+   protected:
+     std::shared_ptr<UnpartitionedMesh>
+     GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
+   
+     const std::string top_boundary_name_;
+     const std::string bottom_boundary_name_;
+   
+     std::vector<ExtrusionLayer> layers_;
+   
+   public:
+     static InputParameters GetInputParameters();
+     static std::shared_ptr<ExtruderMeshGenerator> Create(const ParameterBlock& params);
+   };
+   
+   } // namespace opensn

@@ -1,0 +1,55 @@
+
+.. _program_listing_file_framework_math_functions_function_dimA_to_dimB.h:
+
+Program Listing for File function_dimA_to_dimB.h
+================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_functions_function_dimA_to_dimB.h>` (``framework/math/functions/function_dimA_to_dimB.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/parameters/input_parameters.h"
+   #include <functional>
+   
+   namespace opensn
+   {
+   
+   using ScalarScalarFunction = std::function<double(double)>;
+   using ScalarXYZTFunction = std::function<double(double, double, double, double)>;
+   
+   class FunctionDimAToDimB
+   {
+   private:
+     const size_t input_dimension_;
+     const size_t output_dimension_;
+   
+   public:
+     static InputParameters GetInputParameters();
+     explicit FunctionDimAToDimB(const InputParameters& params);
+   
+     size_t GetInputDimension() const { return input_dimension_; }
+     size_t GetOutputDimension() const { return output_dimension_; }
+   
+     virtual bool HasSlope() const = 0;
+     virtual bool HasCurvature() const = 0;
+   
+     virtual double GetScalarFunction1Parameter(double) const;
+     virtual double GetScalarFunctionSlope1Parameter(double) const;
+     virtual double GetScalarFunctionCurvature1Parameter(double) const;
+   
+     virtual double GetScalarFunction4Parameters(double, double, double, double) const;
+     virtual double GetScalarFunctionSlope4Parameters(double, double, double, double) const;
+     virtual double GetScalarFunctionCurvature4Parameters(double, double, double, double) const;
+   
+     virtual std::vector<double> Evaluate(const std::vector<double>& vals) const = 0;
+     virtual std::vector<double> EvaluateSlope(const std::vector<double>& vals) const { return {0.0}; }
+   };
+   
+   } // namespace opensn

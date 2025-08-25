@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_gauss_legendre_quadrature:
+
+Class GaussLegendreQuadrature
+=============================
+
+- Defined in :ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::GaussQuadrature`` (:ref:`exhale_class_classopensn_1_1_gauss_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GaussLegendreQuadrature
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

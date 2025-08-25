@@ -1,0 +1,73 @@
+
+.. _file_framework_math_functions_function.h:
+
+File function.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_functions>` (``framework/math/functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/functions/function.h``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_functions_function.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``functional``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_field_functions_interpolation_ffinter_volume.h`
+
+- :ref:`file_modules_diffusion_diffusion_mip_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_vector_spatial_function`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1a85756929ccbb76fdb6fc67d2d9b6ea6d`
+
+- :ref:`exhale_typedef_namespaceopensn_1ae841473082465baefc8ecd55f9a069bf`
+
+- :ref:`exhale_typedef_namespaceopensn_1ae8f30ce25a231b1c246434e460f1bec5`
+

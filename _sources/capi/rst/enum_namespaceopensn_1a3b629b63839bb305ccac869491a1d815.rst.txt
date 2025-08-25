@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a3b629b63839bb305ccac869491a1d815:
+
+Enum BCType
+===========
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::BCType
+   :project: opensn

@@ -1,0 +1,62 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h:
+
+File convergence.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/convergence.h``)
+---------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+- ``optional``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1aaff48373fd5011d4e3dfcc0c1cbe4345`
+
+- :ref:`exhale_function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366`
+
+- :ref:`exhale_function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687`
+
+- :ref:`exhale_function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e`
+

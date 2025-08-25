@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_vector_spatial_function:
+
+Class VectorSpatialFunction
+===========================
+
+- Defined in :ref:`file_framework_math_functions_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::function< std::vector< double >(const Vector3 &, int)>``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VectorSpatialFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

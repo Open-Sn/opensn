@@ -1,0 +1,93 @@
+
+.. _program_listing_file_framework_logging_log_stream.h:
+
+Program Listing for File log_stream.h
+=====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_logging_log_stream.h>` (``framework/logging/log_stream.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <iostream>
+   #include <sstream>
+   #include "stringstream_color.h"
+   
+   namespace opensn
+   {
+   
+   /// Log stream for adding header information to a string stream.
+   class LogStream : public std::stringstream
+   {
+   private:
+     std::ostream* log_stream_;
+     std::string log_header_;
+     const bool dummy_;
+     bool use_color_;
+   
+   public:
+     LogStream(std::ostream* output_stream,
+               std::string header,
+               bool dummy_flag = false,
+               bool use_color = false)
+       : log_stream_(output_stream),
+         log_header_(std::move(header)),
+         dummy_(dummy_flag),
+         use_color_(use_color)
+     {
+     }
+   
+     LogStream(const LogStream&) = delete;
+     LogStream& operator=(const LogStream&) = delete;
+   
+     ~LogStream() noexcept override
+     {
+       if (dummy_)
+         return;
+   
+       try
+       {
+         std::string content = this->str();
+         if (content.empty())
+           return;
+   
+         std::istringstream iss(content);
+         std::string line;
+         std::string oline;
+         std::string reset_str = use_color_ ? StringStreamColor(StringStreamColorCode::RESET) : "";
+         while (std::getline(iss, line))
+         {
+           oline += log_header_;
+           oline += line;
+           oline += reset_str;
+           oline += "\n";
+         }
+   
+         if (!oline.empty())
+           *log_stream_ << oline << std::flush;
+       }
+       catch (...) // NOLINT(bugprone-empty-catch)
+       {
+         // No exceptions escape the destructor...
+       }
+     }
+   };
+   
+   struct DummyStream : public std::ostream
+   {
+     struct DummyStreamBuffer : std::streambuf
+     {
+       int overflow(int c) override { return c; };
+     } buffer;
+   
+     DummyStream() : std::ostream(&buffer) {}
+     ~DummyStream() override = default;
+   };
+   
+   } // namespace opensn

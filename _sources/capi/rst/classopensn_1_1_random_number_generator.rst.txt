@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_random_number_generator:
+
+Class RandomNumberGenerator
+===========================
+
+- Defined in :ref:`file_framework_math_random_number_generation_random_number_generator.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::RandomNumberGenerator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

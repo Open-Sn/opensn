@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1ae841473082465baefc8ecd55f9a069bf:
+
+Typedef opensn::ScalarSpatialFunction
+=====================================
+
+- Defined in :ref:`file_framework_math_functions_function.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::ScalarSpatialFunction
+   :project: opensn

@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_spatial_discretization:
+
+Class SpatialDiscretization
+===========================
+
+- Defined in :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::FiniteElementBase`` (:ref:`exhale_class_classopensn_1_1_finite_element_base`)
+- ``public opensn::FiniteVolume`` (:ref:`exhale_class_classopensn_1_1_finite_volume`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SpatialDiscretization
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

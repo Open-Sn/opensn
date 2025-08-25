@@ -1,0 +1,37 @@
+.. _exhale_class_classopensn_1_1_angular_quadrature:
+
+Class AngularQuadrature
+=======================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::ProductQuadrature`` (:ref:`exhale_class_classopensn_1_1_product_quadrature`)
+- ``public opensn::SimplifiedLDFESQ::Quadrature`` (:ref:`exhale_class_classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AngularQuadrature
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

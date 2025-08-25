@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File aahd_fluds.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File aahd_fluds.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-aahd-fluds-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-fluds-h"></span><h1>Program Listing for File aahd_fluds.h<a class="headerlink" href="#program-listing-for-file-aahd-fluds-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-fluds-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2025 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/ndarray.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;caribou/caribou.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">crb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">caribou</span><span class="p">;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @brief Object storing pointer to group-wise angular flux of a face node and angle on the host.</span>
+<span class="cm"> * @details If the node is associated with incoming face, the ``outgoing`` member is a null pointer</span>
+<span class="cm"> * and vice-versa.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FloodPtr</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">outgoing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Object storing pointers to angular fluxes for a given face.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FloodFace</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Pointer to fluxes in the FLUDS for each face node (first index) and angle in angleset (second</span>
+<span class="cm">   * index).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="n">FloodPtr</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">flux</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Object storing pointers to angular fluxes for a given cell.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FloodCell</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">FloodFace</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="p">};</span>
+
+<span class="c1">/// Object storing pointers to angular fluxes for a given SPDS level.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">FloodLevel</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// Map from cell index in level to the data of the cell faces.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">FloodCell</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cells</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Precomputed offset index into contiguous memory for incoming flux.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precomputed_offset</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/** @brief Flatten data structure of AAH_FLUDS for tracking angular flux pointers on a contiguous</span>
+<span class="cm"> *  memory block on device.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHD_FLUDS</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// @brief Constructor from angle set.</span>
+<span class="w">  </span><span class="n">AAHD_FLUDS</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
+<span class="w">             </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">group_set</span><span class="p">,</span>
+<span class="w">             </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
+<span class="w">             </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Copy data of a given level to GPU.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyToDevice</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Copy data of a given level back from GPU.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyFromDevice</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Get the device memory.</span>
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="nf">GetDevicePtr</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_buffer_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get strides for each face node.</span>
+<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">GetStride</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">groupset_size_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">angleset_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * @details Map from level index, index of the cell in the level and face index to the pointer of</span>
+<span class="cm">   * the corresponding incoming psi in the fluds.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">FloodLevel</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fluds_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Map from level index to cell details.</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * @brief Size of required memory for storing incoming flux.</span>
+<span class="cm">   * @details Minimum size of the contiguous memory required for storing data of the largest level.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of groups of the associated group set.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of angles in the angleset.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angleset_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Contiguous memory on the host (CPU) for angular flux.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_buffer_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Contiguous memory on the device (GPU) for angular flux.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_buffer_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

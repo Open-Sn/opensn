@@ -1,0 +1,59 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_device_view_xs_view.h:
+
+File xs_view.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_device_view>` (``modules/linear_boltzmann_solvers/lbs_problem/device/view``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/device/view/xs_view.h``)
+-----------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_view_xs_view.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_x_s_view`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_xs__view_8h_1aee06755a82a192ec6876e3c80dce7345`
+

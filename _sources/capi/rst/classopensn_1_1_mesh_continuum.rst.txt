@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_mesh_continuum:
+
+Class MeshContinuum
+===================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::MeshContinuum
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

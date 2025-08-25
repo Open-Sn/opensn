@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_diffusion_solver_1_1_options:
+
+Struct DiffusionSolver::Options
+===============================
+
+- Defined in :ref:`file_modules_diffusion_diffusion.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_diffusion_solver`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DiffusionSolver::Options
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

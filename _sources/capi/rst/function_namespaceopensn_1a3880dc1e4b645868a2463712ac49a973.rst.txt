@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3880dc1e4b645868a2463712ac49a973:
+
+Function opensn::LpNorm
+=======================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::LpNorm(const std::vector<double>&, const double&)
+   :project: opensn

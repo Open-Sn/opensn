@@ -1,0 +1,70 @@
+
+.. _file_framework_math_linear_solver_petsc_linear_system_solver.h:
+
+File petsc_linear_system_solver.h
+=================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_linear_solver>` (``framework/math/linear_solver``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/linear_solver/petsc_linear_system_solver.h``)
+--------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_linear_solver_petsc_linear_system_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/linear_solver/linear_solver_context.h`` (:ref:`file_framework_math_linear_solver_linear_solver_context.h`)
+
+- ``framework/math/linear_solver/linear_system_solver.h`` (:ref:`file_framework_math_linear_solver_linear_system_solver.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``petscksp.h``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``utility``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_p_e_t_sc_linear_solver_1_1_tolerance_options`
+
+- :ref:`exhale_class_classopensn_1_1_p_e_t_sc_linear_solver`
+

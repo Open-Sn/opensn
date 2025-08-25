@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_surface_mesh:
+
+Class SurfaceMesh
+=================
+
+- Defined in :ref:`file_framework_mesh_surface_mesh_surface_mesh.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SurfaceMesh
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

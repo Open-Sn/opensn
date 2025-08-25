@@ -1,0 +1,14 @@
+.. _exhale_define_mesh__view_8h_1aee06755a82a192ec6876e3c80dce7345:
+
+Define __inline_host_dev__
+==========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_mesh_view.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: __inline_host_dev__
+   :project: opensn

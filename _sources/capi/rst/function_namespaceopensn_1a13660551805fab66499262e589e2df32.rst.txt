@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a13660551805fab66499262e589e2df32:
+
+Function opensn::UploadCellGeometryDiscontinuous
+================================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::UploadCellGeometryDiscontinuous(std::shared_ptr<MeshContinuum>, const Cell&, int64_t&, vtkNew<vtkPoints>&, vtkNew<vtkUnstructuredGrid>&)
+   :project: opensn

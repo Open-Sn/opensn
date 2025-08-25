@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_c_b_c___a_synchronous_communicator_1_1_buffer_item:
+
+Struct CBC_ASynchronousCommunicator::BufferItem
+===============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_c_b_c___a_synchronous_communicator`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::CBC_ASynchronousCommunicator::BufferItem
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

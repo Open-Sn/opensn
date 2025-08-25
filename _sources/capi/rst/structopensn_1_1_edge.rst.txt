@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_edge:
+
+Struct Edge
+===========
+
+- Defined in :ref:`file_framework_mesh_mesh_edge_loops.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::Edge
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

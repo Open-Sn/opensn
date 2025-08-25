@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a0fb0f6840b04038a08db15f956fd891d:
+
+Function opensn::Finalize
+=========================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Finalize()
+   :project: opensn

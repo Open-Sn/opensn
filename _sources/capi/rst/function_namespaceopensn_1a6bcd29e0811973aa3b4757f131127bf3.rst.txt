@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6bcd29e0811973aa3b4757f131127bf3:
+
+Function opensn::operator*
+==========================
+
+- Defined in :ref:`file_framework_data_types_vector3.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::operator*(double, const Vector3&)
+   :project: opensn

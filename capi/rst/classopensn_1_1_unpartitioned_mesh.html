@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class UnpartitionedMesh &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class UnpartitionedMesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-unpartitionedmesh">
+<span id="exhale-class-classopensn-1-1-unpartitioned-mesh"></span><h1>Class UnpartitionedMesh<a class="headerlink" href="#class-unpartitionedmesh" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h.html#file-framework-mesh-unpartitioned-mesh-unpartitioned-mesh-h"><span class="std std-ref">File unpartitioned_mesh.h</span></a></p></li>
+</ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_unpartitioned_mesh_1_1_bound_box.html#exhale-struct-structopensn-1-1-unpartitioned-mesh-1-1-bound-box"><span class="std std-ref">Struct UnpartitionedMesh::BoundBox</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell.html#exhale-struct-structopensn-1-1-unpartitioned-mesh-1-1-light-weight-cell"><span class="std std-ref">Struct UnpartitionedMesh::LightWeightCell</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face.html#exhale-struct-structopensn-1-1-unpartitioned-mesh-1-1-light-weight-face"><span class="std std-ref">Struct UnpartitionedMesh::LightWeightFace</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_unpartitioned_mesh_1_1_options.html#exhale-struct-structopensn-1-1-unpartitioned-mesh-1-1-options"><span class="std std-ref">Struct UnpartitionedMesh::Options</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMeshE">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnpartitionedMesh</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMeshE" title="Link to this definition"></a><br /></dt>
+<dd><p>This object is intended for unpartitioned meshes that still require partitioning. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh17UnpartitionedMeshEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a06476adb4d96c10336675f2e3a36c286"></span><span class="sig-name descname"><span class="n"><span class="pre">UnpartitionedMesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh17UnpartitionedMeshEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMeshD0Ev">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ad0c85ad1bf9c4fc9c901e1cdd20480b3"></span><span class="sig-name descname"><span class="n"><span class="pre">~UnpartitionedMesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMeshD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh12GetDimensionEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a7ed9553b7be6c6e487a18fb54dcd037f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDimension</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh12GetDimensionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh12SetDimensionEj">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a0208306129009de5c7e6da48a704731f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDimension</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dim</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh12SetDimensionEj" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh19GetCoordinateSystemEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1af19d917b90a2930ee8c215da8e9d88bb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a3f993b12e1915b453f150e1c467d8d68.html#_CPPv4N6opensn20CoordinateSystemTypeE" title="opensn::CoordinateSystemType"><span class="n"><span class="pre">CoordinateSystemType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCoordinateSystem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh19GetCoordinateSystemEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh19SetCoordinateSystemEK20CoordinateSystemType">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1aafe6d9b894c674b9a813e9d2cfeb4c3a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCoordinateSystem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a3f993b12e1915b453f150e1c467d8d68.html#_CPPv4N6opensn20CoordinateSystemTypeE" title="opensn::CoordinateSystemType"><span class="n"><span class="pre">CoordinateSystemType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">coord_sys</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh19SetCoordinateSystemEK20CoordinateSystemType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7SetTypeE8MeshType">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a583d615458d0c365fa1ab530fb233f08"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetType</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_namespaceopensn_1a646dcf9223a2ca00076d37531f17a1bf.html#_CPPv4N6opensn8MeshTypeE" title="opensn::MeshType"><span class="n"><span class="pre">MeshType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7SetTypeE8MeshType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh7GetTypeEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a6a010ea3e4bd0abeffde1264ad6de5f5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a646dcf9223a2ca00076d37531f17a1bf.html#_CPPv4N6opensn8MeshTypeE" title="opensn::MeshType"><span class="n"><span class="pre">MeshType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh7GetTypeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh11SetExtrudedEb">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1af85ba1d11b903a7bfc87aa7208e4098c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetExtruded</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">extruded</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh11SetExtrudedEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh10IsExtrudedEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a21812462ce3c2d447c04802d4213c92b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsExtruded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh10IsExtrudedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh18SetOrthoAttributesE6size_t6size_t6size_t">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a870d86ed7a0f274042d603fa36c62807"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetOrthoAttributes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nx</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ny</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nz</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh18SetOrthoAttributesE6size_t6size_t6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh18GetOrthoAttributesEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ac78e59b03ec4188ae10f49bbb56e2c87"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_ortho_mesh_attributes.html#_CPPv4N6opensn19OrthoMeshAttributesE" title="opensn::OrthoMeshAttributes"><span class="n"><span class="pre">OrthoMeshAttributes</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOrthoAttributes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh18GetOrthoAttributesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh14GetBoundingBoxEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1af4d9987f56e62d266efeb14922391cbd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBoxE" title="opensn::UnpartitionedMesh::BoundBox"><span class="n"><span class="pre">BoundBox</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundingBox</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh14GetBoundingBoxEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh18ComputeBoundingBoxEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a04fbc006e3f519bd5a36cffa36407802"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeBoundingBox</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh18ComputeBoundingBoxEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh16GetBoundaryIDMapEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a3446cbd4b25b2b2e477763ebb938771b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryIDMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh16GetBoundaryIDMapEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh16GetBoundaryIDMapEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a9a828ae1574f60c082d7d2b5ee1c9bf6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryIDMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh16GetBoundaryIDMapEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh27GetVertextCellSubscriptionsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a60c51d80df86b3a651300e7653525f0e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetVertextCellSubscriptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh27GetVertextCellSubscriptionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7AddCellERKNSt10shared_ptrI15LightWeightCellEE">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a1d41ff8ea0a9fabc5c1cae595a4eb598"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddCell</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7AddCellERKNSt10shared_ptrI15LightWeightCellEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh16GetNumberOfCellsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ad5fe269c3d33c9479379b3ae985689e1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumberOfCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh16GetNumberOfCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh11GetRawCellsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a866caa84ed602212ed3caf6e5931c3d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetRawCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh11GetRawCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh11GetRawCellsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a53eec0b556a913446429c0b15b00e757"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetRawCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh11GetRawCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh19GetRawBoundaryCellsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1aeffee8832f608a23424fec5376ff9288"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetRawBoundaryCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh19GetRawBoundaryCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh19GetRawBoundaryCellsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a029a0eaffc6a0de6d921cd71928b1f5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetRawBoundaryCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh19GetRawBoundaryCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UnpartitionedMesh11GetVerticesEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a9d43ec779e2b880751400f44478e7252"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetVertices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UnpartitionedMesh11GetVerticesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh11GetVerticesEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a2cee7af8b9063e5cda37bafc040f2e79"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetVertices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh11GetVerticesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh21BuildMeshConnectivityEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a62c2da3c413ce720697ebee9ea6c98f7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildMeshConnectivity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh21BuildMeshConnectivityEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Establishes neighbor connectivity for the light-weight mesh. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh16ComputeCentroidsEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a3cb17a9e2619007cd07522e84aa2da9a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeCentroids</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh16ComputeCentroidsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Compute centroids for all cells. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh12CheckQualityEv">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a7b1dcf2f75f5439afdde0bd7408396cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckQuality</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh12CheckQualityEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check element quality. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh14MakeBoundaryIDERKNSt6stringE">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a88f788f734c4de86d2402e6573387616"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeBoundaryID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">boundary_name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh14MakeBoundaryIDERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Makes or gets a boundary that uniquely identifies the given name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh11AddBoundaryE8uint64_tRKNSt6stringE">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ac9bee60b5c590f1a1ac15d042a6d1f60"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddBoundary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh11AddBoundaryE8uint64_tRKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh4dim_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ab20d0529b8d791963f9ed3d945515de1"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh4dim_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Spatial mesh dimension. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh10coord_sys_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1adc4a7e8012d96a4b17a9c45a57374fa0"></span><a class="reference internal" href="enum_namespaceopensn_1a3f993b12e1915b453f150e1c467d8d68.html#_CPPv4N6opensn20CoordinateSystemTypeE" title="opensn::CoordinateSystemType"><span class="n"><span class="pre">CoordinateSystemType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coord_sys_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh10coord_sys_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh10mesh_type_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a1023d9bdcc2efd98bf54aa47a9027ea1"></span><a class="reference internal" href="enum_namespaceopensn_1a646dcf9223a2ca00076d37531f17a1bf.html#_CPPv4N6opensn8MeshTypeE" title="opensn::MeshType"><span class="n"><span class="pre">MeshType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mesh_type_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh10mesh_type_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh9extruded_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a57769aad12181a0548b55df97d2d875c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">extruded_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh9extruded_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh12ortho_attrs_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a8e05575ec3b010a7aa9ef60e241b003e"></span><a class="reference internal" href="structopensn_1_1_ortho_mesh_attributes.html#_CPPv4N6opensn19OrthoMeshAttributesE" title="opensn::OrthoMeshAttributes"><span class="n"><span class="pre">OrthoMeshAttributes</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ortho_attrs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh12ortho_attrs_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh13mesh_options_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ad52a1272dfb93d56730db19208ac6bc2"></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh7OptionsE" title="opensn::UnpartitionedMesh::Options"><span class="n"><span class="pre">Options</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mesh_options_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh13mesh_options_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh10bound_box_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ab5834d9d1a06b9cad107e408a87de7ba"></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBoxE" title="opensn::UnpartitionedMesh::BoundBox"><span class="n"><span class="pre">BoundBox</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bound_box_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh10bound_box_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh16boundary_id_map_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a9c7aa5e7a6475fe24dadcd2c93a4326d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_id_map_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh16boundary_id_map_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh9vertices_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a03a4540dca4df1e618bd203c67bc8f5d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh9vertices_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh10raw_cells_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1ada8aaddae0a725949157d9b55fd71b94"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">raw_cells_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh10raw_cells_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh19raw_boundary_cells_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a0a78ec3d94c91dc9b90506164f4075f3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="opensn::UnpartitionedMesh::LightWeightCell"><span class="n"><span class="pre">LightWeightCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">raw_boundary_cells_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh19raw_boundary_cells_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh26vertex_cell_subscriptions_E">
+<span class="target" id="classopensn_1_1_unpartitioned_mesh_1a818deb499e2413585b3042bda485ac0a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_cell_subscriptions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh26vertex_cell_subscriptions_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBoxE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BoundBox</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBoxE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4xminE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1a543b5760fc605f5ef7da11f576675606"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xmin</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4xminE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4xmaxE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1a941748c450ee0203c3162c8ff93bbeeb"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xmax</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4xmaxE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4yminE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1a4839db8f5cef569a951dd6160601d938"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ymin</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4yminE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4ymaxE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1adb69a202d77efcf34e16d410ffbd9bf3"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ymax</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4ymaxE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4zminE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1ae0a195a71af728c42629f8d8d9199a21"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zmin</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4zminE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh8BoundBox4zmaxE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_bound_box_1ad1ed37bc3afa416af26e69a1fec37fd0"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zmax</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh8BoundBox4zmaxE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LightWeightCell</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCellE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell15LightWeightCellE8CellType8CellType">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a92035853754ace5ae5c5abf74ac03955"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LightWeightCell</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2.html#_CPPv4N6opensn8CellTypeE" title="opensn::CellType"><span class="n"><span class="pre">CellType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span>, <a class="reference internal" href="enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2.html#_CPPv4N6opensn8CellTypeE" title="opensn::CellType"><span class="n"><span class="pre">CellType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sub_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell15LightWeightCellE8CellType8CellType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell4typeE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a062358b28a1daed564ca884519936d2b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2.html#_CPPv4N6opensn8CellTypeE" title="opensn::CellType"><span class="n"><span class="pre">CellType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell4typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8sub_typeE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a505c3a7498e3ff47bac81ff819f2ac91"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2.html#_CPPv4N6opensn8CellTypeE" title="opensn::CellType"><span class="n"><span class="pre">CellType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sub_type</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8sub_typeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8centroidE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a85c236f542dade2d320ae8d3a9c1b5cb"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8centroidE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8block_idE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a77e1eac6a779167324d044d707b9ee8b"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell8block_idE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell10vertex_idsE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1afe0bef7b4d59fc4dab9b357c89ac76f4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_ids</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell10vertex_idsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell5facesE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_cell_1a96d8f4c741d710282cc16fb940de3843"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFaceE" title="opensn::UnpartitionedMesh::LightWeightFace"><span class="n"><span class="pre">LightWeightFace</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faces</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightCell5facesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFaceE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LightWeightFace</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFaceE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace15LightWeightFaceEv">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face_1a84a0af3aca1e29dd341f348465fbae64"></span><span class="sig-name descname"><span class="n"><span class="pre">LightWeightFace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace15LightWeightFaceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace15LightWeightFaceENSt6vectorI8uint64_tEE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face_1a9dbdaaf35f6aef99d96e11851ff7ae63"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LightWeightFace</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vertex_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace15LightWeightFaceENSt6vectorI8uint64_tEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace10vertex_idsE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face_1a8cf4353cf93448194c0bc1bc0be97ade"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertex_ids</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace10vertex_idsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace12has_neighborE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face_1a7a242f3cf5ee696772409da6fbb6f9cf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_neighbor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace12has_neighborE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace8neighborE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_light_weight_face_1a9fdd702eda949117de3b4a1562c9f60e"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">neighbor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh15LightWeightFace8neighborE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7OptionsE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_options"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Options</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7OptionsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7Options9file_nameE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_options_1a0dbf6db30af205da8c3315c4d5e20b3e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">file_name</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7Options9file_nameE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7Options18block_id_fieldnameE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_options_1ab8b50025a765b208b50f5ae66c3e0ef8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_id_fieldname</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;BlockID&quot;</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7Options18block_id_fieldnameE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7Options21boundary_id_fieldnameE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_options_1af6b4c22d91c03d7a0571470f109fcfbf"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_id_fieldname</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7Options21boundary_id_fieldnameE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh7Options5scaleE">
+<span class="target" id="structopensn_1_1_unpartitioned_mesh_1_1_options_1a5196c4679196fe39bd95793dca9eb340"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scale</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh7Options5scaleE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

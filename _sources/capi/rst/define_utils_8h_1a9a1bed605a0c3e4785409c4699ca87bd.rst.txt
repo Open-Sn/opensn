@@ -1,0 +1,14 @@
+.. _exhale_define_utils_8h_1a9a1bed605a0c3e4785409c4699ca87bd:
+
+Define OpenSnJoinWordsA
+=======================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnJoinWordsA
+   :project: opensn

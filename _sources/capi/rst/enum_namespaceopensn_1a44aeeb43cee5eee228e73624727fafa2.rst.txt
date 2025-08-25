@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2:
+
+Enum CellType
+=============
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::CellType
+   :project: opensn

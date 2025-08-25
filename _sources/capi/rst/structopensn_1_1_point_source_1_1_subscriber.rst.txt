@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_point_source_1_1_subscriber:
+
+Struct PointSource::Subscriber
+==============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_point_source`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::PointSource::Subscriber
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

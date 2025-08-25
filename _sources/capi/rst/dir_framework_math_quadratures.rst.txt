@@ -1,0 +1,30 @@
+.. _dir_framework_math_quadratures:
+
+
+Directory quadratures
+=====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math>` (``framework/math``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/quadratures``
+
+Subdirectories
+--------------
+
+- :ref:`dir_framework_math_quadratures_angular`
+- :ref:`dir_framework_math_quadratures_spatial`
+
+
+Files
+-----
+
+- :ref:`file_framework_math_quadratures_gauss_quadrature.h`
+- :ref:`file_framework_math_quadratures_gausschebyshev_quadrature.h`
+- :ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`
+- :ref:`file_framework_math_quadratures_quadrature_order.h`
+
+

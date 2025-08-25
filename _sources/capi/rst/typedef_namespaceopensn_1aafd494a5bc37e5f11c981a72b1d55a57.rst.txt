@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1aafd494a5bc37e5f11c981a72b1d55a57:
+
+Typedef opensn::SetSourceFunction
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::SetSourceFunction
+   :project: opensn

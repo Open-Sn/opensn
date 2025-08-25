@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1f18b38c31316e2b4ed40c6b9ec89b08:
+
+Function opensn::BuildCellBlockIDsFromField
+===========================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildCellBlockIDsFromField(vtkUGridPtr&, const std::string&, const std::string&)
+   :project: opensn

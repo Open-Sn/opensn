@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02:
+
+Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&, const std::vector<uint64_t>&)
+========================================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeLeakage(DiscreteOrdinatesProblem&, const std::vector<uint64_t>&)
+   :project: opensn

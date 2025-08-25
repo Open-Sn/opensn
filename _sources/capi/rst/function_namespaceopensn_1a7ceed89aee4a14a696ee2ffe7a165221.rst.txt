@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221:
+
+Function opensn::Dot(const std::vector<double>&, const std::vector<double>&)
+============================================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Dot(const std::vector<double>&, const std::vector<double>&)
+   :project: opensn

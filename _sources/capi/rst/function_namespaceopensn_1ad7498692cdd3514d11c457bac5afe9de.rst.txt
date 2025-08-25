@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad7498692cdd3514d11c457bac5afe9de:
+
+Function opensn::RestoreGhostVectorLocalViewRead
+================================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::RestoreGhostVectorLocalViewRead(Vec, GhostVecLocalRaw&)
+   :project: opensn

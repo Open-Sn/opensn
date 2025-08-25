@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_p_e_t_sc_solver_setup:
+
+Struct PETScSolverSetup
+=======================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::PETScSolverSetup
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

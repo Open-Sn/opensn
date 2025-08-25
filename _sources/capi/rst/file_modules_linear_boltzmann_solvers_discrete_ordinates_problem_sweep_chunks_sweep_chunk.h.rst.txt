@@ -1,0 +1,76 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h:
+
+File sweep_chunk.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h``)
+-------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/spatial_discretization/finite_element/unit_cell_matrices.h`` (:ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`)
+
+- ``functional``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_discrete_ordinates_curvilinear_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_sweep_chunks_aah_sweep_chunk_rz.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_sweep_scheduler.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_chunk.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_sweep_chunk`
+

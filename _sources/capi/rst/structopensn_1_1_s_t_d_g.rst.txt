@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_s_t_d_g:
+
+Struct STDG
+===========
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::STDG
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

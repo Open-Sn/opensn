@@ -1,0 +1,70 @@
+
+.. _file_framework_logging_log.h:
+
+File log.h
+==========
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_logging>` (``framework/logging``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/logging/log.h``)
+----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_logging_log.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
+
+- ``framework/logging/log_stream.h`` (:ref:`file_framework_logging_log_stream.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_mesh_logical_volume_logical_volume.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_logger`
+

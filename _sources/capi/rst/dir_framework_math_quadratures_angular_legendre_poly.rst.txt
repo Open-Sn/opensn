@@ -1,0 +1,21 @@
+.. _dir_framework_math_quadratures_angular_legendre_poly:
+
+
+Directory legendre_poly
+=======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/quadratures/angular/legendre_poly``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h`
+
+

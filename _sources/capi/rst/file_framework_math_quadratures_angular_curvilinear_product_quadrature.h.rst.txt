@@ -1,0 +1,58 @@
+
+.. _file_framework_math_quadratures_angular_curvilinear_product_quadrature.h:
+
+File curvilinear_product_quadrature.h
+=====================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/curvilinear_product_quadrature.h``)
+------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_curvilinear_product_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/quadratures/angular/product_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_product_quadrature.h`)
+
+- ``framework/math/quadratures/gausslegendre_quadrature.h`` (:ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_curvilinear_product_quadrature`
+
+- :ref:`exhale_class_classopensn_1_1_g_l_c_product_quadrature2_d_r_z`
+
+- :ref:`exhale_class_classopensn_1_1_g_l_product_quadrature1_d_spherical`
+

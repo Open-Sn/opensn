@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a07aba420cd3748e54b438bbd25d762f9:
+
+Function opensn::OmegaToPhiThetaSafe
+====================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::OmegaToPhiThetaSafe(const Vector3&)
+   :project: opensn

@@ -1,0 +1,52 @@
+
+.. _file_framework_math_functions_piecewise_linear_1d.h:
+
+File piecewise_linear_1d.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_functions>` (``framework/math/functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/functions/piecewise_linear_1d.h``)
+---------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_functions_piecewise_linear_1d.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/functions/function_dimA_to_dimB.h`` (:ref:`file_framework_math_functions_function_dimA_to_dimB.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_piecewise_linear1_d`
+

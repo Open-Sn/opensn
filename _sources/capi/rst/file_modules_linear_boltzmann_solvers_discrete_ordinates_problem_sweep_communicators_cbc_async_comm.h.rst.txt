@@ -1,0 +1,74 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h:
+
+File cbc_async_comm.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h``)
+-----------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``cstdint``
+
+- ``framework/data_types/byte_array.h`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds.h`)
+
+- ``mpicpp-lite/mpicpp-lite.h``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_cbc_angle_set.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___a_synchronous_communicator_1_1_buffer_item`
+
+- :ref:`exhale_class_classopensn_1_1_c_b_c___a_synchronous_communicator`
+

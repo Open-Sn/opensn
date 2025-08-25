@@ -1,0 +1,26 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h:
+
+Program Listing for File print_quadrature.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h>` (``modules/linear_boltzmann_solvers/lbs_problem/device/debug_tool/print_quadrature.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h"
+   
+   namespace opensn::device_dbg
+   {
+   
+   /// Print quadrature on device.
+   void PrintQuadratureOnDevice(QuadratureCarrier& quad);
+   
+   } // namespace opensn::device_dbg

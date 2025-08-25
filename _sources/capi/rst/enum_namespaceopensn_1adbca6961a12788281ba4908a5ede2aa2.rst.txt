@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2:
+
+Enum LBSBoundaryType
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::LBSBoundaryType
+   :project: opensn

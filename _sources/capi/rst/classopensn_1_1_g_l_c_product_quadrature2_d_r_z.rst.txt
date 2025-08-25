@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_g_l_c_product_quadrature2_d_r_z:
+
+Class GLCProductQuadrature2DRZ
+==============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_curvilinear_product_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::CurvilinearProductQuadrature`` (:ref:`exhale_class_classopensn_1_1_curvilinear_product_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GLCProductQuadrature2DRZ
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

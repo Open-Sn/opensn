@@ -1,0 +1,25 @@
+.. _dir_modules_linear_boltzmann_solvers_lbs_problem_device_carrier:
+
+
+Directory carrier
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_device>` (``modules/linear_boltzmann_solvers/lbs_problem/device``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_carrier.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_quadrature_carrier.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`
+
+

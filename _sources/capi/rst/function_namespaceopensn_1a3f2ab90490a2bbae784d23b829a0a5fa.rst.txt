@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3f2ab90490a2bbae784d23b829a0a5fa:
+
+Function opensn::StringTrim
+===========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StringTrim(const std::string&)
+   :project: opensn

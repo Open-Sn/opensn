@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File hdf_utils.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File hdf_utils.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-hdf-utils-h">
+<span id="file-framework-utils-hdf-utils-h"></span><h1>File hdf_utils.h<a class="headerlink" href="#file-hdf-utils-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_framework_utils.html#dir-framework-utils"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/utils</span></code>)</p>
+<nav class="contents local" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-framework-utils-hdf-utils-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">framework/utils/hdf_utils.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id3">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id4">Functions</a></p></li>
+</ul>
+</nav>
+<section id="definition-framework-utils-hdf-utils-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">framework/utils/hdf_utils.h</span></code>)<a class="headerlink" href="#definition-framework-utils-hdf-utils-h" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_framework_utils_hdf_utils.h.html">Program Listing for File hdf_utils.h</a></li>
+</ul>
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hdf5.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code> (<a class="reference internal" href="file_framework_logging_stringstream_color.h.html#file-framework-logging-stringstream-color-h"><span class="std std-ref">File stringstream_color.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vector</span></code> (<a class="reference internal" href="file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h.html#file-framework-data-types-parallel-vector-ghosted-parallel-stl-vector-h"><span class="std std-ref">File ghosted_parallel_stl_vector.h</span></a>)</p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_opensn.html#namespace-opensn"><span class="std std-ref">Namespace opensn</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_namespaceopensn_1a32bddde67f81b8ac1e6732dd345b87f9.html#exhale-function-namespaceopensn-1a32bddde67f81b8ac1e6732dd345b87f9"><span class="std std-ref">Template Function opensn::get_datatype</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1adb2adfc12bb8bdfb4671e726765028e9.html#exhale-function-namespaceopensn-1adb2adfc12bb8bdfb4671e726765028e9"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; char &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a96d7aad3feb66dbbd352a829622c46f3.html#exhale-function-namespaceopensn-1a96d7aad3feb66dbbd352a829622c46f3"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1abef6a52dd094bf8c3e88dd0c516c3189.html#exhale-function-namespaceopensn-1abef6a52dd094bf8c3e88dd0c516c3189"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1dcad894d9e8ec4172be9dd104dac9a9.html#exhale-function-namespaceopensn-1a1dcad894d9e8ec4172be9dd104dac9a9"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; int &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3ad694514a5c91931b511aaa122fa272.html#exhale-function-namespaceopensn-1a3ad694514a5c91931b511aaa122fa272"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; long &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3771ae24eadd6ba62815aae5bf093c4b.html#exhale-function-namespaceopensn-1a3771ae24eadd6ba62815aae5bf093c4b"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; long long &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ae8ab2cc770fefd8956264662c584d676.html#exhale-function-namespaceopensn-1ae8ab2cc770fefd8956264662c584d676"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; short &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a643e69b425469e5db00559bfe912136a.html#exhale-function-namespaceopensn-1a643e69b425469e5db00559bfe912136a"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; signed char &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a2939e4bad966a253c7564a75c7a9c4a1.html#exhale-function-namespaceopensn-1a2939e4bad966a253c7564a75c7a9c4a1"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; unsigned char &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ac5cb2e7ee1d53a3c37a3680bf75ea107.html#exhale-function-namespaceopensn-1ac5cb2e7ee1d53a3c37a3680bf75ea107"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; unsigned int &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a4270011890b6e5f516cee34496c9223c.html#exhale-function-namespaceopensn-1a4270011890b6e5f516cee34496c9223c"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; unsigned long &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ac70029c434a6f8be23fe493156b9c4df.html#exhale-function-namespaceopensn-1ac70029c434a6f8be23fe493156b9c4df"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; unsigned long long &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a6db42998ad5ef630aa6ba39e255729e6.html#exhale-function-namespaceopensn-1a6db42998ad5ef630aa6ba39e255729e6"><span class="std std-ref">Specialized Template Function opensn::get_datatype&lt; unsigned short &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ac1ae8668c67f5195808fa40058771d6d.html#exhale-function-namespaceopensn-1ac1ae8668c67f5195808fa40058771d6d"><span class="std std-ref">Template Function opensn::H5CreateAttribute</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155.html#exhale-function-namespaceopensn-1a5df30a26f7dca0055b610d3aea546155"><span class="std std-ref">Function opensn::H5CreateGroup</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38.html#exhale-function-namespaceopensn-1a3ea5d8f6cdd02d37bc38ca1911d84d38"><span class="std std-ref">Function opensn::H5Has</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a1dca7f0c5b97bf1a9d36772991bf1dcb.html#exhale-function-namespaceopensn-1a1dca7f0c5b97bf1a9d36772991bf1dcb"><span class="std std-ref">Template Function opensn::H5ReadAttribute</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a71ea7848a0b61bd6f8c695503f6955ed.html#exhale-function-namespaceopensn-1a71ea7848a0b61bd6f8c695503f6955ed"><span class="std std-ref">Specialized Template Function opensn::H5ReadAttribute&lt; bool &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1aad7fb496a0c5cb480dcaa0cedd36e484.html#exhale-function-namespaceopensn-1aad7fb496a0c5cb480dcaa0cedd36e484"><span class="std std-ref">Specialized Template Function opensn::H5ReadAttribute&lt; std::string &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ac23ecd54e0cc0c0694dfa47a6b154e8d.html#exhale-function-namespaceopensn-1ac23ecd54e0cc0c0694dfa47a6b154e8d"><span class="std std-ref">Template Function opensn::H5ReadDataset1D</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1afa1fa5dc197399e0d4d1fb424e89c036.html#exhale-function-namespaceopensn-1afa1fa5dc197399e0d4d1fb424e89c036"><span class="std std-ref">Template Function opensn::H5ReadGroupAttribute</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3f84090a0c4d828919432242e33fe605.html#exhale-function-namespaceopensn-1a3f84090a0c4d828919432242e33fe605"><span class="std std-ref">Specialized Template Function opensn::H5ReadGroupAttribute&lt; bool &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1acb06a43468c654577db6d1d10a2fea54.html#exhale-function-namespaceopensn-1acb06a43468c654577db6d1d10a2fea54"><span class="std std-ref">Specialized Template Function opensn::H5ReadGroupAttribute&lt; std::string &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a88407f2ba56e0cfaa2207937ef84a206.html#exhale-function-namespaceopensn-1a88407f2ba56e0cfaa2207937ef84a206"><span class="std std-ref">Template Function opensn::H5WriteDataset1D</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_multi_group_x_s_1_1_precursor:
+
+Struct MultiGroupXS::Precursor
+==============================
+
+- Defined in :ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_multi_group_x_s`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::MultiGroupXS::Precursor
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

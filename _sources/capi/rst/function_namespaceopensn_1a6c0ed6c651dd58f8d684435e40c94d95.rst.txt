@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6c0ed6c651dd58f8d684435e40c94d95:
+
+Function opensn::UploadCellGeometryContinuous
+=============================================
+
+- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::UploadCellGeometryContinuous(const Cell&, const std::vector<uint64_t>&, vtkNew<vtkUnstructuredGrid>&)
+   :project: opensn

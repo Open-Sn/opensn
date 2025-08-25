@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a5faf1e3ba2d4dbc6c7b17d8c25e990d0:
+
+Template Function opensn::Vec2Norm
+==================================
+
+- Defined in :ref:`file_framework_data_types_vector.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Vec2Norm(const Vector<TYPE>&)
+   :project: opensn

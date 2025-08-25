@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_cell_l_b_s_view:
+
+Class CellLBSView
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CellLBSView
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

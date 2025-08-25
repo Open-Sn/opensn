@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac54b553940593c0108ff32910cded021:
+
+Function opensn::CheckLineIntersectTriangle2
+============================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckLineIntersectTriangle2(const Vector3&, const Vector3&, const Vector3&, const Vector3&, const Vector3&, Vector3&, double *)
+   :project: opensn

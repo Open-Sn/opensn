@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1afa1fa5dc197399e0d4d1fb424e89c036:
+
+Template Function opensn::H5ReadGroupAttribute
+==============================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5ReadGroupAttribute(hid_t, const std::string&, const std::string&, T&)
+   :project: opensn

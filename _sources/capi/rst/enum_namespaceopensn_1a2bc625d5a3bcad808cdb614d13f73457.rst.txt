@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a2bc625d5a3bcad808cdb614d13f73457:
+
+Enum NormType
+=============
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::NormType
+   :project: opensn

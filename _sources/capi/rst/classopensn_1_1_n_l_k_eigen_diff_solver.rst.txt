@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_n_l_k_eigen_diff_solver:
+
+Class NLKEigenDiffSolver
+========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::PETScNonLinearSolver`` (:ref:`exhale_class_classopensn_1_1_p_e_t_sc_non_linear_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::NLKEigenDiffSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

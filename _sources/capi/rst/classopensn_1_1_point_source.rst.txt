@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_point_source:
+
+Class PointSource
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_point_source_1_1_subscriber`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PointSource
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

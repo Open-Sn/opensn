@@ -1,0 +1,23 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration:
+
+
+Directory acceleration
+======================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_scdsa_acceleration.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h`
+
+

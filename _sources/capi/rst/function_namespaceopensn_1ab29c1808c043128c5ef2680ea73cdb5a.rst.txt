@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a:
+
+Function opensn::GSConvergenceTest
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_convergence_test.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GSConvergenceTest(KSP, PetscInt, PetscReal, KSPConvergedReason *, void *)
+   :project: opensn

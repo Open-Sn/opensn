@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366:
+
+Function opensn::ComputePointwisePhiChange(LBSProblem&, std::optional<const std::reference_wrapper<std::vector<double>>>)
+=========================================================================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputePointwisePhiChange(LBSProblem&, std::optional<const std::reference_wrapper<std::vector<double>>>)
+   :project: opensn

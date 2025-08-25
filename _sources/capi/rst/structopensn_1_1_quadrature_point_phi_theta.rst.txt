@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_quadrature_point_phi_theta:
+
+Struct QuadraturePointPhiTheta
+==============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::QuadraturePointPhiTheta
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

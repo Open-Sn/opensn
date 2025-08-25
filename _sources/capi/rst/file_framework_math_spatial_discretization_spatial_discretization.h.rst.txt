@@ -1,0 +1,84 @@
+
+.. _file_framework_math_spatial_discretization_spatial_discretization.h:
+
+File spatial_discretization.h
+=============================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_spatial_discretization>` (``framework/math/spatial_discretization``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/spatial_discretization/spatial_discretization.h``)
+-------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_spatial_discretization_spatial_discretization.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
+
+- ``framework/math/quadratures/spatial/spatial_quadrature.h`` (:ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`)
+
+- ``framework/math/spatial_discretization/cell_mappings/cell_mapping.h`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``framework/math/unknown_manager/unknown_manager.h`` (:ref:`file_framework_math_unknown_manager_unknown_manager.h`)
+
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``petscksp.h``
+
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_finite_element_base.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
+
+- :ref:`file_framework_math_spatial_discretization_finite_volume_finite_volume.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_spatial_discretization`
+

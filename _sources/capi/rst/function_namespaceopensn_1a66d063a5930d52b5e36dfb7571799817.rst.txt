@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817:
+
+Function opensn::SampleCDF
+==========================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SampleCDF(double, std::vector<double>)
+   :project: opensn

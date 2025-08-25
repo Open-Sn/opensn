@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1af16122b4c89e5fd31115feebfe4c0239:
+
+Enum AngularQuadratureType
+==========================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::AngularQuadratureType
+   :project: opensn

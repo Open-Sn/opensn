@@ -1,0 +1,127 @@
+
+.. _file_framework_utils_utils.h:
+
+File utils.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/utils.h``)
+----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cstddef``
+
+- ``cstdint``
+
+- ``fstream``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_object_factory.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_sub_set_info`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a4b34773f7d28fd41bb4f55c0549eca18`
+
+- :ref:`exhale_function_namespaceopensn_1ac09d8d3153ccce4e3f8833516ecd9a99`
+
+- :ref:`exhale_function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b`
+
+- :ref:`exhale_function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22`
+
+- :ref:`exhale_function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5`
+
+- :ref:`exhale_function_namespaceopensn_1a42a78c325fb9db322461ef9a50f0e61f`
+
+- :ref:`exhale_function_namespaceopensn_1acb70f37bd02323306b8c93c8420cd98c`
+
+- :ref:`exhale_function_namespaceopensn_1af0816584bd9b03fe6f0e916b2596fedd`
+
+- :ref:`exhale_function_namespaceopensn_1a7cc9e85017c12c498d06e91d9fe9d6e1`
+
+- :ref:`exhale_function_namespaceopensn_1a314e3bf1b467cff4ed3195442a549642`
+
+- :ref:`exhale_function_namespaceopensn_1a07b0fc52ef23660b94e3215f4d4ef639`
+
+- :ref:`exhale_function_namespaceopensn_1a2d3c7d17d736a1861d4ae33d3da12864`
+
+- :ref:`exhale_function_namespaceopensn_1a2389b534fa9d5c29a50f226dde1cb36b`
+
+- :ref:`exhale_function_namespaceopensn_1a3f2ab90490a2bbae784d23b829a0a5fa`
+
+- :ref:`exhale_function_namespaceopensn_1af535c924f0f477243b567cab9b2438b5`
+
+- :ref:`exhale_function_namespaceopensn_1a23fb50509efc9f941b72f74464bf39fd`
+
+- :ref:`exhale_function_namespaceopensn_1a4ea473bdaada41b455f37051989fc333`
+
+- :ref:`exhale_function_namespaceopensn_1a34a6f84c0a58ebf1014873a76e7b7083`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_utils_8h_1a21dbff787782b540291b60dcb05b2c33`
+
+- :ref:`exhale_define_utils_8h_1a9a1bed605a0c3e4785409c4699ca87bd`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1acd8e4e1145d66a401858a4c4a6436e89`
+

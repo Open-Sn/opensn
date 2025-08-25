@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_vacuum_boundary:
+
+Class VacuumBoundary
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_vacuum_boundary.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SweepBoundary`` (:ref:`exhale_class_classopensn_1_1_sweep_boundary`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VacuumBoundary
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

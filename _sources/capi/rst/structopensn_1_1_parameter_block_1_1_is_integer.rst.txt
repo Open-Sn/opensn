@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_parameter_block_1_1_is_integer:
+
+Template Struct ParameterBlock::IsInteger
+=========================================
+
+- Defined in :ref:`file_framework_parameters_parameter_block.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_parameter_block`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::ParameterBlock::IsInteger
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

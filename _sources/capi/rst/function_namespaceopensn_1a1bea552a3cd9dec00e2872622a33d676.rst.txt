@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676:
+
+Function opensn::Scale(std::vector<double>&, const double&)
+===========================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Scale(std::vector<double>&, const double&)
+   :project: opensn

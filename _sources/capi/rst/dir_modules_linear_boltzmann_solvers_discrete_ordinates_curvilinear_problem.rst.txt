@@ -1,0 +1,26 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem:
+
+
+Directory discrete_ordinates_curvilinear_problem
+================================================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers>` (``modules/linear_boltzmann_solvers``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem``
+
+Subdirectories
+--------------
+
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_sweep_chunks`
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_discrete_ordinates_curvilinear_problem.h`
+
+

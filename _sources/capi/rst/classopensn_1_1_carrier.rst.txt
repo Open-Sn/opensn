@@ -1,0 +1,29 @@
+.. _exhale_class_classopensn_1_1_carrier:
+
+Class Carrier
+=============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_carrier.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::MeshCarrier`` (:ref:`exhale_class_classopensn_1_1_mesh_carrier`)
+- ``public opensn::OutflowCarrier`` (:ref:`exhale_class_classopensn_1_1_outflow_carrier`)
+- ``public opensn::QuadratureCarrier`` (:ref:`exhale_class_classopensn_1_1_quadrature_carrier`)
+- ``public opensn::TotalXSCarrier`` (:ref:`exhale_class_classopensn_1_1_total_x_s_carrier`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Carrier
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

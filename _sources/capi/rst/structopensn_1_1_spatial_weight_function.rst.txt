@@ -1,0 +1,26 @@
+.. _exhale_struct_structopensn_1_1_spatial_weight_function:
+
+Struct SpatialWeightFunction
+============================
+
+- Defined in :ref:`file_framework_math_spatial_weight_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public opensn::CartesianSpatialWeightFunction`` (:ref:`exhale_struct_structopensn_1_1_cartesian_spatial_weight_function`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SpatialWeightFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

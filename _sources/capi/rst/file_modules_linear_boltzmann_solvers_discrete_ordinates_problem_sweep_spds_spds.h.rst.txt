@@ -1,0 +1,81 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h:
+
+File spds.h
+===========
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h``)
+----------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``boost/graph/directed_graph.hpp``
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
+
+- ``stack``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_cbc.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_vertex_properties`
+
+- :ref:`exhale_class_classopensn_1_1_s_p_d_s`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e`
+
+- :ref:`exhale_typedef_namespaceopensn_1afaffa8c1eb306ccaca9cc78583b4f6cc`
+

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_l_b_s_solver_i_o:
+
+Class LBSSolverIO
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_io_lbs_problem_io.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LBSSolverIO
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

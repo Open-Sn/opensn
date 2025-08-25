@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1adae1000bdcc434a96309aca679ae7269:
+
+Function opensn::CopyParallelVectorToVec
+========================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CopyParallelVectorToVec(const ParallelVector&, Vec)
+   :project: opensn

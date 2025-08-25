@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o:
+
+Struct AAH_FLUDSCommonData::INCOMING_FACE_INFO
+==============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aah_fluds_common_data.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_a_a_h___f_l_u_d_s_common_data`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAH_FLUDSCommonData::INCOMING_FACE_INFO
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

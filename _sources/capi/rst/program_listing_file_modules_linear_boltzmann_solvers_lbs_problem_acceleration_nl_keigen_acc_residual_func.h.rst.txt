@@ -1,0 +1,23 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_residual_func.h:
+
+Program Listing for File nl_keigen_acc_residual_func.h
+======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_residual_func.h>` (``modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_residual_func.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #include <petscsnes.h>
+   
+   namespace opensn
+   {
+   
+   PetscErrorCode NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx);
+   
+   } // namespace opensn

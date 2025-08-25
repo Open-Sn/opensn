@@ -1,0 +1,54 @@
+
+.. _file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h:
+
+File pi_keigen_solver.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_solvers>` (``modules/linear_boltzmann_solvers/solvers``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h``)
+----------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`)
+
+- ``modules/solver.h`` (:ref:`file_modules_solver.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_power_iteration_k_eigen_solver`
+

@@ -1,0 +1,29 @@
+.. _dir_framework_math_quadratures_angular:
+
+
+Directory angular
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures>` (``framework/math/quadratures``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/quadratures/angular``
+
+Subdirectories
+--------------
+
+- :ref:`dir_framework_math_quadratures_angular_legendre_poly`
+
+
+Files
+-----
+
+- :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+- :ref:`file_framework_math_quadratures_angular_curvilinear_product_quadrature.h`
+- :ref:`file_framework_math_quadratures_angular_product_quadrature.h`
+- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+

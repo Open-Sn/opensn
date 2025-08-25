@@ -1,0 +1,81 @@
+
+.. _file_framework_math_quadratures_angular_angular_quadrature.h:
+
+File angular_quadrature.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/angular_quadrature.h``)
+------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_angular_quadrature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_quadratures_angular_product_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices`
+
+- :ref:`exhale_struct_structopensn_1_1_quadrature_point_phi_theta`
+
+- :ref:`exhale_class_classopensn_1_1_angular_quadrature`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1af16122b4c89e5fd31115feebfe4c0239`
+

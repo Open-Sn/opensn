@@ -1,0 +1,76 @@
+
+.. _file_framework_mesh_mesh_continuum_mesh_continuum.h:
+
+File mesh_continuum.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_mesh_continuum>` (``framework/mesh/mesh_continuum``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/mesh_continuum/mesh_continuum.h``)
+---------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_mesh_continuum_mesh_continuum.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_volume_finite_volume_mapping.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_mesh_continuum`
+

@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File raytracer.h &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File raytracer.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-raytracer-h">
+<span id="program-listing-file-framework-mesh-raytrace-raytracer-h"></span><h1>Program Listing for File raytracer.h<a class="headerlink" href="#program-listing-for-file-raytracer-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_mesh_raytrace_raytracer.h.html#file-framework-mesh-raytrace-raytracer-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/mesh/raytrace/raytracer.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/cell/cell.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
+
+<span class="c1">/// Data structure to hold output info from the raytracer.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">RayTracerOutputInformation</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">distance_to_surface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">pos_f</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">destination_face_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">destination_face_neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">particle_lost</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">lost_particle_info</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Raytracer object.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RayTracer</span>
+<span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reference_grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_nudge_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-8</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">backward_tolerance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">extension_distance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e5</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_concavity_checks_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">RayTracer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_sizes</span><span class="p">,</span>
+<span class="w">                     </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_concavity_checks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">reference_grid_</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span>
+<span class="w">      </span><span class="n">cell_sizes_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">cell_sizes</span><span class="p">)),</span>
+<span class="w">      </span><span class="n">perform_concavity_checks_</span><span class="p">(</span><span class="n">perform_concavity_checks</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Grid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTolerancesFromCellSize</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">cell_size</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">epsilon_nudge_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cell_size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0e-2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">backward_tolerance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cell_size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0e-10</span><span class="p">;</span>
+<span class="w">    </span><span class="n">extension_distance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cell_size</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Traces a ray with an initial position either within the cell or on the cell surface, and with a</span>
+<span class="cm">   * direction vector pointing inward toward the cell. If the ray-trace fails the particle will be</span>
+<span class="cm">   * marked as lost.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">RayTracerOutputInformation</span>
+<span class="w">  </span><span class="n">TraceRay</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos_i</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega_i</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">function_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Traces a ray with an initial position, presumed to be outside the cell, to an incident face.</span>
+<span class="w">  </span><span class="n">RayTracerOutputInformation</span>
+<span class="w">  </span><span class="nf">TraceIncidentRay</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos_i</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega_i</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Performs raytracing within a 1D-slab.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">TraceSlab</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos_i</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega_i</span><span class="p">,</span>
+<span class="w">                 </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_found</span><span class="p">,</span>
+<span class="w">                 </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">backward_tolerance_hit</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">RayTracerOutputInformation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">oi</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Performs raytracing within a 2D Polygon.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TracePolygon</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos_i</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega_i</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_found</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">backward_tolerance_hit</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">RayTracerOutputInformation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">oi</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Performs raytracing within a 3D Polyhedron.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TracePolyhedron</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos_i</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega_i</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_found</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">backward_tolerance_hit</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">RayTracerOutputInformation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">oi</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Computes the intersection of a line with a plane.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The first step of this algorithm is to compute v0 and v1. These</span>
+<span class="cm"> * are vectors from the plane&#39;s reference point to each of the line-points,</span>
+<span class="cm"> * respectively.</span>
+<span class="cm"> * We then take the dot-products of these</span>
+<span class="cm"> * vectors with the plane normal.</span>
+<span class="cm"> * We then say that the vectors have a positive sense if the dot-product</span>
+<span class="cm"> * is positive and a negative sense if the dot-product is negative.</span>
+<span class="cm"> * If the senses are not equal then the line intersects the plane.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Since the face normal is a normalized vector the dot-product of v0 or v1</span>
+<span class="cm"> * will give the projection of the relevant vector along the normal to the</span>
+<span class="cm"> * plane. We can use this projection to compute a weight associated with</span>
+<span class="cm"> * each vector. This also then allows us to compute the intersection point.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param plane_normal The normal associated with the plane</span>
+<span class="cm"> * \param plane_point The reference point for the plane</span>
+<span class="cm"> * \param line_point_0 The line&#39;s initial point</span>
+<span class="cm"> * \param line_point_1 The line&#39;s destination point</span>
+<span class="cm"> * \param intersection_point The point to be populated with the intersection</span>
+<span class="cm"> *                           point</span>
+<span class="cm"> * \param weights The weights associated with this intersection</span>
+<span class="cm"> *</span>
+<span class="cm"> * \return Returns true if the line intersects the plane and false otherwise.</span>
+<span class="cm"> */</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">CheckPlaneLineIntersect</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">plane_normal</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">plane_point</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point_0</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point_1</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_point</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Given a strip defined by two points (v0,v1) and a normal, n, (meaning infinite in the direction</span>
+<span class="cm"> * defined by (v1-v0).cross(n), this function determines if a line, defined from p0 to p1,</span>
+<span class="cm"> * intersects it. If it does then `true` is returned and `intersection_point` contains the point of</span>
+<span class="cm"> * intersection. If it does not then `false` is returned and `intersection_point` remains unchanged.</span>
+<span class="cm"> */</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">CheckLineIntersectStrip</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">strip_point0</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">strip_point1</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">strip_normal</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point0</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point1</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_point</span><span class="p">,</span>
+<span class="w">                             </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">distance_to_intersection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="c1">/// Given a triangle defined by three points, computes whether a line intersects this triangle.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">CheckLineIntersectTriangle2</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tri_point0</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tri_point1</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tri_point2</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_posi</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_dir</span><span class="p">,</span>
+<span class="w">                                 </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_point</span><span class="p">,</span>
+<span class="w">                                 </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">distance_to_intersection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="c1">/// Check whether a point lies in a triangle.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">CheckPointInTriangle</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This functions checks the intersection of a plane with a tetrahedron.</span>
+<span class="cm"> * The equation of a plane is</span>
+<span class="cm"> *      nx(x-x0) + ny(y-y0) + nz(z-z0) = 0</span>
+<span class="cm"> * Where the plane normal is (nx,ny,nz) and the plane point is (x0,y0,z0).</span>
+<span class="cm"> * If we form a dot product between the normal and a vector (x-x0,y-y0,z-z0) then sign of the result</span>
+<span class="cm"> * gives the sense to the surface. Therefore, if we encounter differing senses then the plane is</span>
+<span class="cm"> * indeed intersecting.</span>
+<span class="cm"> */</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">CheckPlaneTetIntersect</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">plane_normal</span><span class="p">,</span>
+<span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">plane_point</span><span class="p">,</span>
+<span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">tet_points</span><span class="p">);</span>
+
+<span class="c1">/// Populates segment lengths along a ray. Sorted along the direction.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PopulateRaySegmentLengths</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point0</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_point1</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">segment_lengths</span><span class="p">);</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

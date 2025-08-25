@@ -1,0 +1,56 @@
+
+.. _file_framework_field_functions_interpolation_ffinter_volume.h:
+
+File ffinter_volume.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_field_functions_interpolation>` (``framework/field_functions/interpolation``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/field_functions/interpolation/ffinter_volume.h``)
+-------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_field_functions_interpolation_ffinter_volume.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/field_functions/interpolation/ffinterpolation.h`` (:ref:`file_framework_field_functions_interpolation_ffinterpolation.h`)
+
+- ``framework/math/functions/function.h`` (:ref:`file_framework_math_functions_function.h`)
+
+- ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_field_function_interpolation_volume`
+

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813:
+
+Template Function opensn::SwapRows
+==================================
+
+- Defined in :ref:`file_framework_data_types_dense_matrix.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SwapRows(DenseMatrix<TYPE>&, size_t, size_t)
+   :project: opensn

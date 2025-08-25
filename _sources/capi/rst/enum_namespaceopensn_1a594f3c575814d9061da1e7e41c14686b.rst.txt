@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a594f3c575814d9061da1e7e41c14686b:
+
+Enum InputParameterTag
+======================
+
+- Defined in :ref:`file_framework_parameters_input_parameters.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::InputParameterTag
+   :project: opensn

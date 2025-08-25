@@ -1,0 +1,64 @@
+
+.. _file_framework_math_linear_solver_linear_solver.h:
+
+File linear_solver.h
+====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_linear_solver>` (``framework/math/linear_solver``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/linear_solver/linear_solver.h``)
+-------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_linear_solver_linear_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/math/linear_solver/linear_solver_context.h`` (:ref:`file_framework_math_linear_solver_linear_solver_context.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_math_linear_solver_linear_eigen_solver.h`
+
+- :ref:`file_framework_math_linear_solver_linear_system_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_linear_solver`
+

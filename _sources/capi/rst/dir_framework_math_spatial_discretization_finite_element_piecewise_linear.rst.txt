@@ -1,0 +1,23 @@
+.. _dir_framework_math_spatial_discretization_finite_element_piecewise_linear:
+
+
+Directory piecewise_linear
+==========================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_spatial_discretization_finite_element>` (``framework/math/spatial_discretization/finite_element``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/math/spatial_discretization/finite_element/piecewise_linear``
+
+
+Files
+-----
+
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_base.h`
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_continuous.h`
+- :ref:`file_framework_math_spatial_discretization_finite_element_piecewise_linear_piecewise_linear_discontinuous.h`
+
+

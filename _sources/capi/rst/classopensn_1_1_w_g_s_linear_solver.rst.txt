@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_w_g_s_linear_solver:
+
+Class WGSLinearSolver
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::PETScLinearSolver`` (:ref:`exhale_class_classopensn_1_1_p_e_t_sc_linear_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::WGSLinearSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

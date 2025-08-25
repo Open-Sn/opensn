@@ -1,0 +1,45 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_solver.h:
+
+Program Listing for File nonlinear_keigen_ags_solver.h
+======================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_solver.h>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_context.h"
+   #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
+   
+   namespace opensn
+   {
+   
+   class NLKEigenvalueAGSSolver : public PETScNonLinearSolver
+   {
+   public:
+     explicit NLKEigenvalueAGSSolver(std::shared_ptr<NLKEigenAGSContext> nlk_ags_context_ptr)
+       : PETScNonLinearSolver(nlk_ags_context_ptr)
+     {
+     }
+   
+     ~NLKEigenvalueAGSSolver() override = default;
+   
+   protected:
+     void PreSetupCallback() override;
+     void SetMonitor() override;
+     void SetSystemSize() override;
+     void SetSystem() override;
+     void SetFunction() override;
+     void SetJacobian() override;
+     void SetInitialGuess() override;
+     void PostSolveCallback() override;
+   };
+   
+   } // namespace opensn

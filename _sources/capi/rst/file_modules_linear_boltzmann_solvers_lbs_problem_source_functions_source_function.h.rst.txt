@@ -1,0 +1,64 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h:
+
+File source_function.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions>` (``modules/linear_boltzmann_solvers/lbs_problem/source_functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h``)
+------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+- ``utility``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_transient_source_function.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_source_function`
+

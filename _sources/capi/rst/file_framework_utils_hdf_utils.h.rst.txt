@@ -1,0 +1,104 @@
+
+.. _file_framework_utils_hdf_utils.h:
+
+File hdf_utils.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/hdf_utils.h``)
+--------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_hdf_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``hdf5.h``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a32bddde67f81b8ac1e6732dd345b87f9`
+
+- :ref:`exhale_function_namespaceopensn_1adb2adfc12bb8bdfb4671e726765028e9`
+
+- :ref:`exhale_function_namespaceopensn_1a96d7aad3feb66dbbd352a829622c46f3`
+
+- :ref:`exhale_function_namespaceopensn_1abef6a52dd094bf8c3e88dd0c516c3189`
+
+- :ref:`exhale_function_namespaceopensn_1a1dcad894d9e8ec4172be9dd104dac9a9`
+
+- :ref:`exhale_function_namespaceopensn_1a3ad694514a5c91931b511aaa122fa272`
+
+- :ref:`exhale_function_namespaceopensn_1a3771ae24eadd6ba62815aae5bf093c4b`
+
+- :ref:`exhale_function_namespaceopensn_1ae8ab2cc770fefd8956264662c584d676`
+
+- :ref:`exhale_function_namespaceopensn_1a643e69b425469e5db00559bfe912136a`
+
+- :ref:`exhale_function_namespaceopensn_1a2939e4bad966a253c7564a75c7a9c4a1`
+
+- :ref:`exhale_function_namespaceopensn_1ac5cb2e7ee1d53a3c37a3680bf75ea107`
+
+- :ref:`exhale_function_namespaceopensn_1a4270011890b6e5f516cee34496c9223c`
+
+- :ref:`exhale_function_namespaceopensn_1ac70029c434a6f8be23fe493156b9c4df`
+
+- :ref:`exhale_function_namespaceopensn_1a6db42998ad5ef630aa6ba39e255729e6`
+
+- :ref:`exhale_function_namespaceopensn_1ac1ae8668c67f5195808fa40058771d6d`
+
+- :ref:`exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155`
+
+- :ref:`exhale_function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38`
+
+- :ref:`exhale_function_namespaceopensn_1a1dca7f0c5b97bf1a9d36772991bf1dcb`
+
+- :ref:`exhale_function_namespaceopensn_1a71ea7848a0b61bd6f8c695503f6955ed`
+
+- :ref:`exhale_function_namespaceopensn_1aad7fb496a0c5cb480dcaa0cedd36e484`
+
+- :ref:`exhale_function_namespaceopensn_1ac23ecd54e0cc0c0694dfa47a6b154e8d`
+
+- :ref:`exhale_function_namespaceopensn_1afa1fa5dc197399e0d4d1fb424e89c036`
+
+- :ref:`exhale_function_namespaceopensn_1a3f84090a0c4d828919432242e33fe605`
+
+- :ref:`exhale_function_namespaceopensn_1acb06a43468c654577db6d1d10a2fea54`
+
+- :ref:`exhale_function_namespaceopensn_1a88407f2ba56e0cfaa2207937ef84a206`
+

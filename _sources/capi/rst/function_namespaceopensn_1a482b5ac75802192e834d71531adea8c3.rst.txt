@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3:
+
+Function opensn::operator|(SourceFlags, SourceFlags)
+====================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::operator|(SourceFlags, SourceFlags)
+   :project: opensn

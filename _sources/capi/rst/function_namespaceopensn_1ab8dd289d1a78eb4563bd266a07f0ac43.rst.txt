@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab8dd289d1a78eb4563bd266a07f0ac43:
+
+Function opensn::BuildLocationExtents
+=====================================
+
+- Defined in :ref:`file_framework_mpi_mpi_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildLocationExtents(uint64_t, const mpi::Communicator&)
+   :project: opensn

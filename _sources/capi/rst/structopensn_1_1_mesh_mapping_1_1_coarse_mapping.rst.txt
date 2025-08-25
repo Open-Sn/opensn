@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_mesh_mapping_1_1_coarse_mapping:
+
+Struct MeshMapping::CoarseMapping
+=================================
+
+- Defined in :ref:`file_framework_mesh_mesh_mapping_mesh_mapping.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_mesh_mapping`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::MeshMapping::CoarseMapping
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

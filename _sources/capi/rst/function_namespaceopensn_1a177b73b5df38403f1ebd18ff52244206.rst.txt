@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206:
+
+Function opensn::AssocLegendre
+==============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_legendre_poly_legendrepoly.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::AssocLegendre(unsigned int, int, double)
+   :project: opensn

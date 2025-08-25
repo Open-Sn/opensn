@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1af267ae634279759f1b058fdb17b8db75:
+
+Enum VecOpType
+==============
+
+- Defined in :ref:`file_framework_data_types_parallel_vector_parallel_vector.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::VecOpType
+   :project: opensn

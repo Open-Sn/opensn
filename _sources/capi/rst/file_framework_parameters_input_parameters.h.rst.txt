@@ -1,0 +1,105 @@
+
+.. _file_framework_parameters_input_parameters.h:
+
+File input_parameters.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_parameters>` (``framework/parameters``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/parameters/input_parameters.h``)
+--------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_parameters_input_parameters.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/allowable_range.h`` (:ref:`file_framework_data_types_allowable_range.h`)
+
+- ``framework/parameters/parameter_block.h`` (:ref:`file_framework_parameters_parameter_block.h`)
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_field_functions_field_function.h`
+
+- :ref:`file_framework_field_functions_field_function_interface.h`
+
+- :ref:`file_framework_graphs_graph_partitioner.h`
+
+- :ref:`file_framework_graphs_petsc_graph_partitioner.h`
+
+- :ref:`file_framework_math_functions_function_dimA_to_dimB.h`
+
+- :ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h`
+
+- :ref:`file_framework_math_quadratures_gauss_quadrature.h`
+
+- :ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`
+
+- :ref:`file_framework_mesh_logical_volume_logical_volume.h`
+
+- :ref:`file_framework_mesh_logical_volume_logical_volume_interface.h`
+
+- :ref:`file_framework_mesh_mesh_generator_mesh_generator.h`
+
+- :ref:`file_framework_mesh_surface_mesh_surface_mesh.h`
+
+- :ref:`file_framework_object_factory.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source_volumetric_source.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+
+- :ref:`file_modules_problem.h`
+
+- :ref:`file_modules_solver.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_input_parameters`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a594f3c575814d9061da1e7e41c14686b`
+
