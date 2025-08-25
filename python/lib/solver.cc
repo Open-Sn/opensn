@@ -554,12 +554,13 @@ WrapLBS(py::module& slv)
       {
         return DiscreteOrdinatesCurvilinearProblem::Create(kwargs_to_param_block(params));
       }
-        ),
+    ),
     R"(
-    .. warning::
-       DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
-
     Construct a discrete ordinates problem for curvilinear geometry.
+
+    Warnings
+    --------
+       DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
 
     Parameters
     ----------
@@ -742,9 +743,9 @@ void
 WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 {
   // clang-format off
-  // DiscreteOrdinatesKEigenAcceleration base
+  // discrete ordinates k-eigen acceleration base
   auto acceleration = py::class_<DiscreteOrdinatesKEigenAcceleration,
-                                     std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
+                                 std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     slv,
     "DiscreteOrdinatesKEigenAcceleration",
     R"(
@@ -753,7 +754,6 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     Wrapper of :cpp:class:`opensn::DiscreteOrdinatesKEigenAcceleration`.
     )"
   );
-
   // SCDSA acceleration
   auto scdsa_acceleration = py::class_<SCDSAAcceleration,
                                        std::shared_ptr<SCDSAAcceleration>,
@@ -798,7 +798,6 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'pwlc' : Piecewise Linear Continuous
     )"
   );
-
   // SMM acceleration
   auto smm_acceleration = py::class_<SMMAcceleration,
                                      std::shared_ptr<SMMAcceleration>,
@@ -820,7 +819,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     ),
     R"(
     SMM acceleration for the power iteration k-eigenvalue solver.
-    .. warning::
+
+    Warnings
+    --------
        SMM acceleration is **experimental** and should be used with caution!
        SMM accleration only supports problems with isotropic scattering.
 
@@ -859,8 +860,8 @@ py_solver(py::module& pyopensn)
   WrapLBS(slv);
   WrapSteadyState(slv);
   WrapNLKEigen(slv);
-  WrapPIteration(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
+  WrapPIteration(slv);
 }
 
 } // namespace opensn
