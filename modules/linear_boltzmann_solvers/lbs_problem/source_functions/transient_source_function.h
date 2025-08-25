@@ -10,7 +10,7 @@ namespace opensn
 {
 
 /**
- * A transient source function needs to adjust the AddDelayedFission routine to properly fit with
+ * A transient source function needs to adjust the DelayedFission routine to properly fit with
  * the current timestepping method and timestep.
  */
 class TransientSourceFunction : public SourceFunction
@@ -26,10 +26,10 @@ public:
    */
   TransientSourceFunction(const LBSProblem& lbs_problem, double& ref_dt, SteppingMethod& method);
 
-  double AddDelayedFission(const PrecursorList& precursors,
-                           const double& rho,
-                           const std::vector<double>& nu_delayed_sigma_f,
-                           const double* phi) const override;
+  double DelayedFission(const PrecursorList& precursors,
+                        const double& rho,
+                        const std::vector<double>& nu_delayed_sigma_f,
+                        const double* phi) const override;
 };
 
 } // namespace opensn

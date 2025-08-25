@@ -14,10 +14,10 @@ TransientSourceFunction::TransientSourceFunction(const LBSProblem& lbs_problem,
 }
 
 double
-TransientSourceFunction::AddDelayedFission(const PrecursorList& precursors,
-                                           const double& rho,
-                                           const std::vector<double>& nu_delayed_sigma_f,
-                                           const double* phi) const
+TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
+                                        const double& rho,
+                                        const std::vector<double>& nu_delayed_sigma_f,
+                                        const double* phi) const
 {
   const auto& BackwardEuler = SteppingMethod::IMPLICIT_EULER;
   const auto& CrankNicolson = SteppingMethod::CRANK_NICOLSON;

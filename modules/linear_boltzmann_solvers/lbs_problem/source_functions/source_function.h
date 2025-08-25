@@ -62,14 +62,14 @@ public:
                           const std::vector<double>& phi,
                           SourceFlags source_flags);
 
-  virtual double AddSourceMoments() const;
+  virtual double FixedSourceMoments() const;
 
   using PrecursorList = std::vector<MultiGroupXS::Precursor>;
-  /// Adds delayed particle precursor sources.
-  virtual double AddDelayedFission(const PrecursorList& precursors,
-                                   const double& rho,
-                                   const std::vector<double>& nu_delayed_sigma_f,
-                                   const double* phi) const;
+  /// Compute delayed particle precursor sources.
+  virtual double DelayedFission(const PrecursorList& precursors,
+                                const double& rho,
+                                const std::vector<double>& nu_delayed_sigma_f,
+                                const double* phi) const;
 
   virtual void AddAdditionalSources(const LBSGroupset& groupset,
                                     std::vector<double>& q,
