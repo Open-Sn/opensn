@@ -46,6 +46,8 @@ __pycache__
 doc/source/pyapi/generated/*
 !doc/source/pyapi/generated/.gitkeep
 doc/build/
+doc/source/capi/xml
+doc/source/capi/rst
 
 #visual studio code files
 .vscode/

@@ -81,6 +81,12 @@ dl.py.property {
   display: block !important;
 }
 
+/* text before a list */
+.rst-content dl.simple > dt {
+    font-weight: 400 !important;
+    margin-bottom: 12px;
+}
+
 /* pybind11 overloaded function */
 .py .method > dd > ol.arabic > li > p {
   width: fit-content;
