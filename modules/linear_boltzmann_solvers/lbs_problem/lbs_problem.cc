@@ -716,10 +716,6 @@ LBSProblem::SetOptions(const InputParameters& input)
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
-
-      // If a discretization exists, initialize the boundaries.
-      if (discretization_)
-        InitializeBoundaries();
     }
 
     else if (spec.GetName() == "point_sources")
