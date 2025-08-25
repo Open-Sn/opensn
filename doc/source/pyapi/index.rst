@@ -359,6 +359,11 @@ Discrete ordinates k-eigen acceleration
 Settings
 --------
 
+.. important::
+
+   Functions in this section are only available to the module mode. For the
+   console mode, refer to ``opensn --help`` for more information.
+
 Logs
 ^^^^
 

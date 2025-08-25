@@ -35,10 +35,31 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinxcontrib.bibtex",
     "sphinx_design",
-    "nbsphinx"
+    "nbsphinx",
+    "breathe",
+    "exhale",
 ]
 
 nbsphinx_execute = "never"
+
+breathe_projects = {
+    "opensn": str(Path(__file__).resolve().parent / "capi" / "xml")
+}
+breathe_default_project = "opensn"
+
+exhale_args = {
+    "containmentFolder": str(Path(__file__).resolve().parent / "capi" / "rst"),
+    "rootFileName": "index.rst",
+    "rootFileTitle": "C++ API",
+    "doxygenStripFromPath": str(Path(__file__).resolve().parent.parent.parent),
+    "exhaleExecutesDoxygen": False,
+    "createTreeView": True,
+    "fullToctreeMaxDepth": 1,
+    "unabridgedOrphanKinds": {"dir", "file", "page", "class", "enum", "namespace"},
+    "fullApiSubSectionTitle": "Extras"
+}
+
+cpp_id_attributes = ['__inline_host_dev__']
 
 # -- Options for BibTeX ------------------------------------------------------
 
