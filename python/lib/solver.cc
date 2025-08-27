@@ -418,6 +418,67 @@ WrapLBS(py::module& slv)
     )",
     py::arg("file_base")
   );
+  lbs_problem.def(
+    "ClearPointSources",
+    &LBSProblem::ClearPointSources,
+    R"(
+    Clears all the point sources from the solver.
+    )"
+  );
+  lbs_problem.def(
+    "AddPointSource",
+    &LBSProblem::AddPointSource,
+    R"(
+    Adds a point source to the solver.
+    )",
+    py::arg("point_source")
+  );
+  lbs_problem.def(
+    "ClearVolumetricSources",
+    &LBSProblem::ClearVolumetricSources,
+    R"(
+    Clears all the volumetric sources from the solver.
+    )"
+  );
+  lbs_problem.def(
+    "AddVolumetricSource",
+    &LBSProblem::AddVolumetricSource,
+    R"(
+    Adds a volumetric source to the solver.
+    )",
+    py::arg("volumetric_source")
+  );
+  lbs_problem.def(
+    "ClearBoundaries",
+    &LBSProblem::ClearBoundaries,
+    R"(
+    Clears all the boundary conditions from the solver.
+    )"
+  );
+  lbs_problem.def(
+    "SetBoundaryOptions",
+    [](LBSProblem& self, py::kwargs& params)
+    {
+      InputParameters input = LBSProblem::GetBoundaryOptionsBlock();
+      input.AssignParameters(kwargs_to_param_block(params));
+      self.SetBoundaryOptions(input);
+    },
+    R"(
+    Set boundary condition.
+
+    Parameters
+    ----------
+    name: str
+        Boundary name that identifies the specific boundary. Must be one of 'xmin', 'xmax', 'ymin',
+        'ymax', 'zmin', or 'zmax'.
+    type: str
+        Boundary type specification. Must be one of 'vacuum', 'isotropic', or 'reflecting'.
+    group_strength: List[float], default=[]
+        Required only if `type` is 'isotropic'. An array of isotropic strength per group.
+    function_name: str, default=''
+        Text name of the function to be called for this boundary condition.
+    )"
+  );
 
   // discrete ordinate solver
   auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,
