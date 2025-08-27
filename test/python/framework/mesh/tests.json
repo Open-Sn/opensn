@@ -9,6 +9,27 @@
     ]
   },
   {
+    "file" : "read_openfoam_meshes.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 1000"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 231"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 1"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 100"
+      }
+    ]
+  },
+  {
     "file" : "mat_ids_from_function.py",
     "num_procs" : 1,
     "checks" : [
