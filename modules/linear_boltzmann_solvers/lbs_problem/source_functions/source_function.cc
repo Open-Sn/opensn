@@ -72,7 +72,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     for (int i = 0; i < num_nodes; ++i)
     {
       // Loop over moments
-      for (int m = 0; m < static_cast<int>(num_moments); ++m)
+      for (size_t m = 0; m < num_moments; ++m)
       {
         const auto ell = m_to_ell_em_map[m].ell;
         const auto uk_map = transport_view.MapDOF(i, m, 0);
@@ -93,7 +93,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
           // Apply fixed sources
           if (apply_fixed_src_)
-            rhs += this->AddSourceMoments();
+            rhs += FixedSourceMoments();
 
           // Apply scattering sources
           if (ell < S.size())
@@ -130,7 +130,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 rhs += rho * F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += this->AddDelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
+              rhs += DelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
           }
 
           // Add to destination vector
@@ -145,16 +145,16 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 }
 
 double
-SourceFunction::AddSourceMoments() const
+SourceFunction::FixedSourceMoments() const
 {
   return fixed_src_moments_[g_];
 }
 
 double
-SourceFunction::AddDelayedFission(const PrecursorList& precursors,
-                                  const double& rho,
-                                  const std::vector<double>& nu_delayed_sigma_f,
-                                  const double* phi) const
+SourceFunction::DelayedFission(const PrecursorList& precursors,
+                               const double& rho,
+                               const std::vector<double>& nu_delayed_sigma_f,
+                               const double* phi) const
 {
   double value = 0.0;
   if (apply_ags_fission_src_)
@@ -176,7 +176,7 @@ SourceFunction::AddDelayedFission(const PrecursorList& precursors,
 void
 SourceFunction::AddPointSources(const LBSGroupset& groupset,
                                 std::vector<double>& q,
-                                const std::vector<double>&,
+                                const std::vector<double>& /*unused*/,
                                 const SourceFlags source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
@@ -193,16 +193,16 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
     {
       for (const auto& subscriber : point_source->GetSubscribers())
       {
-        auto& transport_view = transport_views[subscriber.cell_local_id];
+        const auto& transport_view = transport_views[subscriber.cell_local_id];
 
         const auto& strength = point_source->GetStrength();
         const auto& node_weights = subscriber.node_weights;
         const auto volume_weight = subscriber.volume_weight;
 
-        for (size_t i = 0; i < transport_view.GetNumNodes(); ++i)
+        for (int i = 0; i < transport_view.GetNumNodes(); ++i)
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
-          for (size_t g = gs_i; g <= gs_f; ++g)
+          for (int g = gs_i; g <= gs_f; ++g)
             q[uk_map + g] += strength[g] * node_weights(i) * volume_weight;
         } // for node i
       } // for subscriber
@@ -246,7 +246,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
-          for (size_t g = gs_i; g <= gs_f; ++g)
+          for (int g = gs_i; g <= gs_f; ++g)
             q[dof_map + g] += src[g];
         } // for node i
       } // for subscriber

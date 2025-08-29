@@ -21,7 +21,7 @@ public:
   ~PyEnv();
 
   /// Default environement.
-  static PyEnv* p_default_env;
+  static std::unique_ptr<PyEnv> p_default_env;
 };
 
 } // namespace opensn

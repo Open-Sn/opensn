@@ -16,11 +16,11 @@ class NonLinearSolver
 public:
   explicit NonLinearSolver(std::string solver_name,
                            std::shared_ptr<NonLinearSolverContext> context_ptr)
-    : solver_name_(solver_name), context_ptr_(context_ptr)
+    : solver_name_(std::move(solver_name)), context_ptr_(context_ptr)
   {
   }
 
-  virtual ~NonLinearSolver() {}
+  virtual ~NonLinearSolver() = default;
 
   std::shared_ptr<NonLinearSolverContext> GetContext() { return context_ptr_; }
 

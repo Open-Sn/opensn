@@ -38,7 +38,7 @@ public:
       std::copy(input.second.begin(), input.second.end(), upwind_dof_mapping.begin());
     }
 
-    ~INCOMING_FACE_INFO() {}
+    ~INCOMING_FACE_INFO() = default;
   }; // TODO: Make common
 public:
   explicit AAH_FLUDSCommonData(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,

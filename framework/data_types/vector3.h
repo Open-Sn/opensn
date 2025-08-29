@@ -34,7 +34,7 @@ struct Vector3
   /// Constructor where \f$ \vec{x}=\{a,b,c\} \f$.
   Vector3(std::initializer_list<double> list)
   {
-    auto it = list.begin();
+    const auto* it = list.begin();
     if (list.size() > 0)
       x = *it++;
     if (list.size() > 1)

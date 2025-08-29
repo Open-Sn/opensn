@@ -29,14 +29,11 @@ public:
                      const std::vector<UnitCellMatrices>& unit_cell_matrices,
                      bool suppress_bcs,
                      bool verbose);
-  virtual ~DiffusionMIPSolver() = default;
+  ~DiffusionMIPSolver() override = default;
 
-  inline void SetSourceFunction(const ScalarSpatialFunction& function)
-  {
-    source_function_ = function;
-  }
+  void SetSourceFunction(const ScalarSpatialFunction& function) { source_function_ = function; }
 
-  inline void SetReferenceSolutionFunction(const ScalarSpatialFunction& function)
+  void SetReferenceSolutionFunction(const ScalarSpatialFunction& function)
   {
     ref_solution_function_ = function;
   }

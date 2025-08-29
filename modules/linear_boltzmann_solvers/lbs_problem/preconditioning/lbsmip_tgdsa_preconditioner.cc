@@ -7,8 +7,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 
 namespace opensn
 {
@@ -17,9 +15,9 @@ int
 MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context;
-  PCShellGetContext(pc, &context);
+  PCShellGetContext(pc, static_cast<void*>(&context));
 
-  auto gs_context_ptr = (WGSContext*)(context);
+  auto* gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
   DiscreteOrdinatesProblem& solver = gs_context_ptr->do_problem;

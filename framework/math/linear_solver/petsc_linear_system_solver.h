@@ -28,7 +28,7 @@ public:
 
   PETScLinearSolver(IterativeMethod method, std::shared_ptr<LinearSystemContext> context_ptr);
 
-  virtual ~PETScLinearSolver();
+  ~PETScLinearSolver() override;
 
   ToleranceOptions& GetToleranceOptions() { return tolerance_options; }
 
@@ -40,10 +40,10 @@ public:
   bool GetKSPSolveSuppressionFlag() const { return suppress_kspsolve_; }
 
   /// Set up the linaer solver
-  virtual void Setup();
+  void Setup() override;
 
   /// Solve the system
-  virtual void Solve();
+  void Solve() override;
 
 protected:
   bool IsSystemSet() const { return system_set_; }

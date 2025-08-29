@@ -17,9 +17,9 @@ int
 WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context;
-  PCShellGetContext(pc, &context);
+  PCShellGetContext(pc, static_cast<void*>(&context));
 
-  auto gs_context_ptr = (WGSContext*)(context);
+  auto* gs_context_ptr = (WGSContext*)(context);
 
   // Shorten some names
   DiscreteOrdinatesProblem& do_problem = gs_context_ptr->do_problem;

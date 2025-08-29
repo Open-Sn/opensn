@@ -212,10 +212,10 @@ struct GhostVecLocalRaw
   double* x_localized_raw = nullptr;
 
   /// Returns a copy of the value at the specified index.
-  double operator[](int index) { return x_localized_raw[index]; }
+  double operator[](int index) const { return x_localized_raw[index]; }
 
   /// Returns a reference of the value at the specified index.
-  double& operator()(int index) { return x_localized_raw[index]; }
+  double& operator()(int index) const { return x_localized_raw[index]; }
 };
 
 /// Gets a local raw view of a ghost vector.

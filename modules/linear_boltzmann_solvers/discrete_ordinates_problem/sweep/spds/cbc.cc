@@ -13,7 +13,7 @@ namespace opensn
 {
 
 CBC_SPDS::CBC_SPDS(const Vector3& omega,
-                   const std::shared_ptr<MeshContinuum> grid,
+                   const std::shared_ptr<MeshContinuum>& grid,
                    bool allow_cycles)
   : SPDS(omega, grid)
 {
@@ -41,8 +41,8 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   Graph local_DG(num_loc_cells);
 
   // Create graph edges
-  for (int c = 0; c < num_loc_cells; ++c)
-    for (auto& successor : cell_successors[c])
+  for (size_t c = 0; c < num_loc_cells; ++c)
+    for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_DG);
 
   if (allow_cycles)
@@ -54,7 +54,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
 
   // Generate topological sorting
   spls_.clear();
-  boost::topological_sort(local_DG, std::back_inserter(spls_));
+  boost::topological_sort(local_DG, std::back_inserter(spls_)); // NOLINT
   std::reverse(spls_.begin(), spls_.end());
   if (spls_.empty())
   {

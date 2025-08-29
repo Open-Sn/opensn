@@ -29,6 +29,6 @@ struct UnitCellMatrices
 UnitCellMatrices
 ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
                          const Cell& cell,
-                         const CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);
+                         CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);
 
 } // namespace opensn

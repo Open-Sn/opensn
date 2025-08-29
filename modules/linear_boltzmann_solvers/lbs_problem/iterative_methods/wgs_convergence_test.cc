@@ -15,13 +15,14 @@ namespace opensn
 
 /**Customized convergence test.*/
 PetscErrorCode
-GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*)
+GSConvergenceTest(
+  KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* /*unused*/)
 {
   CALI_CXX_MARK_FUNCTION;
 
   // Get data context
   WGSContext* context;
-  KSPGetApplicationContext(ksp, &context);
+  KSPGetApplicationContext(ksp, static_cast<void*>(&context));
 
   // Set rhs norm
   double residual_scale = 1.0;

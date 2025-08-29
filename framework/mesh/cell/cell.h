@@ -82,7 +82,7 @@ public:
 
   /// A list of the vertices
   std::vector<uint64_t> vertex_ids;
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, const unsigned int f);
+  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, unsigned int f);
 };
 
 /// Generic mesh cell object

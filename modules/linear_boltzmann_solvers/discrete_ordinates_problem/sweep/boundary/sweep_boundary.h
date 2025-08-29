@@ -62,7 +62,8 @@ public:
 
   virtual bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) { return true; }
 
-  virtual void Setup(const std::shared_ptr<MeshContinuum> grid, const AngularQuadrature& quadrature)
+  virtual void Setup(const std::shared_ptr<MeshContinuum>& grid,
+                     const AngularQuadrature& quadrature)
   {
   }
 

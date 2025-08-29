@@ -192,9 +192,10 @@ SPDS::SCCAlgorithm(Vertex u,
 std::vector<std::vector<Vertex>>
 SPDS::FindSCCs(Graph& g)
 {
+  using VerticesSizeType = boost::graph_traits<Graph>::vertices_size_type;
   std::stack<Vertex> stack;
   int time = 0; // Global timer for discovery times
-  int num_vertices = boost::num_vertices(g);
+  VerticesSizeType num_vertices = boost::num_vertices(g);
   std::vector<int> disc(num_vertices, -1);         // Discovery time of each vertex
   std::vector<int> low(num_vertices, -1);          // Lowest discovery time from each vertex
   std::vector<bool> on_stack(num_vertices, false); // Whether a vertex is currently in the stack
@@ -232,7 +233,7 @@ SPDS::RemoveCyclicDependencies(Graph& g)
         std::pair<OutEdgeIterator, OutEdgeIterator> edge_range = boost::out_edges(u, g);
         for (OutEdgeIterator it = edge_range.first; it != edge_range.second; ++it)
           if (boost::target(*it, g) == v)
-            tmp_edges_to_remove.push_back(std::make_pair(u, v));
+            tmp_edges_to_remove.emplace_back(u, v);
       }
       else if (scc.size() == 3) // Tri-connected
       {
@@ -247,7 +248,7 @@ SPDS::RemoveCyclicDependencies(Graph& g)
             {
               if (v == w)
               {
-                tmp_edges_to_remove.push_back(std::make_pair(u, v));
+                tmp_edges_to_remove.emplace_back(u, v);
                 found = true;
                 break;
               }

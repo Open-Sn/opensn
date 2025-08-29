@@ -21,7 +21,7 @@ class DiscreteOrdinatesProblem;
 class AAHSweepChunk : public SweepChunk
 {
 public:
-  AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
+  AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
                 const SpatialDiscretization& discretization,
                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
                 std::vector<CellLBSView>& cell_transport_views,
@@ -39,7 +39,7 @@ public:
                 size_t max_angleset_size,
                 bool use_gpus);
 
-  ~AAHSweepChunk();
+  ~AAHSweepChunk() override;
 
   void Sweep(AngleSet& angle_set) override;
 

@@ -78,7 +78,7 @@ protected:
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::unique_ptr<FLUDSCommonData>>>
     quadrature_fluds_commondata_map_;
 
-  std::vector<size_t> verbose_sweep_angles_;
+  std::vector<int> verbose_sweep_angles_;
   const std::string sweep_type_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
 
@@ -101,7 +101,7 @@ protected:
    * geometry into account.
    */
   static std::pair<UniqueSOGroupings, DirIDToSOMap>
-  AssociateSOsAndDirections(const std::shared_ptr<MeshContinuum> grid,
+  AssociateSOsAndDirections(std::shared_ptr<MeshContinuum> grid,
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
                             GeometryType lbs_geo_type);

@@ -31,7 +31,7 @@ Console::BindBarrier(const mpi::Communicator& comm)
   py::module main = py::module::import("__main__");
   main.def(
     "MPIBarrier",
-    [comm](void)
+    [comm]()
     {
       comm.barrier();
     },

@@ -159,7 +159,7 @@ private:
                     : IsFloat<T>::value    ? VaryingDataType::FLOAT
                     : IsUserData<T>::value ? VaryingDataType::USER_DATA
                                            : VaryingDataType::VOID),
-        value_(value)
+        value_(std::move(value))
     {
     }
 

@@ -65,8 +65,8 @@ public:
                   std::map<uint64_t, BoundaryCondition> bcs,
                   MatID2XSMap map_mat_id_2_xs,
                   const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                  bool requires_ghosts,
                   bool suppress_bcs,
+                  bool requires_ghosts,
                   bool verbose);
 
   /// Returns the assigned name.

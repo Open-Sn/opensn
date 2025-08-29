@@ -183,7 +183,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
   );
   field_func_interp_point.def(
     py::init(
-      [](void)
+      []()
       {
         return FieldFunctionInterpolationPoint::Create();
       }
@@ -212,7 +212,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
   );
   field_func_interp_line.def(
     py::init(
-      [](void)
+      []()
       {
         return FieldFunctionInterpolationLine::Create();
       }
@@ -273,7 +273,7 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
   );
   field_func_interp_volume.def(
     py::init(
-      [](void)
+      []()
       {
         return FieldFunctionInterpolationVolume::Create();
       }

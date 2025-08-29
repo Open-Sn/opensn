@@ -210,8 +210,7 @@ public:
   virtual ~SpatialDiscretization() = default;
 
 protected:
-  SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
-                        SpatialDiscretizationType sdm_type);
+  SpatialDiscretization(std::shared_ptr<MeshContinuum> grid, SpatialDiscretizationType sdm_type);
 
   const std::shared_ptr<MeshContinuum> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;

@@ -504,7 +504,7 @@ WrapLBS(py::module& slv)
       {
         py::array_t<double> np_vector = py::array_t<double>(gr_wise_leakage.size());
         py::buffer_info buffer = np_vector.request();
-        double* np_vector_data = static_cast<double*>(buffer.ptr);
+        auto np_vector_data = static_cast<double*>(buffer.ptr);
         std::copy(gr_wise_leakage.begin(), gr_wise_leakage.end(), np_vector_data);
         result[allowed_bd_ids.at(bndry_id).data()] = np_vector;
       }
@@ -554,12 +554,13 @@ WrapLBS(py::module& slv)
       {
         return DiscreteOrdinatesCurvilinearProblem::Create(kwargs_to_param_block(params));
       }
-        ),
+    ),
     R"(
-    .. warning::
-       DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
-
     Construct a discrete ordinates problem for curvilinear geometry.
+
+    Warnings
+    --------
+       DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
 
     Parameters
     ----------
@@ -590,21 +591,21 @@ WrapSteadyState(py::module& slv)
 {
   // clang-format off
   // steady state solver
-  auto steady_state_solver = py::class_<SteadyStateSolver, std::shared_ptr<SteadyStateSolver>,
+  auto steady_state_solver = py::class_<SteadyStateSourceSolver, std::shared_ptr<SteadyStateSourceSolver>,
                                         Solver>(
     slv,
-    "SteadyStateSolver",
+    "SteadyStateSourceSolver",
     R"(
     Steady state solver.
 
-    Wrapper of :cpp:class:`opensn::SteadyStateSolver`.
+    Wrapper of :cpp:class:`opensn::SteadyStateSourceSolver`.
     )"
   );
   steady_state_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return SteadyStateSolver::Create(kwargs_to_param_block(params));
+        return SteadyStateSourceSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
@@ -742,18 +743,17 @@ void
 WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 {
   // clang-format off
-  // DiscreteOrdinatesKEigenAcceleration base
+  // discrete ordinates k-eigen acceleration base
   auto acceleration = py::class_<DiscreteOrdinatesKEigenAcceleration,
-                                     std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
+                                 std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     slv,
-    "LBSAccelertion",
+    "DiscreteOrdinatesKEigenAcceleration",
     R"(
-    Base class for LBS acceleration methods.
+    Base class for discrete ordinates k-eigenvalue acceleration methods.
 
     Wrapper of :cpp:class:`opensn::DiscreteOrdinatesKEigenAcceleration`.
     )"
   );
-
   // SCDSA acceleration
   auto scdsa_acceleration = py::class_<SCDSAAcceleration,
                                        std::shared_ptr<SCDSAAcceleration>,
@@ -798,7 +798,6 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'pwlc' : Piecewise Linear Continuous
     )"
   );
-
   // SMM acceleration
   auto smm_acceleration = py::class_<SMMAcceleration,
                                      std::shared_ptr<SMMAcceleration>,
@@ -820,7 +819,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     ),
     R"(
     SMM acceleration for the power iteration k-eigenvalue solver.
-    .. warning::
+
+    Warnings
+    --------
        SMM acceleration is **experimental** and should be used with caution!
        SMM accleration only supports problems with isotropic scattering.
 
@@ -859,8 +860,8 @@ py_solver(py::module& pyopensn)
   WrapLBS(slv);
   WrapSteadyState(slv);
   WrapNLKEigen(slv);
-  WrapPIteration(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
+  WrapPIteration(slv);
 }
 
 } // namespace opensn

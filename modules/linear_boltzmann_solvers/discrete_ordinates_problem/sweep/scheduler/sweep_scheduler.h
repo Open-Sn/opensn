@@ -33,13 +33,14 @@ private:
     int sign_of_omegaz;
     size_t set_index;
 
-    explicit RuleValues(std::shared_ptr<AngleSet>& ref_as) : angle_set(ref_as)
+    explicit RuleValues(std::shared_ptr<AngleSet>& ref_as)
+      : angle_set(ref_as),
+        depth_of_graph(0),
+        sign_of_omegax(1),
+        sign_of_omegay(1),
+        sign_of_omegaz(1),
+        set_index(0)
     {
-      depth_of_graph = 0;
-      set_index = 0;
-      sign_of_omegax = 1;
-      sign_of_omegay = 1;
-      sign_of_omegaz = 1;
     }
   };
   std::vector<RuleValues> rule_values_;

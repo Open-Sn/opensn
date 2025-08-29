@@ -7,8 +7,8 @@ PROJECT_NAME           = OpenSn
 PROJECT_NUMBER         =
 PROJECT_BRIEF          =
 PROJECT_LOGO           =
-OUTPUT_DIRECTORY       = source/xml
-CREATE_SUBDIRS         = YES
+OUTPUT_DIRECTORY       = source/capi
+CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -106,13 +106,13 @@ WARN_LOGFILE           =
 INPUT                  = ../framework
 INPUT                 += ../modules
 INPUT_ENCODING         = UTF-8
-FILE_PATTERNS          =
+FILE_PATTERNS          = "*.h"
 RECURSIVE              = YES
 
 EXCLUDE                =
 
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = "*.py"
+EXCLUDE_PATTERNS       = "*.py" "*.cc"
 EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       =

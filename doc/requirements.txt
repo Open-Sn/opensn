@@ -3,3 +3,5 @@ sphinx_design
 sphinx-rtd-theme
 sphinxcontrib-bibtex
 nbsphinx
+breathe
+exhale

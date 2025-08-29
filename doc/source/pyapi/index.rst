@@ -62,7 +62,7 @@ Product quadratures
    :template: noinit.rst
 
    aquad.ProductQuadrature
-   aquad.CurvilinearQuadrature
+   aquad.CurvilinearProductQuadrature
 
 .. autosummary::
    :toctree: generated
@@ -308,7 +308,7 @@ Steady state solver
    :nosignatures:
    :template: python.rst
 
-   solver.SteadyStateSolver
+   solver.SteadyStateSourceSolver
 
 Non-linear k-eigen
 ^^^^^^^^^^^^^^^^^^
@@ -358,6 +358,11 @@ Discrete ordinates k-eigen acceleration
 
 Settings
 --------
+
+.. important::
+
+   Functions in this section are only available to the module mode. For the
+   console mode, refer to ``opensn --help`` for more information.
 
 Logs
 ^^^^

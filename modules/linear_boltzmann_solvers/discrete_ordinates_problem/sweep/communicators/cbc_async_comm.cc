@@ -69,7 +69,7 @@ CBC_ASynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated)
     {
       const int locJ = buffer_item.destination;
-      auto& comm = comm_set_.LocICommunicator(locJ);
+      const auto& comm = comm_set_.LocICommunicator(locJ);
       auto dest = comm_set_.MapIonJ(locJ, locJ);
       auto tag = static_cast<int>(angle_set_id_);
       buffer_item.mpi_request = comm.isend(dest, tag, buffer_item.data_array.Data());
@@ -96,10 +96,10 @@ CBC_ASynchronousCommunicator::ReceiveData()
   using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
   std::map<CellFaceKey, std::vector<double>> received_messages;
   std::vector<uint64_t> cells_who_received_data;
-  auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
+  const auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
   for (int locJ : location_dependencies)
   {
-    auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+    const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
     auto source_rank = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
     auto tag = static_cast<int>(angle_set_id_);
     mpi::Status status;
@@ -112,9 +112,9 @@ CBC_ASynchronousCommunicator::ReceiveData()
 
       while (not data_array.EndOfBuffer())
       {
-        const uint64_t cell_global_id = data_array.Read<uint64_t>();
+        const auto cell_global_id = data_array.Read<uint64_t>();
         const auto face_id = data_array.Read<unsigned int>();
-        const size_t data_size = data_array.Read<size_t>();
+        const auto data_size = data_array.Read<size_t>();
 
         std::vector<double> psi_data;
         psi_data.reserve(data_size);

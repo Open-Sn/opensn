@@ -21,7 +21,7 @@ public:
     PETSC_BICGSTAB
   };
 
-  LinearSystemSolver(IterativeMethod method, std::shared_ptr<LinearSystemContext> ctx)
+  LinearSystemSolver(IterativeMethod method, const std::shared_ptr<LinearSystemContext>& ctx)
     : LinearSolver(ctx), method_(method)
   {
   }

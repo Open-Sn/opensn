@@ -44,13 +44,13 @@ ComputePointwisePhiChange(
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
   auto grid_ptr = lbs_problem.GetGrid();
-  auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
   double pw_change = 0.0;
   for (const auto& cell : grid_ptr->local_cells)
   {
-    auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     for (auto i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
@@ -61,7 +61,7 @@ ComputePointwisePhiChange(
         {
           auto m0g_idx = transport_view.MapDOF(i, 0, gsi + g);
           double max_phi = std::max(fabs(phi_new[m0g_idx]), fabs(phi_old[m0g_idx]));
-          for (auto m = 0; m < num_moments; ++m)
+          for (size_t m = 0; m < num_moments; ++m)
           {
             auto mng_idx = transport_view.MapDOF(i, m, gsi + g);
             double delta_phi = std::fabs(phi_new[mng_idx] - phi_old[mng_idx]);

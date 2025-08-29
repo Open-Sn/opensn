@@ -28,6 +28,8 @@ class Quadrature;
 struct BaseFunctor
 {
   virtual double operator()(double mu, double eta, double xi) { return 0.0; }
+
+  virtual ~BaseFunctor() = default;
 };
 } // namespace SimplifiedLDFESQ
 
@@ -46,7 +48,7 @@ struct SimplifiedLDFESQ::SphericalQuadrilateral
   Vector3 translation_vector;
 
   std::array<Vector3, 4> sub_sqr_points;
-  std::array<double, 4> sub_sqr_weights;
+  std::array<double, 4> sub_sqr_weights{};
 
   double area = 0.0;
 
@@ -87,7 +89,7 @@ public:
   {
   }
 
-  virtual ~Quadrature() {}
+  ~Quadrature() override = default;
 
   /// Generates uniform spherical quadrilaterals from the subdivision of an inscribed cube.
   void GenerateInitialRefinement(int level);
@@ -153,9 +155,7 @@ public:
 
 public:
   /// Locally refines the cells.
-  void LocallyRefine(const Vector3& ref_dir,
-                     const double cone_size,
-                     const bool dir_as_plane_normal = false);
+  void LocallyRefine(const Vector3& ref_dir, double cone_size, bool dir_as_plane_normal = false);
 
 private:
   /// Split a SQ.
@@ -233,7 +233,7 @@ struct SimplifiedLDFESQ::FunctionWeightFromRho
     for (int i = 0; i < 4; ++i)
       c_coeffs[i] = Mult(A_inv, rhs[i]);
 
-    return sldfesq.IntegrateLDFEShapeFunctions(sq, c_coeffs, lqp, lqw);
+    return SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(sq, c_coeffs, lqp, lqw);
   }
 };
 

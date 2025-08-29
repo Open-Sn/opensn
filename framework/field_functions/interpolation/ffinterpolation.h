@@ -62,7 +62,7 @@ public:
   {
   }
 
-  virtual ~FieldFunctionInterpolation() {}
+  virtual ~FieldFunctionInterpolation() = default;
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
   {

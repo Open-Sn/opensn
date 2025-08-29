@@ -20,7 +20,7 @@ public:
   int Run(int argc, char** argv);
 
 private:
-  int InitPETSc(int argc, char** argv);
+  int InitPETSc(int argc, char** argv) const;
   bool ProcessArguments(int argc, char** argv);
 
   bool allow_petsc_error_handler_;

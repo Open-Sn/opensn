@@ -14,37 +14,37 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, SteadyStateSolver);
+OpenSnRegisterObjectInNamespace(lbs, SteadyStateSourceSolver);
 
 InputParameters
-SteadyStateSolver::GetInputParameters()
+SteadyStateSourceSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
                                "across-groupset (AGS) solver.");
-  params.ChangeExistingParamToOptional("name", "SteadyStateSolver");
+  params.ChangeExistingParamToOptional("name", "SteadyStateSourceSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   return params;
 }
 
-std::shared_ptr<SteadyStateSolver>
-SteadyStateSolver::Create(const ParameterBlock& params)
+std::shared_ptr<SteadyStateSourceSolver>
+SteadyStateSourceSolver::Create(const ParameterBlock& params)
 {
   auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<SteadyStateSolver>("lbs::SteadyStateSolver", params);
+  return factory.Create<SteadyStateSourceSolver>("lbs::SteadyStateSourceSolver", params);
 }
 
-SteadyStateSolver::SteadyStateSolver(const InputParameters& params)
+SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
   : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
 }
 
 void
-SteadyStateSolver::Initialize()
+SteadyStateSourceSolver::Initialize()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSolver::Initialize");
+  CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
 
   lbs_problem_->Initialize();
 
@@ -53,9 +53,9 @@ SteadyStateSolver::Initialize()
 }
 
 void
-SteadyStateSolver::Execute()
+SteadyStateSourceSolver::Execute()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSolver::Execute");
+  CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Execute");
 
   auto& options = lbs_problem_->GetOptions();
 
@@ -75,7 +75,7 @@ SteadyStateSolver::Execute()
 }
 
 bool
-SteadyStateSolver::ReadRestartData()
+SteadyStateSourceSolver::ReadRestartData()
 {
   auto& fname = lbs_problem_->GetOptions().read_restart_path;
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
@@ -90,7 +90,7 @@ SteadyStateSolver::ReadRestartData()
 
     // Read psi
     int gs_id = 0;
-    for (auto gs : groupsets)
+    for (const auto& gs : groupsets)
     {
       if (gs.angle_agg)
       {
@@ -98,7 +98,7 @@ SteadyStateSolver::ReadRestartData()
         if (H5Has(file, name))
         {
           std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file, name.c_str(), psi);
+          success &= H5ReadDataset1D<double>(file, name, psi);
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         }
       }
@@ -117,7 +117,7 @@ SteadyStateSolver::ReadRestartData()
 }
 
 bool
-SteadyStateSolver::WriteRestartData()
+SteadyStateSourceSolver::WriteRestartData()
 {
   auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;
@@ -135,7 +135,7 @@ SteadyStateSolver::WriteRestartData()
     if (options.write_delayed_psi_to_restart)
     {
       int gs_id = 0;
-      for (auto gs : lbs_problem_->GetGroupsets())
+      for (const auto& gs : lbs_problem_->GetGroupsets())
       {
         if (gs.angle_agg)
         {

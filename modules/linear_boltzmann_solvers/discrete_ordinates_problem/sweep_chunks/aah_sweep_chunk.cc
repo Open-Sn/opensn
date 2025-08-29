@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum> grid,
+AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<CellLBSView>& cell_transport_views,
@@ -82,8 +82,8 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
   {
     auto cell_local_id = spls[spls_index];
     auto& cell = grid_->local_cells[cell_local_id];
-    auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto& cell_transport_view = cell_transport_views_[cell_local_id];
+    const auto& cell_mapping = discretization_.GetCellMapping(cell);
     auto cell_num_faces = cell.faces.size();
     auto cell_num_nodes = cell_mapping.GetNumNodes();
 
@@ -112,21 +112,21 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
       preloc_face_counter = ni_preloc_face_counter;
 
       // Reset right-hand side
-      for (int gsg = 0; gsg < gs_size; ++gsg)
-        for (int i = 0; i < cell_num_nodes; ++i)
+      for (size_t gsg = 0; gsg < gs_size; ++gsg)
+        for (size_t i = 0; i < cell_num_nodes; ++i)
           b[gsg](i) = 0.0;
 
-      for (int i = 0; i < cell_num_nodes; ++i)
-        for (int j = 0; j < cell_num_nodes; ++j)
+      for (size_t i = 0; i < cell_num_nodes; ++i)
+        for (size_t j = 0; j < cell_num_nodes; ++j)
           Amat(i, j) = omega.Dot(G(i, j));
 
       // Update face orientations
-      for (int f = 0; f < cell_num_faces; ++f)
+      for (size_t f = 0; f < cell_num_faces; ++f)
         face_mu_values[f] = omega.Dot(cell.faces[f].normal);
 
       // Surface integrals
       int in_face_counter = -1;
-      for (int f = 0; f < cell_num_faces; ++f)
+      for (size_t f = 0; f < cell_num_faces; ++f)
       {
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
@@ -142,11 +142,11 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
 
         // IntSf_mu_psi_Mij_dA
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-        for (int fi = 0; fi < num_face_nodes; ++fi)
+        for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
 
-          for (int fj = 0; fj < num_face_nodes; ++fj)
+          for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const int j = cell_mapping.MapFaceNode(f, fj);
 
@@ -170,24 +170,24 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
             if (not psi)
               continue;
 
-            for (int gsg = 0; gsg < gs_size; ++gsg)
+            for (size_t gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
         } // for face node i
       } // for f
 
       // Looping over groups, assembling mass terms
-      for (int gsg = 0; gsg < gs_size; ++gsg)
+      for (size_t gsg = 0; gsg < gs_size; ++gsg)
       {
         double sigma_tg = rho * sigma_t[gs_gi + gsg];
 
         // Contribute source moments q = M_n^T * q_moms
-        for (int i = 0; i < cell_num_nodes; ++i)
+        for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
           for (int m = 0; m < num_moments_; ++m)
           {
-            const size_t ir = cell_transport_view.MapDOF(i, m, static_cast<int>(gs_gi + gsg));
+            const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[m][direction_num] * source_moments_[ir];
           }
           source[i] = temp_src;
@@ -196,10 +196,10 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
         // Mass matrix and source
         // Atemp = Amat + sigma_tgr * M
         // b += M * q
-        for (int i = 0; i < cell_num_nodes; ++i)
+        for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp = 0.0;
-          for (int j = 0; j < cell_num_nodes; ++j)
+          for (size_t j = 0; j < cell_num_nodes; ++j)
           {
             auto Mij = M(i, j);
             Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
@@ -216,10 +216,10 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
       for (int m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[m][direction_num];
-        for (int i = 0; i < cell_num_nodes; ++i)
+        for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
-          for (int gsg = 0; gsg < gs_size; ++gsg)
+          for (size_t gsg = 0; gsg < gs_size; ++gsg)
             destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
         }
       }
@@ -234,7 +234,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
         {
           const size_t imap =
             i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_;
-          for (int gsg = 0; gsg < gs_size; ++gsg)
+          for (size_t gsg = 0; gsg < gs_size; ++gsg)
             cell_psi_data[imap + gsg] = b[gsg](i);
         }
       }
@@ -242,7 +242,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
       // For outoing, non-boundary faces, copy angular flux to fluds and
       // accumulate outflow
       int out_face_counter = -1;
-      for (int f = 0; f < cell_num_faces; ++f)
+      for (size_t f = 0; f < cell_num_faces; ++f)
       {
         if (face_orientations[f] != FaceOrientation::OUTGOING)
           continue;
@@ -259,13 +259,13 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
           ++deploc_face_counter;
 
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-        for (int fi = 0; fi < num_face_nodes; ++fi)
+        for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
 
           if (is_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_size; ++gsg)
+            for (size_t gsg = 0; gsg < gs_size; ++gsg)
               cell_transport_view.AddOutflow(
                 f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
           }
@@ -282,7 +282,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
 
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_size; ++gsg)
+            for (size_t gsg = 0; gsg < gs_size; ++gsg)
               psi[gsg] = b[gsg](i);
           }
         } // for fi

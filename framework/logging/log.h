@@ -88,13 +88,14 @@ public:
     LOG_ALLVERBOSE_2 = 12  ///< Used only if verbosity level equals 2
   };
 
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
 private:
   DummyStream dummy_stream_;
   int verbosity_{0};
 
   Logger() = default;
-  Logger(const Logger&) = delete;
-  Logger& operator=(const Logger&) = delete;
 
 public:
   static Logger& GetInstance() noexcept

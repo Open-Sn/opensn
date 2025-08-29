@@ -198,7 +198,7 @@ H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
       auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
       if (attribute != H5I_INVALID_HID)
       {
-        size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+        auto size = static_cast<size_t>(H5Aget_storage_size(attribute));
         if (size > 0)
         {
           size_t num_elements = size / sizeof(T);
@@ -249,7 +249,7 @@ H5ReadAttribute<std::string>(hid_t id, const std::string& name, std::string& val
     auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
     if (attribute != H5I_INVALID_HID)
     {
-      size_t size = static_cast<size_t>(H5Aget_storage_size(attribute));
+      auto size = static_cast<size_t>(H5Aget_storage_size(attribute));
       if (size > 0)
       {
         hid_t string_type = H5Tcopy(H5T_C_S1);

@@ -22,7 +22,7 @@ AAH_FLUDSCommonData::AAH_FLUDSCommonData(
   : FLUDSCommonData(spds, grid_nodal_mappings)
 {
   this->InitializeAlphaElements(spds, grid_face_histogram);
-  this->InitializeBetaElements(spds);
+  this->InitializeBetaElements(spds); // NOLINT
 }
 
 void
@@ -89,7 +89,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   } // for csoi
 
-  for (auto fc = 0; fc < num_face_categories_; ++fc)
+  for (size_t fc = 0; fc < num_face_categories_; ++fc)
   {
     local_psi_stride_[fc] = grid_face_histogram.GetFaceHistogramBinDOFSize(fc);
     local_psi_max_elements_[fc] = lock_boxes[fc].size();
@@ -152,8 +152,8 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool is_cyclic = false;
         for (auto cyclic_dependency : spds.GetLocalSweepFAS())
         {
-          auto edge_v1_id = cyclic_dependency.first;
-          auto edge_v2_id = cyclic_dependency.second;
+          size_t edge_v1_id = cyclic_dependency.first;
+          size_t edge_v2_id = cyclic_dependency.second;
           auto cell_id = cell.local_id;
           auto neighbor_cell_id = face.GetNeighborLocalID(grid.get());
 
@@ -282,7 +282,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       if (not slot_found)
       {
         outb_face_slot_indices.push_back(lock_box.size());
-        lock_box.push_back(std::pair<int, short>(cell_g_index, f));
+        lock_box.emplace_back(std::pair<int, short>(cell_g_index, f));
       }
 
       // Non-local outgoing
@@ -347,7 +347,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::LocalIncidentMapping");
 
   const auto grid = spds.GetGrid();
-  auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id];
+  const auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id];
   std::vector<std::pair<int, std::vector<short>>> inco_face_dof_mapping;
 
   // Loop over faces but process only incident faces
@@ -428,7 +428,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   {
     auto locJ = location_successors[deplocI];
 
-    std::vector<int>::const_iterator delayed_successor =
+    auto delayed_successor =
       std::find(delayed_location_successors.begin(), delayed_location_successors.end(), locJ);
     if ((delayed_successor == delayed_location_successors.end()))
       continue;
@@ -579,7 +579,7 @@ AAH_FLUDSCommonData::SerializeCellInfo(std::vector<CompactCellView>& cell_views,
       std::vector<uint64_t>& face_vertices = cell_face_views[f].second;
 
       size_t num_verts = face_vertices.size();
-      for (auto fi = 0; fi < num_verts; ++fi)
+      for (size_t fi = 0; fi < num_verts; ++fi)
       {
         face_indices.push_back(static_cast<int>(face_vertices[fi]));
       }

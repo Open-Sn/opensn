@@ -97,7 +97,7 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   const bool use_bndry_source_flag =
     (scope & APPLY_FIXED_SOURCES) and (not do_problem.GetOptions().use_src_moments);
   const bool zero_incoming_delayed_psi = (scope & ZERO_INCOMING_DELAYED_PSI);
-  dynamic_cast<DiscreteOrdinatesProblem&>(do_problem).ZeroOutflowBalanceVars(groupset);
+  do_problem.ZeroOutflowBalanceVars(groupset);
   sweep_scheduler.PrepareForSweep(use_bndry_source_flag, zero_incoming_delayed_psi);
 
   high_resolution_clock::time_point sweep_start = high_resolution_clock::now();

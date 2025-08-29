@@ -53,7 +53,7 @@ public:
    *
    * This constructor creates an array with the specified size.
    */
-  explicit NDArray(const std::array<int, D>& dims)
+  explicit NDArray(const std::array<int, D>& dims) : size_(0)
   {
     SetDimensions(dims);
     Initialize();
@@ -70,7 +70,7 @@ public:
    *
    * This constructor creates an array with the specified size.
    */
-  explicit NDArray(const std::array<int, D>& dims, T value)
+  explicit NDArray(const std::array<int, D>& dims, T value) : size_(0)
   {
     SetDimensions(dims);
     ValueInitialize(value);
@@ -87,7 +87,7 @@ public:
    * This constructor creates an array with the specified size.
    */
   template <typename U>
-  NDArray(const std::initializer_list<U>& dims)
+  NDArray(const std::initializer_list<U>& dims) : size_(0)
   {
     SetDimensions(dims);
     Initialize();
@@ -105,7 +105,7 @@ public:
    * This constructor creates an array with the specified size.
    */
   template <typename U>
-  explicit NDArray(const std::array<U, D>& dims, T value)
+  explicit NDArray(const std::array<U, D>& dims, T value) : size_(0)
   {
     SetDimensions(dims);
     ValueInitialize(value);
@@ -123,7 +123,7 @@ public:
    * This constructor creates an array with the specified size.
    */
   template <typename U>
-  explicit NDArray(const std::array<U, D>& dims)
+  explicit NDArray(const std::array<U, D>& dims) : size_(0)
   {
     SetDimensions(dims);
     Initialize();
@@ -139,7 +139,7 @@ public:
    * \param value The value to assing to each element.
    */
   template <typename U>
-  NDArray(const std::initializer_list<U>& dims, T value)
+  NDArray(const std::initializer_list<U>& dims, T value) : size_(0)
   {
     SetDimensions(dims);
     ValueInitialize(value);
@@ -171,6 +171,8 @@ public:
    */
   NDArray<T, D>& operator=(NDArray<T, D> const& other)
   {
+    if (this == &other)
+      return *this;
     NDArray<T, D>(other).swap(*this);
     return *this;
   }
@@ -250,18 +252,18 @@ public:
    * \return Read/write reference to the element.
    */
   template <typename... Args>
-  inline __attribute__((always_inline)) constexpr T& operator()(Args... args) noexcept
+  __attribute__((always_inline)) constexpr T& operator()(Args... args) noexcept
   {
     return storage_[ComputeIndex(args...)];
   }
 
-  inline __attribute__((always_inline)) constexpr T& operator()(size_t idx) noexcept
+  __attribute__((always_inline)) constexpr T& operator()(size_t idx) noexcept
   {
     static_assert(D == 1, "Can be only used on 1-dimensional arrays");
     return storage_[idx];
   }
 
-  inline __attribute__((always_inline)) constexpr T& operator()(size_t i, size_t j) noexcept
+  __attribute__((always_inline)) constexpr T& operator()(size_t i, size_t j) noexcept
   {
     static_assert(D == 2, "Can be only used on 2-dimensional arrays");
     return storage_[i * strides_[0] + j];
@@ -277,7 +279,7 @@ public:
   constexpr T& at(Args... args)
   {
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < D; ++i)
+    for (int i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
         throw std::out_of_range("Index out of bounds.");
@@ -292,19 +294,18 @@ public:
    * \return Read reference to the element.
    */
   template <typename... Args>
-  inline __attribute__((always_inline)) constexpr const T& operator()(Args... args) const noexcept
+  __attribute__((always_inline)) constexpr const T& operator()(Args... args) const noexcept
   {
     return storage_[ComputeIndex(args...)];
   }
 
-  inline __attribute__((always_inline)) constexpr T const& operator()(size_t idx) const noexcept
+  __attribute__((always_inline)) constexpr T const& operator()(size_t idx) const noexcept
   {
     static_assert(D == 1, "Can be only used on 1-dimensional arrays");
     return storage_[idx];
   }
 
-  inline __attribute__((always_inline)) constexpr T const& operator()(size_t i,
-                                                                      size_t j) const noexcept
+  __attribute__((always_inline)) constexpr T const& operator()(size_t i, size_t j) const noexcept
   {
     static_assert(D == 2, "Can be only used on 2-dimensional arrays");
     return storage_[i * strides_[0] + j];
@@ -320,7 +321,7 @@ public:
   constexpr const T& at(Args... args) const
   {
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < D; ++i)
+    for (int i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
         throw std::out_of_range("Index out of bounds.");
@@ -329,37 +330,37 @@ public:
   }
 
   /// Returns an iterator pointing to the beginning of the array.
-  inline constexpr T* begin() const noexcept { return storage_.get(); }
+  constexpr T* begin() const noexcept { return storage_.get(); }
 
   /// Returns a constant iterator pointing to the beginning of the array.
-  inline constexpr const T* cbegin() const noexcept { return storage_.get(); }
+  constexpr const T* cbegin() const noexcept { return storage_.get(); }
 
   /// Returns an iterator pointing to the end of the array.
-  inline constexpr T* end() const noexcept { return storage_.get() + size_; }
+  constexpr T* end() const noexcept { return storage_.get() + size_; }
 
   /// Returns a constant iterator pointing to the end of the array.
-  inline constexpr const T* cend() const noexcept { return storage_.get() + size_; }
+  constexpr const T* cend() const noexcept { return storage_.get() + size_; }
 
   /// Returns the number of elements in the array.
-  inline constexpr size_t size() const noexcept { return size_; }
+  constexpr size_t size() const noexcept { return size_; }
 
   /// Returns true if the array has no elements
-  inline constexpr bool empty() const noexcept { return size_ == 0; }
+  constexpr bool empty() const noexcept { return size_ == 0; }
 
   /// Returns a pointer to the underlying array data.
-  inline constexpr T* data() const noexcept { return storage_.get(); }
+  constexpr T* data() const noexcept { return storage_.get(); }
 
   /// Returns the rank of the array.
-  inline constexpr size_t rank() const noexcept { return D; }
+  constexpr size_t rank() const noexcept { return D; }
 
   /// Returns the dimension of the array.
-  inline std::vector<size_t> dimension() const noexcept
+  std::vector<size_t> dimension() const
   {
     return std::vector<size_t>(dimensions_.begin(), dimensions_.begin() + D);
   }
 
   /// Sets each element of the array to the specified value.
-  inline void set(T value) noexcept { std::fill(storage_.get(), storage_.get() + size_, value); }
+  void set(T value) noexcept { std::fill(storage_.get(), storage_.get() + size_, value); }
 
   /**
    * Returns a linear index to the specified element with safety checks.
@@ -379,7 +380,7 @@ public:
     }
 
     size_t indices[]{static_cast<size_t>(args)...};
-    for (size_t i = 0; i < D; ++i)
+    for (int i = 0; i < D; ++i)
     {
       if (indices[i] >= dimensions_[i])
       {
@@ -397,7 +398,7 @@ public:
    *
    * \param other The array to swap with.
    */
-  inline void swap(NDArray<T, D>& other) noexcept
+  void swap(NDArray<T, D>& other) noexcept
   {
     std::swap(size_, other.size_);
     std::swap(storage_, other.storage_);
@@ -449,7 +450,7 @@ private:
   }
 
   template <typename... Args>
-  inline __attribute__((always_inline)) constexpr size_t ComputeIndex(Args... args) const noexcept
+  __attribute__((always_inline)) constexpr size_t ComputeIndex(Args... args) const noexcept
   {
     size_t indices[]{static_cast<size_t>(args)...};
 
@@ -471,7 +472,7 @@ private:
     }
 
     size_t index = 0;
-    for (size_t i = 0; i < D; ++i)
+    for (int i = 0; i < D; ++i)
       index += indices[i] * strides_[i];
     return index;
   }

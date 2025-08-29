@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-PetscErrorCode
-GSConvergenceTest(KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void*);
+PetscErrorCode GSConvergenceTest(
+  KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* /*unused*/);
 
 } // namespace opensn

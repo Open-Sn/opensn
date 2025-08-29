@@ -127,6 +127,8 @@ WrapProductQuadrature(py::module& aquad)
     ----------
     n_polar: int
         Number of polar angles.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
     )"
@@ -162,6 +164,8 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     n_azimuthal: int
         Number of azimuthal angles.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
     )"
@@ -198,7 +202,7 @@ WrapProductQuadrature(py::module& aquad)
     n_azimuthal: int
         Number of azimuthal angles.
     scattering_order: int
-        Scattering order.
+        Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
     )"
@@ -216,7 +220,7 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
                                                    std::shared_ptr<CurvilinearProductQuadrature>,
                                                    ProductQuadrature>(
     aquad,
-    "CurvilinearPrductQuadrature",
+    "CurvilinearProductQuadrature",
     R"(
     Curvilinear product quadrature.
 
@@ -254,6 +258,8 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         Number of polar angles.
     n_azimuthal: int
         Number of azimuthal angles.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
     )"
@@ -296,6 +302,8 @@ WrapSLDFESQuadrature(py::module& aquad)
     ----------
     level: int
         Number of subdivisions of the inscribed cube.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
     )"
   );
   simplified_ldfes_quadrature.def(

@@ -20,12 +20,12 @@ public:
    * Write an angular flux vector to a file.
    *
    * \param lbs_problem LBS problem
-   * \param file_base File name stem
+   * \param file_base File name base
    * \param per_material Optional angular flux source vector
    */
   static void WriteAngularFluxes(
     LBSProblem& lbs_problem,
-    const std::string& file_stem,
+    const std::string& file_base,
     std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src =
       std::nullopt);
 
@@ -33,12 +33,12 @@ public:
    * Read an angular flux vector from a file.
    *
    * \param lbs_problem LBS problem
-   * \param file_base File name stem
+   * \param file_base File name base
    * \param per_material Optional angular flux destination vector
    */
   static void ReadAngularFluxes(
     LBSProblem& lbs_problem,
-    const std::string& file_stem,
+    const std::string& file_base,
     std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest =
       std::nullopt);
 
@@ -46,25 +46,25 @@ public:
    * Write a flux moments vector to a file.
    *
    * \param lbs_problem LBS problem
-   * \param file_base File name stem
+   * \param file_base File name base
    * \param per_material Optional flux moments source vector
    */
   static void WriteFluxMoments(
     LBSProblem& lbs_problem,
-    const std::string& file_stem,
+    const std::string& file_base,
     std::optional<const std::reference_wrapper<std::vector<double>>> opt_src = std::nullopt);
 
   /**
    * Read a flux moments vector from a file.
    *
    * \param lbs_problem LBS problem
-   * \param file_base File name stem
+   * \param file_base File name base
    * \param single_file Single data file or data file per rank?
    * \param per_material Optional flux moments destination vector
    */
   static void ReadFluxMoments(
     LBSProblem& lbs_problem,
-    const std::string& file_stem,
+    const std::string& file_base,
     bool single_file,
     std::optional<std::reference_wrapper<std::vector<double>>> opt_dest = std::nullopt);
 };

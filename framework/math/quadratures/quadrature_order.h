@@ -52,7 +52,7 @@ enum class QuadratureOrder : int
   FORTYFIRST = 41,
   FORTYSECOND = 42,
   FORTYTHIRD = 43,
-  INVALID_ORDER
+  INVALID_ORDER = 44
 };
 
 } // namespace opensn

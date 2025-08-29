@@ -266,7 +266,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
   const auto bndry_name = params.GetParamValue<std::string>("name");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  const auto bid = lbs_problem_->supported_boundary_names.at(bndry_name);
+  const auto bid = LBSProblem::supported_boundary_names.at(bndry_name);
   if (bndry_type == "isotropic")
   {
     OpenSnInvalidArgumentIf(not params.Has("group_strength"),
@@ -428,7 +428,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& vol_wt = subscriber.volume_weight;
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
-      for (size_t i = 0; i < num_cell_nodes; ++i)
+      for (int i = 0; i < num_cell_nodes; ++i)
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& shape_val = subscriber.shape_values(i);
@@ -447,7 +447,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
-      for (size_t i = 0; i < num_cell_nodes; ++i)
+      for (int i = 0; i < num_cell_nodes; ++i)
       {
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -466,7 +466,7 @@ std::vector<double>
 ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
                                              const Vector3& node,
                                              const LBSGroupset& groupset,
-                                             const double) const
+                                             const double /*unused*/) const
 {
   const auto num_gs_angles = groupset.quadrature->omegas.size();
   const auto num_gs_groups = groupset.groups.size();

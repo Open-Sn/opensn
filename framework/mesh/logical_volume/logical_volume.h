@@ -23,7 +23,7 @@ public:
   virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:
-  explicit LogicalVolume() {}
+  explicit LogicalVolume() = default;
   explicit LogicalVolume(const InputParameters& parameters);
 };
 

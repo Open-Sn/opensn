@@ -14,7 +14,7 @@ namespace opensn
 
 CBCSweepChunk::CBCSweepChunk(std::vector<double>& destination_phi,
                              std::vector<double>& destination_psi,
-                             const std::shared_ptr<MeshContinuum> grid,
+                             const std::shared_ptr<MeshContinuum>& grid,
                              const SpatialDiscretization& discretization,
                              const std::vector<UnitCellMatrices>& unit_cell_matrices,
                              std::vector<CellLBSView>& cell_transport_views,
@@ -110,20 +110,20 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     auto wt = groupset_.quadrature->weights[direction_num];
 
     // Reset right-hand side
-    for (int gsg = 0; gsg < gs_size_; ++gsg)
-      for (int i = 0; i < cell_num_nodes_; ++i)
+    for (size_t gsg = 0; gsg < gs_size_; ++gsg)
+      for (size_t i = 0; i < cell_num_nodes_; ++i)
         b[gsg](i) = 0.0;
 
-    for (int i = 0; i < cell_num_nodes_; ++i)
-      for (int j = 0; j < cell_num_nodes_; ++j)
+    for (size_t i = 0; i < cell_num_nodes_; ++i)
+      for (size_t j = 0; j < cell_num_nodes_; ++j)
         Amat(i, j) = omega.Dot(G_(i, j));
 
     // Update face orientations
-    for (int f = 0; f < cell_num_faces_; ++f)
+    for (size_t f = 0; f < cell_num_faces_; ++f)
       face_mu_values[f] = omega.Dot(cell_->faces[f].normal);
 
     // Surface integrals
-    for (int f = 0; f < cell_num_faces_; ++f)
+    for (size_t f = 0; f < cell_num_faces_; ++f)
     {
       if (face_orientations[f] != FaceOrientation::INCOMING)
         continue;
@@ -131,7 +131,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       const auto& face = cell_->faces[f];
       const bool is_local_face = cell_transport_view_->IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
-      auto face_nodal_mapping = &fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
+      const auto* face_nodal_mapping =
+        &fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
 
       const std::vector<double>* psi_upwnd_data_block = nullptr;
       const double* psi_local_face_upwnd_data = nullptr;
@@ -148,11 +149,11 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
 
       // IntSf_mu_psi_Mij_dA
       const size_t num_face_nodes = cell_mapping_->GetNumFaceNodes(f);
-      for (int fi = 0; fi < num_face_nodes; ++fi)
+      for (size_t fi = 0; fi < num_face_nodes; ++fi)
       {
         const int i = cell_mapping_->MapFaceNode(f, fi);
 
-        for (int fj = 0; fj < num_face_nodes; ++fj)
+        for (size_t fj = 0; fj < num_face_nodes; ++fj)
         {
           const int j = cell_mapping_->MapFaceNode(f, fj);
 
@@ -185,24 +186,24 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
           if (not psi)
             continue;
 
-          for (int gsg = 0; gsg < gs_size_; ++gsg)
+          for (size_t gsg = 0; gsg < gs_size_; ++gsg)
             b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
       } // for face node i
     } // for f
 
     // Looping over groups, assembling mass terms
-    for (int gsg = 0; gsg < gs_size_; ++gsg)
+    for (size_t gsg = 0; gsg < gs_size_; ++gsg)
     {
       double sigma_tg = rho * sigma_t[gs_gi_ + gsg];
 
       // Contribute source moments q = M_n^T * q_moms
-      for (int i = 0; i < cell_num_nodes_; ++i)
+      for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         double temp_src = 0.0;
         for (int m = 0; m < num_moments_; ++m)
         {
-          const size_t ir = cell_transport_view_->MapDOF(i, m, static_cast<int>(gs_gi_ + gsg));
+          const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_ + gsg);
           temp_src += m2d_op[m][direction_num] * source_moments_[ir];
         }
         source[i] = temp_src;
@@ -211,10 +212,10 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       // Mass matrix and source
       // Atemp = Amat + sigma_tgr * M
       // b += M * q
-      for (int i = 0; i < cell_num_nodes_; ++i)
+      for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         double temp = 0.0;
-        for (int j = 0; j < cell_num_nodes_; ++j)
+        for (size_t j = 0; j < cell_num_nodes_; ++j)
         {
           const double Mij = M_(i, j);
           Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
@@ -231,10 +232,10 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     for (int m = 0; m < num_moments_; ++m)
     {
       const double wn_d2m = d2m_op[m][direction_num];
-      for (int i = 0; i < cell_num_nodes_; ++i)
+      for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         const size_t ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
-        for (int gsg = 0; gsg < gs_size_; ++gsg)
+        for (size_t gsg = 0; gsg < gs_size_; ++gsg)
           destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
       }
     }
@@ -249,13 +250,13 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       {
         const size_t imap =
           i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_;
-        for (int gsg = 0; gsg < gs_size_; ++gsg)
+        for (size_t gsg = 0; gsg < gs_size_; ++gsg)
           cell_psi_data[imap + gsg] = b[gsg](i);
       }
     }
 
     // Perform outgoing surface operations
-    for (int f = 0; f < cell_num_faces_; ++f)
+    for (size_t f = 0; f < cell_num_faces_; ++f)
     {
       if (face_orientations[f] != FaceOrientation::OUTGOING)
         continue;
@@ -269,7 +270,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
 
       const int locality = cell_transport_view_->FaceLocality(f);
       const size_t num_face_nodes = cell_mapping_->GetNumFaceNodes(f);
-      auto& face_nodal_mapping = fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
+      const auto& face_nodal_mapping =
+        fluds_->GetCommonData().GetFaceNodalMapping(cell_local_id_, f);
       std::vector<double>* psi_dnwnd_data = nullptr;
       if (not is_boundary_face and not is_local_face)
       {
@@ -282,13 +284,13 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
                                                                 data_size);
       }
 
-      for (int fi = 0; fi < num_face_nodes; ++fi)
+      for (size_t fi = 0; fi < num_face_nodes; ++fi)
       {
         const int i = cell_mapping_->MapFaceNode(f, fi);
 
         if (is_boundary_face)
         {
-          for (int gsg = 0; gsg < gs_size_; ++gsg)
+          for (size_t gsg = 0; gsg < gs_size_; ++gsg)
             cell_transport_view_->AddOutflow(
               f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
         }
@@ -308,7 +310,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         {
           if (not is_boundary_face or is_reflecting_boundary_face)
           {
-            for (int gsg = 0; gsg < gs_size_; ++gsg)
+            for (size_t gsg = 0; gsg < gs_size_; ++gsg)
               psi[gsg] = b[gsg](i);
           }
         }

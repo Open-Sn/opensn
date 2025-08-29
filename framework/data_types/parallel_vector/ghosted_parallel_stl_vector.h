@@ -19,8 +19,8 @@ public:
    * Initialize the ghosted parallel vector with the given local and global sizes, with the
    * specified global ghost indices.
    */
-  GhostedParallelSTLVector(const uint64_t local_size,
-                           const uint64_t global_size,
+  GhostedParallelSTLVector(uint64_t local_size,
+                           uint64_t global_size,
                            const std::vector<int64_t>& ghost_ids,
                            const mpi::Communicator& communicator = MPI_COMM_WORLD)
     : ParallelSTLVector(local_size, global_size, communicator),
@@ -39,16 +39,10 @@ public:
   }
 
   /// Copy constructor.
-  GhostedParallelSTLVector(const GhostedParallelSTLVector& other)
-    : ParallelSTLVector(other), ghost_comm_(other.ghost_comm_)
-  {
-  }
+  GhostedParallelSTLVector(const GhostedParallelSTLVector& other) = default;
 
   /// Move constructor.
-  GhostedParallelSTLVector(GhostedParallelSTLVector&& other) noexcept
-    : ParallelSTLVector(std::move(other)), ghost_comm_(std::move(other.ghost_comm_))
-  {
-  }
+  GhostedParallelSTLVector(GhostedParallelSTLVector&& other) noexcept = default;
 
   std::unique_ptr<ParallelVector> MakeCopy() const override;
   std::unique_ptr<ParallelVector> MakeClone() const override;

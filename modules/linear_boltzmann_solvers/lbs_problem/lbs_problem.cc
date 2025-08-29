@@ -33,7 +33,7 @@ std::map<uint64_t, std::string> LBSProblem::supported_boundary_ids = {
   {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
 LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid)
-  : Problem(name), grid_(grid)
+  : Problem(name), grid_(grid), use_gpus_(false)
 {
 }
 
@@ -75,9 +75,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Make groups
-  const size_t num_groups = params.GetParamValue<size_t>("num_groups");
+  const auto num_groups = params.GetParamValue<size_t>("num_groups");
   for (size_t g = 0; g < num_groups; ++g)
-    groups_.push_back(LBSGroup(static_cast<int>(g)));
+    groups_.emplace_back(static_cast<int>(g));
 
   // Make groupsets
   const auto& groupsets_array = params.GetParam("groupsets");
@@ -247,7 +247,7 @@ LBSProblem::GetMatID2XSMap() const
   return block_id_to_xs_map_;
 }
 
-const std::shared_ptr<MeshContinuum>
+std::shared_ptr<MeshContinuum>
 LBSProblem::GetGrid() const
 {
   return grid_;
@@ -716,10 +716,6 @@ LBSProblem::SetOptions(const InputParameters& input)
         bndry_params.AssignParameters(spec.GetParam(b));
         SetBoundaryOptions(bndry_params);
       }
-
-      // If a discretization exists, initialize the boundaries.
-      if (discretization_)
-        InitializeBoundaries();
     }
 
     else if (spec.GetName() == "point_sources")
@@ -883,7 +879,7 @@ LBSProblem::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSolver with name: " << GetName() << "\n\n"
+    outstr << "\nInitializing LBS SteadyStateSourceSolver with name: " << GetName() << "\n\n"
            << "Scattering order    : " << scattering_order_ << "\n"
            << "Number of Groups    : " << groups_.size() << "\n"
            << "Number of Group sets: " << groupsets_.size() << std::endl;
@@ -941,7 +937,7 @@ LBSProblem::InitializeMaterials()
                          " cells encountered with an invalid material id.");
 
   // Get ready for processing
-  for (auto [blk_id, mat] : block_id_to_xs_map_)
+  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
   {
     mat->SetAdjointMode(options_.adjoint);
 
@@ -1077,7 +1073,7 @@ LBSProblem::ValidateAndComputeScatteringMoments()
       throw std::logic_error("LBSProblem: Number of scattering moments differs between groupsets");
   int laq = groupsets_[0].quadrature->GetScatteringOrder();
 
-  for (auto [blk_id, mat] : block_id_to_xs_map_)
+  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
   {
     int lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
 

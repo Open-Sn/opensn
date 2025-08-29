@@ -15,15 +15,10 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   pyopensn.doc() = "Python interface for OpenSn.";
   pyopensn.attr("__version__") = PROJECT_VERSION;
   // Environment
-  if (PyEnv::p_default_env == nullptr)
+  if (not PyEnv::p_default_env)
   {
-    PyEnv::p_default_env = new PyEnv();
-    ::Py_AtExit(
-      []() noexcept
-      {
-        delete PyEnv::p_default_env;
-        PyEnv::p_default_env = nullptr;
-      });
+    PyEnv::p_default_env = std::make_unique<PyEnv>();
+    ::Py_AtExit([]() noexcept { PyEnv::p_default_env.reset(); });
   }
 
   // Wrap libraries

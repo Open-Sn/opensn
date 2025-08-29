@@ -34,8 +34,8 @@ public:
   /// An encapsulation of subscriber cell data for defining point source contributions.
   struct Subscriber
   {
-    double volume_weight;
-    uint64_t cell_local_id;
+    double volume_weight = 0.0;
+    uint64_t cell_local_id = 0;
     Vector<double> shape_values;
     Vector<double> node_weights;
   };

@@ -35,7 +35,7 @@ public:
 
   const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
 
-  virtual ~CurvilinearProductQuadrature() = default;
+  ~CurvilinearProductQuadrature() override = default;
 };
 
 class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
@@ -47,7 +47,7 @@ private:
    */
   void Initialize(const GaussQuadrature& quad_polar,
                   const std::vector<GaussQuadrature>& quad_azimu_vec,
-                  const bool verbose = false);
+                  bool verbose = false);
 
   /**
    * Initialize parametrizing factors of the cylindrical angular quadrature, starting from a fully
@@ -58,7 +58,7 @@ private:
 public:
   GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, int scattering_order, bool verbose = false);
 
-  virtual ~GLCProductQuadrature2DRZ() = default;
+  ~GLCProductQuadrature2DRZ() override = default;
 
   void MakeHarmonicIndices();
 };
@@ -67,7 +67,7 @@ class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
 private:
   /// Initialize with one-dimensional quadrature.
-  void Initialize(int Npolar, const bool verbose = false);
+  void Initialize(int Npolar, bool verbose = false);
 
   /**
    * Initialize parametrizing factors of the spherical angular quadrature, starting from a fully
@@ -78,7 +78,7 @@ private:
 public:
   GLProductQuadrature1DSpherical(int Npolar, int scattering_order, bool verbose = false);
 
-  virtual ~GLProductQuadrature1DSpherical() = default;
+  ~GLProductQuadrature1DSpherical() override = default;
 
   void MakeHarmonicIndices();
 };
