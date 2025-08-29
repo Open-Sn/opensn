@@ -34,12 +34,12 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   Console::BindModule(WrapVector3);
   Console::BindModule(WrapFunctors);
 
-  console.BindModule(WrapQuadraturePointPhiTheta);
-  console.BindModule(WrapQuadrature);
-  console.BindModule(WrapProductQuadrature);
-  console.BindModule(WrapCurvilinearProductQuadrature);
-  console.BindModule(WrapSLDFESQuadrature);
-  console.BindModule(WrapLebedevQuadrature);
+  Console::BindModule(WrapQuadraturePointPhiTheta);
+  Console::BindModule(WrapQuadrature);
+  Console::BindModule(WrapProductQuadrature);
+  Console::BindModule(WrapCurvilinearProductQuadrature);
+  Console::BindModule(WrapSLDFESQuadrature);
+  Console::BindModule(WrapLebedevQuadrature);
 
   Console::BindModule(WrapMesh);
   Console::BindModule(WrapMeshGenerator);
