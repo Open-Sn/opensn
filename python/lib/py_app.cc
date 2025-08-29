@@ -39,6 +39,7 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
   Console::BindModule(WrapProductQuadrature);
   Console::BindModule(WrapCurvilinearProductQuadrature);
   Console::BindModule(WrapSLDFESQuadrature);
+  Console::BindModule(WrapLebedevQuadrature);
 
   Console::BindModule(WrapMesh);
   Console::BindModule(WrapMeshGenerator);
