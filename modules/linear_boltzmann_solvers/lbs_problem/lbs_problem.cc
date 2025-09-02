@@ -1144,6 +1144,7 @@ LBSProblem::InitializeParrays()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
+  min_cell_dof_count_ = static_cast<size_t>(-1);
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
@@ -1203,8 +1204,8 @@ LBSProblem::InitializeParrays()
       ++f;
     } // for f
 
-    if (num_nodes > max_cell_dof_count_)
-      max_cell_dof_count_ = num_nodes;
+    max_cell_dof_count_ = std::max(max_cell_dof_count_, num_nodes);
+    min_cell_dof_count_ = std::min(min_cell_dof_count_, num_nodes);
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
                                        num_grps,
@@ -1295,7 +1296,7 @@ LBSProblem::InitializeFieldFunctions()
 
       phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
     } // for m
-  } // for g
+  }   // for g
 
   // Initialize power generation field function
   if (options_.power_field_function_on)
@@ -1409,7 +1410,7 @@ LBSProblem::UpdateFieldFunctions()
 
         data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
-    } // for cell
+    }   // for cell
 
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
@@ -1451,7 +1452,7 @@ LBSProblem::UpdateFieldFunctions()
         data_vector_local[imapA] = nodal_power;
         local_total_power += nodal_power * Vi(i);
       } // for node
-    } // for cell
+    }   // for cell
 
     if (options_.power_normalization > 0.0)
     {
@@ -1511,9 +1512,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
-      } // for cell
-    } // for g
-  } // for m
+      }   // for cell
+    }     // for g
+  }       // for m
 }
 
 LBSProblem::~LBSProblem()

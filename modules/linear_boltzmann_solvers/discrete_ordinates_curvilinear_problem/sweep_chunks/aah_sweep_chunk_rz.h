@@ -26,7 +26,8 @@ public:
                   LBSGroupset& groupset,
                   const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                   int num_moments,
-                  int max_num_cell_dofs);
+                  int max_num_cell_dofs,
+                  int min_num_cell_dofs);
 
   void Sweep(AngleSet& angle_set) override;
 

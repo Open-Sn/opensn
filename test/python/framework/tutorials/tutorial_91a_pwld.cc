@@ -254,9 +254,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
             for (int g = 0; g < num_groups; ++g)
               b[g](i) += upwind_psi[g] * mu_Nij;
           } // for fj
-        } // for fi
-      } // if internal incident face
-    } // for face
+        }   // for fi
+      }     // if internal incident face
+    }       // for face
 
     const auto& sigma_t = cell_xs.GetSigmaTotal();
     for (size_t g = 0; g < num_groups; ++g)
@@ -270,7 +270,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
         for (size_t m = 0; m < num_moments; ++m)
         {
           auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          temp_src += m2d[m][d] * source_moments[dof_map];
+          temp_src += m2d[d][m] * source_moments[dof_map];
         } // for m
         source[i] = temp_src;
       } // for i
@@ -296,7 +296,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     // Accumulate flux-moments
     for (size_t m = 0; m < num_moments; ++m)
     {
-      const double wn_d2m = d2m[m][d];
+      const double wn_d2m = d2m[d][m];
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
@@ -382,9 +382,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
               source_moments[dof_map + g] += inscat_g;
             }
           } // for g
-        } // for m
-      } // for node i
-    } // for cell
+        }   // for m
+      }     // for node i
+    }       // for cell
   };
 
   // Define L-infinite-norm
@@ -427,9 +427,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
             else
               pw_change = std::max(delta_phi, pw_change);
           } // for g
-        } // for m
-      } // for i
-    } // for cell
+        }   // for m
+      }     // for i
+    }       // for cell
 
     return pw_change;
   };

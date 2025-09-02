@@ -23,7 +23,8 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
                                  LBSGroupset& groupset,
                                  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                                  int num_moments,
-                                 int max_num_cell_dofs)
+                                 int max_num_cell_dofs,
+                                 int min_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -35,7 +36,8 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
                groupset,
                xs,
                num_moments,
-               max_num_cell_dofs),
+               max_num_cell_dofs,
+               min_num_cell_dofs),
     secondary_unit_cell_matrices_(secondary_unit_cell_matrices),
     unknown_manager_(),
     psi_sweep_(),
@@ -229,8 +231,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
-        } // for face node i
-      } // for f
+        }   // for face node i
+      }     // for f
 
       // Looping over groups, assembling mass terms
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
@@ -244,7 +246,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_op[m][direction_num] * source_moments_[ir];
+            temp_src += m2d_op[direction_num][m] * source_moments_[ir];
           }
           source[i] = temp_src;
         }
@@ -271,7 +273,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Update phi
       for (int m = 0; m < num_moments_; ++m)
       {
-        const double wn_d2m = d2m_op[m][direction_num];
+        const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);
@@ -342,7 +344,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
               psi[gsg] = b[gsg](i);
           }
         } // for fi
-      } // for face
+      }   // for face
 
       // Update sweeping dependency angular intensity for each polar level (incoming for next
       // interval)
@@ -355,7 +357,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           psi_sweep_[ir + gsg] = f0 * b[gsg](i) - f1 * psi_sweep_[ir + gsg];
       }
     } // for angleset/subset
-  } // for cell
+  }   // for cell
 }
 
 } // namespace opensn

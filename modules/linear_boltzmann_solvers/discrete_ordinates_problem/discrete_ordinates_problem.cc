@@ -292,7 +292,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
           G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
       }
     } // non-defaulted
-  } // for bndry id
+  }   // for bndry id
 }
 
 void
@@ -401,7 +401,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
                                std::to_string(gs) + " not found.");
 
       } // for angle m
-    } // if saving angular flux
+    }   // if saving angular flux
 
     const auto num_gs_groups = groupset.groups.size();
     const auto gsg_i = groupset.groups.front().id;
@@ -430,7 +430,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
             phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
             phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);
           } // for group g
-        } // for moment m
+        }   // for moment m
 
         // Reorient angular flux
         if (options_.save_angular_flux)
@@ -446,7 +446,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           }
         }
       } // for node i
-    } // for cell
+    }   // for cell
 
   } // for groupset
 }
@@ -829,7 +829,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       ++so_grouping_id;
     } // for so_grouping
-  } // map scope
+  }   // map scope
 
   return {unq_so_grps, dir_id_to_so_map};
 }
@@ -922,7 +922,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       else
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
-  } // for so_grouping
+  }   // for so_grouping
 
   groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 
@@ -951,6 +951,7 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
                                                        block_id_to_xs_map_,
                                                        num_moments_,
                                                        max_cell_dof_count_,
+                                                       min_cell_dof_count_,
                                                        *this,
                                                        max_level_size_,
                                                        max_groupset_size_,
@@ -972,7 +973,8 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
                                                        groupset,
                                                        block_id_to_xs_map_,
                                                        num_moments_,
-                                                       max_cell_dof_count_);
+                                                       max_cell_dof_count_,
+                                                       min_cell_dof_count_);
 
     return sweep_chunk;
   }

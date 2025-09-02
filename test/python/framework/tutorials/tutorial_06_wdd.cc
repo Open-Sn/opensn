@@ -138,8 +138,8 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
 
         q_source[dof_map] = 1.0;
       } // for node i
-    } // if inside box
-  } // for cell
+    }   // if inside box
+  }     // for cell
 
   // Define sweep chunk
   NDArray<double, 4> psi_ds_x(std::array<int64_t, 4>{Nx, Ny, Nz, num_groups});
@@ -209,7 +209,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       for (size_t m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
-        rhs += source_moments[dof_map] * m2d[m][d];
+        rhs += source_moments[dof_map] * m2d[d][m];
       }
 
       if (Nx > 1)
@@ -232,8 +232,13 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       // Accumulate flux-moments
       for (size_t m = 0; m < num_moments; ++m)
       {
+<<<<<<< HEAD
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
         phi_new[dof_map] += d2m[m][d] * psi_ijk;
+=======
+        const int64_t dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
+        phi_new[dof_map] += d2m[d][m] * psi_ijk;
+>>>>>>> 8414cbf7 (Sweep performance improvements. Sweep specialization for the case where num_cell_nodes = 4.)
       }
 
       // Save angular fluxes
@@ -364,9 +369,9 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
           else
             pw_change = std::max(delta_phi, pw_change);
         } // for g
-      } // for m
-    } // for i
-  } // for cell
+      }   // for m
+    }     // for i
+  }       // for cell
 
   return pw_change;
 }
@@ -414,9 +419,9 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
             source_moments[dof_map + g] += inscat_g;
           }
         } // for g
-      } // for m
-    } // for node i
-  } // for cell
+      }   // for m
+    }     // for node i
+  }       // for cell
 
   return source_moments;
 }

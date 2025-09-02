@@ -37,36 +37,33 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
-  for (const auto& ell_em : m_to_ell_em_map_)
+  d2m_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
+
+  for (size_t n = 0; n < num_angles; ++n)
   {
-    std::vector<double> cur_mom;
-    cur_mom.reserve(num_angles);
+    const auto& ang = abscissae[n];
+    const double w = weights[n];
+    auto& row = d2m_op_[n];
 
-    for (size_t n = 0; n < num_angles; ++n)
+    for (size_t m = 0; m < num_moms; ++m)
     {
-      const auto& cur_angle = abscissae[n];
-      double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-      double w = weights[n];
-      cur_mom.push_back(value * w);
+      const auto& ell_em = m_to_ell_em_map_[m];
+      const double val = Ylm(ell_em.ell, ell_em.m, ang.phi, ang.theta);
+      row[m] = val * w;
     }
-
-    d2m_op_.push_back(cur_mom);
   }
 
-  // Verbose printout
   std::stringstream outs;
-  outs << "\nQuadrature d2m operator:\n";
+  outs << "\nQuadrature d2m operator (angle rows, moment columns):\n";
   for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
     for (size_t m = 0; m < num_moms; ++m)
     {
-      outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[m][n]
-           << " ";
+      outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[n][m]
+           << ' ';
     }
-    outs << "\n";
   }
-
   log.Log0Verbose1() << outs.str();
 }
 
@@ -78,37 +75,35 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
-  const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
+  const double normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
-  for (const auto& ell_em : m_to_ell_em_map_)
+  m2d_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
+
+  for (size_t n = 0; n < num_angles; ++n)
   {
-    std::vector<double> cur_mom;
-    cur_mom.reserve(num_angles);
+    const auto& ang = abscissae[n];
+    auto& row = m2d_op_[n];
 
-    for (size_t n = 0; n < num_angles; ++n)
+    for (size_t m = 0; m < num_moms; ++m)
     {
-      const auto& cur_angle = abscissae[n];
-      double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
-                     Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-      cur_mom.push_back(value);
+      const auto& ell_em = m_to_ell_em_map_[m];
+      const double val =
+        ((2.0 * ell_em.ell + 1.0) / normalization) * Ylm(ell_em.ell, ell_em.m, ang.phi, ang.theta);
+      row[m] = val;
     }
-
-    m2d_op_.push_back(cur_mom);
   }
 
-  // Verbose printout
   std::stringstream outs;
-
-  outs << "\nQuadrature m2d operator:\n";
+  outs << "\nQuadrature m2d operator (angle rows, moment columns):\n";
   for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
     for (size_t m = 0; m < num_moms; ++m)
     {
-      outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[m][n]
-           << " ";
+      outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
+           << ' ';
     }
-    outs << "\n";
+    outs << '\n';
   }
 
   log.Log0Verbose1() << outs.str();

@@ -335,8 +335,8 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                                       fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
         } // for qp
-      } // for j
-    } // for i
+      }   // for j
+    }     // for i
 
     return UnitCellMatrices{{},
                             {},
@@ -373,7 +373,8 @@ DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
                                                        groupset,
                                                        block_id_to_xs_map_,
                                                        num_moments_,
-                                                       max_cell_dof_count_);
+                                                       max_cell_dof_count_,
+                                                       min_cell_dof_count_);
 
   return sweep_chunk;
 }

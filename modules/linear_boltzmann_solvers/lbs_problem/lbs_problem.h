@@ -247,7 +247,7 @@ public:
    *
    * @note This does nothing for diffusion-based solvers.
    */
-  virtual void ReorientAdjointSolution() {};
+  virtual void ReorientAdjointSolution(){};
 
 protected:
   /// Performs general input checks before initialization continues.
@@ -276,7 +276,7 @@ protected:
 
   virtual void InitializeSolverSchemes();
 
-  virtual void InitializeWGSSolvers() {};
+  virtual void InitializeWGSSolvers(){};
 
   /// Initializes data carriers to GPUs and memory pinner.
   void InitializeGPUExtras();
@@ -316,6 +316,7 @@ protected:
   UnknownManager flux_moments_uk_man_;
 
   size_t max_cell_dof_count_ = 0;
+  size_t min_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
   uint64_t global_node_count_ = 0;
 

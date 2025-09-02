@@ -29,6 +29,7 @@ MeshContinuum::MeshContinuum()
     mesh_type_(UNSTRUCTURED),
     coord_sys_(CoordinateSystemType::CARTESIAN),
     extruded_(false),
+    num_partitions_(opensn::mpi_comm.size()),
     global_vertex_count_(0)
 {
 }
@@ -237,13 +238,6 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   log.LogAllVerbose2() << outstr.str();
 
   return std::make_shared<GridFaceHistogram>(face_categories_list);
-}
-
-bool
-MeshContinuum::IsCellLocal(uint64_t global_id) const
-{
-  auto native_index = global_cell_id_to_local_id_map_.find(global_id);
-  return (native_index != global_cell_id_to_local_id_map_.end());
 }
 
 void
@@ -670,7 +664,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
         if (not face.IsNeighborLocal(this))
           local_graph_edges.insert(face.GetNeighborPartitionID(this));
     } // for f
-  } // for local cells
+  }   // for local cells
 
   // Convert set to vector
   // This is just done for convenience because MPI

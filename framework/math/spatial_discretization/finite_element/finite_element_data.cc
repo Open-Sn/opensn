@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include <cassert>
 
 namespace opensn
 {
@@ -13,23 +14,24 @@ VolumetricFiniteElementData::GetQuadraturePointIndices() const
 }
 
 Vector3
-VolumetricFiniteElementData::QPointXYZ(unsigned int qp) const
+VolumetricFiniteElementData::QPointXYZ(size_t qp) const
 {
-  return qpoints_xyz_.at(qp);
+  assert(qp < qpoints_xyz_.size());
+  return qpoints_xyz_[qp];
 }
 
 double
-VolumetricFiniteElementData::ShapeValue(unsigned int i, unsigned int qp) const
+VolumetricFiniteElementData::ShapeValue(size_t i, size_t qp) const
 {
-  const auto& qp_data = shape_value_.at(i);
-  return qp_data.at(qp);
+  assert(i < shape_value_.size() and qp < shape_value_[i].size());
+  return shape_value_[i][qp];
 }
 
 Vector3
-VolumetricFiniteElementData::ShapeGrad(unsigned int i, unsigned int qp) const
+VolumetricFiniteElementData::ShapeGrad(size_t i, size_t qp) const
 {
-  const auto& qp_data = shape_grad_.at(i);
-  return qp_data.at(qp);
+  assert(i < shape_grad_.size() and qp < shape_graad_[i].size());
+  return shape_grad_[i][qp];
 }
 
 const std::vector<Vector3>&
@@ -57,16 +59,17 @@ VolumetricFiniteElementData::GetJxWValues() const
 }
 
 double
-VolumetricFiniteElementData::JxW(unsigned int qp) const
+VolumetricFiniteElementData::JxW(size_t qp) const
 {
-  return JxW_.at(qp);
+  assert(qp < JxW_.size());
+  return JxW_[qp];
 }
 
 int
 VolumetricFiniteElementData::FaceDofMapping(size_t face, size_t face_node_index) const
 {
-  const auto& face_data = face_dof_mappings_.at(face);
-  return face_data.at(face_node_index);
+  assert(face < face_dof_mappings_.size() and face_node_index < face_dof_mappings_[face].size());
+  return face_dof_mappings_[face][face_node_index];
 }
 
 size_t
@@ -76,9 +79,10 @@ VolumetricFiniteElementData::GetNumNodes() const
 }
 
 Vector3
-SurfaceFiniteElementData::Normal(unsigned int qp) const
+SurfaceFiniteElementData::Normal(size_t qp) const
 {
-  return normals_.at(qp);
+  assert(qp < normals_.size());
+  return normals_[qp];
 }
 
 const std::vector<Vector3>&
