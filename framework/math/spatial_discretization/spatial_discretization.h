@@ -6,10 +6,12 @@
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
 #include <petscksp.h>
+#include <cassert>
 #include <vector>
 #include <map>
 #include <set>
@@ -28,7 +30,14 @@ public:
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
   MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
-  const CellMapping& GetCellMapping(const Cell& cell) const;
+  const CellMapping& GetCellMapping(const Cell& cell) const
+  {
+    assert(cell.local_id < cell_mappings_.size());
+    if (GetGrid()->IsCellLocal(cell.global_id))
+      return *cell_mappings_[cell.local_id];
+    return *nb_cell_mappings_.at(cell.global_id);
+  }
+
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
