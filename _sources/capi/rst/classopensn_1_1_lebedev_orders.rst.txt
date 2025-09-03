@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_lebedev_orders:
+
+Class LebedevOrders
+===================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_lebedev_orders.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_lebedev_orders_1_1_quadrature_point`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::LebedevOrders
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

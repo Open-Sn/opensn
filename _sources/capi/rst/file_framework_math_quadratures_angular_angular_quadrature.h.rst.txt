@@ -44,6 +44,8 @@ Included By
 
 - :ref:`file_framework_math_math.h`
 
+- :ref:`file_framework_math_quadratures_angular_lebedev_quadrature.h`
+
 - :ref:`file_framework_math_quadratures_angular_product_quadrature.h`
 
 - :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`

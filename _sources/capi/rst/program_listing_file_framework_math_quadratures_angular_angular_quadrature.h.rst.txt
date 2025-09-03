@@ -26,7 +26,8 @@ Program Listing for File angular_quadrature.h
    enum class AngularQuadratureType
    {
      ProductQuadrature = 1,
-     SLDFESQ = 2
+     SLDFESQ = 2,
+     LebedevQuadrature = 3
    };
    
    struct QuadraturePointPhiTheta

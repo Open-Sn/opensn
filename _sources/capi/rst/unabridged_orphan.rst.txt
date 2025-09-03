@@ -185,6 +185,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_lebedev_orders_1_1_quadrature_point.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_linear_eigen_context.rst
 
 .. toctree::
@@ -916,6 +921,16 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_l_b_s_vec_ops.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_lebedev_orders.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_lebedev_quadrature.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2348,6 +2363,16 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_quadratures_angular_lebedev_orders.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_quadratures_angular_lebedev_quadrature.h.rst
 
 .. toctree::
    :maxdepth: 1
