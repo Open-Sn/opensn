@@ -1,5 +1,24 @@
 [
   {
+    "file": "lebedev_test.py",
+    "comment": "Lebedev Test",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Weight-Sum-1=",
+        "goldvalue": 1.000e+00,
+        "abs_tol": 1e-03
+      },
+      {
+        "type": "KeyValuePair", 
+        "key": "Weight-Sum-2=",
+        "goldvalue": 1.000e+00,
+        "abs_tol": 1e-03
+      }
+    ]
+  },
+  {
     "file" : "sldfesq_test.py",
     "comment": "SLDFESQ Test",
     "num_procs" : 1,

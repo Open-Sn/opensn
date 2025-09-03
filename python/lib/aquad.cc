@@ -6,6 +6,7 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
+#include "framework/math/quadratures/angular/lebedev_quadrature.h"
 #include <pybind11/stl.h>
 #include <memory>
 #include <stdexcept>
@@ -341,6 +342,66 @@ WrapSLDFESQuadrature(py::module& aquad)
   // clang-format on
 }
 
+// Wrap Lebedev quadrature
+void
+WrapLebedevQuadrature(py::module& aquad)
+{
+  // clang-format off
+  auto lebedev_quadrature = py::class_<LebedevQuadrature,
+                                       std::shared_ptr<LebedevQuadrature>,
+                                       AngularQuadrature>(
+    aquad,
+    "LebedevQuadrature",
+    R"(
+    Lebedev quadrature for spherical integration.
+    
+    This quadrature provides high-order accuracy for spherical integration with
+    symmetric distribution of points on the sphere.
+
+    Wrapper of :cpp:class:`opensn::LebedevQuadrature`.
+    )"
+  );
+  
+  lebedev_quadrature.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        static const std::vector<std::string> required_keys = {"order"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<LebedevQuadrature, int, bool>(params, required_keys, optional_keys);
+      }
+    ),
+    R"(
+    Creates a Lebedev quadrature of the specified order.
+
+    Parameters
+    ----------
+    order: int
+        The order of the quadrature.
+    verbose: bool, default=False
+        Whether to print verbose output during initialization.
+    )"
+  );
+  
+  lebedev_quadrature.def(
+    "LoadFromOrder",
+    &LebedevQuadrature::LoadFromOrder,
+    R"(
+    Loads quadrature points from an Order.
+
+    Parameters
+    ----------
+    order: int
+        The order of the quadrature.
+    verbose: bool, default=False
+        Whether to print verbose output during loading.
+    )",
+    py::arg("order"),
+    py::arg("verbose") = false
+  );
+  // clang-format on
+}
+
 // Wrap the angular quadrature components of OpenSn
 void
 py_aquad(py::module& pyopensn)
@@ -351,6 +412,7 @@ py_aquad(py::module& pyopensn)
   WrapProductQuadrature(aquad);
   WrapCurvilinearProductQuadrature(aquad);
   WrapSLDFESQuadrature(aquad);
+  WrapLebedevQuadrature(aquad);
 }
 
 } // namespace opensn
