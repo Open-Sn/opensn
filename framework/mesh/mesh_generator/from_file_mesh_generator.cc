@@ -56,6 +56,15 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
     umesh = MeshIO::FromPVTU(options);
   else if (extension == ".case")
     umesh = MeshIO::FromEnsightGold(options);
+  else if (std::filesystem::is_directory(filepath)
+           // Contains boundary patch information.
+           && std::filesystem::exists(filepath / "constant/polyMesh/boundary")
+           // Contains information for the general mesh
+           && std::filesystem::exists(filepath / "constant/polyMesh/faces") &&
+           std::filesystem::exists(filepath / "constant/polyMesh/neighbour") &&
+           std::filesystem::exists(filepath / "constant/polyMesh/owner") &&
+           std::filesystem::exists(filepath / "constant/polyMesh/points"))
+    umesh = MeshIO::FromOpenFOAM(options);
   else
     throw std::invalid_argument("Unsupported file type \"" + extension +
                                 "\". Supported types limited to "
