@@ -63,7 +63,7 @@ WrapFieldFunctionGridBased(py::module& ffunc)
     )"
   );
   field_func_grid_based.def_static(
-    "ExportMultipleToVTK",
+    "ExportMultipleToPVTU",
     [](py::list& ff_list, const std::string& base_name)
     {
       std::vector<std::shared_ptr<const FieldFunctionGridBased>> cpp_ff_list;

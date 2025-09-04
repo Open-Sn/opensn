@@ -60,7 +60,7 @@ ss_solver.Execute()
 ff_m0 = phys1.GetScalarFieldFunctionList()
 
 # Export the first scalar field function to VTK
-FieldFunctionGridBased.ExportMultipleToVTK([ff_m0[0]], "SimTest_93_" + solver_name)
+FieldFunctionGridBased.ExportMultipleToPVTU([ff_m0[0]], "SimTest_93_" + solver_name)
 
 MPIBarrier()
 if rank == 0:
