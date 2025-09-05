@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -11,67 +12,53 @@
 namespace opensn
 {
 
-// Solve 8 independent 4x4 systems in SIMD: (Amat + sigma*M) * x = b
-// Inputs:
-//   Am[16]    : base coefficients of Amat (row-major: 00,01,...,33)
-//   Mm[16]    : base coefficients of M (same layout)
-//   sigma[8]  : sigma_tg for 8 consecutive groups
-//   b_base    : pointer into AoS b array at the first group in the batch
-//               layout is [g0*4+0, g0*4+1, g0*4+2, g0*4+3, g1*4+0, ...]
-// Effects:
-//   Overwrites the corresponding 8 b-vectors in place with the solutions.
+// Solve 8 independent 4x4 systems: (Amat + sigma*M) * x = b
 static inline void
-BatchSolveAVX512(const double* Am, const double* Mm, const double* sigma, double* b_base)
+BatchSolve(const double* Am, const double* Mm, const double* sigma_t, double* b)
 {
-  // Build static byte offsets (relative to b_base) for gathers/scatters.
-  // AoS layout: for lane k in [0..7], element i in [0..3] is at offset (4*k + i)
-  const __m512i idx0 =
-    _mm512_setr_epi64(0 * 8, 4 * 8, 8 * 8, 12 * 8, 16 * 8, 20 * 8, 24 * 8, 28 * 8);
-  const __m512i idx1 =
-    _mm512_setr_epi64(1 * 8, 5 * 8, 9 * 8, 13 * 8, 17 * 8, 21 * 8, 25 * 8, 29 * 8);
-  const __m512i idx2 =
-    _mm512_setr_epi64(2 * 8, 6 * 8, 10 * 8, 14 * 8, 18 * 8, 22 * 8, 26 * 8, 30 * 8);
-  const __m512i idx3 =
-    _mm512_setr_epi64(3 * 8, 7 * 8, 11 * 8, 15 * 8, 19 * 8, 23 * 8, 27 * 8, 31 * 8);
+  // Offsets for gathers/scatters
+  // For lane k in [0..7], element i in [0..3] is at offset (4*k + i)
+  const __m512i idx0 = _mm512_setr_epi64(0*8, 4*8, 8*8,  12*8, 16*8, 20*8, 24*8, 28*8);
+  const __m512i idx1 = _mm512_setr_epi64(1*8, 5*8, 9*8,  13*8, 17*8, 21*8, 25*8, 29*8);
+  const __m512i idx2 = _mm512_setr_epi64(2*8, 6*8, 10*8, 14*8, 18*8, 22*8, 26*8, 30*8);
+  const __m512i idx3 = _mm512_setr_epi64(3*8, 7*8, 11*8, 15*8, 19*8, 23*8, 27*8, 31*8);
 
-  // Load RHS batch
-  char* bbytes = reinterpret_cast<char*>(b_base);
+  // Gather b
+  char* bbytes = reinterpret_cast<char*>(b);
   __m512d b0 = _mm512_i64gather_pd(idx0, bbytes, 1);
   __m512d b1 = _mm512_i64gather_pd(idx1, bbytes, 1);
   __m512d b2 = _mm512_i64gather_pd(idx2, bbytes, 1);
   __m512d b3 = _mm512_i64gather_pd(idx3, bbytes, 1);
 
-  // Load sigma
-  __m512d sv = _mm512_loadu_pd(sigma);
+  // Load sigma_t
+  __m512d sv = _mm512_loadu_pd(sigma_t);
 
-  // Broadcast Am and M scalars
+  // Broadcast Am and M
   auto bcast = [](double x) { return _mm512_set1_pd(x); };
 
-  const __m512d Am00 = bcast(Am[0]), Am01 = bcast(Am[1]), Am02 = bcast(Am[2]), Am03 = bcast(Am[3]);
-  const __m512d Am10 = bcast(Am[4]), Am11 = bcast(Am[5]), Am12 = bcast(Am[6]), Am13 = bcast(Am[7]);
-  const __m512d Am20 = bcast(Am[8]), Am21 = bcast(Am[9]), Am22 = bcast(Am[10]),
-                Am23 = bcast(Am[11]);
-  const __m512d Am30 = bcast(Am[12]), Am31 = bcast(Am[13]), Am32 = bcast(Am[14]),
-                Am33 = bcast(Am[15]);
+  // clang-format off
+  const __m512d Am00 = bcast(Am[0]),  Am01 = bcast(Am[1]),  Am02 = bcast(Am[2]),  Am03 = bcast(Am[3]);
+  const __m512d Am10 = bcast(Am[4]),  Am11 = bcast(Am[5]),  Am12 = bcast(Am[6]),  Am13 = bcast(Am[7]);
+  const __m512d Am20 = bcast(Am[8]),  Am21 = bcast(Am[9]),  Am22 = bcast(Am[10]), Am23 = bcast(Am[11]);
+  const __m512d Am30 = bcast(Am[12]), Am31 = bcast(Am[13]), Am32 = bcast(Am[14]), Am33 = bcast(Am[15]);
 
-  const __m512d M00 = bcast(Mm[0]), M01 = bcast(Mm[1]), M02 = bcast(Mm[2]), M03 = bcast(Mm[3]);
-  const __m512d M10 = bcast(Mm[4]), M11 = bcast(Mm[5]), M12 = bcast(Mm[6]), M13 = bcast(Mm[7]);
-  const __m512d M20 = bcast(Mm[8]), M21 = bcast(Mm[9]), M22 = bcast(Mm[10]), M23 = bcast(Mm[11]);
+  const __m512d M00 = bcast(Mm[0]),  M01 = bcast(Mm[1]),  M02 = bcast(Mm[2]),  M03 = bcast(Mm[3]);
+  const __m512d M10 = bcast(Mm[4]),  M11 = bcast(Mm[5]),  M12 = bcast(Mm[6]),  M13 = bcast(Mm[7]);
+  const __m512d M20 = bcast(Mm[8]),  M21 = bcast(Mm[9]),  M22 = bcast(Mm[10]), M23 = bcast(Mm[11]);
   const __m512d M30 = bcast(Mm[12]), M31 = bcast(Mm[13]), M32 = bcast(Mm[14]), M33 = bcast(Mm[15]);
+  // clang-format on
 
-  // A = Am + sigma*M (elementwise)
+  // A = Am + sigma*M
   auto madd = [&sv](const __m512d& a, const __m512d& m) { return _mm512_fmadd_pd(sv, m, a); };
 
-  __m512d A00 = madd(Am00, M00), A01 = madd(Am01, M01), A02 = madd(Am02, M02),
-          A03 = madd(Am03, M03);
-  __m512d A10 = madd(Am10, M10), A11 = madd(Am11, M11), A12 = madd(Am12, M12),
-          A13 = madd(Am13, M13);
-  __m512d A20 = madd(Am20, M20), A21 = madd(Am21, M21), A22 = madd(Am22, M22),
-          A23 = madd(Am23, M23);
-  __m512d A30 = madd(Am30, M30), A31 = madd(Am31, M31), A32 = madd(Am32, M32),
-          A33 = madd(Am33, M33);
+  // clang-format off
+  __m512d A00 = madd(Am00, M00), A01 = madd(Am01, M01), A02 = madd(Am02, M02), A03 = madd(Am03, M03);
+  __m512d A10 = madd(Am10, M10), A11 = madd(Am11, M11), A12 = madd(Am12, M12), A13 = madd(Am13, M13);
+  __m512d A20 = madd(Am20, M20), A21 = madd(Am21, M21), A22 = madd(Am22, M22), A23 = madd(Am23, M23);
+  __m512d A30 = madd(Am30, M30), A31 = madd(Am31, M31), A32 = madd(Am32, M32), A33 = madd(Am33, M33);
+  // clang-format on
 
-  // Forward elimination (SIMD lanes are independent systems)
+  // Forward elimination
   const __m512d invA00 = _mm512_div_pd(_mm512_set1_pd(1.0), A00);
 
   const __m512d v10 = _mm512_mul_pd(A10, invA00);
@@ -111,16 +98,16 @@ BatchSolveAVX512(const double* Am, const double* Mm, const double* sigma, double
   A33 = _mm512_fnmadd_pd(v32, A23, A33);
 
   // Back substitution
+  // clang-format off
   b3 = _mm512_div_pd(b3, A33);
   b2 = _mm512_mul_pd(_mm512_sub_pd(b2, _mm512_mul_pd(A23, b3)), invA22);
-  b1 = _mm512_mul_pd(
-    _mm512_sub_pd(_mm512_sub_pd(b1, _mm512_mul_pd(A12, b2)), _mm512_mul_pd(A13, b3)), invA11);
-  b0 = _mm512_mul_pd(
-    _mm512_sub_pd(_mm512_sub_pd(_mm512_sub_pd(b0, _mm512_mul_pd(A01, b1)), _mm512_mul_pd(A02, b2)),
-                  _mm512_mul_pd(A03, b3)),
-    invA00);
+  b1 = _mm512_mul_pd(_mm512_sub_pd(_mm512_sub_pd(b1, _mm512_mul_pd(A12, b2)), _mm512_mul_pd(A13, b3)),
+		     invA11);
+  b0 = _mm512_mul_pd(_mm512_sub_pd(_mm512_sub_pd(_mm512_sub_pd(b0, _mm512_mul_pd(A01, b1)),
+                     _mm512_mul_pd(A02, b2)), _mm512_mul_pd(A03, b3)), invA00);
+  // clang format on
 
-  // Scatter solutions back to AoS
+  // Scatter b
   _mm512_i64scatter_pd(bbytes, idx0, b0, 1);
   _mm512_i64scatter_pd(bbytes, idx1, b1, 1);
   _mm512_i64scatter_pd(bbytes, idx2, b2, 1);
@@ -144,7 +131,6 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
   DenseMatrix<double> Amat(4, 4);
   DenseMatrix<double> Atemp(4, 4);
   std::vector<double> b(groupset_.groups.size() * 4, 0.0);
-  // std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(4, 0.0));
   std::vector<double> source(4);
 
   // Loop over each cell
@@ -186,9 +172,8 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
       preloc_face_counter = ni_preloc_face_counter;
 
       // Reset right-hand side
-      for (size_t gsg = 0; gsg < gs_size; ++gsg)
-        for (int i = 0; i < 4; ++i)
-          b[gsg * 4 + i] = 0.0;
+      for (size_t i = 0; i < gs_size * 4; ++i)
+        b[i] = 0.0;
 
       // Initialize A matrix
       for (int i = 0; i < 4; ++i)
@@ -252,72 +237,58 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
         }
       }
 
+      // clang-format off
       const double M00 = M(0, 0), M01 = M(0, 1), M02 = M(0, 2), M03 = M(0, 3);
       const double M10 = M(1, 0), M11 = M(1, 1), M12 = M(1, 2), M13 = M(1, 3);
       const double M20 = M(2, 0), M21 = M(2, 1), M22 = M(2, 2), M23 = M(2, 3);
       const double M30 = M(3, 0), M31 = M(3, 1), M32 = M(3, 2), M33 = M(3, 3);
 
-      const double Mm[16] = {
-        M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33};
+      const double Mm[16] = {M00, M01, M02, M03,
+	                     M10, M11, M12, M13,
+			     M20, M21, M22, M23,
+			     M30, M31, M32, M33};
 
       const double Am00 = Amat(0, 0), Am01 = Amat(0, 1), Am02 = Amat(0, 2), Am03 = Amat(0, 3);
       const double Am10 = Amat(1, 0), Am11 = Amat(1, 1), Am12 = Amat(1, 2), Am13 = Amat(1, 3);
       const double Am20 = Amat(2, 0), Am21 = Amat(2, 1), Am22 = Amat(2, 2), Am23 = Amat(2, 3);
       const double Am30 = Amat(3, 0), Am31 = Amat(3, 1), Am32 = Amat(3, 2), Am33 = Amat(3, 3);
 
-      const double Am[16] = {Am00,
-                             Am01,
-                             Am02,
-                             Am03,
-                             Am10,
-                             Am11,
-                             Am12,
-                             Am13,
-                             Am20,
-                             Am21,
-                             Am22,
-                             Am23,
-                             Am30,
-                             Am31,
-                             Am32,
-                             Am33};
+      const double Am[16] = {Am00, Am01, Am02, Am03,
+                             Am10, Am11, Am12, Am13,
+                             Am20, Am21, Am22, Am23,
+                             Am30, Am31, Am32, Am33};
+      // clang-format on
 
       const double* __restrict m2d_row = m2d_op[direction_num].data();
       const double* __restrict d2m_row = d2m_op[direction_num].data();
 
-      // Process groups in blocks (keep your group_block_size_, but try to make it a multiple of 8)
+      // Process groups in blocks (blocksize is a multiple of 8)
       for (size_t g0 = 0; g0 < gs_size; g0 += group_block_size_)
       {
         const size_t g1 = std::min(g0 + group_block_size_, gs_size);
 
-        // Phase 1: assemble RHS b for this block (and cache sigma_tg)
-        // We also drop 4x MapDOF calls per group per moment by using base+gsg.
-        std::vector<double> sigma_blk(g1 - g0);
+        std::vector<double> sigma_block(g1 - g0);
 
         for (size_t gsg = g0; gsg < g1; ++gsg)
         {
           const size_t rel = gsg - g0;
           const double sigma_tg = rho * sigma_t[gs_gi + gsg];
-          sigma_blk[rel] = sigma_tg;
+          sigma_block[rel] = sigma_tg;
 
-          // Add source moments: b_i += sum_m M(i, :) * (w * q_moms at nodes 0..3)
           for (int m = 0; m < num_moments_; ++m)
           {
-            const double w = m2d_row[m];
+	    const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
+	    const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
+	    const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
+	    const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
 
-            // Base indices for this (cell, m, group-set start)
-            const size_t ir0_base = cell_transport_view.MapDOF(0, m, gs_gi);
-            const size_t ir1_base = cell_transport_view.MapDOF(1, m, gs_gi);
-            const size_t ir2_base = cell_transport_view.MapDOF(2, m, gs_gi);
-            const size_t ir3_base = cell_transport_view.MapDOF(3, m, gs_gi);
-
-            const double s0 = w * source_moments_[ir0_base + gsg];
-            const double s1 = w * source_moments_[ir1_base + gsg];
-            const double s2 = w * source_moments_[ir2_base + gsg];
-            const double s3 = w * source_moments_[ir3_base + gsg];
-
-            // Accumulate with scalar FMAs; the compiler will fuse
             double* __restrict bg = &b[gsg * 4];
+            const double w = m2d_row[m];
+            const double s0 = w * source_moments_[dof0 + gsg];
+            const double s1 = w * source_moments_[dof1 + gsg];
+            const double s2 = w * source_moments_[dof2 + gsg];
+            const double s3 = w * source_moments_[dof3 + gsg];
+
             bg[0] += M00 * s0 + M01 * s1 + M02 * s2 + M03 * s3;
             bg[1] += M10 * s0 + M11 * s1 + M12 * s2 + M13 * s3;
             bg[2] += M20 * s0 + M21 * s1 + M22 * s2 + M23 * s3;
@@ -325,23 +296,22 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           }
         }
 
-        // Phase 2: solve the 4x4 systems for this block
-        size_t blk_len = g1 - g0;
+        size_t block_len = g1 - g0;
         size_t k = 0;
 
 #if defined(__AVX512F__)
-        // Vectorized batches of 8 groups
-        for (; k + 8 <= blk_len; k += 8)
-          BatchSolveAVX512(Am, Mm, &sigma_blk[k], &b[(g0 + k) * 4]);
+        // Vectorized solves of batches of 8 groups
+        for (; k + 8 <= block_len; k += 8)
+          BatchSolve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
 #endif
 
-        // Remainder (or entire block if no AVX-512)
-        for (; k < blk_len; ++k)
+        // Remainder of groups  (or entire block if no AVX-512)
+        for (; k < block_len; ++k)
         {
           const size_t gsg = g0 + k;
-          const double sigma_tg = sigma_blk[k];
+          const double sigma_tg = sigma_block[k];
 
-          // Build Atemp = Amat + sigma_tg*M
+          // Build A = Am + sigma_tg*M
           double A00 = Am00 + sigma_tg * M00, A01 = Am01 + sigma_tg * M01;
           double A02 = Am02 + sigma_tg * M02, A03 = Am03 + sigma_tg * M03;
 
@@ -356,7 +326,7 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
 
           double* __restrict bg = &b[gsg * 4];
 
-          // Forward elimination (scalar fallback)
+          // Forward elimination
           const double invA00 = 1.0 / A00;
 
           const double v10 = A10 * invA00;
@@ -402,7 +372,6 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           bg[0] = (bg[0] - A01 * bg[1] - A02 * bg[2] - A03 * bg[3]) * invA00;
         }
 
-        // Phase 3: moment accumulation into phi (unchanged math, but hoisted row ptrs)
         for (size_t gsg = g0; gsg < g1; ++gsg)
         {
           const double* __restrict bg = &b[gsg * 4];
@@ -410,16 +379,15 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const double w = d2m_row[m];
+	    const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
+	    const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
+	    const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
+	    const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
 
-            const size_t ir0_base = cell_transport_view.MapDOF(0, m, gs_gi);
-            const size_t ir1_base = cell_transport_view.MapDOF(1, m, gs_gi);
-            const size_t ir2_base = cell_transport_view.MapDOF(2, m, gs_gi);
-            const size_t ir3_base = cell_transport_view.MapDOF(3, m, gs_gi);
-
-            destination_phi_[ir0_base + gsg] += w * bg[0];
-            destination_phi_[ir1_base + gsg] += w * bg[1];
-            destination_phi_[ir2_base + gsg] += w * bg[2];
-            destination_phi_[ir3_base + gsg] += w * bg[3];
+            destination_phi_[dof0 + gsg] += w * bg[0];
+            destination_phi_[dof1 + gsg] += w * bg[1];
+            destination_phi_[dof2 + gsg] += w * bg[2];
+            destination_phi_[dof3 + gsg] += w * bg[3];
           }
         }
       } // blocks
@@ -439,8 +407,7 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
         }
       }
 
-      // For outoing, non-boundary faces, copy angular flux to fluds and
-      // accumulate outflow
+      // For outoing, non-boundary faces, copy angular flux to fluds and accumulate outflow
       int out_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
       {
@@ -481,9 +448,8 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           else if (is_reflecting)
             psi = angle_set.PsiReflected(face.neighbor_id, direction_num, cell_local_id, f, fi);
           else
-            continue; // non-reflecting boundary has no psi target
+            continue;
 
-          // Write psi only for interior or reflecting boundary faces
           if (!is_boundary || is_reflecting)
           {
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
@@ -491,8 +457,8 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           }
         }
       }
-    } // for angleset/subset
-  }   // for cell
+    }
+  }
 }
 
 } // namespace opensn
