@@ -241,6 +241,12 @@ LBSProblem::GetVolumetricSources() const
   return volumetric_sources_;
 }
 
+void
+LBSProblem::ClearBoundaries()
+{
+  boundary_preferences_.clear();
+}
+
 const std::map<int, std::shared_ptr<MultiGroupXS>>&
 LBSProblem::GetMatID2XSMap() const
 {
