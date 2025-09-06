@@ -8,13 +8,15 @@
 
 #if defined(__AVX512F__)
 #include <immintrin.h>
+#endif
 
 namespace opensn
 {
 
+#if defined(__AVX512F__)
 // Solve 8 independent 4x4 systems: (Amat + sigma*M) * x = b
 static inline void
-BatchSolve(const double* Am, const double* Mm, const double* sigma_t, double* b)
+BatchSolve(const double* __restrict Am, const double* __restrict Mm, const double* __restrict sigma_t, double* __restrict b)
 {
   // Offsets for gathers/scatters
   // For lane k in [0..7], element i in [0..3] is at offset (4*k + i)
