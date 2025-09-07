@@ -101,13 +101,13 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_air},
         ],
         scattering_order=1,
+        volumetric_sources=[mg_src0, mg_src1],
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
             "max_ags_iterations": 1,
-            "volumetric_sources": [mg_src0, mg_src1],
         },
     )
 

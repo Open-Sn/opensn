@@ -97,11 +97,11 @@ if __name__ == "__main__":
             }
         ],
         scattering_order=1,
+        volumetric_sources=[mg_src1, mg_src2],
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
-            "volumetric_sources": [mg_src1, mg_src2],
             "max_ags_iterations": 1,
             "save_angular_flux": True
         },

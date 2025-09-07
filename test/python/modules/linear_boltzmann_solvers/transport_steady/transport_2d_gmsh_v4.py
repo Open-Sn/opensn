@@ -60,12 +60,12 @@ if __name__ == "__main__":
             {"block_ids": [1, 2], "xs": xs_diag},
         ],
         scattering_order=0,
+        volumetric_sources=[mg_src],
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "reflecting"},
                 {"name": "ymin", "type": "reflecting"},
             ],
-            "volumetric_sources": [mg_src],
         },
     )
 

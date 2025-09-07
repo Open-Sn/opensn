@@ -87,6 +87,7 @@ if __name__ == "__main__":
             {"block_ids": [0, 1], "xs": xs_3_170},
         ],
         scattering_order=0,
+        volumetric_sources=[mg_src0, mg_src1],
         options={
             "boundary_conditions": [
                 {
@@ -98,7 +99,6 @@ if __name__ == "__main__":
             "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,
-            "volumetric_sources": [mg_src0, mg_src1],
         },
     )
 

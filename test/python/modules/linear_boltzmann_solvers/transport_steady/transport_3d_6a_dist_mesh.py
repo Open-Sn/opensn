@@ -101,12 +101,12 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_graphite},
         ],
         scattering_order=1,
+        volumetric_sources=[mg_src],
         options={
             "boundary_conditions": [
                 {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
             ],
             "save_angular_flux": True,
-            "volumetric_sources": [mg_src],
         },
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
