@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     if globals().get('master_export', False) is True:
         # Export all phi values
-        basename = "trqnsport_3d_5_2_cycles_phi"
+        basename = "transport_3d_5_2_cycles_phi"
         export_list = []
         for i in range(num_groups):
             export_list.append(fflist[i][0])

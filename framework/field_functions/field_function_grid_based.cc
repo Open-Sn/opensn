@@ -246,7 +246,6 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
   // Upload cell/point data
-  auto cell_data = ugrid->GetCellData();
   auto point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
   {
@@ -264,10 +263,8 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
         component_name += unknown.component_names[c];
 
       vtkNew<vtkDoubleArray> point_array;
-      vtkNew<vtkDoubleArray> cell_array;
 
       point_array->SetName(component_name.c_str());
-      cell_array->SetName(component_name.c_str());
 
       // Populate the array here
       for (const auto& cell : grid->local_cells)
@@ -276,7 +273,6 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
 
         if (num_nodes == cell.vertex_ids.size())
         {
-          double node_average = 0.0;
           for (int n = 0; n < num_nodes; ++n)
           {
             const int64_t nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
@@ -284,10 +280,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
             const double field_value = field_vector[nmap];
 
             point_array->InsertNextValue(field_value);
-            node_average += field_value;
           } // for node
-          node_average /= static_cast<double>(num_nodes);
-          cell_array->InsertNextValue(node_average);
         }
         else
         {
@@ -300,7 +293,6 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          cell_array->InsertNextValue(node_average);
           for (int n = 0; n < cell.vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
@@ -310,7 +302,6 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
       } // for cell
 
       point_data->AddArray(point_array);
-      cell_data->AddArray(cell_array);
     } // for component
   } // for ff_ptr
 
