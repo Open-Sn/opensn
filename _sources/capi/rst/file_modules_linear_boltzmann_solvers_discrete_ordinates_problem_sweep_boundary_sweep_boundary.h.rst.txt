@@ -48,8 +48,6 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_vacuum_boundary.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
-
 
 
 

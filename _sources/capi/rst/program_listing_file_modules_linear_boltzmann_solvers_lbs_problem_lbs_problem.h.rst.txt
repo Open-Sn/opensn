@@ -16,7 +16,6 @@ Program Listing for File lbs_problem.h
    #pragma once
    
    #include "modules/problem.h"
-   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
