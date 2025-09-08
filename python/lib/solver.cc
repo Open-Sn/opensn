@@ -457,6 +457,8 @@ WrapLBS(py::module& slv)
         A list of mappings from block ids to cross-section definitions.
     scattering_order: int, default=0
         The level of harmonic expansion for the scattering source.
+    boundary_conditions: List[Dict], default=[]
+        A list containing tables for each boundary specification.
     options : Dict, default={}
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, default="AAH"
@@ -577,6 +579,8 @@ WrapLBS(py::module& slv)
         A list of mappings from block ids to cross-section definitions.
     scattering_order: int, default=0
         The level of harmonic expansion for the scattering source.
+    boundary_conditions: List[Dict], default=[]
+        A list containing tables for each boundary specification.
     options : dict, optional
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, optional

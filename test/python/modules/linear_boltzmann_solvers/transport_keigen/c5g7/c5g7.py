@@ -90,11 +90,11 @@ if __name__ == "__main__":
         ],
         xs_map=xs_map,
         scattering_order=0,
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-            ],
             "verbose_outer_iterations": True,
             "verbose_inner_iterations": True,
             "power_field_function_on": True,

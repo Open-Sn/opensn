@@ -65,6 +65,10 @@ LBSProblem::GetInputParameters()
   params.AddOptionalParameterArray<std::shared_ptr<PointSource>>(
     "point_sources", {}, "An array of point sources.");
 
+  params.AddOptionalParameterArray(
+    "boundary_conditions", {}, "An array containing tables for each boundary specification.");
+  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
+
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
@@ -132,6 +136,19 @@ LBSProblem::LBSProblem(const InputParameters& params)
     pt_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& src : pt_srcs)
       point_sources_.push_back(src.GetValue<std::shared_ptr<PointSource>>());
+  }
+
+  // Initialize boundary conditions
+  if (params.Has("boundary_conditions"))
+  {
+    auto& bcs = params.GetParam("boundary_conditions");
+    bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
+    {
+      auto bndry_params = GetBoundaryOptionsBlock();
+      bndry_params.AssignParameters(bcs.GetParam(b));
+      SetBoundaryOptions(bndry_params);
+    }
   }
 
   // Check system for GPU acceleration
@@ -566,7 +583,7 @@ LBSProblem::GetBoundaryOptionsBlock()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Set options for boundary conditions. See \\ref LBSBCs");
+  params.SetGeneralDescription("Set options for boundary conditions.");
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");

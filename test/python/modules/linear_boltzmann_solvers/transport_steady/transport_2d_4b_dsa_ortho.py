@@ -102,11 +102,11 @@ if __name__ == "__main__":
         ],
         scattering_order=1,
         volumetric_sources=[mg_src0, mg_src1],
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-            ],
             "max_ags_iterations": 1,
         },
     )

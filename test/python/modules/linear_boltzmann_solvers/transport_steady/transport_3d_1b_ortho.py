@@ -84,13 +84,11 @@ if __name__ == "__main__":
         ],
         scattering_order=1,
         volumetric_sources=[mg_src],
-        options={
-            "boundary_conditions": [
-                {"name": "xmin",
-                 "type": "isotropic",
-                 "group_strength": bsrc},
-            ],
-        },
+        boundary_conditions=[
+            {"name": "xmin",
+             "type": "isotropic",
+             "group_strength": bsrc},
+        ],
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()

@@ -62,12 +62,10 @@ if __name__ == "__main__":
         ],
         scattering_order=0,
         volumetric_sources=[mg_src],
-        options={
-            "boundary_conditions": [
-                {"name": "xmin", "type": "reflecting"},
-                {"name": "ymin", "type": "reflecting"},
-            ],
-        },
+        boundary_conditions=[
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"},
+        ],
     )
 
     ss_solver = SteadyStateSourceSolver(problem=phys)

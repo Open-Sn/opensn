@@ -88,14 +88,14 @@ if __name__ == "__main__":
         ],
         scattering_order=0,
         volumetric_sources=[mg_src0, mg_src1],
+        boundary_conditions=[
+            {
+                "name": "xmin",
+                "type": "isotropic",
+                "group_strength": bsrc,
+            },
+        ],
         options={
-            "boundary_conditions": [
-                {
-                    "name": "xmin",
-                    "type": "isotropic",
-                    "group_strength": bsrc,
-                },
-            ],
             "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,

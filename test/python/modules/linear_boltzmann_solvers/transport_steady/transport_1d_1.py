@@ -95,10 +95,10 @@ if __name__ == "__main__":
         ],
         scattering_order=5,
         volumetric_sources=[mg_src],
+        boundary_conditions=[
+            {"name": "zmin", "type": "isotropic", "group_strength": bsrc},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "zmin", "type": "isotropic", "group_strength": bsrc},
-            ],
             "max_ags_iterations": 1
         }
     )

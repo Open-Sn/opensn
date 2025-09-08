@@ -93,10 +93,10 @@ if __name__ == "__main__":
         ],
         scattering_order=1,
         volumetric_sources=[mg_src1, mg_src2],
+        boundary_conditions=[
+            {"name": "zmax", "type": "isotropic", "group_strength": bsrc},
+        ],
         options={
-            "boundary_conditions": [
-                {"name": "zmax", "type": "isotropic", "group_strength": bsrc},
-            ],
             "save_angular_flux": True,
             # restart_writes_enabled = True,
             # write_delayed_psi_to_restart = True,

@@ -88,15 +88,13 @@ if __name__ == "__main__":
         ],
         scattering_order=1,
         volumetric_sources=[mg_src1, mg_src2],
-        options={
-            "boundary_conditions": [
-                {
-                    "name": "xmin",
-                    "type": "isotropic",
-                    "group_strength": bsrc,
-                },
-            ],
-        },
+        boundary_conditions=[
+            {
+                "name": "xmin",
+                "type": "isotropic",
+                "group_strength": bsrc,
+            },
+        ],
     )
 
     # Initialize and Execute Solver
