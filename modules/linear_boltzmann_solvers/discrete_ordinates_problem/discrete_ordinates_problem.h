@@ -28,6 +28,13 @@ public:
   const std::string& GetSweepType() const { return sweep_type_; }
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
+
+  /// Read/write access to newest updated angular flux vector.
+  std::vector<std::vector<double>>& GetPsiNewLocal();
+
+  /// Read access to newest updated angular flux vector.
+  const std::vector<std::vector<double>>& GetPsiNewLocal() const;
+
   void Initialize() override;
 
   /// Returns the sweep boundaries as a read only reference
@@ -71,6 +78,8 @@ protected:
   /// Sets up the sweek chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
+  void ZeroSolutions() override;
+
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>
@@ -90,6 +99,8 @@ protected:
   std::size_t max_groupset_size_ = 0;
 
   std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
+
+  std::vector<std::vector<double>> psi_new_local_;
 
 public:
   static InputParameters GetInputParameters();

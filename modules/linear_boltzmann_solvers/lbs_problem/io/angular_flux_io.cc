@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/hdf_utils.h"
@@ -12,7 +12,7 @@ namespace opensn
 
 void
 LBSSolverIO::WriteAngularFluxes(
-  LBSProblem& lbs_problem,
+  DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
   std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src)
 {
@@ -23,14 +23,14 @@ LBSSolverIO::WriteAngularFluxes(
 
   // Select source vector
   std::vector<std::vector<double>>& src =
-    opt_src.has_value() ? opt_src.value().get() : lbs_problem.GetPsiNewLocal();
+    opt_src.has_value() ? opt_src.value().get() : do_problem.GetPsiNewLocal();
 
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = lbs_problem.GetGrid();
-  const auto& discretization = lbs_problem.GetSpatialDiscretization();
-  const auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& grid = do_problem.GetGrid();
+  const auto& discretization = do_problem.GetSpatialDiscretization();
+  const auto& groupsets = do_problem.GetGroupsets();
 
   auto num_local_cells = grid->local_cells.size();
   auto num_local_nodes = discretization.GetNumLocalNodes();
@@ -105,7 +105,7 @@ LBSSolverIO::WriteAngularFluxes(
 
 void
 LBSSolverIO::ReadAngularFluxes(
-  LBSProblem& lbs_problem,
+  DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
   std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest)
 {
@@ -116,7 +116,7 @@ LBSSolverIO::ReadAngularFluxes(
 
   // Select destination vector
   std::vector<std::vector<double>>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_problem.GetPsiNewLocal();
+    opt_dest.has_value() ? opt_dest.value().get() : do_problem.GetPsiNewLocal();
 
   log.Log() << "Reading angular flux file from " << file_base;
 
@@ -129,9 +129,9 @@ LBSSolverIO::ReadAngularFluxes(
   H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = lbs_problem.GetGrid();
-  const auto& discretization = lbs_problem.GetSpatialDiscretization();
-  const auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& grid = do_problem.GetGrid();
+  const auto& discretization = do_problem.GetSpatialDiscretization();
+  const auto& groupsets = do_problem.GetGroupsets();
 
   const auto num_local_nodes = discretization.GetNumLocalNodes();
   const auto num_groupsets = groupsets.size();

@@ -1,13 +1,16 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
+
+#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
@@ -48,7 +51,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
   : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>(("problem"))),
+    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     acceleration_(
       params.GetSharedPtrParam<DiscreteOrdinatesKEigenAcceleration>("acceleration", false)),
     max_iters_(params.GetParamValue<size_t>("max_iters")),
