@@ -105,9 +105,7 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_2},
         ],
         scattering_order=0,
-        options={
-            "point_sources": [pt_src],
-        },
+        point_sources=[pt_src],
     )
 
     # Forward solve

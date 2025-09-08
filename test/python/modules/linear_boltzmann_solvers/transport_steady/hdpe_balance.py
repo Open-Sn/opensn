@@ -65,6 +65,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_hdpe},
         ],
         scattering_order=0,
+        volumetric_sources=[mg_src],
         options={
             "save_angular_flux": True,
             "boundary_conditions": [
@@ -75,7 +76,6 @@ if __name__ == "__main__":
                 {"name": "zmin", "type": "reflecting"},
                 {"name": "zmax", "type": "reflecting"},
             ],
-            "volumetric_sources": [mg_src],
         },
     )
 

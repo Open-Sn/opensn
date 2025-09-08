@@ -111,9 +111,7 @@ if __name__ == "__main__":
             {"block_ids": [2], "xs": xs_1g3},
         ],
         scattering_order=0,
-        options={
-            "volumetric_sources": [fwd_src],
-        },
+        volumetric_sources=[fwd_src],
     )
 
     # Forward solve

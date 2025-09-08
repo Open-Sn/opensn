@@ -89,9 +89,7 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_air},
         ],
         scattering_order=1,
-        options={
-            "volumetric_sources": [mg_src],
-        },
+        volumetric_sources=[mg_src],
     )
 
     # Initialize and Execute Solver

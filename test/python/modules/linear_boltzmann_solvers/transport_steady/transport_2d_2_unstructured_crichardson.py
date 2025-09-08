@@ -87,6 +87,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_3_170},
         ],
         scattering_order=1,
+        volumetric_sources=[mg_src1, mg_src2],
         options={
             "boundary_conditions": [
                 {
@@ -95,7 +96,6 @@ if __name__ == "__main__":
                     "group_strength": bsrc,
                 },
             ],
-            "volumetric_sources": [mg_src1, mg_src2],
         },
     )
 

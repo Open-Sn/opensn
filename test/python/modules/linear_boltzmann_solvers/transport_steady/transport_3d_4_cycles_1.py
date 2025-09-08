@@ -93,11 +93,11 @@ if __name__ == "__main__":
             {"block_ids": [0, 1], "xs": xs_graphite},
         ],
         scattering_order=1,
+        volumetric_sources=[mg_src1, mg_src2],
         options={
             "boundary_conditions": [
                 {"name": "zmax", "type": "isotropic", "group_strength": bsrc},
             ],
-            "volumetric_sources": [mg_src1, mg_src2],
         },
     )
 

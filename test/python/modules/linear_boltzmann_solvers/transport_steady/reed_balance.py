@@ -77,12 +77,12 @@ if __name__ == "__main__":
         ],
         xs_map=xs_map,
         scattering_order=0,
+        volumetric_sources=[src0, src1],
         options={
             "boundary_conditions": [
                 {"name": "zmin", "type": "vacuum"},
                 {"name": "zmax", "type": "vacuum"}
             ],
-            "volumetric_sources": [src0, src1],
         }
     )
 

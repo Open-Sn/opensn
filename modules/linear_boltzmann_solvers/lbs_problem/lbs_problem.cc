@@ -59,6 +59,12 @@ LBSProblem::GetInputParameters()
   params.AddRequiredParameter<size_t>("scattering_order",
                                       "The level of harmonic expansion for the scattering source.");
 
+  params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
+    "volumetric_sources", {}, "An array of handles to volumetric sources.");
+
+  params.AddOptionalParameterArray<std::shared_ptr<PointSource>>(
+    "point_sources", {}, "An array of point sources.");
+
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
@@ -110,6 +116,24 @@ LBSProblem::LBSProblem(const InputParameters& params)
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
   }
+
+  // Initialize sources
+  if (params.Has("volumetric_sources"))
+  {
+    auto& vol_srcs = params.GetParam("volumetric_sources");
+    vol_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (const auto& src : vol_srcs)
+      volumetric_sources_.push_back(src.GetValue<std::shared_ptr<VolumetricSource>>());
+  }
+
+  if (params.Has("point_sources"))
+  {
+    auto& pt_srcs = params.GetParam("point_sources");
+    pt_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (const auto& src : pt_srcs)
+      point_sources_.push_back(src.GetValue<std::shared_ptr<PointSource>>());
+  }
+
   // Check system for GPU acceleration
   if (use_gpus_)
   {
