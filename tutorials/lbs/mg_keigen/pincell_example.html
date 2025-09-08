@@ -320,7 +320,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">()</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;pin_cell&quot;</span>
-<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToVTK</span><span class="p">([</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)],</span> <span class="n">vtk_basename</span><span class="p">)</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">([</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)],</span> <span class="n">vtk_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

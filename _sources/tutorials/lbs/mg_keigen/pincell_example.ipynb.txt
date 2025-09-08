@@ -311,7 +311,7 @@
    "source": [
     "fflist = phys.GetScalarFieldFunctionList()\n",
     "vtk_basename = \"pin_cell\"\n",
-    "FieldFunctionGridBased.ExportMultipleToVTK([fflist[g] for g in range(num_groups)], vtk_basename)"
+    "FieldFunctionGridBased.ExportMultipleToPVTU([fflist[g] for g in range(num_groups)], vtk_basename)"
    ]
   },
   {
