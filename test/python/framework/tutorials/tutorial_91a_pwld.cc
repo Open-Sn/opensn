@@ -254,9 +254,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
             for (int g = 0; g < num_groups; ++g)
               b[g](i) += upwind_psi[g] * mu_Nij;
           } // for fj
-        }   // for fi
-      }     // if internal incident face
-    }       // for face
+        } // for fi
+      } // if internal incident face
+    } // for face
 
     const auto& sigma_t = cell_xs.GetSigmaTotal();
     for (size_t g = 0; g < num_groups; ++g)
@@ -382,9 +382,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
               source_moments[dof_map + g] += inscat_g;
             }
           } // for g
-        }   // for m
-      }     // for node i
-    }       // for cell
+        } // for m
+      } // for node i
+    } // for cell
   };
 
   // Define L-infinite-norm
@@ -427,9 +427,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
             else
               pw_change = std::max(delta_phi, pw_change);
           } // for g
-        }   // for m
-      }     // for i
-    }       // for cell
+        } // for m
+      } // for i
+    } // for cell
 
     return pw_change;
   };

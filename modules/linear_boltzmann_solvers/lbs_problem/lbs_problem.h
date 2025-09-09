@@ -250,7 +250,7 @@ public:
    *
    * @note This does nothing for diffusion-based solvers.
    */
-  virtual void ReorientAdjointSolution(){};
+  virtual void ReorientAdjointSolution() {};
 
 protected:
   /// Performs general input checks before initialization continues.
@@ -279,7 +279,7 @@ protected:
 
   virtual void InitializeSolverSchemes();
 
-  virtual void InitializeWGSSolvers(){};
+  virtual void InitializeWGSSolvers() {};
 
   /// Initializes data carriers to GPUs and memory pinner.
   void InitializeGPUExtras();

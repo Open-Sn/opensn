@@ -30,7 +30,7 @@ VolumetricFiniteElementData::ShapeValue(size_t i, size_t qp) const
 Vector3
 VolumetricFiniteElementData::ShapeGrad(size_t i, size_t qp) const
 {
-  assert(i < shape_grad_.size() and qp < shape_graad_[i].size());
+  assert(i < shape_grad_.size() and qp < shape_grad_[i].size());
   return shape_grad_[i][qp];
 }
 
