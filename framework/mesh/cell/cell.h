@@ -16,7 +16,7 @@ namespace opensn
 class Cell;
 class MeshContinuum;
 
-enum class CellType : int
+enum class CellType
 {
   GHOST = 0,
   SLAB = 1,

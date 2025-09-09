@@ -664,7 +664,7 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
         if (not face.IsNeighborLocal(this))
           local_graph_edges.insert(face.GetNeighborPartitionID(this));
     } // for f
-  }   // for local cells
+  } // for local cells
 
   // Convert set to vector
   // This is just done for convenience because MPI

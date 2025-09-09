@@ -335,8 +335,8 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                                       fe_vol_data.ShapeValue(i, qp) *
                                       fe_vol_data.ShapeValue(j, qp) * fe_vol_data.JxW(qp);
         } // for qp
-      }   // for j
-    }     // for i
+      } // for j
+    } // for i
 
     return UnitCellMatrices{{},
                             {},

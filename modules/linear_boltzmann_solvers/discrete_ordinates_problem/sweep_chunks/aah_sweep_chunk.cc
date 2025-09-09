@@ -53,15 +53,26 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
     {
       cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_N4;
 
-      const size_t gs_size = groupset_.groups.size();
-      if (gs_size < 8)
-        group_block_size_ = gs_size;
-      else if (gs_size >= 128)
-        group_block_size_ = 32;
-      else if (gs_size >= 32)
-        group_block_size_ = 16;
-      else
-        group_block_size_ = 8;
+      auto block_size = [&](size_t gs_size) -> size_t
+      {
+        if (gs_size <= simd_width)
+          return gs_size;
+
+        size_t target;
+        if (gs_size >= 16 * simd_width)
+          target = 4 * simd_width;
+        else if (gs_size >= 4 * simd_width)
+          target = 2 * simd_width;
+        else
+          target = 1 * simd_width;
+
+        target = std::min(target, gs_size);
+        if (target >= simd_width)
+          target = (target / simd_width) * simd_width;
+        return target;
+      };
+
+      group_block_size_ = block_size(groupset_.groups.size());
     }
   }
 }
@@ -192,8 +203,8 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           } // for face node j
-        }   // for face node i
-      }     // for f
+        } // for face node i
+      } // for f
 
       // Looping over groups, assembling mass terms
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
@@ -305,9 +316,9 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
               psi[gsg] = b[gsg](i);
           }
         } // for fi
-      }   // for face
-    }     // for angleset/subset
-  }       // for cell
+      } // for face
+    } // for angleset/subset
+  } // for cell
 }
 
 #ifndef __OPENSN_USE_CUDA__

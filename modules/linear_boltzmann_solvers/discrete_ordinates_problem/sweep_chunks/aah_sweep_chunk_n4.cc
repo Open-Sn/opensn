@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
@@ -6,7 +6,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "caliper/cali.h"
 
-#if defined(__AVX512F__)
+#if defined(__AVX512F__) || defined(__AVX2__)
 #include <immintrin.h>
 #endif
 
@@ -16,29 +16,29 @@ namespace opensn
 #if defined(__AVX512F__)
 // Solve 8 independent 4x4 systems: (Amat + sigma*M) * x = b
 static inline void
-BatchSolve(const double* __restrict Am, const double* __restrict Mm, const double* __restrict sigma_t, double* __restrict b)
+AVX512_Solve(const double* __restrict Am,
+             const double* __restrict Mm,
+             const double* __restrict sigma_t,
+             double* __restrict b)
 {
-  // Offsets for gathers/scatters
-  // For lane k in [0..7], element i in [0..3] is at offset (4*k + i)
-  const __m512i idx0 = _mm512_setr_epi64(0*8, 4*8, 8*8,  12*8, 16*8, 20*8, 24*8, 28*8);
-  const __m512i idx1 = _mm512_setr_epi64(1*8, 5*8, 9*8,  13*8, 17*8, 21*8, 25*8, 29*8);
-  const __m512i idx2 = _mm512_setr_epi64(2*8, 6*8, 10*8, 14*8, 18*8, 22*8, 26*8, 30*8);
-  const __m512i idx3 = _mm512_setr_epi64(3*8, 7*8, 11*8, 15*8, 19*8, 23*8, 27*8, 31*8);
+  // Offsets for scatters/gathers:
+  // for lane k in [0..7], element i in [0..3] is at offset (4*k + i)*8
+  // clang-format off
+  const __m512i idx0 = _mm512_setr_epi64(0 * 8, 4 * 8, 8  * 8, 12 * 8, 16 * 8, 20 * 8, 24 * 8, 28 * 8);
+  const __m512i idx1 = _mm512_setr_epi64(1 * 8, 5 * 8, 9  * 8, 13 * 8, 17 * 8, 21 * 8, 25 * 8, 29 * 8);
+  const __m512i idx2 = _mm512_setr_epi64(2 * 8, 6 * 8, 10 * 8, 14 * 8, 18 * 8, 22 * 8, 26 * 8, 30 * 8);
+  const __m512i idx3 = _mm512_setr_epi64(3 * 8, 7 * 8, 11 * 8, 15 * 8, 19 * 8, 23 * 8, 27 * 8, 31 * 8);
 
-  // Gather b
   char* bbytes = reinterpret_cast<char*>(b);
   __m512d b0 = _mm512_i64gather_pd(idx0, bbytes, 1);
   __m512d b1 = _mm512_i64gather_pd(idx1, bbytes, 1);
   __m512d b2 = _mm512_i64gather_pd(idx2, bbytes, 1);
   __m512d b3 = _mm512_i64gather_pd(idx3, bbytes, 1);
 
-  // Load sigma_t
-  __m512d sv = _mm512_loadu_pd(sigma_t);
+  const __m512d sv = _mm512_loadu_pd(sigma_t);
 
-  // Broadcast Am and M
   auto bcast = [](double x) { return _mm512_set1_pd(x); };
 
-  // clang-format off
   const __m512d Am00 = bcast(Am[0]),  Am01 = bcast(Am[1]),  Am02 = bcast(Am[2]),  Am03 = bcast(Am[3]);
   const __m512d Am10 = bcast(Am[4]),  Am11 = bcast(Am[5]),  Am12 = bcast(Am[6]),  Am13 = bcast(Am[7]);
   const __m512d Am20 = bcast(Am[8]),  Am21 = bcast(Am[9]),  Am22 = bcast(Am[10]), Am23 = bcast(Am[11]);
@@ -48,12 +48,9 @@ BatchSolve(const double* __restrict Am, const double* __restrict Mm, const doubl
   const __m512d M10 = bcast(Mm[4]),  M11 = bcast(Mm[5]),  M12 = bcast(Mm[6]),  M13 = bcast(Mm[7]);
   const __m512d M20 = bcast(Mm[8]),  M21 = bcast(Mm[9]),  M22 = bcast(Mm[10]), M23 = bcast(Mm[11]);
   const __m512d M30 = bcast(Mm[12]), M31 = bcast(Mm[13]), M32 = bcast(Mm[14]), M33 = bcast(Mm[15]);
-  // clang-format on
 
-  // A = Am + sigma*M
   auto madd = [&sv](const __m512d& a, const __m512d& m) { return _mm512_fmadd_pd(sv, m, a); };
 
-  // clang-format off
   __m512d A00 = madd(Am00, M00), A01 = madd(Am01, M01), A02 = madd(Am02, M02), A03 = madd(Am03, M03);
   __m512d A10 = madd(Am10, M10), A11 = madd(Am11, M11), A12 = madd(Am12, M12), A13 = madd(Am13, M13);
   __m512d A20 = madd(Am20, M20), A21 = madd(Am21, M21), A22 = madd(Am22, M22), A23 = madd(Am23, M23);
@@ -103,19 +100,149 @@ BatchSolve(const double* __restrict Am, const double* __restrict Mm, const doubl
   // clang-format off
   b3 = _mm512_div_pd(b3, A33);
   b2 = _mm512_mul_pd(_mm512_sub_pd(b2, _mm512_mul_pd(A23, b3)), invA22);
-  b1 = _mm512_mul_pd(_mm512_sub_pd(_mm512_sub_pd(b1, _mm512_mul_pd(A12, b2)), _mm512_mul_pd(A13, b3)),
-		     invA11);
+  b1 = _mm512_mul_pd(_mm512_sub_pd(_mm512_sub_pd(b1, _mm512_mul_pd(A12, b2)),
+                     _mm512_mul_pd(A13, b3)), invA11);
   b0 = _mm512_mul_pd(_mm512_sub_pd(_mm512_sub_pd(_mm512_sub_pd(b0, _mm512_mul_pd(A01, b1)),
                      _mm512_mul_pd(A02, b2)), _mm512_mul_pd(A03, b3)), invA00);
-  // clang format on
+  // clang-format on
 
-  // Scatter b
   _mm512_i64scatter_pd(bbytes, idx0, b0, 1);
   _mm512_i64scatter_pd(bbytes, idx1, b1, 1);
   _mm512_i64scatter_pd(bbytes, idx2, b2, 1);
   _mm512_i64scatter_pd(bbytes, idx3, b3, 1);
 }
+#endif // __AVX512F__
+
+#if defined(__AVX2__)
+// Solve 4 independent 4x4 systems: (Amat + sigma*M) * x = b
+static inline void
+AVX2_Solve(const double* __restrict Am,
+           const double* __restrict Mm,
+           const double* __restrict sigma_t,
+           double* __restrict b)
+{
+  // For lane k in [0..3], element i in [0..3] is at offset (4*k + i)*8
+  const __m128i idx0 = _mm_setr_epi32(0 * 8, 4 * 8, 8 * 8, 12 * 8);
+  const __m128i idx1 = _mm_setr_epi32(1 * 8, 5 * 8, 9 * 8, 13 * 8);
+  const __m128i idx2 = _mm_setr_epi32(2 * 8, 6 * 8, 10 * 8, 14 * 8);
+  const __m128i idx3 = _mm_setr_epi32(3 * 8, 7 * 8, 11 * 8, 15 * 8);
+
+  const double* bbase = b;
+
+  __m256d b0 = _mm256_i32gather_pd(bbase, idx0, 1);
+  __m256d b1 = _mm256_i32gather_pd(bbase, idx1, 1);
+  __m256d b2 = _mm256_i32gather_pd(bbase, idx2, 1);
+  __m256d b3 = _mm256_i32gather_pd(bbase, idx3, 1);
+
+  const __m256d sv = _mm256_loadu_pd(sigma_t);
+
+  auto bcast = [](double x) { return _mm256_set1_pd(x); };
+
+  // clang-format off
+  const __m256d Am00 = bcast(Am[0]),  Am01 = bcast(Am[1]),  Am02 = bcast(Am[2]),  Am03 = bcast(Am[3]);
+  const __m256d Am10 = bcast(Am[4]),  Am11 = bcast(Am[5]),  Am12 = bcast(Am[6]),  Am13 = bcast(Am[7]);
+  const __m256d Am20 = bcast(Am[8]),  Am21 = bcast(Am[9]),  Am22 = bcast(Am[10]), Am23 = bcast(Am[11]);
+  const __m256d Am30 = bcast(Am[12]), Am31 = bcast(Am[13]), Am32 = bcast(Am[14]), Am33 = bcast(Am[15]);
+
+  const __m256d M00 = bcast(Mm[0]),  M01 = bcast(Mm[1]),  M02 = bcast(Mm[2]),  M03 = bcast(Mm[3]);
+  const __m256d M10 = bcast(Mm[4]),  M11 = bcast(Mm[5]),  M12 = bcast(Mm[6]),  M13 = bcast(Mm[7]);
+  const __m256d M20 = bcast(Mm[8]),  M21 = bcast(Mm[9]),  M22 = bcast(Mm[10]), M23 = bcast(Mm[11]);
+  const __m256d M30 = bcast(Mm[12]), M31 = bcast(Mm[13]), M32 = bcast(Mm[14]), M33 = bcast(Mm[15]);
+  // clang-format on
+
+  // A = Am + sigma*M
+#if defined(__FMA__)
+  auto madd = [&sv](const __m256d& a, const __m256d& m) { return _mm256_fmadd_pd(sv, m, a); };
+  auto fnmadd = [](const __m256d& x, const __m256d& y, const __m256d& z)
+  { return _mm256_fnmadd_pd(x, y, z); };
+#else
+  auto madd = [&sv](const __m256d& a, const __m256d& m)
+  { return _mm256_add_pd(_mm256_mul_pd(sv, m), a); };
+  auto fnmadd = [](const __m256d& x, const __m256d& y, const __m256d& z)
+  { return _mm256_sub_pd(z, _mm256_mul_pd(x, y)); };
 #endif
+
+  // clang-format off
+  __m256d A00 = madd(Am00, M00), A01 = madd(Am01, M01), A02 = madd(Am02, M02), A03 = madd(Am03, M03);
+  __m256d A10 = madd(Am10, M10), A11 = madd(Am11, M11), A12 = madd(Am12, M12), A13 = madd(Am13, M13);
+  __m256d A20 = madd(Am20, M20), A21 = madd(Am21, M21), A22 = madd(Am22, M22), A23 = madd(Am23, M23);
+  __m256d A30 = madd(Am30, M30), A31 = madd(Am31, M31), A32 = madd(Am32, M32), A33 = madd(Am33, M33);
+  // clang-format on
+
+  // Forward elimination
+  const __m256d invA00 = _mm256_div_pd(_mm256_set1_pd(1.0), A00);
+
+  const __m256d v10 = _mm256_mul_pd(A10, invA00);
+  b1 = fnmadd(v10, b0, b1);
+  A11 = fnmadd(v10, A01, A11);
+  A12 = fnmadd(v10, A02, A12);
+  A13 = fnmadd(v10, A03, A13);
+
+  const __m256d v20 = _mm256_mul_pd(A20, invA00);
+  b2 = fnmadd(v20, b0, b2);
+  A21 = fnmadd(v20, A01, A21);
+  A22 = fnmadd(v20, A02, A22);
+  A23 = fnmadd(v20, A03, A23);
+
+  const __m256d v30 = _mm256_mul_pd(A30, invA00);
+  b3 = fnmadd(v30, b0, b3);
+  A31 = fnmadd(v30, A01, A31);
+  A32 = fnmadd(v30, A02, A32);
+  A33 = fnmadd(v30, A03, A33);
+
+  const __m256d invA11 = _mm256_div_pd(_mm256_set1_pd(1.0), A11);
+
+  const __m256d v21 = _mm256_mul_pd(A21, invA11);
+  b2 = fnmadd(v21, b1, b2);
+  A22 = fnmadd(v21, A12, A22);
+  A23 = fnmadd(v21, A13, A23);
+
+  const __m256d v31 = _mm256_mul_pd(A31, invA11);
+  b3 = fnmadd(v31, b1, b3);
+  A32 = fnmadd(v31, A12, A32);
+  A33 = fnmadd(v31, A13, A33);
+
+  const __m256d invA22 = _mm256_div_pd(_mm256_set1_pd(1.0), A22);
+
+  const __m256d v32 = _mm256_mul_pd(A32, invA22);
+  b3 = fnmadd(v32, b2, b3);
+  A33 = fnmadd(v32, A23, A33);
+
+  // Back substitution
+  // clang-format off
+  b3 = _mm256_div_pd(b3, A33);
+  b2 = _mm256_mul_pd(_mm256_sub_pd(b2, _mm256_mul_pd(A23, b3)), invA22);
+  b1 = _mm256_mul_pd(_mm256_sub_pd(_mm256_sub_pd(b1, _mm256_mul_pd(A12, b2)),
+                     _mm256_mul_pd(A13, b3)), invA11);
+  b0 = _mm256_mul_pd(_mm256_sub_pd(_mm256_sub_pd(_mm256_sub_pd(b0, _mm256_mul_pd(A01, b1)),
+                     _mm256_mul_pd(A02, b2)), _mm256_mul_pd(A03, b3)), invA00);
+
+  // AVX2 pseudo-scatter
+  alignas(32) double t0[4], t1[4], t2[4], t3[4];
+  _mm256_store_pd(t0, b0);
+  _mm256_store_pd(t1, b1);
+  _mm256_store_pd(t2, b2);
+  _mm256_store_pd(t3, b3);
+
+  b[0]  = t0[0];
+  b[4]  = t0[1];
+  b[8]  = t0[2];
+  b[12] = t0[3];
+  b[1]  = t1[0];
+  b[5]  = t1[1];
+  b[9]  = t1[2];
+  b[13] = t1[3];
+  b[2]  = t2[0];
+  b[6]  = t2[1];
+  b[10] = t2[2];
+  b[14] = t2[3];
+  b[3]  = t3[0];
+  b[7]  = t3[1];
+  b[11] = t3[2];
+  b[15] = t3[3];
+  // clang-format on
+}
+#endif // __AVX2__
 
 void
 AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
@@ -147,8 +274,8 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
 
     // Cell face data
+    const size_t cell_num_faces = cell.faces.size();
     std::vector<double> face_mu_values(4);
-    const auto cell_num_faces = cell.faces.size();
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
@@ -245,26 +372,30 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
       const double M20 = M(2, 0), M21 = M(2, 1), M22 = M(2, 2), M23 = M(2, 3);
       const double M30 = M(3, 0), M31 = M(3, 1), M32 = M(3, 2), M33 = M(3, 3);
 
+#if defined(__AVX512F__) || defined(__AVX2__)
       const double Mm[16] = {M00, M01, M02, M03,
 	                     M10, M11, M12, M13,
 			     M20, M21, M22, M23,
 			     M30, M31, M32, M33};
+#endif
 
       const double Am00 = Amat(0, 0), Am01 = Amat(0, 1), Am02 = Amat(0, 2), Am03 = Amat(0, 3);
       const double Am10 = Amat(1, 0), Am11 = Amat(1, 1), Am12 = Amat(1, 2), Am13 = Amat(1, 3);
       const double Am20 = Amat(2, 0), Am21 = Amat(2, 1), Am22 = Amat(2, 2), Am23 = Amat(2, 3);
       const double Am30 = Amat(3, 0), Am31 = Amat(3, 1), Am32 = Amat(3, 2), Am33 = Amat(3, 3);
 
+#if defined(__AVX512F__) || defined(__AVX2__)
       const double Am[16] = {Am00, Am01, Am02, Am03,
                              Am10, Am11, Am12, Am13,
                              Am20, Am21, Am22, Am23,
                              Am30, Am31, Am32, Am33};
+#endif
       // clang-format on
 
       const double* __restrict m2d_row = m2d_op[direction_num].data();
       const double* __restrict d2m_row = d2m_op[direction_num].data();
 
-      // Process groups in blocks (blocksize is a multiple of 8)
+      // Process groups in blocks
       for (size_t g0 = 0; g0 < gs_size; g0 += group_block_size_)
       {
         const size_t g1 = std::min(g0 + group_block_size_, gs_size);
@@ -279,10 +410,10 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
 
           for (int m = 0; m < num_moments_; ++m)
           {
-	    const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
-	    const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
-	    const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
-	    const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
+            const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
+            const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
+            const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
+            const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
 
             double* __restrict bg = &b[gsg * 4];
             const double w = m2d_row[m];
@@ -304,10 +435,15 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
 #if defined(__AVX512F__)
         // Vectorized solves of batches of 8 groups
         for (; k + 8 <= block_len; k += 8)
-          BatchSolve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
+          AVX512_Solve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
 #endif
 
-        // Remainder of groups  (or entire block if no AVX-512)
+#if defined(__AVX2__)
+        for (; k + 4 <= block_len; k += 4)
+          AVX2_Solve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
+#endif
+
+        // Remainder of groups
         for (; k < block_len; ++k)
         {
           const size_t gsg = g0 + k;
@@ -381,10 +517,10 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const double w = d2m_row[m];
-	    const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
-	    const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
-	    const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
-	    const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
+            const size_t dof0 = cell_transport_view.MapDOF(0, m, gs_gi);
+            const size_t dof1 = cell_transport_view.MapDOF(1, m, gs_gi);
+            const size_t dof2 = cell_transport_view.MapDOF(2, m, gs_gi);
+            const size_t dof3 = cell_transport_view.MapDOF(3, m, gs_gi);
 
             destination_phi_[dof0 + gsg] += w * bg[0];
             destination_phi_[dof1 + gsg] += w * bg[1];
@@ -392,7 +528,7 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
             destination_phi_[dof3 + gsg] += w * bg[3];
           }
         }
-      } // blocks
+      }
 
       // Save angular flux during sweep
       if (save_angular_flux_)
