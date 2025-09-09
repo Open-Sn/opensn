@@ -165,7 +165,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
   // Options
   if (params.IsParameterValid("options"))
   {
-    auto options_params = LBSProblem::GetOptionsBlock();
+    auto options_params = LBSProblem::GetConstructorOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
     SetOptions(options_params);
   }
@@ -250,6 +250,8 @@ void
 LBSProblem::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
   point_sources_.push_back(point_source);
+  if (discretization_)
+    point_sources_.back()->Initialize(*this);
 }
 
 void
@@ -268,6 +270,8 @@ void
 LBSProblem::AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source)
 {
   volumetric_sources_.push_back(volumetric_source);
+  if (discretization_)
+    volumetric_sources_.back()->Initialize(*this);
 }
 
 void
@@ -280,6 +284,12 @@ const std::vector<std::shared_ptr<VolumetricSource>>&
 LBSProblem::GetVolumetricSources() const
 {
   return volumetric_sources_;
+}
+
+void
+LBSProblem::ClearBoundaries()
+{
+  boundary_preferences_.clear();
 }
 
 const std::map<int, std::shared_ptr<MultiGroupXS>>&
@@ -556,6 +566,19 @@ LBSProblem::GetOptionsBlock()
                               "as `prefix_phi_gXXX_mYYY` where `XXX` is the zero padded 3 digit "
                               "group number and `YYY` is the zero padded 3 digit moment. The "
                               "underscore after \"prefix\" is added automatically.");
+  params.ConstrainParameterRange("ags_convergence_check",
+                                 AllowableRangeList::New({"l2", "pointwise"}));
+  params.ConstrainParameterRange("field_function_prefix_option",
+                                 AllowableRangeList::New({"prefix", "solver_name"}));
+
+  return params;
+}
+
+InputParameters
+LBSProblem::GetConstructorOptionsBlock()
+{
+  InputParameters params = LBSProblem::GetOptionsBlock();
+
   params.AddOptionalParameterArray(
     "boundary_conditions", {}, "An array containing tables for each boundary specification.");
   params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
@@ -570,10 +593,6 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
   params.AddOptionalParameter("clear_volumetric_sources", false, "Clears all volumetric sources.");
-  params.ConstrainParameterRange("ags_convergence_check",
-                                 AllowableRangeList::New({"l2", "pointwise"}));
-  params.ConstrainParameterRange("field_function_prefix_option",
-                                 AllowableRangeList::New({"prefix", "solver_name"}));
 
   return params;
 }
@@ -614,7 +633,7 @@ LBSProblem::GetXSMapEntryBlock()
 void
 LBSProblem::SetOptions(const InputParameters& input)
 {
-  auto params = LBSProblem::GetOptionsBlock();
+  auto params = LBSProblem::GetConstructorOptionsBlock();
   params.AssignParameters(input);
 
   // Handle order sensitive options
@@ -764,11 +783,7 @@ LBSProblem::SetOptions(const InputParameters& input)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
       {
-        point_sources_.push_back(sub_param.GetValue<std::shared_ptr<PointSource>>());
-
-        // If a discretization exists, the point source can be initialized.
-        if (discretization_)
-          point_sources_.back()->Initialize(*this);
+        AddPointSource(sub_param.GetValue<std::shared_ptr<PointSource>>());
       }
     }
 
@@ -777,11 +792,7 @@ LBSProblem::SetOptions(const InputParameters& input)
       spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
       for (const auto& sub_param : spec)
       {
-        volumetric_sources_.push_back(sub_param.GetValue<std::shared_ptr<VolumetricSource>>());
-
-        // If the discretization exists, the volumetric source can be initialized.
-        if (discretization_)
-          volumetric_sources_.back()->Initialize(*this);
+        AddVolumetricSource(sub_param.GetValue<std::shared_ptr<VolumetricSource>>());
       }
     }
   } // for p
