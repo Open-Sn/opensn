@@ -9,5 +9,5 @@ Tutorials
    mesh/index
    xs/index
    aquad/index
-   lbs/index
    logvol/index
+   lbs/index
