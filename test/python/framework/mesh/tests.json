@@ -9,6 +9,58 @@
     ]
   },
   {
+    "file" : "read_openfoam_hex.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Number of nodes read: 1331"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Number of cells read: 1000"
+      }
+    ]
+  },
+  {
+    "file" : "read_openfoam_pyr.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Number of nodes read: 5"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Number of cells read: 1"
+      }
+    ]
+  },
+  {
+    "file" : "read_openfoam_tets.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Number of nodes read: 75"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Number of cells read: 231"
+      }
+    ]
+  },
+  {
+    "file" : "read_openfoam_wedge.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Number of nodes read: 231"
+      },
+      {
+        "type" : "StrCompare",
+        "key" : "Number of cells read: 100"
+      }
+    ]
+  },
+  {
     "file" : "mat_ids_from_function.py",
     "num_procs" : 1,
     "checks" : [
