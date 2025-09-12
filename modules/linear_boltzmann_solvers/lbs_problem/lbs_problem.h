@@ -48,6 +48,8 @@ public:
   /// Returns a constant reference to the solver options.
   const LBSOptions& GetOptions() const;
 
+  static InputParameters GetConstructorOptionsBlock();
+
   static InputParameters GetOptionsBlock();
 
   static InputParameters GetBoundaryOptionsBlock();
@@ -114,6 +116,9 @@ public:
 
   /// Constant accessor to the list of volumetric sources.
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
+
+  /// Clears all the boundary conditions from the solver.
+  void ClearBoundaries();
 
   size_t& GetLastRestartTime();
 
