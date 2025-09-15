@@ -116,7 +116,8 @@ if __name__ == "__main__":
 
     # Create adjoint source and switch to adjoint mode
     adj_src = VolumetricSource(logical_volume=qoi_vol, group_strength=[1.0])
-    phys.SetOptions(adjoint=True, volumetric_sources=[adj_src])
+    phys.SetOptions(adjoint=True)
+    phys.SetVolumetricSources(volumetric_sources=[adj_src])
 
     # Adjoint solve and write flux moments
     ss_solver.Execute()

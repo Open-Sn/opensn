@@ -115,6 +115,9 @@ public:
   /// Constant accessor to the list of volumetric sources.
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
+  /// Clears all the boundary conditions from the solver.
+  void ClearBoundaries();
+
   size_t& GetLastRestartTime();
 
   /// Returns a reference to the map of material ids to XSs.
