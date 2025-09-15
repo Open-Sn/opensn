@@ -46,7 +46,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
   // This is done so we can reserve size better
   const size_t num_raw_cells = graph.size();
   size_t num_raw_faces = 0;
-  for (auto& cell_row : graph)
+  for (const auto& cell_row : graph)
     num_raw_faces += cell_row.size();
   size_t avg_num_face_per_cell =
     std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));

@@ -44,12 +44,12 @@ SurfaceMesh::~SurfaceMesh()
 }
 
 std::ostream&
-operator<<(std::ostream& os, SurfaceMesh& that)
+operator<<(std::ostream& os, SurfaceMesh& obj)
 {
   std::vector<Face>::const_iterator curface;
-  for (curface = that.GetTriangles().begin(); curface != that.GetTriangles().end(); ++curface)
+  for (curface = obj.GetTriangles().begin(); curface != obj.GetTriangles().end(); ++curface)
   {
-    long index = std::distance(that.GetTriangles().begin(), curface);
+    long index = std::distance(obj.GetTriangles().begin(), curface);
     os << "Face " << index << " v:";
     os << curface->v_index[0] << "->";
     os << curface->v_index[1] << "->";
@@ -252,7 +252,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "vt" for Vertex
-    if (first_word.compare("vt") == 0)
+    if (first_word == "vt")
     {
       Vector3 newVertex;
       for (int k = 1; k <= 2; ++k)
@@ -342,7 +342,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "f" for face
-    if (first_word.compare("f") == 0)
+    if (first_word == "f")
     {
       int number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
       if ((number_of_verts == 3) and (not as_poly))
@@ -433,11 +433,9 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
 
           // Extract locations of hiphens
           size_t first_dash = sub_word.find('/');
-          size_t last_dash = sub_word.find_last_of('/');
 
           // Extract the words ass. w vertex and normal
           std::string vert_word = sub_word.substr(0, first_dash - 0);
-          std::string norm_word = sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
 
           // Convert word to number (Vertex)
           try
@@ -448,30 +446,6 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           catch (const std::invalid_argument& ia)
           {
             std::cout << "Exception caught!" << std::endl;
-          }
-
-          // Convert word to number (Normal)
-          try
-          {
-            int numValue = std::stoi(norm_word);
-          }
-          catch (const std::invalid_argument& ia)
-          {
-            std::cout << "Exception caught!" << std::endl;
-          }
-
-          // Convert word to number (Texture Vertex)
-          if (last_dash > (first_dash + 1))
-          {
-            std::string tvert_word = sub_word.substr(first_dash + 1, last_dash - first_dash - 1);
-            try
-            {
-              int numValue = std::stoi(tvert_word);
-            }
-            catch (const std::invalid_argument& ia)
-            {
-              std::cout << "Exception caught!" << std::endl;
-            }
           }
 
           // Stop word extraction on line end
@@ -806,7 +780,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   file.seekg(0);
   while (std::getline(file, line))
   {
-    if (elements_section_name.compare(line) == 0)
+    if (elements_section_name == line)
       break;
   }
 

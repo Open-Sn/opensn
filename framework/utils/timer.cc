@@ -26,7 +26,7 @@ Timer::GetTime() const
   using namespace std::chrono;
 
   steady_clock::time_point newTime = std::chrono::steady_clock::now();
-  duration<double> time_span = duration_cast<duration<double>>(newTime - start_time_);
+  auto time_span = duration_cast<duration<double>>(newTime - start_time_);
 
   return time_span.count() * 1000.0;
 }

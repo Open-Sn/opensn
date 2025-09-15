@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid)
+FiniteVolume::FiniteVolume(std::shared_ptr<MeshContinuum> grid)
   : SpatialDiscretization(grid, SpatialDiscretizationType::FINITE_VOLUME)
 {
   CreateCellMappings();
@@ -21,7 +21,7 @@ FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid)
 }
 
 std::shared_ptr<FiniteVolume>
-FiniteVolume::New(const std::shared_ptr<MeshContinuum> grid)
+FiniteVolume::New(std::shared_ptr<MeshContinuum> grid)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.

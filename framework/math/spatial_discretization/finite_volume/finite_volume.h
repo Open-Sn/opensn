@@ -21,13 +21,13 @@ private:
   std::map<uint64_t, uint64_t> neighbor_cell_local_ids_;
 
 private:
-  explicit FiniteVolume(const std::shared_ptr<MeshContinuum> grid);
+  explicit FiniteVolume(std::shared_ptr<MeshContinuum> grid);
 
 public:
-  virtual ~FiniteVolume() = default;
+  ~FiniteVolume() override = default;
 
   /// Publicly accessible construction handler.
-  static std::shared_ptr<FiniteVolume> New(const std::shared_ptr<MeshContinuum> grid);
+  static std::shared_ptr<FiniteVolume> New(std::shared_ptr<MeshContinuum> grid);
 
   void CreateCellMappings();
 

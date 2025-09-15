@@ -178,7 +178,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     }
 
     // Local adjacent cell connections
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor and face.IsNeighborLocal(grid_.get()))
       {

@@ -23,7 +23,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
     bool proceed = false;
     if (min_value >= 0.0)
     {
-      for (auto& val : xs)
+      for (const auto& val : xs)
       {
         if (val > min_value)
         {

@@ -12,7 +12,7 @@ LogicalVolume::GetInputParameters()
   return InputParameters();
 }
 
-LogicalVolume::LogicalVolume(const InputParameters& params)
+LogicalVolume::LogicalVolume(const InputParameters& parameters)
 {
 }
 

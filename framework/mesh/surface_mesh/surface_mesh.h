@@ -44,7 +44,7 @@ public:
   SurfaceMesh();
   ~SurfaceMesh();
 
-  friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& dt);
+  friend std::ostream& operator<<(std::ostream& os, SurfaceMesh& obj);
 
   /// Loads a surface mesh from a wavefront .obj file.
   int ImportFromOBJFile(const std::string& fileName,

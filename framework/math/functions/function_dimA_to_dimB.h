@@ -21,6 +21,7 @@ private:
 public:
   static InputParameters GetInputParameters();
   explicit FunctionDimAToDimB(const InputParameters& params);
+  virtual ~FunctionDimAToDimB() = default;
 
   size_t GetInputDimension() const { return input_dimension_; }
   size_t GetOutputDimension() const { return output_dimension_; }

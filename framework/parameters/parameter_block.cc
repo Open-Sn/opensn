@@ -46,13 +46,13 @@ ParameterBlock::ParameterBlock(const std::string& name)
 }
 
 ParameterBlock::ParameterBlock(const ParameterBlock& other)
+  : type_(other.type_),
+    name_(other.name_),
+    parameters_(other.parameters_),
+    error_origin_scope_(other.error_origin_scope_)
 {
-  type_ = other.type_;
-  name_ = other.name_;
   if (other.value_ptr_)
     value_ptr_ = std::make_unique<Varying>(*other.value_ptr_);
-  parameters_ = other.parameters_;
-  error_origin_scope_ = other.error_origin_scope_;
 }
 
 ParameterBlock&

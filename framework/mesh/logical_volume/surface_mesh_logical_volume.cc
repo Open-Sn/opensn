@@ -40,7 +40,7 @@ SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params
     zbounds_({1.0e6, -1.0e6})
 {
   const auto& vertices = surf_mesh_->GetVertices();
-  for (auto& vertex : vertices)
+  for (const auto& vertex : vertices)
   {
     const double x = vertex.x;
     const double y = vertex.y;
@@ -76,11 +76,11 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
   double y = point.y;
   double z = point.z;
 
-  if (not((x >= xbounds_[0]) and (x <= xbounds_[1])))
+  if ((x < xbounds_[0]) or (x > xbounds_[1]))
     return false;
-  if (not((y >= ybounds_[0]) and (y <= ybounds_[1])))
+  if ((y < ybounds_[0]) or (y > ybounds_[1]))
     return false;
-  if (not((z >= zbounds_[0]) and (z <= zbounds_[1])))
+  if ((z < zbounds_[0]) or (z > zbounds_[1]))
     return false;
 
   // Cheapshot pass
@@ -89,7 +89,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
   // If it does then .. bonus .. we don't need to do
   // anything more because the surface is probably convex.
   bool cheap_pass = true; // now try to disprove
-  for (auto& face : surf_mesh_->GetTriangles())
+  for (const auto& face : surf_mesh_->GetTriangles())
   {
     Vector3 fc = face.face_centroid;
     Vector3 p_to_fc = fc - point;
@@ -192,11 +192,7 @@ SurfaceMeshLogicalVolume::Inside(const Vector3& point) const
         if (distance_to_triangle < closest_distance)
         {
           closest_distance = distance_to_triangle;
-
-          if (sense_with_this_tri > 0.0)
-            closest_sense_pos = true;
-          else
-            closest_sense_pos = false;
+          closest_sense_pos = (sense_with_this_tri > 0.0);
         } //
 
       } // for inner iter face

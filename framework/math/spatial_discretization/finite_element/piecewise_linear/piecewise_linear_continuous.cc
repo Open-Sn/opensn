@@ -507,7 +507,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   auto storage = unknown_manager.dof_storage_type;
 
   const int64_t local_id = node_global_id - static_cast<int64_t>(local_block_address_);
-  const bool is_local = not(local_id < 0 or local_id >= local_base_block_size_);
+  const bool is_local = local_id >= 0 and local_id < local_base_block_size_;
 
   int64_t address = -1;
   if (is_local)

@@ -22,7 +22,7 @@ protected:
 
   explicit LogicalVolumeInterface(const InputParameters& params);
 
-  const std::shared_ptr<LogicalVolume> GetLogicalVolume() const;
+  std::shared_ptr<LogicalVolume> GetLogicalVolume() const;
 
 private:
   const std::shared_ptr<LogicalVolume> logical_volume_;

@@ -274,8 +274,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
       for (int j = 0; j < num_cell_nodes; ++j)
         iss >> node_tags[j];
 
-      element_data.emplace_back(
-        std::make_tuple(element_tag, element_type, physical_reg, node_tags));
+      element_data.emplace_back(element_tag, element_type, physical_reg, node_tags);
     }
   }
 

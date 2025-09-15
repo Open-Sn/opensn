@@ -246,7 +246,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
   // Upload cell/point data
-  auto point_data = ugrid->GetPointData();
+  auto* point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
   {
     const auto field_vector = ff_ptr->GetGhostedFieldVector();

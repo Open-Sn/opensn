@@ -13,10 +13,10 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
   const std::shared_ptr<MeshContinuum> ref_grid,
   const LineQuadrature& volume_quadrature)
   : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
+    v0i_(slab_cell.vertex_ids[0]),
+    v1i_(slab_cell.vertex_ids[1]),
     volume_quadrature_(volume_quadrature)
 {
-  v0i_ = slab_cell.vertex_ids[0];
-  v1i_ = slab_cell.vertex_ids[1];
   v0_ = grid_->vertices[v0i_];
   const auto& v1 = grid_->vertices[v1i_];
 
@@ -244,7 +244,7 @@ PieceWiseLinearSlabMapping::MakeSurfaceFiniteElementData(size_t face_index) cons
   {
     F_JxW.push_back(JxW);
 
-    F_qpoints_xyz.push_back(Vector3(0.0, 0.0, f));
+    F_qpoints_xyz.emplace_back(0.0, 0.0, f);
   }
 
   F_num_nodes = 1;

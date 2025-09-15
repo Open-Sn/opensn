@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-const std::shared_ptr<MeshContinuum>
+std::shared_ptr<MeshContinuum>
 RayTracer::Grid() const
 {
   return reference_grid_;
@@ -75,7 +75,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     for (auto vi : cell.vertex_ids)
       outstr << grid->vertices[vi].PrintStr() << "\n";
 
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       outstr << "Face with centroid: " << face.centroid.PrintStr() << " ";
       outstr << "n=" << face.normal.PrintStr() << "\n";
@@ -84,21 +84,21 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     }
 
     outstr << "o Cell\n";
-    for (auto& vid : cell.vertex_ids)
+    for (const auto& vid : cell.vertex_ids)
     {
       auto& v = grid->vertices[vid];
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
-      auto& v = face.centroid;
+      const auto& v = face.centroid;
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
     for (size_t f = 0; f < cell.faces.size(); ++f)
     {
-      auto& face = cell.faces[f];
+      const auto& face = cell.faces[f];
       outstr << "f ";
       for (auto vid : face.vertex_ids)
       {
@@ -304,7 +304,7 @@ RayTracer::TracePolygon(const Cell& cell,
     oi = face_intersections.back();
   else if (perform_concavity_checks_ and not face_intersections.empty())
   {
-    auto closest_intersection = &face_intersections.back();
+    auto* closest_intersection = &face_intersections.back();
     for (auto& intersection : face_intersections)
       if (intersection.distance_to_surface < closest_intersection->distance_to_surface)
         closest_intersection = &intersection;
@@ -384,7 +384,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
     oi = triangle_intersections.back();
   else if (perform_concavity_checks_ and not triangle_intersections.empty())
   {
-    auto closest_intersection = &triangle_intersections.back();
+    auto* closest_intersection = &triangle_intersections.back();
     for (auto& intersection : triangle_intersections)
       if (intersection.distance_to_surface < closest_intersection->distance_to_surface)
         closest_intersection = &intersection;
@@ -550,10 +550,7 @@ CheckPointInTriangle(
   bool dp1 = (vc1.Dot(n) >= 0.0);
   bool dp2 = (vc2.Dot(n) >= 0.0);
 
-  if (dp0 and dp1 and dp2)
-    return true;
-  else
-    return false;
+  return (dp0 and dp1 and dp2);
 }
 
 bool
@@ -614,7 +611,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
   // segment lengths from the strip defined by v0 to vc.
   if (cell.GetType() == CellType::POLYGON)
   {
-    for (auto& face : cell.faces) // edges
+    for (const auto& face : cell.faces) // edges
     {
       const auto& v0 = grid->vertices[face.vertex_ids[0]];
       const auto& vc = cell.centroid;
@@ -636,11 +633,11 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
   }
   else if (cell.GetType() == CellType::POLYHEDRON)
   {
-    auto& vcc = cell.centroid;
+    const auto& vcc = cell.centroid;
 
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
-      auto& vfc = face.centroid;
+      const auto& vfc = face.centroid;
 
       // Face center to vertex segments
       for (auto vi : face.vertex_ids)
@@ -669,7 +666,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
 
         auto& v0 = grid->vertices[vid_0];
         auto& v1 = grid->vertices[vid_1];
-        auto& v2 = vcc;
+        const auto& v2 = vcc;
 
         Vector3 intersection_point;
 

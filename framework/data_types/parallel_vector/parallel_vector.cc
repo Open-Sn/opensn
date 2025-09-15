@@ -17,14 +17,7 @@ ParallelVector::ParallelVector(uint64_t local_size,
 {
 }
 
-ParallelVector::ParallelVector(const ParallelVector& other)
-  : local_size_(other.local_size_),
-    global_size_(other.global_size_),
-    location_id_(other.location_id_),
-    process_count_(other.process_count_),
-    comm_(other.comm_)
-{
-}
+ParallelVector::ParallelVector(const ParallelVector& other) = default;
 
 ParallelVector::ParallelVector(ParallelVector&& other) noexcept
   : local_size_(other.local_size_),

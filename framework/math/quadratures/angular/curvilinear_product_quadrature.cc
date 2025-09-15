@@ -35,7 +35,7 @@ GLProductQuadrature1DSpherical::Initialize(int Npolar, const bool verbose)
   // Verifications and corrections (if possible)
   const auto eps = std::numeric_limits<double>::epsilon();
 
-  if (polar_quad.weights.size() == 0)
+  if (polar_quad.weights.empty())
     throw std::invalid_argument("GLProductQuadrature1DSpherical: "
                                 "Invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights.size()));
@@ -223,13 +223,13 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
                                 "to number of polar points of the polar quadrature.");
 
   // At present, this class does not handle correctly reduced geometries
-  if (polar_quad.weights.size() == 0)
+  if (polar_quad.weights.empty())
     throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                 "Invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights.size()));
 
   for (const auto& azimu_quad : azimu_quad_vec)
-    if (azimu_quad.weights.size() == 0)
+    if (azimu_quad.weights.empty())
       throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                   "Invalid azimuthal quadrature size = " +
                                   std::to_string(azimu_quad.weights.size()));

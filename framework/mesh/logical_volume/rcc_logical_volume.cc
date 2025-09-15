@@ -84,10 +84,7 @@ RCCLogicalVolume::Inside(const Vector3& point) const
   const Vector3 p0r_projected(p0r.Dot(tangent), p0r.Dot(binorm), 0.0);
 
   // Determine if point is within cylinder
-  if (p0r_projected.NormSquare() <= r_ * r_)
-    return true;
-  else
-    return false;
+  return p0r_projected.NormSquare() <= (r_ * r_);
 }
 
 } // namespace opensn

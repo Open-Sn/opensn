@@ -52,7 +52,7 @@ OmegaToPhiThetaSafe(const Vector3& omega)
 void
 PrintVector(const std::vector<double>& x)
 {
-  for (auto& xi : x)
+  for (const auto& xi : x)
     std::cout << xi << ' ';
   std::cout << std::endl;
 }

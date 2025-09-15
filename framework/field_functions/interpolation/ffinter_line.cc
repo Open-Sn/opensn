@@ -122,7 +122,7 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
   local_data.reserve(4 * number_of_points_ / opensn::mpi_comm.size());
   for (auto p = 0; p < local_interpolation_points_.size(); ++p)
   {
-    auto& point = local_interpolation_points_[p];
+    const auto& point = local_interpolation_points_[p];
     local_data.push_back(point.x);
     local_data.push_back(point.y);
     local_data.push_back(point.z);
@@ -159,8 +159,8 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
     values.reserve(global_data_size / 4);
     for (size_t i = 0; i < global_data_size; i += 4)
     {
-      values.emplace_back(std::make_tuple(
-        global_data[i], global_data[i + 1], global_data[i + 2], global_data[i + 3]));
+      values.emplace_back(
+        global_data[i], global_data[i + 1], global_data[i + 2], global_data[i + 3]);
     }
 
     std::stable_sort(values.begin(),

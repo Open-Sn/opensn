@@ -3,6 +3,7 @@
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
@@ -26,6 +27,7 @@ MeshContinuum::MeshContinuum()
           global_cell_id_to_nonlocal_id_map_),
     dim_(0),
     mesh_type_(UNSTRUCTURED),
+    coord_sys_(CoordinateSystemType::CARTESIAN),
     extruded_(false),
     global_vertex_count_(0)
 {
@@ -57,8 +59,8 @@ MeshContinuum::GetUniqueBoundaryIDs() const
 
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
-  for (auto& cell : local_cells)
-    for (auto& face : cell.faces)
+  for (const auto& cell : local_cells)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor)
         local_bndry_ids_set.insert(face.neighbor_id);
 
@@ -241,11 +243,7 @@ bool
 MeshContinuum::IsCellLocal(uint64_t global_id) const
 {
   auto native_index = global_cell_id_to_local_id_map_.find(global_id);
-
-  if (native_index != global_cell_id_to_local_id_map_.end())
-    return true;
-
-  return false;
+  return (native_index != global_cell_id_to_local_id_map_.end());
 }
 
 void
@@ -259,7 +257,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  auto& adj_cell = cells[cur_face.neighbor_id];
+  const auto& adj_cell = cells[cur_face.neighbor_id];
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
@@ -273,7 +271,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
     {
       if (cfvid == afvid)
       {
-        dof_mapping.push_back((short)afv);
+        dof_mapping.push_back(afv);
         found = true;
         break;
       }
@@ -298,7 +296,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  auto& adj_cell = cells[cur_face.neighbor_id];
+  const auto& adj_cell = cells[cur_face.neighbor_id];
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
@@ -664,9 +662,9 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   // Loop over local cells
   // Populate local_graph_edges
   local_graph_edges.insert(mpi_comm.rank()); // add current location
-  for (auto& cell : local_cells)
+  for (const auto& cell : local_cells)
   {
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor)
         if (not face.IsNeighborLocal(this))
@@ -772,7 +770,7 @@ MeshContinuum::ComputeVolumePerBlockID() const
 {
   // Create a map to hold local volume with local block as key
   std::map<int, double> block_volumes;
-  for (auto& cell : this->local_cells)
+  for (const auto& cell : this->local_cells)
     block_volumes[cell.block_id] += cell.volume;
 
   // Collect all local block IDs

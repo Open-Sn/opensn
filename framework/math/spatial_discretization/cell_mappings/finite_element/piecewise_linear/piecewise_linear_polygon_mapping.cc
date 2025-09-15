@@ -18,14 +18,12 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   : PieceWiseLinearBaseMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
-    surface_quadrature_(surface_quadrature)
+    surface_quadrature_(surface_quadrature),
+    num_of_subtris_(static_cast<int>(poly_cell.faces.size())),
+    beta_(1.0 / num_of_subtris_),
+    // Get raw vertices
+    vc_(poly_cell.centroid)
 {
-  num_of_subtris_ = static_cast<int>(poly_cell.faces.size());
-  beta_ = 1.0 / num_of_subtris_;
-
-  // Get raw vertices
-  vc_ = poly_cell.centroid;
-
   // Calculate legs and determinants
   for (int side = 0; side < num_of_subtris_; ++side)
   {

@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "framework/data_types/vector3.h"
+#include <array>
+
 namespace opensn
 {
 
