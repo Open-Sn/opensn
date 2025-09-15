@@ -34,6 +34,8 @@ Includes
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
+- ``type_traits``
+
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
@@ -53,6 +55,8 @@ Functions
 
 
 - :ref:`exhale_function_namespaceopensn_1a32bddde67f81b8ac1e6732dd345b87f9`
+
+- :ref:`exhale_function_namespaceopensn_1aa5f3dafec4bbf7976cd939512c58b4a6`
 
 - :ref:`exhale_function_namespaceopensn_1adb2adfc12bb8bdfb4671e726765028e9`
 
@@ -80,7 +84,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a6db42998ad5ef630aa6ba39e255729e6`
 
-- :ref:`exhale_function_namespaceopensn_1ac1ae8668c67f5195808fa40058771d6d`
+- :ref:`exhale_function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc`
 
 - :ref:`exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155`
 
@@ -100,5 +104,5 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1acb06a43468c654577db6d1d10a2fea54`
 
-- :ref:`exhale_function_namespaceopensn_1a88407f2ba56e0cfaa2207937ef84a206`
+- :ref:`exhale_function_namespaceopensn_1a2cae895da69180244056b5914f580802`
 
