@@ -960,5 +960,43 @@
         "gold": "\"max_mpi_message_size\"."
       }
     ]
+  },  
+  {
+    "file": "transport_3d_7a_leb_quad.py",
+    "comment": "3d Simple Homogenous System - 3D Ortho Mesh + Lebedev Quadrature (3) + 0.5 Scattering Ratio",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 7.94030e-01,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 9.12411e-01,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_7b_leb_quad.py",
+    "comment": "3d Simple Homogenous System - 3D Ortho Mesh + Lebedev Quadrature (21) + 0.9 Scattering Ratio",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 1.01202e+00,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.57353e+00,
+        "abs_tol": 0.0001
+      }
+    ]
   }
 ]

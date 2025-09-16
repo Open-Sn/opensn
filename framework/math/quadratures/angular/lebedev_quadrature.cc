@@ -19,6 +19,9 @@ LebedevQuadrature::LebedevQuadrature(int order, bool verbose)
   : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, order)
 {
   LoadFromOrder(order, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 }
 
 void
