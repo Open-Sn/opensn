@@ -13,7 +13,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import LebedevQuadrature
@@ -37,6 +37,14 @@ if __name__ == "__main__":
 
     meshgen = OrthogonalMeshGenerator(
         node_sets=[nodes, nodes, nodes],
+        partitioner=KBAGraphPartitioner(
+            nx=2,
+            ny=2,
+            nz=2,
+            xcuts=[0.0],
+            ycuts=[0.0],
+            zcuts=[0.0]
+        )
     )
     grid = meshgen.Execute()
 
