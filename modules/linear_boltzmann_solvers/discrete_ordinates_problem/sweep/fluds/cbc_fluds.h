@@ -15,25 +15,51 @@ class UnknownManager;
 class SpatialDiscretization;
 class Cell;
 
+/**
+ * Flux data structures (FLUDS) specific to the cell-by-cell (CBC) sweep algorithm
+ *
+ * This class manages the storage and access of angular flux data during a CBC sweep
+ *
+ * It provides methods to access:
+ * - Upwind angular flux data from local neighbor cells
+ * - Storage locations for downwind angular flux data for the current cell
+ * - Upwind angular flux data received from remote MPI ranks
+ */
 class CBC_FLUDS : public FLUDS
 {
 public:
   CBC_FLUDS(size_t num_groups,
             size_t num_angles,
             const CBC_FLUDSCommonData& common_data,
-            std::vector<double>& local_psi_data,
             const UnknownManager& psi_uk_man,
             const SpatialDiscretization& sdm);
 
   const FLUDSCommonData& GetCommonData() const;
 
-  const std::vector<double>& GetLocalUpwindDataBlock() const;
+  /**
+   * Given a local upwind neighbor cell, this function returns a base pointer to
+   * the start of its data block
+   */
+  const double* GetLocalUpwindPsi(const Cell& face_neighbor) const;
 
-  const double* GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell);
+  /**
+   * Given a local cell, this function returns a base pointer to the start of
+   * the cell's data block for writing its just solved angular fluxes
+   */
+  double* GetLocalDownwindPsi(const Cell& cell);
 
+  /**
+   * Given a remote upwind cell's global ID and local face index, this function
+   * returns the pre-received angular flux data for the face on the upwind cell
+   */
   const std::vector<double>& GetNonLocalUpwindData(uint64_t cell_global_id,
                                                    unsigned int face_id) const;
 
+  /**
+   * Given the angular flux data for a face on a remote upwind cell, a face node
+   * index on the face, and an angle set index, this function returns a pointer
+   * to start of the group data for the specified face node and angle
+   */
   const double* GetNonLocalUpwindPsi(const std::vector<double>& psi_data,
                                      unsigned int face_node_mapped,
                                      unsigned int angle_set_index);
@@ -79,9 +105,19 @@ public:
 
 private:
   const CBC_FLUDSCommonData& common_data_;
-  std::reference_wrapper<std::vector<double>> local_psi_data_;
+
+  // Storage for local angular fluxes
+  // Layout: spatial DOF major -> angle in set major -> group major
+  std::vector<double> local_psi_data_;
+
   const UnknownManager& psi_uk_man_;
+
   const SpatialDiscretization& sdm_;
+
+  size_t num_angles_in_gs_quadrature_;
+  size_t num_quadrature_local_dofs_;
+  size_t num_local_spatial_dofs_;
+  size_t local_psi_data_size_;
 
   std::vector<double> delayed_local_psi_;
   std::vector<double> delayed_local_psi_old_;
