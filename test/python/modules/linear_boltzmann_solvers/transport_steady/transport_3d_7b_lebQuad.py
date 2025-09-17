@@ -23,7 +23,7 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
 
-    num_procs = 1
+    num_procs = 2
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} processors but got {size}.")
 
@@ -37,15 +37,8 @@ if __name__ == "__main__":
 
     meshgen = OrthogonalMeshGenerator(
         node_sets=[nodes, nodes, nodes],
-        partitioner=KBAGraphPartitioner(
-            nx=2,
-            ny=2,
-            nz=2,
-            xcuts=[0.0],
-            ycuts=[0.0],
-            zcuts=[0.0]
-        )
     )
+
     grid = meshgen.Execute()
 
     grid.SetUniformBlockID(0)
