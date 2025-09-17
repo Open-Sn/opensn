@@ -21,31 +21,31 @@ CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 
 set(BuildValues "Release;Debug;RelWithDebInfo;MinSizeRel;Native")
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
-    message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+  message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${BuildValues})
 
 if (CMAKE_CXX_FLAGS_NATIVE STREQUAL "")
-    set(CMAKE_CXX_FLAGS_NATIVE "-O3 -DNDEBUG" CACHE STRING "" FORCE)
-    if(COMPILER_SUPPORTS_MARCH_NATIVE)
-        set(CMAKE_CXX_FLAGS_NATIVE "${CMAKE_CXX_FLAGS_NATIVE} -march=native" CACHE STRING "" FORCE)
-    endif()
+  set(CMAKE_CXX_FLAGS_NATIVE "-O3 -DNDEBUG" CACHE STRING "" FORCE)
+  if(COMPILER_SUPPORTS_MARCH_NATIVE)
+    set(CMAKE_CXX_FLAGS_NATIVE "${CMAKE_CXX_FLAGS_NATIVE} -march=native" CACHE STRING "" FORCE)
+  endif()
 endif()
 
 option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
 if (OPENSN_WITH_CUDA)
-    set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-    find_package(CUDAToolkit 12.0 REQUIRED)
-    message(STATUS "CUDA support enabled")
-    message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
-    enable_language(CUDA)
+  set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
+  find_package(CUDAToolkit 12.0 REQUIRED)
+  message(STATUS "CUDA support enabled")
+  message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
+  enable_language(CUDA)
 endif()
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
 
 if(OPENSN_WITH_PYTHON_MODULE)
-    set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
+  set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
 endif()
 
 # dependencies
@@ -54,13 +54,13 @@ find_package(MPI REQUIRED)
 find_package(HDF5 REQUIRED COMPONENTS C HL)
 find_package(Boost CONFIG)
 if (NOT Boost_FOUND)
-    message(STATUS "Boost CONFIG not found, falling back to module mode")
-    find_package(Boost REQUIRED)
+  message(STATUS "Boost CONFIG not found, falling back to module mode")
+  find_package(Boost REQUIRED)
 endif()
 
 find_package(VTK QUIET)
 if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
-    find_package(VTK
+  find_package(VTK
         COMPONENTS
             CommonCore
             CommonDataModel
@@ -74,9 +74,9 @@ if(VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
             IOExodus
         REQUIRED
     )
-    message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
+  message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
 elseif(VTK_VERSION VERSION_GREATER_EQUAL "8.0.0")
-    find_package(VTK
+  find_package(VTK
         COMPONENTS
             vtkCommonCore
             vtkCommonDataModel
@@ -90,69 +90,69 @@ elseif(VTK_VERSION VERSION_GREATER_EQUAL "8.0.0")
             vtkIOExodus
         REQUIRED
     )
-    message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
+  message(STATUS "Found VTK: ${VTK_DIR} (found version \"${VTK_VERSION}\")")
 else()
-    if (${VTK_DIR} STREQUAL VTK_DIR-NOTFOUND)
-        message(FATAL_ERROR "Could not find VTK")
-    else()
-        message(FATAL_ERROR "Found unsupported version of VTK: ${VTK_DIR}, version ${VTK_VERSION}")
-    endif()
+  if (${VTK_DIR} STREQUAL VTK_DIR-NOTFOUND)
+    message(FATAL_ERROR "Could not find VTK")
+  else()
+    message(FATAL_ERROR "Found unsupported version of VTK: ${VTK_DIR}, version ${VTK_VERSION}")
+  endif()
 endif()
 
 find_package(PETSc 3.17 REQUIRED)
 check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_64BIT_INDICES)
 if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
-    message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
+  message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
 endif()
 check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
 if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
-    message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
+  message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
 endif()
 
 find_package(caliper REQUIRED)
 if(caliper_FOUND)
-    message(STATUS "Found Caliper: ${caliper_DIR}")
+  message(STATUS "Found Caliper: ${caliper_DIR}")
 endif()
 
 # google test
 find_package(GTest QUIET)
 if(NOT TARGET GTest::gtest_main)
-    message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
-    FetchContent_Declare(
+  message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
+  FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG v1.15.2
     )
-    FetchContent_MakeAvailable(googletest)
+  FetchContent_MakeAvailable(googletest)
 endif()
 
 # compile options
 set(OPENSN_CXX_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    if (NOT OPENSN_WITH_CUDA)
-      list(APPEND OPENSN_CXX_FLAGS "-pedantic")
-    endif()
-    list(APPEND OPENSN_CXX_FLAGS "-Wall")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+  if (NOT OPENSN_WITH_CUDA)
     list(APPEND OPENSN_CXX_FLAGS "-pedantic")
-    list(APPEND OPENSN_CXX_FLAGS "-Wall")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
+  endif()
+  list(APPEND OPENSN_CXX_FLAGS "-Wall")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+  list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+  list(APPEND OPENSN_CXX_FLAGS "-Wall")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-    if (NOT OPENSN_WITH_CUDA)
-      list(APPEND OPENSN_CXX_FLAGS "-pedantic")
-    endif()
-    list(APPEND OPENSN_CXX_FLAGS "-Wall")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-sign-compare")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-psabi")
-    list(APPEND OPENSN_CXX_FLAGS "-Wno-deprecated-declarations")
+  if (NOT OPENSN_WITH_CUDA)
+    list(APPEND OPENSN_CXX_FLAGS "-pedantic")
+  endif()
+  list(APPEND OPENSN_CXX_FLAGS "-Wall")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-sign-compare")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-psabi")
+  list(APPEND OPENSN_CXX_FLAGS "-Wno-deprecated-declarations")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel")
-    list(APPEND OPENSN_CXX_FLAGS "-fp-model=precise")
+  list(APPEND OPENSN_CXX_FLAGS "-fp-model=precise")
 else()
-    message(WARNING "Untested compiler : ${CMAKE_CXX_COMPILER_ID}")
+  message(WARNING "Untested compiler : ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # libopensn
@@ -162,19 +162,19 @@ file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
 )
 
 if (OPENSN_WITH_CUDA)
-    file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
-    add_library(libopensncuda STATIC ${LIBOPENSN_CUDA_SRCS})
+  file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
+  add_library(libopensncuda STATIC ${LIBOPENSN_CUDA_SRCS})
 endif()
 
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
 
 if (OPENSN_WITH_CUDA)
-    target_compile_options(libopensncuda PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
-    target_compile_features(libopensncuda PUBLIC cuda_std_20)
-    target_compile_definitions(libopensncuda PRIVATE __OPENSN_USE_CUDA__)
-    target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
-    set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
-    set_property(TARGET libopensncuda PROPERTY OUTPUT_NAME opensncuda)
+  target_compile_options(libopensncuda PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
+  target_compile_features(libopensncuda PUBLIC cuda_std_20)
+  target_compile_definitions(libopensncuda PRIVATE __OPENSN_USE_CUDA__)
+  target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
+  set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_property(TARGET libopensncuda PROPERTY OUTPUT_NAME opensncuda)
 endif()
 
 target_include_directories(libopensn
@@ -192,11 +192,11 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
 if (OPENSN_WITH_CUDA)
-    target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
-    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
-    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
-    target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>)
-    target_include_directories(libopensncuda
+  target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
+  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
+  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
+  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>)
+  target_include_directories(libopensncuda
       PRIVATE
       $<INSTALL_INTERFACE:include/opensn>
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
@@ -222,15 +222,11 @@ target_link_libraries(libopensn
     MPI::MPI_CXX
 )
 if (OPENSN_WITH_CUDA)
-    target_link_libraries(libopensncuda PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
-    target_link_libraries(libopensn INTERFACE libopensncuda)
+  target_link_libraries(libopensncuda PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
+  target_link_libraries(libopensn INTERFACE libopensncuda)
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
-
-if(NOT MSVC)
-    set_target_properties(libopensn PROPERTIES OUTPUT_NAME opensn)
-endif()
 
 set_target_properties(
     libopensn
@@ -240,14 +236,14 @@ set_target_properties(
 )
 
 if(OPENSN_WITH_PYTHON)
-    add_subdirectory(python)
-    add_subdirectory(test)
+  add_subdirectory(python)
+  add_subdirectory(test)
 
-    if(OPENSN_WITH_PYTHON_MODULE)
-        add_subdirectory(pyopensn)
-    endif()
+  if(OPENSN_WITH_PYTHON_MODULE)
+    add_subdirectory(pyopensn)
+  endif()
 
-    add_custom_target(test
+  add_custom_target(test
       COMMAND
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
@@ -285,7 +281,7 @@ install(
 )
 
 if(OPENSN_WITH_CUDA)
-    install(
+  install(
         TARGETS libopensncuda
         EXPORT openSnTargets
         LIBRARY DESTINATION lib
@@ -329,7 +325,7 @@ install(
 )
 
 if(OPENSN_WITH_PYTHON)
-    install(
+  install(
         TARGETS opensn libopensnpy
         EXPORT openSnTargets
         LIBRARY DESTINATION lib
@@ -337,7 +333,7 @@ if(OPENSN_WITH_PYTHON)
         RUNTIME DESTINATION bin
     )
 
-    install(
+  install(
         DIRECTORY ${CMAKE_SOURCE_DIR}/python
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
         FILES_MATCHING PATTERN "*.h"

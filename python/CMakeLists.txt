@@ -32,9 +32,6 @@ target_link_libraries(libopensnpy
     pybind11::embed
 )
 target_compile_options(libopensnpy PRIVATE ${OPENSN_CXX_FLAGS})
-if(NOT MSVC)
-    set_target_properties(libopensnpy PROPERTIES OUTPUT_NAME opensnpy)
-endif()
 set_target_properties(
     libopensnpy
     PROPERTIES
