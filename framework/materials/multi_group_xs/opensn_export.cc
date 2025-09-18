@@ -115,6 +115,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
       const auto& nu_sigma_f = GetNuSigmaF();
 
       std::vector<double> nu;
+      nu.reserve(GetNumGroups());
       for (size_t g = 0; g < GetNumGroups(); ++g)
         nu.emplace_back(sigma_f[g] > 0.0 ? nu_sigma_f[g] / sigma_f[g] : 0.0);
 

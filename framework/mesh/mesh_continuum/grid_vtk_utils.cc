@@ -235,6 +235,7 @@ UploadFaceGeometry(const CellFace& cell_face,
   const size_t num_verts = cell_face.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
+  cell_vids.reserve(cell_face.vertex_ids.size());
   for (uint64_t vid : cell_face.vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 

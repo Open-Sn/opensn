@@ -197,6 +197,7 @@ GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
 
   const auto quad_polar = GaussLegendreQuadrature(Npolar, verbose);
   std::vector<GaussQuadrature> quad_azimuthal;
+  quad_azimuthal.reserve(Npolar);
   for (auto n = 0; n < Npolar; ++n)
     quad_azimuthal.emplace_back(GaussChebyshevQuadrature(Nazimuthal, verbose));
   Initialize(quad_polar, quad_azimuthal, verbose);
@@ -342,6 +343,7 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
   for (size_t p = 0; p < azimu_quad_vec.size(); ++p)
   {
     std::vector<unsigned int> vec_directions_p;
+    vec_directions_p.reserve(azimu_quad_vec[p].weights.size());
     for (size_t q = 0; q < azimu_quad_vec[p].weights.size(); ++q)
       vec_directions_p.emplace_back(ind0 + q);
     map_directions_.emplace(p, vec_directions_p);
