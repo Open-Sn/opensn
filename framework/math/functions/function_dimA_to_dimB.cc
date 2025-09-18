@@ -28,34 +28,43 @@ FunctionDimAToDimB::FunctionDimAToDimB(const InputParameters& params)
 }
 
 double
-FunctionDimAToDimB::GetScalarFunction1Parameter(double) const
+FunctionDimAToDimB::GetScalarFunction1Parameter(double /* unused */) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::GetScalarFunctionSlope1Parameter(double) const
+FunctionDimAToDimB::GetScalarFunctionSlope1Parameter(double /* unused */) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::GetScalarFunctionCurvature1Parameter(double) const
-{
-  OpenSnLogicalError("No available function");
-}
-
-double
-FunctionDimAToDimB::GetScalarFunction4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunctionCurvature1Parameter(double /* unused */) const
 {
   OpenSnLogicalError("No available function");
 }
 
 double
-FunctionDimAToDimB::GetScalarFunctionSlope4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunction4Parameters(double /* unused */,
+                                                 double /* unused */,
+                                                 double /* unused */,
+                                                 double /* unused */) const
+{
+  OpenSnLogicalError("No available function");
+}
+
+double
+FunctionDimAToDimB::GetScalarFunctionSlope4Parameters(double /* unused */,
+                                                      double /* unused */,
+                                                      double /* unused */,
+                                                      double /* unused */) const
 {
   OpenSnLogicalError("No available function");
 }
 double
-FunctionDimAToDimB::GetScalarFunctionCurvature4Parameters(double, double, double, double) const
+FunctionDimAToDimB::GetScalarFunctionCurvature4Parameters(double /* unused */,
+                                                          double /* unused */,
+                                                          double /* unused */,
+                                                          double /* unused */) const
 {
   OpenSnLogicalError("No available function");
 }

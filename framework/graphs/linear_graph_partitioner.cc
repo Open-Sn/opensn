@@ -47,7 +47,7 @@ LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                                  const std::vector<Vector3>&,
+                                  const std::vector<Vector3>& /* centroids */,
                                   const int number_of_parts)
 {
   log.Log0Verbose1() << "Partitioning with LinearGraphPartitioner";

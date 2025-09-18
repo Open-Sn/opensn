@@ -127,7 +127,7 @@ CreateCommonKrylovSolverSetup(Mat matrix,
 }
 
 PetscErrorCode
-KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*)
+KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context */)
 {
   Vec Rhs;
   KSPGetRhs(ksp, &Rhs);

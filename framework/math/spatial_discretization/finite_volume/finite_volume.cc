@@ -212,7 +212,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
 int64_t
 FiniteVolume::MapDOF(const Cell& cell,
-                     const unsigned int,
+                     const unsigned int /* node */,
                      const UnknownManager& unknown_manager,
                      const unsigned int unknown_id,
                      const unsigned int component) const
@@ -253,7 +253,7 @@ FiniteVolume::MapDOF(const Cell& cell,
 
 int64_t
 FiniteVolume::MapDOFLocal(const Cell& cell,
-                          const unsigned int,
+                          const unsigned int /* node */,
                           const UnknownManager& unknown_manager,
                           const unsigned int unknown_id,
                           const unsigned int component) const

@@ -38,7 +38,7 @@ PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                                 const std::vector<Vector3>&,
+                                 const std::vector<Vector3>& /* centroids */,
                                  int number_of_parts)
 {
   log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
