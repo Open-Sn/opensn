@@ -97,7 +97,7 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, Vector<double>& shap
 
   if ((xi >= -1.0e-6) and (xi <= 1.0 + 1.0e-6))
   {
-    for (int i = 0; i < num_nodes_; ++i)
+    for (size_t i = 0; i < num_nodes_; ++i)
     {
       if (i == 0)
         shape_values(i) = 1.0 - xi;

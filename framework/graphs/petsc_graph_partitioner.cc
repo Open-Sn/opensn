@@ -84,10 +84,10 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw);
     PetscMalloc(j_indices.size() * sizeof(int64_t), &j_indices_raw);
 
-    for (int64_t j = 0; j < static_cast<int64_t>(i_indices.size()); ++j)
+    for (size_t j = 0; j < i_indices.size(); ++j)
       i_indices_raw[j] = i_indices[j];
 
-    for (int64_t j = 0; j < static_cast<int64_t>(j_indices.size()); ++j)
+    for (size_t j = 0; j < j_indices.size(); ++j)
       j_indices_raw[j] = j_indices[j];
 
     log.Log0Verbose1() << "Done copying to raw indices.";

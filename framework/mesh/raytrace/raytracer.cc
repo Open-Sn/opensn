@@ -266,7 +266,7 @@ RayTracer::TracePolygon(const Cell& cell,
 
   size_t num_faces = cell.faces.size();
   face_intersections.reserve(num_faces);
-  for (int f = 0; f < num_faces; ++f)
+  for (size_t f = 0; f < num_faces; ++f)
   {
     if (cell.faces[f].normal.Dot(omega_i) < 0.0)
       continue;
@@ -334,7 +334,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
 
   size_t num_faces = cell.faces.size();
   triangle_intersections.reserve(num_faces * 4); // Guessing 4 tris per face
-  for (int f = 0; f < num_faces; ++f)
+  for (size_t f = 0; f < num_faces; ++f)
   {
     const auto& face = cell.faces[f];
 

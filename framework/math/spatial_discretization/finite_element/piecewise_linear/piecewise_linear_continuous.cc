@@ -427,9 +427,9 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   if (unknown_manager.dof_storage_type == UnknownStorageType::NODAL)
   {
     int ir = -1;
-    for (int i = 0; i < local_base_block_size_; ++i)
+    for (uint64_t i = 0; i < local_base_block_size_; ++i)
     {
-      for (int j = 0; j < N; ++j)
+      for (unsigned int j = 0; j < N; ++j)
       {
         ++ir;
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
@@ -440,9 +440,9 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
     int ir = -1;
-    for (int j = 0; j < N; ++j)
+    for (unsigned int j = 0; j < N; ++j)
     {
-      for (int i = 0; i < local_base_block_size_; ++i)
+      for (uint64_t i = 0; i < local_base_block_size_; ++i)
       {
         ++ir;
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];

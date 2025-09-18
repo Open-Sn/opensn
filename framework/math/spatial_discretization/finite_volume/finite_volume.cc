@@ -184,10 +184,10 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
   nodal_nnz_in_diag.resize(num_local_cells * N, 0.0);
   nodal_nnz_off_diag.resize(num_local_cells * N, 0.0);
 
-  for (int uk = 0; uk < num_uk; ++uk)
+  for (unsigned int uk = 0; uk < num_uk; ++uk)
   {
     const unsigned int num_comps = unknown_manager.unknowns[uk].num_components;
-    for (int comp = 0; comp < num_comps; ++comp)
+    for (unsigned int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : grid_->local_cells)
       {

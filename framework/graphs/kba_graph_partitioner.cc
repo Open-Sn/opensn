@@ -131,7 +131,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
   std::vector<int64_t> real_pids(num_cells, 0);
   for (size_t c = 0; c < num_cells; ++c)
   {
-    for (size_t p = 0; p < number_of_parts; ++p)
+    for (int p = 0; p < number_of_parts; ++p)
     {
       if (pids[c] >= pid_subsets[p].ss_begin and pids[c] <= pid_subsets[p].ss_end)
         real_pids[c] = static_cast<int64_t>(p);

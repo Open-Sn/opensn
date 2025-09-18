@@ -214,12 +214,12 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
 
   // Boundaries
   auto num_boundaries = serial_data.Read<size_t>();
-  for (auto b = 0; b < num_boundaries; ++b)
+  for (size_t b = 0; b < num_boundaries; ++b)
   {
     const auto bid = serial_data.Read<uint64_t>();
     const auto num_chars = serial_data.Read<size_t>();
     std::string bname(num_chars, ' ');
-    for (auto i = 0; i < num_chars; ++i)
+    for (size_t i = 0; i < num_chars; ++i)
       bname[i] = serial_data.Read<char>();
     info_block.boundary_id_map.insert(std::make_pair(bid, bname));
   }

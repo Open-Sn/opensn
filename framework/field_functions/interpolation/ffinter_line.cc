@@ -79,7 +79,7 @@ FieldFunctionInterpolationLine::Execute()
   double local_max = 0.0, local_sum = 0.0, local_avg = 0.0;
   size_t local_size = local_interpolation_points_.size();
   local_interpolation_values_.resize(local_size);
-  for (auto p = 0; p < local_size; ++p)
+  for (size_t p = 0; p < local_size; ++p)
   {
     auto& point = local_interpolation_points_[p];
     auto cell_local_index = local_cells_[p];
@@ -157,7 +157,7 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
     // Zip data and sort data by coordinate
     std::vector<std::tuple<double, double, double, double>> values;
     values.reserve(global_data_size / 4);
-    for (size_t i = 0; i < global_data_size; i += 4)
+    for (int i = 0; i < global_data_size; i += 4)
     {
       values.emplace_back(
         global_data[i], global_data[i + 1], global_data[i + 2], global_data[i + 3]);

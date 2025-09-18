@@ -234,7 +234,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& s
     // Determine if inside tet
     if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and ((xi + eta) <= (1.0 + 1.0e-12)))
     {
-      for (int i = 0; i < num_nodes_; ++i)
+      for (size_t i = 0; i < num_nodes_; ++i)
       {
         int index = node_to_side_map_[i][s];
         double value = 0.0;
@@ -304,7 +304,7 @@ PieceWiseLinearPolygonMapping::GradShapeValues(const Vector3& xyz,
                                                std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 

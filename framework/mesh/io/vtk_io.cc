@@ -422,9 +422,9 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     }
 
     // Push points
-    for (size_t p = 0; p < total_point_count; ++p)
+    for (vtkIdType p = 0; p < total_point_count; ++p)
     {
-      auto* point = ugrid.GetPoint(static_cast<vtkIdType>(p));
+      auto* point = ugrid.GetPoint(p);
 
       Vector3 vertex(point[0], point[1], point[2]);
 
@@ -480,10 +480,10 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
     // Build vertex map
     bool mapping_failed = false;
     std::vector<size_t> vertex_map(ugrid->GetNumberOfPoints(), 0);
-    for (size_t p = 0; p < ugrid->GetNumberOfPoints(); ++p)
+    for (vtkIdType p = 0; p < ugrid->GetNumberOfPoints(); ++p)
     {
       Vector3 point;
-      ugrid->GetPoint(static_cast<vtkIdType>(p), &point.x);
+      ugrid->GetPoint(p, &point.x);
 
       bool map_found = false;
       for (const auto vid : bndry_vids_set)

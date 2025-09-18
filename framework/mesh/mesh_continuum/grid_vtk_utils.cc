@@ -450,7 +450,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
                            const std::string& field_name,
                            const std::string& file_name)
 {
-  const size_t total_cell_count = ugrid->GetNumberOfCells();
+  const auto total_cell_count = ugrid->GetNumberOfCells();
   std::vector<int> block_ids(total_cell_count, -1);
 
   // Determine if reading cell identifiers
@@ -508,10 +508,10 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
   }
 
   //  apply cell identifier
-  for (size_t c = 0; c < total_cell_count; ++c)
+  for (vtkIdType c = 0; c < total_cell_count; ++c)
   {
     std::vector<double> cell_id_vec(1);
-    cell_id_array_ptr->GetTuple(static_cast<vtkIdType>(c), cell_id_vec.data());
+    cell_id_array_ptr->GetTuple(c, cell_id_vec.data());
     const auto mat_id = (int)cell_id_vec.front();
 
     block_ids[c] = mat_id;

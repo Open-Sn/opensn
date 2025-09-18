@@ -101,7 +101,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     H5ReadDataset1D<int>(file, path + "scatter_data/g_min", g_min);
     H5ReadDataset1D<int>(file, path + "scatter_data/g_max", g_max);
     int fidx = 0;
-    for (int gp = 0; gp < mgxs.num_groups_; ++gp)
+    for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
         for (int n = 0; n < mgxs.scattering_order_ + 1; ++n, ++fidx)
           mgxs.transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);

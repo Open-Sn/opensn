@@ -933,12 +933,12 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   size_t I = x_cuts.size();
   size_t J = y_cuts.size();
 
-  std::vector<std::vector<int>> IJ_bins(I + 1, std::vector<int>(J + 1, 0));
+  std::vector<std::vector<size_t>> IJ_bins(I + 1, std::vector<size_t>(J + 1, 0));
 
   for (auto& poly_face : poly_faces_)
   {
-    int ref_i = 0;
-    int ref_j = 0;
+    size_t ref_i = 0;
+    size_t ref_j = 0;
     for (size_t i = 0; i < I; ++i)
     {
       if (poly_face->face_centroid.x >= x_cuts[i])
@@ -954,13 +954,13 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   } // for face
 
   // Determine average and max
-  int max_bin_size = 0;
-  int tot_bin_size = 0;
-  int i_max = 0, j_max = 0;
+  size_t max_bin_size = 0;
+  size_t tot_bin_size = 0;
+  size_t i_max = 0, j_max = 0;
 
-  for (int i = 0; i < (I + 1); ++i)
+  for (size_t i = 0; i < (I + 1); ++i)
   {
-    for (int j = 0; j < (J + 1); ++j)
+    for (size_t j = 0; j < (J + 1); ++j)
     {
       if (IJ_bins[i][j] > max_bin_size)
       {

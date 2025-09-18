@@ -127,7 +127,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   // which the side belongs and consequently allows
   // the determination of Nf. Nc is always evaluated
   // so no mapping is needed.
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     FEnodeMap newNodeMap;
     for (size_t f = 0; f < face_data_.size(); ++f)
@@ -475,7 +475,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
       if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and (zeta >= -1.0e-12) and
           ((xi + eta + zeta) <= (1.0 + 1.0e-12)))
       {
-        for (int i = 0; i < num_nodes_; ++i)
+        for (size_t i = 0; i < num_nodes_; ++i)
         {
           auto side_map = node_side_maps_[i].face_map[f].side_map[s];
 
@@ -566,7 +566,7 @@ PieceWiseLinearPolyhedronMapping::GradShapeValues(const Vector3& xyz,
                                                   std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 
