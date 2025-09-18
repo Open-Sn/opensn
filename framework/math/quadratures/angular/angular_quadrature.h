@@ -20,6 +20,14 @@ enum class AngularQuadratureType
   TRIANGULAR_QUADRATURE = 4,
 };
 
+/// Method used to construct the discrete-to-moment and moment-to-discrete operators.
+enum class OperatorConstructionMethod
+{
+  STANDARD = 0,      ///< Standard weighted quadrature projection.
+  GALERKIN_ONE = 1,  ///< Galerkin method 1: D2M = (M2D)^{-1}.
+  GALERKIN_THREE = 3 ///< Galerkin method 3: orthogonalized approximate harmonics.
+};
+
 /// Quadrature point in spherical coordinates.
 struct QuadraturePointPhiTheta
 {
@@ -53,25 +61,34 @@ public:
   };
 
 protected:
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
   /// Discrete-to-moment operator matrix.
-  std::vector<std::vector<double>> d2m_op_;
+  std::vector<std::vector<double>> d2m_op_ = {};
   /// Moment-to-discrete operator matrix.
-  std::vector<std::vector<double>> m2d_op_;
+  std::vector<std::vector<double>> m2d_op_ = {};
   /// Mapping from moment index to spherical harmonic indices.
-  std::vector<HarmonicIndices> m_to_ell_em_map_;
+  std::vector<HarmonicIndices> m_to_ell_em_map_ = {};
   /// Quadrature type identifier.
   AngularQuadratureType type_;
   /// Spatial dimension of the quadrature.
   unsigned int dimension_;
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
+  unsigned int quadrature_order_ = 0;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
@@ -85,18 +102,21 @@ public:
   /// Compute the moment-to-discrete operator.
   void BuildMomentToDiscreteOperator();
 
-  /**
-   * Return a reference to the precomputed discrete-to-moment operator.
-   *
-   * The operator is accessed as [d][m], where m is the moment index and d is the direction index.
-   */
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
+
+  /// Return a reference to the precomputed discrete-to-moment operator.
+  /// The operator is accessed as [d][m], where d is the direction index and m is the moment index.
   std::vector<std::vector<double>> const& GetDiscreteToMomentOperator() const;
 
-  /**
-   * Return a reference to the precomputed moment-to-discrete operator.
-   *
-   * The operator is accessed as [d][m], where m is the moment index and d is the direction index.
-   */
+  /// Return a reference to the precomputed moment-to-discrete operator.
+  /// The operator is accessed as [d][m], where d is the direction index and m is the moment index.
   std::vector<std::vector<double>> const& GetMomentToDiscreteOperator() const;
 
   /// Return a reference to the precomputed harmonic index map.
@@ -110,12 +130,22 @@ public:
 
   AngularQuadratureType GetType() const { return type_; }
 
+  /// Set the quadrature-specific order parameter.
+  /// For Lebedev: Lebedev order {3, 5, 7, ...}; for SLDFESQ: uniform refinement level.
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  /// Set the number of positive-mu polar points (product quadrature types).
+  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+
+  /// Set the total number of azimuthal points (product quadrature types).
+  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
+
   /// Quadrature point abscissae in spherical coordinates.
-  std::vector<QuadraturePointPhiTheta> abscissae;
+  std::vector<QuadraturePointPhiTheta> abscissae = {};
   /// Quadrature weights.
-  std::vector<double> weights;
+  std::vector<double> weights = {};
   /// Quadrature point direction vectors in Cartesian coordinates.
-  std::vector<Vector3> omegas;
+  std::vector<Vector3> omegas = {};
 };
 
 } // namespace opensn

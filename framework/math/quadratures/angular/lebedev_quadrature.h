@@ -11,67 +11,47 @@
 namespace opensn
 {
 
-/**
- * Lebedev quadrature for angular integration on the surface of a sphere.
- *
- * Lebedev quadrature provides a set of points on the surface of a sphere that allows for
- * symmetric and efficient angular integration. This implementation reads point data from
- * files and constructs the quadrature set.
- */
+/// Lebedev quadrature for angular integration on the full unit sphere (3D XYZ).
+///
+/// Provides symmetric, high-order point sets on S^2. Point data is loaded from
+/// predefined tabulated values keyed by order.
 class LebedevQuadrature3DXYZ : public AngularQuadrature
 {
 public:
-  /**
-   * Construct a Lebedev quadrature.
-   *
-   * \param quadrature_order Order of the Lebedev quadrature set to load.
-   * \param scattering_order Scattering order for moment calculations.
-   * \param verbose Flag to enable verbose output.
-   */
+  /// Construct a 3D Lebedev quadrature.
+  ///
+  /// \param quadrature_order Order of the Lebedev quadrature set to load.
+  /// \param scattering_order Scattering order for moment calculations.
+  /// \param verbose Enable verbose output.
   LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                          unsigned int scattering_order,
-                         bool verbose = false);
+                         bool verbose = false,
+                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
-  /**
-   * Load quadrature points for the specified order from predefined data.
-   *
-   * \param quadrature_order Order to load.
-   * \param verbose Flag to enable verbose output.
-   */
+  /// Load quadrature points for the given order from predefined tabulated data.
   void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
 };
 
-/**
- * 2D Lebedev quadrature for angular integration on the upper hemisphere.
- *
- * This is a 2D version of the Lebedev quadrature that only includes points with z >= 0
- * (i.e., polar angles theta <= pi/2). Points on the equator (z = 0) have their weights halved
- * since they are shared between the upper and lower hemispheres.
- */
+/// Lebedev quadrature restricted to the upper hemisphere (2D XY).
+///
+/// Only includes points with z >= 0. Points on the equator (z = 0) have their weights
+/// halved since they are shared between the upper and lower hemispheres.
 class LebedevQuadrature2DXY : public AngularQuadrature
 {
 public:
-  /**
-   * Construct a 2D Lebedev quadrature.
-   *
-   * \param quadrature_order Order of the Lebedev quadrature set to load.
-   * \param scattering_order Scattering order for moment calculations.
-   * \param verbose Flag to enable verbose output.
-   */
+  /// Construct a 2D Lebedev quadrature (upper hemisphere only).
+  ///
+  /// \param quadrature_order Order of the Lebedev quadrature set to load.
+  /// \param scattering_order Scattering order for moment calculations.
+  /// \param verbose Enable verbose output.
   LebedevQuadrature2DXY(unsigned int quadrature_order,
                         unsigned int scattering_order,
-                        bool verbose = false);
+                        bool verbose = false,
+                        OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
-  /**
-   * Load quadrature points for the specified order from predefined data.
-   *
-   * Keep only upper hemisphere points (z >= 0) and halve weights for z = 0.
-   *
-   * \param quadrature_order Order to load.
-   * \param verbose Flag to enable verbose output.
-   */
+  /// Load upper-hemisphere points for the given order, halving weights at the equator.
   void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
 };
 

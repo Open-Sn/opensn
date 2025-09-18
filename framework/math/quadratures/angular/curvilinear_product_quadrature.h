@@ -9,10 +9,10 @@
 namespace opensn
 {
 
-/**
- * Base class for curvilinear angular quadratures (product angular quadratures with additional
- * direction-dependent parameters).
- */
+/// Base class for curvilinear angular quadratures.
+///
+/// Extends product quadratures with direction-dependent parametrizing factors
+/// needed for the curvilinear streaming operator.
 class CurvilinearProductQuadrature : public ProductQuadrature
 {
 public:
@@ -23,68 +23,62 @@ public:
   ~CurvilinearProductQuadrature() override = default;
 
 protected:
-  CurvilinearProductQuadrature(unsigned int dimension, unsigned int scattering_order)
-    : ProductQuadrature(dimension, scattering_order)
+  CurvilinearProductQuadrature(unsigned int dimension,
+                               unsigned int scattering_order,
+                               OperatorConstructionMethod method)
+    : ProductQuadrature(dimension, scattering_order, method)
   {
   }
 
   /// Factor to account for angular diamond differencing.
   std::vector<double> fac_diamond_difference_;
 
-  /**
-   * Factor to account for discretisation of the component of the streaming operator that contains
-   * the angular derivative.
-   */
+  /// Factor for discretization of the angular-derivative component of the streaming operator.
   std::vector<double> fac_streaming_operator_;
 };
 
 class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
 {
 public:
-  GLCProductQuadrature2DRZ(unsigned int Npolar,
-                           unsigned int Nazimuthal,
-                           unsigned int scattering_order,
-                           bool verbose = false);
+  GLCProductQuadrature2DRZ(
+    unsigned int Npolar,
+    unsigned int Nazimuthal,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~GLCProductQuadrature2DRZ() override = default;
 
   void MakeHarmonicIndices();
 
 private:
-  /**
-   * Initialize with one-dimensional quadratures: a polar quadrature and a possibly unique azimuthal
-   * quadrature for each polar level.
-   */
+  /// Initialize from a polar quadrature and a per-polar-level azimuthal quadrature vector.
   void Initialize(const GaussQuadrature& quad_polar,
                   const std::vector<GaussQuadrature>& quad_azimu_vec,
                   bool verbose = false);
 
-  /**
-   * Initialize parametrizing factors of the cylindrical angular quadrature, starting from a fully
-   * initialized underlying product quadrature.
-   */
+  /// Initialize cylindrical parametrizing factors from the underlying product quadrature.
   void InitializeParameters();
 };
 
 class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
 public:
-  GLProductQuadrature1DSpherical(unsigned int Npolar,
-                                 unsigned int scattering_order,
-                                 bool verbose = false);
+  GLProductQuadrature1DSpherical(
+    unsigned int Npolar,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~GLProductQuadrature1DSpherical() override = default;
 
   void MakeHarmonicIndices();
 
 private:
-  /// Initialize with one-dimensional quadrature.
+  /// Initialize with a 1D polar quadrature.
   void Initialize(unsigned int Npolar, bool verbose = false);
 
-  /**
-   * Initialize parametrizing factors of the spherical angular quadrature, starting from a fully
-   * initialized underlying product quadrature.
-   */
+  /// Initialize spherical parametrizing factors from the underlying product quadrature.
   void InitializeParameters();
 };
 
