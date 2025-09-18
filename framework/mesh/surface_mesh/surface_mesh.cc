@@ -208,7 +208,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   {
     // Get the first word
     size_t beg_of_word = file_line.find_first_not_of(delimiter);
-    size_t end_of_word = file_line.find(delimiter, beg_of_word - beg_of_word);
+    size_t end_of_word = file_line.find(delimiter, 0);
     std::string first_word = file_line.substr(beg_of_word, end_of_word);
     std::string sub_word;
 
