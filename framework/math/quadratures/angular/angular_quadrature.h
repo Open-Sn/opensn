@@ -20,6 +20,13 @@ enum class AngularQuadratureType
   TriangularQuadrature = 4,
 };
 
+enum class OperatorConstructionMethod
+{
+  Standard = 0,          ///< Compute both operators directly
+  GalerkinMethodOne = 1, ///< Compute M2D first, then D2M = inverse(M2D)
+  GalerkinMethodTwo = 2  ///< Compute D2M first, then M2D = inverse(D2M)
+};
+
 /// Quadrature point in spherical coordinates.
 struct QuadraturePointPhiTheta
 {
@@ -56,7 +63,10 @@ protected:
   explicit AngularQuadrature(AngularQuadratureType type,
                              unsigned int dimension,
                              unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
@@ -72,9 +82,19 @@ protected:
   unsigned int dimension_;
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
+
+  /// Helper method to invert a square matrix using PETSc
+  std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
+
+  /// Build D2M operator directly using spherical harmonics
+  void BuildDiscreteToMomentOperatorStandard();
+
+  /// Build M2D operator directly using spherical harmonics
+  void BuildMomentToDiscreteOperatorStandard();
 
 public:
   virtual ~AngularQuadrature() = default;
@@ -84,6 +104,24 @@ public:
 
   /// Compute the moment-to-discrete operator.
   void BuildMomentToDiscreteOperator();
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /**
    * Return a reference to the precomputed discrete-to-moment operator.
