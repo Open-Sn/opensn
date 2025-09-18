@@ -80,6 +80,79 @@ WrapQuadrature(py::module& aquad)
     &AngularQuadrature::omegas,
     "Vector of direction vectors."
   );
+  angular_quadrature.def(
+    "SetOperatorConstructionMethod",
+    &AngularQuadrature::SetOperatorConstructionMethod,
+    R"(
+    Set the method used to construct the D2M and M2D operators.
+    
+    Parameters
+    ----------
+    method : int
+        Construction method: 0=Standard, 1=Galerkin Method 1, 2=Galerkin Method 2
+    )",
+    py::arg("method")
+  );
+  angular_quadrature.def(
+    "GetOperatorConstructionMethod",
+    &AngularQuadrature::GetOperatorConstructionMethod,
+    R"(
+    Get the current operator construction method.
+
+    Returns
+    -------
+    int
+        Current construction method: 0=Standard, 1=Galerkin Method 1, 2=Galerkin Method 2
+    )"
+  );
+  angular_quadrature.def(
+    "BuildDiscreteToMomentOperator",
+    &AngularQuadrature::BuildDiscreteToMomentOperator,
+    "Build the discrete-to-moment operator using the current construction method."
+  );
+  angular_quadrature.def(
+    "BuildMomentToDiscreteOperator", 
+    &AngularQuadrature::BuildMomentToDiscreteOperator,
+    "Build the moment-to-discrete operator using the current construction method."
+  );
+  angular_quadrature.def(
+    "GetDiscreteToMomentOperator",
+    [](const AngularQuadrature& self) {
+      const auto& op = self.GetDiscreteToMomentOperator();
+      // Convert to list of lists for Python
+      py::list result;
+      for (const auto& row : op) {
+        py::list py_row;
+        for (double val : row) {
+          py_row.append(val);
+        }
+        result.append(py_row);
+      }
+      return result;
+    },
+    "Get the discrete-to-moment operator as a list of lists."
+  );
+  angular_quadrature.def(
+    "GetMomentToDiscreteOperator",
+    [](const AngularQuadrature& self) {
+      const auto& op = self.GetMomentToDiscreteOperator();
+      // Convert to list of lists for Python
+      py::list result;
+      for (const auto& row : op) {
+        py::list py_row;
+        for (double val : row) {
+          py_row.append(val);
+        }
+        result.append(py_row);
+      }
+      return result;
+    },
+    "Get the moment-to-discrete operator as a list of lists."
+  );
+  py::enum_<OperatorConstructionMethod>(aquad, "OperatorConstructionMethod")
+    .value("Standard", OperatorConstructionMethod::Standard)
+    .value("GalerkinMethodOne", OperatorConstructionMethod::GalerkinMethodOne)
+    .value("GalerkinMethodTwo", OperatorConstructionMethod::GalerkinMethodTwo);
   // clang-format on
 }
 
