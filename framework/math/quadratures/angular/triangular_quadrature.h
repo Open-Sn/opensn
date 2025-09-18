@@ -39,8 +39,11 @@ public:
   std::vector<double> polar_ang;
 
 protected:
-  TriangularQuadrature(unsigned int dimension, unsigned int scattering_order)
-    : AngularQuadrature(AngularQuadratureType::TriangularQuadrature, dimension, scattering_order),
+  TriangularQuadrature(unsigned int dimension,
+                       unsigned int scattering_order,
+                       OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
+    : AngularQuadrature(
+        AngularQuadratureType::TriangularQuadrature, dimension, scattering_order, method),
       weight_sum_(0.0)
   {
   }
@@ -81,9 +84,11 @@ public:
    * \param scattering_order Scattering order for moment calculations.
    * \param verbose Flag to enable verbose output.
    */
-  explicit GLCTriangularQuadrature3DXYZ(unsigned int Npolar,
-                                        unsigned int scattering_order,
-                                        bool verbose = false);
+  explicit GLCTriangularQuadrature3DXYZ(
+    unsigned int Npolar,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
   /**
@@ -120,9 +125,11 @@ public:
    * \param scattering_order Scattering order for moment calculations.
    * \param verbose Flag to enable verbose output.
    */
-  explicit GLCTriangularQuadrature2DXY(unsigned int Npolar,
-                                       unsigned int scattering_order,
-                                       bool verbose = false);
+  explicit GLCTriangularQuadrature2DXY(
+    unsigned int Npolar,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
   /**
