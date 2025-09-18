@@ -7,6 +7,11 @@
 #include "framework/runtime.h"
 #include <iomanip>
 #include <numeric>
+#include <stdexcept>
+#include <cmath>
+
+#include <petscmat.h>
+#include <petscksp.h>
 
 namespace opensn
 {
@@ -29,8 +34,142 @@ AngularQuadrature::MakeHarmonicIndices()
         m_to_ell_em_map_.emplace_back(ell, m);
 }
 
+std::vector<std::vector<double>>
+AngularQuadrature::InvertMatrix(const std::vector<std::vector<double>>& matrix)
+{
+  const size_t n = matrix.size();
+
+  // Check if matrix is square
+  if (n == 0 || matrix[0].size() != n)
+  {
+    throw std::runtime_error("Matrix must be square for inversion");
+  }
+
+  PetscErrorCode ierr;
+  Mat A, B, X;
+  KSP ksp;
+
+  // Create PETSc matrix A from input matrix
+  ierr = MatCreate(PETSC_COMM_SELF, &A);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetSizes(A, n, n, n, n);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetType(A, MATSEQDENSE);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetUp(A);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Fill matrix A with input data
+  for (PetscInt i = 0; i < static_cast<PetscInt>(n); ++i)
+  {
+    for (PetscInt j = 0; j < static_cast<PetscInt>(n); ++j)
+    {
+      ierr = MatSetValue(A, i, j, matrix[i][j], INSERT_VALUES);
+      CHKERRABORT(PETSC_COMM_SELF, ierr);
+    }
+  }
+  ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Create identity matrix B (right-hand side)
+  ierr = MatCreate(PETSC_COMM_SELF, &B);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetSizes(B, n, n, n, n);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetType(B, MATSEQDENSE);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatSetUp(B);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Fill B with identity matrix
+  for (PetscInt i = 0; i < static_cast<PetscInt>(n); ++i)
+  {
+    ierr = MatSetValue(B, i, i, 1.0, INSERT_VALUES);
+    CHKERRABORT(PETSC_COMM_SELF, ierr);
+  }
+  ierr = MatAssemblyBegin(B, MAT_FINAL_ASSEMBLY);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatAssemblyEnd(B, MAT_FINAL_ASSEMBLY);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Create solution matrix X
+  ierr = MatDuplicate(B, MAT_DO_NOT_COPY_VALUES, &X);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Set up linear solver
+  ierr = KSPCreate(PETSC_COMM_SELF, &ksp);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = KSPSetOperators(ksp, A, A);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Use direct solver for better accuracy
+  PC pc;
+  ierr = KSPGetPC(ksp, &pc);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = PCSetType(pc, PCLU);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  ierr = KSPSetFromOptions(ksp);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Solve AX = B (where B is identity, so X will be A^-1)
+  ierr = KSPMatSolve(ksp, B, X);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Check convergence
+  KSPConvergedReason reason;
+  ierr = KSPGetConvergedReason(ksp, &reason);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  if (reason < 0)
+  {
+    // Clean up before throwing
+    MatDestroy(&A);
+    MatDestroy(&B);
+    MatDestroy(&X);
+    KSPDestroy(&ksp);
+    throw std::runtime_error("PETSc linear solver failed to converge during matrix inversion");
+  }
+
+  // Extract solution back to std::vector format
+  std::vector<std::vector<double>> inverse(n, std::vector<double>(n));
+
+  // Get array from PETSc dense matrix
+  PetscScalar* array;
+  ierr = MatDenseGetArray(X, &array);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Copy data (PETSc uses column-major storage for dense matrices)
+  for (size_t i = 0; i < n; ++i)
+  {
+    for (size_t j = 0; j < n; ++j)
+    {
+      inverse[i][j] = PetscRealPart(array[j * n + i]); // Transpose due to column-major
+    }
+  }
+
+  ierr = MatDenseRestoreArray(X, &array);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  // Clean up PETSc objects
+  ierr = MatDestroy(&A);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatDestroy(&B);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = MatDestroy(&X);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+  ierr = KSPDestroy(&ksp);
+  CHKERRABORT(PETSC_COMM_SELF, ierr);
+
+  log.Log0Verbose1() << "Matrix inversion completed successfully using PETSc LU solver";
+
+  return inverse;
+}
+
 void
-AngularQuadrature::BuildDiscreteToMomentOperator()
+AngularQuadrature::BuildDiscreteToMomentOperatorStandard()
 {
   d2m_op_.clear();
 
@@ -68,7 +207,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
 }
 
 void
-AngularQuadrature::BuildMomentToDiscreteOperator()
+AngularQuadrature::BuildMomentToDiscreteOperatorStandard()
 {
   m2d_op_.clear();
 
@@ -107,6 +246,114 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   }
 
   log.Log0Verbose1() << outs.str();
+}
+
+void
+AngularQuadrature::BuildDiscreteToMomentOperator()
+{
+  const size_t num_angles = abscissae.size();
+  const size_t num_moms = m_to_ell_em_map_.size();
+
+  switch (construction_method_)
+  {
+    case OperatorConstructionMethod::Standard:
+    {
+      BuildDiscreteToMomentOperatorStandard();
+      break;
+    }
+
+    case OperatorConstructionMethod::GalerkinMethodOne:
+    {
+      log.Log0Verbose1() << "Building D2M operator by inverting M2D operator using PETSc";
+
+      // Build M2D first if not already built
+      if (m2d_op_.empty())
+      {
+        BuildMomentToDiscreteOperatorStandard();
+      }
+
+      // Check dimensions
+      if (num_angles != num_moms)
+      {
+        throw std::runtime_error("Cannot invert M2D operator: number of directions (" +
+                                 std::to_string(num_angles) + ") != number of moments (" +
+                                 std::to_string(num_moms) + ")");
+      }
+
+      try
+      {
+        d2m_op_ = InvertMatrix(m2d_op_);
+        log.Log0Verbose1() << "D2M operator successfully computed as inverse of M2D using PETSc";
+      }
+      catch (const std::exception& e)
+      {
+        log.LogAllError() << "Failed to invert M2D operator with PETSc: " << e.what();
+        log.LogAllError() << "Falling back to Standard Method";
+        BuildDiscreteToMomentOperatorStandard();
+      }
+      break;
+    }
+
+    case OperatorConstructionMethod::GalerkinMethodTwo:
+    {
+      BuildDiscreteToMomentOperatorStandard();
+      break;
+    }
+  }
+}
+
+void
+AngularQuadrature::BuildMomentToDiscreteOperator()
+{
+  const size_t num_angles = abscissae.size();
+  const size_t num_moms = m_to_ell_em_map_.size();
+
+  switch (construction_method_)
+  {
+    case OperatorConstructionMethod::Standard:
+    {
+      BuildMomentToDiscreteOperatorStandard();
+      break;
+    }
+
+    case OperatorConstructionMethod::GalerkinMethodOne:
+    {
+      BuildMomentToDiscreteOperatorStandard();
+      break;
+    }
+
+    case OperatorConstructionMethod::GalerkinMethodTwo:
+    {
+      log.Log0Verbose1() << "Building M2D operator by inverting D2M operator using PETSc";
+
+      // Build D2M first if not already built
+      if (d2m_op_.empty())
+      {
+        BuildDiscreteToMomentOperatorStandard();
+      }
+
+      // Check dimensions
+      if (num_angles != num_moms)
+      {
+        throw std::runtime_error("Cannot invert D2M operator: number of directions (" +
+                                 std::to_string(num_angles) + ") != number of moments (" +
+                                 std::to_string(num_moms) + ")");
+      }
+
+      try
+      {
+        m2d_op_ = InvertMatrix(d2m_op_);
+        log.Log0Verbose1() << "M2D operator successfully computed as inverse of D2M using PETSc";
+      }
+      catch (const std::exception& e)
+      {
+        log.LogAllError() << "Failed to invert D2M operator with PETSc: " << e.what();
+        log.LogAllError() << "Falling back to Standard Method";
+        BuildMomentToDiscreteOperatorStandard();
+      }
+      break;
+    }
+  }
 }
 
 std::vector<std::vector<double>> const&
