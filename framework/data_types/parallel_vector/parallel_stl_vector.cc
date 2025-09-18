@@ -31,11 +31,6 @@ ParallelSTLVector::ParallelSTLVector(const ParallelSTLVector& other)
 {
 }
 
-ParallelSTLVector::ParallelSTLVector(ParallelSTLVector&& other) noexcept
-  : ParallelVector(std::move(other)), extents_(other.extents_), values_(std::move(other.values_))
-{
-}
-
 std::unique_ptr<ParallelVector>
 ParallelSTLVector::MakeCopy() const
 {

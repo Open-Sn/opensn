@@ -71,15 +71,6 @@ ParameterBlock::operator=(const ParameterBlock& other)
   return *this;
 }
 
-ParameterBlock::ParameterBlock(ParameterBlock&& other) noexcept
-{
-  std::swap(type_, other.type_);
-  std::swap(name_, other.name_);
-  std::swap(value_ptr_, other.value_ptr_);
-  std::swap(parameters_, other.parameters_);
-  std::swap(error_origin_scope_, other.error_origin_scope_);
-}
-
 ParameterBlock&
 ParameterBlock::operator=(ParameterBlock&& other) noexcept
 {
