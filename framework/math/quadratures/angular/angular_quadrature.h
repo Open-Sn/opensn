@@ -18,6 +18,13 @@ enum class AngularQuadratureType
   LebedevQuadrature = 3
 };
 
+enum class OperatorConstructionMethod
+{
+  Standard = 0,          ///< Compute both operators directly
+  GalerkinMethodOne = 1, ///< Compute M2D first, then D2M = inverse(M2D)
+  GalerkinMethodTwo = 2  ///< Compute D2M first, then M2D = inverse(D2M)
+};
+
 struct QuadraturePointPhiTheta
 {
   double phi = 0.0;
@@ -50,16 +57,31 @@ protected:
   AngularQuadratureType type_;
   unsigned int dimension_;
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
 
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::Standard)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
   void MakeHarmonicIndices();
+
+  /// Helper method to invert a square matrix using PETSc
+  std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
+
+  /// Build D2M operator directly using spherical harmonics
+  void BuildDiscreteToMomentOperatorStandard();
+
+  /// Build M2D operator directly using spherical harmonics
+  void BuildMomentToDiscreteOperatorStandard();
 
 public:
   std::vector<QuadraturePointPhiTheta> abscissae;
@@ -68,11 +90,20 @@ public:
 
   virtual ~AngularQuadrature() = default;
 
-  /// Computes the discrete to moment operator.
+  /// Computes the discrete to moment operator based on construction method.
   void BuildDiscreteToMomentOperator();
 
-  /// Computes the moment to discrete operator.
+  /// Computes the moment to discrete operator based on construction method.
   void BuildMomentToDiscreteOperator();
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /**
    * Returns a reference to the precomputed d2m operator. The operator is accessed as [m][d], where
