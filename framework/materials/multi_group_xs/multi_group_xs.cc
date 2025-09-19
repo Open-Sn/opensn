@@ -146,7 +146,8 @@ MultiGroupXS::Combine(
       if (xsecs[x]->IsFissionable())
       {
         mgxs.sigma_f_[g] += sig_f[g];
-        mgxs.chi_[g] += ff_i * chi[g];
+        if (not chi.empty())
+          mgxs.chi_[g] += ff_i * chi[g];
         mgxs.nu_sigma_f_[g] += sig_f[g];
         for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
           mgxs.production_matrix_[g][gp] += F[g][gp];

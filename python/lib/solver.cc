@@ -10,6 +10,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/solvers/time_dependent_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
@@ -941,6 +942,77 @@ WrapSteadyState(py::module& slv)
   // clang-format on
 }
 
+// Wrap transient solver
+void
+WrapTransientKEigen(py::module& slv)
+{
+  // clang-format off
+  auto transient_solver =
+    py::class_<TransientKEigenSolver, std::shared_ptr<TransientKEigenSolver>, Solver>(
+      slv,
+      "TransientKEigenSolver",
+      R"(
+      Transient k-eigenvalue solver.
+
+      Wrapper of :cpp:class:`opensn::TransientKEigenSolver`.
+      )"
+    );
+  transient_solver.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return TransientKEigenSolver::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct a Transient solver.
+
+    Parameters
+    ----------
+    pyopensn.solver.LBSProblem : LBSProblem
+        Existing LBSProblem instance.
+    dt : float, optional, default=1.0
+        Time step size used during the simulation.
+    stop_time : float, optional, default=1.0
+        Simulation end time.
+    )"
+  );
+  transient_solver.def(
+    "SetTimeStep",
+    &TransientKEigenSolver::SetTimeStep,
+    R"(
+    Set the timestep size used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    dt : float
+        New timestep size.
+    )");
+  transient_solver.def(
+    "SetTheta",
+    &TransientKEigenSolver::SetTheta,
+    R"(
+    Set the theta parameter used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    theta : float
+        Theta value between 0 and 1.
+    )");
+  transient_solver.def(
+    "Step",
+    &TransientKEigenSolver::Step,
+    R"(
+    Execute a single transient solve at the current time.
+
+    This performs the transient sweep for the current timestep but does not
+    advance the internal time. Call :meth:`Advance` after this to advance time.
+    )");
+  slv.attr("BackwardEuler") = 1.0;
+  slv.attr("CrankNicolson") = 0.5;
+  // clang-format on
+}
+
 // Wrap time-dependent solver
 void
 WrapTimeDependent(py::module& slv)
@@ -1286,6 +1358,7 @@ py_solver(py::module& pyopensn)
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);
+  WrapTransientKEigen(slv);
   WrapTimeDependent(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
