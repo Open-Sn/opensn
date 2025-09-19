@@ -418,6 +418,94 @@ WrapLBS(py::module& slv)
     )",
     py::arg("file_base")
   );
+  lbs_problem.def(
+    "SetPointSources",
+    [](LBSProblem& self, py::kwargs& params)
+    {
+      for (auto [key, value] : params)
+      {
+        auto c_key = key.cast<std::string>();
+        if (c_key == "clear_point_sources")
+          self.ClearPointSources();
+        else if (c_key == "point_sources")
+        {
+          auto sources = value.cast<py::list>();
+          for (auto source : sources)
+          {
+            self.AddPointSource(source.cast<std::shared_ptr<PointSource>>());
+          }
+        }
+        else
+          throw std::runtime_error("Invalid argument provided to SetPointSources.\n");
+      }
+    },
+    R"(
+    Set or clear point sources.
+
+    Parameters
+    ----------
+    clear_point_sources: bool, default=False
+        If true, all current the point sources of the problem are deleted.
+    point_sources: List[pyopensn.source.PointSource]
+        List of new point sources to be added to the problem.
+    )"
+  );
+  lbs_problem.def(
+    "SetVolumetricSources",
+    [](LBSProblem& self, py::kwargs& params)
+    {
+      for (auto [key, value] : params)
+      {
+        auto c_key = key.cast<std::string>();
+        if (c_key == "clear_volumetric_sources")
+          self.ClearVolumetricSources();
+        else if (c_key == "volumetric_sources")
+        {
+          auto sources = value.cast<py::list>();
+          for (auto source : sources)
+          {
+            self.AddVolumetricSource(source.cast<std::shared_ptr<VolumetricSource>>());
+          }
+        }
+        else
+          throw std::runtime_error("Invalid argument provided to SetVolumetricSources.\n");
+      }
+    },
+    R"(
+    Set or clear volumetric sources.
+
+    Parameters
+    ----------
+    clear_volumetric_sources: bool, default=False
+        If true, all current the volumetric sources of the problem are deleted.
+    volumetric_sources: List[pyopensn.source.VolumetricSource]
+        List of new volumetric sources to be added to the problem.
+    )"
+  );
+  lbs_problem.def(
+    "SetBoundaryOptions",
+    [](LBSProblem& self, py::kwargs& params)
+    {
+      for (auto [key, value] : params)
+      {
+        auto c_key = key.cast<std::string>();
+        if (c_key == "clear_boundary_conditions")
+          self.ClearBoundaries();
+        else if (c_key == "boundary_conditions")
+        {
+          auto boundaries = value.cast<py::list>();
+          for (auto boundary : boundaries)
+          {
+            InputParameters input = LBSProblem::GetBoundaryOptionsBlock();
+            input.AssignParameters(pyobj_to_param_block("", boundary.cast<py::dict>()));
+            self.SetBoundaryOptions(input);
+          }
+        }
+        else
+          throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
+      }
+    }
+  );
 
   // discrete ordinate solver
   auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,

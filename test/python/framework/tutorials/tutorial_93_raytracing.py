@@ -48,8 +48,8 @@ phys1 = DiscreteOrdinatesProblem(
         {"block_ids": [0], "xs": xs1g},
     ],
     scattering_order=0,
+    point_sources=[pt_src],
     options={
-        "point_sources": [pt_src],
         "field_function_prefix": solver_name,
     },
 )

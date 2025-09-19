@@ -35,6 +35,9 @@ convert_vector(const Vector<T>& vec)
 
 // Cast kwargs to ParameterBlock
 
+/// Translate a Python object into a ParameterBlock.
+ParameterBlock pyobj_to_param_block(const std::string& key, const py::object& obj);
+
 /// Translate a Python dictionary into a ParameterBlock.
 ParameterBlock kwargs_to_param_block(const py::kwargs& params);
 

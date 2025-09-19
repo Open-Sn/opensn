@@ -148,8 +148,8 @@ if __name__ == "__main__":
     # Switch to adjoint mode
     phys.SetOptions(
         adjoint=True,
-        volumetric_sources=[adjoint_source]
     )
+    phys.SetVolumetricSources(volumetric_sources=[adjoint_source])
 
     # Adjoint solve and write flux moments
     ss_solver.Execute()

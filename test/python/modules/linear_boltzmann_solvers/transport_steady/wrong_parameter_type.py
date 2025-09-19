@@ -60,10 +60,9 @@ if __name__ == "__main__":
             }
         ],
         scattering_order=0,
+        boundary_conditions=[],
         options={
             "max_mpi_message_size": True,
-            "boundary_conditions": [
-            ],
         }
     )
     ss_solver = SteadyStateSolver(problem=phys)
