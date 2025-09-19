@@ -280,6 +280,11 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetBoundaryOptions">
+<span class="sig-name descname"><span class="pre">SetBoundaryOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetBoundaryOptions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetOptions">
 <span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetOptions" title="Link to this definition"></a></dt>
 <dd><p>Set problem options from a large list of parameters.</p>
@@ -319,6 +324,34 @@ boundaries become vacuum.</p></li>
 <li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all point sources.</p></li>
 <li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>
 <li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all volumetric sources.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetPointSources">
+<span class="sig-name descname"><span class="pre">SetPointSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetPointSources" title="Link to this definition"></a></dt>
+<dd><p>Set or clear point sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the point sources of the problem are deleted.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em>) – List of new point sources to be added to the problem.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetVolumetricSources">
+<span class="sig-name descname"><span class="pre">SetVolumetricSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetVolumetricSources" title="Link to this definition"></a></dt>
+<dd><p>Set or clear volumetric sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the volumetric sources of the problem are deleted.</p></li>
+<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em>) – List of new volumetric sources to be added to the problem.</p></li>
 </ul>
 </dd>
 </dl>

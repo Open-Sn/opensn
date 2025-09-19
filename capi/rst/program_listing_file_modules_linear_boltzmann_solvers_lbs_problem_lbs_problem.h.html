@@ -201,6 +201,9 @@
 <span class="w">  </span><span class="c1">/// Constant accessor to the list of volumetric sources.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetVolumetricSources</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Clears all the boundary conditions from the solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">();</span>
+
 <span class="w">  </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetLastRestartTime</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Returns a reference to the map of material ids to XSs.</span>
