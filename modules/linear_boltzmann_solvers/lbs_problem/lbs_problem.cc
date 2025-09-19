@@ -614,24 +614,6 @@ LBSProblem::SetOptions(const InputParameters& input)
   params.AssignParameters(input);
 
   // Handle order sensitive options
-  if (params.IsParameterValid("clear_boundary_conditions"))
-  {
-    if (params.GetParamValue<bool>("clear_boundary_conditions"))
-      boundary_preferences_.clear();
-  }
-
-  if (params.IsParameterValid("clear_point_sources"))
-  {
-    if (params.GetParamValue<bool>("clear_point_sources"))
-      point_sources_.clear();
-  }
-
-  if (params.IsParameterValid("clear_volumetric_sources"))
-  {
-    if (params.GetParamValue<bool>("clear_volumetric_sources"))
-      volumetric_sources_.clear();
-  }
-
   if (params.IsParameterValid("adjoint"))
   {
     const bool adjoint = params.GetParamValue<bool>("adjoint");
@@ -743,35 +725,6 @@ LBSProblem::SetOptions(const InputParameters& input)
 
     else if (spec.GetName() == "field_function_prefix")
       options_.field_function_prefix = spec.GetValue<std::string>();
-
-    else if (spec.GetName() == "boundary_conditions")
-    {
-      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (size_t b = 0; b < spec.GetNumParameters(); ++b)
-      {
-        auto bndry_params = GetBoundaryOptionsBlock();
-        bndry_params.AssignParameters(spec.GetParam(b));
-        SetBoundaryOptions(bndry_params);
-      }
-    }
-
-    else if (spec.GetName() == "point_sources")
-    {
-      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (const auto& sub_param : spec)
-      {
-        AddPointSource(sub_param.GetValue<std::shared_ptr<PointSource>>());
-      }
-    }
-
-    else if (spec.GetName() == "volumetric_sources")
-    {
-      spec.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-      for (const auto& sub_param : spec)
-      {
-        AddVolumetricSource(sub_param.GetValue<std::shared_ptr<VolumetricSource>>());
-      }
-    }
   } // for p
 
   if (options_.restart_writes_enabled)
