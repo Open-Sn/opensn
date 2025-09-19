@@ -27,6 +27,7 @@ MeshContinuum::MeshContinuum()
     dim_(0),
     mesh_type_(UNSTRUCTURED),
     extruded_(false),
+    num_partitions_(opensn::mpi_comm.size()),
     global_vertex_count_(0)
 {
 }
@@ -235,17 +236,6 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   log.LogAllVerbose2() << outstr.str();
 
   return std::make_shared<GridFaceHistogram>(face_categories_list);
-}
-
-bool
-MeshContinuum::IsCellLocal(uint64_t global_id) const
-{
-  auto native_index = global_cell_id_to_local_id_map_.find(global_id);
-
-  if (native_index != global_cell_id_to_local_id_map_.end())
-    return true;
-
-  return false;
 }
 
 void

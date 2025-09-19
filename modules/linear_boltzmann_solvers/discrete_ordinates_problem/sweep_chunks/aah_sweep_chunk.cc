@@ -20,6 +20,7 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
                              const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                              int num_moments,
                              int max_num_cell_dofs,
+                             int min_num_cell_dofs,
                              DiscreteOrdinatesProblem& problem,
                              size_t max_level_size,
                              size_t max_groupset_size,
@@ -36,13 +37,53 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
                groupset,
                xs,
                num_moments,
-               max_num_cell_dofs),
+               max_num_cell_dofs,
+               min_num_cell_dofs),
     problem_(problem),
     max_level_size_(max_level_size),
     use_gpus_(use_gpus)
 {
   if (use_gpus_)
     CreateDeviceLevelVector();
+  else
+  {
+    cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_Generic;
+
+    if (min_num_cell_dofs == 4 and max_num_cell_dofs == 4)
+    {
+      cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_N4;
+
+      static constexpr size_t simd_width =
+#if defined(__AVX512F__)
+        8; // 8 lanes (512-bit, doubles)
+#elif defined(__AVX2__)
+        4; // 4 lanes (256-bit, doubles)
+#else
+        1; // scalar
+#endif
+
+      auto block_size = [&](size_t gs_size) -> size_t
+      {
+        if (gs_size <= simd_width)
+          return gs_size;
+
+        size_t target;
+        if (gs_size >= 16 * simd_width)
+          target = 4 * simd_width;
+        else if (gs_size >= 4 * simd_width)
+          target = 2 * simd_width;
+        else
+          target = 1 * simd_width;
+
+        target = std::min(target, gs_size);
+        if (target >= simd_width)
+          target = (target / simd_width) * simd_width;
+        return target;
+      };
+
+      group_block_size_ = block_size(groupset_.groups.size());
+    }
+  }
 }
 
 void
@@ -51,14 +92,12 @@ AAHSweepChunk::Sweep(AngleSet& angle_set)
   if (use_gpus_)
     GPUSweep(angle_set);
   else
-    CPUSweep(angle_set);
+    (this->*cpu_sweep_impl_)(angle_set);
 }
 
 void
-AAHSweepChunk::CPUSweep(AngleSet& angle_set)
+AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("AAHSweepChunk::Sweep");
-
   auto gs_size = groupset_.groups.size();
   auto gs_gi = groupset_.groups.front().id;
 
@@ -188,7 +227,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_op[m][direction_num] * source_moments_[ir];
+            temp_src += m2d_op[direction_num][m] * source_moments_[ir];
           }
           source[i] = temp_src;
         }
@@ -215,7 +254,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
       // Update phi
       for (int m = 0; m < num_moments_; ++m)
       {
-        const double wn_d2m = d2m_op[m][direction_num];
+        const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
