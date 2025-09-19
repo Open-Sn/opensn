@@ -39,6 +39,7 @@ set_target_properties(
         SOVERSION ${PROJECT_VERSION_MAJOR}
         POSITION_INDEPENDENT_CODE ON
         INTERPROCEDURAL_OPTIMIZATION OFF
+        OUTPUT_NAME opensnpy
 )
 
 # opensn binary

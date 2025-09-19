@@ -233,6 +233,7 @@ set_target_properties(
     PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
+        OUTPUT_NAME opensn
 )
 
 if(OPENSN_WITH_PYTHON)
