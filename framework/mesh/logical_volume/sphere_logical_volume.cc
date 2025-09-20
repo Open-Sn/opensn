@@ -49,10 +49,7 @@ SphereLogicalVolume::Inside(const Vector3& point) const
 
   double R2 = dx * dx + dy * dy + dz * dz;
 
-  if (R2 <= (r_ * r_))
-    return true;
-  else
-    return false;
+  return R2 <= (r_ * r_);
 }
 
 } // namespace opensn

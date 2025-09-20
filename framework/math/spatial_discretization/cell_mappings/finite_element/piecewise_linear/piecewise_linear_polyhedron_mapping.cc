@@ -16,12 +16,12 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   const TriangleQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
       ref_grid, polyh_cell, polyh_cell.vertex_ids.size(), MakeFaceNodeMapping(polyh_cell)),
+    alphac_(1.0 / static_cast<double>(polyh_cell.vertex_ids.size())),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
   // Assign cell centre
   const Vector3& vcc = polyh_cell.centroid;
-  alphac_ = 1.0 / static_cast<double>(polyh_cell.vertex_ids.size());
 
   // For each face
   size_t num_faces = polyh_cell.faces.size();
@@ -127,7 +127,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   // which the side belongs and consequently allows
   // the determination of Nf. Nc is always evaluated
   // so no mapping is needed.
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
   {
     FEnodeMap newNodeMap;
     for (size_t f = 0; f < face_data_.size(); ++f)
@@ -462,7 +462,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
   {
     for (size_t s = 0; s < face_data_[f].sides.size(); ++s)
     {
-      auto& side_fe_info = face_data_[f].sides[s];
+      const auto& side_fe_info = face_data_[f].sides[s];
       // Map xyz to xi_eta_zeta
       const auto& p0 = grid_->vertices[side_fe_info.v_index[0]];
       Vector3 xi_eta_zeta = side_fe_info.Jinv * (xyz - p0);
@@ -475,7 +475,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
       if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and (zeta >= -1.0e-12) and
           ((xi + eta + zeta) <= (1.0 + 1.0e-12)))
       {
-        for (int i = 0; i < num_nodes_; ++i)
+        for (size_t i = 0; i < num_nodes_; ++i)
         {
           auto side_map = node_side_maps_[i].face_map[f].side_map[s];
 
@@ -566,7 +566,7 @@ PieceWiseLinearPolyhedronMapping::GradShapeValues(const Vector3& xyz,
                                                   std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 
@@ -575,7 +575,7 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
 {
   // Determine number of internal qpoints
   size_t num_tets = 0;
-  for (auto& face : face_data_)
+  for (const auto& face : face_data_)
     num_tets += face.sides.size();
 
   size_t num_vol_qpoints = volume_quadrature_.qpoints.size();

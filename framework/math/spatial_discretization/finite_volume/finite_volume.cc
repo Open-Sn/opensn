@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid)
+FiniteVolume::FiniteVolume(std::shared_ptr<MeshContinuum> grid)
   : SpatialDiscretization(grid, SpatialDiscretizationType::FINITE_VOLUME)
 {
   CreateCellMappings();
@@ -21,7 +21,7 @@ FiniteVolume::FiniteVolume(const std::shared_ptr<MeshContinuum> grid)
 }
 
 std::shared_ptr<FiniteVolume>
-FiniteVolume::New(const std::shared_ptr<MeshContinuum> grid)
+FiniteVolume::New(std::shared_ptr<MeshContinuum> grid)
 {
   // First try to find an existing spatial discretization that matches the
   // one requested.
@@ -184,10 +184,10 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
   nodal_nnz_in_diag.resize(num_local_cells * N, 0.0);
   nodal_nnz_off_diag.resize(num_local_cells * N, 0.0);
 
-  for (int uk = 0; uk < num_uk; ++uk)
+  for (unsigned int uk = 0; uk < num_uk; ++uk)
   {
     const unsigned int num_comps = unknown_manager.unknowns[uk].num_components;
-    for (int comp = 0; comp < num_comps; ++comp)
+    for (unsigned int comp = 0; comp < num_comps; ++comp)
     {
       for (auto& cell : grid_->local_cells)
       {
@@ -212,7 +212,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
 
 int64_t
 FiniteVolume::MapDOF(const Cell& cell,
-                     const unsigned int,
+                     const unsigned int /* node */,
                      const UnknownManager& unknown_manager,
                      const unsigned int unknown_id,
                      const unsigned int component) const
@@ -253,7 +253,7 @@ FiniteVolume::MapDOF(const Cell& cell,
 
 int64_t
 FiniteVolume::MapDOFLocal(const Cell& cell,
-                          const unsigned int,
+                          const unsigned int /* node */,
                           const UnknownManager& unknown_manager,
                           const unsigned int unknown_id,
                           const unsigned int component) const

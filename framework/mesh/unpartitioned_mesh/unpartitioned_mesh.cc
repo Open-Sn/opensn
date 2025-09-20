@@ -11,7 +11,8 @@
 namespace opensn
 {
 
-UnpartitionedMesh::UnpartitionedMesh() : dim_(0), mesh_type_(UNSTRUCTURED), extruded_(false)
+UnpartitionedMesh::UnpartitionedMesh()
+  : dim_(0), coord_sys_(CoordinateSystemType::CARTESIAN), mesh_type_(UNSTRUCTURED), extruded_(false)
 {
 }
 

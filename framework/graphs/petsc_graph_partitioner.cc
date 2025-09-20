@@ -38,7 +38,7 @@ PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
 
 std::vector<int64_t>
 PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
-                                 const std::vector<Vector3>&,
+                                 const std::vector<Vector3>& /* centroids */,
                                  int number_of_parts)
 {
   log.Log0Verbose1() << "Partitioning with PETScGraphPartitioner";
@@ -46,7 +46,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
   // This is done so we can reserve size better
   const size_t num_raw_cells = graph.size();
   size_t num_raw_faces = 0;
-  for (auto& cell_row : graph)
+  for (const auto& cell_row : graph)
     num_raw_faces += cell_row.size();
   size_t avg_num_face_per_cell =
     std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));
@@ -84,10 +84,10 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw);
     PetscMalloc(j_indices.size() * sizeof(int64_t), &j_indices_raw);
 
-    for (int64_t j = 0; j < static_cast<int64_t>(i_indices.size()); ++j)
+    for (size_t j = 0; j < i_indices.size(); ++j)
       i_indices_raw[j] = i_indices[j];
 
-    for (int64_t j = 0; j < static_cast<int64_t>(j_indices.size()); ++j)
+    for (size_t j = 0; j < j_indices.size(); ++j)
       j_indices_raw[j] = j_indices[j];
 
     log.Log0Verbose1() << "Done copying to raw indices.";

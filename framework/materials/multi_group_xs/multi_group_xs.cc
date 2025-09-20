@@ -39,7 +39,7 @@ MultiGroupXS::Combine(
   double Nf_total = 0.0; // Total density of fissile materials
 
   // Loop over cross sections
-  for (auto& combo : combinations)
+  for (const auto& combo : combinations)
   {
     // Get the cross section
     auto xs = combo.first;

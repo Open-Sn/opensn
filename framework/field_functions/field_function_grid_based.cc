@@ -246,7 +246,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
   // Upload cell/point data
-  auto point_data = ugrid->GetPointData();
+  auto* point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
   {
     const auto field_vector = ff_ptr->GetGhostedFieldVector();
@@ -273,7 +273,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
 
         if (num_nodes == cell.vertex_ids.size())
         {
-          for (int n = 0; n < num_nodes; ++n)
+          for (size_t n = 0; n < num_nodes; ++n)
           {
             const int64_t nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
 
@@ -285,7 +285,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
         else
         {
           double node_average = 0.0;
-          for (int n = 0; n < num_nodes; ++n)
+          for (size_t n = 0; n < num_nodes; ++n)
           {
             const int64_t nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
 

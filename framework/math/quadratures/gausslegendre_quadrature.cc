@@ -97,7 +97,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
   double delta = 2.0 / num_search_intvls;
   std::vector<double> xk(N, 0.0);
   int counter = -1;
-  for (size_t i = 0; i < num_search_intvls; ++i)
+  for (int i = 0; i < num_search_intvls; ++i)
   {
     double x_i = -1.0 + i * delta;
     double x_ip1 = x_i + delta;
@@ -113,7 +113,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
   //  - a = block bracket containing the second derivative
   //  - b = denominator
   //  - c = everything but xold
-  for (int k = 0; k < N; ++k)
+  for (int k = 0; k < N; ++k) // NOLINT(modernize-use-integer-sign-comparison)
   {
     for (size_t iteration = 0; iteration < max_iters; ++iteration)
     {

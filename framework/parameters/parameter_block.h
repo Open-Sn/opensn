@@ -126,7 +126,7 @@ public:
   ParameterBlock& operator=(const ParameterBlock& other);
 
   /// Move constructor
-  ParameterBlock(ParameterBlock&& other) noexcept;
+  ParameterBlock(ParameterBlock&& other) noexcept = default;
 
   /// Move assignment operator
   ParameterBlock& operator=(ParameterBlock&& other) noexcept;

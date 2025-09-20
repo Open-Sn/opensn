@@ -159,7 +159,7 @@ InputParameters::IsParameterIgnored(const std::string& param_name)
   bool ignored = false;
 
   {
-    auto& list = system_ignored_param_names_;
+    const auto& list = system_ignored_param_names_;
     if (std::find(list.begin(), list.end(), param_name) != list.end())
       ignored = true;
   }
@@ -186,7 +186,7 @@ InputParameters::AddOptionalParameterArray(const std::string& name,
 {
   ParameterBlock new_block(name);
   new_block.ChangeToArray();
-  for (auto& block : array)
+  for (const auto& block : array)
     new_block.AddParameter(block);
 
   AddParameter(new_block);
@@ -316,7 +316,7 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   }
 
   // Now attempt to assign values
-  for (auto& param : params.GetParameters())
+  for (const auto& param : params.GetParameters())
   {
     const auto& param_name = param.GetName();
 

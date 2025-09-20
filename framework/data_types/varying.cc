@@ -55,10 +55,8 @@ Varying::Varying(const std::string& value)
 {
 }
 
-Varying::Varying(const Varying& other)
+Varying::Varying(const Varying& other) : type_(other.type_), data_(other.data_->Clone())
 {
-  data_ = other.data_->Clone();
-  type_ = other.type_;
 }
 
 Varying::Varying(Varying&& other) noexcept

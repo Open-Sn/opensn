@@ -28,7 +28,7 @@ protected:
   /// Initializes the quadrature with custom angles and weights.
   void AssembleCosines(const std::vector<double>& azimuthal,
                        const std::vector<double>& polar,
-                       const std::vector<double>& weights,
+                       const std::vector<double>& wts,
                        bool verbose);
 
 public:

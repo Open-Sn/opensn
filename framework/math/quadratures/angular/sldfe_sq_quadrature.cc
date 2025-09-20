@@ -103,7 +103,7 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   // Define rotation matrix
   Matrix3x3 Rihat;
   auto n = Vector3(0.0, -1.0 / sqrt(2), 1.0 / sqrt(2));
-  auto& t = ihat;
+  const auto& t = ihat;
   auto b = n.Cross(t).Normalized();
 
   Rihat.SetColJVec(0, t);
@@ -459,7 +459,7 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
   double y_tilde_max = 0.0;
   double y_tilde_min = 1.0;
 
-  for (auto& v : sq.vertices_xy_tilde)
+  for (const auto& v : sq.vertices_xy_tilde)
   {
     x_tilde_max = std::fmax(x_tilde_max, v.x);
     x_tilde_min = std::fmin(x_tilde_min, v.x);
@@ -816,8 +816,8 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base
     {
       for (int v = 0; v < 4; ++v)
       {
-        auto& v0 = sq.vertices_xyz_prime[v];
-        auto& v1 = sq.vertices_xyz_prime[(v < 3) ? v + 1 : 0];
+        const auto& v0 = sq.vertices_xyz_prime[v];
+        const auto& v1 = sq.vertices_xyz_prime[(v < 3) ? v + 1 : 0];
 
         for (int d = 0; d <= 10; ++d)
         {

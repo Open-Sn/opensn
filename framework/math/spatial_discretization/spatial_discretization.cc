@@ -39,7 +39,7 @@ SpatialDiscretization::GetType() const
   return type_;
 }
 
-const std::shared_ptr<MeshContinuum>
+std::shared_ptr<MeshContinuum>
 SpatialDiscretization::GetGrid() const
 {
   return grid_;

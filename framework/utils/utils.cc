@@ -144,6 +144,7 @@ MakeSubSets(size_t num_items, size_t desired_num_subsets)
     std::floor(static_cast<double>(num_items) / static_cast<double>(desired_num_subsets));
   const std::size_t rem = num_items % desired_num_subsets;
 
+  ss_infos.reserve(desired_num_subsets);
   for (size_t i = 0; i < desired_num_subsets; ++i)
     ss_infos.push_back({0, 0, div});
   for (size_t j = 0; j < rem; ++j)

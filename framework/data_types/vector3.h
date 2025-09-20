@@ -267,6 +267,6 @@ struct Vector3
 };
 
 /// Scalar multiplication from the left. \f$ \vec{w} = \alpha \vec{x}\f$
-Vector3 operator*(double value, const Vector3& that);
+Vector3 operator*(double value, const Vector3& vec);
 
 } // namespace opensn

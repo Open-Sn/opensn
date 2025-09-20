@@ -21,7 +21,6 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 {
   size_t Na = azimuthal.size();
   size_t Np = polar.size();
-  size_t Nw = wts.size();
 
   azimu_ang = azimuthal;
   polar_ang = polar;

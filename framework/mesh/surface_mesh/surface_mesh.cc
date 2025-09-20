@@ -44,12 +44,12 @@ SurfaceMesh::~SurfaceMesh()
 }
 
 std::ostream&
-operator<<(std::ostream& os, SurfaceMesh& that)
+operator<<(std::ostream& os, SurfaceMesh& obj)
 {
   std::vector<Face>::const_iterator curface;
-  for (curface = that.GetTriangles().begin(); curface != that.GetTriangles().end(); ++curface)
+  for (curface = obj.GetTriangles().begin(); curface != obj.GetTriangles().end(); ++curface)
   {
-    long index = std::distance(that.GetTriangles().begin(), curface);
+    long index = std::distance(obj.GetTriangles().begin(), curface);
     os << "Face " << index << " v:";
     os << curface->v_index[0] << "->";
     os << curface->v_index[1] << "->";
@@ -208,7 +208,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   {
     // Get the first word
     size_t beg_of_word = file_line.find_first_not_of(delimiter);
-    size_t end_of_word = file_line.find(delimiter, beg_of_word - beg_of_word);
+    size_t end_of_word = file_line.find(delimiter, 0);
     std::string first_word = file_line.substr(beg_of_word, end_of_word);
     std::string sub_word;
 
@@ -252,7 +252,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "vt" for Vertex
-    if (first_word.compare("vt") == 0)
+    if (first_word == "vt")
     {
       Vector3 newVertex;
       for (int k = 1; k <= 2; ++k)
@@ -342,7 +342,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     }
 
     // Keyword "f" for face
-    if (first_word.compare("f") == 0)
+    if (first_word == "f")
     {
       int number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
       if ((number_of_verts == 3) and (not as_poly))
@@ -433,11 +433,9 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
 
           // Extract locations of hiphens
           size_t first_dash = sub_word.find('/');
-          size_t last_dash = sub_word.find_last_of('/');
 
           // Extract the words ass. w vertex and normal
           std::string vert_word = sub_word.substr(0, first_dash - 0);
-          std::string norm_word = sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
 
           // Convert word to number (Vertex)
           try
@@ -448,30 +446,6 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
           catch (const std::invalid_argument& ia)
           {
             std::cout << "Exception caught!" << std::endl;
-          }
-
-          // Convert word to number (Normal)
-          try
-          {
-            int numValue = std::stoi(norm_word);
-          }
-          catch (const std::invalid_argument& ia)
-          {
-            std::cout << "Exception caught!" << std::endl;
-          }
-
-          // Convert word to number (Texture Vertex)
-          if (last_dash > (first_dash + 1))
-          {
-            std::string tvert_word = sub_word.substr(first_dash + 1, last_dash - first_dash - 1);
-            try
-            {
-              int numValue = std::stoi(tvert_word);
-            }
-            catch (const std::invalid_argument& ia)
-            {
-              std::cout << "Exception caught!" << std::endl;
-            }
           }
 
           // Stop word extraction on line end
@@ -806,7 +780,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
   file.seekg(0);
   while (std::getline(file, line))
   {
-    if (elements_section_name.compare(line) == 0)
+    if (elements_section_name == line)
       break;
   }
 
@@ -959,12 +933,12 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   size_t I = x_cuts.size();
   size_t J = y_cuts.size();
 
-  std::vector<std::vector<int>> IJ_bins(I + 1, std::vector<int>(J + 1, 0));
+  std::vector<std::vector<size_t>> IJ_bins(I + 1, std::vector<size_t>(J + 1, 0));
 
   for (auto& poly_face : poly_faces_)
   {
-    int ref_i = 0;
-    int ref_j = 0;
+    size_t ref_i = 0;
+    size_t ref_j = 0;
     for (size_t i = 0; i < I; ++i)
     {
       if (poly_face->face_centroid.x >= x_cuts[i])
@@ -980,13 +954,13 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   } // for face
 
   // Determine average and max
-  int max_bin_size = 0;
-  int tot_bin_size = 0;
-  int i_max = 0, j_max = 0;
+  size_t max_bin_size = 0;
+  size_t tot_bin_size = 0;
+  size_t i_max = 0, j_max = 0;
 
-  for (int i = 0; i < (I + 1); ++i)
+  for (size_t i = 0; i < (I + 1); ++i)
   {
-    for (int j = 0; j < (J + 1); ++j)
+    for (size_t j = 0; j < (J + 1); ++j)
     {
       if (IJ_bins[i][j] > max_bin_size)
       {

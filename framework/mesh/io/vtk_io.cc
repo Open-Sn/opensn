@@ -67,7 +67,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
   auto num_cfaces = vtk_cell->GetNumberOfFaces();
 
   polyh_cell->vertex_ids.reserve(num_cpoints);
-  auto point_ids = vtk_cell->GetPointIds();
+  auto* point_ids = vtk_cell->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
@@ -133,11 +133,11 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       for (int f = 0; f < num_cfaces; ++f)
       {
         UnpartitionedMesh::LightWeightFace face;
-        auto vtk_face = vtk_cell->GetFace(f);
+        auto* vtk_face = vtk_cell->GetFace(f);
         auto num_face_points = vtk_face->GetNumberOfPoints();
 
         face.vertex_ids.reserve(num_face_points);
-        auto face_point_ids = vtk_face->GetPointIds();
+        auto* face_point_ids = vtk_face->GetPointIds();
         for (int p = 0; p < num_face_points; ++p)
         {
           uint64_t point_id = face_point_ids->GetId(p);
@@ -182,7 +182,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
   auto num_cfaces = num_cpoints;
 
   poly_cell->vertex_ids.reserve(num_cpoints);
-  auto point_ids = vtk_cell->GetPointIds();
+  auto* point_ids = vtk_cell->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
@@ -224,12 +224,12 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
 
   auto slab_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, sub_type);
 
-  auto vtk_line = vtkLine::SafeDownCast(vtk_cell);
+  auto* vtk_line = vtkLine::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_line->GetNumberOfPoints();
   auto num_cfaces = num_cpoints;
 
   slab_cell->vertex_ids.reserve(num_cpoints);
-  auto point_ids = vtk_line->GetPointIds();
+  auto* point_ids = vtk_line->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
@@ -258,11 +258,11 @@ CreateCellFromVTKVertex(vtkCell* vtk_cell)
   auto point_cell =
     std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::GHOST, CellType::POINT);
 
-  auto vtk_vertex = vtkVertex::SafeDownCast(vtk_cell);
+  auto* vtk_vertex = vtkVertex::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_vertex->GetNumberOfPoints();
 
   point_cell->vertex_ids.reserve(num_cpoints);
-  auto point_ids = vtk_vertex->GetPointIds();
+  auto* point_ids = vtk_vertex->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
@@ -291,7 +291,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
   if (not ugrid.GetCellData()->GetArray(block_id_array_name.c_str()))
     throw std::logic_error(fname + ": grid has no \"" + block_id_array_name + "\" array.");
 
-  auto block_id_array =
+  auto* block_id_array =
     vtkIntArray::SafeDownCast(ugrid.GetCellData()->GetArray(block_id_array_name.c_str()));
 
   OpenSnLogicalErrorIf(not block_id_array, "Failed to cast BlockID array to vtkInt");
@@ -301,11 +301,11 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells(total_cell_count);
     std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
-    auto cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
-    auto pnts_gids_ptr = ugrid.GetPointData()->GetGlobalIds();
+    auto* cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
+    auto* pnts_gids_ptr = ugrid.GetPointData()->GetGlobalIds();
 
-    auto cell_gids = vtkIdTypeArray::SafeDownCast(cell_gids_ptr);
-    auto pnts_gids = vtkIdTypeArray::SafeDownCast(pnts_gids_ptr);
+    auto* cell_gids = vtkIdTypeArray::SafeDownCast(cell_gids_ptr);
+    auto* pnts_gids = vtkIdTypeArray::SafeDownCast(pnts_gids_ptr);
 
     // Determine id offset
     // We do this because some mesh formats (like ExodusII)
@@ -333,7 +333,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     // Load cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
-      auto vtk_cell = ugrid.GetCell(static_cast<vtkIdType>(c));
+      auto* vtk_cell = ugrid.GetCell(c);
       auto vtk_celldim = vtk_cell->GetCellDimension();
       const vtkIdType cell_gid = cell_gids->GetValue(c) + cid_offset;
 
@@ -370,7 +370,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     // Load points
     for (vtkIdType p = 0; p < total_point_count; ++p)
     {
-      auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
+      auto* point = ugrid.GetPoint(p);
       const vtkIdType point_gid = pnts_gids->GetValue(p) + pid_offset;
 
       auto vertex = std::make_shared<Vector3>(point[0], point[1], point[2]);
@@ -401,7 +401,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
-      auto vtk_cell = ugrid.GetCell(static_cast<vtkIdType>(c));
+      auto* vtk_cell = ugrid.GetCell(c);
       auto vtk_celldim = vtk_cell->GetCellDimension();
 
       if (vtk_celldim != dimension_to_copy)
@@ -422,9 +422,9 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     }
 
     // Push points
-    for (size_t p = 0; p < total_point_count; ++p)
+    for (vtkIdType p = 0; p < total_point_count; ++p)
     {
-      auto point = ugrid.GetPoint(static_cast<vtkIdType>(p));
+      auto* point = ugrid.GetPoint(p);
 
       Vector3 vertex(point[0], point[1], point[2]);
 
@@ -480,10 +480,10 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
     // Build vertex map
     bool mapping_failed = false;
     std::vector<size_t> vertex_map(ugrid->GetNumberOfPoints(), 0);
-    for (size_t p = 0; p < ugrid->GetNumberOfPoints(); ++p)
+    for (vtkIdType p = 0; p < ugrid->GetNumberOfPoints(); ++p)
     {
       Vector3 point;
-      ugrid->GetPoint(static_cast<vtkIdType>(p), &point.x);
+      ugrid->GetPoint(p, &point.x);
 
       bool map_found = false;
       for (const auto vid : bndry_vids_set)
@@ -516,11 +516,11 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 
     // Process each cell in bndry block
     size_t num_faces_boundarified = 0;
-    auto& bndry_block = ugrid_name.first;
+    const auto& bndry_block = ugrid_name.first;
     size_t num_bndry_block_cells = bndry_block->GetNumberOfCells();
     for (size_t bc = 0; bc < num_bndry_block_cells; ++bc)
     {
-      auto bndry_cell = bndry_block->GetCell(static_cast<vtkIdType>(bc));
+      auto* bndry_cell = bndry_block->GetCell(static_cast<vtkIdType>(bc));
 
       // Build list of face candidates and vertex set
       std::set<size_t> face_ids_short_list;
@@ -575,10 +575,10 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
   // Exodus ships boundary-ids via SideSets and NodeSets. This allows
   // it to be read from the file. Here we have to enable the reader
   // to process this because it does not do it by default.
-  reader->SetAllArrayStatus(reader->NODE_SET, 1);
-  reader->SetAllArrayStatus(reader->NODE_SET_CONN, 1);
-  reader->SetAllArrayStatus(reader->SIDE_SET, 1);
-  reader->SetAllArrayStatus(reader->SIDE_SET_CONN, 1);
+  reader->SetAllArrayStatus(vtkExodusIIReader::NODE_SET, 1);
+  reader->SetAllArrayStatus(vtkExodusIIReader::NODE_SET_CONN, 1);
+  reader->SetAllArrayStatus(vtkExodusIIReader::SIDE_SET, 1);
+  reader->SetAllArrayStatus(vtkExodusIIReader::SIDE_SET_CONN, 1);
 
   // The exodusII file format ships blocks of elements
   // together with their points/vertices as self-contained (localized)
@@ -601,14 +601,14 @@ MeshIO::FromExodusII(const UnpartitionedMesh::Options& options)
   // level 2 is also of type vtkMultiBlockDataSet. The level 2 block that has
   // the actual elements is also split into blocks but these, level 3,
   // blocks each contain a structure castable to vtkUnstructuredGrid.
-  auto multiblock = reader->GetOutput();
+  auto* multiblock = reader->GetOutput();
 
   std::vector<vtkUGridPtrAndName> grid_blocks;
-  auto iter_a = multiblock->NewIterator();
+  auto* iter_a = multiblock->NewIterator();
   iter_a->GoToFirstItem();
   while (not iter_a->IsDoneWithTraversal())
   {
-    auto block_a = iter_a->GetCurrentDataObject();
+    auto* block_a = iter_a->GetCurrentDataObject();
 
     const std::string block_name =
       StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
@@ -782,14 +782,14 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
   reader->Update();
 
   // Get all the grid blocks
-  auto multiblock = reader->GetOutput();
+  auto* multiblock = reader->GetOutput();
 
   std::vector<vtkUGridPtrAndName> grid_blocks;
-  auto iter_a = multiblock->NewIterator();
+  auto* iter_a = multiblock->NewIterator();
   iter_a->GoToFirstItem();
   while (not iter_a->IsDoneWithTraversal())
   {
-    auto block_a = iter_a->GetCurrentDataObject();
+    auto* block_a = iter_a->GetCurrentDataObject();
 
     const std::string block_name =
       StringTrim(iter_a->GetCurrentMetaData()->Get(vtkCompositeDataSet::NAME()));
@@ -977,7 +977,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-      global_node_id_list->InsertNextValue(static_cast<vtkIdType>(v + 1));
+      global_node_id_list->InsertNextValue(static_cast<vtkIdType>(v) + 1);
     }
 
     // Load cells
@@ -1196,7 +1196,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 
   writer->Write();
 
-  auto em = writer->GetModelMetadata();
+  auto* em = writer->GetModelMetadata();
 
   log.Log() << "Num blocks   :  " << em->GetNumberOfBlocks();
   log.Log() << "Num node sets:  " << em->GetNumberOfNodeSets();

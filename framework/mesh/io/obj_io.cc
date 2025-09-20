@@ -47,7 +47,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   {
     // Get the first word
     size_t beg_of_word = file_line.find_first_not_of(delimiter);
-    size_t end_of_word = file_line.find(delimiter, beg_of_word - beg_of_word);
+    size_t end_of_word = file_line.find(delimiter, 0);
     std::string first_word = file_line.substr(beg_of_word, end_of_word);
     std::string sub_word;
 
@@ -128,11 +128,9 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
         // Extract locations of hyphens
         size_t first_dash = sub_word.find('/');
-        size_t last_dash = sub_word.find_last_of('/');
 
         // Extract the words ass. vertex and normal
         std::string vert_word = sub_word.substr(0, first_dash - 0);
-        std::string norm_word = sub_word.substr(last_dash + 1, sub_word.length() - last_dash - 1);
 
         // Convert word to number (Vertex)
         try

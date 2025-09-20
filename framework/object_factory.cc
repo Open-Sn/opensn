@@ -34,7 +34,7 @@ ObjectFactory::GetRegisteredObjectParameters(const std::string& type) const
   OpenSnInvalidArgumentIf(iter == object_registry_.end(),
                           "Object type \"" + type + "\" is not registered in ObjectFactory.");
 
-  auto& reg_entry = iter->second;
+  const auto& reg_entry = iter->second;
 
   return reg_entry.get_in_params_func();
 }

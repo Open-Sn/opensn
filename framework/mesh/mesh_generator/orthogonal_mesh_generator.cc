@@ -16,7 +16,7 @@ OrthogonalMeshGenerator::OrthogonalMeshGenerator(const InputParameters& params)
   // Parse the node_sets param
   if (params.IsParameterValid("node_sets"))
   {
-    auto& node_sets_param = params.GetParam("node_sets");
+    const auto& node_sets_param = params.GetParam("node_sets");
     node_sets_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& node_list_block : node_sets_param)
     {

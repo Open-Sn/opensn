@@ -21,14 +21,14 @@ VolumetricFiniteElementData::QPointXYZ(unsigned int qp) const
 double
 VolumetricFiniteElementData::ShapeValue(unsigned int i, unsigned int qp) const
 {
-  auto& qp_data = shape_value_.at(i);
+  const auto& qp_data = shape_value_.at(i);
   return qp_data.at(qp);
 }
 
 Vector3
 VolumetricFiniteElementData::ShapeGrad(unsigned int i, unsigned int qp) const
 {
-  auto& qp_data = shape_grad_.at(i);
+  const auto& qp_data = shape_grad_.at(i);
   return qp_data.at(qp);
 }
 
@@ -65,7 +65,7 @@ VolumetricFiniteElementData::JxW(unsigned int qp) const
 int
 VolumetricFiniteElementData::FaceDofMapping(size_t face, size_t face_node_index) const
 {
-  auto& face_data = face_dof_mappings_.at(face);
+  const auto& face_data = face_dof_mappings_.at(face);
   return face_data.at(face_node_index);
 }
 

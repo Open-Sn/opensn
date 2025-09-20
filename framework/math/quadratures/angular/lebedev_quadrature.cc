@@ -33,7 +33,6 @@ LebedevQuadrature::LoadFromOrder(int order, bool verbose)
 
   std::stringstream ostr;
   double weight_sum = 0.0;
-  int point_count = 0;
 
   for (const auto& point : points)
   {
@@ -72,8 +71,6 @@ LebedevQuadrature::LoadFromOrder(int order, bool verbose)
                w);
       ostr << buf;
     }
-
-    point_count++;
   }
 
   if (verbose)

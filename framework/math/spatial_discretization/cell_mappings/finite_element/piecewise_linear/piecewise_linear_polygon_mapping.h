@@ -55,9 +55,9 @@ private:
   /// This structure goes into sides
   struct FEside_data2d
   {
-    double detJ;
-    double detJ_surf;
-    std::array<uint64_t, 2> v_index;
+    double detJ{};
+    double detJ_surf{};
+    std::array<uint64_t, 2> v_index{};
     Vector3 v0;
     Matrix3x3 J;
     Matrix3x3 Jinv;

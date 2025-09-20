@@ -74,7 +74,7 @@ MeshMapping::Build(const std::shared_ptr<MeshContinuum>& fine_grid,
     const auto& coarse_cell = *coarse_cell_ptr;
 
     double total_fine_volume = 0.0;
-    for (const auto fine_cell_ptr : coarse_mapping.fine_cells)
+    for (const auto* fine_cell_ptr : coarse_mapping.fine_cells)
     {
       const auto& fine_cell = *fine_cell_ptr;
       total_fine_volume += fine_cell.volume;

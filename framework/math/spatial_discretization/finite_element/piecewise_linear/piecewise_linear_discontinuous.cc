@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi_utils.h"
+#include <cstdint>
 #include <sstream>
 
 namespace opensn
@@ -171,21 +172,21 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     size_t num_nodes = cell_mapping.GetNumNodes();
 
     // Self connection
-    for (int i = 0; i < num_nodes; ++i)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
       int64_t ir = cell_local_block_address_[lc] + i;
       nodal_nnz_in_diag[ir] += static_cast<int64_t>(num_nodes);
     }
 
     // Local adjacent cell connections
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor and face.IsNeighborLocal(grid_.get()))
       {
         const auto& adj_cell = grid_->cells[face.neighbor_id];
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
-        for (int i = 0; i < num_nodes; ++i)
+        for (size_t i = 0; i < num_nodes; ++i)
         {
           int64_t ir = cell_local_block_address_[lc] + i;
           nodal_nnz_in_diag[ir] += static_cast<int64_t>(adj_cell_mapping.GetNumNodes());
@@ -234,9 +235,9 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   if (unknown_manager.dof_storage_type == UnknownStorageType::NODAL)
   {
     int ir = -1;
-    for (int i = 0; i < local_base_block_size_; ++i)
+    for (uint64_t i = 0; i < local_base_block_size_; ++i)
     {
-      for (int j = 0; j < N; ++j)
+      for (unsigned int j = 0; j < N; ++j)
       {
         ++ir;
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];
@@ -247,9 +248,9 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   else if (unknown_manager.dof_storage_type == UnknownStorageType::BLOCK)
   {
     int ir = -1;
-    for (int j = 0; j < N; ++j)
+    for (unsigned int j = 0; j < N; ++j)
     {
-      for (int i = 0; i < local_base_block_size_; ++i)
+      for (uint64_t i = 0; i < local_base_block_size_; ++i)
       {
         ++ir;
         nodal_nnz_in_diag[ir] = backup_nnz_in_diag[i];

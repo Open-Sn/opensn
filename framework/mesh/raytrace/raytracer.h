@@ -46,7 +46,7 @@ public:
   }
 
 private:
-  const std::shared_ptr<MeshContinuum> Grid() const;
+  std::shared_ptr<MeshContinuum> Grid() const;
 
   void SetTolerancesFromCellSize(double cell_size)
   {
@@ -169,7 +169,7 @@ bool CheckPlaneTetIntersect(const Vector3& plane_normal,
                             const std::vector<Vector3>& tet_points);
 
 /// Populates segment lengths along a ray. Sorted along the direction.
-void PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
+void PopulateRaySegmentLengths(std::shared_ptr<MeshContinuum> grid,
                                const Cell& cell,
                                const Vector3& line_point0,
                                const Vector3& line_point1,

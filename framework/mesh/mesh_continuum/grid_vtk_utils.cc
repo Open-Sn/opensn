@@ -70,7 +70,7 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
     std::vector<vtkIdType> faces_vids;
 
     size_t num_faces = cell.faces.size();
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       size_t num_fverts = face.vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
@@ -192,7 +192,7 @@ UploadCellGeometryContinuous(const Cell& cell,
       case CellType::POLYHEDRON:
       {
         size_t num_faces = cell.faces.size();
-        for (auto& face : cell.faces)
+        for (const auto& face : cell.faces)
         {
           size_t num_fverts = face.vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
@@ -235,6 +235,7 @@ UploadFaceGeometry(const CellFace& cell_face,
   const size_t num_verts = cell_face.vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
+  cell_vids.reserve(cell_face.vertex_ids.size());
   for (uint64_t vid : cell_face.vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 
@@ -275,7 +276,7 @@ FindHighestDimension(std::vector<vtkUGridPtrAndName>& ugrid_blocks)
     const int64_t num_cells = ugrid.first->GetNumberOfCells();
     for (int64_t c = 0; c < num_cells; ++c)
     {
-      auto cell = ugrid.first->GetCell(c);
+      auto* cell = ugrid.first->GetCell(c);
       OpenSnLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
       max_dim = std::max(max_dim, cell->GetCellDimension());
     }
@@ -332,7 +333,7 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
     vtkIdType max_id = 0;
     for (vtkIdType p = 0; p < num_points; ++p)
     {
-      auto point_gids =
+      auto* point_gids =
         vtkIdTypeArray::SafeDownCast(consolidated_ugrid->GetPointData()->GetGlobalIds());
       auto point_gid = point_gids->GetValue(p);
 
@@ -347,10 +348,10 @@ ConsolidateGridBlocks(std::vector<vtkUGridPtrAndName>& ugrid_blocks,
   const int64_t num_cells = consolidated_ugrid->GetNumberOfCells();
   for (int64_t c = 0; c < num_cells; ++c)
   {
-    auto cell = consolidated_ugrid->GetCell(c);
+    auto* cell = consolidated_ugrid->GetCell(c);
     OpenSnLogicalErrorIf(not cell, "Failed to obtain VTK-cell pointer");
 
-    auto cell_type_name = cell->GetClassName();
+    const auto* cell_type_name = cell->GetClassName();
     cell_type_count_map[cell_type_name] += 1;
   }
 
@@ -435,7 +436,7 @@ SetBlockIDArrays(std::vector<vtkUGridPtrAndName>& ugrid_blocks)
     for (vtkIdType c = 0; c < num_cells; ++c)
       block_id_list->InsertNextValue(block_id);
 
-    auto arr = ugrid.first->GetCellData()->GetArray("BlockID");
+    auto* arr = ugrid.first->GetCellData()->GetArray("BlockID");
     if (not arr)
       ugrid.first->GetCellData()->RemoveArray("BlockID");
 
@@ -449,7 +450,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
                            const std::string& field_name,
                            const std::string& file_name)
 {
-  const size_t total_cell_count = ugrid->GetNumberOfCells();
+  const auto total_cell_count = ugrid->GetNumberOfCells();
   std::vector<int> block_ids(total_cell_count, -1);
 
   // Determine if reading cell identifiers
@@ -458,19 +459,19 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
   {
     log.Log0Warning() << "A user-supplied field name from which to recover block identifiers has "
                          "not been found. Block-ids will be left unassigned.";
-    goto end_error_checks;
+    return block_ids;
   }
   else
   {
-    auto cell_data = ugrid->GetCellData();
-    const auto vtk_abstract_array_ptr = cell_data->GetAbstractArray(field_name.c_str());
+    auto* cell_data = ugrid->GetCellData();
+    auto* vtk_abstract_array_ptr = cell_data->GetAbstractArray(field_name.c_str());
 
     if (not vtk_abstract_array_ptr)
     {
       log.Log0Warning() << "The VTU file : \"" << file_name << "\" "
                         << "does not contain a vtkCellData field of name : \"" << field_name
                         << "\". Block-ids will be left unassigned.";
-      goto end_error_checks;
+      return block_ids;
     }
 
     cell_id_array_ptr = vtkArrayDownCast<vtkDataArray>(vtk_abstract_array_ptr);
@@ -480,7 +481,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
                         << "with vtkCellData field of name : \"" << field_name << "\" "
                         << "cannot be downcast to vtkDataArray. Block-ids will be left "
                            "unassigned.";
-      goto end_error_checks;
+      return block_ids;
     }
 
     const auto cell_id_n_tup = cell_id_array_ptr->GetNumberOfTuples();
@@ -491,7 +492,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
                         << "\" has n. tuples : " << cell_id_n_tup
                         << ", but differs from the value expected : " << total_cell_count
                         << ". Block-ids will be left unassigned.";
-      goto end_error_checks;
+      return block_ids;
     }
 
     const auto cell_id_n_val = cell_id_array_ptr->GetNumberOfValues();
@@ -502,21 +503,20 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
                         << "\" has n. values : " << cell_id_n_val
                         << ", but differs from the value expected : " << total_cell_count
                         << ". Block-ids will be left unassigned.";
-      goto end_error_checks;
+      return block_ids;
     }
   }
 
   //  apply cell identifier
-  for (size_t c = 0; c < total_cell_count; ++c)
+  for (vtkIdType c = 0; c < total_cell_count; ++c)
   {
     std::vector<double> cell_id_vec(1);
-    cell_id_array_ptr->GetTuple(static_cast<vtkIdType>(c), cell_id_vec.data());
+    cell_id_array_ptr->GetTuple(c, cell_id_vec.data());
     const auto mat_id = (int)cell_id_vec.front();
 
     block_ids[c] = mat_id;
   }
 
-end_error_checks:
   return block_ids;
 }
 

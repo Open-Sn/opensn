@@ -19,7 +19,7 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
 {
   // Convert input handles
   const auto inputs = params.GetParamVectorValue<std::shared_ptr<MeshGenerator>>("inputs");
-  for (auto& mesh_generator : inputs)
+  for (const auto& mesh_generator : inputs)
     inputs_.push_back(mesh_generator);
 
   // Set partitioner
@@ -137,7 +137,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
 
   size_t cell_global_id = 0;
-  auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
+  const auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
 
   for (auto& raw_cell : input_umesh->GetRawCells())
   {
@@ -207,7 +207,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   cell->vertex_ids = raw_cell.vertex_ids;
 
   size_t face_counter = 0;
-  for (auto& raw_face : raw_cell.faces)
+  for (const auto& raw_face : raw_cell.faces)
   {
     CellFace newFace;
     newFace.has_neighbor = raw_face.has_neighbor;

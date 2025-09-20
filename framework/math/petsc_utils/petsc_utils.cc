@@ -127,7 +127,7 @@ CreateCommonKrylovSolverSetup(Mat matrix,
 }
 
 PetscErrorCode
-KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*)
+KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context */)
 {
   Vec Rhs;
   KSPGetRhs(ksp, &Rhs);
@@ -227,12 +227,8 @@ CopyGlobalVecToSTLvector(Vec x,
   // Populating local indices
   size_t N = global_indices.size();
   std::vector<int64_t> local_indices(N, 0);
-  size_t counter = 0;
-  for (auto val : global_indices)
-  {
+  for (size_t counter = 0; counter < N; ++counter)
     local_indices[counter] = counter;
-    ++counter;
-  }
 
   // Creating PETSc vector
   Vec local_vec;
