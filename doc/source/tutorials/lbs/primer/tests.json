@@ -1,0 +1,22 @@
+[
+  {
+    "file": "forward_example.py",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_example.py",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  }
+]

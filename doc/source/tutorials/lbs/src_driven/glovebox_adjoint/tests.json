@@ -1,7 +1,7 @@
 [
   {
-    "file": "first_example.py",
-    "num_procs": 4,
+    "file": "glovebox_adj.py",
+    "num_procs": 8,
     "checks": [
       {
         "type": "ErrorCode",
