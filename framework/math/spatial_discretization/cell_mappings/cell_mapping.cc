@@ -23,24 +23,4 @@ CellMapping::CellMapping(const std::shared_ptr<MeshContinuum> grid,
 {
 }
 
-size_t
-CellMapping::GetNumFaceNodes(size_t face_index) const
-{
-  return face_node_mappings_.at(face_index).size();
-}
-
-int
-CellMapping::MapFaceNode(size_t face_index, size_t face_node_index) const
-{
-  try
-  {
-    return face_node_mappings_.at(face_index).at(face_node_index);
-  }
-  catch (const std::out_of_range& oor)
-  {
-    throw std::out_of_range("CellMapping::MapFaceNode: "
-                            "Either face_index or face_node_index is out of range");
-  }
-}
-
 } // namespace opensn

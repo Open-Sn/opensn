@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 
@@ -13,24 +12,6 @@ SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<MeshContinuum
                                              SpatialDiscretizationType sdm_type)
   : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}), grid_(grid), type_(sdm_type)
 {
-}
-
-const CellMapping&
-SpatialDiscretization::GetCellMapping(const Cell& cell) const
-{
-  constexpr std::string_view fname = "spatial_discretization::"
-                                     "GetCellMapping";
-  try
-  {
-    if (GetGrid()->IsCellLocal(cell.global_id))
-      return *cell_mappings_.at(cell.local_id);
-    else
-      return *nb_cell_mappings_.at(cell.global_id);
-  }
-  catch (const std::out_of_range& oor)
-  {
-    throw std::out_of_range(std::string(fname) + ": Failed to obtain cell mapping.");
-  }
 }
 
 SpatialDiscretizationType
