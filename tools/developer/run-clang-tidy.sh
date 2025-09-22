@@ -62,5 +62,5 @@ if (( ${#positional[@]} == 1 )); then
   fi
   run-clang-tidy -p build -header-filter="$header_filter" "$file"
 else
-  run-clang-tidy -p build -header-filter="$header_filter" "${repo}/modules" "${repo}/python"
+  run-clang-tidy -p build -header-filter="$header_filter" "${repo}/framework" "${repo}/modules" "${repo}/python"
 fi

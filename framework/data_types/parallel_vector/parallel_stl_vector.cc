@@ -31,11 +31,6 @@ ParallelSTLVector::ParallelSTLVector(const ParallelSTLVector& other)
 {
 }
 
-ParallelSTLVector::ParallelSTLVector(ParallelSTLVector&& other) noexcept
-  : ParallelVector(std::move(other)), extents_(other.extents_), values_(std::move(other.values_))
-{
-}
-
 std::unique_ptr<ParallelVector>
 ParallelSTLVector::MakeCopy() const
 {
@@ -447,8 +442,8 @@ ParallelSTLVector::Assemble()
     ByteArray byte_array(byte_vector);
     for (size_t k = 0; k < num_ops; ++k)
     {
-      const int64_t global_id = byte_array.Read<int64_t>();
-      const double value = byte_array.Read<double>();
+      const auto global_id = byte_array.Read<int64_t>();
+      const auto value = byte_array.Read<double>();
 
       // Check that the global ID is in fact valid for this process
       const int64_t local_id = global_id - static_cast<int64_t>(extents_[location_id_]);

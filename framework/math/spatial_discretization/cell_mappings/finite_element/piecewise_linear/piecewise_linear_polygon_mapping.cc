@@ -18,14 +18,12 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   : PieceWiseLinearBaseMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
-    surface_quadrature_(surface_quadrature)
+    surface_quadrature_(surface_quadrature),
+    num_of_subtris_(static_cast<int>(poly_cell.faces.size())),
+    beta_(1.0 / num_of_subtris_),
+    // Get raw vertices
+    vc_(poly_cell.centroid)
 {
-  num_of_subtris_ = static_cast<int>(poly_cell.faces.size());
-  beta_ = 1.0 / num_of_subtris_;
-
-  // Get raw vertices
-  vc_ = poly_cell.centroid;
-
   // Calculate legs and determinants
   for (int side = 0; side < num_of_subtris_; ++side)
   {
@@ -236,7 +234,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& s
     // Determine if inside tet
     if ((xi >= -1.0e-12) and (eta >= -1.0e-12) and ((xi + eta) <= (1.0 + 1.0e-12)))
     {
-      for (int i = 0; i < num_nodes_; ++i)
+      for (size_t i = 0; i < num_nodes_; ++i)
       {
         int index = node_to_side_map_[i][s];
         double value = 0.0;
@@ -306,7 +304,7 @@ PieceWiseLinearPolygonMapping::GradShapeValues(const Vector3& xyz,
                                                std::vector<Vector3>& gradshape_values) const
 {
   gradshape_values.clear();
-  for (int i = 0; i < num_nodes_; ++i)
+  for (size_t i = 0; i < num_nodes_; ++i)
     gradshape_values.emplace_back(GradShapeValue(i, xyz));
 }
 

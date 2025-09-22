@@ -13,6 +13,7 @@ PETScNonLinearSolver::PETScNonLinearSolver(std::shared_ptr<NonLinearSolverContex
                                            const InputParameters& params)
   : NonLinearSolver(params.GetParamValue<std::string>("name"), context_ptr),
     J_(nullptr),
+    P_(nullptr),
     r_(nullptr),
     x_(nullptr),
     nl_solver_(nullptr),

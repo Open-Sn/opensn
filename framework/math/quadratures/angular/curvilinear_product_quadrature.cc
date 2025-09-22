@@ -35,7 +35,7 @@ GLProductQuadrature1DSpherical::Initialize(int Npolar, const bool verbose)
   // Verifications and corrections (if possible)
   const auto eps = std::numeric_limits<double>::epsilon();
 
-  if (polar_quad.weights.size() == 0)
+  if (polar_quad.weights.empty())
     throw std::invalid_argument("GLProductQuadrature1DSpherical: "
                                 "Invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights.size()));
@@ -197,6 +197,7 @@ GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
 
   const auto quad_polar = GaussLegendreQuadrature(Npolar, verbose);
   std::vector<GaussQuadrature> quad_azimuthal;
+  quad_azimuthal.reserve(Npolar);
   for (auto n = 0; n < Npolar; ++n)
     quad_azimuthal.emplace_back(GaussChebyshevQuadrature(Nazimuthal, verbose));
   Initialize(quad_polar, quad_azimuthal, verbose);
@@ -223,13 +224,13 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
                                 "to number of polar points of the polar quadrature.");
 
   // At present, this class does not handle correctly reduced geometries
-  if (polar_quad.weights.size() == 0)
+  if (polar_quad.weights.empty())
     throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                 "Invalid polar quadrature size = " +
                                 std::to_string(polar_quad.weights.size()));
 
   for (const auto& azimu_quad : azimu_quad_vec)
-    if (azimu_quad.weights.size() == 0)
+    if (azimu_quad.weights.empty())
       throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                   "Invalid azimuthal quadrature size = " +
                                   std::to_string(azimu_quad.weights.size()));
@@ -342,6 +343,7 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
   for (size_t p = 0; p < azimu_quad_vec.size(); ++p)
   {
     std::vector<unsigned int> vec_directions_p;
+    vec_directions_p.reserve(azimu_quad_vec[p].weights.size());
     for (size_t q = 0; q < azimu_quad_vec[p].weights.size(); ++q)
       vec_directions_p.emplace_back(ind0 + q);
     map_directions_.emplace(p, vec_directions_p);
@@ -420,8 +422,8 @@ GLCProductQuadrature2DRZ::MakeHarmonicIndices()
 {
   m_to_ell_em_map_.clear();
 
-  for (auto l = 0; l <= scattering_order_; ++l)
-    for (auto m = 0; m <= l; ++m)
+  for (unsigned int l = 0; l <= scattering_order_; ++l)
+    for (int m = 0; m <= l; ++m)
       m_to_ell_em_map_.emplace_back(l, m);
 }
 

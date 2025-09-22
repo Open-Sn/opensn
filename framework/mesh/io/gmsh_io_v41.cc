@@ -65,7 +65,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
     throw std::logic_error(fname + ": Failed to read number of entitities.");
 
   // Skip point entities
-  for (int i = 0; i < num_points; ++i)
+  for (size_t i = 0; i < num_points; ++i)
     std::getline(file, file_line);
 
   // Read curve, surface, and volume entities
@@ -104,7 +104,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   vertices.clear();
   vertices.resize(num_nodes);
 
-  for (int n = 0; n < num_entity_blocks; ++n)
+  for (size_t n = 0; n < num_entity_blocks; ++n)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
@@ -117,14 +117,14 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
     }
 
     std::vector<size_t> node_tags(num_nodes_in_block);
-    for (int i = 0; i < num_nodes_in_block; ++i)
+    for (size_t i = 0; i < num_nodes_in_block; ++i)
     {
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
       iss >> node_tags[i];
     }
 
-    for (int i = 0; i < num_nodes_in_block; ++i)
+    for (size_t i = 0; i < num_nodes_in_block; ++i)
     {
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
@@ -174,7 +174,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_entity_blocks >> num_elements >> min_element_tag >> max_element_tag))
     throw std::logic_error(fname + ": Failed to read number of element entity blocks.");
 
-  for (int n = 0; n < num_entity_blocks; ++n)
+  for (size_t n = 0; n < num_entity_blocks; ++n)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
@@ -220,7 +220,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
     throw std::logic_error(fname + ": Failed to read number of element entity blocks.");
 
   std::vector<std::tuple<size_t, int, int, std::vector<size_t>>> element_data;
-  for (int n = 0; n < num_entity_blocks; ++n)
+  for (size_t n = 0; n < num_entity_blocks; ++n)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
@@ -274,8 +274,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
       for (int j = 0; j < num_cell_nodes; ++j)
         iss >> node_tags[j];
 
-      element_data.emplace_back(
-        std::make_tuple(element_tag, element_type, physical_reg, node_tags));
+      element_data.emplace_back(element_tag, element_type, physical_reg, node_tags);
     }
   }
 

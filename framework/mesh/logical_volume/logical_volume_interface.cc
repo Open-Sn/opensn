@@ -24,7 +24,7 @@ LogicalVolumeInterface::LogicalVolumeInterface(const InputParameters& params)
 {
 }
 
-const std::shared_ptr<LogicalVolume>
+std::shared_ptr<LogicalVolume>
 LogicalVolumeInterface::GetLogicalVolume() const
 {
   return logical_volume_;

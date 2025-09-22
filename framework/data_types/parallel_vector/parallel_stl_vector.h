@@ -31,7 +31,7 @@ public:
   ParallelSTLVector(const ParallelSTLVector& other);
 
   /// Move constructor.
-  ParallelSTLVector(ParallelSTLVector&& other) noexcept;
+  ParallelSTLVector(ParallelSTLVector&& other) noexcept = default;
 
   std::unique_ptr<ParallelVector> MakeCopy() const override;
   std::unique_ptr<ParallelVector> MakeClone() const override;

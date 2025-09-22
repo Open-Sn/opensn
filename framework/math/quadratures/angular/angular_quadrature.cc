@@ -17,14 +17,14 @@ AngularQuadrature::MakeHarmonicIndices()
   m_to_ell_em_map_.clear();
 
   if (dimension_ == 1)
-    for (auto ell = 0; ell <= scattering_order_; ++ell)
+    for (auto ell = 0; ell <= scattering_order_; ++ell) // NOLINT
       m_to_ell_em_map_.emplace_back(ell, 0);
   else if (dimension_ == 2)
-    for (auto ell = 0; ell <= scattering_order_; ++ell)
+    for (auto ell = 0; ell <= scattering_order_; ++ell) // NOLINT
       for (auto m = -ell; m <= ell; m += 2)
         m_to_ell_em_map_.emplace_back(ell, m);
   else if (dimension_ == 3)
-    for (auto ell = 0; ell <= scattering_order_; ++ell)
+    for (auto ell = 0; ell <= scattering_order_; ++ell) // NOLINT
       for (auto m = -ell; m <= ell; ++m)
         m_to_ell_em_map_.emplace_back(ell, m);
 }
@@ -42,7 +42,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
     std::vector<double> cur_mom;
     cur_mom.reserve(num_angles);
 
-    for (auto n = 0; n < num_angles; ++n)
+    for (size_t n = 0; n < num_angles; ++n)
     {
       const auto& cur_angle = abscissae[n];
       double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
@@ -56,10 +56,10 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
   // Verbose printout
   std::stringstream outs;
   outs << "\nQuadrature d2m operator:\n";
-  for (auto n = 0; n < num_angles; ++n)
+  for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (auto m = 0; m < num_moms; ++m)
+    for (size_t m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[m][n]
            << " ";
@@ -85,7 +85,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
     std::vector<double> cur_mom;
     cur_mom.reserve(num_angles);
 
-    for (auto n = 0; n < num_angles; ++n)
+    for (size_t n = 0; n < num_angles; ++n)
     {
       const auto& cur_angle = abscissae[n];
       double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
@@ -100,10 +100,10 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   std::stringstream outs;
 
   outs << "\nQuadrature m2d operator:\n";
-  for (auto n = 0; n < num_angles; ++n)
+  for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (auto m = 0; m < num_moms; ++m)
+    for (size_t m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[m][n]
            << " ";

@@ -19,7 +19,7 @@ struct SpatialWeightFunction
 
 struct CartesianSpatialWeightFunction : public SpatialWeightFunction
 {
-  virtual double operator()(const Vector3& pt) const { return 1.0; }
+  double operator()(const Vector3& pt) const override { return 1.0; }
 };
 
 struct SphericalSpatialWeightFunction : public CartesianSpatialWeightFunction
