@@ -26,6 +26,14 @@ Definition (``framework/mesh/mesh_edge_loops.h``)
 
 
 
+Includes
+--------
+
+
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
 
 
 

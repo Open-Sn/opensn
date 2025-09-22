@@ -141,9 +141,9 @@
 <span class="w">  </span><span class="c1">/// This structure goes into sides</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">FEside_data2d</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">detJ</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">detJ_surf</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v_index</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">detJ</span><span class="p">{};</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">detJ_surf</span><span class="p">{};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v_index</span><span class="p">{};</span>
 <span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">v0</span><span class="p">;</span>
 <span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">J</span><span class="p">;</span>
 <span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">Jinv</span><span class="p">;</span>

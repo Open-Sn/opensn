@@ -193,7 +193,7 @@ Program Listing for File petsc_utils.h
                                                   int64_t maximum_iterations = 100);
    
    /// General monitor that print the residual norm relative to the right-hand side norm.
-   PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void*);
+   PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* context);
    
    /// Copies a PETSc vector to a STL vector. Only the local portion is copied.
    void CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL = true);

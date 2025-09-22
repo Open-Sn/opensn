@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a22094640b32abe9b9b936991c578aef9:
+
+Function opensn::PopulateRaySegmentLengths
+==========================================
+
+- Defined in :ref:`file_framework_mesh_raytrace_raytracer.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PopulateRaySegmentLengths(std::shared_ptr<MeshContinuum>, const Cell&, const Vector3&, const Vector3&, const Vector3&, std::vector<double>&)
+   :project: opensn

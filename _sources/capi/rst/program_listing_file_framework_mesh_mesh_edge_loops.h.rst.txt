@@ -15,6 +15,9 @@ Program Listing for File mesh_edge_loops.h
    
    #pragma once
    
+   #include "framework/data_types/vector3.h"
+   #include <array>
+   
    namespace opensn
    {
    

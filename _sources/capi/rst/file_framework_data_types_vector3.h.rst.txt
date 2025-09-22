@@ -72,6 +72,8 @@ Included By
 
 - :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`
 
+- :ref:`file_framework_mesh_mesh_edge_loops.h`
+
 - :ref:`file_framework_mesh_mesh_face.h`
 
 - :ref:`file_framework_mesh_raytrace_raytracer.h`
@@ -99,5 +101,5 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a6bcd29e0811973aa3b4757f131127bf3`
+- :ref:`exhale_function_namespaceopensn_1acf4b378e3097666d393186de01d8ca8a`
 
