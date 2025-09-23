@@ -128,18 +128,6 @@ VectorGhostCommunicator::VectorGhostCommunicator(const VectorGhostCommunicator& 
 {
 }
 
-VectorGhostCommunicator::VectorGhostCommunicator(VectorGhostCommunicator&& other) noexcept
-  : local_size_(other.local_size_),
-    global_size_(other.local_size_),
-    ghost_ids_(other.ghost_ids_),
-    comm_(other.comm_),
-    location_id_(other.location_id_),
-    process_count_(other.process_count_),
-    extents_(other.extents_),
-    cached_parallel_data_(other.cached_parallel_data_)
-{
-}
-
 int64_t
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
