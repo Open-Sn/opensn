@@ -235,19 +235,6 @@ WrapLBS(py::module& slv)
     field_function_prefix: str, default=''
         Prefix to use on all field functions. By default, this is empty. If specified, flux moments
         are exported as ``prefix_phi_gXXX_mYYY``.
-    boundary_conditions: List[Dict], default=[]
-        A list containing tables for each boundary specification.
-    clear_boundary_conditions: bool, default=False
-        Clears all boundary conditions. If no additional boundary conditions are supplied, all
-        boundaries become vacuum.
-    point_sources: List[pyopensn.source.PointSource], default=[]
-        A list of point sources.
-    clear_point_sources: bool, default=False
-        Clear all point sources.
-    volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
-        A list of volumetric sources.
-    clear_volumetric_sources: bool, default=False
-        Clear all volumetric sources.
     )"
   );
   lbs_problem.def(
@@ -547,6 +534,10 @@ WrapLBS(py::module& slv)
         The level of harmonic expansion for the scattering source.
     boundary_conditions: List[Dict], default=[]
         A list containing tables for each boundary specification.
+    point_sources: List[pyopensn.source.PointSource], default=[]
+        A list of point sources.
+    volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
+        A list of volumetric sources.
     options : Dict, default={}
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, default="AAH"
@@ -669,6 +660,10 @@ WrapLBS(py::module& slv)
         The level of harmonic expansion for the scattering source.
     boundary_conditions: List[Dict], default=[]
         A list containing tables for each boundary specification.
+    point_sources: List[pyopensn.source.PointSource], default=[]
+        A list of point sources.
+    volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
+        A list of volumetric sources.
     options : dict, optional
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, optional
