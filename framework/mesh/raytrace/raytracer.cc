@@ -647,8 +647,10 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
         Vector3 intersection_point;
 
         double d = 0.0;
+        // NOLINTBEGIN
         bool intersects =
           CheckLineIntersectTriangle2(vert, vfc, vcc, line_point0, omega, intersection_point, &d);
+        // NOLINTEND
 
         if (intersects)
         {
