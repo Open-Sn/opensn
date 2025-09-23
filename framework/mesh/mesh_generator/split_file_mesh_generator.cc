@@ -73,7 +73,7 @@ SplitFileMeshGenerator::Execute()
 }
 
 void
-SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
+SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
                                        const UnpartitionedMesh& umesh,
                                        const int num_partitions) const
 {
@@ -178,8 +178,8 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
     for (const auto& cell_global_id : cells_needed)
     {
       const auto& cell = *raw_cells[cell_global_id];
-      serial_data.Write(static_cast<int>(cell_pids[cell_global_id])); // int
-      serial_data.Write(cell_global_id);                              // uint64_t
+      serial_data.Write(cell_pids[cell_global_id]);
+      serial_data.Write(cell_global_id);
       SerializeCell(cell, serial_data);
       if (serial_data.Size() > BUFFER_SIZE)
       {

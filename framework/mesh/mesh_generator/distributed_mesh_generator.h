@@ -89,7 +89,7 @@ private:
    * \param num_partitions The number of partitions to distribute.
    * \return The serialized mesh data for location 0.
    */
-  static ByteArray DistributeSerializedMeshData(const std::vector<int64_t>& cell_pids,
+  static ByteArray DistributeSerializedMeshData(const std::vector<int>& cell_pids,
                                                 const UnpartitionedMesh& umesh,
                                                 int num_partitions);
 

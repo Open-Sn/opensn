@@ -533,7 +533,7 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
   vtkNew<vtkUnstructuredGrid> ugrid;
   vtkNew<vtkPoints> points;
   vtkNew<vtkIntArray> block_array;
-  vtkNew<vtkUnsignedIntArray> partition_id_array;
+  vtkNew<vtkIntArray> partition_id_array;
 
   points->SetDataType(VTK_DOUBLE);
 
