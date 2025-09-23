@@ -320,13 +320,6 @@ sections do not have <code class="docutils literal notranslate"><span class="pre
 zero-padded 3-digit moment.</p></li>
 <li><p><strong>field_function_prefix</strong> (<em>str</em><em>, </em><em>default=''</em>) – Prefix to use on all field functions. By default, this is empty. If specified, flux moments
 are exported as <code class="docutils literal notranslate"><span class="pre">prefix_phi_gXXX_mYYY</span></code>.</p></li>
-<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list containing tables for each boundary specification.</p></li>
-<li><p><strong>clear_boundary_conditions</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clears all boundary conditions. If no additional boundary conditions are supplied, all
-boundaries become vacuum.</p></li>
-<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of point sources.</p></li>
-<li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all point sources.</p></li>
-<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>
-<li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Clear all volumetric sources.</p></li>
 </ul>
 </dd>
 </dl>
@@ -396,6 +389,8 @@ groupset.</p></li>
 <li><p><strong>xs_map</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of mappings from block ids to cross-section definitions.</p></li>
 <li><p><strong>scattering_order</strong> (<em>int</em><em>, </em><em>default=0</em>) – The level of harmonic expansion for the scattering source.</p></li>
 <li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list containing tables for each boundary specification.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of point sources.</p></li>
+<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>
 <li><p><strong>options</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – A block of optional configuration parameters. See <cite>SetOptions</cite> for available settings.</p></li>
 <li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>default=&quot;AAH&quot;</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.</p></li>
 <li><p><strong>use_gpus</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag specifying whether GPU acceleration is used for the sweep. Currently, only <code class="docutils literal notranslate"><span class="pre">AAH</span></code> is
