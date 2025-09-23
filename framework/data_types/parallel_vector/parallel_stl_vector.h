@@ -60,7 +60,7 @@ public:
    * \note This accessor allows access to all locally stored elements, including any data beyond
    *       local_size_ that may exist in derived classes.
    */
-  double operator[](int64_t local_id) const override;
+  double operator[](uint64_t local_id) const override;
 
   /**
    * Read/write accessor to the entry at the given local index of the local vector.
@@ -68,7 +68,7 @@ public:
    * \note This accessor allows access to all locally stored elements, including any data beyond
    *       local_size_ that may exist in derived classes.
    */
-  double& operator[](int64_t local_id) override;
+  double& operator[](uint64_t local_id) override;
 
   /// Return a vector containing the locally owned data.
   std::vector<double> MakeLocalVector() override;
@@ -83,7 +83,7 @@ public:
    * Copies a contiguous block of data from the source STL vector to the current vector starting at
    * local_offset. The input STL vector must have exactly num_values entries.
    */
-  void BlockSet(const std::vector<double>& y, int64_t local_offset, int64_t num_values) override;
+  void BlockSet(const std::vector<double>& y, uint64_t local_offset, uint64_t num_values) override;
 
   /// Sets the local values of one vector equal to another. The sizes must be compatible.
   void CopyLocalValues(const ParallelVector& y) override;
@@ -99,16 +99,18 @@ public:
    * at y_offset) to the current vector starting at local_offset.
    */
   void BlockCopyLocalValues(const ParallelVector& y,
-                            int64_t y_offset,
-                            int64_t local_offset,
-                            int64_t num_values) override;
+                            uint64_t y_offset,
+                            uint64_t local_offset,
+                            uint64_t num_values) override;
 
   /**
    * Copies a contiguous block of local data (num_values entries) from the source vector (starting
    * at y_offset) to the current vector starting at local_offset. PETSc flavor.
    */
-  void
-  BlockCopyLocalValues(Vec y, int64_t y_offset, int64_t local_offset, int64_t num_values) override;
+  void BlockCopyLocalValues(Vec y,
+                            uint64_t y_offset,
+                            uint64_t local_offset,
+                            uint64_t num_values) override;
 
   /**
    * Define a set or add operation for the given global id-value pair
@@ -116,14 +118,14 @@ public:
    * This routine adds the global id-value pair to the set operation cache, which upon execution of
    * Assemble, communicates the operations to the appropriate process.
    */
-  void SetValue(int64_t global_id, double value, VecOpType op_type) override;
+  void SetValue(uint64_t global_id, double value, VecOpType op_type) override;
 
   /**
    * Group multiple operations into a single call.
    *
    * This routine goes through the given global id-value pairs and calls SetValue for each.
    */
-  void SetValues(const std::vector<int64_t>& global_ids,
+  void SetValues(const std::vector<uint64_t>& global_ids,
                  const std::vector<double>& values,
                  VecOpType op_type) override;
 

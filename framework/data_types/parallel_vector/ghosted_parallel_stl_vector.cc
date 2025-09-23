@@ -25,7 +25,7 @@ GhostedParallelSTLVector::MakeClone() const
 }
 
 double
-GhostedParallelSTLVector::GetGlobalValue(const int64_t global_id) const
+GhostedParallelSTLVector::GetGlobalValue(const uint64_t global_id) const
 {
   if (global_id >= extents_[location_id_] and global_id < extents_[location_id_ + 1])
     return values_[global_id - extents_[location_id_]];
