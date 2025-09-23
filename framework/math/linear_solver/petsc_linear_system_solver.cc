@@ -23,9 +23,10 @@ PETScLinearSolver::PETScLinearSolver(IterativeMethod method,
 
 PETScLinearSolver::~PETScLinearSolver()
 {
+  KSPDestroy(&ksp_);
+  MatDestroy(&A_);
   VecDestroy(&x_);
   VecDestroy(&b_);
-  KSPDestroy(&ksp_);
 }
 
 void

@@ -10,7 +10,6 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include "cxxopts/cxxopts.h"
-#include "petsc.h"
 #include <string>
 
 using namespace opensn;
@@ -19,7 +18,7 @@ namespace py = pybind11;
 namespace opensnpy
 {
 
-PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
+PyApp::PyApp(const mpi::Communicator& comm)
 {
   opensn::mpi_comm = comm;
 
@@ -68,16 +67,6 @@ PyApp::PyApp(const mpi::Communicator& comm) : allow_petsc_error_handler_(false)
 }
 
 int
-PyApp::InitPETSc(int argc, char** argv) const
-{
-  PetscOptionsInsertString(nullptr, "-error_output_stderr");
-  if (!allow_petsc_error_handler_)
-    PetscOptionsInsertString(nullptr, "-no_signal_handler");
-  PetscCall(PetscInitialize(&argc, &argv, nullptr, nullptr));
-  return 0;
-}
-
-int
 PyApp::Run(int argc, char** argv)
 {
   if (opensn::mpi_comm.rank() == 0)
@@ -91,15 +80,10 @@ PyApp::Run(int argc, char** argv)
 
   if (ProcessArguments(argc, argv))
   {
-    PetscOptionsSetValue(NULL, "-options_left", "0");
-    InitPETSc(argc, argv);
-
     opensn::Initialize();
     console.InitConsole();
     console.ExecuteFile(opensn::input_path.string());
     opensn::Finalize();
-
-    PetscFinalize();
 
     if (opensn::mpi_comm.rank() == 0)
     {
@@ -130,7 +114,6 @@ PyApp::ProcessArguments(int argc, char** argv)
     ("caliper",                     "Enable Caliper reporting",
       cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
     ("i,input",                     "Input file", cxxopts::value<std::string>())
-    ("allow-petsc-error-handler",   "Allow PETSc error handler")
     ("p,py",                        "Python expression", cxxopts::value<std::vector<std::string>>());
     /* clang-format on */
 
@@ -148,9 +131,6 @@ PyApp::ProcessArguments(int argc, char** argv)
       int verbosity = result["verbose"].as<int>();
       opensn::log.SetVerbosity(verbosity);
     }
-
-    if (result.count("allow-petsc-error-handler"))
-      allow_petsc_error_handler_ = true;
 
     if (result.count("suppress-color"))
       opensn::suppress_color = true;
