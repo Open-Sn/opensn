@@ -755,7 +755,7 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
   Case2 case2;
   Case3 case3;
   SphericalHarmonicF SphF;
-  BaseFunctor* F = &case1;
+  BaseFunctor* F;
   switch (test_case)
   {
     case 1:
