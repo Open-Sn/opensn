@@ -118,14 +118,12 @@ PieceWiseLinearContinuous::OrderNodes()
   local_base_block_size_ = local_num_nodes;
   global_base_block_size_ = global_num_nodes;
 
-  // Build node mapping for local
-  //                                              nodes
+  // Build node mapping for local nodes
   node_mapping_.clear();
   for (uint64_t i = 0; i < local_num_nodes; ++i)
     node_mapping_[local_node_ids[i]] = static_cast<int64_t>(local_block_address_ + i);
 
-  // Communicate nodes in need
-  //                                              of mapping
+  // Communicate nodes in need of mapping
   std::map<uint64_t, std::vector<uint64_t>> query_node_ids = MapAllToAll(nonlocal_node_ids_map);
 
   // Map the query nodes
