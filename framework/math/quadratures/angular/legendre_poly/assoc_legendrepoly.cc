@@ -4,6 +4,7 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include <cmath>
 #include <cstdlib>
+#include <utility>
 
 namespace opensn
 {
@@ -11,7 +12,7 @@ namespace opensn
 double
 AssocLegendre(unsigned int ell, int m, double x)
 {
-  if (abs(m) > ell)
+  if (std::cmp_greater(abs(m), ell))
     return 0.0;
 
   // ell=0, m=0
@@ -33,7 +34,7 @@ AssocLegendre(unsigned int ell, int m, double x)
   }
 
   double Pmlp1;
-  if (ell == m)
+  if (std::cmp_equal(ell, m))
   {
     Pmlp1 = -(2.0 * ell - 1.0) * sqrt(1.0 - x * x) * AssocLegendre(ell - 1, int(ell) - 1, x);
   }
