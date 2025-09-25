@@ -9,6 +9,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <utility>
 
 namespace opensn
 {
@@ -181,7 +182,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
         bool found = false;
         for (auto& lock_box_slot : lock_box)
         {
-          if ((static_cast<uint64_t>(lock_box_slot.first) == face.neighbor_id) and
+          if (std::cmp_equal(lock_box_slot.first, face.neighbor_id) and
               (lock_box_slot.second == adj_face_idx))
           {
             lock_box_slot.first = -1;
@@ -242,14 +243,14 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
           auto c = cell.local_id;
           auto d = face.GetNeighborLocalID(grid.get());
 
-          if ((a == c) and (b == d))
+          if (std::cmp_equal(a, c) and std::cmp_equal(b, d))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;
             outb_face_face_category.back() -= 1;
           }
 
-          if ((a == d) and (b == c))
+          if (std::cmp_equal(a, d) and std::cmp_equal(b, c))
           {
             temp_lock_box = &delayed_lock_box;
             outb_face_face_category.back() *= -1;
@@ -669,7 +670,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int adj_cell = -1;
           for (auto c = 0; c < prelocI_cell_views_[prelocI].size(); ++c)
           {
-            if (prelocI_cell_views_[prelocI][c].first == face.neighbor_id)
+            if (std::cmp_equal(prelocI_cell_views_[prelocI][c].first, face.neighbor_id))
             {
               adj_cell = c;
               break;
@@ -750,7 +751,8 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           int ass_cell = -1;
           for (auto c = 0; c < delayed_prelocI_cell_views_[delayed_preLocI].size(); ++c)
           {
-            if (delayed_prelocI_cell_views_[delayed_preLocI][c].first == face.neighbor_id)
+            if (std::cmp_equal(delayed_prelocI_cell_views_[delayed_preLocI][c].first,
+                               face.neighbor_id))
             {
               ass_cell = c;
               break;
