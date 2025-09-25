@@ -59,7 +59,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   mgxs.temperature_ = temperature;
 
   // Scattering order
-  if (not H5ReadGroupAttribute<size_t>(file, dataset_name, "order", mgxs.scattering_order_))
+  if (not H5ReadGroupAttribute<unsigned int>(file, dataset_name, "order", mgxs.scattering_order_))
     throw std::runtime_error("Failure reading \"order\" from " + file_name);
 
   // Scattering shape
@@ -103,7 +103,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     int fidx = 0;
     for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
-        for (int n = 0; n < mgxs.scattering_order_ + 1; ++n, ++fidx)
+        for (unsigned int n = 0; n < mgxs.scattering_order_ + 1; ++n, ++fidx)
           mgxs.transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);
   }
 

@@ -50,7 +50,7 @@ public:
 
   size_t GetNumGroups() const { return num_groups_; }
 
-  size_t GetScatteringOrder() const { return scattering_order_; }
+  unsigned int GetScatteringOrder() const { return scattering_order_; }
 
   size_t GetNumPrecursors() const { return num_precursors_; }
 
@@ -114,7 +114,7 @@ private:
   /// Total number of groups
   size_t num_groups_;
   /// Legendre scattering order
-  size_t scattering_order_;
+  unsigned int scattering_order_;
   /// Number of precursors
   size_t num_precursors_;
   /// Is fissionable?

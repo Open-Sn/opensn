@@ -65,7 +65,7 @@ public:
   size_t GetNumGroups() const;
 
   /// Returns the scattering order for the solver. This will only be non-zero after initialization.
-  size_t GetScatteringOrder() const;
+  unsigned int GetScatteringOrder() const;
 
   /**
    * Returns the number of precursors for the solver. This will only be non-zero after
@@ -289,7 +289,7 @@ protected:
   LBSOptions options_;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
-  size_t scattering_order_ = 0;
+  unsigned int scattering_order_ = 0;
   size_t num_precursors_ = 0;
   size_t max_precursors_per_material_ = 0;
 
