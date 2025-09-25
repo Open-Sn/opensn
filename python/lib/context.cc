@@ -64,7 +64,7 @@ WrapSettings(py::module& context)
   // log settings
   context.def(
     "SetVerbosityLevel",
-    [](int level)
+    [](unsigned int level)
     {
       log.SetVerbosity(level);
     },
