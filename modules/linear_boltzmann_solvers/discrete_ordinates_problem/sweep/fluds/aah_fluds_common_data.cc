@@ -283,7 +283,7 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
       if (not slot_found)
       {
         outb_face_slot_indices.push_back(lock_box.size());
-        lock_box.emplace_back(std::pair<int, short>(cell_g_index, f));
+        lock_box.emplace_back(cell_g_index, f);
       }
 
       // Non-local outgoing
