@@ -682,7 +682,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
     case AngleAggregationType::POLAR:
     {
       // Check geometry types
-      if (not(grid->GetType() == ORTHOGONAL or grid->GetDimension() == 2 or grid->Extruded()))
+      if (grid->GetType() != ORTHOGONAL and grid->GetDimension() != 2 and not grid->Extruded())
         throw std::logic_error(
           fname + ": The simulation is using polar angle aggregation for which only certain "
                   "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
@@ -746,8 +746,8 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
     case AngleAggregationType::AZIMUTHAL:
     {
       // Check geometry types
-      if (not(lbs_geo_type == GeometryType::ONED_SPHERICAL or
-              lbs_geo_type == GeometryType::TWOD_CYLINDRICAL))
+      if (lbs_geo_type != GeometryType::ONED_SPHERICAL and
+          lbs_geo_type != GeometryType::TWOD_CYLINDRICAL)
         throw std::logic_error(
           fname + ": The simulation is using azimuthal angle aggregation for which only "
                   "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
