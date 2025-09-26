@@ -406,18 +406,6 @@ LBSProblem::GetPrecursorsNewLocal() const
   return precursor_new_local_;
 }
 
-std::vector<std::vector<double>>&
-LBSProblem::GetPsiNewLocal()
-{
-  return psi_new_local_;
-}
-
-const std::vector<std::vector<double>>&
-LBSProblem::GetPsiNewLocal() const
-{
-  return psi_new_local_;
-}
-
 std::vector<double>&
 LBSProblem::GetDensitiesLocal()
 {
@@ -640,8 +628,7 @@ LBSProblem::SetOptions(const InputParameters& input)
         // Set all solutions to zero.
         phi_old_local_.assign(phi_old_local_.size(), 0.0);
         phi_new_local_.assign(phi_new_local_.size(), 0.0);
-        for (auto& psi : psi_new_local_)
-          psi.assign(psi.size(), 0.0);
+        ZeroSolutions();
         precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
       }
     }
@@ -1134,18 +1121,6 @@ LBSProblem::InitializeParrays()
   q_moments_local_.assign(local_unknown_count, 0.0);
   phi_old_local_.assign(local_unknown_count, 0.0);
   phi_new_local_.assign(local_unknown_count, 0.0);
-
-  // Setup groupset psi vectors
-  psi_new_local_.clear();
-  for (auto& groupset : groupsets_)
-  {
-    psi_new_local_.emplace_back();
-    if (options_.save_angular_flux)
-    {
-      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
-      psi_new_local_.back().assign(num_ang_unknowns, 0.0);
-    }
-  }
 
   // Setup precursor vector
   if (options_.use_precursors)

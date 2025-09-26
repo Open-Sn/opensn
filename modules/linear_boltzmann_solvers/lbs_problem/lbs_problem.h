@@ -186,12 +186,6 @@ public:
   /// Read access to newest updated precursors vector.
   const std::vector<double>& GetPrecursorsNewLocal() const;
 
-  /// Read/write access to newest updated angular flux vector.
-  std::vector<std::vector<double>>& GetPsiNewLocal();
-
-  /// Read access to newest updated angular flux vector.
-  const std::vector<std::vector<double>>& GetPsiNewLocal() const;
-
   /// Read/write access to the cell-wise densities.
   std::vector<double>& GetDensitiesLocal();
 
@@ -290,6 +284,8 @@ protected:
   /// Reset data carriers to null and unpin memory.
   void ResetGPUCarriers();
 
+  virtual void ZeroSolutions() = 0;
+
   LBSOptions options_;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
@@ -325,7 +321,6 @@ protected:
 
   std::vector<double> q_moments_local_, ext_src_moments_local_;
   std::vector<double> phi_new_local_, phi_old_local_;
-  std::vector<std::vector<double>> psi_new_local_;
   std::vector<double> precursor_new_local_;
   std::vector<double> densities_local_;
 
