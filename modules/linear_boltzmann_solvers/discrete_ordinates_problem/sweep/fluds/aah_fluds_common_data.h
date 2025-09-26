@@ -47,7 +47,7 @@ public:
 
 protected:
   friend class AAH_FLUDS;
-  int largest_face_ = 0;
+  size_t largest_face_ = 0;
   /// Number of face categories
   size_t num_face_categories_ = 0;
   /// Group-angle-faceDOF stride per cat
