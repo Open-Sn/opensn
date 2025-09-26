@@ -31,6 +31,12 @@ StringTrim(const std::string& s)
   return StringRTrim(StringLTrim(s));
 }
 
+bool
+StartsWith(std::string_view s, std::string_view k)
+{
+  return s.size() >= k.size() && std::equal(k.begin(), k.end(), s.begin());
+}
+
 std::vector<std::string>
 StringSplit(const std::string& input, const std::string& delim)
 {
