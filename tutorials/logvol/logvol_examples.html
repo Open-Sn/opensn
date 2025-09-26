@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.2. Using Logical Volumes &mdash; OpenSn 0.0.1 documentation</title>
+  <title>4.2. Using Logical Volumes &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,8 +29,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="C++ API" href="../../capi/rst/index.html" />
-    <link rel="prev" title="5.1. Introduction to Logical Volumes" href="introduction.html" /> 
+    <link rel="next" title="5. Linear Boltzmann Solver" href="../lbs/index.html" />
+    <link rel="prev" title="4.1. Introduction to Logical Volumes" href="introduction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,23 +59,23 @@
 <li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../xs/index.html">2. Cross Sections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../aquad/index.html">3. Angular Quadrature</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">4. Linear Boltzmann Solver</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">5. Logical Volumes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="introduction.html">5.1. Introduction to Logical Volumes</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">5.2. Using Logical Volumes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Load-Original-Mesh">5.2.1. Load Original Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Visualization">5.2.2. Visualization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Right-Circular-Cylinder-as-Logical-Volumes">5.2.3. Right-Circular Cylinder as Logical Volumes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Rectangular-Parallelepiped-as-Logical-Volumes">5.2.4. Rectangular Parallelepiped as Logical Volumes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Sphere-as-Logical-Volumes">5.2.5. Sphere as Logical Volumes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Using-a-Python-Function-instead-of-Logical-Volumes">5.2.6. Using a Python Function instead of Logical Volumes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Boolean-Operations-on-Logical-Volumes">5.2.7. Boolean Operations on Logical Volumes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Using-a-Skinmesh-as-Logical-Volume">5.2.8. Using a Skinmesh as Logical Volume</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">5.2.9. Finalize (for Jupyter Notebook only)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">4. Logical Volumes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">4.1. Introduction to Logical Volumes</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.2. Using Logical Volumes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Load-Original-Mesh">4.2.1. Load Original Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Visualization">4.2.2. Visualization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Right-Circular-Cylinder-as-Logical-Volumes">4.2.3. Right-Circular Cylinder as Logical Volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Rectangular-Parallelepiped-as-Logical-Volumes">4.2.4. Rectangular Parallelepiped as Logical Volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Sphere-as-Logical-Volumes">4.2.5. Sphere as Logical Volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Using-a-Python-Function-instead-of-Logical-Volumes">4.2.6. Using a Python Function instead of Logical Volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Boolean-Operations-on-Logical-Volumes">4.2.7. Boolean Operations on Logical Volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Using-a-Skinmesh-as-Logical-Volume">4.2.8. Using a Skinmesh as Logical Volume</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.2.9. Finalize (for Jupyter Notebook only)</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">5. Linear Boltzmann Solver</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
@@ -100,8 +100,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5. </span>Logical Volumes</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.2. </span>Using Logical Volumes</li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">4. </span>Logical Volumes</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2. </span>Using Logical Volumes</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,7 +111,7 @@
            <div itemprop="articleBody">
              
   <section id="Using-Logical-Volumes">
-<h1><span class="section-number">5.2. </span>Using Logical Volumes<a class="headerlink" href="#Using-Logical-Volumes" title="Link to this heading"></a></h1>
+<h1><span class="section-number">4.2. </span>Using Logical Volumes<a class="headerlink" href="#Using-Logical-Volumes" title="Link to this heading"></a></h1>
 <p>We read a 3D tetrahedral mesh with uniform <code class="docutils literal notranslate"><span class="pre">blockID</span></code>. Then we use several logical volumes to modify the blockIDs for some portion of the original mesh.</p>
 <p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
 <p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
@@ -137,7 +137,7 @@
 </div>
 </div>
 <section id="Load-Original-Mesh">
-<h2><span class="section-number">5.2.1. </span>Load Original Mesh<a class="headerlink" href="#Load-Original-Mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.1. </span>Load Original Mesh<a class="headerlink" href="#Load-Original-Mesh" title="Link to this heading"></a></h2>
 <p>We use <code class="docutils literal notranslate"><span class="pre">FromFileMeshGenerator</span></code> to read the mesh, and then export it to a VTU file.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -153,12 +153,12 @@
 </div>
 </section>
 <section id="Visualization">
-<h2><span class="section-number">5.2.2. </span>Visualization<a class="headerlink" href="#Visualization" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.2. </span>Visualization<a class="headerlink" href="#Visualization" title="Link to this heading"></a></h2>
 <p>The resulting mesh and material layout is shown below:</p>
 <p><img alt="Original Mesh" class="no-scaled-link" src="../../_images/cube_tets_original.png" style="width: 50%;" /></p>
 </section>
 <section id="Right-Circular-Cylinder-as-Logical-Volumes">
-<h2><span class="section-number">5.2.3. </span>Right-Circular Cylinder as Logical Volumes<a class="headerlink" href="#Right-Circular-Cylinder-as-Logical-Volumes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.3. </span>Right-Circular Cylinder as Logical Volumes<a class="headerlink" href="#Right-Circular-Cylinder-as-Logical-Volumes" title="Link to this heading"></a></h2>
 <p>We use two RCCs to change the blockID in two locations in the domain.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -189,12 +189,12 @@
 </div>
 </div>
 <section id="id1">
-<h3><span class="section-number">5.2.3.1. </span>Visualization<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.3.1. </span>Visualization<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/cube_tets_RCC.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Rectangular-Parallelepiped-as-Logical-Volumes">
-<h2><span class="section-number">5.2.4. </span>Rectangular Parallelepiped as Logical Volumes<a class="headerlink" href="#Rectangular-Parallelepiped-as-Logical-Volumes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.4. </span>Rectangular Parallelepiped as Logical Volumes<a class="headerlink" href="#Rectangular-Parallelepiped-as-Logical-Volumes" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -212,12 +212,12 @@
 </div>
 </div>
 <section id="id2">
-<h3><span class="section-number">5.2.4.1. </span>Visualization<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.4.1. </span>Visualization<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/cube_tets_RPP.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Sphere-as-Logical-Volumes">
-<h2><span class="section-number">5.2.5. </span>Sphere as Logical Volumes<a class="headerlink" href="#Sphere-as-Logical-Volumes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.5. </span>Sphere as Logical Volumes<a class="headerlink" href="#Sphere-as-Logical-Volumes" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -235,12 +235,12 @@
 </div>
 </div>
 <section id="id3">
-<h3><span class="section-number">5.2.5.1. </span>Visualization<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.5.1. </span>Visualization<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/cube_tets_sphere.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Using-a-Python-Function-instead-of-Logical-Volumes">
-<h2><span class="section-number">5.2.6. </span>Using a Python Function instead of Logical Volumes<a class="headerlink" href="#Using-a-Python-Function-instead-of-Logical-Volumes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.6. </span>Using a Python Function instead of Logical Volumes<a class="headerlink" href="#Using-a-Python-Function-instead-of-Logical-Volumes" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -264,12 +264,12 @@
 </div>
 </div>
 <section id="id4">
-<h3><span class="section-number">5.2.6.1. </span>Visualization<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.6.1. </span>Visualization<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/cube_tets_sphere2.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Boolean-Operations-on-Logical-Volumes">
-<h2><span class="section-number">5.2.7. </span>Boolean Operations on Logical Volumes<a class="headerlink" href="#Boolean-Operations-on-Logical-Volumes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.7. </span>Boolean Operations on Logical Volumes<a class="headerlink" href="#Boolean-Operations-on-Logical-Volumes" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -309,12 +309,12 @@
 </div>
 </div>
 <section id="id5">
-<h3><span class="section-number">5.2.7.1. </span>Visualization<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.7.1. </span>Visualization<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/cube_tets_bool.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Using-a-Skinmesh-as-Logical-Volume">
-<h2><span class="section-number">5.2.8. </span>Using a Skinmesh as Logical Volume<a class="headerlink" href="#Using-a-Skinmesh-as-Logical-Volume" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.8. </span>Using a Skinmesh as Logical Volume<a class="headerlink" href="#Using-a-Skinmesh-as-Logical-Volume" title="Link to this heading"></a></h2>
 <p>A skin mesh is the surface mesh of the outer boundary (“skin”) of a 3D volume mesh.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -359,12 +359,12 @@
 </div>
 </div>
 <section id="id6">
-<h3><span class="section-number">5.2.8.1. </span>Visualization<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<h3><span class="section-number">4.2.8.1. </span>Visualization<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p><img alt="Modified Mesh" class="no-scaled-link" src="../../_images/skin.png" style="width: 50%;" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">5.2.9. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">4.2.9. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -390,8 +390,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="introduction.html" class="btn btn-neutral float-left" title="5.1. Introduction to Logical Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../capi/rst/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="introduction.html" class="btn btn-neutral float-left" title="4.1. Introduction to Logical Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lbs/index.html" class="btn btn-neutral float-right" title="5. Linear Boltzmann Solver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,683 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# A Multigroup 2D Glovebox\n",
+    "\n",
+    "In this example, we use OpenSn’s linear Boltzmann solver to compute response functions in two Helium-3 detectors within a mockup 2D glovebox.\n",
+    "\n",
+    "The following is a complete transport simulation example. Each element of the simulation can be described in the sections below:\n",
+    "- [Prerequisites](#prerequisites)\n",
+    "- [Geometry](#Geometry)\n",
+    "- [Mesh](#mesh)\n",
+    "    - [Cross Sections](#cross-sections)\n",
+    "- [Solver](#Solver)\n",
+    "    - [Angular Quadrature](#angular-quadrature)\n",
+    "    - [Group Structure](#group-structure)\n",
+    "    - [Source Definition](#source-definition)\n",
+    "    - [Discrete Ordinates Problem](#discrete-ordinates-problem)\n",
+    "    - [Execute](#execute)\n",
+    "- [Post Processing](#post-processing)\n",
+    "    - [Volumetric Field Function](#volumetric-field-function)\n",
+    "    - [Compute Leakage](#compute-leakage)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Prerequisites\n",
+    "\n",
+    "Before running this example, make sure that the **Python module of OpenSn** was installed.\n",
+    "\n",
+    "### Converting and Running this Notebook from the Terminal\n",
+    "To run this notebook from the terminal, simply type:\n",
+    "\n",
+    "`jupyter nbconvert --to python --execute glovebox.ipynb`.\n",
+    "\n",
+    "To run this notebook in parallel (for example, using 4 processes), simply type:\n",
+    "\n",
+    "`mpiexec -n 4 jupyter nbconvert --to python --execute glovebox.ipynb`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from mpi4py import MPI\n",
+    "size = MPI.COMM_WORLD.size\n",
+    "rank = MPI.COMM_WORLD.rank\n",
+    "barrier = MPI.COMM_WORLD.barrier\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"Running the LBS glovebox example problem with {size} MPI processors.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Import Requirements\n",
+    "\n",
+    "Import required classes and functions from the Python interface of OpenSn. Make sure that the path\n",
+    "to PyOpenSn is appended to Python's PATH."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "import sys\n",
+    "import math\n",
+    "import numpy as np\n",
+    "\n",
+    "# assuming that the execute dir is the notebook dir\n",
+    "# this line is not necessary when PyOpenSn is installed using pip\n",
+    "sys.path.append(\"../../..\")\n",
+    "\n",
+    "from pyopensn.mesh import FromFileMeshGenerator, PETScGraphPartitioner\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "from pyopensn.source import VolumetricSource\n",
+    "from pyopensn.aquad import GLCProductQuadrature2DXY\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "from pyopensn.response import ResponseEvaluator\n",
+    "from pyopensn.math import Vector3, VectorSpatialFunction\n",
+    "from pyopensn.fieldfunc import FieldFunctionInterpolationVolume, \\\n",
+    "                               FieldFunctionInterpolationLine, \\\n",
+    "                               FieldFunctionGridBased\n",
+    "from pyopensn.logvol import RCCLogicalVolume\n",
+    "from pyopensn.context import UseColor, Finalize\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Geometry\n",
+    "In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a $10\\text{cm}\\times 10\\text{cm}$ block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:\n",
+    "\n",
+    "<img src=\"images/glovebox_geom.png\"/>\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Mesh\n",
+    "In this section, we import an unstructured mesh generated using the open-source meshing tool Gmsh."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "meshgen = FromFileMeshGenerator(\n",
+    "    filename=\"glovebox.msh\",\n",
+    "    partitioner=PETScGraphPartitioner(type='parmetis'),\n",
+    ")\n",
+    "grid = meshgen.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<img src=\"images/glovebox_mesh.png\"/>\n",
+    "\n",
+    "<img src=\"images/det_mesh.png\" width=\"400\"/>\n",
+    "\n",
+    "<img src=\"images/src_mesh.png\" width=\"400\"/>\n",
+    "\n",
+    "The total cell count for this mesh is 8,214."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Cross Sections\n",
+    "In this problem, we compute the multigroup absorption reaction rate in a He-3 detector. We begin by importing the multigroup cross sections, using the WIMS69 energy group structure for five materials:\n",
+    "- Air\n",
+    "- SS-316\n",
+    "- HDPE\n",
+    "- He-3\n",
+    "- Cf-252\n",
+    "\n",
+    "Since we are importing a Gmsh mesh, materials IDs are assigned to the corresponding physcial group ID. Look at [glovebox.msh](./glovebox.msh) under `PhysicalNames`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "xs_dir = \"WIMS69\"\n",
+    "xs_air = MultiGroupXS()\n",
+    "xs_air.LoadFromOpenSn(xs_dir+\"/Air.cxs\")\n",
+    "\n",
+    "xs_steel = MultiGroupXS()\n",
+    "xs_steel.LoadFromOpenSn(xs_dir+\"/SS_316.cxs\")\n",
+    "\n",
+    "xs_hdpe = MultiGroupXS()\n",
+    "xs_hdpe.LoadFromOpenSn(xs_dir+\"/HDPE.cxs\")\n",
+    "\n",
+    "xs_he3 = MultiGroupXS()\n",
+    "xs_he3.LoadFromOpenSn(xs_dir+\"/He3.cxs\")\n",
+    "\n",
+    "xs_cf = MultiGroupXS()\n",
+    "xs_cf.LoadFromOpenSn(xs_dir+\"/Cf252.cxs\")\n",
+    "\n",
+    "xsecs = [{\"block_ids\": [1], \"xs\": xs_air},\n",
+    "         {\"block_ids\": [2], \"xs\": xs_steel},\n",
+    "         {\"block_ids\": [3], \"xs\": xs_hdpe},\n",
+    "         {\"block_ids\": [4], \"xs\": xs_he3},\n",
+    "         {\"block_ids\": [5], \"xs\": xs_cf}]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## **Solver**\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Angular Quadrature\n",
+    "Since we are solving a 2D problem we will create Gauss-Legendre Product Quadrature in 2D. In this case we will use 2 polar angles and 128 azimuthal angles. With polar symmetry that leaves us with 128 angles. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pquad = GLCProductQuadrature2DXY(n_polar=2, \n",
+    "                                 n_azimuthal=128,\n",
+    "                                 scattering_order=0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Group Structure\n",
+    "Since we are using the WIMS69 group structure, we define a groupset block with 69 energy groups."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "num_groups = 69\n",
+    "grpsets = [\n",
+    "    {\n",
+    "        \"groups_from_to\": (0, num_groups-1),\n",
+    "        \"angular_quadrature\": pquad,\n",
+    "        \"inner_linear_method\": \"petsc_gmres\",\n",
+    "        \"l_abs_tol\": 1.0e-9,\n",
+    "        \"l_max_its\": 500,\n",
+    "        \"gmres_restart_interval\": 100,\n",
+    "    },\n",
+    "]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Source Definition\n",
+    "For the volumetric source, we first specify the source spectrum. In this case, we assign a uniform energy spectrum distributed throughout the source logical volume. Using `VolumetricSource`, this group-wise source definition is applied per unit area to material ID 5. Once the `VolumetricSource`is defined, it is added to the physics options."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "groups = np.flip([1.00000E-11, 5.00000E-09, 1.00000E-08, 1.50000E-08, 2.00000E-08, \n",
+    "                  2.50000E-08, 3.00000E-08, 3.50000E-08, 4.20000E-08, 5.00000E-08, \n",
+    "                  5.80000E-08, 6.70000E-08, 8.00000E-08, 1.00000E-07, 1.40000E-07, \n",
+    "                  1.80000E-07, 2.20000E-07, 2.50000E-07, 2.80000E-07, 3.00000E-07, \n",
+    "                  3.20000E-07, 3.50000E-07, 4.00000E-07, 5.00000E-07, 6.25000E-07, \n",
+    "                  7.80000E-07, 8.50000E-07, 9.10000E-07, 9.50000E-07, 9.72000E-07, \n",
+    "                  9.96000E-07, 1.02000E-06, 1.04500E-06, 1.07100E-06, 1.09700E-06, \n",
+    "                  1.12300E-06, 1.15000E-06, 1.30000E-06, 1.50000E-06, 2.10000E-06, \n",
+    "                  2.60000E-06, 3.30000E-06, 4.00000E-06, 9.87700E-06, 1.59680E-05, \n",
+    "                  2.77000E-05, 4.80520E-05, 7.55014E-05, 1.48729E-04, 3.67263E-04, \n",
+    "                  9.06899E-04, 1.42510E-03, 2.23945E-03, 3.51910E-03, 5.53000E-03, \n",
+    "                  9.11800E-03, 1.50300E-02, 2.47800E-02, 4.08500E-02, 6.73400E-02, \n",
+    "                  1.11000E-01, 1.83000E-01, 3.02500E-01, 5.00000E-01, 8.21000E-01, \n",
+    "                  1.35300E+00, 2.23100E+00, 3.67900E+00, 6.06550E+00, 1.00000E+01])\n",
+    "group_width = -np.diff(groups)\n",
+    "dE = groups[0] - groups[-1]\n",
+    "dA = np.pi*0.2*0.2\n",
+    "Q = (group_width / dE / dA).tolist()\n",
+    "\n",
+    "vol_src = VolumetricSource(block_ids=[5], group_strength=Q)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Discrete Ordinates Problem\n",
+    "For establishing the discrete ordinate problem, we provide;\n",
+    "+ mesh : The mesh\n",
+    "+ num_groups : The number of energy groups\n",
+    "+ groupsets : The groupsets block\n",
+    "+ scattering_order : The scattering order\n",
+    "+ xs_map : Cross section map\n",
+    "+ volumetric_sources : The volumetric source\n",
+    "+ boundary_conditions : The boundary conditions\n",
+    "+ options : Physics solver options"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "phys = DiscreteOrdinatesProblem(\n",
+    "    mesh=grid,\n",
+    "    num_groups=num_groups,\n",
+    "    groupsets=grpsets,\n",
+    "    scattering_order=0,\n",
+    "    xs_map=xsecs,\n",
+    "    volumetric_sources = [vol_src],\n",
+    "    boundary_conditions = [\n",
+    "        {\"name\": \"xmin\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"xmax\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"ymin\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"ymax\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"zmin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"zmax\", \"type\": \"reflecting\"}\n",
+    "    ],\n",
+    "    options = {\"save_angular_flux\": True},\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Execute\n",
+    "We then create the physics solver, initialize it, and execute it."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ss_solver = SteadyStateSourceSolver(problem=phys)\n",
+    "ss_solver.Initialize()\n",
+    "ss_solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Post Processing\n",
+    "### Volumetric Field Function\n",
+    "\n",
+    "With the solver executed, we now create a `FieldFunction`. In OpenSn we define a `FieldFunction` for the response we will like to calculate. In this case we are looking to compute the total $He^3$ absorption reaction rate in our glovebox: \n",
+    "\n",
+    "$$\n",
+    "\\text{QoI} =  \\sum^G_g \\, \\text{RR}^g = \\sum^G_g \\, \\int_\\mathcal{D} d^3r \\, \\int_{(4\\pi)} d\\Omega \\, \\sigma^g_{det}(\\vec{r}) \\psi^g(\\vec{r},\\vec\\Omega)  = \\sum^G_g \\, \\int_\\mathcal{D} d^3r \\, \\sigma^g_{det}(\\vec{r}) \\phi^g(\\vec{r}) \n",
+    "$$\n",
+    "\n",
+    "Thus, in OpenSn we will generate a scalar field function using `GetScalarFieldFunctionList` with a `sum` over the RoI(s). In this case we have two detectors so we will create two logical volumes as our RoI's."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "det1 = [7.0, 10.0, 0.0]\n",
+    "det2 = [47.0, 10.0, 0.0]\n",
+    "dets = [det1, det2]\n",
+    "det_logvols = []\n",
+    "for det in dets:\n",
+    "    r_he3 = 1.2\n",
+    "    he3 = RCCLogicalVolume(\n",
+    "                r=r_he3, \n",
+    "                x0=det[0], y0=det[1], \n",
+    "                z0=-2.0, vz= 2.0\n",
+    "    )\n",
+    "    det_logvols.append(he3)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "At each group the solution $\\phi^g(\\vec{r})$ is multiplied by the detector response at that group $\\sigma^{He3,g}_{a}$. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)\n",
+    "sig_a = np.array(xs_he3.sigma_a)\n",
+    "\n",
+    "fields = []\n",
+    "flux = []\n",
+    "resp = []\n",
+    "for d,det in enumerate(det_logvols):\n",
+    "    flux.append([])\n",
+    "    for g in range(num_groups):\n",
+    "        ffi = FieldFunctionInterpolationVolume()\n",
+    "        ffi.SetOperationType(\"sum\")\n",
+    "        ffi.SetLogicalVolume(det)\n",
+    "        ffi.AddFieldFunction(fflist[g][0])\n",
+    "        ffi.Initialize()\n",
+    "        ffi.Execute()\n",
+    "        phi_g = ffi.GetValue()\n",
+    "        flux[d].append(phi_g)\n",
+    "\n",
+    "        if d == 0: fields.append(fflist[g][0])\n",
+    "    resp.append(sig_a * flux[d])\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"{'Total Flux in Detector-1:'} {np.sum(flux[0]):.6e}\")\n",
+    "    print(f\"{'Total Response in Detector-1:'} {np.sum(resp[0]):.6e}\")\n",
+    "\n",
+    "    print(f\"{'Total Flux in Detector-2:'} {np.sum(flux[1]):.6e}\")\n",
+    "    print(f\"{'Total Response in Detector-2:'} {np.sum(resp[1]):.6e}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Total Flux Detector 1 : 6.107575e-02\\\n",
+    "Total Flux Detector 2 : 6.119690e-02\\\n",
+    "Total Response Detector 1 : 4.457174e-03\\\n",
+    "Total Response Detector 2 : 4.458115e-03"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "fig = plt.figure(figsize=(22,16))\n",
+    "\n",
+    "emid = (groups[:-1]+groups[1:])/2\n",
+    "axs = []\n",
+    "if rank == 0:\n",
+    "    # Flux spectrum \n",
+    "    axs.append(fig.add_subplot(221))\n",
+    "    axs[0].loglog(emid, flux[0]/group_width, label=\"Detector1\", drawstyle='steps')\n",
+    "    axs[0].loglog(emid, flux[1]/group_width, \"--+\", label=\"Detector2\", drawstyle='steps')\n",
+    "    axs[0].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[0].set_ylabel(r\"$\\phi^g(E)$\", fontsize=20)\n",
+    "    axs[0].set_title(\"Flux Spectrum\", fontsize=20)\n",
+    "    axs[0].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[0].legend(fontsize=20)\n",
+    "    axs[0].grid()\n",
+    "\n",
+    "    # Flux spectrum per unit lethargy\n",
+    "    axs.append(fig.add_subplot(222))\n",
+    "    axs[1].loglog(emid, flux[0]*emid/group_width, label=\"Detector1\", drawstyle='steps')\n",
+    "    axs[1].loglog(emid, flux[1]*emid/group_width, \"--+\", label=\"Detector2\", drawstyle='steps')\n",
+    "    axs[1].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[1].set_ylabel(r\"$\\phi^g(u)$\", fontsize=20)\n",
+    "    axs[1].set_title(\"Flux Spectrum per unit lethargy\", fontsize=20)\n",
+    "    axs[1].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[1].legend(fontsize=20)\n",
+    "    axs[1].grid()\n",
+    "\n",
+    "    # Absorption spectrum \n",
+    "    axs.append(fig.add_subplot(223))\n",
+    "    axs[2].loglog(emid, resp[0]/group_width,label=\"Detector1\", drawstyle='steps')\n",
+    "    axs[2].loglog(emid, resp[1]/group_width, \"--+\", label=\"Detector2\", drawstyle='steps')\n",
+    "    axs[2].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[2].set_ylabel(r\"$\\text{RR}^g(E)$\", fontsize=20)\n",
+    "    axs[2].set_title(\"Absorption Spectrum\", fontsize=20)\n",
+    "    axs[2].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[2].legend(fontsize=20)\n",
+    "    axs[2].grid()\n",
+    "\n",
+    "    # Absorption spectrum per unit lehtargy\n",
+    "    axs.append(fig.add_subplot(224))\n",
+    "    axs[3].loglog(emid, resp[0]*emid/group_width,label=\"Detector1\", drawstyle='steps')\n",
+    "    axs[3].loglog(emid, resp[1]*emid/group_width, \"--+\", label=\"Detector2\", drawstyle='steps')\n",
+    "    axs[3].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[3].set_ylabel(r\"$\\text{RR}^g(u)$\", fontsize=20)\n",
+    "    axs[3].set_title(\"Absorption Spectrum per unit lethargy\", fontsize=20)\n",
+    "    axs[3].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[3].legend(fontsize=20)\n",
+    "    axs[3].grid()\n",
+    "\n",
+    "    plt.savefig(\"images/Spectrum.png\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![Flux](images/Spectrum.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "With our field function defined, we can also export the multi-group scalar flux, $\\phi^g(\\vec{r})$, to a .vtu file using ``ExportMultipleToPVTU``."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "FFGrid = FieldFunctionGridBased\n",
+    "FFGrid.ExportMultipleToPVTU(fields, \"Flux/glovebox\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Group 3: [1.353, 2.231] MeV \n",
+    "\n",
+    "<img src=\"images/glovebox_g3.png\"/>\n",
+    "\n",
+    "\n",
+    "Group 52: [2.2e-07, 2.5e-07] MeV \n",
+    "\n",
+    "<img src=\"images/glovebox_g52.png\"/>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Compute Leakage\n",
+    "We can simultanously compute the groupwise leakage rate at the problem boundaries, $\\vec{j}^{g}|_{\\Gamma_{\\text{+}}}$, of the problem domain."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "leakage = phys.ComputeLeakage([\"xmin\", \"xmax\",\"ymin\",\"ymax\"])\n",
+    "lkg_xmin = leakage['xmin']\n",
+    "lkg_xmax = leakage['xmax']\n",
+    "lkg_ymin = leakage['ymin']\n",
+    "lkg_ymax = leakage['ymax']\n",
+    "\n",
+    "fig = plt.figure(figsize=(22,8))\n",
+    "axs = []\n",
+    "if rank == 0:\n",
+    "    # plt.figure(figsize=(16,9))\n",
+    "    axs.append(fig.add_subplot(121))\n",
+    "    axs[0].loglog(emid, lkg_xmin/group_width, drawstyle='steps', label=\"XMin\")\n",
+    "    axs[0].loglog(emid, lkg_xmax/group_width, \"--+\", drawstyle='steps', label=\"XMax\")\n",
+    "    axs[0].loglog(emid, lkg_ymin/group_width, drawstyle='steps', label=\"YMin\")\n",
+    "    axs[0].loglog(emid, lkg_ymax/group_width, \"--+\", drawstyle='steps', label=\"YMax\")\n",
+    "    axs[0].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[0].set_ylabel(r\"$\\vec{j}^{g}(E)|_{\\Gamma_{\\text{+}}}$\", fontsize=20)\n",
+    "    axs[0].set_title(\"Leakage Spectrum\", fontsize=20)\n",
+    "    axs[0].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[0].legend(fontsize=20)\n",
+    "    axs[0].grid()\n",
+    "\n",
+    "    axs.append(fig.add_subplot(122))\n",
+    "    axs[1].loglog(emid, lkg_xmin*emid/group_width, drawstyle='steps', label=\"XMin\")\n",
+    "    axs[1].loglog(emid, lkg_xmax*emid/group_width, \"--+\", drawstyle='steps', label=\"XMax\")\n",
+    "    axs[1].loglog(emid, lkg_ymin*emid/group_width, drawstyle='steps', label=\"YMin\")\n",
+    "    axs[1].loglog(emid, lkg_ymax*emid/group_width, \"--+\", drawstyle='steps', label=\"YMax\")\n",
+    "    axs[1].set_xlabel(\"Energy (MeV)\", fontsize=20)\n",
+    "    axs[1].set_ylabel(r\"$\\vec{j}^{g}(u)|_{\\Gamma_{\\text{+}}}$\", fontsize=20)\n",
+    "    axs[1].set_title(\"Leakage Spectrum per unit lethargy\", fontsize=20)\n",
+    "    axs[1].tick_params(axis='both', which='major', labelsize=20)\n",
+    "    axs[1].legend(fontsize=20)\n",
+    "    axs[1].grid()\n",
+    "\n",
+    "    plt.savefig(\"images/Lkg.png\")\n",
+    "    \n",
+    "    print(f\"{'Total Leakage XMin :'} {np.sum(lkg_xmin):.6e}\")\n",
+    "    print(f\"{'Total Leakage XMax :'} {np.sum(lkg_xmax):.6e}\")\n",
+    "    print(f\"{'Total Leakage YMin :'} {np.sum(lkg_ymin):.6e}\")\n",
+    "    print(f\"{'Total Leakage YMax :'} {np.sum(lkg_ymax):.6e}\")\n",
+    "\n",
+    "    tot_lkg = np.sum(lkg_xmin)+np.sum(lkg_xmax)+ \\\n",
+    "              np.sum(lkg_ymin)+np.sum(lkg_ymax)\n",
+    "    print(f\"{'Total Leakage :'} {tot_lkg:.6e}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Total Leakage XMin :  4.769487e-02 \\\n",
+    "Total Leakage XMax :  4.758068e-02 \\\n",
+    "Total Leakage YMin :  4.701734e-01 \\\n",
+    "Total Leakage YMax :  4.702092e-01\n",
+    "\n",
+    "Total Leakage :  1.035658e+00"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<img src=\"images/Lkg.png\"/>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Compute Balance"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Finalize (for Jupyter Notebook only)\n",
+    "\n",
+    "In Python script mode, PyOpenSn automatically handles environment termination. However, this\n",
+    "automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization\n",
+    "of the environment at the end of the notebook is required. Do not call the finalization in Python\n",
+    "script mode, or in console mode.\n",
+    "\n",
+    "Note that PyOpenSn's finalization must be called before MPI's finalization.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython import get_ipython\n",
+    "\n",
+    "def finalize_env():\n",
+    "    Finalize()\n",
+    "    MPI.Finalize()\n",
+    "\n",
+    "ipython_instance = get_ipython()\n",
+    "if ipython_instance is not None:\n",
+    "    ipython_instance.events.register(\"post_execute\", finalize_env)\n",
+    "\n",
+    "os.system(\"rm -rf Data Flux Results\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "opensn_env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

@@ -1,0 +1,955 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.1.2. A First Adjoint Example &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.2. KEigen" href="../keigen/index.html" />
+    <link rel="prev" title="5.1.1. A First Example" href="forward_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.1. Primer</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="forward_example.html">5.1.1. A First Example</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.1.2. A First Adjoint Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.1. </span>Primer</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.1.2. </span>A First Adjoint Example</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="A-First-Adjoint-Example">
+<h1><span class="section-number">5.1.2. </span>A First Adjoint Example<a class="headerlink" href="#A-First-Adjoint-Example" title="Link to this heading"></a></h1>
+<p>In this example we will explore leveraging an adjoint formulation of the linear Boltzmann equations for computing response functions in a desired region of interest (RoI).</p>
+<p>The following is a complete transport simulation example. Each element of the simulation can be described in the sections below:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#Prerequisites"><span class="std std-ref">Prerequisites</span></a></p></li>
+<li><p><a class="reference internal" href="#Mesh"><span class="std std-ref">Mesh</span></a></p></li>
+<li><p><a class="reference internal" href="#Geometry"><span class="std std-ref">Geometry</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Material-IDs"><span class="std std-ref">Material IDs</span></a></p></li>
+<li><p><a class="reference internal" href="#Cross-Sections"><span class="std std-ref">Cross Sections</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#Solver"><span class="std std-ref">Solver</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Angular-Quadrature"><span class="std std-ref">Angular Quadrature</span></a></p></li>
+<li><p><a class="reference internal" href="#Group-Structure"><span class="std std-ref">Group Structure</span></a></p></li>
+<li><p><a class="reference internal" href="#Discrete-Ordinates-Problem"><span class="std std-ref">Discrete Ordinates Problem</span></a></p></li>
+<li><p><a class="reference internal" href="#Execute"><span class="std std-ref">Execute</span></a></p></li>
+<li><p><a class="reference internal" href="#Post-Processing"><span class="std std-ref">Post Processing</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Volumetric-Field-Function"><span class="std std-ref">Volumetric Field Function</span></a></p></li>
+<li><p><a class="reference internal" href="#Linear-Field-Function"><span class="std std-ref">Linear Field Function</span></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#Adjoint-Solver"><span class="std std-ref">Adjoint Solver</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Adjoint-Source"><span class="std std-ref">Adjoint Source</span></a></p></li>
+<li><p><a class="reference internal" href="#Adjoint-Options"><span class="std std-ref">Adjoint Options</span></a></p></li>
+<li><p><a class="reference internal" href="#Post-Processing"><span class="std std-ref">Post Processing</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Detector-Response"><span class="std std-ref">Detector Response</span></a></p></li>
+<li><p><a class="reference internal" href="#Linear-Field-Function"><span class="std std-ref">Linear Field Function</span></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#Solution"><span class="std std-ref">Solution</span></a></p></li>
+</ul>
+<hr class="docutils" />
+<section id="Prerequisites">
+<h2><span class="section-number">5.1.2.1. </span>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
+<p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
+<section id="Converting-and-Running-this-Notebook-from-the-Terminal">
+<h3><span class="section-number">5.1.2.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<p>To run this notebook from the terminal, simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">adjoint_example.ipynb</span></code>.</p>
+<p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">adjoint_example.ipynb</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+<span class="n">barrier</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">barrier</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running the first LBS adjoint example with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processors.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running the first LBS adjoint example with 1 MPI processors.
+</pre></div></div>
+</div>
+</section>
+<section id="Import-Requirements">
+<h3><span class="section-number">5.1.2.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h3>
+<p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># assuming that the execute dir is the notebook dir</span>
+<span class="c1"># this line is not necessary when PyOpenSn is installed using pip</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span><span class="p">,</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseEvaluator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">,</span> \
+                               <span class="n">FieldFunctionInterpolationLine</span><span class="p">,</span> \
+                               <span class="n">FieldFunctionGridBased</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OpenSn version 0.0.1
+2025-09-20 02:04:31 Running OpenSn with 1 processes.
+
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Mesh">
+<h2><span class="section-number">5.1.2.2. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<p>Here, we will use the in-house orthogonal mesh generator for a simple Cartesian grid. We first create a list of nodes in the Z direction.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">L</span> <span class="o">/</span> <span class="n">N</span>
+<span class="n">nodesz</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">nodesz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">ds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Orthogonal-Mesh-Generation">
+<h3><span class="section-number">5.1.2.2.1. </span>Orthogonal Mesh Generation<a class="headerlink" href="#Orthogonal-Mesh-Generation" title="Link to this heading"></a></h3>
+<p>We use the <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code> and pass the list of nodes per dimension. Here, we pass our lsit of nodes for the z direction creating a 1D geometry of side length 10 cm with 100 square cells.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span> <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodesz</span><span class="p">]</span> <span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Done checking cell-center-to-face orientations
+[0]  00:00:00.2 Establishing cell connectivity.
+[0]  00:00:00.2 Vertex cell subscriptions complete.
+[0]  00:00:00.2 Surpassing cell 100 of 1000 (10%)
+[0]  00:00:00.2 Surpassing cell 200 of 1000 (20%)
+[0]  00:00:00.2 Surpassing cell 301 of 1000 (30%)
+[0]  00:00:00.2 Surpassing cell 400 of 1000 (40%)
+[0]  00:00:00.2 Surpassing cell 500 of 1000 (50%)
+[0]  00:00:00.2 Surpassing cell 601 of 1000 (60%)
+[0]  00:00:00.2 Surpassing cell 701 of 1000 (70%)
+[0]  00:00:00.2 Surpassing cell 800 of 1000 (80%)
+[0]  00:00:00.2 Surpassing cell 900 of 1000 (90%)
+[0]  00:00:00.2 Surpassing cell 1000 of 1000 (100%)
+[0]  00:00:00.2 Establishing cell boundary connectivity.
+[0]  00:00:00.2 Done establishing cell connectivity.
+[0]  Number of cells per partition (max,min,avg) = 1000,1000,1000
+[0]
+[0]  Mesh statistics:
+[0]    Global cell count             : 1000
+[0]    Local cell count (avg,max,min): 1000,1000,1000
+[0]    Ghost-to-local ratio (avg)    : 0
+[0]
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Geometry">
+<h2><span class="section-number">5.1.2.3. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
+<section id="Material-IDs">
+<h3><span class="section-number">5.1.2.3.1. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
+<p>In this example, we define a source-driven detector response problem consisting of two regions: a detector and a source in vacuum. The geometry of the model is shown below.</p>
+<p><img alt="33541deeabfa46b1a1b05ec2bb37c9f3" src="../../../_images/adjoint_geom.png" /></p>
+<p>Firstly, when using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to assign material IDs to all cells. We will begin by assigning the background material ID with a value of 0.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  00:00:00.3 Done setting block id 0 to all cells
+</pre></div></div>
+</div>
+<p>Next we will assign material IDs for the source and detector. When assigning material IDs via logical volumes the IDs for each cell is overriden by the most recent assignment. That is to say, assigning a material ID of 1 to any region in our domain will override the previously set ID to those cells.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+            <span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">zmin</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">zmax</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">det</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+            <span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">zmin</span><span class="o">=</span><span class="mf">7.75</span><span class="p">,</span> <span class="n">zmax</span><span class="o">=</span><span class="mf">8.25</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Cross-Sections">
+<h3><span class="section-number">5.1.2.3.2. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
+<p>We generate one-group cross sections using OpenSn’s <code class="docutils literal notranslate"><span class="pre">CreateSimpleOneGroup</span></code> method. In this tutorial, the background is set to vacuum. For the source region, we assign a total cross section <span class="math notranslate nohighlight">\(\Sigma_t = 1.0\)</span> with a scattering ratio <span class="math notranslate nohighlight">\(c = \frac{\Sigma_{s,0}}{\Sigma_t} = 1.0\)</span>, making it a pure scatterer. The detector region is given a total cross section <span class="math notranslate nohighlight">\(\Sigma_t = 0.6\)</span> and a scattering ratio of 0.0, making it a pure absorber.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_bkgrnd</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_bkgrnd</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">xs_src</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_src</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">sig_det</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="n">xs_det</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_det</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="n">sig_det</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">xsecs</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_bkgrnd</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_src</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_det</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  *** WARNING ***  Negative transport cross section found for group 0 in call to ComputeDiffusionParameters. sigma_t=0 sigma_1=0. Setting sigma_1=0, sigma_tr=sigma_t for this group.
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Solver">
+<h2><span class="section-number">5.1.2.4. </span>Solver<a class="headerlink" href="#Solver" title="Link to this heading"></a></h2>
+<section id="Angular-Quadrature">
+<h3><span class="section-number">5.1.2.4.1. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h3>
+<p>Since we are solving a 1D problem we will create Gauss-Legendre Product Quadrature for a 1D slab. In this case we will use 512 polar angles creating a 1D angular quadrature in <span class="math notranslate nohighlight">\(\mu\)</span> with a scattering order of 0.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pquad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+                                  <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Using 1D Slab Gauss–Legendre product quadrature with 512 angles and weight sum of 1.00
+</pre></div></div>
+</div>
+</section>
+<section id="Group-Structure">
+<h3><span class="section-number">5.1.2.4.2. </span>Group Structure<a class="headerlink" href="#Group-Structure" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_groups</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">grpsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Volumetric-Source">
+<h3><span class="section-number">5.1.2.4.3. </span>Volumetric Source<a class="headerlink" href="#Volumetric-Source" title="Link to this heading"></a></h3>
+<p>For the volumetric source, we assign a source strength of 1.0 per unit length to material ID 1.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">dL</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">vol_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="n">Q</span><span class="o">/</span><span class="n">dL</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Discrete-Ordinates-Problem">
+<h3><span class="section-number">5.1.2.4.4. </span>Discrete Ordinates Problem<a class="headerlink" href="#Discrete-Ordinates-Problem" title="Link to this heading"></a></h3>
+<p>For establishing the discrete ordinate problem, we provide;</p>
+<ul class="simple">
+<li><p>mesh : The mesh</p></li>
+<li><p>num_groups : The number of energy groups</p></li>
+<li><p>groupsets : The groupsets block</p></li>
+<li><p>xs_map : Cross section map</p></li>
+<li><p>scattering_order : The scattering order</p></li>
+<li><p>volumetric_sources : The volumetric source</p></li>
+<li><p>boundary_conditions : The boundary conditions</p></li>
+</ul>
+<p><strong>Note: The parameters for the ``DiscreteOrdinatesProblem`` are not required to be in this order.</strong></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">grpsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xsecs</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">vol_src</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">}</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Execute">
+<h3><span class="section-number">5.1.2.4.5. </span>Execute<a class="headerlink" href="#Execute" title="Link to this heading"></a></h3>
+<p>We then create the physics solver, initialize it, and execute it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss_solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]
+[0]  Initializing LBS SteadyStateSourceSolver with name: LBSDiscreteOrdinatesProblem
+[0]
+[0]  Scattering order    : 0
+[0]  Number of Groups    : 1
+[0]  Number of Group sets: 1
+[0]
+[0]  ***** Groupset 0 *****
+[0]  Groups:
+[0]      0
+[0]
+[0]  Initializing spatial discretization.
+[0]  Computing unit integrals.
+[0]  Ghost cell unit cell-matrix ratio: 0%
+[0]  Cell matrices computed.
+[0]  Initializing parallel arrays. G=1 M=1
+[0]  Done with parallel arrays.
+[0]  Volumetric source #0 has 200 total subscribing cells.
+[0]  00:00:00.7 Initializing sweep datastructures.
+[0]  00:00:00.7 Done initializing sweep datastructures.
+[0]  00:00:00.7 Initialized angle aggregation.
+[0]  Initializing WGS and AGS solvers
+</pre></div></div>
+</div>
+<p>Note: In this tutorial we have decided to execute the linear Boltzmann solver in addition to the adjoint solver to illustrate their duality. It is not necessary to execute the standard linear Boltzmann solver to use the adjoint solver.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Total number of angular unknowns: 1024000
+[0]  Number of lagged angular unknowns: 0(0%)
+[0]
+[0]
+[0]  ********** Solving groupset 0 with PETSC_GMRES
+[0]
+[0]  Quadrature number of angles: 512
+[0]  Groups 0 0
+[0]
+[0]  00:00:00.7 Computing b
+[0]  00:00:00.8 WGS groups [0-0] Iteration     0 Residual         1
+[0]  00:00:00.8 WGS groups [0-0] Iteration     1 Residual   0.17567
+[0]  00:00:00.9 WGS groups [0-0] Iteration     2 Residual 0.0127995
+[0]  00:00:00.9 WGS groups [0-0] Iteration     3 Residual 0.000713653
+[0]  00:00:01.0 WGS groups [0-0] Iteration     4 Residual 3.29238e-05
+[0]  00:00:01.1 WGS groups [0-0] Iteration     5 Residual 1.29272e-06
+[0]  00:00:01.1 WGS groups [0-0] Iteration     6 Residual 4.406e-08 CONVERGED
+[0]
+[0]
+[0]         Average sweep time (s):        0.05656
+[0]         Sweep Time/Unknown (ns):       55.2343
+[0]         Number of unknowns per sweep:  1024000
+[0]
+</pre></div></div>
+</div>
+</section>
+<section id="Post-Processing">
+<h3><span class="section-number">5.1.2.4.6. </span>Post Processing<a class="headerlink" href="#Post-Processing" title="Link to this heading"></a></h3>
+<section id="Volumetric-Field-Function">
+<h4><span class="section-number">5.1.2.4.6.1. </span>Volumetric Field Function<a class="headerlink" href="#Volumetric-Field-Function" title="Link to this heading"></a></h4>
+<p>With the solver executed, we now create a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code>. In OpenSn we define a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code> for the response we will like to calculate. In this case we are looking to compute the total <span class="math notranslate nohighlight">\(He^3\)</span> absorption reaction rate in our detector:</p>
+<div class="math notranslate nohighlight">
+\[\text{QoI} = \text{RR}(\mathcal{D}) = \int_\mathcal{D} d^3r \, \int_{(4\pi)} d\Omega \, \sigma_{det}(\vec{r}) \psi(\vec{r},\vec\Omega)  = \int_\mathcal{D} d^3r \, \sigma_{det}(\vec{r}) \phi(\vec{r})\]</div>
+<p>Thus, in OpenSn we will generate a scalar field function using <code class="docutils literal notranslate"><span class="pre">GetScalarFieldFunctionList</span></code> with a <code class="docutils literal notranslate"><span class="pre">sum</span></code> over the RoI.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ffvol</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+<span class="n">ffvol</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+<span class="n">ffvol</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+<span class="n">ffvol</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffvol</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffvol</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">fwd_flux</span> <span class="o">=</span> <span class="n">ffvol</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+<span class="n">fwd_resp</span> <span class="o">=</span> <span class="n">sig_det</span><span class="o">*</span><span class="n">fwd_flux</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Forward Total Flux :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">fwd_flux</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Forward Total Response :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">fwd_resp</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Forward Total Flux : 3.321548e-01
+Forward Total Response : 1.992929e-01
+</pre></div></div>
+</div>
+<p>We can also export the scalar flux, <span class="math notranslate nohighlight">\(\phi(x)\)</span>, to a .vtu file using <code class="docutils literal notranslate"><span class="pre">ExportMultipleToPVTU</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FFGrid</span> <span class="o">=</span> <span class="n">FieldFunctionGridBased</span>
+<span class="n">FFGrid</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">([</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;Flux/fwdflux_p&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Exporting field functions to PVTU with file base &#34;Flux/fwdflux_p&#34;
+[0]  Done exporting field functions to PVTU.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Linear-Field-Function">
+<h3><span class="section-number">5.1.2.4.7. </span>Linear Field Function<a class="headerlink" href="#Linear-Field-Function" title="Link to this heading"></a></h3>
+<p>To save the scalar flux along a line segment of the problem we use <code class="docutils literal notranslate"><span class="pre">FieldFunctionInterpolationLine()</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">):</span>
+    <span class="c1"># Linear Field Function</span>
+    <span class="n">ffline</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationLine</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="s2">&quot;Flux/detector&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Exported CSV file for field func &#34;phi_g000_m00&#34; to &#34;Flux/detector_phi_g000_m00.csv&#34;
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Adjoint-Solver">
+<h2><span class="section-number">5.1.2.5. </span>Adjoint Solver<a class="headerlink" href="#Adjoint-Solver" title="Link to this heading"></a></h2>
+<section id="Adjoint-Source">
+<h3><span class="section-number">5.1.2.5.1. </span>Adjoint Source<a class="headerlink" href="#Adjoint-Source" title="Link to this heading"></a></h3>
+<p>To solve the 1D detector response using the adjoint operator, we begin by defining the adjoint source <span class="math notranslate nohighlight">\(q^{\dagger}\)</span> over the detector volume with a source strength of 1.0. By default, adjoint sources are distributed isotropically in angle across the source domain.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adj_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">logical_volume</span><span class="o">=</span><span class="n">det</span><span class="p">,</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Adjoint-Options">
+<h3><span class="section-number">5.1.2.5.2. </span>Adjoint Options<a class="headerlink" href="#Adjoint-Options" title="Link to this heading"></a></h3>
+<p>For executing the adjoint solver there are two options we must re-assign;</p>
+<ul class="simple">
+<li><p>A toggle for the adjoint, default is False.</p></li>
+<li><p>Updating the volumetric sources.</p></li>
+</ul>
+<p>Note: Once the adjoint data has been saved locally you do not need to run <code class="docutils literal notranslate"><span class="pre">Execute</span></code> to run the response evaluator. Pay close attention to the <code class="docutils literal notranslate"><span class="pre">ResponseEvaluator</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span><span class="n">adjoint</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">clear_volumetric_sources</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">adj_src</span><span class="p">])</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Volumetric source #1 has 50 total subscribing cells.
+[0]
+[0]
+[0]  ********** Solving groupset 0 with PETSC_GMRES
+[0]
+[0]  Quadrature number of angles: 512
+[0]  Groups 0 0
+[0]
+[0]  00:00:01.3 Computing b
+[0]  00:00:01.4 WGS groups [0-0] Iteration     0 Residual         1
+[0]  00:00:01.4 WGS groups [0-0] Iteration     1 Residual  0.106629
+[0]  00:00:01.5 WGS groups [0-0] Iteration     2 Residual 0.0450525
+[0]  00:00:01.5 WGS groups [0-0] Iteration     3 Residual 0.0184022
+[0]  00:00:01.6 WGS groups [0-0] Iteration     4 Residual 0.00336001
+[0]  00:00:01.7 WGS groups [0-0] Iteration     5 Residual 0.000388187
+[0]  00:00:01.7 WGS groups [0-0] Iteration     6 Residual 3.50983e-05
+[0]  00:00:01.8 WGS groups [0-0] Iteration     7 Residual 2.65622e-06
+[0]  00:00:01.8 WGS groups [0-0] Iteration     8 Residual 1.73704e-07 CONVERGED
+[0]
+[0]
+[0]         Average sweep time (s):        0.0584055
+[0]         Sweep Time/Unknown (ns):       57.0367
+[0]         Number of unknowns per sweep:  1024000
+[0]
+</pre></div></div>
+</div>
+</section>
+<section id="id1">
+<h3><span class="section-number">5.1.2.5.3. </span>Post Processing<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<section id="Detector-Response">
+<h4><span class="section-number">5.1.2.5.3.1. </span>Detector Response<a class="headerlink" href="#Detector-Response" title="Link to this heading"></a></h4>
+<p>When evaluating response functions via the adjoint its efficiency derives from having access to the adjoint solution <span class="math notranslate nohighlight">\(\phi^{\dagger}\)</span>. For this, we export the adjoint flux moments to a .h5 file using <code class="docutils literal notranslate"><span class="pre">WriteFluxMoments</span></code>. The adjoint data is then saved to a location of our choosing.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;/Data&quot;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">WriteFluxMoments</span><span class="p">(</span><span class="n">data_dir</span><span class="o">+</span><span class="s2">&quot;/adjflux_p&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Writing flux moments to /home/jason/Documents/Work/OpenSn/opensn-jay/doc/source/tutorials/lbs/primer/Data/adjflux_p
+</pre></div></div>
+</div>
+<p>With the adjoint data in hand and a forward source defined, we now create a <code class="docutils literal notranslate"><span class="pre">ResponseEvaluator</span></code>.</p>
+<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">buffers</span></code> (adjoint data) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fwd_src</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;material&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;block_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;strength&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">Q</span><span class="o">/</span><span class="n">dL</span><span class="p">]}]}</span>
+
+<span class="n">evaluator</span> <span class="o">=</span> <span class="n">ResponseEvaluator</span><span class="p">(</span><span class="n">problem</span> <span class="o">=</span> <span class="n">phys</span><span class="p">)</span>
+<span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
+    <span class="n">buffers</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;detector&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;file_prefixes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;flux_moments&#39;</span><span class="p">:</span> <span class="n">data_dir</span><span class="o">+</span><span class="s1">&#39;/adjflux_p&#39;</span><span class="p">}</span>
+    <span class="p">}],</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">fwd_src</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Reading flux moments from /home/jason/Documents/Work/OpenSn/opensn-jay/doc/source/tutorials/lbs/primer/Data/adjflux_p
+</pre></div></div>
+</div>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
+<div class="math notranslate nohighlight">
+\[\text{QoI} = \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q(\vec{r},\vec\Omega) \psi^{\dagger}(\vec{r},\vec\Omega) = \int_\mathcal{D}  d^3r  \, q(\vec{r}) \phi^{\dagger}(\vec{r})\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adj_flux</span> <span class="o">=</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">EvaluateResponse</span><span class="p">(</span><span class="s2">&quot;detector&quot;</span><span class="p">)</span>
+<span class="n">adj_resp</span> <span class="o">=</span> <span class="n">sig_det</span><span class="o">*</span><span class="n">adj_flux</span>
+
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Adjoint Total Flux :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">adj_flux</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Adjoint Total Response :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">adj_resp</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Adjoint Total Flux : 3.321548e-01
+Adjoint Total Response : 1.992929e-01
+</pre></div></div>
+</div>
+<p>The adjoint flux solution can be exported to a .vtu using <code class="docutils literal notranslate"><span class="pre">ExportMultiToPVTU</span></code>, the same method previously used for the “forward” flux.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">FFGrid</span> <span class="o">=</span> <span class="n">FieldFunctionGridBased</span>
+<span class="n">FFGrid</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">([</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="s2">&quot;Flux/adjflux_p&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Exporting field functions to PVTU with file base &#34;Flux/adjflux_p&#34;
+[0]  Done exporting field functions to PVTU.
+</pre></div></div>
+</div>
+</section>
+<section id="id2">
+<h4><span class="section-number">5.1.2.5.3.2. </span>Linear Field Function<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>To save the scalar flux along a line segment of the problem we once again use <code class="docutils literal notranslate"><span class="pre">FieldFunctionInterpolationLine()</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">):</span>
+    <span class="c1"># Linear Field Function</span>
+    <span class="n">ffline</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationLine</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="s2">&quot;Flux/adjdetector&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Exported CSV file for field func &#34;phi_g000_m00&#34; to &#34;Flux/adjdetector_phi_g000_m00.csv&#34;
+</pre></div></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+</section>
+<section id="Solution">
+<h2><span class="section-number">5.1.2.6. </span>Solution<a class="headerlink" href="#Solution" title="Link to this heading"></a></h2>
+<p>To plot the scalar flux <span class="math notranslate nohighlight">\(\phi(z)\)</span> and adjoint flux <span class="math notranslate nohighlight">\(\phi^\dagger(z)\)</span> we load the respective data from the .csv files.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">walk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Convert each CSV to a python dictionary</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">CSVToDict</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<span class="c1"># Collect each flux distribution into a dictionary</span>
+<span class="c1"># Flux -&gt; detector   -&gt; {x,y,z,phi_g001_m00}</span>
+<span class="c1">#      -&gt; adjdetector -&gt; {x,y,z,phi_g002_m00}</span>
+<span class="n">Flux</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span><span class="p">)</span> <span class="ow">in</span> <span class="n">walk</span><span class="p">(</span><span class="s1">&#39;Flux/&#39;</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">Flux</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">CSVToDict</span><span class="p">(</span><span class="s2">&quot;Flux/&quot;</span><span class="o">+</span><span class="n">filename</span><span class="p">)</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">Flux</span><span class="p">[</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">]</span>
+<span class="n">fwd</span> <span class="o">=</span> <span class="n">Flux</span><span class="p">[</span><span class="s1">&#39;detector&#39;</span><span class="p">][</span><span class="s1">&#39;phi_g000_m00&#39;</span><span class="p">]</span>
+<span class="n">adj</span> <span class="o">=</span> <span class="n">Flux</span><span class="p">[</span><span class="s1">&#39;adjdetector&#39;</span><span class="p">][</span><span class="s1">&#39;phi_g000_m00&#39;</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fwd</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forward&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Adjoint&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Distance (cm)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\phi(z)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/tutorials_lbs_primer_adjoint_example_55_0.png" src="../../../_images/tutorials_lbs_primer_adjoint_example_55_0.png" />
+</div>
+</div>
+<hr class="docutils" />
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">5.1.2.7. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data Flux AdjFlux&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Elapsed execution time: 00:00:02.8
+2025-09-20 02:04:34 OpenSn finished execution.
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="forward_example.html" class="btn btn-neutral float-left" title="5.1.1. A First Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../keigen/index.html" class="btn btn-neutral float-right" title="5.2. KEigen" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

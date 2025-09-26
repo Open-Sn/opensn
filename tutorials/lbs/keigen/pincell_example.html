@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.3. Reactor pin cell &mdash; OpenSn 0.0.1 documentation</title>
+  <title>5.2.1. Reactor pin cell &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,8 +29,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="5. Logical Volumes" href="../../logvol/index.html" />
-    <link rel="prev" title="4.2. Slowing-Down in High-Density Polyethylene" href="../mg_src_driven/hdpe_example.html" /> 
+    <link rel="next" title="5.3. Source Driven" href="../src_driven/index.html" />
+    <link rel="prev" title="5.2. KEigen" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,24 +59,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html">4. Linear Boltzmann Solver</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../first/first_example.html">4.1. A First Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">4.2. Slowing-Down in High-Density Polyethylene</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.3. Reactor pin cell</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Using-this-Notebook">4.3.1. Using this Notebook</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Import-Requirements">4.3.2. Import Requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Mesh">4.3.3. Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Cross-Sections">4.3.4. Cross Sections</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Angular-Quadrature">4.3.5. Angular Quadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Linear-Boltzmann-Solver">4.3.6. Linear Boltzmann Solver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Post-Processing-via-Field-Functions">4.3.7. Post-Processing via Field Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">4.3.8. Post-processing: Extract the average flux in a portion of the domain</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.3.9. Finalize (for Jupyter Notebook only)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.2. KEigen</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.2.1. Reactor pin cell</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">5. Logical Volumes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
@@ -101,8 +93,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Linear Boltzmann Solver</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.3. </span>Reactor pin cell</li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.2. </span>KEigen</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.2.1. </span>Reactor pin cell</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -112,7 +105,7 @@
            <div itemprop="articleBody">
              
   <section id="Reactor-pin-cell">
-<h1><span class="section-number">4.3. </span>Reactor pin cell<a class="headerlink" href="#Reactor-pin-cell" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.2.1. </span>Reactor pin cell<a class="headerlink" href="#Reactor-pin-cell" title="Link to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -124,10 +117,10 @@
 </div>
 </div>
 <section id="Using-this-Notebook">
-<h2><span class="section-number">4.3.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
 <p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
 <section id="Converting-and-Running-this-Notebook-from-the-Terminal">
-<h3><span class="section-number">4.3.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.2.1.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
 <p>To run this notebook from the terminal, simply type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;notebook_name&gt;.ipynb</span></code>.</p>
 <p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
@@ -148,7 +141,7 @@
 </section>
 </section>
 <section id="Import-Requirements">
-<h2><span class="section-number">4.3.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
 <p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -170,7 +163,7 @@
 </div>
 </div>
 <section id="Disable-colorized-output">
-<h3><span class="section-number">4.3.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.2.1.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -182,7 +175,7 @@
 </section>
 </section>
 <section id="Mesh">
-<h2><span class="section-number">4.3.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
 <p>We load a 3x3 reactor pin lattice (.obj file). The mesh and its block IDs are shown below:</p>
 <div style="display: flex; gap: 1rem; align-items: flex-start;"><p><img alt="Mesh and Material Layout for the pin cell problem" src="../../../_images/pincell_mesh.png" /></p>
 </div><p>div&gt;</p>
@@ -198,7 +191,7 @@
 </div>
 </section>
 <section id="Cross-Sections">
-<h2><span class="section-number">4.3.4. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.4. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
 <p>We load 361-group cross sections that were generated using OpenMC.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -230,7 +223,7 @@
 </div>
 </section>
 <section id="Angular-Quadrature">
-<h2><span class="section-number">4.3.5. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.5. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>).</p>
 <p>For more accurate results, we suggest using <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">8</span></code> and <code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">32</span></code></p>
 <div class="nbinput nblast docutils container">
@@ -243,9 +236,9 @@
 </div>
 </section>
 <section id="Linear-Boltzmann-Solver">
-<h2><span class="section-number">4.3.6. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.6. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
 <section id="Options-for-the-Linear-Boltzmann-Problem-(LBS)">
-<h3><span class="section-number">4.3.6.1. </span>Options for the Linear Boltzmann Problem (LBS)<a class="headerlink" href="#Options-for-the-Linear-Boltzmann-Problem-(LBS)" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.2.1.6.1. </span>Options for the Linear Boltzmann Problem (LBS)<a class="headerlink" href="#Options-for-the-Linear-Boltzmann-Problem-(LBS)" title="Link to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -292,7 +285,7 @@
 </div>
 </section>
 <section id="Putting-the-Linear-Boltzmann-Solver-Together">
-<h3><span class="section-number">4.3.6.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#Putting-the-Linear-Boltzmann-Solver-Together" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.2.1.6.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#Putting-the-Linear-Boltzmann-Solver-Together" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -312,7 +305,7 @@
 </section>
 </section>
 <section id="Post-Processing-via-Field-Functions">
-<h2><span class="section-number">4.3.7. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.7. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -325,7 +318,7 @@
 </div>
 </section>
 <section id="Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">
-<h2><span class="section-number">4.3.8. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.8. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
 <p>We create an edit zone (logical volume) that is the entire domain.</p>
 <p>We request the average (keyword <code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code>) of the scalar flux over the edit zone, for each group.</p>
 <div class="nbinput nblast docutils container">
@@ -478,7 +471,7 @@
 <div style="display: flex; gap: 1rem; align-items: flex-start;"><p><img alt="Lethargy Spectrum" src="../../../_images/pincell_lethargy_spectrum.png" /> <img alt="Spectrum" src="../../../_images/pincell_spectrum.png" /></p>
 </div></section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">4.3.9. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.2.1.9. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -512,8 +505,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../mg_src_driven/hdpe_example.html" class="btn btn-neutral float-left" title="4.2. Slowing-Down in High-Density Polyethylene" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../logvol/index.html" class="btn btn-neutral float-right" title="5. Logical Volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="5.2. KEigen" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../src_driven/index.html" class="btn btn-neutral float-right" title="5.3. Source Driven" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

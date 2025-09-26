@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.1. A First Example &mdash; OpenSn 0.0.1 documentation</title>
+  <title>5.1.1. A First Example &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,8 +29,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="4.2. Slowing-Down in High-Density Polyethylene" href="../mg_src_driven/hdpe_example.html" />
-    <link rel="prev" title="4. Linear Boltzmann Solver" href="../index.html" /> 
+    <link rel="next" title="5.1.2. A First Adjoint Example" href="adjoint_example.html" />
+    <link rel="prev" title="5.1. Primer" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,26 +59,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html">4. Linear Boltzmann Solver</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1. A First Example</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Using-this-Notebook">4.1.1. Using this Notebook</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Import-Requirements">4.1.2. Import Requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Mesh">4.1.3. Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Cross-Sections">4.1.4. Cross Sections</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Volumetric-Source">4.1.5. Volumetric Source</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Angular-Quadrature">4.1.6. Angular Quadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Linear-Boltzmann-Solver">4.1.7. Linear Boltzmann Solver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Post-Processing-via-Field-Functions">4.1.8. Post-Processing via Field Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">4.1.9. Post-processing: Extract the average flux in a portion of the domain</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">4.1.10. Finalize (for Jupyter Notebook only)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Possible-Extensions">4.1.11. Possible Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.1. Primer</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.1.1. A First Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="adjoint_example.html">5.1.2. A First Adjoint Example</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">4.2. Slowing-Down in High-Density Polyethylene</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../mg_keigen/pincell_example.html">4.3. Reactor pin cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">5. Logical Volumes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
@@ -103,8 +94,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
-          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Linear Boltzmann Solver</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.1. </span>A First Example</li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.1. </span>Primer</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.1.1. </span>A First Example</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -114,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="A-First-Example">
-<h1><span class="section-number">4.1. </span>A First Example<a class="headerlink" href="#A-First-Example" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.1.1. </span>A First Example<a class="headerlink" href="#A-First-Example" title="Link to this heading"></a></h1>
 <p>This is a complete simulation transport example. Each aspect of the simulation process is kept to a minimum:</p>
 <ul class="simple">
 <li><p>We use an orthogonal 2D grid;</p></li>
@@ -134,14 +126,14 @@
 </div>
 </div>
 <section id="Using-this-Notebook">
-<h2><span class="section-number">4.1.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
 <p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
 <section id="Converting-and-Running-this-Notebook-from-the-Terminal">
-<h3><span class="section-number">4.1.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
 <p>To run this notebook from the terminal, simply type:</p>
-<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">first_example.ipynb</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">forward_example.ipynb</span></code>.</p>
 <p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
-<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">first_example.ipynb</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">forward_example.ipynb</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -151,14 +143,14 @@
 <span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
 
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running the first LBS example with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processors.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running the first forward LBS example with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processors.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 </section>
 <section id="Import-Requirements">
-<h2><span class="section-number">4.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
 <p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -181,7 +173,7 @@
 </div>
 </div>
 <section id="Disable-colorized-output">
-<h3><span class="section-number">4.1.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -193,10 +185,10 @@
 </section>
 </section>
 <section id="Mesh">
-<h2><span class="section-number">4.1.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
 <p>Here, we will use the in-house orthogonal mesh generator for a simple Cartesian grid.</p>
 <section id="List-of-Nodes">
-<h3><span class="section-number">4.1.3.1. </span>List of Nodes<a class="headerlink" href="#List-of-Nodes" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.3.1. </span>List of Nodes<a class="headerlink" href="#List-of-Nodes" title="Link to this heading"></a></h3>
 <p>We first create a list of nodes for each dimension (X and Y). Here, both dimensions share the same node values.</p>
 <p>The nodes will be spread from -1 to +1.</p>
 <div class="nbinput nblast docutils container">
@@ -215,11 +207,11 @@
 </div>
 </section>
 <section id="Orthogonal-Mesh-Generation">
-<h3><span class="section-number">4.1.3.2. </span>Orthogonal Mesh Generation<a class="headerlink" href="#Orthogonal-Mesh-Generation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.3.2. </span>Orthogonal Mesh Generation<a class="headerlink" href="#Orthogonal-Mesh-Generation" title="Link to this heading"></a></h3>
 <p>We use the <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code> and pass the list of nodes per dimension. Here, we pass 2 times the same list of nodes to create a 2D geometry with square cells. Thus, we create a square domain, of side length 2, centered on the origin (0,0).</p>
 <p>We also partition the 2D mesh into <span class="math notranslate nohighlight">\(2 \times 2\)</span> subdomains using <code class="docutils literal notranslate"><span class="pre">KBAGraphPartitioner</span></code>. Since we want the split the x-axis in 2, we give only 1 value in the xcuts array (<span class="math notranslate nohighlight">\(x=0\)</span>). Likewise for ycuts (<span class="math notranslate nohighlight">\(y=0\)</span>). The assignment to a partition is done based on where the cell center is located with respect to the various xcuts, ycuts, and zcuts (in the code, a fuzzy logic is applied to avoid arithmetic issues).</p>
 <p>The resulting mesh and partition is shown below:</p>
-<p><img alt="Mesh_Partition" src="../../../_images/first_example_mesh_partition.png" /></p>
+<p><img alt="Mesh_Partition" src="../../../_images/forward_example_mesh_partition.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -239,7 +231,7 @@
 </div>
 </section>
 <section id="Material-IDs">
-<h3><span class="section-number">4.1.3.3. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.3.3. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
 <p>When using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to assign material IDs to all cells. Here, we have a homogeneous domain, so we assign a material ID with value 0 for each cell in the spatial domain.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -252,7 +244,7 @@
 </section>
 </section>
 <section id="Cross-Sections">
-<h2><span class="section-number">4.1.4. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.4. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
 <p>We create one-group cross sections using a built-in method. See the tutorials’ section on cross sections for more details on how to load cross sections into OpenSn.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -265,7 +257,7 @@
 </div>
 </section>
 <section id="Volumetric-Source">
-<h2><span class="section-number">4.1.5. </span>Volumetric Source<a class="headerlink" href="#Volumetric-Source" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.5. </span>Volumetric Source<a class="headerlink" href="#Volumetric-Source" title="Link to this heading"></a></h2>
 <p>We create a volumetric multigroup source which will be assigned to cells with given block IDs. Volumetric sources are assigned to the solver via the <code class="docutils literal notranslate"><span class="pre">options</span></code> parameter in the LBS block (see below).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -281,7 +273,7 @@
 </div>
 </section>
 <section id="Angular-Quadrature">
-<h2><span class="section-number">4.1.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 2D angular quadrature for XY geometry.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -293,9 +285,9 @@
 </div>
 </section>
 <section id="Linear-Boltzmann-Solver">
-<h2><span class="section-number">4.1.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
 <section id="Options-for-the-Linear-Boltzmann-Problem-(LBS)">
-<h3><span class="section-number">4.1.7.1. </span>Options for the Linear Boltzmann Problem (LBS)<a class="headerlink" href="#Options-for-the-Linear-Boltzmann-Problem-(LBS)" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.7.1. </span>Options for the Linear Boltzmann Problem (LBS)<a class="headerlink" href="#Options-for-the-Linear-Boltzmann-Problem-(LBS)" title="Link to this heading"></a></h3>
 <p>In the LBS block, we provide</p>
 <ul class="simple">
 <li><p>the number of energy groups,</p></li>
@@ -333,7 +325,7 @@
 </div>
 </section>
 <section id="Putting-the-Linear-Boltzmann-Solver-Together">
-<h3><span class="section-number">4.1.7.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#Putting-the-Linear-Boltzmann-Solver-Together" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.1.1.7.2. </span>Putting the Linear Boltzmann Solver Together<a class="headerlink" href="#Putting-the-Linear-Boltzmann-Solver-Together" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -348,16 +340,16 @@
 </section>
 </section>
 <section id="Post-Processing-via-Field-Functions">
-<h2><span class="section-number">4.1.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.8. </span>Post-Processing via Field Functions<a class="headerlink" href="#Post-Processing-via-Field-Functions" title="Link to this heading"></a></h2>
 <p>We extract the scalar flux (i.e., the first entry in the field function list) and export it to a VTK file whose name is supplied by the user. See the tutorials’ section on post-processing for more details on field functions.</p>
 <p>The resulting scalar flux is shown below:</p>
-<p><img alt="Scalar_flux" src="../../../_images/first_example_scalar_flux.png" /></p>
+<p><img alt="Scalar_flux" src="../../../_images/forward_example_scalar_flux.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;first_example&quot;</span>
+<span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;forward_example&quot;</span>
 <span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
     <span class="p">[</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>  <span class="c1"># export only the flux of group 0 (first []), moment 0 (second [])</span>
     <span class="n">vtk_basename</span>
@@ -367,7 +359,7 @@
 </div>
 </section>
 <section id="Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain">
-<h2><span class="section-number">4.1.9. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.9. </span>Post-processing: Extract the average flux in a portion of the domain<a class="headerlink" href="#Post-processing:-Extract-the-average-flux-in-a-portion-of-the-domain" title="Link to this heading"></a></h2>
 <p>We create two edit zones (logical volumes):</p>
 <ol class="arabic simple">
 <li><p>one for one quarter of the domain</p></li>
@@ -410,7 +402,7 @@
 </div>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">4.1.10. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.10. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -431,7 +423,7 @@
 </div>
 </section>
 <section id="Possible-Extensions">
-<h2><span class="section-number">4.1.11. </span>Possible Extensions<a class="headerlink" href="#Possible-Extensions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.1.1.11. </span>Possible Extensions<a class="headerlink" href="#Possible-Extensions" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Change the number of MPI processes;</p></li>
 <li><p>Change the spatial resolution by increasing or decreasing the number of cells;</p></li>
@@ -444,8 +436,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="4. Linear Boltzmann Solver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../mg_src_driven/hdpe_example.html" class="btn btn-neutral float-right" title="4.2. Slowing-Down in High-Density Polyethylene" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="5.1. Primer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="adjoint_example.html" class="btn btn-neutral float-right" title="5.1.2. A First Adjoint Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

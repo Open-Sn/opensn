@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3.3. A Multigroup 2D Glovebox &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="5.3.4. A Multigroup Adjoint Response" href="../detector_adjoint/detector_adj.html" />
+    <link rel="prev" title="5.3.2. A Multigroup 1D Detector" href="../detector_forward/detector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">5.3. Source Driven</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">5.3.1. Slowing-Down in High-Density Polyethylene</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_forward/detector.html">5.3.2. A Multigroup 1D Detector</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.3. A Multigroup 2D Glovebox</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">5.3.4. A Multigroup Adjoint Response</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">5.3.5. Adjoint Method with Multiple Detector Responses</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5.3. </span>Source Driven</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.3. </span>A Multigroup 2D Glovebox</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="A-Multigroup-2D-Glovebox">
+<h1><span class="section-number">5.3.3. </span>A Multigroup 2D Glovebox<a class="headerlink" href="#A-Multigroup-2D-Glovebox" title="Link to this heading"></a></h1>
+<p>In this example, we use OpenSn’s linear Boltzmann solver to compute response functions in two Helium-3 detectors within a mockup 2D glovebox.</p>
+<p>The following is a complete transport simulation example. Each element of the simulation can be described in the sections below:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#Prerequisites"><span class="std std-ref">Prerequisites</span></a></p></li>
+<li><p><a class="reference internal" href="#Geometry"><span class="std std-ref">Geometry</span></a></p></li>
+<li><p><a class="reference internal" href="#Mesh"><span class="std std-ref">Mesh</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Cross-Sections"><span class="std std-ref">Cross Sections</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#Solver"><span class="std std-ref">Solver</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Angular-Quadrature"><span class="std std-ref">Angular Quadrature</span></a></p></li>
+<li><p><a class="reference internal" href="#Group-Structure"><span class="std std-ref">Group Structure</span></a></p></li>
+<li><p><a class="reference internal" href="#Source-Definition"><span class="std std-ref">Source Definition</span></a></p></li>
+<li><p><a class="reference internal" href="#Discrete-Ordinates-Problem"><span class="std std-ref">Discrete Ordinates Problem</span></a></p></li>
+<li><p><a class="reference internal" href="#Execute"><span class="std std-ref">Execute</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#Post-Processing"><span class="std std-ref">Post Processing</span></a></p>
+<ul>
+<li><p><a class="reference internal" href="#Volumetric-Field-Function"><span class="std std-ref">Volumetric Field Function</span></a></p></li>
+<li><p><a class="reference internal" href="#Compute-Leakage"><span class="std std-ref">Compute Leakage</span></a></p></li>
+</ul>
+</li>
+</ul>
+<hr class="docutils" />
+<section id="Prerequisites">
+<h2><span class="section-number">5.3.3.1. </span>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
+<p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
+<section id="Converting-and-Running-this-Notebook-from-the-Terminal">
+<h3><span class="section-number">5.3.3.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<p>To run this notebook from the terminal, simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">glovebox.ipynb</span></code>.</p>
+<p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">glovebox.ipynb</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+<span class="n">barrier</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">barrier</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running the LBS glovebox example problem with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processors.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Import-Requirements">
+<h3><span class="section-number">5.3.3.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h3>
+<p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># assuming that the execute dir is the notebook dir</span>
+<span class="c1"># this line is not necessary when PyOpenSn is installed using pip</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromFileMeshGenerator</span><span class="p">,</span> <span class="n">PETScGraphPartitioner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseEvaluator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span><span class="p">,</span> <span class="n">VectorSpatialFunction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">,</span> \
+                               <span class="n">FieldFunctionInterpolationLine</span><span class="p">,</span> \
+                               <span class="n">FieldFunctionGridBased</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RCCLogicalVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Geometry">
+<h2><span class="section-number">5.3.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
+<p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
+<p><img alt="24f0cbc082ad432185231b0659b7c6e2" src="../../../../_images/glovebox_geom1.png" /></p>
+<hr class="docutils" />
+</section>
+<section id="Mesh">
+<h2><span class="section-number">5.3.3.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<p>In this section, we import an unstructured mesh generated using the open-source meshing tool Gmsh.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshgen</span> <span class="o">=</span> <span class="n">FromFileMeshGenerator</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;glovebox.msh&quot;</span><span class="p">,</span>
+    <span class="n">partitioner</span><span class="o">=</span><span class="n">PETScGraphPartitioner</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;parmetis&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="7a31a7e410f34a79a6ae11ccf726e231" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="7bbeb1ad41d3416e8dd7c3a7bf56f4f3" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="6436044599384cdebb8ea2403f2a1358" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p>The total cell count for this mesh is 8,214.</p>
+<section id="Cross-Sections">
+<h3><span class="section-number">5.3.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
+<p>In this problem, we compute the multigroup absorption reaction rate in a He-3 detector. We begin by importing the multigroup cross sections, using the WIMS69 energy group structure for five materials:</p>
+<ul class="simple">
+<li><p>Air</p></li>
+<li><p>SS-316</p></li>
+<li><p>HDPE</p></li>
+<li><p>He-3</p></li>
+<li><p>Cf-252</p></li>
+</ul>
+<p>Since we are importing a Gmsh mesh, materials IDs are assigned to the corresponding physcial group ID. Look at <a class="reference external" href="./glovebox.msh">glovebox.msh</a> under <code class="docutils literal notranslate"><span class="pre">PhysicalNames</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;WIMS69&quot;</span>
+<span class="n">xs_air</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_air</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/Air.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_steel</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_steel</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/SS_316.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_hdpe</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_hdpe</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/HDPE.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_he3</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_he3</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/He3.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_cf</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_cf</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/Cf252.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xsecs</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_air</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_steel</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_hdpe</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_he3</span><span class="p">},</span>
+         <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_cf</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="Solver">
+<h2><span class="section-number">5.3.3.4. </span><strong>Solver</strong><a class="headerlink" href="#Solver" title="Link to this heading"></a></h2>
+<section id="Angular-Quadrature">
+<h3><span class="section-number">5.3.3.4.1. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h3>
+<p>Since we are solving a 2D problem we will create Gauss-Legendre Product Quadrature in 2D. In this case we will use 2 polar angles and 128 azimuthal angles. With polar symmetry that leaves us with 128 angles.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pquad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                 <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+                                 <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Group-Structure">
+<h3><span class="section-number">5.3.3.4.2. </span>Group Structure<a class="headerlink" href="#Group-Structure" title="Link to this heading"></a></h3>
+<p>Since we are using the WIMS69 group structure, we define a groupset block with 69 energy groups.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_groups</span> <span class="o">=</span> <span class="mi">69</span>
+<span class="n">grpsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-9</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Source-Definition">
+<h3><span class="section-number">5.3.3.4.3. </span>Source Definition<a class="headerlink" href="#Source-Definition" title="Link to this heading"></a></h3>
+<p>For the volumetric source, we first specify the source spectrum. In this case, we assign a uniform energy spectrum distributed throughout the source logical volume. Using <code class="docutils literal notranslate"><span class="pre">VolumetricSource</span></code>, this group-wise source definition is applied per unit area to material ID 5. Once the <code class="docutils literal notranslate"><span class="pre">VolumetricSource</span></code>is defined, it is added to the physics options.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">groups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">([</span><span class="mf">1.00000E-11</span><span class="p">,</span> <span class="mf">5.00000E-09</span><span class="p">,</span> <span class="mf">1.00000E-08</span><span class="p">,</span> <span class="mf">1.50000E-08</span><span class="p">,</span> <span class="mf">2.00000E-08</span><span class="p">,</span>
+                  <span class="mf">2.50000E-08</span><span class="p">,</span> <span class="mf">3.00000E-08</span><span class="p">,</span> <span class="mf">3.50000E-08</span><span class="p">,</span> <span class="mf">4.20000E-08</span><span class="p">,</span> <span class="mf">5.00000E-08</span><span class="p">,</span>
+                  <span class="mf">5.80000E-08</span><span class="p">,</span> <span class="mf">6.70000E-08</span><span class="p">,</span> <span class="mf">8.00000E-08</span><span class="p">,</span> <span class="mf">1.00000E-07</span><span class="p">,</span> <span class="mf">1.40000E-07</span><span class="p">,</span>
+                  <span class="mf">1.80000E-07</span><span class="p">,</span> <span class="mf">2.20000E-07</span><span class="p">,</span> <span class="mf">2.50000E-07</span><span class="p">,</span> <span class="mf">2.80000E-07</span><span class="p">,</span> <span class="mf">3.00000E-07</span><span class="p">,</span>
+                  <span class="mf">3.20000E-07</span><span class="p">,</span> <span class="mf">3.50000E-07</span><span class="p">,</span> <span class="mf">4.00000E-07</span><span class="p">,</span> <span class="mf">5.00000E-07</span><span class="p">,</span> <span class="mf">6.25000E-07</span><span class="p">,</span>
+                  <span class="mf">7.80000E-07</span><span class="p">,</span> <span class="mf">8.50000E-07</span><span class="p">,</span> <span class="mf">9.10000E-07</span><span class="p">,</span> <span class="mf">9.50000E-07</span><span class="p">,</span> <span class="mf">9.72000E-07</span><span class="p">,</span>
+                  <span class="mf">9.96000E-07</span><span class="p">,</span> <span class="mf">1.02000E-06</span><span class="p">,</span> <span class="mf">1.04500E-06</span><span class="p">,</span> <span class="mf">1.07100E-06</span><span class="p">,</span> <span class="mf">1.09700E-06</span><span class="p">,</span>
+                  <span class="mf">1.12300E-06</span><span class="p">,</span> <span class="mf">1.15000E-06</span><span class="p">,</span> <span class="mf">1.30000E-06</span><span class="p">,</span> <span class="mf">1.50000E-06</span><span class="p">,</span> <span class="mf">2.10000E-06</span><span class="p">,</span>
+                  <span class="mf">2.60000E-06</span><span class="p">,</span> <span class="mf">3.30000E-06</span><span class="p">,</span> <span class="mf">4.00000E-06</span><span class="p">,</span> <span class="mf">9.87700E-06</span><span class="p">,</span> <span class="mf">1.59680E-05</span><span class="p">,</span>
+                  <span class="mf">2.77000E-05</span><span class="p">,</span> <span class="mf">4.80520E-05</span><span class="p">,</span> <span class="mf">7.55014E-05</span><span class="p">,</span> <span class="mf">1.48729E-04</span><span class="p">,</span> <span class="mf">3.67263E-04</span><span class="p">,</span>
+                  <span class="mf">9.06899E-04</span><span class="p">,</span> <span class="mf">1.42510E-03</span><span class="p">,</span> <span class="mf">2.23945E-03</span><span class="p">,</span> <span class="mf">3.51910E-03</span><span class="p">,</span> <span class="mf">5.53000E-03</span><span class="p">,</span>
+                  <span class="mf">9.11800E-03</span><span class="p">,</span> <span class="mf">1.50300E-02</span><span class="p">,</span> <span class="mf">2.47800E-02</span><span class="p">,</span> <span class="mf">4.08500E-02</span><span class="p">,</span> <span class="mf">6.73400E-02</span><span class="p">,</span>
+                  <span class="mf">1.11000E-01</span><span class="p">,</span> <span class="mf">1.83000E-01</span><span class="p">,</span> <span class="mf">3.02500E-01</span><span class="p">,</span> <span class="mf">5.00000E-01</span><span class="p">,</span> <span class="mf">8.21000E-01</span><span class="p">,</span>
+                  <span class="mf">1.35300E+00</span><span class="p">,</span> <span class="mf">2.23100E+00</span><span class="p">,</span> <span class="mf">3.67900E+00</span><span class="p">,</span> <span class="mf">6.06550E+00</span><span class="p">,</span> <span class="mf">1.00000E+01</span><span class="p">])</span>
+<span class="n">group_width</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+<span class="n">dE</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">groups</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">dA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">0.2</span><span class="o">*</span><span class="mf">0.2</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="n">group_width</span> <span class="o">/</span> <span class="n">dE</span> <span class="o">/</span> <span class="n">dA</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">vol_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="n">Q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Discrete-Ordinates-Problem">
+<h3><span class="section-number">5.3.3.4.4. </span>Discrete Ordinates Problem<a class="headerlink" href="#Discrete-Ordinates-Problem" title="Link to this heading"></a></h3>
+<p>For establishing the discrete ordinate problem, we provide;</p>
+<ul class="simple">
+<li><p>mesh : The mesh</p></li>
+<li><p>num_groups : The number of energy groups</p></li>
+<li><p>groupsets : The groupsets block</p></li>
+<li><p>scattering_order : The scattering order</p></li>
+<li><p>xs_map : Cross section map</p></li>
+<li><p>volumetric_sources : The volumetric source</p></li>
+<li><p>boundary_conditions : The boundary conditions</p></li>
+<li><p>options : Physics solver options</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">grpsets</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xsecs</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">vol_src</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Execute">
+<h3><span class="section-number">5.3.3.4.5. </span>Execute<a class="headerlink" href="#Execute" title="Link to this heading"></a></h3>
+<p>We then create the physics solver, initialize it, and execute it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ss_solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Post-Processing">
+<h2><span class="section-number">5.3.3.5. </span>Post Processing<a class="headerlink" href="#Post-Processing" title="Link to this heading"></a></h2>
+<section id="Volumetric-Field-Function">
+<h3><span class="section-number">5.3.3.5.1. </span>Volumetric Field Function<a class="headerlink" href="#Volumetric-Field-Function" title="Link to this heading"></a></h3>
+<p>With the solver executed, we now create a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code>. In OpenSn we define a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code> for the response we will like to calculate. In this case we are looking to compute the total <span class="math notranslate nohighlight">\(He^3\)</span> absorption reaction rate in our glovebox:</p>
+<div class="math notranslate nohighlight">
+\[\text{QoI} =  \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)} d\Omega \, \sigma^g_{det}(\vec{r}) \psi^g(\vec{r},\vec\Omega)  = \sum^G_g \, \int_\mathcal{D} d^3r \, \sigma^g_{det}(\vec{r}) \phi^g(\vec{r})\]</div>
+<p>Thus, in OpenSn we will generate a scalar field function using <code class="docutils literal notranslate"><span class="pre">GetScalarFieldFunctionList</span></code> with a <code class="docutils literal notranslate"><span class="pre">sum</span></code> over the RoI(s). In this case we have two detectors so we will create two logical volumes as our RoI’s.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">det1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="n">det2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">47.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="n">det1</span><span class="p">,</span> <span class="n">det2</span><span class="p">]</span>
+<span class="n">det_logvols</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">:</span>
+    <span class="n">r_he3</span> <span class="o">=</span> <span class="mf">1.2</span>
+    <span class="n">he3</span> <span class="o">=</span> <span class="n">RCCLogicalVolume</span><span class="p">(</span>
+                <span class="n">r</span><span class="o">=</span><span class="n">r_he3</span><span class="p">,</span>
+                <span class="n">x0</span><span class="o">=</span><span class="n">det</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y0</span><span class="o">=</span><span class="n">det</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">z0</span><span class="o">=-</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">vz</span><span class="o">=</span> <span class="mf">2.0</span>
+    <span class="p">)</span>
+    <span class="n">det_logvols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">he3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>At each group the solution <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span> is multiplied by the detector response at that group <span class="math notranslate nohighlight">\(\sigma^{He3,g}_{a}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">sig_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs_he3</span><span class="o">.</span><span class="n">sigma_a</span><span class="p">)</span>
+
+<span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">flux</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">resp</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">d</span><span class="p">,</span><span class="n">det</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det_logvols</span><span class="p">):</span>
+    <span class="n">flux</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_groups</span><span class="p">):</span>
+        <span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+        <span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+        <span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+        <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+        <span class="n">phi_g</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+        <span class="n">flux</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phi_g</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">resp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig_a</span> <span class="o">*</span> <span class="n">flux</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Flux in Detector-1:&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flux</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Response in Detector-1:&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Flux in Detector-2:&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flux</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Response in Detector-2:&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">resp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">Total Flux Detector 1 : 6.107575e-02</div>
+<div class="line">Total Flux Detector 2 : 6.119690e-02</div>
+<div class="line">Total Response Detector 1 : 4.457174e-03</div>
+<div class="line">Total Response Detector 2 : 4.458115e-03</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span>
+
+<span class="n">emid</span> <span class="o">=</span> <span class="p">(</span><span class="n">groups</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">groups</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">axs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="c1"># Flux spectrum</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">flux</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector1&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">flux</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector2&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\phi^g(E)$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Flux Spectrum&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="c1"># Flux spectrum per unit lethargy</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">flux</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector1&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">flux</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector2&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\phi^g(u)$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Flux Spectrum per unit lethargy&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="c1"># Absorption spectrum</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector1&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector2&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\text</span><span class="si">{RR}</span><span class="s2">^g(E)$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Absorption Spectrum&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="c1"># Absorption spectrum per unit lehtargy</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector1&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detector2&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\text</span><span class="si">{RR}</span><span class="s2">^g(u)$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Absorption Spectrum per unit lethargy&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;images/Spectrum.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><img alt="Flux" src="../../../../_images/Spectrum.png" /></p>
+<p>With our field function defined, we can also export the multi-group scalar flux, <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span>, to a .vtu file using <code class="docutils literal notranslate"><span class="pre">ExportMultipleToPVTU</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">FFGrid</span> <span class="o">=</span> <span class="n">FieldFunctionGridBased</span>
+<span class="n">FFGrid</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="s2">&quot;Flux/glovebox&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Group 3: [1.353, 2.231] MeV</p>
+<p><img alt="3bfb23460ee940c3ab31dd241f2dbb73" src="../../../../_images/glovebox_g3.png" /></p>
+<p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
+<p><img alt="6ffcd4c9e1da480c990001c71b31904b" src="../../../../_images/glovebox_g52.png" /></p>
+</section>
+<section id="Compute-Leakage">
+<h3><span class="section-number">5.3.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
+<p>We can simultanously compute the groupwise leakage rate at the problem boundaries, <span class="math notranslate nohighlight">\(\vec{j}^{g}|_{\Gamma_{\text{+}}}\)</span>, of the problem domain.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">leakage</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeLeakage</span><span class="p">([</span><span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span><span class="s2">&quot;ymin&quot;</span><span class="p">,</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
+<span class="n">lkg_xmin</span> <span class="o">=</span> <span class="n">leakage</span><span class="p">[</span><span class="s1">&#39;xmin&#39;</span><span class="p">]</span>
+<span class="n">lkg_xmax</span> <span class="o">=</span> <span class="n">leakage</span><span class="p">[</span><span class="s1">&#39;xmax&#39;</span><span class="p">]</span>
+<span class="n">lkg_ymin</span> <span class="o">=</span> <span class="n">leakage</span><span class="p">[</span><span class="s1">&#39;ymin&#39;</span><span class="p">]</span>
+<span class="n">lkg_ymax</span> <span class="o">=</span> <span class="n">leakage</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">]</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="n">axs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="c1"># plt.figure(figsize=(16,9))</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_xmin</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;XMin&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_xmax</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;XMax&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_ymin</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;YMin&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_ymax</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;YMax&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\vec</span><span class="si">{j}</span><span class="s2">^</span><span class="si">{g}</span><span class="s2">(E)|_{\Gamma_{\text{+}}}$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Leakage Spectrum&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="n">axs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_xmin</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;XMin&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_xmax</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;XMax&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_ymin</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;YMin&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">emid</span><span class="p">,</span> <span class="n">lkg_ymax</span><span class="o">*</span><span class="n">emid</span><span class="o">/</span><span class="n">group_width</span><span class="p">,</span> <span class="s2">&quot;--+&quot;</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;YMax&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (MeV)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\vec</span><span class="si">{j}</span><span class="s2">^</span><span class="si">{g}</span><span class="s2">(u)|_{\Gamma_{\text{+}}}$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Leakage Spectrum per unit lethargy&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;images/Lkg.png&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage XMin :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage XMax :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmax</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage YMin :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_ymin</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage YMax :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_ymax</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">tot_lkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmin</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmax</span><span class="p">)</span><span class="o">+</span> \
+              <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_ymin</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_ymax</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tot_lkg</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">Total Leakage XMin : 4.769487e-02</div>
+<div class="line">Total Leakage XMax : 4.758068e-02</div>
+<div class="line">Total Leakage YMin : 4.701734e-01</div>
+<div class="line">Total Leakage YMax : 4.702092e-01</div>
+</div>
+<p>Total Leakage : 1.035658e+00</p>
+<p><img alt="96acd52c4dc840efbee137db2e2e9b2e" src="../../../../_images/Lkg.png" /></p>
+</section>
+<section id="Compute-Balance">
+<h3><span class="section-number">5.3.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">5.3.3.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data Flux Results&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../detector_forward/detector.html" class="btn btn-neutral float-left" title="5.3.2. A Multigroup 1D Detector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../detector_adjoint/detector_adj.html" class="btn btn-neutral float-right" title="5.3.4. A Multigroup Adjoint Response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
