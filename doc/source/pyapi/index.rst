@@ -300,8 +300,8 @@ Solver base class
 
    solver.Solver
 
-Steady state solver
-^^^^^^^^^^^^^^^^^^^
+Steady state source solver
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
