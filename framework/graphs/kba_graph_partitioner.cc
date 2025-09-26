@@ -6,6 +6,7 @@
 #include "framework/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include <format>
 #include <cmath>
 
 namespace opensn
@@ -60,8 +61,11 @@ KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
 
     // Check number of items
     if (cuts.size() != (n - 1))
-      OpenSnInvalidArgument("The number of cuts supplied for \"" + name +
-                            "cuts\" is not equal to n" + name + "-1.");
+    {
+      auto err = std::format(
+        "The number of cuts supplied for \"{}cuts\" is not equal to n{}-1.", name, name);
+      OpenSnInvalidArgument(err);
+    }
     if (cuts.empty())
       continue;
 

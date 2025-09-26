@@ -183,16 +183,14 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       SerializeCell(cell, serial_data);
       if (serial_data.Size() > BUFFER_SIZE)
       {
-        ofile.write(reinterpret_cast<char*>(serial_data.Data().data()),
-                    static_cast<int>(serial_data.Size()));
+        WriteBinaryValue(ofile, serial_data);
         serial_data.Clear();
         serial_data.Data().reserve(serial_data.Data().capacity());
       }
     }
     if (serial_data.Size() > 0)
     {
-      ofile.write(reinterpret_cast<char*>(serial_data.Data().data()),
-                  static_cast<int>(serial_data.Size()));
+      WriteBinaryValue(ofile, serial_data);
 
       serial_data.Clear();
     }
@@ -204,16 +202,14 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int64_t>& cell_pids,
       serial_data.Write(raw_vertices[vid]);
       if (serial_data.Size() > BUFFER_SIZE)
       {
-        ofile.write(reinterpret_cast<char*>(serial_data.Data().data()),
-                    static_cast<int>(serial_data.Size()));
+        WriteBinaryValue(ofile, serial_data);
 
         serial_data.Clear();
       }
     }
     if (serial_data.Size() > 0)
     {
-      ofile.write(reinterpret_cast<char*>(serial_data.Data().data()),
-                  static_cast<int>(serial_data.Size()));
+      WriteBinaryValue(ofile, serial_data);
 
       serial_data.Clear();
     }

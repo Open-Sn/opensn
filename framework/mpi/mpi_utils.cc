@@ -19,7 +19,7 @@ BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm)
   // This allows for the determination of whether a global index is
   // locally owned or not.
   std::vector<uint64_t> extents(process_count + 1, 0);
-  for (size_t locJ = 1; locJ < process_count; ++locJ)
+  for (int locJ = 1; locJ < process_count; ++locJ)
     extents[locJ] = extents[locJ - 1] + local_sizes[locJ - 1];
   extents[process_count] = extents[process_count - 1] + local_sizes.back();
 

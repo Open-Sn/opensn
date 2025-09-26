@@ -27,7 +27,7 @@ public:
   VectorGhostCommunicator(const VectorGhostCommunicator& other);
 
   /// Move constructor.
-  VectorGhostCommunicator(VectorGhostCommunicator&& other) noexcept;
+  VectorGhostCommunicator(VectorGhostCommunicator&& other) = default;
 
   uint64_t GetLocalSize() const { return local_size_; }
   uint64_t GetGlobalSize() const { return global_size_; }

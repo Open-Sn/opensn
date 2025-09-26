@@ -149,7 +149,8 @@ ParallelSTLVector::CopyLocalValues(Vec y)
   PetscInt n;
   VecGetLocalSize(y, &n);
 
-  OpenSnInvalidArgumentIf(n < local_size_, "Attempted update with a vector of insufficient size.");
+  OpenSnInvalidArgumentIf(std::cmp_less(n, local_size_),
+                          "Attempted update with a vector of insufficient size.");
 
   const double* x;
   VecGetArrayRead(y, &x);
@@ -195,10 +196,10 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
   OpenSnInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   OpenSnInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
 
-  const int64_t y_end = y_offset + num_values;
-  const int64_t local_end = local_offset + num_values;
+  const PetscInt y_end = y_offset + num_values;
+  const auto local_end = local_offset + num_values;
 
-  int64_t y_local_size;
+  PetscInt y_local_size;
   VecGetLocalSize(y, &y_local_size);
 
   OpenSnInvalidArgumentIf(y_end > y_local_size,
@@ -479,7 +480,7 @@ ParallelSTLVector::DefineExtents(uint64_t local_size,
   // This allows for the determination of whether a global index is
   // locally owned or not.
   std::vector<uint64_t> extents(comm_size + 1, 0);
-  for (size_t p = 1; p < comm_size; ++p)
+  for (int p = 1; p < comm_size; ++p)
     extents[p] = extents[p - 1] + local_sizes[p - 1];
   extents[comm_size] = extents[comm_size - 1] + local_sizes.back();
 

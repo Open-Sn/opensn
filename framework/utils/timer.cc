@@ -53,7 +53,7 @@ Timer::GetLocalDateTimeString()
   std::time_t now = system_clock::to_time_t(system_clock::now());
 
   char s[30];
-  size_t end = std::strftime(s, 30, "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+  size_t end = std::strftime(s, 30, "%Y-%m-%d %H:%M:%S", std::localtime(&now)); // NOLINT
   s[29] = '\0';
   if (end < 30)
     s[end] = '\0';
