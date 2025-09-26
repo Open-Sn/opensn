@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
+#include "framework/math/quadratures/angular/harmonic_selection_rules.h"
 #include <memory>
 #include <vector>
 
@@ -22,9 +23,9 @@ enum class AngularQuadratureType
 
 enum class OperatorConstructionMethod
 {
-  Standard = 0,          ///< Compute both operators directly
-  GalerkinMethodOne = 1, ///< Compute M2D first, then D2M = inverse(M2D)
-  GalerkinMethodTwo = 2  ///< Compute D2M first, then M2D = inverse(D2M)
+  STANDARD = 0,
+  GALERKIN_ONE = 1,
+  GALERKIN_THREE = 3
 };
 
 /// Quadrature point in spherical coordinates.
@@ -60,9 +61,11 @@ public:
   };
 
 protected:
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
     : type_(type),
       dimension_(dimension),
       scattering_order_(scattering_order),
@@ -86,15 +89,6 @@ protected:
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
-
-  /// Helper method to invert a square matrix using PETSc
-  std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
-
-  /// Build D2M operator directly using spherical harmonics
-  void BuildDiscreteToMomentOperatorStandard();
-
-  /// Build M2D operator directly using spherical harmonics
-  void BuildMomentToDiscreteOperatorStandard();
 
 public:
   virtual ~AngularQuadrature() = default;
