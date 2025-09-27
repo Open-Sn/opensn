@@ -14,6 +14,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/quadrature_view.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/xs_view.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/runtime.h"
 #include "caliper/cali.h"
 #include "caribou/caribou.h"
 
