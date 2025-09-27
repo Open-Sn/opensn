@@ -53,22 +53,6 @@ public:
   {
   }
 
-  std::vector<double>& DelayedLocalPsi() override { return delayed_local_psi_; }
-  std::vector<double>& DelayedLocalPsiOld() override { return delayed_local_psi_old_; }
-
-  std::vector<std::vector<double>>& DeplocIOutgoingPsi() override { return deplocI_outgoing_psi_; }
-
-  std::vector<std::vector<double>>& PrelocIOutgoingPsi() override { return prelocI_outgoing_psi_; }
-
-  std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsi() override
-  {
-    return delayed_prelocI_outgoing_psi_;
-  }
-  std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() override
-  {
-    return delayed_prelocI_outgoing_psi_old_;
-  }
-
   // cell_global_id, face_id
   using CellFaceKey = std::pair<uint64_t, unsigned int>;
 
@@ -83,14 +67,7 @@ private:
   const UnknownManager& psi_uk_man_;
   const SpatialDiscretization& sdm_;
 
-  std::vector<double> delayed_local_psi_;
-  std::vector<double> delayed_local_psi_old_;
-  std::vector<std::vector<double>> deplocI_outgoing_psi_;
-  std::vector<std::vector<double>> prelocI_outgoing_psi_;
   std::vector<std::vector<double>> boundryI_incoming_psi_;
-
-  std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_;
-  std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
 
   std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
 };
