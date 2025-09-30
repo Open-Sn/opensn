@@ -38,7 +38,6 @@ if __name__ == "__main__":
     xss[6].LoadFromOpenSn("c5g7/materials/XS_fission_chamber.xs")
 
     num_groups = xss[0].num_groups
-    print("Num groups: ", num_groups)
 
     # Create materials
     xs_map = []
