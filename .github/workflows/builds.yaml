@@ -13,7 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         compiler:
-          - gcc/9
           - gcc/10
           - gcc/12
           - gcc/13
@@ -21,6 +20,7 @@ jobs:
           - clang/14
           - clang/16
           - clang/17
+          - clang/19
           - intel/oneapi
     steps:
       - uses: actions/checkout@v4
