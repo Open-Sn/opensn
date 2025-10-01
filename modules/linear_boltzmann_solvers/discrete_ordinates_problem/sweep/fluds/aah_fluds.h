@@ -69,14 +69,12 @@ public:
 
   void ClearLocalAndReceivePsi() override;
   void ClearSendPsi() override;
-  void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) override;
-  void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) override;
+  void AllocateInternalLocalPsi() override;
+  void AllocateOutgoingPsi() override;
 
-  void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) override;
-  void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps) override;
-  void AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
-                                         size_t num_angles,
-                                         size_t num_loc_deps) override;
+  void AllocateDelayedLocalPsi() override;
+  void AllocatePrelocIOutgoingPsi() override;
+  void AllocateDelayedPrelocIOutgoingPsi() override;
 
   void SetDelayedOutgoingPsiOldToNew() override;
   void SetDelayedOutgoingPsiNewToOld() override;

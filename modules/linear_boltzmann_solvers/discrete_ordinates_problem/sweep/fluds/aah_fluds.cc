@@ -193,62 +193,61 @@ AAH_FLUDS::ClearSendPsi()
 }
 
 void
-AAH_FLUDS::AllocateInternalLocalPsi(size_t num_grps, size_t num_angles)
+AAH_FLUDS::AllocateInternalLocalPsi()
 {
   local_psi_.resize(common_data_.num_face_categories_);
   // fc = face category
   for (size_t fc = 0; fc < common_data_.num_face_categories_; ++fc)
   {
     local_psi_[fc].resize(common_data_.local_psi_stride_[fc] *
-                            common_data_.local_psi_max_elements_[fc] * num_grps * num_angles,
+                            common_data_.local_psi_max_elements_[fc] * num_groups_and_angles_,
                           0.0);
   }
 }
 
 void
-AAH_FLUDS::AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs)
+AAH_FLUDS::AllocateOutgoingPsi()
 {
+  std::size_t num_loc_sucs = spds_.GetLocationSuccessors().size();
   deplocI_outgoing_psi_.resize(num_loc_sucs, std::vector<double>());
   for (size_t deplocI = 0; deplocI < num_loc_sucs; ++deplocI)
   {
     deplocI_outgoing_psi_[deplocI].resize(
-      common_data_.deplocI_face_dof_count_[deplocI] * num_grps * num_angles, 0.0);
+      common_data_.deplocI_face_dof_count_[deplocI] * num_groups_and_angles_, 0.0);
   }
   UpdateRange(deplocI_outgoing_psi_, deplocI_outgoing_psi_view_);
 }
 
 void
-AAH_FLUDS::AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles)
+AAH_FLUDS::AllocateDelayedLocalPsi()
 {
-  delayed_local_psi_.resize(common_data_.delayed_local_psi_stride_ *
-                              common_data_.delayed_local_psi_max_elements_ * num_grps * num_angles,
-                            0.0);
+  std::size_t delayed_local_psi_size = common_data_.delayed_local_psi_stride_ *
+                                       common_data_.delayed_local_psi_max_elements_ *
+                                       num_groups_and_angles_;
+  delayed_local_psi_.resize(delayed_local_psi_size, 0.0);
   delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
 
-  delayed_local_psi_old_.resize(common_data_.delayed_local_psi_stride_ *
-                                  common_data_.delayed_local_psi_max_elements_ * num_grps *
-                                  num_angles,
-                                0.0);
+  delayed_local_psi_old_.resize(delayed_local_psi_size, 0.0);
   delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
 }
 
 void
-AAH_FLUDS::AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
+AAH_FLUDS::AllocatePrelocIOutgoingPsi()
 {
+  std::size_t num_loc_deps = spds_.GetLocationDependencies().size();
   prelocI_outgoing_psi_.resize(num_loc_deps, std::vector<double>());
   for (size_t prelocI = 0; prelocI < num_loc_deps; ++prelocI)
   {
     prelocI_outgoing_psi_[prelocI].resize(
-      common_data_.prelocI_face_dof_count_[prelocI] * num_grps * num_angles, 0.0);
+      common_data_.prelocI_face_dof_count_[prelocI] * num_groups_and_angles_, 0.0);
   }
   UpdateRange(prelocI_outgoing_psi_, prelocI_outgoing_psi_view_);
 }
 
 void
-AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
-                                             size_t num_angles,
-                                             size_t num_loc_deps)
+AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
 {
+  std::size_t num_loc_deps = spds_.GetDelayedLocationDependencies().size();
   delayed_prelocI_outgoing_psi_.resize(num_loc_deps);
   delayed_prelocI_outgoing_psi_old_.resize(num_loc_deps);
 
@@ -256,7 +255,7 @@ AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
   {
     const int num_nodes = common_data_.delayed_prelocI_face_dof_count_[prelocI];
 
-    uint64_t buff_size = num_nodes * num_grps * num_angles;
+    uint64_t buff_size = num_nodes * num_groups_and_angles_;
 
     delayed_prelocI_outgoing_psi_[prelocI].resize(buff_size, 0.0);
     delayed_prelocI_outgoing_psi_old_[prelocI].resize(buff_size, 0.0);

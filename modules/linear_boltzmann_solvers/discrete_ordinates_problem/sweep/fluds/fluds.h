@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
 #include <set>
 #include <span>
@@ -29,17 +30,12 @@ public:
 
   virtual void ClearLocalAndReceivePsi() {}
   virtual void ClearSendPsi() {}
-  virtual void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) {}
-  virtual void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) {}
+  virtual void AllocateInternalLocalPsi() {}
+  virtual void AllocateOutgoingPsi() {}
 
-  virtual void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) {}
-  virtual void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
-  {
-  }
-  virtual void
-  AllocateDelayedPrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps)
-  {
-  }
+  virtual void AllocateDelayedLocalPsi() {}
+  virtual void AllocatePrelocIOutgoingPsi() {}
+  virtual void AllocateDelayedPrelocIOutgoingPsi() {}
 
   std::span<double>& DelayedLocalPsi() { return delayed_local_psi_view_; }
   std::span<double>& DelayedLocalPsiOld() { return delayed_local_psi_old_view_; }

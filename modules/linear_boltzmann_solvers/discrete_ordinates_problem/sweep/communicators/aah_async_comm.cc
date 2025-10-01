@@ -200,10 +200,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
 void
 AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 {
-  const auto& spds = fluds_.GetSPDS();
-  const auto num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
-  fluds_.AllocateDelayedPrelocIOutgoingPsi(num_groups_, num_angles_, num_delayed_dependencies);
-  fluds_.AllocateDelayedLocalPsi(num_groups_, num_angles_);
+  fluds_.AllocateDelayedPrelocIOutgoingPsi();
+  fluds_.AllocateDelayedLocalPsi();
 }
 
 bool
@@ -254,7 +252,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
   // Resize FLUDS non-local incoming data
   if (not upstream_data_initialized_)
   {
-    fluds_.AllocatePrelocIOutgoingPsi(num_groups_, num_angles_, num_dependencies);
+    fluds_.AllocatePrelocIOutgoingPsi();
     upstream_data_initialized_ = true;
   }
 
@@ -321,10 +319,10 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
     const auto& spds = fluds_.GetSPDS();
 
     // Resize FLUDS local outgoing data
-    fluds_.AllocateInternalLocalPsi(num_groups_, num_angles_);
+    fluds_.AllocateInternalLocalPsi();
 
     // Resize FLUDS non-local outgoing data
-    fluds_.AllocateOutgoingPsi(num_groups_, num_angles_, spds.GetLocationSuccessors().size());
+    fluds_.AllocateOutgoingPsi();
 
     data_initialized_ = true;
   }
