@@ -48,6 +48,8 @@ Included By
 
 - :ref:`file_framework_mesh_cell_cell.h`
 
+- :ref:`file_framework_utils_utils.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
 
 

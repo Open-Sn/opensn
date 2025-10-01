@@ -36,6 +36,8 @@ Includes
 
 - ``cstdint``
 
+- ``framework/data_types/byte_array.h`` (:ref:`file_framework_data_types_byte_array.h`)
+
 - ``fstream``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
@@ -107,7 +109,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a4ea473bdaada41b455f37051989fc333`
 
-- :ref:`exhale_function_namespaceopensn_1a34a6f84c0a58ebf1014873a76e7b7083`
+- :ref:`exhale_function_namespaceopensn_1abfdde796b17fcc0858f7cf5263d73ff9`
+
+- :ref:`exhale_function_namespaceopensn_1aedc2cefde3256eaed8ced21ffaa3ca26`
 
 
 Defines

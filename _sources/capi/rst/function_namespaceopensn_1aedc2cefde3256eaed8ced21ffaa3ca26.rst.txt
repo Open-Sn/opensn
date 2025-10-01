@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aedc2cefde3256eaed8ced21ffaa3ca26:
+
+Specialized Template Function opensn::WriteBinaryValue(std::ofstream&, const ByteArray&)
+========================================================================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::WriteBinaryValue(std::ofstream&, const ByteArray&)
+   :project: opensn
