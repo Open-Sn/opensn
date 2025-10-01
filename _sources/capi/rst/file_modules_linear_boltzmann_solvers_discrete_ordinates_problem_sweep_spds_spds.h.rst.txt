@@ -48,6 +48,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_cbc.h`

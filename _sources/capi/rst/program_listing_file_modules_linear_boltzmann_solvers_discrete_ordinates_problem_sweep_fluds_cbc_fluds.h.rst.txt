@@ -52,34 +52,12 @@ Program Listing for File cbc_fluds.h
    
      void ClearLocalAndReceivePsi() override { deplocs_outgoing_messages_.clear(); }
      void ClearSendPsi() override {}
-     void AllocateInternalLocalPsi(size_t num_grps, size_t num_angles) override {}
-     void AllocateOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_sucs) override {}
+     void AllocateInternalLocalPsi() override {}
+     void AllocateOutgoingPsi() override {}
    
-     void AllocateDelayedLocalPsi(size_t num_grps, size_t num_angles) override {}
-     void AllocatePrelocIOutgoingPsi(size_t num_grps, size_t num_angles, size_t num_loc_deps) override
-     {
-     }
-     void AllocateDelayedPrelocIOutgoingPsi(size_t num_grps,
-                                            size_t num_angles,
-                                            size_t num_loc_deps) override
-     {
-     }
-   
-     std::vector<double>& DelayedLocalPsi() override { return delayed_local_psi_; }
-     std::vector<double>& DelayedLocalPsiOld() override { return delayed_local_psi_old_; }
-   
-     std::vector<std::vector<double>>& DeplocIOutgoingPsi() override { return deplocI_outgoing_psi_; }
-   
-     std::vector<std::vector<double>>& PrelocIOutgoingPsi() override { return prelocI_outgoing_psi_; }
-   
-     std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsi() override
-     {
-       return delayed_prelocI_outgoing_psi_;
-     }
-     std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() override
-     {
-       return delayed_prelocI_outgoing_psi_old_;
-     }
+     void AllocateDelayedLocalPsi() override {}
+     void AllocatePrelocIOutgoingPsi() override {}
+     void AllocateDelayedPrelocIOutgoingPsi() override {}
    
      // cell_global_id, face_id
      using CellFaceKey = std::pair<uint64_t, unsigned int>;
@@ -95,14 +73,7 @@ Program Listing for File cbc_fluds.h
      const UnknownManager& psi_uk_man_;
      const SpatialDiscretization& sdm_;
    
-     std::vector<double> delayed_local_psi_;
-     std::vector<double> delayed_local_psi_old_;
-     std::vector<std::vector<double>> deplocI_outgoing_psi_;
-     std::vector<std::vector<double>> prelocI_outgoing_psi_;
      std::vector<std::vector<double>> boundryI_incoming_psi_;
-   
-     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_;
-     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
    
      std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
    };
