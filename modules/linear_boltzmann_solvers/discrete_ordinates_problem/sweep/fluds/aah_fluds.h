@@ -78,15 +78,11 @@ public:
                                          size_t num_angles,
                                          size_t num_loc_deps) override;
 
-  std::vector<double>& DelayedLocalPsi() override;
-  std::vector<double>& DelayedLocalPsiOld() override;
+  void SetDelayedOutgoingPsiOldToNew() override;
+  void SetDelayedOutgoingPsiNewToOld() override;
 
-  std::vector<std::vector<double>>& DeplocIOutgoingPsi() override;
-
-  std::vector<std::vector<double>>& PrelocIOutgoingPsi() override;
-
-  std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsi() override;
-  std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() override;
+  void SetDelayedLocalPsiOldToNew() override;
+  void SetDelayedLocalPsiNewToOld() override;
 };
 
 } // namespace opensn

@@ -4,8 +4,9 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
-#include <vector>
 #include <set>
+#include <span>
+#include <vector>
 #include <cstddef>
 #include <cstdint>
 
@@ -40,16 +41,25 @@ public:
   {
   }
 
-  virtual std::vector<double>& DelayedLocalPsi() = 0;
-  virtual std::vector<double>& DelayedLocalPsiOld() = 0;
+  std::span<double>& DelayedLocalPsi() { return delayed_local_psi_view_; }
+  std::span<double>& DelayedLocalPsiOld() { return delayed_local_psi_old_view_; }
+  virtual void SetDelayedLocalPsiOldToNew() {}
+  virtual void SetDelayedLocalPsiNewToOld() {}
 
-  virtual std::vector<std::vector<double>>& DeplocIOutgoingPsi() = 0;
+  std::vector<std::span<double>>& DeplocIOutgoingPsi() { return deplocI_outgoing_psi_view_; }
 
-  virtual std::vector<std::vector<double>>& PrelocIOutgoingPsi() = 0;
+  std::vector<std::span<double>>& PrelocIOutgoingPsi() { return prelocI_outgoing_psi_view_; }
 
-  virtual std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsi() = 0;
-
-  virtual std::vector<std::vector<double>>& DelayedPrelocIOutgoingPsiOld() = 0;
+  std::vector<std::span<double>>& DelayedPrelocIOutgoingPsi()
+  {
+    return delayed_prelocI_outgoing_psi_view_;
+  }
+  std::vector<std::span<double>>& DelayedPrelocIOutgoingPsiOld()
+  {
+    return delayed_prelocI_outgoing_psi_old_view_;
+  }
+  virtual void SetDelayedOutgoingPsiOldToNew() {}
+  virtual void SetDelayedOutgoingPsiNewToOld() {}
 
   virtual ~FLUDS() = default;
 
@@ -58,6 +68,13 @@ protected:
   const size_t num_angles_;
   const size_t num_groups_and_angles_;
   const SPDS& spds_;
+
+  std::span<double> delayed_local_psi_view_;
+  std::span<double> delayed_local_psi_old_view_;
+  std::vector<std::span<double>> deplocI_outgoing_psi_view_;
+  std::vector<std::span<double>> prelocI_outgoing_psi_view_;
+  std::vector<std::span<double>> delayed_prelocI_outgoing_psi_view_;
+  std::vector<std::span<double>> delayed_prelocI_outgoing_psi_old_view_;
 };
 
 } // namespace opensn

@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -34,11 +35,13 @@ AngleAggregation::ZeroOutgoingDelayedPsi()
   for (auto& angsetgrp : angle_set_groups)
     for (auto& angset : angsetgrp.GetAngleSets())
       for (auto& delayed_data : angset->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        Set(delayed_data, 0.0);
+        std::fill(delayed_data.begin(), delayed_data.end(), 0.0);
 
   for (auto& angsetgrp : angle_set_groups)
     for (auto& angset : angsetgrp.GetAngleSets())
-      Set(angset->GetFLUDS().DelayedLocalPsi(), 0.0);
+      std::fill(angset->GetFLUDS().DelayedLocalPsi().begin(),
+                angset->GetFLUDS().DelayedLocalPsi().end(),
+                0.0);
 }
 
 void
@@ -67,13 +70,15 @@ AngleAggregation::ZeroIncomingDelayedPsi()
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
-      Set(angle_set->GetFLUDS().DelayedLocalPsiOld(), 0.0);
+      std::fill(angle_set->GetFLUDS().DelayedLocalPsiOld().begin(),
+                angle_set->GetFLUDS().DelayedLocalPsiOld().end(),
+                0.0);
 
   // Inter location cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
       for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        Set(loc_vector, 0.0);
+        std::fill(loc_vector.begin(), loc_vector.end(), 0.0);
 }
 
 void
@@ -665,13 +670,12 @@ AngleAggregation::SetDelayedPsiOld2New()
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().DelayedLocalPsi() = angle_set->GetFLUDS().DelayedLocalPsiOld();
+      angle_set->GetFLUDS().SetDelayedLocalPsiOldToNew();
 
   // Inter location cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi() =
-        angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld();
+      angle_set->GetFLUDS().SetDelayedOutgoingPsiOldToNew();
 }
 
 void
@@ -695,13 +699,12 @@ AngleAggregation::SetDelayedPsiNew2Old()
   // Intra-cell cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().DelayedLocalPsiOld() = angle_set->GetFLUDS().DelayedLocalPsi();
+      angle_set->GetFLUDS().SetDelayedLocalPsiNewToOld();
 
   // Inter location cycles
   for (auto& as_group : angle_set_groups)
     for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld() =
-        angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi();
+      angle_set->GetFLUDS().SetDelayedOutgoingPsiNewToOld();
 }
 
 } // namespace opensn
