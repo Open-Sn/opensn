@@ -16,8 +16,6 @@ jobs:
           - gcc/10
           - gcc/12
           - gcc/13
-          - clang/12
-          - clang/14
           - clang/16
           - clang/17
           - clang/19
