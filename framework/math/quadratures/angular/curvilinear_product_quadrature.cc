@@ -423,7 +423,7 @@ GLCProductQuadrature2DRZ::MakeHarmonicIndices()
   m_to_ell_em_map_.clear();
 
   for (unsigned int l = 0; l <= scattering_order_; ++l)
-    for (int m = 0; m <= l; ++m)
+    for (unsigned int m = 0; m <= l; ++m)
       m_to_ell_em_map_.emplace_back(l, m);
 }
 

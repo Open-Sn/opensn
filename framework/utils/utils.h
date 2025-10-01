@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/data_types/byte_array.h"
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -102,9 +103,17 @@ operator""_hash(const char* str, size_t len)
 
 template <typename T>
 void
-WriteBinaryValue(std::ofstream& output_file, T value)
+WriteBinaryValue(std::ofstream& output_file, const T& value)
 {
   output_file.write((char*)&value, sizeof(T));
+}
+
+template <>
+inline void
+WriteBinaryValue(std::ofstream& output_file, const ByteArray& value)
+{
+  for (std::byte b : value.Data())
+    output_file.put(std::to_integer<char>(b));
 }
 
 template <typename T>
