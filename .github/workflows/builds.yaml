@@ -43,6 +43,23 @@ jobs:
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
           build/test/opensn-unit
 
+  cuda:
+    name: "${{ matrix.compiler }}"
+    runs-on: [self-hosted, cuda]
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc/14
+          - clang/19
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        shell: bash
+        run: |
+          module load cuda/12.9 python3/3.12.3 opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+
   sanitize:
     runs-on: [self-hosted]
     steps:
