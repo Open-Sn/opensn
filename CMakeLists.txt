@@ -195,7 +195,14 @@ if (OPENSN_WITH_CUDA)
   target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
   target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
   target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
-  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>)
+  target_compile_options(libopensncuda PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CUDA>>:
+    $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>>
+  )
+  target_compile_options(libopensncuda PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:
+    $<BUILD_INTERFACE:-Wno-unused-function -Wno-constant-logical-operand>>
+  )
   target_include_directories(libopensncuda
       PRIVATE
       $<INSTALL_INTERFACE:include/opensn>
