@@ -124,7 +124,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
   // Initialize sources
   if (params.Has("volumetric_sources"))
   {
-    auto& vol_srcs = params.GetParam("volumetric_sources");
+    const auto& vol_srcs = params.GetParam("volumetric_sources");
     vol_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& src : vol_srcs)
       volumetric_sources_.push_back(src.GetValue<std::shared_ptr<VolumetricSource>>());
@@ -132,7 +132,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   if (params.Has("point_sources"))
   {
-    auto& pt_srcs = params.GetParam("point_sources");
+    const auto& pt_srcs = params.GetParam("point_sources");
     pt_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (const auto& src : pt_srcs)
       point_sources_.push_back(src.GetValue<std::shared_ptr<PointSource>>());
@@ -141,7 +141,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
   // Initialize boundary conditions
   if (params.Has("boundary_conditions"))
   {
-    auto& bcs = params.GetParam("boundary_conditions");
+    const auto& bcs = params.GetParam("boundary_conditions");
     bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
     {
