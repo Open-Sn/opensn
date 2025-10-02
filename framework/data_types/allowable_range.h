@@ -32,13 +32,12 @@ public:
   template <typename T>
   std::string OutOfRangeString(const std::string& scope, const T& value) const
   {
-    const Varying vvalue(value);
     std::stringstream outstr;
 
     if (not scope.empty())
       outstr << "Parameter \"" << scope << "\": ";
 
-    outstr << "Value " << vvalue << " out of range. ";
+    outstr << "Value " << value << " out of range. ";
     outstr << "Constraints: " << AllowableRangeStr() << ".";
 
     return outstr.str();
