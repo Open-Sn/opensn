@@ -56,8 +56,8 @@ LBSProblem::GetInputParameters()
   params.AddRequiredParameterArray("xs_map",
                                    "Cross-section map from block IDs to cross-section objects.");
 
-  params.AddRequiredParameter<size_t>("scattering_order",
-                                      "The level of harmonic expansion for the scattering source.");
+  params.AddRequiredParameter<unsigned int>(
+    "scattering_order", "The level of harmonic expansion for the scattering source.");
 
   params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
@@ -80,7 +80,7 @@ LBSProblem::GetInputParameters()
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
-    scattering_order_(params.GetParamValue<size_t>("scattering_order")),
+    scattering_order_(params.GetParamValue<unsigned int>("scattering_order")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
@@ -195,7 +195,7 @@ LBSProblem::GetNumGroups() const
   return num_groups_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetScatteringOrder() const
 {
   return scattering_order_;
@@ -1032,19 +1032,17 @@ LBSProblem::ValidateAndComputeScatteringMoments()
     laq: Legendre order supported by the angular quadrature
   */
 
-  int lfs = scattering_order_;
-  if (lfs < 0)
-    throw std::invalid_argument("LBSProblem: Scattering order must be >= 0");
+  unsigned int lfs = scattering_order_;
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
     if (groupsets_[gs].quadrature->GetScatteringOrder() !=
         groupsets_[0].quadrature->GetScatteringOrder())
       throw std::logic_error("LBSProblem: Number of scattering moments differs between groupsets");
-  int laq = groupsets_[0].quadrature->GetScatteringOrder();
+  auto laq = groupsets_[0].quadrature->GetScatteringOrder();
 
   for (const auto& [blk_id, mat] : block_id_to_xs_map_)
   {
-    int lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
+    auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
 
     if (laq > lxs)
     {

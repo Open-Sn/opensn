@@ -194,7 +194,7 @@ MultiGroupXS::Combine(
 
     if (not xsecs[x]->GetTransferMatrices().empty())
     {
-      for (size_t m = 0; m < xsecs[x]->GetScatteringOrder() + 1; ++m)
+      for (unsigned int m = 0; m < xsecs[x]->GetScatteringOrder() + 1; ++m)
       {
         auto& Sm = mgxs.transfer_matrices_[m];
         const auto& Sm_other = xsecs[x]->GetTransferMatrix(m);
