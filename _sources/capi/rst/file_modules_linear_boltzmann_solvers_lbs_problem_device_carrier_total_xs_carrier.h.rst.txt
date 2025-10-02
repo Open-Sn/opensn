@@ -32,6 +32,8 @@ Includes
 
 - ``cstdint``
 
+- ``limits``
+
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_carrier.h`)

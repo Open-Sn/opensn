@@ -92,6 +92,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/carrier.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -112,7 +113,7 @@
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetXSGPUData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">block_id</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Number of groups.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UINT32_MAX</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Number of block IDs.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_block_ids</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Map from block ID to flatten index.</span>
