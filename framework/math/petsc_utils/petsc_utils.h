@@ -13,8 +13,8 @@ class ParallelVector;
 /// Generalized solver structure.
 struct PETScSolverSetup
 {
-  KSP ksp;
-  PC pc;
+  KSP ksp{};
+  PC pc{};
 
   std::string solver_name = "KSPSolver";
 

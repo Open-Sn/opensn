@@ -45,13 +45,13 @@ private:
   struct DistributedMeshData
   {
     /// Dimension of the mesh (2D, 3D).
-    unsigned int dimension;
+    unsigned int dimension{};
     /// The coordinate system of the mesh.
-    CoordinateSystemType coord_sys;
+    CoordinateSystemType coord_sys{};
     /// Type of mesh.
-    MeshType mesh_type;
+    MeshType mesh_type{};
     /// Whether the mesh is extruded or not.
-    bool extruded;
+    bool extruded{};
     /// Attributes for orthogonal mesh, if applicable.
     OrthoMeshAttributes ortho_attributes;
 
@@ -62,7 +62,7 @@ private:
     /// Map of boundary IDs to boundary names.
     std::map<uint64_t, std::string> boundary_id_map;
     /// Number of global vertices in the mesh.
-    size_t num_global_vertices;
+    size_t num_global_vertices{};
   };
 
   /// The number of partitions for distributing the mesh.
