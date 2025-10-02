@@ -24,7 +24,7 @@ TotalXSCarrier::ComputeSize(LBSProblem& lbs_problem)
   // check if all cross sections have the same number of group
   for (const auto& [block_id, xs] : xs_map)
   {
-    if (num_groups == UINT32_MAX)
+    if (num_groups == std::numeric_limits<size_t>::max())
     {
       num_groups = xs->GetNumGroups();
     }

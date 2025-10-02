@@ -34,7 +34,7 @@ MultiGroupXS::Combine(
   std::vector<std::shared_ptr<MultiGroupXS>> xsecs;
   xsecs.reserve(combinations.size());
 
-  unsigned int n_grps = 0;
+  size_t n_grps = 0;
   unsigned int n_precs = 0;
   double Nf_total = 0.0; // Total density of fissile materials
 
