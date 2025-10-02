@@ -33,7 +33,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // that belong to them. This information yields what this process
   // needs to receive from other processes.
   std::map<int, std::vector<int64_t>> recv_map;
-  for (int64_t ghost_id : ghost_ids_)
+  for (auto ghost_id : ghost_ids_)
     recv_map[FindOwnerPID(ghost_id)].push_back(ghost_id);
 
   // This process will receive data in process-contiguous manner,
@@ -81,10 +81,10 @@ VectorGhostCommunicator::MakeCachedParallelData()
 
   // Next, the local ids on this process that need to be
   // communicated to other processes can be determined and stored.
-  std::vector<int64_t> local_ids_to_send;
+  std::vector<uint64_t> local_ids_to_send;
   local_ids_to_send.reserve(send_size);
   for (const auto& [pid, gids] : send_map)
-    for (const int64_t gid : gids)
+    for (const uint64_t gid : gids)
     {
       OpenSnLogicalErrorIf(gid < extents_[location_id_] or gid >= extents_[location_id_ + 1],
                            std::string(__FUNCTION__) + ": " +
@@ -93,7 +93,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
                              std::to_string(location_id_) + " needs to communicate global id " +
                              std::to_string(gid) + " to it, but this id is not locally owned.");
 
-      local_ids_to_send.push_back(gid - static_cast<int64_t>(extents_[location_id_]));
+      local_ids_to_send.push_back(gid - extents_[location_id_]);
     }
 
   // Finally, the communication pattern for the data being sent
@@ -128,7 +128,7 @@ VectorGhostCommunicator::VectorGhostCommunicator(const VectorGhostCommunicator& 
 {
 }
 
-int64_t
+uint64_t
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
   OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map.count(ghost_id) == 0,
@@ -138,7 +138,7 @@ VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
   const auto k = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id) - ghost_ids_.begin();
 
   // Local index is local size plus the position in the ghost id vector
-  return static_cast<int64_t>(local_size_) + k;
+  return local_size_ + k;
 }
 
 void
@@ -152,14 +152,14 @@ VectorGhostCommunicator::CommunicateGhostEntries(std::vector<double>& ghosted_ve
                             std::to_string(local_size_ + ghost_ids_.size()));
 
   // Serialize the data that needs to be sent
-  const size_t send_size = cached_parallel_data_.local_ids_to_send.size();
+  const auto send_size = cached_parallel_data_.local_ids_to_send.size();
   std::vector<double> send_data;
   send_data.reserve(send_size);
-  for (const int64_t local_id : cached_parallel_data_.local_ids_to_send)
+  for (const auto local_id : cached_parallel_data_.local_ids_to_send)
     send_data.push_back(ghosted_vector[local_id]);
 
   // Create serialized storage for the data to be received
-  const size_t recv_size = ghost_ids_.size();
+  const auto recv_size = ghost_ids_.size();
   std::vector<double> recv_data(recv_size, 0.0);
 
   // Communicate the ghost data
@@ -201,7 +201,7 @@ VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vect
 }
 
 int
-VectorGhostCommunicator::FindOwnerPID(const int64_t global_id) const
+VectorGhostCommunicator::FindOwnerPID(const uint64_t global_id) const
 {
   OpenSnInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
                           std::string(__FUNCTION__) + ": Invalid global id." +

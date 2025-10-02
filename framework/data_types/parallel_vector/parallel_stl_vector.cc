@@ -77,7 +77,7 @@ ParallelSTLVector::MakeLocalVector()
 }
 
 double
-ParallelSTLVector::operator[](const int64_t local_id) const
+ParallelSTLVector::operator[](const uint64_t local_id) const
 {
   OpenSnInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
                           "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
@@ -87,7 +87,7 @@ ParallelSTLVector::operator[](const int64_t local_id) const
 }
 
 double&
-ParallelSTLVector::operator[](const int64_t local_id)
+ParallelSTLVector::operator[](const uint64_t local_id)
 {
   OpenSnInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
                           "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
@@ -115,13 +115,15 @@ ParallelSTLVector::Set(const std::vector<double>& local_vector)
 }
 
 void
-ParallelSTLVector::BlockSet(const std::vector<double>& y, int64_t local_offset, int64_t num_values)
+ParallelSTLVector::BlockSet(const std::vector<double>& y,
+                            uint64_t local_offset,
+                            uint64_t num_values)
 {
   OpenSnInvalidArgumentIf(y.size() < num_values,
                           "y.size() < num_values " + std::to_string(y.size()) + " < " +
                             std::to_string(num_values));
 
-  const int64_t local_end = local_offset + num_values;
+  const uint64_t local_end = local_offset + num_values;
   OpenSnInvalidArgumentIf(local_end > local_size_,
                           "local_offset + num_values=" + std::to_string(local_end) +
                             ", is out of range for destination vector with local size " +
@@ -160,15 +162,15 @@ ParallelSTLVector::CopyLocalValues(Vec y)
 
 void
 ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
-                                        int64_t y_offset,
-                                        int64_t local_offset,
-                                        int64_t num_values)
+                                        uint64_t y_offset,
+                                        uint64_t local_offset,
+                                        uint64_t num_values)
 {
   OpenSnInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   OpenSnInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
 
-  const int64_t y_end = y_offset + num_values;
-  const int64_t local_end = local_offset + num_values;
+  const auto y_end = y_offset + num_values;
+  const auto local_end = local_offset + num_values;
 
   OpenSnInvalidArgumentIf(y_end > y.GetLocalSize(),
                           "y_offset + num_values=" + std::to_string(y_end) +
@@ -189,9 +191,9 @@ ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
 
 void
 ParallelSTLVector::BlockCopyLocalValues(Vec y,
-                                        int64_t y_offset,
-                                        int64_t local_offset,
-                                        int64_t num_values)
+                                        uint64_t y_offset,
+                                        uint64_t local_offset,
+                                        uint64_t num_values)
 {
   OpenSnInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   OpenSnInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
@@ -221,7 +223,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
 }
 
 void
-ParallelSTLVector::SetValue(const int64_t global_id, const double value, const VecOpType op_type)
+ParallelSTLVector::SetValue(const uint64_t global_id, const double value, const VecOpType op_type)
 {
   OpenSnInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
                           "Invalid global index encountered. Global indices "
@@ -232,7 +234,7 @@ ParallelSTLVector::SetValue(const int64_t global_id, const double value, const V
 }
 
 void
-ParallelSTLVector::SetValues(const std::vector<int64_t>& global_ids,
+ParallelSTLVector::SetValues(const std::vector<uint64_t>& global_ids,
                              const std::vector<double>& values,
                              const VecOpType op_type)
 {
@@ -260,7 +262,7 @@ ParallelSTLVector::operator+=(const ParallelVector& y)
   // of y, which again applies bounds checking
   const double* y_data = y.GetData();
 
-  for (int64_t i = 0; i < local_size_; ++i)
+  for (uint64_t i = 0; i < local_size_; ++i)
     values_[i] += y_data[i];
 }
 
@@ -275,13 +277,13 @@ ParallelSTLVector::PlusAY(const ParallelVector& y, double a)
   const double* y_data = y.GetData();
 
   if (a == 1.0)
-    for (int64_t i = 0; i < local_size_; ++i)
+    for (uint64_t i = 0; i < local_size_; ++i)
       values_[i] += y_data[i];
   else if (a == -1.0)
-    for (int64_t i = 0; i < local_size_; ++i)
+    for (uint64_t i = 0; i < local_size_; ++i)
       values_[i] -= y_data[i];
   else
-    for (int64_t i = 0; i < local_size_; ++i)
+    for (uint64_t i = 0; i < local_size_; ++i)
       values_[i] += a * y_data[i];
 }
 
@@ -295,21 +297,21 @@ ParallelSTLVector::AXPlusY(double a, const ParallelVector& y)
   // of y, which again applies bounds checking
   const double* y_data = y.GetData();
 
-  for (int64_t i = 0; i < local_size_; ++i)
+  for (uint64_t i = 0; i < local_size_; ++i)
     values_[i] = a * values_[i] + y_data[i];
 }
 
 void
 ParallelSTLVector::Scale(double a)
 {
-  for (size_t i = 0; i < local_size_; ++i)
+  for (uint64_t i = 0; i < local_size_; ++i)
     values_[i] *= a;
 }
 
 void
 ParallelSTLVector::Shift(double a)
 {
-  for (size_t i = 0; i < local_size_; ++i)
+  for (uint64_t i = 0; i < local_size_; ++i)
     values_[i] += a;
 }
 
@@ -328,7 +330,7 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
     case NormType::L2_NORM:
     {
       double norm_val = 0.0;
-      for (size_t i = 0; i < local_size_; ++i)
+      for (uint64_t i = 0; i < local_size_; ++i)
       {
         const double value = values_[i];
         norm_val += value * value;
@@ -390,7 +392,7 @@ ParallelSTLVector::Assemble()
   // The local operations can be handled immediately
   for (const auto& [global_id, value] : local_cache)
   {
-    const int64_t local_id = global_id - static_cast<int64_t>(extents_[location_id_]);
+    const uint64_t local_id = global_id - extents_[location_id_];
     OpenSnLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                          "Invalid mapping from global to local.");
 
@@ -447,7 +449,7 @@ ParallelSTLVector::Assemble()
       const auto value = byte_array.Read<double>();
 
       // Check that the global ID is in fact valid for this process
-      const int64_t local_id = global_id - static_cast<int64_t>(extents_[location_id_]);
+      const auto local_id = global_id - extents_[location_id_];
 
       OpenSnLogicalErrorIf(local_id < 0 or local_id >= local_size_,
                            "A non-local global ID was received by process " +

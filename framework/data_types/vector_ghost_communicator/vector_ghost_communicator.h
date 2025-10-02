@@ -37,7 +37,7 @@ public:
 
   const mpi::Communicator& GetCommunicator() const { return comm_; }
 
-  int64_t MapGhostToLocal(int64_t ghost_id) const;
+  uint64_t MapGhostToLocal(int64_t ghost_id) const;
 
   void CommunicateGhostEntries(std::vector<double>& ghosted_vector) const;
 
@@ -61,14 +61,14 @@ protected:
     std::vector<int> recvcounts;
     std::vector<int> recvdispls;
 
-    std::vector<int64_t> local_ids_to_send;
+    std::vector<uint64_t> local_ids_to_send;
     std::map<int64_t, size_t> ghost_to_recv_map;
   };
 
   const CachedParallelData cached_parallel_data_;
 
 private:
-  int FindOwnerPID(int64_t global_id) const;
+  int FindOwnerPID(uint64_t global_id) const;
   CachedParallelData MakeCachedParallelData();
 };
 
