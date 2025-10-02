@@ -54,7 +54,7 @@ CellFace::IsNeighborLocal(const MeshContinuum* grid) const
 
   const auto& adj_cell = grid->cells[neighbor_id];
 
-  return (adj_cell.partition_id == static_cast<uint64_t>(opensn::mpi_comm.rank()));
+  return (adj_cell.partition_id == opensn::mpi_comm.rank());
 }
 
 int
@@ -67,7 +67,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
 
   const auto& adj_cell = grid->cells[neighbor_id];
 
-  return static_cast<int>(adj_cell.partition_id);
+  return adj_cell.partition_id;
 }
 
 uint64_t
@@ -394,7 +394,7 @@ Cell::Serialize() const
 
   raw.Write<uint64_t>(global_id);
   raw.Write<uint64_t>(local_id);
-  raw.Write<uint64_t>(partition_id);
+  raw.Write<int>(partition_id);
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
   raw.Write<double>(centroid.z);
@@ -419,7 +419,7 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
 {
   auto cell_global_id = raw.Read<uint64_t>(address, &address);
   auto cell_local_id = raw.Read<uint64_t>(address, &address);
-  auto cell_prttn_id = raw.Read<uint64_t>(address, &address);
+  auto cell_prttn_id = raw.Read<int>(address, &address);
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);
   auto cell_centroid_z = raw.Read<double>(address, &address);

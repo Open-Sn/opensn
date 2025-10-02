@@ -36,7 +36,7 @@ public:
   std::shared_ptr<MeshContinuum> Execute() override;
 
 protected:
-  void WriteSplitMesh(const std::vector<int64_t>& cell_pids,
+  void WriteSplitMesh(const std::vector<int>& cell_pids,
                       const UnpartitionedMesh& umesh,
                       int num_partitions) const;
 

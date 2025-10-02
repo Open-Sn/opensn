@@ -70,9 +70,9 @@ PieceWiseLinearContinuous::OrderNodes()
   // node. We build this list here.
   // We start by adding the current location id
   // as the first subscription
-  std::map<uint64_t, std::set<uint64_t>> ls_node_ids_psubs;
+  std::map<uint64_t, std::set<int>> ls_node_ids_psubs;
   for (const uint64_t node_id : ls_node_ids_set)
-    ls_node_ids_psubs[node_id] = {static_cast<uint64_t>(opensn::mpi_comm.rank())};
+    ls_node_ids_psubs[node_id] = {opensn::mpi_comm.rank()};
 
   // Now we add the partitions associated with the
   // ghost cells.
@@ -90,8 +90,8 @@ PieceWiseLinearContinuous::OrderNodes()
   std::map<uint64_t, std::vector<uint64_t>> nonlocal_node_ids_map;
   for (const uint64_t node_id : ls_node_ids_set)
   {
-    uint64_t smallest_partition_id = opensn::mpi_comm.rank();
-    for (const uint64_t pid : ls_node_ids_psubs[node_id]) // pid = partition id
+    auto smallest_partition_id = opensn::mpi_comm.rank();
+    for (const auto pid : ls_node_ids_psubs[node_id]) // pid = partition id
       smallest_partition_id = std::min(smallest_partition_id, pid);
 
     if (smallest_partition_id == opensn::mpi_comm.rank())

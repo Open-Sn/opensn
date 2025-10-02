@@ -36,7 +36,7 @@ PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)
 {
 }
 
-std::vector<int64_t>
+std::vector<int>
 PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
                                  const std::vector<Vector3>& /* centroids */,
                                  int number_of_parts)
@@ -52,7 +52,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     std::ceil(static_cast<double>(num_raw_faces) / static_cast<double>(num_raw_cells));
 
   // Start building indices
-  std::vector<int64_t> cell_pids(num_raw_cells, 0);
+  std::vector<int> cell_pids(num_raw_cells, 0);
   if (num_raw_cells > 1)
   {
     // Build indices

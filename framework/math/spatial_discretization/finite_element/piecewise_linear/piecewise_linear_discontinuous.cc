@@ -101,7 +101,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   for (uint64_t global_id : grid_->cells.GetGhostGlobalIDs())
   {
     const auto& cell = grid_->cells[global_id];
-    const int locI = static_cast<int>(cell.partition_id);
+    const int locI = cell.partition_id;
 
     std::vector<uint64_t>& locI_cell_id_list = ghost_cell_ids_consolidated[locI];
 

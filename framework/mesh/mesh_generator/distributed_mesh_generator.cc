@@ -78,7 +78,7 @@ DistributedMeshGenerator::Create(const ParameterBlock& params)
 }
 
 ByteArray
-DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int64_t>& cell_pids,
+DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& cell_pids,
                                                        const UnpartitionedMesh& umesh,
                                                        const int num_partitions)
 {

@@ -11,7 +11,7 @@ namespace opensn
 void
 GlobalCellHandler::PushBack(std::shared_ptr<Cell> new_cell)
 {
-  if (new_cell->partition_id == static_cast<uint64_t>(opensn::mpi_comm.rank()))
+  if (new_cell->partition_id == opensn::mpi_comm.rank())
   {
     new_cell->local_id = local_cells_ref_.size();
     local_cells_ref_.push_back(std::move(new_cell));

@@ -45,7 +45,7 @@ LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)
 {
 }
 
-std::vector<int64_t>
+std::vector<int>
 LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
                                   const std::vector<Vector3>& /* centroids */,
                                   const int number_of_parts)
@@ -54,7 +54,7 @@ LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& grap
 
   const std::vector<SubSetInfo> sub_sets = MakeSubSets(graph.size(), number_of_parts);
 
-  std::vector<int64_t> pids(graph.size(), 0);
+  std::vector<int> pids(graph.size(), 0);
 
   if (all_to_rank_ < 0)
   {
