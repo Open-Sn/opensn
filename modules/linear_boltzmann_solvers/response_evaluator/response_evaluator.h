@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/parameters/input_parameters.h"
 #include <memory>
@@ -109,7 +110,7 @@ private:
                                                 double time = 0.0) const;
 
 private:
-  std::shared_ptr<LBSProblem> lbs_problem_;
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 
   std::map<std::string, AdjointBuffer> adjoint_buffers_;
 
