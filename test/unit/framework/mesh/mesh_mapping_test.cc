@@ -69,7 +69,9 @@ TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
         }
       }
       if (!found_mapping)
+      {
         EXPECT_EQ(MeshMapping::invalid_face_index, fine_mapping.coarse_faces[fine_face_i]);
+      }
     }
   }
 }
