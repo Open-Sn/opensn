@@ -64,11 +64,9 @@ phys = DiscreteOrdinatesProblem(
         {"block_ids": [1], "xs": xs_diag},
     ],
     scattering_order=scattering_order,
-    options={
-        "boundary_conditions": [
-            {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
-        ],
-    }
+    boundary_conditions=[
+        {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
+    ],
 )
 ss_solver = SteadyStateSourceSolver(problem=phys)
 ss_solver.Initialize()
