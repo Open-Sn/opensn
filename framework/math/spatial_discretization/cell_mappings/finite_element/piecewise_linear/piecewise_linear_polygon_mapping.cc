@@ -12,7 +12,7 @@ namespace opensn
 
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const Cell& poly_cell,
-  const std::shared_ptr<MeshContinuum> ref_grid,
+  std::shared_ptr<MeshContinuum> ref_grid,
   const TriangleQuadrature& volume_quadrature,
   const LineQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
