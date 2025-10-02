@@ -231,7 +231,7 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.ReadAngularFluxes">
-<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Read angular fluxes from file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -289,38 +289,11 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.SetOptions">
-<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.SetOptions" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.SetOptions" title="Link to this definition"></a></dt>
 <dd><p>Set problem options from a large list of parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>max_mpi_message_size</strong> (<em>int default=32768</em>) – The maximum MPI message size used during sweeps.</p></li>
-<li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.</p></li>
-<li><p><strong>write_delayed_psi_to_restart</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag that controls writing of delayed angular fluxes to restarts.</p></li>
-<li><p><strong>read_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for reading restart dumps including file basename.</p></li>
-<li><p><strong>write_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for writing restart dumps including file basename.</p></li>
-<li><p><strong>write_restart_time_interval</strong> (<em>int</em><em>, </em><em>default=0</em>) – Time interval in seconds at which restart data is to be written.</p></li>
-<li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
-<li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
-<li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
-<li><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p></li>
-<li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
-<li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
-<li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations.</p></li>
-<li><p><strong>ags_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Across-groupset iterations tolerance.</p></li>
-<li><p><strong>ags_convergence_check</strong> (<em>{'l2'</em><em>, </em><em>'pointwise'}</em><em>, </em><em>default='l2'</em>) – Type of convergence check for AGS iterations.</p></li>
-<li><p><strong>verbose_ags_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
-<li><p><strong>power_field_function_on</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag to control the creation of the power generation field function. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, a
-field function will be created with the general name <code class="docutils literal notranslate"><span class="pre">&lt;solver_name&gt;_power_generation</span></code>.</p></li>
-<li><p><strong>power_default_kappa</strong> (<em>float</em><em>, </em><em>default=3.20435e-11</em>) – Default <code class="docutils literal notranslate"><span class="pre">kappa</span></code> value (Energy released per fission) to use for power generation when cross
-sections do not have <code class="docutils literal notranslate"><span class="pre">kappa</span></code> values. Default corresponds to 200 MeV per fission.</p></li>
-<li><p><strong>power_normalization</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – Power normalization factor to use. Supply a negative or zero number to turn this off.</p></li>
-<li><p><strong>field_function_prefix_option</strong> (<em>{'prefix'</em><em>, </em><em>'solver_name'}</em><em>, </em><em>default='prefix'</em>) – Prefix option on field function names. If unset, flux field functions will be exported as
-<code class="docutils literal notranslate"><span class="pre">phi_gXXX_mYYY</span></code>, where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is the zero-padded 3-digit group number and <code class="docutils literal notranslate"><span class="pre">YYY</span></code> is the
-zero-padded 3-digit moment.</p></li>
-<li><p><strong>field_function_prefix</strong> (<em>str</em><em>, </em><em>default=''</em>) – Prefix to use on all field functions. By default, this is empty. If specified, flux moments
-are exported as <code class="docutils literal notranslate"><span class="pre">prefix_phi_gXXX_mYYY</span></code>.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -355,7 +328,7 @@ are exported as <code class="docutils literal notranslate"><span class="pre">pre
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.WriteAngularFluxes">
-<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Write angular flux data to file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

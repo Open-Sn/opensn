@@ -197,7 +197,7 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadAngularFluxes">
-<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Read angular fluxes from file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -269,7 +269,6 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
 <li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
 <li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
-<li><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p></li>
 <li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
 <li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
 <li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations.</p></li>
@@ -321,7 +320,7 @@ are exported as <code class="docutils literal notranslate"><span class="pre">pre
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.WriteAngularFluxes">
-<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Write angular flux data to file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -50,6 +50,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h`
 
 

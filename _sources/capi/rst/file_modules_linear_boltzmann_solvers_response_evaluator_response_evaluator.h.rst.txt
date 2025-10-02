@@ -34,6 +34,8 @@ Includes
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`)
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
 
 
