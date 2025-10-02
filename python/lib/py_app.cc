@@ -110,7 +110,7 @@ PyApp::ProcessArguments(int argc, char** argv)
     options.add_options("User")
     ("h,help",                      "Help message")
     ("c,suppress-color",            "Suppress color output")
-    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.", cxxopts::value<int>())
+    ("v,verbose",                   "Verbosity level (0 to 3). Default is 0.", cxxopts::value<unsigned int>())
     ("caliper",                     "Enable Caliper reporting",
       cxxopts::value<std::string>()->implicit_value("runtime-report(calc.inclusive=true),max_column_width=80"))
     ("i,input",                     "Input file", cxxopts::value<std::string>())
@@ -128,7 +128,7 @@ PyApp::ProcessArguments(int argc, char** argv)
 
     if (result.count("verbose"))
     {
-      int verbosity = result["verbose"].as<int>();
+      auto verbosity = result["verbose"].as<unsigned int>();
       opensn::log.SetVerbosity(verbosity);
     }
 

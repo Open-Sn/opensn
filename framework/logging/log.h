@@ -93,7 +93,7 @@ public:
 
 private:
   DummyStream dummy_stream_;
-  int verbosity_{0};
+  unsigned int verbosity_{0};
 
   Logger() = default;
 
@@ -104,8 +104,8 @@ public:
     return instance;
   }
 
-  void SetVerbosity(int level) { verbosity_ = std::min(level, 2); }
-  int GetVerbosity() const { return verbosity_; }
+  void SetVerbosity(unsigned int level) { verbosity_ = std::min(level, 2U); }
+  unsigned int GetVerbosity() const { return verbosity_; }
   LogStream Log(LOG_LVL level = LOG_0);
   LogStream Log0() { return Log(LOG_0); }
   LogStream Log0Warning() { return Log(LOG_0WARNING); }
