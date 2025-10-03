@@ -75,31 +75,127 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   {
     const size_t num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
-    std::vector<uint64_t> succesors;
+    unsigned int num_satisfied_downwind_deps = 0;
+    unsigned int num_remote_predecessors = 0;
+    unsigned int num_remote_successors = 0;
+    std::vector<uint64_t> local_predecessors;
+    std::vector<uint64_t> local_successors;
 
     for (size_t f = 0; f < num_faces; ++f)
     {
-      if (cell_face_orientations_[cell.local_id][f] == INCOMING)
+      const auto& face = cell.faces[f];
+      const auto& cell_face_orientation = cell_face_orientations_[cell.local_id][f];
+
+      if (cell_face_orientation == INCOMING)
       {
-        if (cell.faces[f].has_neighbor)
+        if (face.has_neighbor)
+        {
           ++num_dependencies;
+          if (grid->IsCellLocal(face.neighbor_id))
+            local_predecessors.push_back(grid->cells[face.neighbor_id].local_id);
+          else
+            ++num_remote_predecessors;
+        }
       }
-      else if (cell_face_orientations_[cell.local_id][f] == OUTGOING)
+      else if (cell_face_orientation == OUTGOING)
       {
-        const auto& face = cell.faces[f];
-        if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
-          succesors.push_back(grid->cells[face.neighbor_id].local_id);
+        if (face.has_neighbor)
+        {
+          if (grid->IsCellLocal(face.neighbor_id))
+            local_successors.push_back(grid->cells[face.neighbor_id].local_id);
+          else
+            ++num_remote_successors;
+        }
       }
     }
 
-    task_list_.push_back({num_dependencies, succesors, cell.local_id, &cell, false});
+    task_list_.push_back({num_dependencies,
+                          num_satisfied_downwind_deps,
+                          num_remote_predecessors,
+                          num_remote_successors,
+                          local_predecessors,
+                          local_successors,
+                          cell.local_id,
+                          &cell,
+                          false});
   }
+
+  min_num_pool_allocator_slots_ = std::min(SimulateLocalSweep(), num_loc_cells);
 }
 
 const std::vector<Task>&
 CBC_SPDS::GetTaskList() const
 {
   return task_list_;
+}
+
+size_t
+CBC_SPDS::SimulateLocalSweep() const
+{
+  std::vector<Task> simulated_task_list = task_list_;
+
+  size_t min_num_slots = 0;
+  size_t current_num_slots = 0;
+
+  size_t num_permanent_slots = 0;
+
+  // For each task that has remote dependencies, set aside a permanent slot
+  // in the pool
+  for (const auto& task : simulated_task_list)
+    if ((task.num_remote_predecessors > 0) or (task.num_remote_successors > 0))
+      ++num_permanent_slots;
+
+  // Assume all remote dependencies are satisfied at the start
+  for (auto& task : simulated_task_list)
+    if ((task.num_remote_predecessors > 0) and
+        (task.num_dependencies >= task.num_remote_predecessors))
+      task.num_dependencies -= task.num_remote_predecessors;
+
+  bool a_task_executed = true;
+  while (a_task_executed)
+  {
+    a_task_executed = false;
+
+    for (auto& task : simulated_task_list)
+    {
+      if (task.num_dependencies == 0 and (not task.completed))
+      {
+        // Allocate a slot for this task if it has no remote dependencies
+        if ((task.num_remote_predecessors == 0) and (task.num_remote_successors == 0))
+          ++current_num_slots;
+
+        min_num_slots = std::max(min_num_slots, current_num_slots);
+        a_task_executed = true;
+
+        for (const auto& local_task_num : task.local_successors)
+          --simulated_task_list[local_task_num].num_dependencies;
+
+        task.completed = true;
+
+        // Update predecessor task downwind dependency consumption counts
+        for (const auto& local_task_num : task.local_predecessors)
+        {
+          auto& predecessor_task = simulated_task_list[local_task_num];
+          ++predecessor_task.num_satisfied_downwind_deps;
+
+          // Deallocate a slot if the predecessor task has satisfied all its
+          // downwind dependencies and has no remote dependencies
+          if ((predecessor_task.num_satisfied_downwind_deps >=
+               predecessor_task.local_successors.size()) and
+              (predecessor_task.num_remote_predecessors == 0) and
+              (predecessor_task.num_remote_successors == 0))
+            --current_num_slots;
+        }
+
+        // Deallocate a slot for this task if it has no local or remote dependencies
+        if ((task.local_successors.empty()) and (task.num_remote_predecessors == 0) and
+            (task.num_remote_successors == 0))
+          --current_num_slots;
+      }
+    }
+  }
+
+  return (min_num_slots + num_permanent_slots);
 }
 
 } // namespace opensn

@@ -24,7 +24,8 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            bool use_gpu)
   : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpu),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
-    async_comm_(id, *fluds, comm_set)
+    async_comm_(id, *fluds, comm_set),
+    cbc_fluds_(dynamic_cast<CBC_FLUDS&>(*fluds_))
 {
 }
 
@@ -70,15 +71,31 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
         all_tasks_completed = false;
       if (cell_task.num_dependencies == 0 and not cell_task.completed)
       {
+        cbc_fluds_.Allocate(cell_task.cell_ptr->local_id);
+
         sweep_chunk.SetCell(cell_task.cell_ptr, *this);
         sweep_chunk.Sweep(*this);
 
-        for (uint64_t local_task_num : cell_task.successors)
+        for (uint64_t local_task_num : cell_task.local_successors)
           --current_task_list_[local_task_num].num_dependencies;
 
         cell_task.completed = true;
         a_task_executed = true;
         async_comm_.SendData();
+
+        // Update predecessor dependency consumption counts
+        for (uint64_t local_task_num : cell_task.local_predecessors)
+        {
+          ++current_task_list_[local_task_num].num_satisfied_downwind_deps;
+
+          if (current_task_list_[local_task_num].num_satisfied_downwind_deps >=
+              current_task_list_[local_task_num].local_successors.size())
+            cbc_fluds_.Deallocate(current_task_list_[local_task_num].cell_ptr->local_id);
+        }
+
+        // Deallocate if cell has no local successors
+        if (cell_task.local_successors.empty())
+          cbc_fluds_.Deallocate(cell_task.cell_ptr->local_id);
       }
     } // for cell_task
     async_comm_.SendData();
