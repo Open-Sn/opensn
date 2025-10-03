@@ -60,7 +60,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const int64_t imap = sdm.MapDOF(cell, 0);
+    const auto imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid;
     const auto V = cell.volume;
@@ -72,7 +72,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid->cells[face.neighbor_id];
-        const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
+        const auto jnmap = sdm.MapDOF(adj_cell, 0);
 
         const auto& xn = adj_cell.centroid;
 
@@ -139,7 +139,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
   FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut2_FV", {ff});
 
   // Make ghosted vectors
-  std::vector<int64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
+  std::vector<uint64_t> ghost_ids = sdm.GetGhostDOFIndices(OneDofPerNode);
 
   VectorGhostCommunicator vgc(num_local_dofs, num_global_dofs, ghost_ids, opensn::mpi_comm);
   std::vector<double> field_wg = vgc.MakeGhostedVector(field);

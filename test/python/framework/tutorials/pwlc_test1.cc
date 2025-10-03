@@ -99,7 +99,7 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
     } // for face f
 
     // Develop node mapping
-    std::vector<int64_t> imap(num_nodes, 0); // node-mapping
+    std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 

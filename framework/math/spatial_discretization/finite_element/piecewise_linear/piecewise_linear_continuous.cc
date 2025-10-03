@@ -255,7 +255,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     const auto& cell_mapping = GetCellMapping(cell);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const int64_t ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell, i);
       if (ir < 0)
         IR_MAP_ERROR();
 
@@ -266,7 +266,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const int64_t jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell, j);
           if (jr < 0)
             JR_MAP_ERROR();
 
@@ -299,7 +299,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const int64_t ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell, i);
       if (ir < 0)
         IR_MAP_ERROR();
 
@@ -322,7 +322,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const int64_t jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell, j);
           if (jr < 0)
             JR_MAP_ERROR();
 
@@ -450,7 +450,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   }
 }
 
-int64_t
+uint64_t
 PieceWiseLinearContinuous::MapDOF(const Cell& cell,
                                   const unsigned int node,
                                   const UnknownManager& unknown_manager,
@@ -553,10 +553,10 @@ PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager
   return ghost_node_mapping_.size() * N;
 }
 
-std::vector<int64_t>
+std::vector<uint64_t>
 PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
-  std::vector<int64_t> dof_ids;
+  std::vector<uint64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
   const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();

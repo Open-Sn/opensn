@@ -21,7 +21,7 @@ class VectorGhostCommunicator
 public:
   VectorGhostCommunicator(uint64_t local_size,
                           uint64_t global_size,
-                          const std::vector<int64_t>& ghost_ids,
+                          const std::vector<uint64_t>& ghost_ids,
                           const mpi::Communicator& communicator);
 
   /// Copy constructor.
@@ -34,11 +34,11 @@ public:
   uint64_t GetGlobalSize() const { return global_size_; }
 
   uint64_t GetNumGhosts() const { return ghost_ids_.size(); }
-  const std::vector<int64_t>& GetGhostIndices() const { return ghost_ids_; }
+  const std::vector<uint64_t>& GetGhostIndices() const { return ghost_ids_; }
 
   const mpi::Communicator& GetCommunicator() const { return comm_; }
 
-  std::optional<uint64_t> MapGhostToLocal(int64_t ghost_id) const;
+  std::optional<uint64_t> MapGhostToLocal(uint64_t ghost_id) const;
 
   void CommunicateGhostEntries(std::vector<double>& ghosted_vector) const;
 
@@ -48,7 +48,7 @@ public:
 protected:
   const uint64_t local_size_;
   const uint64_t global_size_;
-  const std::vector<int64_t> ghost_ids_;
+  const std::vector<uint64_t> ghost_ids_;
   const mpi::Communicator& comm_;
 
   const int location_id_;
@@ -63,7 +63,7 @@ protected:
     std::vector<int> recvdispls;
 
     std::vector<uint64_t> local_ids_to_send;
-    std::map<int64_t, size_t> ghost_to_recv_map;
+    std::map<uint64_t, size_t> ghost_to_recv_map;
   };
 
   const CachedParallelData cached_parallel_data_;

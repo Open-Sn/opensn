@@ -45,11 +45,11 @@ public:
                                     const UnknownManager& unknown_manager) const = 0;
 
   /// Maps the global address of a degree of freedom.
-  virtual int64_t MapDOF(const Cell& cell,
-                         unsigned int node,
-                         const UnknownManager& unknown_manager,
-                         unsigned int unknown_id,
-                         unsigned int component) const = 0;
+  virtual uint64_t MapDOF(const Cell& cell,
+                          unsigned int node,
+                          const UnknownManager& unknown_manager,
+                          unsigned int unknown_id,
+                          unsigned int component) const = 0;
 
   /// Maps the local address of a degree of freedom. This can include ghost entries if the specific
   /// discretization has any.
@@ -63,7 +63,7 @@ public:
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
    * discretization has any. Default structure here is a single scalar unknown.
    */
-  virtual int64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
+  virtual uint64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
 
   /**
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
@@ -99,7 +99,7 @@ public:
    *For the unknown structure in the unknown manager, returns the global IDs of all the ghost
    * degrees-of-freedom.
    */
-  virtual std::vector<int64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
+  virtual std::vector<uint64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const = 0;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of local- and ghost

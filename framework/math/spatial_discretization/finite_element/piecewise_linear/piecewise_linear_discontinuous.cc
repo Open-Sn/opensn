@@ -262,7 +262,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   opensn::mpi_comm.barrier();
 }
 
-int64_t
+uint64_t
 PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
                                      const unsigned int node,
                                      const UnknownManager& unknown_manager,
@@ -405,7 +405,7 @@ PieceWiseLinearDiscontinuous::GetNumGhostDOFs(const UnknownManager& unknown_mana
   return 0;
 }
 
-std::vector<int64_t>
+std::vector<uint64_t>
 PieceWiseLinearDiscontinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
   return {};

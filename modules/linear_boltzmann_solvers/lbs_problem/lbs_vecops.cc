@@ -25,7 +25,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor
     {
       for (size_t m = 0; m < num_moments; ++m)
       {
-        size_t mapped_idx = transport_view.MapDOF(i, m, gsi);
+        auto mapped_idx = transport_view.MapDOF(i, m, gsi);
         for (int g = 0; g < gss; ++g)
         {
           ++idx;

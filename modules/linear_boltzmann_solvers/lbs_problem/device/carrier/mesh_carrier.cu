@@ -109,7 +109,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     // phi address
     std::uint64_t* phi_address_data = reinterpret_cast<std::uint64_t*>(cell_data);
     const CellLBSView& cell_transport_view = cell_transport_views[cell.local_id];
-    std::uint64_t phi_address = cell_transport_view.MapDOF(0, 0, 0);
+    auto phi_address = cell_transport_view.MapDOF(0, 0, 0);
     *(phi_address_data++) = phi_address;
     cell_data = reinterpret_cast<char*>(phi_address_data);
     // GM matrices (G and M matrices are combined into one single Matrix of double4)

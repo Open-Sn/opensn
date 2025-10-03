@@ -76,11 +76,11 @@ DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solv
   Initialize();
 }
 
-std::vector<int64_t>
+std::vector<uint64_t>
 DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretization& pwld,
                                                           const UnknownManager& uk_man)
 {
-  std::set<int64_t> ghost_ids;
+  std::set<uint64_t> ghost_ids;
   const auto& grid = *pwld.GetGrid();
   for (const uint64_t ghost_id : grid.cells.GetGhostGlobalIDs())
   {
@@ -111,9 +111,9 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostInfo(const SpatialDiscretizati
 
   // Create the mapping
   int64_t k = 0;
-  std::map<int64_t, int64_t> ghost_global_to_local_map;
-  for (const int64_t ghost_id : ghost_ids)
-    ghost_global_to_local_map[ghost_id] = static_cast<int64_t>(num_local_dofs + k++);
+  std::map<uint64_t, uint64_t> ghost_global_to_local_map;
+  for (const auto ghost_id : ghost_ids)
+    ghost_global_to_local_map[ghost_id] = num_local_dofs + k++;
 
   return {vec_ghost_comm, ghost_global_to_local_map};
 }
@@ -159,7 +159,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         {
           const int64_t dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
           const int64_t dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
 
           cfem_dof_global2local_map[dof_cfem_map_global] = dof_cfem_map;
 
@@ -197,8 +197,8 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
-          const int64_t dof_dfem_map_global = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
-          const int64_t dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_dfem_map_global = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
           if (cfem_dof_global2local_map.count(dof_cfem_map_global) > 0)
           {
             const int64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);

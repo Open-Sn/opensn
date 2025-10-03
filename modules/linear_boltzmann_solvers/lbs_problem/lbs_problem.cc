@@ -984,7 +984,7 @@ LBSProblem::ComputeUnitIntegrals()
       ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
 
   const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
-  for (uint64_t ghost_id : ghost_ids)
+  for (auto ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
       ComputeUnitCellIntegrals(sdm, grid_->cells[ghost_id], grid_->GetCoordinateSystem());
 

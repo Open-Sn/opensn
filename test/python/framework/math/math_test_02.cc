@@ -31,7 +31,7 @@ math_Test02_ParallelVector()
 
   opensn::log.Log() << "Testing GhostedParallelSTLVector" << std::endl;
 
-  const int64_t ghost_id = opensn::mpi_comm.rank() == 0 ? 5 : 4;
+  const uint64_t ghost_id = opensn::mpi_comm.rank() == 0 ? 5 : 4;
   GhostedParallelSTLVector ghost_vec(5, 10, {ghost_id}, opensn::mpi_comm);
 
   opensn::log.LogAll() << "Number of Ghosts: " << ghost_vec.GetNumGhosts() << std::endl;
@@ -105,7 +105,7 @@ math_Test02_ParallelVector()
                        "other utilities"
                     << std::endl;
 
-  std::vector<int64_t> ghost_ids;
+  std::vector<uint64_t> ghost_ids;
   if (opensn::mpi_comm.rank() == 0)
     ghost_ids = {5, 6};
   else
@@ -129,7 +129,7 @@ math_Test02_ParallelVector()
 
   {
     std::stringstream outstr;
-    for (int64_t gid : ghost_vec2.GetGhostIndices())
+    for (uint64_t gid : ghost_vec2.GetGhostIndices())
       outstr << gid << " ";
     opensn::log.LogAll() << "ghost_vec2 ghost ids: " << outstr.str() << std::endl;
   }

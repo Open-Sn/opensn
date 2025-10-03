@@ -187,7 +187,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
           double temp_src = 0.0;
           for (int m = 0; m < num_moments_; ++m)
           {
-            const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
+            const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[m][direction_num] * source_moments_[ir];
           }
           source[i] = temp_src;
@@ -218,7 +218,7 @@ AAHSweepChunk::CPUSweep(AngleSet& angle_set)
         const double wn_d2m = d2m_op[m][direction_num];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
+          const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
         }
