@@ -5,6 +5,7 @@
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log_exceptions.h"
 #include <map>
+#include <optional>
 #include <string>
 #include <algorithm>
 
@@ -128,17 +129,22 @@ VectorGhostCommunicator::VectorGhostCommunicator(const VectorGhostCommunicator& 
 {
 }
 
-uint64_t
+std::optional<uint64_t>
 VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
 {
   OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map.count(ghost_id) == 0,
                           "The given ghost id does not belong to this communicator.");
 
-  // Get the position within the ghost id vector of the given ghost id
-  const auto k = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id) - ghost_ids_.begin();
-
-  // Local index is local size plus the position in the ghost id vector
-  return local_size_ + k;
+  auto it = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id);
+  if (it != ghost_ids_.end())
+  {
+    // Get the position within the ghost id vector of the given ghost id
+    const auto k = it - ghost_ids_.begin();
+    // Local index is local size plus the position in the ghost id vector
+    return local_size_ + k;
+  }
+  else
+    return std::nullopt;
 }
 
 void

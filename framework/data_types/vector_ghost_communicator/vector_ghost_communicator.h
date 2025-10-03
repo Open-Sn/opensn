@@ -7,6 +7,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <optional>
 
 namespace mpi = mpicpp_lite;
 
@@ -37,7 +38,7 @@ public:
 
   const mpi::Communicator& GetCommunicator() const { return comm_; }
 
-  uint64_t MapGhostToLocal(int64_t ghost_id) const;
+  std::optional<uint64_t> MapGhostToLocal(int64_t ghost_id) const;
 
   void CommunicateGhostEntries(std::vector<double>& ghosted_vector) const;
 
