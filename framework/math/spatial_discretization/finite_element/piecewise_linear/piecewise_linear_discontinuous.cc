@@ -331,7 +331,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
   return -1;
 }
 
-int64_t
+uint64_t
 PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
                                           const unsigned int node,
                                           const UnknownManager& unknown_manager,

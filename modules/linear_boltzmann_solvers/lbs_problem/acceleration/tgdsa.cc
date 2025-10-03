@@ -103,8 +103,8 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
       double& delta_phi_mapped = delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -148,8 +148,8 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dphi_map = sdm.MapDOFLocal(cell, i);
-      const int64_t phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
 
       const double delta_phi_mapped = delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];

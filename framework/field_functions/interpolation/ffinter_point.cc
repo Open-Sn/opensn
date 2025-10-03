@@ -86,7 +86,7 @@ FieldFunctionInterpolationPoint::Execute()
   std::vector<double> node_dof_values(num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)
   {
-    const int64_t imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+    const auto imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
     node_dof_values[i] = field_data[imap];
   }
 

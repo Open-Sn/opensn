@@ -191,7 +191,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
     {
       for (auto& cell : grid_->local_cells)
       {
-        const int64_t i = MapDOFLocal(cell, 0, unknown_manager, uk, comp);
+        const auto i = MapDOFLocal(cell, 0, unknown_manager, uk, comp);
 
         nodal_nnz_in_diag[i] += 1;
 
@@ -251,7 +251,7 @@ FiniteVolume::MapDOF(const Cell& cell,
   return address;
 }
 
-int64_t
+uint64_t
 FiniteVolume::MapDOFLocal(const Cell& cell,
                           const unsigned int /* node */,
                           const UnknownManager& unknown_manager,

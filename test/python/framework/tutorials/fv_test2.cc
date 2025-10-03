@@ -158,7 +158,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
 
-    const int64_t imap = sdm.MapDOFLocal(cell, 0);
+    const auto imap = sdm.MapDOFLocal(cell, 0);
     const double phi_P = field_wg[imap];
 
     const auto& xp = cell.centroid;
@@ -176,7 +176,7 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid->cells[face.neighbor_id];
-        const int64_t nmap = sdm.MapDOFLocal(adj_cell, 0);
+        const auto nmap = sdm.MapDOFLocal(adj_cell, 0);
         phi_N = field_wg[nmap];
 
         xn = adj_cell.centroid;
@@ -186,9 +186,9 @@ SimTest02_FV(std::shared_ptr<MeshContinuum> grid)
     } // for face
     grad_phi_P /= cell.volume;
 
-    const int64_t xmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 0);
-    const int64_t ymap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 1);
-    const int64_t zmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 2);
+    const auto xmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 0);
+    const auto ymap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 1);
+    const auto zmap = sdm.MapDOFLocal(cell, 0, grad_uk_man, 0, 2);
 
     grad_phi[xmap] = grad_phi_P.x;
     grad_phi[ymap] = grad_phi_P.y;

@@ -59,7 +59,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dof_map = sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0);
+      const auto dof_map = sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0);
       std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
     }
   }

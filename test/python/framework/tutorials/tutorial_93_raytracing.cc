@@ -151,7 +151,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
         for (size_t m = 0; m < num_moments; ++m)
         {
-          const int64_t dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
           // Apply harmonic weight
           const auto& ell_em = m_to_ell_em_map.at(m);
@@ -289,7 +289,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
           T(i) = phi_tally[imap] / num_particles;
         }
 
@@ -297,7 +297,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const int64_t imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
           phi_tally[imap] = phi_uc(i);
         }
       } // for group g
