@@ -66,7 +66,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     // For component/group
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -147,7 +147,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
-          Vector<int64_t> adj_idxs(num_face_nodes);
+          Vector<PetscInt> adj_idxs(num_face_nodes);
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const auto jp =
@@ -413,7 +413,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     // For component/group
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -616,7 +616,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     for (size_t g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
@@ -684,7 +684,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
-          Vector<int64_t> adj_idxs(num_face_nodes);
+          Vector<PetscInt> adj_idxs(num_face_nodes);
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const auto jp =
@@ -916,7 +916,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
     const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     for (size_t g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
@@ -1069,7 +1069,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
     const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     for (size_t g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);

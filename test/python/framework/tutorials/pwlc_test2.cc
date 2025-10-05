@@ -109,7 +109,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
     } // for face f
 
     // Develop node mapping
-    std::vector<int64_t> imap(num_nodes, 0); // node-mapping
+    std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
       imap[i] = sdm.MapDOF(cell, i);
 
@@ -197,7 +197,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
     std::vector<double> nodal_phi(num_nodes, 0.0);
     for (size_t j = 0; j < num_nodes; ++j)
     {
-      const int64_t jmap = sdm.MapDOFLocal(cell, j);
+      const auto jmap = sdm.MapDOFLocal(cell, j);
       nodal_phi[j] = field_wg[jmap];
     } // for j
 

@@ -191,12 +191,12 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   /**Utility mappings*/
   struct DOFHandler
   {
-    const int64_t local_block_start = 0;
-    const int64_t local_block_end = 0;
+    const uint64_t local_block_start = 0;
+    const uint64_t local_block_end = 0;
     const std::vector<uint64_t>& locI_block_addr;
 
-    DOFHandler(int64_t block_start,
-               int64_t block_end,
+    DOFHandler(uint64_t block_start,
+               uint64_t block_end,
                const std::vector<uint64_t>& locJ_block_address)
       : local_block_start(block_start),
         local_block_end(block_end),
@@ -204,31 +204,29 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     {
     }
 
-    bool IsMapLocal(int64_t ir) const { return (ir >= local_block_start and ir < local_block_end); }
-
-    int64_t MapIRLocal(int64_t ir) const { return ir - local_block_start; }
-
-    int64_t GetLocFromIR(int64_t ir)
+    bool IsMapLocal(uint64_t ir) const
     {
-      int64_t locI = std::upper_bound(locI_block_addr.begin(), locI_block_addr.end(), ir) -
-                     locI_block_addr.begin() - 1;
+      return (ir >= local_block_start and ir < local_block_end);
+    }
+
+    uint64_t MapIRLocal(uint64_t ir) const { return ir - local_block_start; }
+
+    uint64_t GetLocFromIR(uint64_t ir)
+    {
+      auto locI = std::upper_bound(locI_block_addr.begin(), locI_block_addr.end(), ir) -
+                  locI_block_addr.begin() - 1;
       return locI;
     }
 
-  } dof_handler(static_cast<int64_t>(local_block_address_),
-                static_cast<int64_t>(local_block_address_ + local_base_block_size_),
-                locJ_block_address_);
+  } dof_handler(
+    local_block_address_, local_block_address_ + local_base_block_size_, locJ_block_address_);
 
   // Writes a message on ir error
   auto IR_MAP_ERROR = []()
   { throw std::runtime_error("PieceWiseLinearContinuous: ir mapping error"); };
 
-  // Writes a message on jr error
-  auto JR_MAP_ERROR = []()
-  { throw std::runtime_error("PieceWiseLinearContinuous: jr mapping error"); };
-
   // Checks whether an integer is already in a vector
-  auto IS_VALUE_IN_VECTOR = [](const std::vector<int64_t>& vec, int64_t val)
+  auto IS_VALUE_IN_VECTOR = [](const std::vector<uint64_t>& vec, uint64_t val)
   {
     bool already_there = false;
     for (auto check_val : vec)
@@ -242,7 +240,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   // Build local sparsity pattern
   log.Log0Verbose1() << "Building local sparsity pattern.";
-  std::vector<std::vector<int64_t>> nodal_connections(local_base_block_size_);
+  std::vector<std::vector<uint64_t>> nodal_connections(local_base_block_size_);
 
   nodal_nnz_in_diag.clear();
   nodal_nnz_off_diag.clear();
@@ -255,20 +253,16 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     const auto& cell_mapping = GetCellMapping(cell);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const int64_t ir = MapDOF(cell, i);
-      if (ir < 0)
-        IR_MAP_ERROR();
+      const auto ir = MapDOF(cell, i);
 
       if (dof_handler.IsMapLocal(ir))
       {
         const int64_t il = dof_handler.MapIRLocal(ir);
-        std::vector<int64_t>& node_links = nodal_connections[il];
+        std::vector<uint64_t>& node_links = nodal_connections[il];
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const int64_t jr = MapDOF(cell, j);
-          if (jr < 0)
-            JR_MAP_ERROR();
+          const auto jr = MapDOF(cell, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -290,7 +284,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   // of ir-nodes that are not local. Each ir-node needs to
   // be furnished with the jr-nodes it links to.
 
-  using ROWJLINKS = std::pair<int64_t, std::vector<int64_t>>;
+  using ROWJLINKS = std::pair<uint64_t, std::vector<uint64_t>>;
   std::vector<ROWJLINKS> ir_links;
 
   for (auto& cell : grid_->local_cells)
@@ -299,9 +293,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const int64_t ir = MapDOF(cell, i);
-      if (ir < 0)
-        IR_MAP_ERROR();
+      const auto ir = MapDOF(cell, i);
 
       if (not dof_handler.IsMapLocal(ir))
       {
@@ -322,9 +314,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const int64_t jr = MapDOF(cell, j);
-          if (jr < 0)
-            JR_MAP_ERROR();
+          const auto jr = MapDOF(cell, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -348,21 +338,21 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   // Step 1
   // We now serialize the non-local data
-  std::vector<std::vector<int64_t>> locI_serialized(opensn::mpi_comm.size());
+  std::vector<std::vector<uint64_t>> locI_serialized(opensn::mpi_comm.size());
 
   for (const auto& ir_linkage : ir_links)
   {
-    const int64_t locI = dof_handler.GetLocFromIR(ir_linkage.first);
+    const auto locI = dof_handler.GetLocFromIR(ir_linkage.first);
 
     // row cols amount
-    locI_serialized[locI].push_back(static_cast<int64_t>(ir_linkage.second.size()));
+    locI_serialized[locI].push_back(ir_linkage.second.size());
     // row num
-    locI_serialized[locI].push_back(static_cast<int64_t>(ir_linkage.first));
-    for (int64_t jr : ir_linkage.second)
+    locI_serialized[locI].push_back(ir_linkage.first);
+    for (uint64_t jr : ir_linkage.second)
       locI_serialized[locI].push_back(jr); // col num
   }
 
-  std::vector<int64_t> recvbuf;
+  std::vector<uint64_t> recvbuf;
   mpi_comm.all_to_all(locI_serialized, recvbuf);
 
   // Deserialze data
@@ -372,13 +362,13 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   for (size_t k = 0; k < recvbuf.size();)
   {
-    const int64_t num_values = recvbuf[k++];
-    const int64_t ir = recvbuf[k++];
+    const auto num_values = recvbuf[k++];
+    const auto ir = recvbuf[k++];
 
     ROWJLINKS new_links;
     new_links.first = ir;
     new_links.second.reserve(num_values);
-    for (int i = 0; i < num_values; ++i)
+    for (uint64_t i = 0; i < num_values; ++i)
       new_links.second.push_back(recvbuf[k++]);
 
     foreign_ir_links.push_back(std::move(new_links));
@@ -387,13 +377,13 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   // Adding to sparsity pattern
   for (const auto& ir_linkage : foreign_ir_links)
   {
-    const int64_t ir = ir_linkage.first;
+    const auto ir = ir_linkage.first;
 
     if (not dof_handler.IsMapLocal(ir))
       IR_MAP_ERROR();
 
-    int64_t il = dof_handler.MapIRLocal(ir);
-    std::vector<int64_t>& node_links = nodal_connections[il];
+    auto il = dof_handler.MapIRLocal(ir);
+    auto& node_links = nodal_connections[il];
 
     for (int64_t jr : ir_linkage.second)
     {
@@ -450,7 +440,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   }
 }
 
-int64_t
+uint64_t
 PieceWiseLinearContinuous::MapDOF(const Cell& cell,
                                   const unsigned int node,
                                   const UnknownManager& unknown_manager,
@@ -488,7 +478,7 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
   return address;
 }
 
-int64_t
+uint64_t
 PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
                                        const unsigned int node,
                                        const UnknownManager& unknown_manager,
@@ -553,10 +543,10 @@ PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager
   return ghost_node_mapping_.size() * N;
 }
 
-std::vector<int64_t>
+std::vector<uint64_t>
 PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
-  std::vector<int64_t> dof_ids;
+  std::vector<uint64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
   const size_t num_unknown_comps = unknown_manager.GetTotalUnknownStructureSize();

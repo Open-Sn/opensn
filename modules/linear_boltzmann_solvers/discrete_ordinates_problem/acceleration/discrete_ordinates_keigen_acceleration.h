@@ -73,11 +73,11 @@ protected:
   struct GhostInfo
   {
     std::shared_ptr<VectorGhostCommunicator> vector_ghost_communicator = nullptr;
-    std::map<int64_t, int64_t> ghost_global_id_2_local_map;
+    std::map<uint64_t, uint64_t> ghost_global_id_2_local_map;
   };
 
-  static std::vector<int64_t> MakePWLDGhostIndices(const SpatialDiscretization& pwld,
-                                                   const UnknownManager& uk_man);
+  static std::vector<uint64_t> MakePWLDGhostIndices(const SpatialDiscretization& pwld,
+                                                    const UnknownManager& uk_man);
 
   static GhostInfo MakePWLDGhostInfo(const SpatialDiscretization& pwld,
                                      const UnknownManager& uk_man);

@@ -35,7 +35,7 @@ Vec
 CreateVectorWithGhosts(int64_t local_size,
                        int64_t global_size,
                        int64_t nghosts,
-                       const std::vector<int64_t>& ghost_indices)
+                       const std::vector<PetscInt>& ghost_indices)
 {
   Vec x;
   VecCreateGhost(opensn::mpi_comm,

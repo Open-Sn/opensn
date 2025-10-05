@@ -59,7 +59,7 @@ SimTest01_FV(std::shared_ptr<MeshContinuum> grid)
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const int64_t imap = sdm.MapDOF(cell, 0);
+    const auto imap = sdm.MapDOF(cell, 0);
 
     const auto& xp = cell.centroid;
     const auto V = cell.volume;
@@ -72,7 +72,7 @@ SimTest01_FV(std::shared_ptr<MeshContinuum> grid)
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid->cells[face.neighbor_id];
-        const int64_t jnmap = sdm.MapDOF(adj_cell, 0);
+        const auto jnmap = sdm.MapDOF(adj_cell, 0);
 
         const auto& xn = adj_cell.centroid;
 

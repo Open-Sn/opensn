@@ -91,7 +91,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
     for (size_t g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
@@ -295,7 +295,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     }
 
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
 
     for (size_t g = 0; g < num_groups; ++g)
     {
@@ -444,7 +444,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     }
 
     Vector<double> cell_rhs(num_nodes);
-    Vector<int64_t> cell_idxs(num_nodes);
+    Vector<PetscInt> cell_idxs(num_nodes);
 
     for (size_t g = 0; g < num_groups; ++g)
     {

@@ -984,7 +984,7 @@ LBSProblem::ComputeUnitIntegrals()
       ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
 
   const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
-  for (uint64_t ghost_id : ghost_ids)
+  for (auto ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
       ComputeUnitCellIntegrals(sdm, grid_->cells[ghost_id], grid_->GetCoordinateSystem());
 
@@ -1404,8 +1404,8 @@ LBSProblem::UpdateFieldFunctions()
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const int64_t imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-        const int64_t imapB = sdm.MapDOFLocal(cell, i);
+        const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+        const auto imapB = sdm.MapDOFLocal(cell, i);
 
         data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
@@ -1435,8 +1435,8 @@ LBSProblem::UpdateFieldFunctions()
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const int64_t imapA = sdm.MapDOFLocal(cell, i);
-        const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto imapA = sdm.MapDOFLocal(cell, i);
+        const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
         double nodal_power = 0.0;
         for (size_t g = 0; g < groups_.size(); ++g)
@@ -1503,8 +1503,8 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const int64_t imapA = sdm.MapDOFLocal(cell, i);
-          const int64_t imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const auto imapA = sdm.MapDOFLocal(cell, i);
+          const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
           if (which_phi == PhiSTLOption::PHI_OLD)
             phi_old_local_[imapB] = ff_data[imapA];

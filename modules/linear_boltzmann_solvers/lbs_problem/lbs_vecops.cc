@@ -25,7 +25,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor
     {
       for (size_t m = 0; m < num_moments; ++m)
       {
-        size_t mapped_idx = transport_view.MapDOF(i, m, gsi);
+        auto mapped_idx = transport_view.MapDOF(i, m, gsi);
         for (int g = 0; g < gss; ++g)
         {
           ++idx;
@@ -59,7 +59,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const int64_t dof_map = sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0);
+      const auto dof_map = sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0);
       std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
     }
   }

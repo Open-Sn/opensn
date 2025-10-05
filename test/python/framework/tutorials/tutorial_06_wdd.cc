@@ -134,7 +134,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
     {
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const int64_t dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
         q_source[dof_map] = 1.0;
       } // for node i
@@ -208,7 +208,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       // Source moments
       for (size_t m = 0; m < num_moments; ++m)
       {
-        const int64_t dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
+        const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
         rhs += source_moments[dof_map] * m2d[m][d];
       }
 
@@ -232,12 +232,12 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       // Accumulate flux-moments
       for (size_t m = 0; m < num_moments; ++m)
       {
-        const int64_t dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
+        const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
         phi_new[dof_map] += d2m[m][d] * psi_ijk;
       }
 
       // Save angular fluxes
-      const int64_t psi_map = sdm.MapDOFLocal(cell, 0, psi_uk_man, d, g);
+      const auto psi_map = sdm.MapDOFLocal(cell, 0, psi_uk_man, d, g);
       psi[psi_map] = psi_ijk;
 
       psi_ds_x(i, j, k, g) = 2.0 * psi_ijk - psi_us_x[g];
@@ -339,13 +339,13 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       // Get scalar moments
-      const int64_t m0_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto m0_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
       const double* phi_new_m0 = &in_phi_new[m0_map];
       const double* phi_old_m0 = &in_phi_old[m0_map];
       for (size_t m = 0; m < num_moments; ++m)
       {
-        const int64_t m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+        const auto m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
 
         const double* phi_new_m = &in_phi_new[m_map];
         const double* phi_old_m = &in_phi_old[m_map];
@@ -396,7 +396,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
     {
       for (size_t m = 0; m < num_moments; ++m)
       {
-        const int64_t dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
         const auto ell = m_ell_em_map[m].ell;
 
         for (size_t g = 0; g < num_groups; ++g)

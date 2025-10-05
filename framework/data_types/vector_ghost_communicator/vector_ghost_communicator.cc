@@ -5,6 +5,7 @@
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log_exceptions.h"
 #include <map>
+#include <optional>
 #include <string>
 #include <algorithm>
 
@@ -13,7 +14,7 @@ namespace opensn
 
 VectorGhostCommunicator::VectorGhostCommunicator(const uint64_t local_size,
                                                  const uint64_t global_size,
-                                                 const std::vector<int64_t>& ghost_ids,
+                                                 const std::vector<uint64_t>& ghost_ids,
                                                  const mpi::Communicator& communicator)
   : local_size_(local_size),
     global_size_(global_size),
@@ -32,14 +33,14 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // Construct a mapping between processes and the ghost indices
   // that belong to them. This information yields what this process
   // needs to receive from other processes.
-  std::map<int, std::vector<int64_t>> recv_map;
+  std::map<int, std::vector<uint64_t>> recv_map;
   for (auto ghost_id : ghost_ids_)
     recv_map[FindOwnerPID(ghost_id)].push_back(ghost_id);
 
   // This process will receive data in process-contiguous manner,
   // so a mapping needs to be developed to map each ghost id to
   // its respective ordering in the received data.
-  std::map<int64_t, size_t> ghost_to_recv_map;
+  std::map<uint64_t, size_t> ghost_to_recv_map;
   size_t count = 0;
   for (const auto& [pid, gids] : recv_map)
     for (const int64_t gid : gids)
@@ -71,7 +72,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   // MPI utility MapAllToAll in OpenSn accomplishes this task,
   // returning a mapping of processes to the global ids that this
   // process needs to send.
-  std::map<int, std::vector<int64_t>> send_map = MapAllToAll(recv_map, comm_);
+  std::map<int, std::vector<uint64_t>> send_map = MapAllToAll(recv_map, comm_);
 
   // With this information, the amount of information that needs
   // to be sent can be determined.
@@ -128,17 +129,22 @@ VectorGhostCommunicator::VectorGhostCommunicator(const VectorGhostCommunicator& 
 {
 }
 
-uint64_t
-VectorGhostCommunicator::MapGhostToLocal(const int64_t ghost_id) const
+std::optional<uint64_t>
+VectorGhostCommunicator::MapGhostToLocal(const uint64_t ghost_id) const
 {
   OpenSnInvalidArgumentIf(cached_parallel_data_.ghost_to_recv_map.count(ghost_id) == 0,
                           "The given ghost id does not belong to this communicator.");
 
-  // Get the position within the ghost id vector of the given ghost id
-  const auto k = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id) - ghost_ids_.begin();
-
-  // Local index is local size plus the position in the ghost id vector
-  return local_size_ + k;
+  auto it = std::find(ghost_ids_.begin(), ghost_ids_.end(), ghost_id);
+  if (it != ghost_ids_.end())
+  {
+    // Get the position within the ghost id vector of the given ghost id
+    const auto k = it - ghost_ids_.begin();
+    // Local index is local size plus the position in the ghost id vector
+    return local_size_ + k;
+  }
+  else
+    return std::nullopt;
 }
 
 void

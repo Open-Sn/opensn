@@ -6,6 +6,7 @@
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "mpicpp-lite/mpicpp-lite.h"
+#include <stdexcept>
 
 namespace mpi = mpicpp_lite;
 
@@ -21,7 +22,7 @@ public:
    */
   GhostedParallelSTLVector(uint64_t local_size,
                            uint64_t global_size,
-                           const std::vector<int64_t>& ghost_ids,
+                           const std::vector<uint64_t>& ghost_ids,
                            const mpi::Communicator& communicator = MPI_COMM_WORLD)
     : ParallelSTLVector(local_size, global_size, communicator),
       ghost_comm_(local_size, global_size, ghost_ids, communicator)
@@ -54,12 +55,16 @@ public:
   uint64_t GetLocalSizeWithGhosts() const { return values_.size(); }
 
   /// Return the ghost indices associated with the local vector.
-  const std::vector<int64_t>& GetGhostIndices() const { return ghost_comm_.GetGhostIndices(); }
+  const std::vector<uint64_t>& GetGhostIndices() const { return ghost_comm_.GetGhostIndices(); }
 
   /// Map a global ghost id to its respective local id.
-  int64_t MapGhostToLocal(const int64_t ghost_id) const
+  uint64_t MapGhostToLocal(const uint64_t ghost_id) const
   {
-    return ghost_comm_.MapGhostToLocal(ghost_id);
+    auto local_id = ghost_comm_.MapGhostToLocal(ghost_id);
+    if (local_id)
+      return local_id.value();
+    else
+      throw std::runtime_error("Mapping from ghost ID to local ID failed");
   }
 
   /// Return a vector containing the locally owned data and ghost data.

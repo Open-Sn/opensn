@@ -191,7 +191,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
     {
       for (auto& cell : grid_->local_cells)
       {
-        const int64_t i = MapDOFLocal(cell, 0, unknown_manager, uk, comp);
+        const auto i = MapDOFLocal(cell, 0, unknown_manager, uk, comp);
 
         nodal_nnz_in_diag[i] += 1;
 
@@ -210,7 +210,7 @@ FiniteVolume::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
   } // for unknown
 }
 
-int64_t
+uint64_t
 FiniteVolume::MapDOF(const Cell& cell,
                      const unsigned int /* node */,
                      const UnknownManager& unknown_manager,
@@ -251,7 +251,7 @@ FiniteVolume::MapDOF(const Cell& cell,
   return address;
 }
 
-int64_t
+uint64_t
 FiniteVolume::MapDOFLocal(const Cell& cell,
                           const unsigned int /* node */,
                           const UnknownManager& unknown_manager,
@@ -300,10 +300,10 @@ FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
   return grid_->cells.GhostCellCount() * N;
 }
 
-std::vector<int64_t>
+std::vector<uint64_t>
 FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
 {
-  std::vector<int64_t> dof_ids;
+  std::vector<uint64_t> dof_ids;
   dof_ids.reserve(GetNumGhostDOFs(unknown_manager));
 
   std::vector<uint64_t> ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
@@ -319,7 +319,7 @@ FiniteVolume::GetGhostDOFIndices(const UnknownManager& unknown_manager) const
       const size_t num_comps = unkn.num_components;
       for (size_t c = 0; c < num_comps; ++c)
       {
-        const int64_t dofmap = MapDOF(cell, 0, unknown_manager, u, c);
+        const uint64_t dofmap = MapDOF(cell, 0, unknown_manager, u, c);
         dof_ids.push_back(dofmap);
       } // for c
     } // for u

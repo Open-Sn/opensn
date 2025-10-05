@@ -275,7 +275,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const int64_t nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
 
@@ -287,7 +287,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
           double node_average = 0.0;
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const int64_t nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
             node_average += field_value;

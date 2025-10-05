@@ -44,7 +44,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
     const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+      const auto uk_map = transport_view.MapDOF(i, 0, 0);
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
@@ -100,7 +100,7 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
     const int num_nodes = transport_view.GetNumNodes();
     for (auto i = 0; i < num_nodes; ++i)
     {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+      const auto uk_map = transport_view.MapDOF(i, 0, 0);
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
@@ -154,7 +154,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
       // Loop over nodes
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
-        const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+        const auto uk_map = transport_view.MapDOF(i, 0, 0);
         const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
         // Loop over groups
@@ -277,7 +277,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
     {
       for (size_t g = 0; g < num_groups_; ++g)
       {
-        size_t imap = transport_view.MapDOF(i, 0, g);
+        auto imap = transport_view.MapDOF(i, 0, g);
         double phi_0g = phi_new_local_[imap];
         double q_0g = mat_src[imap];
 
