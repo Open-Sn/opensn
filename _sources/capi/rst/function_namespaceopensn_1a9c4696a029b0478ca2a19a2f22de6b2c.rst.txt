@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a8979e15cdd9c55b55be98f01fcc2e0fc:
+.. _exhale_function_namespaceopensn_1a9c4696a029b0478ca2a19a2f22de6b2c:
 
 Function opensn::CreateVectorWithGhosts
 =======================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::CreateVectorWithGhosts(int64_t, int64_t, int64_t, const std::vector<int64_t>&)
+.. doxygenfunction:: opensn::CreateVectorWithGhosts(int64_t, int64_t, int64_t, const std::vector<PetscInt>&)
    :project: opensn
