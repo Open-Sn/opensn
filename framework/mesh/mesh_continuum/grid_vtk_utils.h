@@ -11,8 +11,8 @@
 
 template <class T>
 class vtkNew;
-class vtkPoints;
-class vtkUnstructuredGrid;
+class vtkPoints;           // NOLINT
+class vtkUnstructuredGrid; // NOLINT
 template <class T>
 class vtkSmartPointer;
 

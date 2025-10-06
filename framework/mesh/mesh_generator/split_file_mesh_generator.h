@@ -18,16 +18,16 @@ class SplitFileMeshGenerator : public MeshGenerator
 protected:
   struct SplitMeshInfo
   {
-    unsigned int dimension;
-    CoordinateSystemType coord_sys;
-    MeshType mesh_type;
-    bool extruded;
+    unsigned int dimension{};
+    CoordinateSystemType coord_sys{};
+    MeshType mesh_type{};
+    bool extruded{};
     OrthoMeshAttributes ortho_attributes;
 
     std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
-    size_t num_global_vertices;
+    size_t num_global_vertices{};
   };
 
 public:

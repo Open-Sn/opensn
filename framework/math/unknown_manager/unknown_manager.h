@@ -127,7 +127,7 @@ public:
   }
 
   UnknownManager(std::initializer_list<std::pair<UnknownType, unsigned int>> unknown_info_list,
-                 UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
+                 UnknownStorageType storage_type = UnknownStorageType::NODAL)
     : dof_storage_type(storage_type)
   {
     for (const auto& uk_info : unknown_info_list)
@@ -135,7 +135,7 @@ public:
   }
 
   explicit UnknownManager(const std::vector<Unknown>& unknown_info_list,
-                          UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
+                          UnknownStorageType storage_type = UnknownStorageType::NODAL)
     : dof_storage_type(storage_type)
   {
     for (const auto& uk : unknown_info_list)
@@ -143,7 +143,7 @@ public:
   }
 
   UnknownManager(std::initializer_list<Unknown> unknowns,
-                 UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
+                 UnknownStorageType storage_type = UnknownStorageType::NODAL)
     : dof_storage_type(storage_type)
   {
     size_t uk_id = 0;

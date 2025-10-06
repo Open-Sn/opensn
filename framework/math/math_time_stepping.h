@@ -18,7 +18,7 @@ enum class SteppingMethod
 };
 
 /// Returns the string name of a time stepping method.
-std::string SteppingMethodStringName(SteppingMethod);
+std::string SteppingMethodStringName(SteppingMethod method);
 SteppingMethod SteppingMethodFromString(const std::string& name);
 
 } // namespace opensn
