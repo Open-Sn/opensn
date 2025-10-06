@@ -23,7 +23,8 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
                                  LBSGroupset& groupset,
                                  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
                                  int num_moments,
-                                 int max_num_cell_dofs)
+                                 int max_num_cell_dofs,
+                                 int min_num_cell_dofs)
   : SweepChunk(destination_phi,
                destination_psi,
                grid,
@@ -35,7 +36,8 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
                groupset,
                xs,
                num_moments,
-               max_num_cell_dofs),
+               max_num_cell_dofs,
+               min_num_cell_dofs),
     secondary_unit_cell_matrices_(secondary_unit_cell_matrices),
     unknown_manager_(),
     psi_sweep_(),
@@ -244,7 +246,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           for (int m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_op[m][direction_num] * source_moments_[ir];
+            temp_src += m2d_op[direction_num][m] * source_moments_[ir];
           }
           source[i] = temp_src;
         }
@@ -271,7 +273,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Update phi
       for (int m = 0; m < num_moments_; ++m)
       {
-        const double wn_d2m = d2m_op[m][direction_num];
+        const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);

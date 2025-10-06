@@ -316,6 +316,7 @@ protected:
   UnknownManager flux_moments_uk_man_;
 
   size_t max_cell_dof_count_ = 0;
+  size_t min_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
   uint64_t global_node_count_ = 0;
 

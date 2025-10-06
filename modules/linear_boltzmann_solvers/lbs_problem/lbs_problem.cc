@@ -1144,6 +1144,7 @@ LBSProblem::InitializeParrays()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
+  min_cell_dof_count_ = static_cast<size_t>(-1);
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
@@ -1203,8 +1204,8 @@ LBSProblem::InitializeParrays()
       ++f;
     } // for f
 
-    if (num_nodes > max_cell_dof_count_)
-      max_cell_dof_count_ = num_nodes;
+    max_cell_dof_count_ = std::max(max_cell_dof_count_, num_nodes);
+    min_cell_dof_count_ = std::min(min_cell_dof_count_, num_nodes);
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
                                        num_grps,

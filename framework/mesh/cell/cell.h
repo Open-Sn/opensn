@@ -116,6 +116,7 @@ public:
   uint64_t global_id = 0;
   uint64_t local_id = 0;
   int partition_id = 0;
+  int num_parition = 0;
   int block_id = -1;
 
   Vector3 centroid;

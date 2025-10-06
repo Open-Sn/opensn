@@ -951,6 +951,7 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
                                                        block_id_to_xs_map_,
                                                        num_moments_,
                                                        max_cell_dof_count_,
+                                                       min_cell_dof_count_,
                                                        *this,
                                                        max_level_size_,
                                                        max_groupset_size_,
@@ -972,7 +973,8 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
                                                        groupset,
                                                        block_id_to_xs_map_,
                                                        num_moments_,
-                                                       max_cell_dof_count_);
+                                                       max_cell_dof_count_,
+                                                       min_cell_dof_count_);
 
     return sweep_chunk;
   }

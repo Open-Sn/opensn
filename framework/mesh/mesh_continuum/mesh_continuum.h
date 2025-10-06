@@ -42,6 +42,7 @@ public:
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
+  int GetNumPartitions() const { return num_partitions_; }
   size_t GetGlobalNumberOfCells() const;
 
   std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
@@ -84,7 +85,11 @@ public:
                                                            double slave_tolerance = 1.1) const;
 
   /// Returns whether the cell with the given global id is locally owned.
-  bool IsCellLocal(uint64_t global_id) const;
+  bool IsCellLocal(uint64_t global_id) const noexcept
+  {
+    return global_cell_id_to_local_id_map_.contains(global_id);
+  }
+
   /**
    * Given a global id of a cell, returns the local id if the cell is local, otherwise throws
    * an out_of_range error.
@@ -158,7 +163,7 @@ private:
   bool extruded_;
   OrthoMeshAttributes ortho_attributes_;
   std::map<uint64_t, std::string> boundary_id_map_;
-
+  int num_partitions_;
   uint64_t global_vertex_count_;
 
   /// Locally owned cells

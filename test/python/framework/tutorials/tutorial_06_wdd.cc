@@ -209,7 +209,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       for (size_t m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
-        rhs += source_moments[dof_map] * m2d[m][d];
+        rhs += source_moments[dof_map] * m2d[d][m];
       }
 
       if (Nx > 1)
@@ -233,7 +233,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       for (size_t m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
-        phi_new[dof_map] += d2m[m][d] * psi_ijk;
+        phi_new[dof_map] += d2m[d][m] * psi_ijk;
       }
 
       // Save angular fluxes

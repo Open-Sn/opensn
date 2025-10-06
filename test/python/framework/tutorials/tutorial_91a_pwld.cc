@@ -270,7 +270,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
         for (size_t m = 0; m < num_moments; ++m)
         {
           auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-          temp_src += m2d[m][d] * source_moments[dof_map];
+          temp_src += m2d[d][m] * source_moments[dof_map];
         } // for m
         source[i] = temp_src;
       } // for i
@@ -296,7 +296,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     // Accumulate flux-moments
     for (size_t m = 0; m < num_moments; ++m)
     {
-      const double wn_d2m = d2m[m][d];
+      const double wn_d2m = d2m[d][m];
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);

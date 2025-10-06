@@ -49,7 +49,7 @@ CellFace::IsNeighborLocal(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return false;
-  if (opensn::mpi_comm.size() == 1)
+  if (grid->GetNumPartitions() == 1)
     return true;
 
   const auto& adj_cell = grid->cells[neighbor_id];
@@ -62,7 +62,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return -1;
-  if (opensn::mpi_comm.size() == 1)
+  if (grid->GetNumPartitions() == 1)
     return 0;
 
   const auto& adj_cell = grid->cells[neighbor_id];
@@ -75,7 +75,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
     return -1;
-  if (opensn::mpi_comm.size() == 1)
+  if (grid->GetNumPartitions() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
   const auto& adj_cell = grid->cells[neighbor_id];

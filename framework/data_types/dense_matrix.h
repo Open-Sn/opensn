@@ -282,7 +282,7 @@ Subtract(const DenseMatrix<TYPE>& A, const DenseMatrix<TYPE>& B)
   auto AR = A.Rows();
   auto BR = B.Rows();
 
-  assert(AR != 0 and B.size() != 0);
+  assert(AR != 0 and BR != 0);
   assert(AR == BR);
 
   auto AC = A.Columns();
