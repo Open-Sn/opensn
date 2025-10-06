@@ -37,10 +37,20 @@ Program Listing for File mesh_continuum_local_cell_handler.h
      }
    
      /// Returns a reference to a local cell, given a local cell index.
-     Cell& operator[](uint64_t cell_local_index);
+     Cell& operator[](uint64_t cell_local_index)
+     {
+       assert(not local_cells.empty());
+       assert(cell_local_index < local_cells.size());
+       return *local_cells[cell_local_index];
+     }
    
      /// Returns a const reference to a local cell, given a local cell index.
-     const Cell& operator[](uint64_t cell_local_index) const;
+     const Cell& operator[](uint64_t cell_local_index) const
+     {
+       assert(not local_cells.empty());
+       assert(cell_local_index < local_cells.size());
+       return *local_cells[cell_local_index];
+     }
    
      /**
       * Get the total number of local cells.

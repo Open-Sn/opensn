@@ -294,7 +294,7 @@ Program Listing for File dense_matrix.h
      auto AR = A.Rows();
      auto BR = B.Rows();
    
-     assert(AR != 0 and B.size() != 0);
+     assert(AR != 0 and BR != 0);
      assert(AR == BR);
    
      auto AC = A.Columns();

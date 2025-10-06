@@ -16,6 +16,7 @@ Program Listing for File cell_mapping.h
    #pragma once
    
    #include "framework/data_types/vector.h"
+   #include <cassert>
    #include <memory>
    #include <utility>
    #include <vector>
@@ -48,18 +49,27 @@ Program Listing for File cell_mapping.h
      size_t GetNumNodes() const { return num_nodes_; }
    
      /// Returns the number of nodes on the given face.
-     size_t GetNumFaceNodes(size_t face_index) const;
-   
-     const std::vector<std::vector<int>>& GetFaceNodeMappings() const { return face_node_mappings_; }
-   
-     /// Returns the node locations associated with this element.
-     const std::vector<Vector3>& GetNodeLocations() const { return node_locations_; }
+     size_t GetNumFaceNodes(size_t face_index) const
+     {
+       assert(face_index < face_node_mappings_.size());
+       return face_node_mappings_[face_index].size();
+     }
    
      /**
       * Given the face index and the face node index, returns the index of the cell node the face node
       * corresponds to.
       */
-     int MapFaceNode(size_t face_index, size_t face_node_index) const;
+     int MapFaceNode(size_t face_index, size_t face_node_index) const
+     {
+       assert(face_index < face_node_mappings_.size() &&
+              face_node_index < face_node_mappings_[face_index].size());
+       return face_node_mappings_[face_index][face_node_index];
+     }
+   
+     const std::vector<std::vector<int>>& GetFaceNodeMappings() const { return face_node_mappings_; }
+   
+     /// Returns the node locations associated with this element.
+     const std::vector<Vector3>& GetNodeLocations() const { return node_locations_; }
    
      /// Returns the value of the required shape function at the world xyz point.
      virtual double ShapeValue(int i, const Vector3& xyz) const = 0;

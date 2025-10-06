@@ -128,6 +128,7 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGlobalVertexCount</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetGlobalVertexCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumPartitions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_partitions_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetGlobalNumberOfCells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaryIDMap</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_id_map_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -170,7 +171,11 @@
 <span class="w">                                                           </span><span class="kt">double</span><span class="w"> </span><span class="n">slave_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.1</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns whether the cell with the given global id is locally owned.</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsCellLocal</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsCellLocal</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">global_cell_id_to_local_id_map_</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">global_id</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Given a global id of a cell, returns the local id if the cell is local, otherwise throws</span>
 <span class="cm">   * an out_of_range error.</span>
@@ -244,7 +249,7 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">extruded_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">OrthoMeshAttributes</span><span class="w"> </span><span class="n">ortho_attributes_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_id_map_</span><span class="p">;</span>
-
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Locally owned cells</span>

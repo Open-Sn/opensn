@@ -111,16 +111,26 @@
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns a reference to a local cell, given a local cell index.</span>
-<span class="w">  </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_local_index</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_local_index</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">empty</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cell_local_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">local_cells</span><span class="p">[</span><span class="n">cell_local_index</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns a const reference to a local cell, given a local cell index.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_local_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="p">[](</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_local_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">empty</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">cell_local_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">local_cells</span><span class="p">[</span><span class="n">cell_local_index</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Get the total number of local cells.</span>
 <span class="cm">   * @return Size of the native cell vector.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">LocalCellCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">LocalCellCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">local_cells</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Internal iterator class.</span>
 <span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Iterator</span>

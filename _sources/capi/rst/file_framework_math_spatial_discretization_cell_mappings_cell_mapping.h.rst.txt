@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``cassert``
+
 - ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
 
 - ``functional``

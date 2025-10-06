@@ -101,6 +101,14 @@
 
 <span class="c1">// experimental, to be moved to a higher level header file</span>
 <span class="kr">inline</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">max_dof</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">simd_width</span><span class="w"> </span><span class="o">=</span>
+<span class="cp">#if defined(__AVX512F__)</span>
+<span class="w">  </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="c1">// 8 lanes (512-bit, doubles)</span>
+<span class="cp">#elif defined(__AVX2__)</span>
+<span class="w">  </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4 lanes (256-bit, doubles)</span>
+<span class="cp">#else</span>
+<span class="w">  </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// scalar</span>
+<span class="cp">#endif</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 
@@ -119,6 +127,7 @@
 <span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MultiGroupXS</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
 <span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">num_moments</span><span class="p">,</span>
 <span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_cell_dofs</span><span class="p">,</span>
+<span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">min_num_cell_dofs</span><span class="p">,</span>
 <span class="w">                </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span>
 <span class="w">                </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_level_size</span><span class="p">,</span>
 <span class="w">                </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_groupset_size</span><span class="p">,</span>
@@ -138,8 +147,16 @@
 
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_level_size_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group_block_size_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">level_vector_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">CpuSweepFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">AAHSweepChunk</span><span class="o">::*</span><span class="p">)(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">CpuSweepFunc</span><span class="w"> </span><span class="n">cpu_sweep_impl_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CPUSweep_Generic</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CPUSweep_N4</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

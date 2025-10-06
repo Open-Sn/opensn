@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a82e7b6a54db1102e3e42267b43b093d4:
+
+Variable opensn::simd_width
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::simd_width
+   :project: opensn
