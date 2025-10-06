@@ -41,13 +41,22 @@ Program Listing for File function_dimA_to_dimB.h
      virtual bool HasSlope() const = 0;
      virtual bool HasCurvature() const = 0;
    
-     virtual double GetScalarFunction1Parameter(double) const;
-     virtual double GetScalarFunctionSlope1Parameter(double) const;
-     virtual double GetScalarFunctionCurvature1Parameter(double) const;
+     virtual double GetScalarFunction1Parameter(double x) const;
+     virtual double GetScalarFunctionSlope1Parameter(double x) const;
+     virtual double GetScalarFunctionCurvature1Parameter(double x) const;
    
-     virtual double GetScalarFunction4Parameters(double, double, double, double) const;
-     virtual double GetScalarFunctionSlope4Parameters(double, double, double, double) const;
-     virtual double GetScalarFunctionCurvature4Parameters(double, double, double, double) const;
+     virtual double GetScalarFunction4Parameters(double /* unused */,
+                                                 double /* unused */,
+                                                 double /* unused */,
+                                                 double /* unused */) const;
+     virtual double GetScalarFunctionSlope4Parameters(double /* unused */,
+                                                      double /* unused */,
+                                                      double /* unused */,
+                                                      double /* unused */) const;
+     virtual double GetScalarFunctionCurvature4Parameters(double /* unused */,
+                                                          double /* unused */,
+                                                          double /* unused */,
+                                                          double /* unused */) const;
    
      virtual std::vector<double> Evaluate(const std::vector<double>& vals) const = 0;
      virtual std::vector<double> EvaluateSlope(const std::vector<double>& vals) const { return {0.0}; }

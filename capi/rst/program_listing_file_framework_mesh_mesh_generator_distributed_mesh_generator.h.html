@@ -131,13 +131,13 @@
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">DistributedMeshData</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">/// Dimension of the mesh (2D, 3D).</span>
-<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">{};</span>
 <span class="w">    </span><span class="c1">/// The coordinate system of the mesh.</span>
-<span class="w">    </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">{};</span>
 <span class="w">    </span><span class="c1">/// Type of mesh.</span>
-<span class="w">    </span><span class="n">MeshType</span><span class="w"> </span><span class="n">mesh_type</span><span class="p">;</span>
+<span class="w">    </span><span class="n">MeshType</span><span class="w"> </span><span class="n">mesh_type</span><span class="p">{};</span>
 <span class="w">    </span><span class="c1">/// Whether the mesh is extruded or not.</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">extruded</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">extruded</span><span class="p">{};</span>
 <span class="w">    </span><span class="c1">/// Attributes for orthogonal mesh, if applicable.</span>
 <span class="w">    </span><span class="n">OrthoMeshAttributes</span><span class="w"> </span><span class="n">ortho_attributes</span><span class="p">;</span>
 
@@ -148,7 +148,7 @@
 <span class="w">    </span><span class="c1">/// Map of boundary IDs to boundary names.</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_id_map</span><span class="p">;</span>
 <span class="w">    </span><span class="c1">/// Number of global vertices in the mesh.</span>
-<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_global_vertices</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_global_vertices</span><span class="p">{};</span>
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="c1">/// The number of partitions for distributing the mesh.</span>
