@@ -124,7 +124,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
   // Create graph
   Graph global_tdg(opensn::mpi_comm.size());
 
-  for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
+  for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc) // NOLINT
     for (int dep : global_dependencies_[loc])
       boost::add_edge(dep, loc, 1.0, global_tdg);
 
