@@ -45,7 +45,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_DG);
 
-  if (allow_cycles)
+  if (allow_cycles) // NOLINT
   {
     auto edges_to_remove = RemoveCyclicDependencies(local_DG);
     for (auto& edge_to_remove : edges_to_remove)
