@@ -491,6 +491,13 @@ WrapLBS(py::module& slv)
       }
     }
   );
+  lbs_problem.def(
+    "SetAdjoint",
+    [](LBSProblem& self, bool adjoint)
+    {
+      self.SetAdjoint(adjoint);
+    }
+  );
 
   // discrete ordinate solver
   auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,

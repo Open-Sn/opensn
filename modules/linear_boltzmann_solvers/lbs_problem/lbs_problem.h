@@ -58,6 +58,8 @@ public:
 
   void SetBoundaryOptions(const InputParameters& params);
 
+  void SetAdjoint(bool adjoint);
+
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t GetNumMoments() const;
 
