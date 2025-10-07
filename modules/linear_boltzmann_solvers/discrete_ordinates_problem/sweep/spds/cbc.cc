@@ -41,7 +41,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   Graph local_DG(num_loc_cells);
 
   // Create graph edges
-  for (size_t c = 0; c < num_loc_cells; ++c)
+  for (size_t c = 0; c < num_loc_cells; ++c) // NOLINT
     for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_DG);
 
