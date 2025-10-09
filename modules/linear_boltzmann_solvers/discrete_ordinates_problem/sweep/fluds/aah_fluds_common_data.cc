@@ -125,185 +125,155 @@ AAH_FLUDSCommonData::SlotDynamics(const Cell& cell,
 {
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::SlotDynamics");
 
-  auto grid = spds.GetGrid();
+  const auto& grid_ptr = spds.GetGrid();
 
-  // Loop over faces but process only incident faces
+  // Local feedback arc set. All edges (u -> v) that need to be removed from the sweep graph to
+  // make it acyclic.
+  const auto& fas = spds.GetLocalSweepFAS();
+
+  // Mark an edge as delayed
+  auto mark_delayed = [](short& cat) { cat = static_cast<short>(-cat - 1); };
+
+  // Does FAS contain (u -> v)?
+  auto is_fas_edge = [&](int u, int v)
+  {
+    for (const auto& e : fas)
+    {
+      if (static_cast<int>(e.first) == u and static_cast<int>(e.second) == v)
+        return true;
+    }
+    return false;
+  };
+
+  const auto cell_id = cell.local_id;
+
+  // Incoming faces
   std::vector<short> inco_face_face_category;
   inco_face_face_category.reserve(cell.faces.size());
+
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell.local_id][f];
 
-    // Incident face
-    if (orientation == FaceOrientation::INCOMING)
+    if (orientation != FaceOrientation::INCOMING or not face.IsNeighborLocal(grid_ptr.get()))
+      continue;
+
+    const auto num_face_dofs = face.vertex_ids.size();
+    const short face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
+    const auto nbr_cell_id = face.GetNeighborLocalID(grid_ptr.get());
+
+    inco_face_face_category.push_back(face_categ);
+
+    // Mark as delayed ONLY if FAS says the incoming edge from this cell's neighbor
+    // should be removed (neighbor -> cell).
+    if (is_fas_edge(nbr_cell_id, cell_id))
     {
+      mark_delayed(inco_face_face_category.back());
+      continue;
+    }
 
-      // Local cell dependence
-      if (face.IsNeighborLocal(grid.get()))
+    // If we didn't mark the edge as delyed, clear lock-box entry
+    auto& lock_box = lock_boxes[face_categ];
+    const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_ptr.get());
+    bool found = false;
+    for (auto& slot : lock_box)
+    {
+      if (std::cmp_equal(slot.first, face.neighbor_id) and (slot.second == adj_face_idx))
       {
-        size_t num_face_dofs = face.vertex_ids.size();
-        size_t face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
+        slot.first = -1;
+        slot.second = -1;
+        found = true;
+        break;
+      }
+    }
 
-        inco_face_face_category.push_back(static_cast<short>(face_categ));
-
-        LockBox& lock_box = lock_boxes[face_categ];
-
-        // Check if part of cyclic dependency
-        bool is_cyclic = false;
-        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
-        {
-          size_t edge_v1_id = cyclic_dependency.first;
-          size_t edge_v2_id = cyclic_dependency.second;
-          auto cell_id = cell.local_id;
-          auto neighbor_cell_id = face.GetNeighborLocalID(grid.get());
-
-          if ((edge_v1_id == cell_id) and (edge_v2_id == neighbor_cell_id))
-          {
-            is_cyclic = true;
-            inco_face_face_category.back() *= -1;
-            inco_face_face_category.back() -= 1;
-          }
-
-          if ((edge_v1_id == neighbor_cell_id) and (edge_v2_id == cell_id))
-          {
-            is_cyclic = true;
-            inco_face_face_category.back() *= -1;
-            inco_face_face_category.back() -= 1;
-          }
-        }
-        if (is_cyclic)
-          continue;
-
-        // Find associated face for dof mapping and lock box
-        auto adj_face_idx = (short)face.GetNeighborAdjacentFaceIndex(grid.get());
-
-        // Now find the cell (index,face) pair in the lock box and empty slot
-        bool found = false;
-        for (auto& lock_box_slot : lock_box)
-        {
-          if (std::cmp_equal(lock_box_slot.first, face.neighbor_id) and
-              (lock_box_slot.second == adj_face_idx))
-          {
-            lock_box_slot.first = -1;
-            lock_box_slot.second = -1;
-            found = true;
-            break;
-          }
-        }
-        if (not found)
-        {
-          std::ostringstream oss;
-          oss << "AAH_FLUDSCommonData: Lock-box location not found in call to "
-                 "InitializeAlphaElements.\n"
-              << "Local cell: " << std::to_string(cell.local_id) << ", "
-              << "Face: " << std::to_string(f) << ", "
-              << "Looking for cell: " << std::to_string(face.GetNeighborLocalID(grid.get())) << ", "
-              << "Adjacent face: " << std::to_string(adj_face_idx) << ", "
-              << "Category: " << std::to_string(face_categ) << ", "
-              << "Omega: " << spds.GetOmega().PrintStr() << ", "
-              << "Lock-box size: " << std::to_string(lock_box.size());
-          throw std::runtime_error(oss.str());
-        }
-      } // if local
-    } // if incident
-
-  } // for f
+    if (not found)
+    {
+      std::ostringstream oss;
+      oss << "AAH_FLUDSCommonData::SlotDynamics: Lock-box location not found.\n"
+          << "Local cell: " << std::to_string(cell.local_id) << ", "
+          << "Face: " << std::to_string(f) << ", "
+          << "Looking for cell: " << std::to_string(face.GetNeighborLocalID(grid_ptr.get())) << ", "
+          << "Adjacent face: " << std::to_string(adj_face_idx) << ", "
+          << "Category: " << std::to_string(face_categ) << ", "
+          << "Omega: " << spds.GetOmega().PrintStr() << ", "
+          << "Lock-box size: " << std::to_string(lock_box.size());
+      throw std::runtime_error(oss.str());
+    }
+  }
 
   so_cell_inco_face_face_category_.push_back(inco_face_face_category);
 
-  // Loop over faces but process only outgoing faces
+  // Outgoing faces
   std::vector<int> outb_face_slot_indices;
   std::vector<short> outb_face_face_category;
   outb_face_slot_indices.reserve(cell.faces.size());
   outb_face_face_category.reserve(cell.faces.size());
+
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
-    auto cell_g_index = cell.global_id;
     const auto& orientation = spds.GetCellFaceOrientations()[cell.local_id][f];
 
-    // Outgoing face
-    if (orientation == FaceOrientation::OUTGOING)
+    if (orientation != FaceOrientation::OUTGOING)
+      continue;
+
+    const auto num_face_dofs = face.vertex_ids.size();
+    const short face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
+    outb_face_face_category.push_back(face_categ);
+
+    // Choose target lock box (default non-delayed)
+    auto* target_lock_box = &lock_boxes[face_categ];
+
+    // Mark as delayed ONLY if FAS says the outgoing edge from this cell to its
+    // neighbor should be removed (cell -> neighbor)
+    if (face.IsNeighborLocal(grid_ptr.get()))
     {
-      size_t num_face_dofs = face.vertex_ids.size();
-      size_t face_categ = grid_face_histogram.MapFaceHistogramBins(num_face_dofs);
-
-      outb_face_face_category.push_back(static_cast<short>(face_categ));
-
-      LockBox* temp_lock_box = &lock_boxes[face_categ];
-
-      // Check if part of cyclic dependency
-      if (face.IsNeighborLocal(grid.get()))
+      const auto nbr_cell_id = face.GetNeighborLocalID(grid_ptr.get());
+      if (is_fas_edge(cell_id, nbr_cell_id))
       {
-        for (auto cyclic_dependency : spds.GetLocalSweepFAS())
-        {
-          auto a = cyclic_dependency.first;
-          auto b = cyclic_dependency.second;
-          auto c = cell.local_id;
-          auto d = face.GetNeighborLocalID(grid.get());
-
-          if (std::cmp_equal(a, c) and std::cmp_equal(b, d))
-          {
-            temp_lock_box = &delayed_lock_box;
-            outb_face_face_category.back() *= -1;
-            outb_face_face_category.back() -= 1;
-          }
-
-          if (std::cmp_equal(a, d) and std::cmp_equal(b, c))
-          {
-            temp_lock_box = &delayed_lock_box;
-            outb_face_face_category.back() *= -1;
-            outb_face_face_category.back() -= 1;
-          }
-        }
+        target_lock_box = &delayed_lock_box;
+        mark_delayed(outb_face_face_category.back());
       }
+    }
 
-      LockBox& lock_box = *temp_lock_box;
+    auto& lock_box = *target_lock_box;
 
-      // Check if this face is the max size
-      if (num_face_dofs > largest_face_)
-        largest_face_ = static_cast<int>(num_face_dofs);
+    // Track largest face
+    if (num_face_dofs > static_cast<size_t>(largest_face_))
+      largest_face_ = static_cast<int>(num_face_dofs);
 
-      // Find a open slot
-      bool slot_found = false;
-      for (auto k = 0; k < lock_box.size(); ++k)
+    // Find/open a slot
+    bool slot_found = false;
+    for (auto k = 0; k < lock_box.size(); ++k)
+    {
+      if (lock_box[k].first < 0)
       {
-        if (lock_box[k].first < 0)
-        {
-          outb_face_slot_indices.push_back(k);
-          lock_box[k].first = cell_g_index;
-          lock_box[k].second = static_cast<short>(f);
-          slot_found = true;
-          break;
-        }
+        outb_face_slot_indices.push_back(k);
+        lock_box[k].first = static_cast<int>(cell.global_id);
+        lock_box[k].second = static_cast<short>(f);
+        slot_found = true;
+        break;
       }
+    }
+    if (not slot_found)
+    {
+      outb_face_slot_indices.push_back(static_cast<int>(lock_box.size()));
+      lock_box.emplace_back(static_cast<int>(cell.global_id), static_cast<short>(f));
+    }
 
-      // If an open slot was not found push a new one
-      if (not slot_found)
-      {
-        outb_face_slot_indices.push_back(lock_box.size());
-        lock_box.emplace_back(cell_g_index, f);
-      }
-
-      // Non-local outgoing
-      if (face.has_neighbor and (not face.IsNeighborLocal(grid.get())))
-      {
-        auto locJ = face.GetNeighborPartitionID(grid.get());
-        auto deplocI = spds.MapLocJToDeplocI(locJ);
-        auto face_slot = deplocI_face_dof_count_[deplocI];
-
-        deplocI_face_dof_count_[deplocI] += face.vertex_ids.size();
-
-        nonlocal_outb_face_deplocI_slot_.emplace_back(deplocI, face_slot);
-
-        // The following function is defined below
-        AddFaceViewToDepLocI(deplocI, cell_g_index, face_slot, face);
-
-      } // non-local neighbor
-    } // if outgoing
-
-  } // for f
+    // Non-local outgoing
+    if (face.has_neighbor and not face.IsNeighborLocal(grid_ptr.get()))
+    {
+      const auto locJ = face.GetNeighborPartitionID(grid_ptr.get());
+      const auto deplocI = spds.MapLocJToDeplocI(locJ);
+      const auto face_slot = deplocI_face_dof_count_[deplocI];
+      deplocI_face_dof_count_[deplocI] += face.vertex_ids.size();
+      nonlocal_outb_face_deplocI_slot_.emplace_back(deplocI, face_slot);
+      AddFaceViewToDepLocI(deplocI, cell.global_id, face_slot, face);
+    }
+  }
 
   so_cell_outb_face_slot_indices_.push_back(outb_face_slot_indices);
   so_cell_outb_face_face_category_.push_back(outb_face_face_category);
