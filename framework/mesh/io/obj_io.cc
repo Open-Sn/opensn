@@ -249,21 +249,21 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   std::vector<Vector3> cell_vertices;
   {
     // Initial map is straight
-    std::vector<size_t> vertex_map;
+    std::vector<uint64_t> vertex_map;
     vertex_map.reserve(file_vertices.size());
     for (size_t m = 0; m < file_vertices.size(); ++m)
       vertex_map.push_back(m);
 
     // Build set of cell vertices
-    std::set<size_t> cell_vertex_id_set;
+    std::set<uint64_t> cell_vertex_id_set;
     for (const auto& cell_ptr : block_data.at(main_block_id).cells)
-      for (size_t vid : cell_ptr->vertex_ids)
+      for (auto vid : cell_ptr->vertex_ids)
         cell_vertex_id_set.insert(vid);
 
     // Make cell_vertices and edit map
     {
-      size_t new_id = 0;
-      for (size_t vid : cell_vertex_id_set)
+      uint64_t new_id = 0;
+      for (auto vid : cell_vertex_id_set)
       {
         cell_vertices.push_back(file_vertices[vid]);
         vertex_map[vid] = new_id;
@@ -272,7 +272,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     }
 
     // Build set of bndry vertices
-    std::set<size_t> bndry_vertex_id_set;
+    std::set<uint64_t> bndry_vertex_id_set;
     for (size_t block_id : bndry_block_ids)
       for (const auto& edge : block_data[block_id].edges)
       {
@@ -282,7 +282,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
     // Find a match for each boundary vertex and
     // place it in the map
-    for (size_t bvid : bndry_vertex_id_set)
+    for (auto bvid : bndry_vertex_id_set)
     {
       const auto& bndry_vertex = file_vertices[bvid];
 
@@ -322,8 +322,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     for (size_t block_id : bndry_block_ids)
       for (auto& edge : block_data[block_id].edges)
       {
-        edge.first = static_cast<int>(vertex_map[edge.first]);
-        edge.second = static_cast<int>(vertex_map[edge.second]);
+        edge.first = vertex_map[edge.first];
+        edge.second = vertex_map[edge.second];
       }
   }
   mesh->GetVertices() = cell_vertices;
@@ -358,12 +358,12 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       size_t num_faces_boundarified = 0;
       for (const auto& edge : bndry_edges)
       {
-        std::set<size_t> edge_vert_id_set({edge.first, edge.second});
+        std::set<uint64_t> edge_vert_id_set({edge.first, edge.second});
 
         for (auto& face_ptr : bndry_faces)
         {
           const auto& vert_ids = face_ptr->vertex_ids;
-          std::set<size_t> face_vert_id_set(vert_ids.begin(), vert_ids.end());
+          std::set<uint64_t> face_vert_id_set(vert_ids.begin(), vert_ids.end());
 
           if (face_vert_id_set == edge_vert_id_set)
           {
