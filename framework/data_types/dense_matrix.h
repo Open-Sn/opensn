@@ -415,8 +415,9 @@ GaussElimination(DenseMatrix<TYPE>& A, Vector<TYPE>& b, size_t n)
   }
 
   // Back substitution
-  for (int i = n - 1; i >= 0; --i)
+  for (size_t k = 0; k < n; ++k)
   {
+    size_t i = n - 1 - k;
     auto bi = b(i);
     for (size_t j = i + 1; j < n; ++j)
       bi -= A(i, j) * b(j);
