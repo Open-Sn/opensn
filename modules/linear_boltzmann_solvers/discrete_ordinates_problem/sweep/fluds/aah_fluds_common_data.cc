@@ -687,7 +687,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
           }
 
           // Find associated face
-          std::set<int> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
+          std::set<uint64_t> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
           CompactCellView* adj_cell_view = &prelocI_cell_views_[prelocI][adj_cell];
           int adj_face_idx = -1, af = -1;
           for (auto& adj_face : adj_cell_view->second)
@@ -695,7 +695,7 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(const Cell& cell, const SPDS& spds)
             ++af;
             bool face_matches = true;
 
-            std::set<int> afvids(adj_face.second.begin(), adj_face.second.end());
+            std::set<uint64_t> afvids(adj_face.second.begin(), adj_face.second.end());
 
             if (cfvids != afvids)
               face_matches = false;

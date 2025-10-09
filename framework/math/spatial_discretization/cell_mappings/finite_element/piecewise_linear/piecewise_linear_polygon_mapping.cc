@@ -75,7 +75,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   }
 
   // Compute node to side mapping
-  for (int v = 0; v < poly_cell.vertex_ids.size(); ++v)
+  for (std::size_t v = 0; v < poly_cell.vertex_ids.size(); ++v)
   {
     const uint64_t vindex = poly_cell.vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
