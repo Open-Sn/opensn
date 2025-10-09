@@ -222,7 +222,7 @@ RayTracer::TraceSlab(const Cell& cell,
   int num_faces = 2;
   for (int f = 0; f < num_faces; ++f)
   {
-    uint64_t fpi = cell.vertex_ids[f]; // face point index
+    auto fpi = cell.vertex_ids[f]; // face point index
     Vector3 face_point = grid->vertices[fpi];
 
     bool intersects = CheckPlaneLineIntersect(
@@ -273,8 +273,8 @@ RayTracer::TracePolygon(const Cell& cell,
 
     RayTracerOutputInformation face_oi;
 
-    uint64_t fpi = cell.faces[f].vertex_ids[0]; // face point index 0
-    uint64_t fpf = cell.faces[f].vertex_ids[1]; // face point index 1
+    auto fpi = cell.faces[f].vertex_ids[0]; // face point index 0
+    auto fpf = cell.faces[f].vertex_ids[1]; // face point index 1
     const Vector3& face_point_i = grid->vertices[fpi];
     const Vector3& face_point_f = grid->vertices[fpf];
 
@@ -341,10 +341,10 @@ RayTracer::TracePolyhedron(const Cell& cell,
     size_t num_sides = face.vertex_ids.size();
     for (size_t s = 0; s < num_sides; ++s)
     {
-      size_t v0_index = face.vertex_ids[s];
-      size_t v1_index = (s < (num_sides - 1)) ? // if not last vertex
-                          face.vertex_ids[s + 1]
-                                              : face.vertex_ids[0]; // else
+      auto v0_index = face.vertex_ids[s];
+      auto v1_index = (s < (num_sides - 1)) ? // if not last vertex
+                        face.vertex_ids[s + 1]
+                                            : face.vertex_ids[0]; // else
       const auto& v0 = grid->vertices[v0_index];
       const auto& v1 = grid->vertices[v1_index];
       const auto& v2 = cell.faces[f].centroid;
@@ -662,8 +662,8 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
       // Face edge to cell center segments
       for (std::size_t v = 0; v < face.vertex_ids.size(); ++v)
       {
-        uint64_t vid_0 = face.vertex_ids[v];
-        uint64_t vid_1 =
+        auto vid_0 = face.vertex_ids[v];
+        auto vid_1 =
           (v < (face.vertex_ids.size() - 1)) ? face.vertex_ids[v + 1] : face.vertex_ids[0];
 
         auto& v0 = grid->vertices[vid_0];
