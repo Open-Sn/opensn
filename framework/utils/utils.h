@@ -49,6 +49,9 @@ std::string StringRTrim(const std::string& s);
 /// Trims whitespace from the front and back of a string.
 std::string StringTrim(const std::string& s);
 
+/// Verifies a string starts with a specified string k
+bool StartsWith(std::string_view s, std::string_view k);
+
 /// Splits a string using the given delimiter. Consecutive delimitersare treated as one.
 std::vector<std::string> StringSplit(const std::string& input, const std::string& delim = " ");
 
