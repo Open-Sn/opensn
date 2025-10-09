@@ -146,7 +146,7 @@ public:
                  UnknownStorageType storage_type = UnknownStorageType::NODAL)
     : dof_storage_type(storage_type)
   {
-    size_t uk_id = 0;
+    int uk_id = 0;
     for (const auto& uk : unknowns)
     {
       AddUnknown(uk.type, uk.num_components);
