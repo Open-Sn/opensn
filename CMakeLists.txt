@@ -73,7 +73,6 @@ function(_add_ld_cfg CFG FLAG)
   endif()
 endfunction()
 
-_add_cxx_cfg(Debug "-O0")
 _add_cxx_cfg(Native "-O3")
 _add_cxx_cfg(Native "-march=native")
 _add_cxx_cfg(Native "-mtune=native")
