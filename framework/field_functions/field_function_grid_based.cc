@@ -293,7 +293,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          for (int n = 0; n < cell.vertex_ids.size(); ++n)
+          for (std::size_t n = 0; n < cell.vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

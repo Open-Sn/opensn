@@ -660,7 +660,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
       } // for edge
 
       // Face edge to cell center segments
-      for (int v = 0; v < face.vertex_ids.size(); ++v)
+      for (std::size_t v = 0; v < face.vertex_ids.size(); ++v)
       {
         uint64_t vid_0 = face.vertex_ids[v];
         uint64_t vid_1 =
