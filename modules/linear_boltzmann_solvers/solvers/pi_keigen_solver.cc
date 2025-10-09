@@ -13,8 +13,6 @@
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include <iomanip>
 #include "sys/stat.h"
 

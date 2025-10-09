@@ -163,25 +163,34 @@ private:
     {
     }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     std::string GetStringValue() const override { OpenSnLogicalError("Method not implemented"); }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool GetBoolValue() const override { OpenSnLogicalError("Method not implemented"); }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     int64_t GetIntegerValue() const override { OpenSnLogicalError("Method not implemented"); }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     double GetFloatValue() const override { OpenSnLogicalError("Method not implemented"); }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     std::vector<std::byte> GetBytesValue() const override
     {
       OpenSnLogicalError("Method not implemented");
     }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     std::unique_ptr<VaryingType> Clone() const override
     {
       return std::make_unique<VaryingArbitraryType<T>>(value_);
     }
+
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     size_t Size() const override { return sizeof(T); }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator==(const VaryingType& that) const override
     {
       if (type_ != that.GetType())
@@ -205,7 +214,10 @@ private:
       }
     }
 
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator!=(const VaryingType& that) const override { return not(*this == that); }
+
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator>(const VaryingType& that) const override
     {
       if (type_ != that.GetType())
@@ -228,6 +240,8 @@ private:
           return false;
       }
     }
+
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator<(const VaryingType& that) const override
     {
       if (type_ != that.GetType())
@@ -250,10 +264,14 @@ private:
           return false;
       }
     }
+
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator>=(const VaryingType& that) const override
     {
       return (*this > that) or (*this == that);
     }
+
+    // NOLINTNEXTLINE(portability-template-virtual-member-function)
     bool operator<=(const VaryingType& that) const override
     {
       return (*this < that) or (*this == that);
