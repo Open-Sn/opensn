@@ -11,25 +11,23 @@ namespace opensn
 unsigned int
 UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
-  int last_unknown_end = -1;
+  unsigned int last_unknown_end = 0;
   if (not unknowns.empty())
-    last_unknown_end = unknowns.back().GetMapEnd();
-
-  unsigned int new_unknown_index = unknowns.size();
+    last_unknown_end = unknowns.back().GetMapEnd() + 1;
 
   if (unk_type == UnknownType::SCALAR)
   {
-    unknowns.emplace_back(UnknownType::SCALAR, 1, last_unknown_end + 1);
+    unknowns.emplace_back(UnknownType::SCALAR, 1, last_unknown_end);
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_2)
   {
-    unknowns.emplace_back(UnknownType::VECTOR_2, 2, last_unknown_end + 1);
+    unknowns.emplace_back(UnknownType::VECTOR_2, 2, last_unknown_end);
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_3)
   {
-    unknowns.emplace_back(UnknownType::VECTOR_3, 3, last_unknown_end + 1);
+    unknowns.emplace_back(UnknownType::VECTOR_3, 3, last_unknown_end);
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
   else if (unk_type == UnknownType::VECTOR_N)
@@ -41,14 +39,14 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
       throw std::runtime_error(oss.str());
     }
 
-    unknowns.emplace_back(UnknownType::VECTOR_N, dimension, last_unknown_end + 1);
+    unknowns.emplace_back(UnknownType::VECTOR_N, dimension, last_unknown_end);
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
   else
     throw std::runtime_error(
       "UnknownManager: Invalid call to AddUnknown. Unknown type not supported.");
 
-  return new_unknown_index;
+  return unknowns.size();
 }
 
 unsigned int
