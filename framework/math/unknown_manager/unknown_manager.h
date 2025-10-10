@@ -146,7 +146,7 @@ public:
                  UnknownStorageType storage_type = UnknownStorageType::NODAL)
     : dof_storage_type(storage_type)
   {
-    int uk_id = 0;
+    std::size_t uk_id = 0;
     for (const auto& uk : unknowns)
     {
       AddUnknown(uk.type, uk.num_components);
@@ -171,8 +171,8 @@ public:
     return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
   }
 
-  size_t GetNumberOfUnknowns() const { return unknowns.size(); }
-  const Unknown& GetUnknown(size_t id) const { return unknowns[id]; }
+  std::size_t GetNumberOfUnknowns() const { return unknowns.size(); }
+  const Unknown& GetUnknown(std::size_t id) const { return unknowns[id]; }
 
   void SetDOFStorageType(const UnknownStorageType storage_type) { dof_storage_type = storage_type; }
 
@@ -184,29 +184,30 @@ public:
    * Adds an unknown to the manager. This method will figure out where the last unknown ends and
    * where to begin the next one.
    */
-  unsigned int AddUnknown(UnknownType unk_type, unsigned int dimension = 0);
+  std::size_t AddUnknown(UnknownType unk_type, unsigned int dimension = 0);
 
   /// Maps the unknown's component within the storage of a node.
-  unsigned int MapUnknown(int unknown_id, unsigned int component = 0) const;
+  std::size_t MapUnknown(std::size_t unknown_id, unsigned int component = 0) const;
 
   /// Determines the total number of components over all unknowns.
-  unsigned int GetTotalUnknownStructureSize() const;
+  std::size_t GetTotalUnknownStructureSize() const;
 
   /**
    * Sets the number of off block connections for the given unknown. All the components will be set
    * to the same amount.
    */
-  void SetUnknownNumOffBlockConnections(int unknown_id, int num_conn);
+  void SetUnknownNumOffBlockConnections(std::size_t unknown_id, int num_conn);
 
   /// Sets the number of off block connections for the given unknown-component pair.
-  void
-  SetUnknownComponentNumOffBlockConnections(int unknown_id, unsigned int component, int num_conn);
+  void SetUnknownComponentNumOffBlockConnections(std::size_t unknown_id,
+                                                 unsigned int component,
+                                                 int num_conn);
 
   /// Sets a unk_name for the indicated unknown
-  void SetUnknownName(int unknown_id, const std::string& unk_name);
+  void SetUnknownName(std::size_t unknown_id, const std::string& unk_name);
 
   /// Sets the component_name to be associated with each component of the unknown.
-  void SetUnknownComponentName(int unknown_id,
+  void SetUnknownComponentName(std::size_t unknown_id,
                                unsigned int component,
                                const std::string& component_name);
 

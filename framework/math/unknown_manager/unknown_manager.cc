@@ -8,10 +8,10 @@
 namespace opensn
 {
 
-unsigned int
+std::size_t
 UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
 {
-  unsigned int last_unknown_end = 0;
+  std::size_t last_unknown_end = 0;
   if (not unknowns.empty())
     last_unknown_end = unknowns.back().GetMapEnd() + 1;
 
@@ -49,10 +49,10 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
   return unknowns.size();
 }
 
-unsigned int
-UnknownManager::MapUnknown(int unknown_id, unsigned int component) const
+std::size_t
+UnknownManager::MapUnknown(std::size_t unknown_id, unsigned int component) const
 {
-  if (unknown_id < 0 or unknown_id >= unknowns.size())
+  if (unknown_id >= unknowns.size())
   {
     std::ostringstream oss;
     oss << "UnknownManager: Call to MapUnknown failed (id = " << unknown_id << ")";
@@ -61,7 +61,7 @@ UnknownManager::MapUnknown(int unknown_id, unsigned int component) const
   return unknowns[unknown_id].GetMap(component);
 }
 
-unsigned int
+std::size_t
 UnknownManager::GetTotalUnknownStructureSize() const
 {
   if (unknowns.empty())
@@ -71,9 +71,9 @@ UnknownManager::GetTotalUnknownStructureSize() const
 }
 
 void
-UnknownManager::SetUnknownNumOffBlockConnections(int unknown_id, int num_conn)
+UnknownManager::SetUnknownNumOffBlockConnections(std::size_t unknown_id, int num_conn)
 {
-  if (unknown_id < 0 or unknown_id >= unknowns.size())
+  if (unknown_id >= unknowns.size())
   {
     std::ostringstream oss;
     oss << "UnknownManager: Call to SetUnknownNumOffBlockConnections failed (id = " << unknown_id
@@ -86,11 +86,11 @@ UnknownManager::SetUnknownNumOffBlockConnections(int unknown_id, int num_conn)
 }
 
 void
-UnknownManager::SetUnknownComponentNumOffBlockConnections(int unknown_id,
+UnknownManager::SetUnknownComponentNumOffBlockConnections(std::size_t unknown_id,
                                                           unsigned int component,
                                                           int num_conn)
 {
-  if (unknown_id < 0 or unknown_id >= unknowns.size())
+  if (unknown_id >= unknowns.size())
   {
     std::ostringstream oss;
     oss << "UnknownManager: Call to SetUnknownComponentNumOffBlockConnections failed "
@@ -110,9 +110,9 @@ UnknownManager::SetUnknownComponentNumOffBlockConnections(int unknown_id,
 }
 
 void
-UnknownManager::SetUnknownName(int unknown_id, const std::string& unk_name)
+UnknownManager::SetUnknownName(std::size_t unknown_id, const std::string& unk_name)
 {
-  if (unknown_id < 0 or unknown_id >= unknowns.size())
+  if (unknown_id >= unknowns.size())
   {
     std::ostringstream oss;
     oss << "UnknownManager: Call to SetUnknownName failed (id = " << unknown_id << ")";
@@ -123,11 +123,11 @@ UnknownManager::SetUnknownName(int unknown_id, const std::string& unk_name)
 }
 
 void
-UnknownManager::SetUnknownComponentName(int unknown_id,
+UnknownManager::SetUnknownComponentName(std::size_t unknown_id,
                                         unsigned int component,
                                         const std::string& component_name)
 {
-  if (unknown_id < 0 or unknown_id >= unknowns.size())
+  if (unknown_id >= unknowns.size())
   {
     std::ostringstream oss;
     oss << "UnknownManager: Call to SetUnknownComponentName failed (id = " << unknown_id << ")";
