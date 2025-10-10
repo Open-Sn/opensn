@@ -60,7 +60,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -97,7 +97,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -199,9 +199,9 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
         } // boundary face
       } // for face
 
-      MatSetValues(
-        A_, num_nodes, cell_idxs.data(), num_nodes, cell_idxs.data(), cell_A.data(), ADD_VALUES);
-      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      auto nn = static_cast<PetscInt>(num_nodes);
+      MatSetValues(A_, nn, cell_idxs.data(), nn, cell_idxs.data(), cell_A.data(), ADD_VALUES);
+      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
   } // for cell
 
@@ -264,7 +264,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -301,7 +301,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
@@ -384,7 +384,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
           } // Robin BC
         } // boundary face
       } // for face
-      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      auto nn = static_cast<PetscInt>(num_nodes);
+      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
   } // for cell
 
@@ -416,7 +417,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   {
     const size_t num_faces = cell.faces.size();
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
 
@@ -450,7 +451,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = sdm_.MapDOF(cell, i, uk_man_, 0, g);
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
@@ -518,7 +519,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
           } // Robin BC
         } // boundary face
       } // for face
-      VecSetValues(rhs_, num_nodes, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      auto nn = static_cast<PetscInt>(num_nodes);
+      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
     } // for g
   } // for cell
 
