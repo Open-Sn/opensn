@@ -483,9 +483,9 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
       local_data.emplace_back(val);
 
   // Communicate the data
-  std::vector<double> global_data(local_data.size());
-  mpi_comm.all_reduce(
-    local_data.data(), local_data.size(), global_data.data(), mpi::op::sum<double>());
+  auto count = static_cast<int>(local_data.size());
+  std::vector<double> global_data(count);
+  mpi_comm.all_reduce(local_data.data(), count, global_data.data(), mpi::op::sum<double>());
 
   // Unpack the data
   std::map<uint64_t, std::vector<double>> global_leakage;
