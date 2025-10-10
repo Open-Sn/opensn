@@ -280,7 +280,7 @@ public:
     }
   }
 
-  double GetOutflow(int f, int g) const
+  double GetOutflow(std::size_t f, std::size_t g) const
   {
     if (f < outflow_.size() and g < outflow_[f].size())
       return outflow_[f][g];
