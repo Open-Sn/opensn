@@ -8,8 +8,8 @@ namespace opensn
 {
 
 template <typename Functor>
-int
-LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor func)
+int64_t
+LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, uint64_t gsi, uint64_t gss, Functor func)
 {
   CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
 
@@ -21,12 +21,12 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, int gsi, int gss, Functor
   for (const auto& cell : grid->local_cells)
   {
     const auto& transport_view = cell_transport_views[cell.local_id];
-    for (int i = 0; i < cell.vertex_ids.size(); ++i)
+    for (std::size_t i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (size_t m = 0; m < num_moments; ++m)
       {
         auto mapped_idx = transport_view.MapDOF(i, m, gsi);
-        for (int g = 0; g < gss; ++g)
+        for (std::size_t g = 0; g < gss; ++g)
         {
           ++idx;
           func(idx, mapped_idx + g);
@@ -49,8 +49,8 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
   const auto& sdm = lbs_problem.GetSpatialDiscretization();
   const auto& unknown_manager = lbs_problem.GetUnknownManager();
 
-  const size_t first_grp = groups.front().id;
-  const size_t final_grp = groups.back().id;
+  const long first_grp = groups.front().id;
+  const long final_grp = groups.back().id;
 
   for (const auto& cell : grid->local_cells)
   {
@@ -59,7 +59,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0);
+      const auto dof_map = static_cast<long>(sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0));
       std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
     }
   }
