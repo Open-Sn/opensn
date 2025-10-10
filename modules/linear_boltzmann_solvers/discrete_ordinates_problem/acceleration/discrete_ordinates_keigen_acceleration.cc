@@ -274,8 +274,8 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      const auto lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto diff_phi_map = static_cast<long>(diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0));
+      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi));
       const auto input_begin = phi_data->begin() + lbs_phi_map;
       const auto output_begin = phi_local.begin() + diff_phi_map;
       std::copy_n(input_begin, gss, output_begin);
@@ -313,8 +313,8 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto diff_phi_map = diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0);
-      const auto lbs_phi_map = lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto diff_phi_map = static_cast<long>(diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0));
+      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi));
       const auto input_begin = input.begin() + diff_phi_map;
       const auto output_begin = output.begin() + lbs_phi_map;
       std::copy_n(input_begin, gss, output_begin);
