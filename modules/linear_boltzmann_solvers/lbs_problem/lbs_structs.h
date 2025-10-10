@@ -253,23 +253,23 @@ public:
 
   const MultiGroupXS& GetXS() const { return *xs_; }
 
-  bool IsFaceLocal(int f) const { return face_local_flags_[f]; }
+  bool IsFaceLocal(std::size_t f) const { return face_local_flags_[f]; }
 
-  int FaceLocality(int f) const { return face_locality_[f]; }
+  int FaceLocality(std::size_t f) const { return face_locality_[f]; }
 
-  const Cell* FaceNeighbor(int f) const { return neighbor_cell_ptrs_[f]; }
+  const Cell* FaceNeighbor(std::size_t f) const { return neighbor_cell_ptrs_[f]; }
 
   int GetNumNodes() const { return num_nodes_; }
 
   double GetVolume() const { return volume_; }
 
-  void ZeroOutflow(int f, int g)
+  void ZeroOutflow(std::size_t f, std::size_t g)
   {
     if (f < outflow_.size() and g < outflow_[f].size())
       outflow_[f][g] = 0.0;
   }
 
-  void AddOutflow(int f, int g, double intS_mu_psi)
+  void AddOutflow(std::size_t f, std::size_t g, double intS_mu_psi)
   {
     if (f < outflow_.size())
     {
