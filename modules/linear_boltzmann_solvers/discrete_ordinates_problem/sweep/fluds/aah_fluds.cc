@@ -34,7 +34,10 @@ AAH_FLUDS::AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommon
 }
 
 double*
-AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, int n)
+AAH_FLUDS::OutgoingPsi(std::size_t cell_so_index,
+                       int outb_face_counter,
+                       std::size_t face_dof,
+                       std::size_t n)
 {
   // Face category
   int fc = common_data_.so_cell_outb_face_face_category_[cell_so_index][outb_face_counter];
@@ -60,7 +63,7 @@ AAH_FLUDS::OutgoingPsi(int cell_so_index, int outb_face_counter, int face_dof, i
 }
 
 double*
-AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
+AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_t n)
 {
   if (outb_face_counter > common_data_.nonlocal_outb_face_deplocI_slot_.size())
   {
@@ -74,7 +77,7 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
   int slot = common_data_.nonlocal_outb_face_deplocI_slot_[outb_face_counter].second;
   int nonlocal_psi_Gn_blockstride = common_data_.deplocI_face_dof_count_[depLocI];
 
-  int index =
+  std::size_t index =
     nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ + face_dof * num_groups_;
 
   if ((index < 0) or (index > deplocI_outgoing_psi_[depLocI].size()))
@@ -90,7 +93,11 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, int face_dof, int n)
 }
 
 double*
-AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int g, int n)
+AAH_FLUDS::UpwindPsi(std::size_t cell_so_index,
+                     int inc_face_counter,
+                     std::size_t face_dof,
+                     std::size_t g,
+                     std::size_t n)
 {
   // Face category
   int fc = common_data_.so_cell_inco_face_face_category_[cell_so_index][inc_face_counter];
@@ -124,20 +131,23 @@ AAH_FLUDS::UpwindPsi(int cell_so_index, int inc_face_counter, int face_dof, int 
 }
 
 double*
-AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n)
+AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter,
+                       std::size_t face_dof,
+                       std::size_t g,
+                       std::size_t n)
 {
   int prelocI = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].first;
 
   if (prelocI >= 0)
   {
-    int nonlocal_psi_Gn_blockstride = common_data_.prelocI_face_dof_count_[prelocI];
+    std::size_t nonlocal_psi_Gn_blockstride = common_data_.prelocI_face_dof_count_[prelocI];
     int slot = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].second.first;
 
     int mapped_dof = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
                        .second.second[face_dof];
 
-    int index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
-                mapped_dof * num_groups_ + g;
+    std::size_t index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
+                        mapped_dof * num_groups_ + g;
 
     return &prelocI_outgoing_psi_[prelocI][index];
   }
@@ -145,15 +155,15 @@ AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter, int face_dof, int g, int n)
   {
     prelocI = common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].first;
 
-    int nonlocal_psi_Gn_blockstride = common_data_.delayed_prelocI_face_dof_count_[prelocI];
+    std::size_t nonlocal_psi_Gn_blockstride = common_data_.delayed_prelocI_face_dof_count_[prelocI];
     int slot =
       common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].second.first;
 
     int mapped_dof = common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
                        .second.second[face_dof];
 
-    int index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
-                mapped_dof * num_groups_ + g;
+    std::size_t index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
+                        mapped_dof * num_groups_ + g;
 
     return &delayed_prelocI_outgoing_psi_old_[prelocI][index];
   }
