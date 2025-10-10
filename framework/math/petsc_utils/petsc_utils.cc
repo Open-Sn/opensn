@@ -225,14 +225,14 @@ CopyGlobalVecToSTLvector(Vec x,
                          std::vector<double>& data)
 {
   // Populating local indices
-  size_t N = global_indices.size();
+  auto N = static_cast<PetscInt>(global_indices.size());
   std::vector<int64_t> local_indices(N, 0);
-  for (size_t counter = 0; counter < N; ++counter)
+  for (PetscInt counter = 0; counter < N; ++counter)
     local_indices[counter] = counter;
 
   // Creating PETSc vector
   Vec local_vec;
-  VecCreateSeq(PETSC_COMM_SELF, global_indices.size() + 1, &local_vec);
+  VecCreateSeq(PETSC_COMM_SELF, N + 1, &local_vec);
   VecSet(local_vec, 0.0);
 
   // Create and transfer index sets
