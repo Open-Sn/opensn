@@ -292,7 +292,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   double local_gain = local_production + local_in_flow;
   std::vector<double> local_balance_table = {
     local_absorption, local_production, local_in_flow, local_out_flow, local_balance, local_gain};
-  size_t table_size = local_balance_table.size();
+  auto table_size = static_cast<int>(local_balance_table.size());
 
   // Compute global balance
   std::vector<double> global_balance_table(table_size, 0.0);
