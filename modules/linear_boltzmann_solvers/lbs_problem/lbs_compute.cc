@@ -341,7 +341,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto& quadrature = groupset.quadrature;
 
   const auto num_gs_angles = quadrature->omegas.size();
-  const auto num_gs_groups = groupset.groups.size();
+  const auto num_gs_groups = static_cast<int>(groupset.groups.size());
 
   const auto gsi = groupset.groups.front().id;
 
@@ -369,7 +369,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
             const auto mu = omega.Dot(face.normal);
             if (mu > 0.0)
             {
-              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+              for (int gsg = 0; gsg < num_gs_groups; ++gsg)
               {
                 const auto g = gsg + gsi;
                 const auto imap = sdm.MapDOFLocal(cell, i, psi_uk_man, n, g);
