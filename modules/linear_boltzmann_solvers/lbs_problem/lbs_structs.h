@@ -246,7 +246,7 @@ public:
       outflow_.resize(num_faces);
   }
 
-  size_t MapDOF(int node, int moment, int grp) const
+  size_t MapDOF(uint64_t node, uint64_t moment, uint64_t grp) const
   {
     return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
   }
