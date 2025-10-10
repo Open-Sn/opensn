@@ -141,7 +141,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
   std::vector<double> cont_input(num_cfem_local_dofs, 0.0);
   std::vector<double> cont_input_ctr(num_cfem_local_dofs, 0.0);
 
-  std::map<int64_t, int64_t> cfem_dof_global2local_map;
+  std::map<uint64_t, uint64_t> cfem_dof_global2local_map;
 
   // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
@@ -201,8 +201,8 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
           const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
           if (cfem_dof_global2local_map.count(dof_cfem_map_global) > 0)
           {
-            const int64_t dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);
-            const int64_t dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_global];
+            const auto dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);
+            const auto dof_cfem_map = cfem_dof_global2local_map[dof_cfem_map_global];
 
             const double phi_value = input_with_ghosts[dof_dfem_map];
 
