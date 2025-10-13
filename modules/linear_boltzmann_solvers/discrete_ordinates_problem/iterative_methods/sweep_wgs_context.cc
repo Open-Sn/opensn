@@ -104,7 +104,8 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   sweep_scheduler.Sweep();
   high_resolution_clock::time_point sweep_end = high_resolution_clock::now();
 
-  double sweep_time = (duration_cast<nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
+  auto sweep_time =
+    static_cast<double>(duration_cast<nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
   sweep_times.push_back(sweep_time);
 }
 
