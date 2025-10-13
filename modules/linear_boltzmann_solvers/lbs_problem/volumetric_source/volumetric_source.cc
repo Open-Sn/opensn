@@ -118,7 +118,9 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
 }
 
 std::vector<double>
-VolumetricSource::operator()(const Cell& cell, const Vector3& xyz, const int num_groups) const
+VolumetricSource::operator()(const Cell& cell,
+                             const Vector3& xyz,
+                             const std::size_t num_groups) const
 {
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
     return std::vector<double>(num_groups, 0.0);
