@@ -131,7 +131,7 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
 
   // Compute size of local coordinate and interpolation data and send to rank 0
   std::vector<int> local_data_sizes(opensn::mpi_comm.size(), 0);
-  int local_size = local_data.size();
+  auto local_size = static_cast<int>(local_data.size());
   opensn::mpi_comm.gather(local_size, local_data_sizes, 0);
 
   // Compute global size of coordinate and interpolation data and each location's offset
