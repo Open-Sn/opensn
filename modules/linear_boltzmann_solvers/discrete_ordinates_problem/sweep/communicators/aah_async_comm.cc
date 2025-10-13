@@ -87,7 +87,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   auto message_count_and_size = [this](size_t num_unknowns)
   {
     if (num_unknowns == 0)
-      return std::pair<size_t, size_t>(0, 0);
+      return std::pair<size_t, int>(0, 0);
 
     const size_t bytes = num_unknowns * sizeof(double);
     size_t message_count = num_angles_;
@@ -95,18 +95,19 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
       message_count = (bytes + (max_mpi_message_size_ - 1)) / max_mpi_message_size_;
     message_count = std::min(message_count, num_unknowns);
 
-    const size_t message_size = (num_unknowns + (message_count - 1)) / message_count;
-    return std::pair<size_t, size_t>(message_count, message_size);
+    const auto message_size =
+      static_cast<int>((num_unknowns + (message_count - 1)) / message_count);
+    return std::pair<size_t, int>(message_count, message_size);
   };
 
   // Predecessor locations
-  const size_t num_dependencies = spds.GetLocationDependencies().size();
+  const auto num_dependencies = spds.GetLocationDependencies().size();
   preloc_msg_data_.resize(num_dependencies);
   preloc_msg_received_.resize(num_dependencies);
 
-  for (size_t i = 0; i < num_dependencies; ++i)
+  for (std::size_t i = 0; i < num_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto num_unknowns = fluds.GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     const auto [message_count, message_size] = message_count_and_size(num_unknowns);
     if (message_count == 0)
     {
@@ -132,13 +133,13 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
   }
 
   // Delayed predecessor locations
-  const size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
+  const auto num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
   delayed_preloc_msg_data_.resize(num_delayed_dependencies);
   delayed_preloc_msg_received_.resize(num_delayed_dependencies);
 
-  for (size_t i = 0; i < num_delayed_dependencies; ++i)
+  for (std::size_t i = 0; i < num_delayed_dependencies; ++i)
   {
-    size_t num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto num_unknowns = fluds.GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_;
     const auto [message_count, message_size] = message_count_and_size(num_unknowns);
     if (message_count == 0)
     {
@@ -171,7 +172,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
 
   for (size_t i = 0; i < num_successors; ++i)
   {
-    size_t num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
+    auto num_unknowns = fluds.GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_;
     const auto [message_count, message_size] = message_count_and_size(num_unknowns);
     if (message_count == 0)
     {
