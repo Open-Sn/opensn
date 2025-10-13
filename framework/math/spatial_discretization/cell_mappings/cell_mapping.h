@@ -60,7 +60,7 @@ public:
   const std::vector<Vector3>& GetNodeLocations() const { return node_locations_; }
 
   /// Returns the value of the required shape function at the world xyz point.
-  virtual double ShapeValue(int i, const Vector3& xyz) const = 0;
+  virtual double ShapeValue(size_t i, const Vector3& xyz) const = 0;
 
   /**
    * Populates all the shape function values at the given world xyz point. This method is optimized
@@ -69,7 +69,7 @@ public:
   virtual void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const = 0;
 
   /// Returns the value of the required shape function gradient at the world xyz point.
-  virtual Vector3 GradShapeValue(int i, const Vector3& xyz) const = 0;
+  virtual Vector3 GradShapeValue(size_t i, const Vector3& xyz) const = 0;
 
   /**
    * Populates all the shape function gradient values at the given world xyz point. This method is

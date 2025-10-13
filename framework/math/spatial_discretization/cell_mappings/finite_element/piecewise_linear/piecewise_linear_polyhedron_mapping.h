@@ -32,9 +32,9 @@ public:
   SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
   /// Actual shape functions as function of cartesian coordinates
-  double ShapeValue(int i, const Vector3& xyz) const override;
+  double ShapeValue(size_t i, const Vector3& xyz) const override;
 
-  Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
+  Vector3 GradShapeValue(size_t i, const Vector3& xyz) const override;
 
   void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const override;
 

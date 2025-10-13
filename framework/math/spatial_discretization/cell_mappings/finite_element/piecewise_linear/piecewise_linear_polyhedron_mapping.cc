@@ -408,7 +408,7 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::ShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearPolyhedronMapping::ShapeValue(size_t i, const Vector3& xyz) const
 {
   for (size_t f = 0; f < face_data_.size(); ++f)
   {
@@ -502,7 +502,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
 }
 
 Vector3
-PieceWiseLinearPolyhedronMapping::GradShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearPolyhedronMapping::GradShapeValue(size_t i, const Vector3& xyz) const
 {
   Vector3 grad, gradr;
   for (size_t f = 0; f < face_data_.size(); ++f)
