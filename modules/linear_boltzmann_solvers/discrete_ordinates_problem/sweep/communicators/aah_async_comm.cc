@@ -219,12 +219,11 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
   {
     auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
 
-    for (size_t m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
+    assert(delayed_preloc_msg_data_[i].size() <= std::numeric_limits<int>::max());
+    for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const size_t utag = max_num_messages_ * static_cast<size_t>(angle_set_num) + m;
-      assert(utag <= std::numeric_limits<int>::max());
-      const int tag = static_cast<int>(utag);
+      const int tag = max_num_messages_ * angle_set_num + m;
       if (not delayed_preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -262,12 +261,11 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
   {
     auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
 
-    for (size_t m = 0; m < preloc_msg_data_[i].size(); ++m)
+    assert(preloc_msg_data_[i].size() <= std::numeric_limits<int>::max());
+    for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const size_t utag = max_num_messages_ * static_cast<size_t>(angle_set_num) + m;
-      assert(utag <= std::numeric_limits<int>::max());
-      const int tag = static_cast<int>(utag);
+      const int tag = max_num_messages_ * angle_set_num + m;
       if (not preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))

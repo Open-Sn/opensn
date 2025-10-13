@@ -23,7 +23,7 @@ class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
 private:
   size_t num_groups_;
   size_t num_angles_;
-  size_t max_num_messages_;
+  int max_num_messages_;
   size_t max_mpi_message_size_;
   bool done_sending_;
   bool data_initialized_;
@@ -58,9 +58,9 @@ public:
                                size_t max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
 
-  size_t GetMaxNumMessages() const { return max_num_messages_; }
+  int GetMaxNumMessages() const { return max_num_messages_; }
 
-  void SetMaxNumMessages(size_t count) { max_num_messages_ = count; }
+  void SetMaxNumMessages(int count) { max_num_messages_ = count; }
 
   bool DoneSending() const;
 
