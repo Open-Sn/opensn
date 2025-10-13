@@ -57,7 +57,7 @@ protected:
   /// Reorders the nodes for parallel computation in a Continuous Finite Element calculation.
   void OrderNodes();
 
-  std::vector<int64_t> cell_local_block_address_;
+  std::vector<uint64_t> cell_local_block_address_;
   std::vector<std::pair<uint64_t, int64_t>> neighbor_cell_block_address_;
 
 private:

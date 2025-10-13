@@ -73,7 +73,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = GetCellMapping(cell);
-    cell_local_block_address_[cell.local_id] = static_cast<int64_t>(local_node_count);
+    cell_local_block_address_[cell.local_id] = local_node_count;
     local_node_count += cell_mapping.GetNumNodes();
   }
 
@@ -86,7 +86,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   for (int locI = 0; locI < opensn::mpi_comm.size(); ++locI)
   {
     if (locI == opensn::mpi_comm.rank())
-      local_block_address_ = static_cast<int64_t>(running_block_address);
+      local_block_address_ = running_block_address;
 
     running_block_address += locJ_block_size_[locI];
   }
@@ -122,7 +122,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
     {
       const auto& cell = grid_->cells[cell_global_id];
 
-      const uint64_t cell_block_address =
+      const auto cell_block_address =
         local_block_address_ + cell_local_block_address_[cell.local_id];
       map_list.push_back(cell_block_address);
     }
@@ -174,7 +174,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     // Self connection
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      int64_t ir = cell_local_block_address_[lc] + i;
+      auto ir = cell_local_block_address_[lc] + i;
       nodal_nnz_in_diag[ir] += static_cast<int64_t>(num_nodes);
     }
 
@@ -188,7 +188,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          int64_t ir = cell_local_block_address_[lc] + i;
+          auto ir = cell_local_block_address_[lc] + i;
           nodal_nnz_in_diag[ir] += static_cast<int64_t>(adj_cell_mapping.GetNumNodes());
         }
       }
@@ -212,7 +212,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
 
         for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
-          int64_t ir = cell_local_block_address_[lc] + i;
+          auto ir = cell_local_block_address_[lc] + i;
           nodal_nnz_off_diag[ir] += static_cast<int64_t>(adj_cell_mapping.GetNumNodes());
         }
       }
@@ -278,16 +278,16 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
-                        cell_local_block_address_[cell.local_id] +
-                        local_base_block_size_ * block_id + node;
+      auto address = local_block_address_ * num_unknowns +
+                     cell_local_block_address_[cell.local_id] + local_base_block_size_ * block_id +
+                     node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address = static_cast<int64_t>(local_block_address_ * num_unknowns) +
-                        cell_local_block_address_[cell.local_id] * num_unknowns +
-                        node * num_unknowns + block_id;
+      auto address = local_block_address_ * num_unknowns +
+                     cell_local_block_address_[cell.local_id] * num_unknowns + node * num_unknowns +
+                     block_id;
       return address;
     }
   }
@@ -315,15 +315,14 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
-                        locJ_block_size_[cell.partition_id] * block_id + node;
+      auto address = neighbor_cell_block_address_[index].second +
+                     locJ_block_size_[cell.partition_id] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address =
-        static_cast<int64_t>(neighbor_cell_block_address_[index].second * num_unknowns) +
-        node * num_unknowns + block_id;
+      auto address =
+        neighbor_cell_block_address_[index].second * num_unknowns + node * num_unknowns + block_id;
       return address;
     }
   }
@@ -347,15 +346,14 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
   {
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = static_cast<int64_t>(cell_local_block_address_[cell.local_id]) +
-                        local_base_block_size_ * block_id + node;
+      auto address =
+        cell_local_block_address_[cell.local_id] + local_base_block_size_ * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address =
-        static_cast<int64_t>(cell_local_block_address_[cell.local_id] * num_unknowns) +
-        node * num_unknowns + block_id;
+      auto address =
+        cell_local_block_address_[cell.local_id] * num_unknowns + node * num_unknowns + block_id;
       return address;
     }
   }
@@ -383,15 +381,14 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
 
     if (storage == UnknownStorageType::BLOCK)
     {
-      int64_t address = static_cast<int64_t>(neighbor_cell_block_address_[index].second) +
-                        locJ_block_size_[cell.partition_id] * block_id + node;
+      auto address = neighbor_cell_block_address_[index].second +
+                     locJ_block_size_[cell.partition_id] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
-      int64_t address =
-        static_cast<int64_t>(neighbor_cell_block_address_[index].second * num_unknowns) +
-        node * num_unknowns + block_id;
+      auto address =
+        neighbor_cell_block_address_[index].second * num_unknowns + node * num_unknowns + block_id;
       return address;
     }
   }
