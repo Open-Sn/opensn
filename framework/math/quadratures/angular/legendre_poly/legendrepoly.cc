@@ -8,7 +8,7 @@ namespace opensn
 {
 
 double
-Legendre(int N, double x)
+Legendre(unsigned int N, double x)
 {
   double Pnm1 = 1;
   double Pn = x;
@@ -24,9 +24,9 @@ Legendre(int N, double x)
     return x;
   }
 
-  for (int n = 2; n <= N; ++n)
+  for (unsigned int n = 2; n <= N; ++n)
   {
-    int ns = n - 1;
+    auto ns = n - 1;
     Pnp1 = ((2.0 * ns + 1) / (ns + 1.0)) * x * Pn - (ns / (ns + 1.0)) * Pnm1;
     Pnm1 = Pn;
     Pn = Pnp1;
@@ -36,7 +36,7 @@ Legendre(int N, double x)
 }
 
 double
-dLegendredx(int N, double x)
+dLegendredx(unsigned int N, double x)
 {
   if (N == 0)
   {
@@ -55,7 +55,7 @@ dLegendredx(int N, double x)
 }
 
 double
-d2Legendredx2(int N, double x)
+d2Legendredx2(unsigned int N, double x)
 {
   double epsilon = 1.0e-8;
   if (N == 0)
