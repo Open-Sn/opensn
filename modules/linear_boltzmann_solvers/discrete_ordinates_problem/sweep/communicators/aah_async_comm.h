@@ -24,7 +24,7 @@ private:
   size_t num_groups_;
   size_t num_angles_;
   int max_num_messages_;
-  size_t max_mpi_message_size_;
+  int max_mpi_message_size_;
   bool done_sending_;
   bool data_initialized_;
   bool upstream_data_initialized_;
@@ -55,7 +55,7 @@ public:
   AAH_ASynchronousCommunicator(FLUDS& fluds,
                                size_t num_groups,
                                size_t num_angles,
-                               size_t max_mpi_message_size,
+                               int max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
 
   int GetMaxNumMessages() const { return max_num_messages_; }
