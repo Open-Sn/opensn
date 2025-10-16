@@ -75,7 +75,7 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_
 
   int depLocI = common_data_.nonlocal_outb_face_deplocI_slot_[outb_face_counter].first;
   int slot = common_data_.nonlocal_outb_face_deplocI_slot_[outb_face_counter].second;
-  int nonlocal_psi_Gn_blockstride = common_data_.deplocI_face_dof_count_[depLocI];
+  auto nonlocal_psi_Gn_blockstride = common_data_.deplocI_face_dof_count_[depLocI];
 
   std::size_t index =
     nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ + face_dof * num_groups_;
@@ -141,10 +141,11 @@ AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter,
   if (prelocI >= 0)
   {
     std::size_t nonlocal_psi_Gn_blockstride = common_data_.prelocI_face_dof_count_[prelocI];
-    int slot = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].second.first;
+    auto slot =
+      common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].second.first;
 
-    int mapped_dof = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
-                       .second.second[face_dof];
+    auto mapped_dof = common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
+                        .second.second[face_dof];
 
     std::size_t index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
                         mapped_dof * num_groups_ + g;
@@ -156,11 +157,12 @@ AAH_FLUDS::NLUpwindPsi(int nonl_inc_face_counter,
     prelocI = common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].first;
 
     std::size_t nonlocal_psi_Gn_blockstride = common_data_.delayed_prelocI_face_dof_count_[prelocI];
-    int slot =
+    auto slot =
       common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter].second.first;
 
-    int mapped_dof = common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
-                       .second.second[face_dof];
+    auto mapped_dof =
+      common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonl_inc_face_counter]
+        .second.second[face_dof];
 
     std::size_t index = nonlocal_psi_Gn_blockstride * num_groups_ * n + slot * num_groups_ +
                         mapped_dof * num_groups_ + g;
@@ -263,7 +265,7 @@ AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
 
   for (size_t prelocI = 0; prelocI < num_loc_deps; ++prelocI)
   {
-    const int num_nodes = common_data_.delayed_prelocI_face_dof_count_[prelocI];
+    const auto num_nodes = common_data_.delayed_prelocI_face_dof_count_[prelocI];
 
     uint64_t buff_size = num_nodes * num_groups_and_angles_;
 
