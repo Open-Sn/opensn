@@ -31,7 +31,7 @@ public:
   operator=(const DiscreteOrdinatesCurvilinearProblem&) = delete;
 
 protected:
-  void PerformInputChecks() override;
+  void PerformInputChecks();
   void InitializeSpatialDiscretization() override;
   void ComputeSecondaryUnitIntegrals();
 

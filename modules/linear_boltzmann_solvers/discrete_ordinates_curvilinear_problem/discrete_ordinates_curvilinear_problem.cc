@@ -46,15 +46,12 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
   const InputParameters& params)
   : DiscreteOrdinatesProblem(params)
 {
+  PerformInputChecks();
 }
 
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
-  log.Log() << "DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : enter";
-
-  DiscreteOrdinatesProblem::PerformInputChecks();
-
   // perform additional verifications for curvilinear LBS
   // coordinate system must be curvilinear
   if (grid_->GetCoordinateSystem() != CoordinateSystemType::CYLINDRICAL and
@@ -237,7 +234,6 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       }
     }
   }
-  log.Log() << "DiscreteOrdinatesCurvilinearSolver::PerformInputChecks : exit";
 }
 
 void

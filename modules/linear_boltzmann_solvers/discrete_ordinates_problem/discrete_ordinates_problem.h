@@ -35,6 +35,8 @@ public:
   /// Read access to newest updated angular flux vector.
   const std::vector<std::vector<double>>& GetPsiNewLocal() const;
 
+  void PrintSimHeader() override;
+
   void Initialize() override;
 
   /// Returns the sweep boundaries as a read only reference
@@ -106,12 +108,15 @@ public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
 
-protected:
+private:
+  /// Computes the number of moments for the given mesher types
+  void ValidateAndComputeScatteringMoments();
+
   /**
    * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
    * geometry into account.
    */
-  static std::pair<UniqueSOGroupings, DirIDToSOMap>
+  std::pair<UniqueSOGroupings, DirIDToSOMap>
   AssociateSOsAndDirections(std::shared_ptr<MeshContinuum> grid,
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
