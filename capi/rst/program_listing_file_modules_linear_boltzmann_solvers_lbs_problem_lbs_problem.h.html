@@ -134,12 +134,6 @@
 <span class="w">  </span><span class="c1">/// Returns a constant reference to the solver options.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOptions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetXSMapEntryBlock</span><span class="p">();</span>
-
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
@@ -167,19 +161,7 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetMaxPrecursorsPerMaterial</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Adds a group to the list of groups. If group id &lt; 0, the id will be logically derived from the</span>
-<span class="cm">   * list size. If &gt;= 0 the id will be set to the id specified.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGroup</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
-
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroup</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Adds a groupset to the list of groupsets. The groupset id will be logically derived from the</span>
-<span class="cm">   * list size.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGroupset</span><span class="p">();</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroupsets</span><span class="p">();</span>
 
@@ -302,9 +284,6 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Initializes default materials and physics materials.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeMaterials</span><span class="p">();</span>
-
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -337,32 +316,36 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Initialize groupsets</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeGroupsets</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initializes materials</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeXSmapAndDensities</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeMaterials</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Initialize sources</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initialize boundary conditions</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaryConditions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Performs general input checks before initialization continues.</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PerformInputChecks</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Prints header information of simulation.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
-
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSpatialDiscretization</span><span class="p">();</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PrintSimHeader</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeUnitIntegrals</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Initializes common groupset items.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGroupsets</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Computes the number of moments for the given mesher types</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAndComputeScatteringMoments</span><span class="p">();</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSpatialDiscretization</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Initializes parallel arrays.</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParrays</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParrays</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeFieldFunctions</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Initializes boundaries.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaries</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeWGSSolvers</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
@@ -448,6 +431,12 @@
 
 <span class="w">  </span><span class="c1">/// Returns the input parameters for this object.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetXSMapEntryBlock</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

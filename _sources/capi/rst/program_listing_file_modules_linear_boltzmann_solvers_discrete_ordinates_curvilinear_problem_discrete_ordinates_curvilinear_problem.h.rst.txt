@@ -43,7 +43,7 @@ Program Listing for File discrete_ordinates_curvilinear_problem.h
      operator=(const DiscreteOrdinatesCurvilinearProblem&) = delete;
    
    protected:
-     void PerformInputChecks() override;
+     void PerformInputChecks();
      void InitializeSpatialDiscretization() override;
      void ComputeSecondaryUnitIntegrals();
    

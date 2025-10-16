@@ -121,6 +121,8 @@
 <span class="w">  </span><span class="c1">/// Read access to newest updated angular flux vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetPsiNewLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the sweep boundaries as a read only reference</span>
@@ -192,12 +194,15 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="k">protected</span><span class="o">:</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Computes the number of moments for the given mesher types</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ValidateAndComputeScatteringMoments</span><span class="p">();</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes</span>
 <span class="cm">   * geometry into account.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">UniqueSOGroupings</span><span class="p">,</span><span class="w"> </span><span class="n">DirIDToSOMap</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">UniqueSOGroupings</span><span class="p">,</span><span class="w"> </span><span class="n">DirIDToSOMap</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="n">AssociateSOsAndDirections</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
 <span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
 <span class="w">                            </span><span class="n">AngleAggregationType</span><span class="w"> </span><span class="n">agg_type</span><span class="p">,</span>

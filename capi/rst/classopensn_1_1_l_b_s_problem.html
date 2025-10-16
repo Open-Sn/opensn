@@ -194,21 +194,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem8AddGroupEi">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a4e3490d5296b4eedff71bcbddd449918"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddGroup</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem8AddGroupEi" title="Link to this definition"></a><br /></dt>
-<dd><p>Adds a group to the list of groups. If group id &lt; 0, the id will be logically derived from the list size. If &gt;= 0 the id will be set to the id specified. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem9GetGroupsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a201ee019860f11514e22a54e1a52882b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_l_b_s_group.html#_CPPv4N6opensn8LBSGroupE" title="opensn::LBSGroup"><span class="n"><span class="pre">LBSGroup</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetGroups</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem9GetGroupsEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem11AddGroupsetEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ad9444718a3ef275f13fa0807f05f6cf1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddGroupset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem11AddGroupsetEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Adds a groupset to the list of groupsets. The groupset id will be logically derived from the list size. </p>
-</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem12GetGroupsetsEv">
@@ -456,12 +444,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19InitializeMaterialsEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a6a96198f55ffd74f8655a68d131bf079"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeMaterials</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19InitializeMaterialsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes default materials and physics materials. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a74f8f4b277298ec42d2d0fe624f8619c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TriggerRestartDump</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -503,6 +485,12 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18GetInputParametersEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a59eb5cb82c103c26d4bfba9868810c63"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the input parameters for this object. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15GetOptionsBlockEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a628e15bd22558b92d6db5f60dd3272e9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetOptionsBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15GetOptionsBlockEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -516,12 +504,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18GetXSMapEntryBlockEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1e09270ad372e863398d643cb034f238"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetXSMapEntryBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18GetXSMapEntryBlockEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18GetInputParametersEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a59eb5cb82c103c26d4bfba9868810c63"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the input parameters for this object. </p>
-</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -540,20 +522,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18PerformInputChecksEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ac12aca16a1212be65eb1976fdd83cb90"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PerformInputChecks</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18PerformInputChecksEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Performs general input checks before initialization continues. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem14PrintSimHeaderEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a42e3268fd37060003abe1ed29cf02a1e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintSimHeader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem14PrintSimHeaderEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Prints header information of simulation. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem31InitializeSpatialDiscretizationEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a83f793ea567686df720ddac7cd265029"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem31InitializeSpatialDiscretizationEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a3bcd8d65559842437f6a34c4c3e51447"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintSimHeader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem14PrintSimHeaderEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -562,20 +532,13 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19InitializeGroupsetsEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ace3d64d47921431e046ee41dc09bacba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeGroupsets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19InitializeGroupsetsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes common groupset items. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem35ValidateAndComputeScatteringMomentsEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1af5009bf85a1640e435bd2bd3ad7b1cc1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateAndComputeScatteringMoments</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem35ValidateAndComputeScatteringMomentsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Computes the number of moments for the given mesher types. </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem31InitializeSpatialDiscretizationEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a83f793ea567686df720ddac7cd265029"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem31InitializeSpatialDiscretizationEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem17InitializeParraysEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a5697713603c66ec6efdb27d647c2245f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeParrays</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17InitializeParraysEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a29b8d967e556881f69f6813a6668400f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeParrays</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17InitializeParraysEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initializes parallel arrays. </p>
 </dd></dl>
 
@@ -592,7 +555,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem23InitializeSolverSchemesEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a9b08105a78bfd223d0142db49c0cbb51"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSolverSchemes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem23InitializeSolverSchemesEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a99e175d8190ce3e3ae7ae19ce5c8cdfe"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSolverSchemes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem23InitializeSolverSchemesEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
