@@ -20,10 +20,11 @@ public:
    * Initialize the ghosted parallel vector with the given local and global sizes, with the
    * specified global ghost indices.
    */
-  GhostedParallelSTLVector(uint64_t local_size,
-                           uint64_t global_size,
-                           const std::vector<uint64_t>& ghost_ids,
-                           const mpi::Communicator& communicator = MPI_COMM_WORLD)
+  GhostedParallelSTLVector(
+    uint64_t local_size,
+    uint64_t global_size,
+    const std::vector<uint64_t>& ghost_ids,
+    const mpi::Communicator& communicator = MPI_COMM_WORLD) // NOLINT(bugprone-casting-through-void)
     : ParallelSTLVector(local_size, global_size, communicator),
       ghost_comm_(local_size, global_size, ghost_ids, communicator)
   {

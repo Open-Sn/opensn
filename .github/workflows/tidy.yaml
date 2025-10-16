@@ -1,0 +1,29 @@
+name: clang-tidy
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: [self-hosted]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        shell: bash
+        run: |
+          module load python3/3.12.3 opensn/clang/19
+          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+      - name: clang-tidy
+        shell: bash
+        run: |
+          module load python3/3.12.3 opensn/clang/19
+          tools/developer/run-clang-tidy.sh -extra-arg-before=--gcc-toolchain=/opt/local/opensn/gcc/13.3.0/gcc-13.3.0 \
+                                            -extra-arg=-I/opt/local/opensn/clang/19.1.5/mpich-4.3.0b1/include
