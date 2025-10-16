@@ -42,7 +42,7 @@ LBSProblem::GetInputParameters()
 {
   InputParameters params = Problem::GetInputParameters();
 
-  params.ChangeExistingParamToOptional("name", "LBSDatablock");
+  params.ChangeExistingParamToOptional("name", "LBSProblem");
 
   params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
 
@@ -55,9 +55,6 @@ LBSProblem::GetInputParameters()
 
   params.AddRequiredParameterArray("xs_map",
                                    "Cross-section map from block IDs to cross-section objects.");
-
-  params.AddRequiredParameter<unsigned int>(
-    "scattering_order", "The level of harmonic expansion for the scattering source.");
 
   params.AddOptionalParameterArray<std::shared_ptr<VolumetricSource>>(
     "volumetric_sources", {}, "An array of handles to volumetric sources.");
@@ -80,65 +77,41 @@ LBSProblem::GetInputParameters()
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
-    scattering_order_(params.GetParamValue<unsigned int>("scattering_order")),
+    num_groups_(params.GetParamValue<size_t>("num_groups")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
-  // Make groups
-  const auto num_groups = params.GetParamValue<size_t>("num_groups");
-  for (size_t g = 0; g < num_groups; ++g)
-    groups_.emplace_back(static_cast<int>(g));
-
-  // Make groupsets
-  const auto& groupsets_array = params.GetParam("groupsets");
-
-  const size_t num_gs = groupsets_array.GetNumParameters();
-  for (size_t gs = 0; gs < num_gs; ++gs)
+  // Check system for GPU acceleration
+  if (use_gpus_)
   {
-    const auto& groupset_params = groupsets_array.GetParam(gs);
-
-    InputParameters gs_input_params = LBSGroupset::GetInputParameters();
-    gs_input_params.SetObjectType("LBSProblem:LBSGroupset");
-    gs_input_params.AssignParameters(groupset_params);
-
-    groupsets_.emplace_back(gs_input_params, gs, *this);
+#ifdef __OPENSN_USE_CUDA__
+    CheckCapableDevices();
+#else
+    throw std::invalid_argument(
+      GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled");
+#endif // __OPENSN_USE_CUDA__
   }
 
-  // Build XS map
-  const auto& xs_array = params.GetParam("xs_map");
-  const size_t num_xs = xs_array.GetNumParameters();
-  for (size_t i = 0; i < num_xs; ++i)
+  // Initialize options
+  if (params.IsParameterValid("options"))
   {
-    const auto& item_params = xs_array.GetParam(i);
-    InputParameters xs_entry_pars = GetXSMapEntryBlock();
-    xs_entry_pars.AssignParameters(item_params);
-
-    const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
-    block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    const auto& block_ids = block_ids_param.GetVectorValue<int>();
-    auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
-    for (const auto& block_id : block_ids)
-      block_id_to_xs_map_[block_id] = xs;
+    auto options_params = LBSProblem::GetOptionsBlock();
+    options_params.AssignParameters(params.GetParam("options"));
+    SetOptions(options_params);
   }
 
-  // Initialize sources
-  if (params.Has("volumetric_sources"))
-  {
-    const auto& vol_srcs = params.GetParam("volumetric_sources");
-    vol_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    for (const auto& src : vol_srcs)
-      volumetric_sources_.push_back(src.GetValue<std::shared_ptr<VolumetricSource>>());
-  }
+  // Set geometry type
+  const auto dim = grid_->GetDimension();
+  if (dim == 1)
+    options_.geometry_type = GeometryType::ONED_SLAB;
+  else if (dim == 2)
+    options_.geometry_type = GeometryType::TWOD_CARTESIAN;
+  else if (dim == 3)
+    options_.geometry_type = GeometryType::THREED_CARTESIAN;
+  else
+    OpenSnLogicalError("Cannot deduce geometry type from mesh.");
 
-  if (params.Has("point_sources"))
-  {
-    const auto& pt_srcs = params.GetParam("point_sources");
-    pt_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    for (const auto& src : pt_srcs)
-      point_sources_.push_back(src.GetValue<std::shared_ptr<PointSource>>());
-  }
-
-  // Initialize boundary conditions
+  // Set boundary conditions
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");
@@ -151,24 +124,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
     }
   }
 
-  // Check system for GPU acceleration
-  if (use_gpus_)
-  {
-#ifdef __OPENSN_USE_CUDA__
-    CheckCapableDevices();
-#else
-    throw std::invalid_argument(
-      "GPU support was requested, but OpenSn was built without CUDA enabled.\n");
-#endif // __OPENSN_USE_CUDA__
-  }
-
-  // Options
-  if (params.IsParameterValid("options"))
-  {
-    auto options_params = LBSProblem::GetOptionsBlock();
-    options_params.AssignParameters(params.GetParam("options"));
-    SetOptions(options_params);
-  }
+  InitializeGroupsets(params);
+  InitializeSources(params);
+  InitializeXSmapAndDensities(params);
+  InitializeMaterials();
 }
 
 LBSOptions&
@@ -213,25 +172,10 @@ LBSProblem::GetMaxPrecursorsPerMaterial() const
   return max_precursors_per_material_;
 }
 
-void
-LBSProblem::AddGroup(int id)
-{
-  if (id < 0)
-    groups_.emplace_back(static_cast<int>(groups_.size()));
-  else
-    groups_.emplace_back(id);
-}
-
 const std::vector<LBSGroup>&
 LBSProblem::GetGroups() const
 {
   return groups_;
-}
-
-void
-LBSProblem::AddGroupset()
-{
-  groupsets_.emplace_back(static_cast<int>(groupsets_.size()));
 }
 
 std::vector<LBSGroupset>&
@@ -690,10 +634,12 @@ LBSProblem::SetOptions(const InputParameters& input)
       if (not std::filesystem::exists(dir))
       {
         if (not std::filesystem::create_directories(dir))
-          throw std::runtime_error("Failed to create restart directory: " + dir.string());
+          throw std::runtime_error(GetName() + ": Failed to create restart directory " +
+                                   dir.string());
       }
       else if (not std::filesystem::is_directory(dir))
-        throw std::runtime_error("Restart path exists but is not a directory: " + dir.string());
+        throw std::runtime_error(GetName() + ": Restart path exists but is not a directory " +
+                                 dir.string());
     }
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
@@ -718,7 +664,7 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
     case LBSBoundaryType::VACUUM:
     case LBSBoundaryType::REFLECTING:
     {
-      GetBoundaryPreferences()[bid] = {type};
+      boundary_preferences_[bid] = {type};
       break;
     }
     case LBSBoundaryType::ISOTROPIC:
@@ -734,7 +680,8 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
     }
     case LBSBoundaryType::ARBITRARY:
     {
-      throw std::runtime_error("Arbitrary boundary conditions are not currently supported");
+      throw std::runtime_error(GetName() +
+                               ": Arbitrary boundary conditions are not currently supported");
       break;
     }
   }
@@ -745,17 +692,14 @@ LBSProblem::Initialize()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::Initialize");
 
-  PerformInputChecks(); // assigns num_groups and grid
   PrintSimHeader();
-
   mpi_comm.barrier();
 
-  InitializeMaterials();
   InitializeSpatialDiscretization();
-  InitializeGroupsets();
-  ValidateAndComputeScatteringMoments();
   InitializeParrays();
   InitializeBoundaries();
+  InitializeGPUExtras();
+  SetAdjoint(false);
 
   // Initialize point sources
   for (auto& point_source : point_sources_)
@@ -764,50 +708,6 @@ LBSProblem::Initialize()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
-
-  InitializeGPUExtras();
-  SetAdjoint(false);
-}
-
-void
-LBSProblem::PerformInputChecks()
-{
-  if (groups_.empty())
-    throw std::runtime_error("LBSProblem: No groups added to solver");
-
-  num_groups_ = groups_.size();
-
-  if (groupsets_.empty())
-    throw std::runtime_error("LBSProblem: No group-sets added to solver");
-
-  int grpset_counter = 0;
-  for (auto& group_set : groupsets_)
-  {
-    if (group_set.groups.empty())
-    {
-      std::stringstream oss;
-      oss << "LBSPRoblem: No groups added to groupset " << grpset_counter;
-      throw std::runtime_error(oss.str());
-    }
-    ++grpset_counter;
-  }
-
-  if (grid_ == nullptr)
-    throw std::runtime_error("LBSProblem: Invalid grid");
-
-  // Determine geometry type
-  const auto dim = grid_->GetDimension();
-  if (dim == 1)
-    options_.geometry_type = GeometryType::ONED_SLAB;
-  else if (dim == 2)
-    options_.geometry_type = GeometryType::TWOD_CARTESIAN;
-  else if (dim == 3)
-    options_.geometry_type = GeometryType::THREED_CARTESIAN;
-  else
-    OpenSnLogicalError("Cannot deduce geometry type from mesh.");
-
-  // Assign placeholder unit densities
-  densities_local_.assign(grid_->local_cells.size(), 1.0);
 }
 
 void
@@ -816,33 +716,105 @@ LBSProblem::PrintSimHeader()
   if (opensn::mpi_comm.rank() == 0)
   {
     std::stringstream outstr;
-    outstr << "\nInitializing LBS SteadyStateSourceSolver with name: " << GetName() << "\n\n"
+    outstr << "\n"
+           << "Initializing " << GetName() << "\n\n"
            << "Scattering order    : " << scattering_order_ << "\n"
-           << "Number of Groups    : " << groups_.size() << "\n"
-           << "Number of Group sets: " << groupsets_.size() << std::endl;
+           << "Number of moments   : " << num_moments_ << "\n"
+           << "Number of groups    : " << groups_.size() << "\n"
+           << "Number of groupsets : " << groupsets_.size() << "\n\n";
 
-    // Output Groupsets
     for (const auto& groupset : groupsets_)
     {
-      char buf_pol[20];
-
-      outstr << "\n***** Groupset " << groupset.id << " *****\n"
+      outstr << "***** Groupset " << groupset.id << " *****\n"
              << "Groups:\n";
-      int counter = 0;
-      for (auto group : groupset.groups)
+      const auto& groups = groupset.groups;
+      constexpr int groups_per_line = 12;
+      for (size_t i = 0; i < groups.size(); ++i)
       {
-        snprintf(buf_pol, 20, "%5d ", group.id);
-        outstr << std::string(buf_pol);
-        counter++;
-        if (counter == 12)
-        {
-          counter = 0;
-          outstr << "\n";
-        }
+        outstr << std::setw(5) << groups[i].id << ' ';
+        if ((i + 1) % groups_per_line == 0)
+          outstr << '\n';
       }
+      if (!groups.empty() && groups.size() % groups_per_line != 0)
+        outstr << '\n';
     }
-    log.Log() << outstr.str() << "\n" << std::endl;
+
+    log.Log() << outstr.str() << '\n';
   }
+}
+
+void
+LBSProblem::InitializeSources(const InputParameters& params)
+{
+  if (params.Has("volumetric_sources"))
+  {
+    const auto& vol_srcs = params.GetParam("volumetric_sources");
+    vol_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (const auto& src : vol_srcs)
+      volumetric_sources_.push_back(src.GetValue<std::shared_ptr<VolumetricSource>>());
+  }
+
+  if (params.Has("point_sources"))
+  {
+    const auto& pt_srcs = params.GetParam("point_sources");
+    pt_srcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (const auto& src : pt_srcs)
+      point_sources_.push_back(src.GetValue<std::shared_ptr<PointSource>>());
+  }
+}
+
+void
+LBSProblem::InitializeGroupsets(const InputParameters& params)
+{
+  // Initialize groups
+  if (num_groups_ == 0)
+    throw std::invalid_argument(GetName() + ": Number of groups must be > 0");
+  for (size_t g = 0; g < num_groups_; ++g)
+    groups_.emplace_back(static_cast<int>(g));
+
+  // Initialize groupsets
+  const auto& groupsets_array = params.GetParam("groupsets");
+  const size_t num_gs = groupsets_array.GetNumParameters();
+  if (num_gs == 0)
+    throw std::invalid_argument(GetName() + ": At least one groupset must be specified");
+  for (size_t gs = 0; gs < num_gs; ++gs)
+  {
+    const auto& groupset_params = groupsets_array.GetParam(gs);
+    InputParameters gs_input_params = LBSGroupset::GetInputParameters();
+    gs_input_params.SetObjectType("LBSProblem:LBSGroupset");
+    gs_input_params.AssignParameters(groupset_params);
+    groupsets_.emplace_back(gs_input_params, gs, *this);
+    if (groupsets_.back().groups.empty())
+    {
+      std::stringstream oss;
+      oss << GetName() << ": No groups added to groupset " << groupsets_.back().id;
+      throw std::runtime_error(oss.str());
+    }
+  }
+}
+
+void
+LBSProblem::InitializeXSmapAndDensities(const InputParameters& params)
+{
+  // Build XS map
+  const auto& xs_array = params.GetParam("xs_map");
+  const size_t num_xs = xs_array.GetNumParameters();
+  for (size_t i = 0; i < num_xs; ++i)
+  {
+    const auto& item_params = xs_array.GetParam(i);
+    InputParameters xs_entry_pars = GetXSMapEntryBlock();
+    xs_entry_pars.AssignParameters(item_params);
+
+    const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
+    block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    const auto& block_ids = block_ids_param.GetVectorValue<int>();
+    auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
+    for (const auto& block_id : block_ids)
+      block_id_to_xs_map_[block_id] = xs;
+  }
+
+  // Assign placeholder unit densities
+  densities_local_.assign(grid_->local_cells.size(), 1.0);
 }
 
 void
@@ -879,9 +851,9 @@ LBSProblem::InitializeMaterials()
     mat->SetAdjointMode(options_.adjoint);
 
     OpenSnLogicalErrorIf(mat->GetNumGroups() < groups_.size(),
-                         "Cross-sections on block \"" + std::to_string(blk_id) +
-                           "\" has fewer groups (" + std::to_string(mat->GetNumGroups()) +
-                           ") than " + "the simulation (" + std::to_string(groups_.size()) + "). " +
+                         "Cross-sections for block \"" + std::to_string(blk_id) +
+                           "\" have fewer groups (" + std::to_string(mat->GetNumGroups()) +
+                           ") than the simulation (" + std::to_string(groups_.size()) + "). " +
                            "Cross-sections must have at least as many groups as the simulation.");
   }
 
@@ -906,7 +878,7 @@ LBSProblem::InitializeMaterials()
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
       OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
-                           "Incompatible cross-section data encountered for material ID " +
+                           "Incompatible cross-section data encountered for material id " +
                              std::to_string(mat_id) + ". When delayed neutron data is present " +
                              "for one fissionable matrial, it must be present for all fissionable "
                              "materials.");
@@ -967,93 +939,6 @@ LBSProblem::ComputeUnitIntegrals()
   log.Log() << "Ghost cell unit cell-matrix ratio: "
             << (double)num_global_ucms[1] * 100 / (double)num_global_ucms[0] << "%";
   log.Log() << "Cell matrices computed.";
-}
-
-void
-LBSProblem::InitializeGroupsets()
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::InitializeGroupsets");
-
-  for (auto& groupset : groupsets_)
-  {
-    // Build groupset angular flux unknown manager
-    groupset.psi_uk_man_.unknowns.clear();
-    size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t gs_num_groups = groupset.groups.size();
-    auto& grpset_psi_uk_man = groupset.psi_uk_man_;
-
-    const auto VarVecN = UnknownType::VECTOR_N;
-    for (unsigned int n = 0; n < num_angles; ++n)
-      grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
-
-    if (use_gpus_)
-      groupset.InitializeGPUCarriers();
-  } // for groupset
-}
-
-void
-LBSProblem::ValidateAndComputeScatteringMoments()
-{
-  /*
-    lfs: Legendre order used in the flux solver
-    lxs: Legendre order used in the cross-section library
-    laq: Legendre order supported by the angular quadrature
-  */
-
-  unsigned int lfs = scattering_order_;
-
-  for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetScatteringOrder() !=
-        groupsets_[0].quadrature->GetScatteringOrder())
-      throw std::logic_error("LBSProblem: Number of scattering moments differs between groupsets");
-  auto laq = groupsets_[0].quadrature->GetScatteringOrder();
-
-  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
-  {
-    auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
-
-    if (laq > lxs)
-    {
-      log.Log0Warning()
-        << "The quadrature set(s) supports more scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-
-    if (lfs < lxs)
-    {
-      log.Log0Warning()
-        << "Computing the flux with fewer scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-    else if (lfs > lxs)
-    {
-      log.Log0Warning()
-        << "Computing the flux with more scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-  }
-
-  if (lfs < laq)
-  {
-    log.Log0Warning() << "Using fewer rows/columns of angular matrices (M, D) than the quadrature "
-                      << "supports" << std::endl;
-  }
-  else if (lfs > laq)
-    throw std::logic_error(
-      "LBSProblem: Solver requires more flux moments than the angular quadrature supports");
-
-  // Compute number of solver moments.
-  auto geometry_type = options_.geometry_type;
-  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
-      geometry_type == GeometryType::ONED_SPHERICAL or
-      geometry_type == GeometryType::TWOD_CYLINDRICAL)
-  {
-    num_moments_ = lfs + 1;
-  }
-  else if (geometry_type == GeometryType::TWOD_CARTESIAN)
-    num_moments_ = ((lfs + 1) * (lfs + 2)) / 2;
-  else if (geometry_type == GeometryType::THREED_CARTESIAN)
-    num_moments_ = (lfs + 1) * (lfs + 1);
 }
 
 void
@@ -1327,7 +1212,6 @@ void
 LBSProblem::CheckCapableDevices()
 {
 }
-
 #endif // __OPENSN_USE_CUDA__
 
 std::vector<double>

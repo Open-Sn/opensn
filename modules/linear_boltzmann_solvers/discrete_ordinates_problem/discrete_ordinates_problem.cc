@@ -52,7 +52,10 @@ DiscreteOrdinatesProblem::GetInputParameters()
 
   params.SetClassName("DiscreteOrdinatesProblem");
 
-  params.ChangeExistingParamToOptional("name", "LBSDiscreteOrdinatesProblem");
+  params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesProblem");
+
+  params.AddRequiredParameter<unsigned int>(
+    "scattering_order", "The level of harmonic expansion for the scattering source.");
 
   params.AddOptionalParameterArray(
     "directions_sweep_order_to_print",
@@ -61,7 +64,6 @@ DiscreteOrdinatesProblem::GetInputParameters()
 
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
-
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
 
   return params;
@@ -79,11 +81,36 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
+  scattering_order_ = params.GetParamValue<int>("scattering_order");
+  ValidateAndComputeScatteringMoments();
+
   if (use_gpus_ && sweep_type_ == "CBC")
   {
-    log.Log0Warning() << "Sweep computation on GPUs has not yet been supported for CBC. "
+    log.Log0Warning() << "Sweep computation on GPUs is not supported for the CBC sweep."
                       << "Falling back to CPU sweep.\n";
     use_gpus_ = false;
+  }
+
+  for (auto& groupset : groupsets_)
+  {
+    // Build groupset angular flux unknown manager
+    if (not groupset.quadrature)
+    {
+      std::stringstream oss;
+      oss << "Groupset " << groupset.id << " does not have an associated quadrature set";
+      throw std::runtime_error(oss.str());
+    }
+    groupset.psi_uk_man_.unknowns.clear();
+    size_t num_angles = groupset.quadrature->abscissae.size();
+    size_t gs_num_groups = groupset.groups.size();
+    auto& grpset_psi_uk_man = groupset.psi_uk_man_;
+
+    const auto VarVecN = UnknownType::VECTOR_N;
+    for (unsigned int n = 0; n < num_angles; ++n)
+      grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
+
+    if (use_gpus_)
+      groupset.InitializeGPUCarriers();
   }
 }
 
@@ -100,6 +127,72 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
     if (groupset.angle_agg != nullptr)
       groupset.angle_agg->angle_set_groups.clear();
   }
+}
+
+void
+DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
+{
+  /*
+    lfs: Legendre order used in the flux solver
+    lxs: Legendre order used in the cross-section library
+    laq: Legendre order supported by the angular quadrature
+  */
+
+  unsigned int lfs = scattering_order_;
+
+  for (size_t gs = 1; gs < groupsets_.size(); ++gs)
+    if (groupsets_[gs].quadrature->GetScatteringOrder() !=
+        groupsets_[0].quadrature->GetScatteringOrder())
+      throw std::logic_error(GetName() +
+                             ": Number of scattering moments differs between groupsets");
+  auto laq = groupsets_[0].quadrature->GetScatteringOrder();
+
+  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
+  {
+    auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
+
+    if (laq > lxs)
+    {
+      log.Log0Warning()
+        << "The quadrature set(s) supports more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+
+    if (lfs < lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with fewer scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+    else if (lfs > lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+  }
+
+  if (lfs < laq)
+  {
+    log.Log0Warning() << "Using fewer rows/columns of angular matrices (M, D) than the quadrature "
+                      << "supports" << std::endl;
+  }
+  else if (lfs > laq)
+    throw std::logic_error(
+      GetName() + ": Solver requires more flux moments than the angular quadrature supports");
+
+  // Compute number of solver moments.
+  auto geometry_type = options_.geometry_type;
+  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
+      geometry_type == GeometryType::ONED_SPHERICAL or
+      geometry_type == GeometryType::TWOD_CYLINDRICAL)
+  {
+    num_moments_ = lfs + 1;
+  }
+  else if (geometry_type == GeometryType::TWOD_CARTESIAN)
+    num_moments_ = ((lfs + 1) * (lfs + 2)) / 2;
+  else if (geometry_type == GeometryType::THREED_CARTESIAN)
+    num_moments_ = (lfs + 1) * (lfs + 1);
 }
 
 std::pair<size_t, size_t>
@@ -141,6 +234,40 @@ const std::vector<std::vector<double>>&
 DiscreteOrdinatesProblem::GetPsiNewLocal() const
 {
   return psi_new_local_;
+}
+
+void
+DiscreteOrdinatesProblem::PrintSimHeader()
+{
+  if (opensn::mpi_comm.rank() == 0)
+  {
+    std::stringstream outstr;
+    outstr << "\n"
+           << "Initializing " << GetName() << "\n\n"
+           << "Scattering order    : " << scattering_order_ << "\n"
+           << "Number of moments   : " << num_moments_ << "\n"
+           << "Number of groups    : " << groups_.size() << "\n"
+           << "Number of groupsets : " << groupsets_.size() << "\n\n";
+
+    for (const auto& groupset : groupsets_)
+    {
+      outstr << "***** Groupset " << groupset.id << " *****\n"
+             << "Number of angles: " << groupset.quadrature->abscissae.size() << "\n"
+             << "Groups:\n";
+      const auto& groups = groupset.groups;
+      constexpr int groups_per_line = 12;
+      for (size_t i = 0; i < groups.size(); ++i)
+      {
+        outstr << std::setw(5) << groups[i].id << ' ';
+        if ((i + 1) % groups_per_line == 0)
+          outstr << '\n';
+      }
+      if (!groups.empty() && groups.size() % groups_per_line != 0)
+        outstr << '\n';
+    }
+
+    log.Log() << outstr.str() << '\n';
+  }
 }
 
 void
@@ -253,9 +380,9 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
               if (not n_ptr)
                 n_ptr = std::make_unique<Vector3>(face.normal);
               if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-                throw std::logic_error(
-                  "LBSProblem: Not all face normals are, within tolerance, locally the "
-                  "same for the reflecting boundary condition requested");
+                throw std::logic_error(GetName() +
+                                       ": Not all face normals are, within tolerance, locally the "
+                                       "same for the reflecting boundary condition requested");
             }
 
         // Now check globally
@@ -280,9 +407,9 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 
             if (local_has_bid)
               if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-                throw std::logic_error(
-                  "LBSProblem: Not all face normals are, within tolerance, globally the "
-                  "same for the reflecting boundary condition requested");
+                throw std::logic_error(GetName() +
+                                       ": Not all face normals are, within tolerance, globally the "
+                                       "same for the reflecting boundary condition requested");
 
             global_normal = locJ_normal;
           }
@@ -676,13 +803,11 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::AssociateSOsAndDirections");
 
-  const std::string fname = __FUNCTION__;
-
   // Checks
   if (quadrature.omegas.empty())
-    throw std::logic_error(fname + ": Quadrature with no omegas cannot be used.");
+    throw std::logic_error(GetName() + ": Quadrature with no omegas cannot be used");
   if (quadrature.weights.empty())
-    throw std::logic_error(fname + ": Quadrature with no weights cannot be used.");
+    throw std::logic_error(GetName() + ": Quadrature with no weights cannot be used");
 
   // Build groupings
   UniqueSOGroupings unq_so_grps;
@@ -709,14 +834,14 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       // Check geometry types
       if (grid->GetType() != ORTHOGONAL and grid->GetDimension() != 2 and not grid->Extruded())
         throw std::logic_error(
-          fname + ": The simulation is using polar angle aggregation for which only certain "
-                  "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED.");
+          GetName() + ": The simulation is using polar angle aggregation for which only certain "
+                      "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED");
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::ProductQuadrature)
-        throw std::logic_error(fname + ": The simulation is using polar angle aggregation for "
-                                       "which only Product-type quadratures are supported.");
+        throw std::logic_error(GetName() + ": The simulation is using polar angle aggregation for "
+                                           "which only Product-type quadratures are supported");
 
       // Process Product Quadrature
       try
@@ -761,7 +886,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       catch (const std::bad_cast& bc)
       {
         throw std::runtime_error(
-          fname + ": Casting the angular quadrature to the product quadrature base, failed.");
+          GetName() + ": Casting the angular quadrature to the product quadrature base failed");
       }
 
       break;
@@ -774,14 +899,15 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       if (lbs_geo_type != GeometryType::ONED_SPHERICAL and
           lbs_geo_type != GeometryType::TWOD_CYLINDRICAL)
         throw std::logic_error(
-          fname + ": The simulation is using azimuthal angle aggregation for which only "
-                  "ONED_SPHERICAL or TWOD_CYLINDRICAL derived geometry types are supported.");
+          GetName() + ": The simulation is using azimuthal angle aggregation for which only "
+                      "the TWOD_CYLINDRICAL derived geometry type is supported");
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::ProductQuadrature)
-        throw std::logic_error(fname + ": The simulation is using azimuthal angle aggregation for "
-                                       "which only Product-type quadratures are supported.");
+        throw std::logic_error(GetName() +
+                               ": The simulation is using azimuthal angle aggregation for "
+                               "which only product-type quadratures are supported");
 
       // Process Product Quadrature
       try
@@ -808,14 +934,13 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       catch (const std::bad_cast& bc)
       {
         throw std::runtime_error(
-          fname + ": Casting the angular quadrature to the product quadrature base, failed.");
+          GetName() + ": Casting the angular quadrature to the product quadrature base failed");
       }
 
       break;
     }
     default:
-      throw std::invalid_argument(fname + ": Called with UNDEFINED angle "
-                                          "aggregation type.");
+      throw std::invalid_argument(GetName() + ": Called with UNDEFINED angle aggregation type");
   } // switch angle aggregation type
 
   // Map directions to sweep orderings

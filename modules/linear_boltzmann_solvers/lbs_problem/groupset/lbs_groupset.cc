@@ -26,8 +26,8 @@ LBSGroupset::GetInputParameters()
                                    "The first and last group id this groupset operates on, e.g. A "
                                    "4 group problem <TT>groups_from_to= {0, 3}</TT>");
   // Anglesets
-  params.AddRequiredParameter<std::shared_ptr<AngularQuadrature>>(
-    "angular_quadrature", "A handle to an angular quadrature");
+  params.AddOptionalParameter<std::shared_ptr<AngularQuadrature>>(
+    "angular_quadrature", nullptr, "A handle to an angular quadrature");
   params.AddOptionalParameter(
     "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
   params.AddOptionalParameter("angle_aggregation_num_subsets",
@@ -157,7 +157,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   }
 
   // Add quadrature
-  quadrature = params.GetSharedPtrParam<AngularQuadrature>("angular_quadrature");
+  quadrature = params.GetSharedPtrParam<AngularQuadrature>("angular_quadrature", false);
 
   // Angle aggregation
   const auto angle_agg_typestr = params.GetParamValue<std::string>("angle_aggregation_type");

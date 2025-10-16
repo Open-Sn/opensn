@@ -48,12 +48,6 @@ public:
   /// Returns a constant reference to the solver options.
   const LBSOptions& GetOptions() const;
 
-  static InputParameters GetOptionsBlock();
-
-  static InputParameters GetBoundaryOptionsBlock();
-
-  static InputParameters GetXSMapEntryBlock();
-
   void SetOptions(const InputParameters& input);
 
   void SetBoundaryOptions(const InputParameters& params);
@@ -81,19 +75,7 @@ public:
    */
   size_t GetMaxPrecursorsPerMaterial() const;
 
-  /**
-   * Adds a group to the list of groups. If group id < 0, the id will be logically derived from the
-   * list size. If >= 0 the id will be set to the id specified.
-   */
-  void AddGroup(int id);
-
   const std::vector<LBSGroup>& GetGroups() const;
-
-  /**
-   * Adds a groupset to the list of groupsets. The groupset id will be logically derived from the
-   * list size.
-   */
-  void AddGroupset();
 
   std::vector<LBSGroupset>& GetGroupsets();
 
@@ -216,9 +198,6 @@ public:
 
   void Initialize() override;
 
-  /// Initializes default materials and physics materials.
-  void InitializeMaterials();
-
   bool TriggerRestartDump() const
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
@@ -251,32 +230,36 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
+private:
+  /// Initialize groupsets
+  void InitializeGroupsets(const InputParameters& params);
+
+  /// Initializes materials
+  void InitializeXSmapAndDensities(const InputParameters& params);
+  void InitializeMaterials();
+
+  /// Initialize sources
+  void InitializeSources(const InputParameters& params);
+
+  /// Initialize boundary conditions
+  void InitializeBoundaryConditions(const InputParameters& params);
+
 protected:
-  /// Performs general input checks before initialization continues.
-  virtual void PerformInputChecks();
-
-  /// Prints header information of simulation.
-  void PrintSimHeader();
-
-  virtual void InitializeSpatialDiscretization();
+  virtual void PrintSimHeader();
 
   void ComputeUnitIntegrals();
 
-  /// Initializes common groupset items.
-  void InitializeGroupsets();
-
-  /// Computes the number of moments for the given mesher types
-  void ValidateAndComputeScatteringMoments();
+  virtual void InitializeSpatialDiscretization();
 
   /// Initializes parallel arrays.
-  virtual void InitializeParrays();
+  void InitializeParrays();
 
   void InitializeFieldFunctions();
 
   /// Initializes boundaries.
   virtual void InitializeBoundaries() {}
 
-  virtual void InitializeSolverSchemes();
+  void InitializeSolverSchemes();
 
   virtual void InitializeWGSSolvers() {};
 
@@ -362,6 +345,12 @@ public:
 
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
+
+  static InputParameters GetOptionsBlock();
+
+  static InputParameters GetBoundaryOptionsBlock();
+
+  static InputParameters GetXSMapEntryBlock();
 };
 
 } // namespace opensn
