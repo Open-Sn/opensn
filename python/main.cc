@@ -14,13 +14,13 @@ main(int argc, char** argv)
 {
   mpi::Environment env(argc, argv);
 
-  PetscCall(PetscInitializeNoArguments());
+  PetscCall(PetscInitializeNoArguments()); // NOLINT(bugprone-casting-through-void)
 
   int retval = EXIT_SUCCESS;
   try
   {
     py::scoped_interpreter guard{};
-    opensnpy::PyApp app(MPI_COMM_WORLD);
+    opensnpy::PyApp app(MPI_COMM_WORLD); // NOLINT(bugprone-casting-through-void)
     retval = app.Run(argc, argv);
   }
   catch (...)

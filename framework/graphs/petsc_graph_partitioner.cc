@@ -93,8 +93,8 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     log.Log0Verbose1() << "Done copying to raw indices.";
 
     // Create adjacency matrix
-    Mat Adj; // Adjacency matrix
-    MatCreateMPIAdj(PETSC_COMM_SELF,
+    Mat Adj;                         // Adjacency matrix
+    MatCreateMPIAdj(PETSC_COMM_SELF, // NOLINT(bugprone-casting-through-void)
                     (int64_t)num_raw_cells,
                     (int64_t)num_raw_cells,
                     i_indices_raw,
@@ -107,7 +107,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     // Create partitioning
     MatPartitioning part;
     IS is, isg;
-    MatPartitioningCreate(MPI_COMM_SELF, &part);
+    MatPartitioningCreate(MPI_COMM_SELF, &part); // NOLINT(bugprone-casting-through-void)
     MatPartitioningSetAdjacency(part, Adj);
     MatPartitioningSetType(part, type_.c_str());
     MatPartitioningSetNParts(part, number_of_parts);
