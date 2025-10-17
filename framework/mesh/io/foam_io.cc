@@ -112,10 +112,7 @@ ReadFace(std::istream& in, std::vector<int>& out)
   }
 
   // find closing ')'
-  if (not ExpectChar(in, ')'))
-    return false;
-
-  return true;
+  return ExpectChar(in, ')');
 }
 
 // used to read the cell idx in the owner and neighbor files
@@ -135,7 +132,7 @@ SkipFoamHeader(std::istream& in)
   std::string line;
   while (std::getline(in, line))
   {
-    std::string tmp = line;
+    const std::string& tmp = line;
     StringTrim(tmp);
     if (tmp.empty() or StartsWith(tmp, "//"))
       continue;
@@ -341,7 +338,7 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
     if (not SkipUntil(in, '('))
       throw std::logic_error(fname + ": Missing '(' starting zones list.");
   }
-  const size_t nzones = static_cast<size_t>(nzones_i);
+  const auto nzones = static_cast<size_t>(nzones_i);
 
   std::vector<CellZoneEntry> zones;
   zones.reserve(nzones);
@@ -471,7 +468,6 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   const auto faces_p = base / "faces";
   const auto owner_p = base / "owner";
   const auto neigh_p = base / "neighbour";
-  const auto boundary_p = base / "boundary";
 
   if (not std::filesystem::exists(neigh_p))
     throw std::logic_error(fname + ": Missing 'neighbour'. Even with zero internal faces it "
@@ -617,16 +613,19 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   {
     const int c_o = owner[f];
     const int c_n = neigh[f];
-    if (c_o < 0 or c_o >= ncells or c_n < 0 or c_n >= ncells)
+    if (c_o < 0 or std::cmp_greater_equal(c_o, ncells) or c_n < 0 or
+        std::cmp_greater_equal(c_n, ncells))
+    {
       throw std::logic_error(fname + ": owner/neighbour id out of range (face " +
                              std::to_string(f) + ").");
+    }
     cell_faces[c_o].push_back(static_cast<int64_t>(f));      // owner side: outward as stored
     cell_faces[c_n].push_back(-static_cast<int64_t>(f) - 1); // neighbour side: reversed for outward
   }
   for (size_t f = ninternal_faces; f < nfaces; ++f)
   {
     const int c_o = owner[f];
-    if (c_o < 0 or c_o >= ncells)
+    if (c_o < 0 or std::cmp_greater_equal(c_o, ncells))
       throw std::logic_error(fname + ": owner id out of range (boundary face " + std::to_string(f) +
                              ").");
     cell_faces[c_o].push_back(+f); // boundary face outward w.r.t owner
@@ -642,7 +641,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     {
       for (int c_id : zones[z_id].cells)
       {
-        if (c_id >= 0 and static_cast<size_t>(c_id) < ncells)
+        if (c_id >= 0 and std::cmp_less(c_id, ncells))
         {
           block_map[c_id] = static_cast<int>(z_id);
         }
