@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
-#include "framework/math/quadratures/angular/harmonic_selection_rules.h"
 #include <memory>
 #include <vector>
 
