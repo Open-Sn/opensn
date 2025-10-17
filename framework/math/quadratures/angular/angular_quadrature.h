@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
-#include "framework/math/quadratures/angular/harmonic_selection_rules.h"
 #include <memory>
 #include <vector>
 
@@ -59,7 +58,7 @@ protected:
   unsigned int dimension_;
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
-  unsigned int galerkin_N_ = 0;
+  unsigned int quadrature_order_ = 0;
 
   explicit AngularQuadrature(
     AngularQuadratureType type,
@@ -123,8 +122,16 @@ public:
 
   AngularQuadratureType GetType() const { return type_; }
 
-  void SetGalerkinN(unsigned int N) { galerkin_N_ = N; }
-  unsigned int GetGalerkinN() const { return galerkin_N_; }
+  /**
+   * Sets the quadrature_order_ parameter depending on the quadrature type:
+   * For Product Quadrature: N in Sn notation
+   * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
+   * For SLDFE-S Quadrature: Uniform Refinement Level
+   */
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  // Gets the Quadrature Order for harmonic selection
+  unsigned int GetGalerkinN() const { return quadrature_order_; }
 };
 
 } // namespace opensn
