@@ -3,6 +3,7 @@
 
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
+#include "framework/math/quadratures/angular/harmonic_selection_rules.h"
 #include "framework/math/math.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -31,7 +32,7 @@ AngularQuadrature::MakeHarmonicIndices()
     params.dimension = dimension_;
     params.scattering_order = scattering_order_;
     params.num_angles = abscissae.size();
-    params.N = galerkin_N_;
+    params.quadrature_order = quadrature_order_;
 
     // Get rule-selected harmonics
     m_to_ell_em_map_ = HarmonicSelectionRules::SelectHarmonics(params);
@@ -221,20 +222,20 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
 
       const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
-      for (const auto& ell_em : m_to_ell_em_map_)
+      for (size_t n = 0; n < num_angles; ++n)
       {
-        std::vector<double> cur_mom;
-        cur_mom.reserve(num_angles);
+        std::vector<double> cur_row;
+        cur_row.reserve(num_moms);
 
-        for (auto n = 0; n < num_angles; ++n)
+        for (const auto& ell_em : m_to_ell_em_map_)
         {
           const auto& cur_angle = abscissae[n];
           double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
                          Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          cur_mom.push_back(value);
+          cur_row.push_back(value);
         }
 
-        m2d_op_.push_back(cur_mom);
+        m2d_op_.push_back(cur_row);
       }
 
       // Verbose printout
@@ -298,16 +299,17 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
       // Build M2D operator using approximate harmonics
       const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
-      for (size_t m = 0; m < num_moms; ++m)
+      for (size_t n = 0; n < num_angles; ++n)
       {
-        std::vector<double> cur_mom(num_angles);
-        const auto& ell_em = m_to_ell_em_map_[m];
+        std::vector<double> cur_row(num_moms);
 
-        for (size_t n = 0; n < num_angles; ++n)
+        for (size_t m = 0; m < num_moms; ++m)
         {
-          cur_mom[n] = ((2.0 * ell_em.ell + 1.0) / normalization) * approx_harmonics[n][m];
+          const auto& ell_em = m_to_ell_em_map_[m];
+          cur_row[m] = ((2.0 * ell_em.ell + 1.0) / normalization) * approx_harmonics[n][m];
         }
-        m2d_op_.push_back(cur_mom);
+
+        m2d_op_.push_back(cur_row);
       }
 
       // Verbose printout
@@ -318,7 +320,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         outs << std::setw(5) << n;
         for (size_t m = 0; m < num_moms; ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[m][n]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
                << " ";
         }
         outs << "\n";
