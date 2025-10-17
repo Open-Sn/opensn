@@ -38,7 +38,8 @@ public:
    * If the cell does not belong to the logical volume tied to this source,
    * a vector of zeros are returned.
    */
-  std::vector<double> operator()(const Cell& cell, const Vector3& xyz, int num_groups) const;
+  std::vector<double>
+  operator()(const Cell& cell, const Vector3& xyz, std::size_t num_groups) const;
 
   size_t GetNumLocalSubscribers() const { return num_local_subsribers_; }
   size_t GetNumGlobalSubsribers() const { return num_global_subscribers_; }

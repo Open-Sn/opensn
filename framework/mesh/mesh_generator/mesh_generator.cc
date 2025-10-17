@@ -319,7 +319,7 @@ MeshGenerator::RebalancePartitions(std::vector<int>& cell_pids, const int num_pa
   }
 
   // Redistributed cells from heavy partitions
-  const auto total_cells = cell_pids.size();
+  const auto total_cells = static_cast<int>(cell_pids.size());
   const int target = total_cells / num_partitions;
 
   for (int partition = 0; partition < num_partitions; ++partition)
@@ -327,7 +327,7 @@ MeshGenerator::RebalancePartitions(std::vector<int>& cell_pids, const int num_pa
     while (cells_per_partition[partition] > target)
     {
       const auto it = std::min_element(cells_per_partition.begin(), cells_per_partition.end());
-      const auto min_partition = std::distance(cells_per_partition.begin(), it);
+      const auto min_partition = static_cast<int>(std::distance(cells_per_partition.begin(), it));
       if (min_partition == partition or cells_per_partition[min_partition] >= target)
         break;
 

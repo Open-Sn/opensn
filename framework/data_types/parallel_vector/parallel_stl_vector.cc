@@ -129,7 +129,9 @@ ParallelSTLVector::BlockSet(const std::vector<double>& y,
                             ", is out of range for destination vector with local size " +
                             std::to_string(local_size_));
 
-  std::copy(y.begin(), y.begin() + num_values, values_.begin() + local_offset);
+  std::copy(y.begin(),
+            y.begin() + static_cast<long>(num_values),
+            values_.begin() + static_cast<long>(local_offset));
 }
 
 void
@@ -186,7 +188,9 @@ ParallelSTLVector::BlockCopyLocalValues(const ParallelVector& y,
   // of y, which again applies bounds checking
   const double* y_data = y.GetData();
 
-  std::copy(y_data + y_offset, y_data + y_offset + num_values, values_.begin() + local_offset);
+  std::copy(y_data + y_offset,
+            y_data + y_offset + num_values,
+            values_.begin() + static_cast<long>(local_offset));
 }
 
 void
@@ -198,7 +202,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
   OpenSnInvalidArgumentIf(y_offset < 0, "y_offset < 0.");
   OpenSnInvalidArgumentIf(local_offset < 0, "local_offset < 0.");
 
-  const PetscInt y_end = y_offset + num_values;
+  const auto y_end = static_cast<PetscInt>(y_offset + num_values);
   const auto local_end = local_offset + num_values;
 
   PetscInt y_local_size;
@@ -217,7 +221,9 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
   const double* y_data;
   VecGetArrayRead(y, &y_data);
 
-  std::copy(y_data + y_offset, y_data + y_offset + num_values, values_.begin() + local_offset);
+  std::copy(y_data + y_offset,
+            y_data + y_offset + num_values,
+            values_.begin() + static_cast<long>(local_offset));
 
   VecRestoreArrayRead(y, &y_data);
 }
@@ -355,13 +361,13 @@ ParallelSTLVector::Assemble()
 {
   // Define the local operation mode.
   // 0=Do Nothing, 1=Set, 2=Add, 3=INVALID (mixed set/add ops)
-  const short local_mode = static_cast<short>(not set_cache_.empty()) +
-                           static_cast<short>(not add_cache_.empty()) * static_cast<short>(2);
+  const int local_mode = static_cast<int>(not set_cache_.empty()) +
+                         static_cast<int>(not add_cache_.empty()) * static_cast<short>(2);
   OpenSnLogicalErrorIf(local_mode == 3, "Invalid operation mode.");
 
   // Now, determine the global operation mode
-  short global_mode;
-  comm_.all_reduce(local_mode, global_mode, mpi::op::max<short>());
+  int global_mode;
+  comm_.all_reduce(local_mode, global_mode, mpi::op::max<int>());
 
   // If the mode is to do nothing, exit
   if (global_mode == 0)

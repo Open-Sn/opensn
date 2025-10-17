@@ -390,8 +390,8 @@ SMMAcceleration::AssembleDiffusionBCs() const
                 // This will not work if extended to multiple groupsets because in
                 // the current paradigm, one diffusion solver per groupset would be
                 // required.
-                rows.push_back(imap + gsg);
-                cols.push_back(jmap + gsg);
+                rows.push_back(static_cast<PetscInt>(imap + gsg));
+                cols.push_back(static_cast<PetscInt>(jmap + gsg));
                 vals.push_back(bfac * face_M(i, j));
               }
             } // for face node fj

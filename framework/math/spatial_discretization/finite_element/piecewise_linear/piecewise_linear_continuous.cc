@@ -257,7 +257,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
       if (dof_handler.IsMapLocal(ir))
       {
-        const int64_t il = dof_handler.MapIRLocal(ir);
+        const auto il = dof_handler.MapIRLocal(ir);
         std::vector<uint64_t>& node_links = nodal_connections[il];
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
@@ -385,7 +385,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     auto il = dof_handler.MapIRLocal(ir);
     auto& node_links = nodal_connections[il];
 
-    for (int64_t jr : ir_linkage.second)
+    for (auto jr : ir_linkage.second)
     {
       if (IS_VALUE_IN_VECTOR(node_links, jr))
         continue;

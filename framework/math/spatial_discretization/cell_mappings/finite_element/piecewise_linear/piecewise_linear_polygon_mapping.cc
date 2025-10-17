@@ -183,7 +183,7 @@ PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
 }
 
 double
-PieceWiseLinearPolygonMapping::ShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearPolygonMapping::ShapeValue(size_t i, const Vector3& xyz) const
 {
   for (int s = 0; s < num_of_subtris_; ++s)
   {
@@ -258,7 +258,7 @@ PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& s
 }
 
 Vector3
-PieceWiseLinearPolygonMapping::GradShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearPolygonMapping::GradShapeValue(size_t i, const Vector3& xyz) const
 {
   Vector3 grad_r;
   Vector3 grad;

@@ -114,13 +114,13 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto& other_face = faces_[ofi];
 
-        for (size_t e2 = 0; e2 < 3; ++e2)
+        for (int e2 = 0; e2 < 3; ++e2)
         {
           if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
           {
-            curface_edge[2] = ofi; // cell index
-            curface_edge[3] = e2;  // edge index
+            curface_edge[2] = static_cast<int>(ofi); // cell index
+            curface_edge[3] = e2;                    // edge index
           }
         } // for e2
       } // for ofi
@@ -130,13 +130,13 @@ SurfaceMesh::UpdateInternalConnectivity()
       {
         auto& other_face = faces_[ofi];
 
-        for (size_t e2 = 0; e2 < 3; ++e2)
+        for (int e2 = 0; e2 < 3; ++e2)
         {
           if ((curface_edge[0] == other_face.e_index[e2][1]) and
               (curface_edge[1] == other_face.e_index[e2][0]))
           {
-            curface_edge[2] = ofi; // cell index
-            curface_edge[3] = e2;  // edge index
+            curface_edge[2] = static_cast<int>(ofi); // cell index
+            curface_edge[3] = e2;                    // edge index
           }
         } // for e2
       } // for ofi
@@ -162,8 +162,8 @@ SurfaceMesh::UpdateInternalConnectivity()
           if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
           {
-            curface_edge[2] = ofi; // cell index
-            curface_edge[3] = e2;  // edge index
+            curface_edge[2] = static_cast<int>(ofi); // cell index
+            curface_edge[3] = static_cast<int>(e2);  // edge index
           }
         } // for e2
       } // for ofi
@@ -178,8 +178,8 @@ SurfaceMesh::UpdateInternalConnectivity()
           if ((curface_edge[0] == other_face->edges[e2][1]) and
               (curface_edge[1] == other_face->edges[e2][0]))
           {
-            curface_edge[2] = ofi; // cell index
-            curface_edge[3] = e2;  // edge index
+            curface_edge[2] = static_cast<int>(ofi); // cell index
+            curface_edge[3] = static_cast<int>(e2);  // edge index
           }
         } // for e2
       } // for other faces
@@ -344,7 +344,7 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
     // Keyword "f" for face
     if (first_word == "f")
     {
-      int number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
+      auto number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
       if ((number_of_verts == 3) and (not as_poly))
       {
         auto newFace = std::make_shared<Face>();
@@ -550,11 +550,11 @@ SurfaceMesh::ImportFromOBJFile(const std::string& fileName, bool as_poly, const 
   for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); ++curPFace)
   {
     Vector3 centroid;
-    int num_verts = (*curPFace)->v_indices.size();
-    for (int v = 0; v < num_verts; ++v)
+    auto num_verts = (*curPFace)->v_indices.size();
+    for (std::size_t v = 0; v < num_verts; ++v)
       centroid = centroid + vertices_[(*curPFace)->v_indices[v]];
 
-    centroid = centroid / num_verts;
+    centroid = centroid / static_cast<double>(num_verts);
 
     (*curPFace)->face_centroid = centroid;
 
@@ -690,11 +690,11 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
   for (auto curPFace = this->poly_faces_.begin(); curPFace != this->poly_faces_.end(); ++curPFace)
   {
     Vector3 centroid;
-    int num_verts = (*curPFace)->v_indices.size();
-    for (int v = 0; v < num_verts; ++v)
+    auto num_verts = (*curPFace)->v_indices.size();
+    for (std::size_t v = 0; v < num_verts; ++v)
       centroid = centroid + vertices_[(*curPFace)->v_indices[v]];
 
-    centroid = centroid / num_verts;
+    centroid = centroid / static_cast<double>(num_verts);
 
     (*curPFace)->face_centroid = centroid;
 
@@ -972,7 +972,7 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
     }
   }
 
-  double average = tot_bin_size / ((double)(I + 1) * (J + 1));
+  double average = static_cast<double>(tot_bin_size) / static_cast<double>((I + 1) * (J + 1));
 
   log.Log() << "Average faces per set: " << average;
   log.Log() << "Maximum faces per set: " << max_bin_size << " at (i,j)= ( " << i_max << " , "
@@ -992,7 +992,7 @@ SurfaceMesh::ComputeLoadBalancing(std::vector<double>& x_cuts, std::vector<doubl
   else
     log.Log() << "Y greater than " << y_cuts[j_max - 1] << " and less than " << y_cuts[j_max];
 
-  log.Log() << "Max-to-average ratio: " << max_bin_size / average;
+  log.Log() << "Max-to-average ratio: " << static_cast<double>(max_bin_size) / average;
 }
 
 } // namespace opensn

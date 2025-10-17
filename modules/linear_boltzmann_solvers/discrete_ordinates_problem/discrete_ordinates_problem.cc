@@ -489,22 +489,22 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     const auto& uk_man = groupset.psi_uk_man_;
 
     // Build reversed angle mapping
-    std::map<int, int> reversed_angle_map;
+    std::map<std::size_t, std::size_t> reversed_angle_map;
     if (options_.save_angular_flux)
     {
       const auto& omegas = groupset.quadrature->omegas;
       const auto num_gs_angles = omegas.size();
 
       // Go through angles until all are paired
-      std::set<size_t> visited;
-      for (size_t idir = 0; idir < num_gs_angles; ++idir)
+      std::set<std::size_t> visited;
+      for (std::size_t idir = 0; idir < num_gs_angles; ++idir)
       {
         // Skip if already encountered
         if (visited.count(idir) > 0)
           continue;
 
         bool found = true;
-        for (size_t jdir = 0; jdir < num_gs_angles; ++jdir)
+        for (std::size_t jdir = 0; jdir < num_gs_angles; ++jdir)
         {
           // Angles are opposite if their sum is zero
           const auto sum = grid_->GetDimension() == 1

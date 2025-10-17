@@ -159,7 +159,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
   }
 
   // Generate topological ordering
-  std::vector<size_t> global_linear_sweep_order;
+  std::vector<int> global_linear_sweep_order;
   boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
   std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
   if (global_linear_sweep_order.empty())
@@ -172,7 +172,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
   std::vector<int> global_order_mapping(opensn::mpi_comm.size(), -1);
   for (int k = 0; k < opensn::mpi_comm.size(); ++k)
   {
-    int loc = global_linear_sweep_order[k];
+    auto loc = global_linear_sweep_order[k];
     global_order_mapping[loc] = k;
   }
 
@@ -181,7 +181,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
   std::vector<int> global_sweep_order_rank(opensn::mpi_comm.size(), -1);
   for (int k = 0; k < opensn::mpi_comm.size(); ++k)
   {
-    int loc = global_linear_sweep_order[k];
+    auto loc = global_linear_sweep_order[k];
     if (global_dependencies_[loc].empty())
       global_sweep_order_rank[k] = 0;
     else

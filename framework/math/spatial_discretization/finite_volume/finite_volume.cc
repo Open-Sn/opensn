@@ -226,29 +226,26 @@ FiniteVolume::MapDOF(const Cell& cell,
   if (component >= num_unknowns)
     return -1;
 
-  int64_t address = -1;
   if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                num_local_cells * block_id + cell.local_id;
+      return local_block_address_ * num_unknowns + num_local_cells * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(local_block_address_) * num_unknowns +
-                cell.local_id * num_unknowns + block_id;
+      return local_block_address_ * num_unknowns + cell.local_id * num_unknowns + block_id;
   }
   else
   {
     const uint64_t ghost_local_id = neighbor_cell_local_ids_.at(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
-                locJ_block_size_[cell.partition_id] * block_id + ghost_local_id;
+      return locJ_block_address_[cell.partition_id] * num_unknowns +
+             locJ_block_size_[cell.partition_id] * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(locJ_block_address_[cell.partition_id]) * num_unknowns +
-                ghost_local_id * num_unknowns + block_id;
+      return locJ_block_address_[cell.partition_id] * num_unknowns + ghost_local_id * num_unknowns +
+             block_id;
   }
 
-  return address;
+  return -1;
 }
 
 uint64_t
@@ -267,13 +264,12 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   if (component >= num_unknowns)
     return -1;
 
-  int64_t address = -1;
   if (cell.partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(num_local_cells) * block_id + cell.local_id;
+      return num_local_cells * block_id + cell.local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(cell.local_id) * num_unknowns + block_id;
+      return cell.local_id * num_unknowns + block_id;
   }
   else
   {
@@ -282,14 +278,12 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
     const uint64_t ghost_local_id = grid_->cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
-      address = static_cast<int64_t>(num_local_dofs) +
-                static_cast<int64_t>(num_ghost_nodes) * block_id + ghost_local_id;
+      return num_local_dofs + num_ghost_nodes * block_id + ghost_local_id;
     else if (storage == UnknownStorageType::NODAL)
-      address = static_cast<int64_t>(num_local_dofs) +
-                num_unknowns * static_cast<int64_t>(ghost_local_id) + block_id;
+      return num_local_dofs + num_unknowns * ghost_local_id + block_id;
   }
 
-  return address;
+  return -1;
 }
 
 size_t

@@ -121,7 +121,7 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     const int64_t* cell_pids_raw;
     ISGetIndices(is, &cell_pids_raw);
     for (size_t i = 0; i < num_raw_cells; ++i)
-      cell_pids[i] = cell_pids_raw[i];
+      cell_pids[i] = static_cast<int>(cell_pids_raw[i]);
     ISRestoreIndices(is, &cell_pids_raw);
 
     log.Log0Verbose1() << "Done retrieving cell global indices.";

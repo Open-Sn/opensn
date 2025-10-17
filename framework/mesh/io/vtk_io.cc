@@ -851,7 +851,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       throw std::logic_error("Could not open file '" + std::string(file_name) + "' for writing.");
 
     // Develop list of faces and nodes
-    std::set<int> nodes_set;
+    std::set<uint64_t> nodes_set;
     std::vector<CellFace> faces_to_export;
     for (auto& cell : grid->local_cells)
     {
@@ -863,7 +863,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
           {
             faces_to_export.push_back(face);
 
-            for (int vid : face.vertex_ids)
+            for (auto vid : face.vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
         } // for face
@@ -883,7 +883,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     for (auto node : nodes_set)
     {
       node_counter++;
-      int node_g_index = node;
+      auto node_g_index = node;
       node_mapping[node_g_index] = node_counter;
 
       Vector3 cur_v = grid->vertices[node_g_index];

@@ -104,8 +104,8 @@ public:
   void AddToRHS(const std::vector<double>& values);
 
   /// Adds to the entries into the matrix without applying spatial discretization.
-  void AddToMatrix(const std::vector<int64_t>& rows,
-                   const std::vector<int64_t>& cols,
+  void AddToMatrix(const std::vector<PetscInt>& rows,
+                   const std::vector<PetscInt>& cols,
                    const std::vector<double>& vals);
 
   /**

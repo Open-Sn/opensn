@@ -43,7 +43,7 @@ VectorGhostCommunicator::MakeCachedParallelData()
   std::map<uint64_t, size_t> ghost_to_recv_map;
   size_t count = 0;
   for (const auto& [pid, gids] : recv_map)
-    for (const int64_t gid : gids)
+    for (const auto gid : gids)
       ghost_to_recv_map[gid] = count++;
 
   std::vector<int> sendcounts;

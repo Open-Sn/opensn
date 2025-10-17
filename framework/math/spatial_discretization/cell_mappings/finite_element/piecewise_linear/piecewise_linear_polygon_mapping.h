@@ -37,9 +37,9 @@ public:
   /// Pre-computation of the partial derivative along y of the shape function at a quadrature point.
   double SideGradShape_y(uint32_t side, uint32_t i) const;
 
-  double ShapeValue(int i, const Vector3& xyz) const override;
+  double ShapeValue(size_t i, const Vector3& xyz) const override;
 
-  Vector3 GradShapeValue(int i, const Vector3& xyz) const override;
+  Vector3 GradShapeValue(size_t i, const Vector3& xyz) const override;
 
   void ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const override;
 

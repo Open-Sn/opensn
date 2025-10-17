@@ -179,7 +179,7 @@ PowerIterationKEigenSolver::Execute()
     WriteRestartData();
 
   // Print summary
-  int total_num_sweeps = 0;
+  std::size_t total_num_sweeps = 0;
   for (auto& wgs_solver : do_problem_->GetWGSSolvers())
   {
     auto context = wgs_solver->GetContext();

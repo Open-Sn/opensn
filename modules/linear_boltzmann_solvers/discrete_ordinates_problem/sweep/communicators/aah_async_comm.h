@@ -23,20 +23,20 @@ class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
 private:
   size_t num_groups_;
   size_t num_angles_;
-  size_t max_num_messages_;
-  size_t max_mpi_message_size_;
+  int max_num_messages_;
+  int max_mpi_message_size_;
   bool done_sending_;
   bool data_initialized_;
   bool upstream_data_initialized_;
 
   std::vector<std::vector<bool>> preloc_msg_received_;
-  std::vector<std::vector<std::tuple<int, size_t, size_t>>> preloc_msg_data_;
+  std::vector<std::vector<std::tuple<int, int, size_t>>> preloc_msg_data_;
 
   std::vector<std::vector<bool>> delayed_preloc_msg_received_;
-  std::vector<std::vector<std::tuple<int, size_t, size_t>>> delayed_preloc_msg_data_;
+  std::vector<std::vector<std::tuple<int, int, size_t>>> delayed_preloc_msg_data_;
 
   std::vector<mpi::Request> deploc_msg_request_;
-  std::vector<std::vector<std::tuple<int, size_t, size_t>>> deploc_msg_data_;
+  std::vector<std::vector<std::tuple<int, int, size_t>>> deploc_msg_data_;
 
 protected:
   /**
@@ -55,12 +55,12 @@ public:
   AAH_ASynchronousCommunicator(FLUDS& fluds,
                                size_t num_groups,
                                size_t num_angles,
-                               size_t max_mpi_message_size,
+                               int max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
 
-  size_t GetMaxNumMessages() const { return max_num_messages_; }
+  int GetMaxNumMessages() const { return max_num_messages_; }
 
-  void SetMaxNumMessages(size_t count) { max_num_messages_ = count; }
+  void SetMaxNumMessages(int count) { max_num_messages_ = count; }
 
   bool DoneSending() const;
 

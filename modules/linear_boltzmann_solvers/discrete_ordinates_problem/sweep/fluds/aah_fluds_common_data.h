@@ -7,6 +7,7 @@
 #include <set>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
 namespace opensn
 {
@@ -16,10 +17,10 @@ class Cell;
 class CellFace;
 
 // face_slot index, vertex ids
-using CompactFaceView = std::pair<int, std::vector<uint64_t>>;
+using CompactFaceView = std::pair<int64_t, std::vector<uint64_t>>;
 
 // cell_global_id, faces
-using CompactCellView = std::pair<int, std::vector<CompactFaceView>>;
+using CompactCellView = std::pair<uint64_t, std::vector<CompactFaceView>>;
 
 class SPDS;
 
@@ -73,7 +74,7 @@ protected:
    * This is a small vector [deplocI] that holds the number of face dofs for each dependent
    * location.
    */
-  std::vector<int> deplocI_face_dof_count_;
+  std::vector<uint64_t> deplocI_face_dof_count_;
 
   /**
    * This is a vector [dependent_location][unordered_cell_index]
@@ -91,7 +92,7 @@ protected:
    * This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in
    * the local psi vector where the first face dof will store its data
    */
-  std::vector<std::vector<int>> so_cell_outb_face_slot_indices_;
+  std::vector<std::vector<uint64_t>> so_cell_outb_face_slot_indices_;
 
   /**
    * This is a vector [cell_sweep_order_index][outgoing_face_count]  which holds the face
@@ -137,17 +138,18 @@ private:
    * This is a small vector [prelocI] that holds the number of  face dofs for each predecessor
    * location.
    */
-  std::vector<int> prelocI_face_dof_count_;
-  std::vector<int> delayed_prelocI_face_dof_count_;
+  std::vector<int64_t> prelocI_face_dof_count_;
+  std::vector<int64_t> delayed_prelocI_face_dof_count_;
 
   /**
    * This is a vector [nonlocal_inc_face_counter] containing AlphaPairs. AlphaPair-first is the
    * prelocI index and AlphaPair-second is a BetaPair. The BetaPair-first is the slot where
    * the face storage begins and BetaPair-second is a dof mapping
    */
-  std::vector<std::pair<int, std::pair<int, std::vector<int>>>> nonlocal_inc_face_prelocI_slot_dof_;
+  std::vector<std::pair<int, std::pair<int64_t, std::vector<int64_t>>>>
+    nonlocal_inc_face_prelocI_slot_dof_;
 
-  std::vector<std::pair<int, std::pair<int, std::vector<int>>>>
+  std::vector<std::pair<int, std::pair<int64_t, std::vector<int64_t>>>>
     delayed_nonlocal_inc_face_prelocI_slot_dof_;
 
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
@@ -155,17 +157,21 @@ private:
   void SlotDynamics(const Cell& cell,
                     const SPDS& spds,
                     const GridFaceHistogram& grid_face_histogram,
-                    std::vector<std::vector<std::pair<int, short>>>& lock_boxes,
-                    std::vector<std::pair<int, short>>& delayed_lock_box);
+                    std::vector<std::vector<std::pair<std::optional<uint64_t>, short>>>& lock_boxes,
+                    std::vector<std::pair<std::optional<uint64_t>, short>>& delayed_lock_box);
 
   /**
    * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
    * computes the location of this position's upwind psi in the local upwind psi vector.
    */
-  void AddFaceViewToDepLocI(int deplocI, int cell_g_index, int face_slot, const CellFace& face);
+  void AddFaceViewToDepLocI(int deplocI,
+                            uint64_t cell_g_index,
+                            uint64_t face_slot,
+                            const CellFace& face);
 
-  void
-  LocalIncidentMapping(const Cell& cell, const SPDS& spds, std::vector<int>& local_so_cell_mapping);
+  void LocalIncidentMapping(const Cell& cell,
+                            const SPDS& spds,
+                            std::vector<uint64_t>& local_so_cell_mapping);
 
   void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
 
@@ -174,13 +180,13 @@ private:
    * This is easy since all the values are integers.
    */
   static void SerializeCellInfo(std::vector<CompactCellView>& cell_views,
-                                std::vector<int>& face_indices,
-                                int num_face_dofs);
+                                std::vector<int64_t>& face_indices,
+                                uint64_t num_face_dofs);
 
   /// Deserializes face indices.
   static void DeSerializeCellInfo(std::vector<CompactCellView>& cell_views,
-                                  std::vector<int>* face_indices,
-                                  int& num_face_dofs);
+                                  std::vector<int64_t>* face_indices,
+                                  int64_t& num_face_dofs);
 
   void NonLocalIncidentMapping(const Cell& cell, const SPDS& spds);
 };
