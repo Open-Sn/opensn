@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9a150f771f5f743674abdfa0bee57209:
+
+Function opensn::StartsWith
+===========================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StartsWith(std::string_view, std::string_view)
+   :project: opensn
