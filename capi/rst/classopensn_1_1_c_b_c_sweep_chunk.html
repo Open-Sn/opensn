@@ -100,7 +100,9 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunkE">
 <span class="target" id="classopensn_1_1_c_b_c_sweep_chunk"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBCSweepChunk</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE" title="opensn::SweepChunk"><span class="n"><span class="pre">SweepChunk</span></span></a><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunkE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Implements the core sweep operation for a single cell within the cell-by-cell (CBC) sweep algorithm</p>
+<p>This class is responsible for performing the discrete ordinates transport calculation on a given cell for all angles and groups managed by its current <a class="reference internal" href="classopensn_1_1_angle_set.html#classopensn_1_1_angle_set"><span class="std std-ref">AngleSet</span></a> It interacts with a <a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s.html#classopensn_1_1_c_b_c___f_l_u_d_s"><span class="std std-ref">CBC_FLUDS</span></a> object to obtain upwind angular flux data (from local neighbors, MPI remote buffers, or boundaries) and to store outgoing angular flux data (to local neighbors or MPI send buffers) </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk13CBCSweepChunkERNSt6vectorIdEERNSt6vectorIdEERKNSt10shared_ptrI13MeshContinuumEERK21SpatialDiscretizationRKNSt6vectorI16UnitCellMatricesEERNSt6vectorI11CellLBSViewEERKNSt6vectorIdEERKNSt6vectorIdEERK11LBSGroupsetRKNSt3mapIiNSt10shared_ptrI12MultiGroupXSEEEEiii">
@@ -122,7 +124,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk5SweepER8AngleSet">
 <span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1ac665dd1ecd00f792d5dd59f6a7e4e4a8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sweep</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk5SweepER8AngleSet" title="Link to this definition"></a><br /></dt>
-<dd><p>Sweep chunks should override this. </p>
+<dd><p>Performs the discrete ordinates sweep calculation for the currently set cell, for all angles and groups within the provided <a class="reference internal" href="classopensn_1_1_angle_set.html#classopensn_1_1_angle_set"><span class="std std-ref">AngleSet</span></a></p>
+<p>It:<ul class="simple">
+<li><p>Assembles the local transport equation system for each angle and group</p></li>
+<li><p>Retrieves upwind angular fluxes from local neighbors, remote locations (via MPI data managed by <a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s.html#classopensn_1_1_c_b_c___f_l_u_d_s"><span class="std std-ref">CBC_FLUDS</span></a>), or boundaries</p></li>
+<li><p>Solves the local system for the outgoing angular fluxes at the cell nodes</p></li>
+<li><p>Updates the global scalar flux moments</p></li>
+<li><p>If save_angular_flux_ is true, stores the computed angular fluxes into the global angular flux vector</p></li>
+<li><p>Propagates outgoing angular fluxes to local downwind neighbors or stages them for MPI transmission to remote downwind neighbors </p></li>
+</ul>
+</p>
 </dd></dl>
 
 </div>
