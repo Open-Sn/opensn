@@ -102,8 +102,7 @@ if __name__ == "__main__":
             {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
         ],
         options={
-            "max_ags_iterations": 1,
-            "save_angular_flux": True
+            "max_ags_iterations": 1
         },
         sweep_type="CBC"
     )
