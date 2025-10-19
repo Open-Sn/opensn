@@ -74,6 +74,9 @@ if __name__ == "__main__":
             {"name": "zmin", "type": "reflecting"},
             {"name": "zmax", "type": "reflecting"},
         ],
+        options={
+            "save_angular_flux": True,
+        },
         sweep_type="CBC"
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
