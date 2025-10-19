@@ -74,6 +74,7 @@ if __name__ == "__main__":
             "power_field_function_on": True,
             "power_default_kappa": 1.0,
             "power_normalization": 1.0,
+            "save_angular_flux": True,
             "read_restart_path": "c5g7_restart/c5g7",
             # "restart_writes_enabled": True,
             # "write_delayed_psi_to_restart": True,

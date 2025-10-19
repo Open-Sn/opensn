@@ -80,7 +80,8 @@ if __name__ == "__main__":
         options={
             "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
-            "verbose_outer_iterations": True
+            "verbose_outer_iterations": True,
+            "save_angular_flux": True,
         },
         sweep_type="CBC",
     )

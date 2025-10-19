@@ -99,7 +99,8 @@ if __name__ == "__main__":
         scattering_order=5,
         volumetric_sources=[mg_src],
         options={
-            "max_ags_iterations": 1
+            "max_ags_iterations": 1,
+            "save_angular_flux": True
         },
         sweep_type="CBC"
     )
