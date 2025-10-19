@@ -38,6 +38,26 @@
     ]
   },
   {
+    "file": "transport_1d_1_gpu.py",
+    "comment": "1D LinearBSolver Test - PWLD",
+    "num_procs": 3,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.49903,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000718243,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_2d_1_poly.py",
     "comment": "2D LinearBSolver Test - PWLD",
     "num_procs": 4,
@@ -76,9 +96,49 @@
     ]
   },
   {
+    "file": "transport_2d_2_unstructured_gpu.py",
+    "comment": "2D LinearBSolver Test Unstructured grid - PWLD",
+    "num_procs": 4,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.51187,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.00142458,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_2_unstructured.py",
     "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
     "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.541465,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000378243,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2_unstructured_gpu.py",
+    "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
+    "num_procs": 4,
+    "requires_gpu": "True",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -396,8 +456,48 @@
     ]
   },
   {
+    "file": "transport_3d_1a_extruder_gpu.py",
+    "comment": "3D LinearBSolver Test - PWLD",
+    "num_procs": 4,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52745,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000376339,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_1b_ortho.py",
     "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.52831,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000804576,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1b_ortho_gpu.py",
+    "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
+    "requires_gpu": "True",
     "num_procs": 4,
     "checks": [
       {
