@@ -91,7 +91,6 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
 
@@ -102,60 +101,28 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Flux data structures (FLUDS) specific to the cell-by-cell (CBC) sweep algorithm</span>
-<span class="cm"> *</span>
-<span class="cm"> * This class manages the storage and access of angular flux data during a CBC sweep</span>
-<span class="cm"> *</span>
-<span class="cm"> * It provides methods to access:</span>
-<span class="cm"> * - Upwind angular flux data from local neighbor cells</span>
-<span class="cm"> * - Storage locations for downwind angular flux data for the current cell</span>
-<span class="cm"> * - Upwind angular flux data received from remote MPI ranks</span>
-<span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_FLUDS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FLUDS</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">CBC_FLUDS</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">            </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">CBC_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data</span><span class="p">,</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">local_psi_data</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">psi_uk_man</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Given a local upwind neighbor cell, a node index on this cell, and an</span>
-<span class="cm">   * angleset subset index, this function returns a pointer to</span>
-<span class="cm">   * the start of the group data for the specified node and angle.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">UpwindPsi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_neighbor</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">adj_cell_node</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">as_ss_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalUpwindDataBlock</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Given a local cell, a node index on this cell, and an angleset subset index,</span>
-<span class="cm">   * this function returns a pointer to the start of the group data for the specified</span>
-<span class="cm">   * node and angle for writing its just solved angular fluxes.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">OutgoingPsi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cell_node</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">as_ss_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetLocalCellUpwindPsi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">psi_data_block</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">);</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Given a remote upwind cell&#39;s global ID, a face ID on this cell,</span>
-<span class="cm">   * a node index on this face, and an angleset subset index,</span>
-<span class="cm">   * this function returns a pointer to the start of the group data for the specified</span>
-<span class="cm">   * face node and angle.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">NLUpwindPsi</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_id</span><span class="p">,</span>
-<span class="w">                      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_id</span><span class="p">,</span>
-<span class="w">                      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_node_mapped</span><span class="p">,</span>
-<span class="w">                      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">as_ss_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNonLocalUpwindData</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_id</span><span class="p">,</span>
+<span class="w">                                                   </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Given a pointer to a vector holding the non-local outgoing psi data for a face,</span>
-<span class="cm">   * a node index on this face, and an angleset subset index,</span>
-<span class="cm">   * this function returns a pointer to the start of the group data for the specified</span>
-<span class="cm">   * face node and angle.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="o">*</span>
-<span class="w">  </span><span class="nf">NLOutgoingPsi</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">psi_nonlocal_outgoing</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">face_node</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">as_ss_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetNonLocalUpwindPsi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">psi_data</span><span class="p">,</span>
+<span class="w">                                     </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_node_mapped</span><span class="p">,</span>
+<span class="w">                                     </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_index</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearLocalAndReceivePsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">deplocs_outgoing_messages_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearSendPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
@@ -176,17 +143,9 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CBC_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">local_psi_data_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">psi_uk_man_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_in_gs_quadrature_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_quadrature_local_dofs_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_local_spatial_dofs_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">local_psi_data_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Layout for storage for local angular fluxes:</span>
-<span class="cm">   * spatial DOF major -&gt; angle in angleset major -&gt; group in groupset major</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">local_psi_data_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundryI_incoming_psi_</span><span class="p">;</span>
 
