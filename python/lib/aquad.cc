@@ -366,9 +366,9 @@ WrapLebedevQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"order"};
+        static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<LebedevQuadrature, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -376,28 +376,13 @@ WrapLebedevQuadrature(py::module& aquad)
 
     Parameters
     ----------
-    order: int
+    quadrature_order: int
         The order of the quadrature.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Whether to print verbose output during initialization.
     )"
-  );
-  
-  lebedev_quadrature.def(
-    "LoadFromOrder",
-    &LebedevQuadrature::LoadFromOrder,
-    R"(
-    Loads quadrature points from an Order.
-
-    Parameters
-    ----------
-    order: int
-        The order of the quadrature.
-    verbose: bool, default=False
-        Whether to print verbose output during loading.
-    )",
-    py::arg("order"),
-    py::arg("verbose") = false
   );
   // clang-format on
 }

@@ -52,7 +52,7 @@ if __name__ == "__main__":
         strength.append(1.0)
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
-    pquad = LebedevQuadrature(order=21)
+    pquad = LebedevQuadrature(quadrature_order=21, scattering_order=0)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

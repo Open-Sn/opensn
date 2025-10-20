@@ -15,24 +15,24 @@
 namespace opensn
 {
 
-LebedevQuadrature::LebedevQuadrature(int order, bool verbose)
-  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, order)
+LebedevQuadrature::LebedevQuadrature(int quadrature_order, int scattering_order, bool verbose)
+  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order)
 {
-  LoadFromOrder(order, verbose);
+  LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
 }
 
 void
-LebedevQuadrature::LoadFromOrder(int order, bool verbose)
+LebedevQuadrature::LoadFromOrder(int quadrature_order, bool verbose)
 {
   abscissae.clear();
   weights.clear();
   omegas.clear();
 
   // Get points from LebedevOrders
-  const auto& points = LebedevOrders::GetOrderPoints(order);
+  const auto& points = LebedevOrders::GetOrderPoints(quadrature_order);
 
   std::stringstream ostr;
   double weight_sum = 0.0;
@@ -78,7 +78,8 @@ LebedevQuadrature::LoadFromOrder(int order, bool verbose)
 
   if (verbose)
   {
-    log.Log() << "Loaded " << points.size() << " Lebedev quadrature points from order " << order;
+    log.Log() << "Loaded " << points.size() << " Lebedev quadrature points from quadrature order "
+              << quadrature_order;
     log.Log() << ostr.str() << "\n"
               << "Weight sum=" << weight_sum;
   }
