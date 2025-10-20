@@ -5,7 +5,6 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/data_types/vector3.h"
 #include "framework/logging/log.h"
-#include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include <algorithm>
 #include <cstddef>
@@ -17,8 +16,6 @@ namespace opensn
 void
 SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
 {
-  Timer timer;
-  timer.Reset();
   initial_level_ = level;
 
   // Define constants
@@ -77,19 +74,20 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
     log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
 
   // Print Statistics
-  double time = timer.GetTime() / 1000.0;
-  log.Log0Verbose1() << "Number of dirs/octant: " << initial_octant_SQs_.size();
-  log.Log0Verbose1() << "Total weight         : " << total_area;
-  log.Log0Verbose1() << "Total weight/(pi/2)  : " << total_area / M_PI_2;
-  log.Log0Verbose1() << "Area Max/Min         : " << area_max / area_min;
-  log.Log0Verbose1() << "Area Max/Avg         : " << area_max / area_avg;
+  log.Log0Verbose1() << "Number of dirs/octant                    : " << initial_octant_SQs_.size();
+  log.Log0Verbose1() << "Total weight beofre normalization        : " << total_area;
+  log.Log0Verbose1() << "Total weight/(pi/2) before normalization : " << total_area / M_PI_2;
+  log.Log0Verbose1() << "Area Max/Min                             : " << area_max / area_min;
+  log.Log0Verbose1() << "Area Max/Avg                             : " << area_max / area_avg;
 
   CopyToAllOctants();
 
   // Populate quadriture points
   PopulateQuadratureAbscissae();
 
-  log.Log0Verbose1() << "Time taken           : " << time;
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 }
 
 void
@@ -642,14 +640,14 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
   abscissae.clear();
   weights.clear();
   omegas.clear();
-
+  double weight_sum = 0.0;
   for (const auto& sq : deployed_SQs)
   {
     for (int i = 0; i < 4; ++i)
     {
       const auto& omega = sq.sub_sqr_points[i];
       const double weight = sq.sub_sqr_weights[i];
-
+      weight_sum += weight;
       double theta = acos(omega.z);
       double phi = acos(omega.x / sin(theta));
 
@@ -663,6 +661,10 @@ SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
       omegas.push_back(omega);
     }
   }
+
+  // Renormalize weights to 1.0
+  for (auto& w : weights)
+    w /= weight_sum;
 }
 
 double
@@ -976,6 +978,10 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
   deployed_SQs_history_.push_back(new_deployment);
 
   PopulateQuadratureAbscissae();
+
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
 
   log.Log() << "SLDFESQ refined " << num_refined << " SQs.";
 }
