@@ -628,7 +628,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     if (c_o < 0 or std::cmp_greater_equal(c_o, ncells))
       throw std::logic_error(fname + ": owner id out of range (boundary face " + std::to_string(f) +
                              ").");
-    cell_faces[c_o].push_back(+f); // boundary face outward w.r.t owner
+    cell_faces[c_o].push_back(static_cast<int64_t>(+f)); // boundary face outward w.r.t owner
   }
 
   // generate the block_id map from cellZones
@@ -656,9 +656,9 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
                                                                      CellType::POLYHEDRON);
     cell->block_id = block_map[c];
 
-    for (int code : cell_faces[c])
+    for (auto code : cell_faces[c])
     {
-      const int f = (code >= 0) ? code : (-code - 1);
+      const int64_t f = (code >= 0) ? code : (-code - 1);
       const auto& f_v = face_verts[f];
 
       UnpartitionedMesh::LightWeightFace lwf;
