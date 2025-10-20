@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+use_color=0
 user_extra_before=""
 user_extra_arg=""
 positional=()
 before_opt=()
 arg_opt=()
+clang_tidy_args=()
 had_issues=0
 tmp_log="$(mktemp -t clang_tidy.XXXXXX)"
 cleanup() { rm -f "$tmp_log"; }
@@ -46,11 +48,18 @@ while [[ $# -gt 0 ]]; do
       user_extra_arg="${1#*=}"; shift; continue ;;
     -extra-arg)
       shift; user_extra_arg="${1:-}"; [[ -n "${1:-}" ]] && shift; continue ;;
+    -use-color|--use-color)
+      use_color=1; shift; continue ;;
     --) shift; break ;;
     -*) echo "Unknown option: $1" >&2; usage; exit 2 ;;
     *) positional+=( "$1" ); shift; continue ;;
   esac
 done
+
+# Add color flag if requested
+if (( use_color )); then
+  clang_tidy_args+=( -use-color )
+fi
 
 # Collect anything after '--'
 if [[ $# -gt 0 ]]; then positional+=( "$@" ); fi
@@ -87,10 +96,10 @@ if (( ${#positional[@]} == 1 )); then
       exit 1
     fi
   fi
-  run-clang-tidy -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
+  run-clang-tidy ${clang_tidy_args[@]:-} -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
                  ${arg_opt[@]+"${arg_opt[@]}"} "$file" -warnings-as-errors='*' | tee -a "$tmp_log"
 else
-  run-clang-tidy -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
+  run-clang-tidy ${clang_tidy_args[@]:-} -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
                  ${arg_opt[@]+"${arg_opt[@]}"} "${repo}/framework" "${repo}/modules" "${repo}/python" \
                  -warnings-as-errors='*' | tee -a "$tmp_log"
 fi
