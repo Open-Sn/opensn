@@ -14,12 +14,12 @@ using ScalarSpatialMaterialFunction = std::function<double(int, const Vector3&)>
 using ScalarMaterialFunction = std::function<double(double, int)>;
 
 /// Base class for evaluating spatial material functions given a coordinate.
-class VectorSpatialFunction : public std::function<std::vector<double>(const Vector3&, int)>
+class VectorSpatialFunction : public std::function<std::vector<double>(const Vector3&, std::size_t)>
 {
 public:
   VectorSpatialFunction() = default;
-  VectorSpatialFunction(const std::function<std::vector<double>(const Vector3&, int)>& src)
-    : std::function<std::vector<double>(const Vector3&, int)>(src)
+  VectorSpatialFunction(const std::function<std::vector<double>(const Vector3&, std::size_t)>& src)
+    : std::function<std::vector<double>(const Vector3&, std::size_t)>(src)
   {
   }
 };

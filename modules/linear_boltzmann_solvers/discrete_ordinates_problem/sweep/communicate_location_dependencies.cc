@@ -19,7 +19,7 @@ CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
 
   // Communicate location dep counts
   std::vector<int> depcount_per_loc;
-  int current_loc_dep_count = location_dependencies.size();
+  auto current_loc_dep_count = static_cast<int>(location_dependencies.size());
   mpi_comm.all_gather(current_loc_dep_count, depcount_per_loc);
 
   // Broadcast dependencies

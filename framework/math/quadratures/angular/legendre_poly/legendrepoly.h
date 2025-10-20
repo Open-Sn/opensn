@@ -12,7 +12,7 @@ namespace opensn
  * \param N int Order of the Legendre polynomial.
  * \param x double The evaluation point.
  */
-double Legendre(int N, double x);
+double Legendre(unsigned int N, double x);
 
 /**
  * Provides the function evaluation of the derivative of Pn at value x
@@ -20,7 +20,7 @@ double Legendre(int N, double x);
  * \param N int Order of the Legendre polynomial.
  * \param x double The evaluation point.
  */
-double dLegendredx(int N, double x);
+double dLegendredx(unsigned int N, double x);
 
 /**
  * Provides the function evaluation of the second derivative of Pn at value x
@@ -28,7 +28,7 @@ double dLegendredx(int N, double x);
  * \param N int Order of the Legendre polynomial.
  * \param x double The evaluation point.
  */
-double d2Legendredx2(int N, double x);
+double d2Legendredx2(unsigned int N, double x);
 
 /**
  * Provides the function evaluation of the associated Legendre polynomial at value x.

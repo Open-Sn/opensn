@@ -27,7 +27,7 @@ public:
   {
   }
 
-  double ShapeValue(int i, const Vector3& xyz) const override
+  double ShapeValue(size_t i, const Vector3& xyz) const override
   {
     return grid_->CheckPointInsideCell(cell_, xyz) ? 1.0 : 0.0;
   }
@@ -40,7 +40,7 @@ public:
       shape_values = Vector<double>(num_nodes_, 0.0);
   }
 
-  Vector3 GradShapeValue(int i, const Vector3& xyz) const override
+  Vector3 GradShapeValue(size_t i, const Vector3& xyz) const override
   {
     return Vector3(0.0, 0.0, 0.0);
   }

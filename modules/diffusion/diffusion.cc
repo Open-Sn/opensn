@@ -90,8 +90,8 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
 }
 
 void
-DiffusionSolver::AddToMatrix(const std::vector<int64_t>& rows,
-                             const std::vector<int64_t>& cols,
+DiffusionSolver::AddToMatrix(const std::vector<PetscInt>& rows,
+                             const std::vector<PetscInt>& cols,
                              const std::vector<double>& vals)
 {
   if (rows.size() != cols.size() or rows.size() != vals.size())

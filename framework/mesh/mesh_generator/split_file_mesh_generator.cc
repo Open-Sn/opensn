@@ -172,7 +172,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
     WriteBinaryValue(ofile, vertices_needed.size()); // size_t
 
     // Write cells
-    constexpr size_t BUFFER_SIZE = 4096 * 2;
+    constexpr size_t BUFFER_SIZE = 4096L * 2;
     ByteArray serial_data;
     serial_data.Data().reserve(BUFFER_SIZE * 2);
     for (const auto& cell_global_id : cells_needed)

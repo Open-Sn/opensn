@@ -62,7 +62,7 @@ PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
 }
 
 double
-PieceWiseLinearSlabMapping::ShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearSlabMapping::ShapeValue(size_t i, const Vector3& xyz) const
 {
   const auto& p0 = grid_->vertices[v0i_];
   const auto& p1 = grid_->vertices[v1i_];
@@ -110,7 +110,7 @@ PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, Vector<double>& shap
 }
 
 Vector3
-PieceWiseLinearSlabMapping::GradShapeValue(const int i, const Vector3& xyz) const
+PieceWiseLinearSlabMapping::GradShapeValue(size_t i, const Vector3& xyz) const
 {
   if (i == 0)
     return Vector3(0.0, 0.0, -1.0 / h_);

@@ -8,6 +8,7 @@
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <cstddef>
 #include <map>
 
 namespace opensn
@@ -70,7 +71,7 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
     area_max = std::fmax(area_max, area);
     area_min = std::fmin(area_min, area);
   }
-  double area_avg = total_area / initial_octant_SQs_.size();
+  double area_avg = total_area / static_cast<double>(initial_octant_SQs_.size());
 
   if (negative_weights_found)
     log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
@@ -469,13 +470,13 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
 
   // Integrate Legendre Quadrature
   std::array<double, 4> integral = {0.0, 0.0, 0.0, 0.0};
-  int Nq = legendre_qpoints.size();
+  auto Nq = legendre_qpoints.size();
   double dx_tilde = (x_tilde_max - x_tilde_min);
   double dy_tilde = (y_tilde_max - y_tilde_min);
 
-  for (int i = 0; i < Nq; ++i)
+  for (std::size_t i = 0; i < Nq; ++i)
   {
-    for (int j = 0; j < Nq; ++j)
+    for (std::size_t j = 0; j < Nq; ++j)
     {
       // Determine xy_tilde
       double x_tilde = x_tilde_min + (1.0 + legendre_qpoints[j][0]) * dx_tilde / 2.0;
@@ -774,10 +775,10 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
       F = &case1;
   }
 
-  const int Nd = initial_octant_SQs_.size() * 4;
+  const auto Nd = initial_octant_SQs_.size() * 4;
   const int NR = RiemannN;
 
-  double h = 1.0 / sqrt(8.0 * Nd);
+  double h = 1.0 / sqrt(8.0 * static_cast<double>(Nd));
   double I_riemann = ref_solution;
   if (NR > 0)
     I_riemann = std::fabs(RiemannIntegral(F, NR));
@@ -789,7 +790,7 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
   snprintf(buff1, 200, "Quadrature integral: %.10e\n", I_quadrature);
   snprintf(buff2,
            200,
-           "Error_RQ%05d_%06d: %2d %f %e\n",
+           "Error_RQ%05ld_%06ld: %2d %f %e\n",
            Nd,
            Nd * 8,
            initial_level_,

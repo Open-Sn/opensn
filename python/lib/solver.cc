@@ -605,7 +605,7 @@ WrapLBS(py::module& slv)
       py::dict result;
       for (const auto& [bndry_id, gr_wise_leakage] : leakage)
       {
-        py::array_t<double> np_vector = py::array_t<double>(gr_wise_leakage.size());
+        py::array_t<double> np_vector = py::array_t<double>(static_cast<long>(gr_wise_leakage.size()));
         py::buffer_info buffer = np_vector.request();
         auto *np_vector_data = static_cast<double*>(buffer.ptr);
         std::copy(gr_wise_leakage.begin(), gr_wise_leakage.end(), np_vector_data);

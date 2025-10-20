@@ -98,7 +98,7 @@ AngleAggregation::InitializeReflectingBCs()
   {
     if (bndry->IsReflecting())
     {
-      size_t tot_num_angles = quadrature_->abscissae.size();
+      auto tot_num_angles = static_cast<int>(quadrature_->abscissae.size());
       size_t num_local_cells = grid_->local_cells.size();
       auto& rbndry = (ReflectingBoundary&)(*bndry);
 
@@ -108,7 +108,7 @@ AngleAggregation::InitializeReflectingBCs()
       rbndry.GetAngleReadyFlags().resize(tot_num_angles, false);
 
       // Determine reflected angle and check that it is within the quadrature
-      for (size_t n = 0; n < tot_num_angles; ++n)
+      for (int n = 0; n < tot_num_angles; ++n)
       {
         const Vector3& omega_n = quadrature_->omegas[n];
         Vector3 omega_reflected;
@@ -143,7 +143,7 @@ AngleAggregation::InitializeReflectingBCs()
         }
 
         auto& index_map = rbndry.GetReflectedAngleIndexMap();
-        for (size_t nstar = 0; nstar < tot_num_angles; ++nstar)
+        for (int nstar = 0; nstar < tot_num_angles; ++nstar)
           if (omega_reflected.Dot(quadrature_->omegas[nstar]) > (1.0 - epsilon))
           {
             index_map[n] = nstar;
@@ -165,7 +165,7 @@ AngleAggregation::InitializeReflectingBCs()
       heteroflux_new.clear();
       heteroflux_old.clear();
       heteroflux_new.resize(tot_num_angles);
-      for (size_t n = 0; n < tot_num_angles; ++n)
+      for (int n = 0; n < tot_num_angles; ++n)
       {
         // Only continue if omega is outgoing
         if (quadrature_->omegas[n].Dot(rbndry.GetNormal()) < 0.0)
