@@ -408,7 +408,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
   {
     const auto it = std::find(unique_bids.begin(), unique_bids.end(), bid);
     OpenSnInvalidArgumentIf(it == unique_bids.end(),
-                            "Boundary ID " + std::to_string(bid) + "not found on grid.");
+                            "Boundary ID " + std::to_string(bid) + " not found on grid.");
   }
 
   const auto num_groups = do_problem.GetNumGroups();
