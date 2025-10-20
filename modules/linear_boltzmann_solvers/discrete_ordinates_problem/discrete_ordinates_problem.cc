@@ -138,7 +138,7 @@ DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
     laq: Legendre order supported by the angular quadrature
   */
 
-  unsigned int lfs = scattering_order_;
+  size_t lfs = scattering_order_;
 
   for (size_t gs = 1; gs < groupsets_.size(); ++gs)
     if (groupsets_[gs].quadrature->GetScatteringOrder() !=
@@ -390,7 +390,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
         const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
 
         std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
-        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3, 0.0);
+        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
 
         mpi_comm.all_gather(local_has_bid, locJ_has_bid);
         std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
