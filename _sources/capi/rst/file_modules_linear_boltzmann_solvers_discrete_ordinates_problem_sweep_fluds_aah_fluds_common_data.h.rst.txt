@@ -36,6 +36,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`)
 
+- ``optional``
+
 - ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
 
 
@@ -69,7 +71,7 @@ Typedefs
 --------
 
 
-- :ref:`exhale_typedef_namespaceopensn_1a28b6bfe059ce5b9026c51d2d6e823da7`
+- :ref:`exhale_typedef_namespaceopensn_1af22b592ef6d05c38e1c97745f4137cdf`
 
-- :ref:`exhale_typedef_namespaceopensn_1a17f509cd8a3cb2a57a8482bc38724b8b`
+- :ref:`exhale_typedef_namespaceopensn_1a18578bd344a5b61164771fbdd7dc547b`
 

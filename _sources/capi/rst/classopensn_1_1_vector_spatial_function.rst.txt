@@ -12,7 +12,7 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public std::function< std::vector< double >(const Vector3 &, int)>``
+- ``public std::function< std::vector< double >(const Vector3 &, std::size_t)>``
 
 
 Class Documentation

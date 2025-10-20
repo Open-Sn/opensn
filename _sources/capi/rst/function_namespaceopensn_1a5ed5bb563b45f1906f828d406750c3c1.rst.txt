@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a62afe87b20f8ccbee179c2308bb71865:
+.. _exhale_function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1:
 
 Function opensn::d2Legendredx2
 ==============================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::d2Legendredx2(int, double)
+.. doxygenfunction:: opensn::d2Legendredx2(unsigned int, double)
    :project: opensn

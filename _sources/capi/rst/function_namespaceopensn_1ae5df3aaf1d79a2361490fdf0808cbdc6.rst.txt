@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a8e566822007fc6871847100faeeb69df:
+.. _exhale_function_namespaceopensn_1ae5df3aaf1d79a2361490fdf0808cbdc6:
 
 Function opensn::Legendre
 =========================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::Legendre(int, double)
+.. doxygenfunction:: opensn::Legendre(unsigned int, double)
    :project: opensn
