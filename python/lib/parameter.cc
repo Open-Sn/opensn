@@ -24,7 +24,7 @@
 
 #define TO_PARAMBLOCK(class_name)                                                                  \
   if (py::isinstance<class_name>(obj))                                                             \
-  return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>())
+  return ParameterBlock(key, obj.cast<std::shared_ptr<class_name>>()) // NOLINT
 
 namespace opensn
 {

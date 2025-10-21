@@ -1000,7 +1000,8 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id + 1));
+      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id) +
+                                           static_cast<vtkIdType>(1));
     } // for local cells
 
     // Set arrays
@@ -1097,7 +1098,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
         // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-        node_global_ids->InsertNextValue(static_cast<vtkIdType>(vid + 1));
+        node_global_ids->InsertNextValue(static_cast<vtkIdType>(vid) + static_cast<vtkIdType>(1));
       }
 
       // Load cells
