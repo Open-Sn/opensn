@@ -23,7 +23,8 @@ class TestConfiguration:
                  dependency: str,
                  args: list,
                  weight_class: str,
-                 skip: str):
+                 skip: str,
+                 requires_gpu: bool):
         """Constructor. Load checks into the data structure"""
         self.file_dir = file_dir
         self.filename = filename
@@ -37,6 +38,7 @@ class TestConfiguration:
         self.dependency = dependency
         self.args = args
         self.skip = skip
+        self.requires_gpu = requires_gpu
 
         check_num = 0
         for check_params in checks_params:
@@ -222,6 +224,26 @@ def ParseTestConfiguration(file_path: str):
                 warnings.warn(message_prefix + '"skip" field must be a string')
                 continue
 
+        requires_gpu = False
+        if "requires_gpu" in test_block:
+            gpu_value = test_block["requires_gpu"]
+            if isinstance(gpu_value, bool):
+                requires_gpu = gpu_value
+            elif isinstance(gpu_value, str):
+                normalized = gpu_value.strip().lower()
+                if normalized in ("true", "1", "yes", "on"):
+                    requires_gpu = True
+                elif normalized in ("false", "0", "no", "off", ""):
+                    requires_gpu = False
+                else:
+                    warnings.warn(message_prefix + '"requires_gpu" field must be boolean-like')
+                    continue
+            elif isinstance(gpu_value, (int, float)):
+                requires_gpu = bool(gpu_value)
+            else:
+                warnings.warn(message_prefix + '"requires_gpu" field must be boolean-like')
+                continue
+
         try:
             new_test = TestConfiguration(file_dir=os.path.dirname(file_path) + "/",
                                          filename=test_block["file"],
@@ -232,7 +254,8 @@ def ParseTestConfiguration(file_path: str):
                                          dependency=dependency,
                                          args=args,
                                          weight_class=weight_class,
-                                         skip=skip_reason)
+                                         skip=skip_reason,
+                                         requires_gpu=requires_gpu)
             args_str = ''.join(map(str, new_test.args))
             test_objects[hash(new_test.filename + args_str)] = new_test
         except ValueError:
@@ -324,6 +347,12 @@ def ConfigureTests(test_hierarchy: dict, argv):
             sub_test_objs = ParseTestConfiguration(testdir + config_file)
             specific_test_dependency = None
             for obj in sub_test_objs.values():
+                if argv.gpu:
+                    if not obj.requires_gpu:
+                        continue
+                else:
+                    if obj.requires_gpu:
+                        continue
                 if specific_test is None or obj.filename == specific_test:
                     test_objects.append(obj)
                     if specific_test is not None:
@@ -335,7 +364,12 @@ def ConfigureTests(test_hierarchy: dict, argv):
             if specific_test_dependency is not None:
                 if specific_test_dependency in sub_test_objs:
                     obj = sub_test_objs[specific_test_dependency]
-                    test_objects.append(obj)
+                    include_dependency = obj.requires_gpu if argv.gpu else not obj.requires_gpu
+                    if include_dependency:
+                        test_objects.append(obj)
+                    else:
+                        warnings.warn(
+                            "Dependency '" + specific_test_dependency + "' filtered by GPU mode.")
                 else:
                     warnings.warn(
                         "Specified dependency '" + specific_test_dependency + "' does not exist.")
@@ -395,6 +429,9 @@ def RunTests(tests: list, argv):
         # Check for tests to run
         for test in tests:
             if test.ran or (test.weight_class not in weight_classes_allowed):
+                continue
+            if (test.requires_gpu and not argv.gpu) or (argv.gpu and not test.requires_gpu):
+                test.ran = True
                 continue
             done = False
 

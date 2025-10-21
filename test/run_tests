@@ -82,6 +82,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--gpu",
+    action="store_true",
+    help="Run tests that require a GPU."
+)
+
+parser.add_argument(
     "-w", "--weights",
     type=int, required=False, default=3,
     help="Test weight. Single numeric value < 7. This number, when converted to binary, specifies "

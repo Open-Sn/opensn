@@ -47,6 +47,20 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_openmcxs_U235_gpu.py",
+    "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration",
+    "num_procs": 4,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.2800213,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_openmcxs_U235_smm.py",
     "comment": "3D 84G keigenvalue test using OpenMC MGXS cross-sections and power iteration with SMM",
     "num_procs": 4,
@@ -215,6 +229,20 @@
     "file": "keigenvalue_transport_3d_2g_exo_pyramid.py",
     "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model",
     "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.929337,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_exo_pyramid_gpu.py",
+    "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model",
+    "num_procs": 1,
+    "requires_gpu": "True",
     "checks": [
       {
         "type": "KeyValuePair",

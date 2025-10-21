@@ -59,6 +59,11 @@ jobs:
         run: |
           module load cuda/12.9 python3/3.12.3 opensn/${{ matrix.compiler }}
           mkdir build && cd build && cmake -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+      - name: test
+        shell: bash
+        run: |
+          module load cuda/12.9 python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests --gpu -d test/python -j 32 -v 1
 
   sanitize:
     runs-on: [self-hosted]
