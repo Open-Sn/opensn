@@ -39,15 +39,16 @@ Program Listing for File lebedev_quadrature.h
       * @param order The order of the Lebedev quadrature set to load
       * @param verbose Flag to enable verbose output
       */
-     LebedevQuadrature(int order, bool verbose = false);
+     LebedevQuadrature(int quadrature_order, int scattering_order, bool verbose = false);
    
+   private:
      /**
       * @brief Loads quadrature points for the specified order from predefined data.
       *
       * @param order The order to load
       * @param verbose Flag to enable verbose output
       */
-     void LoadFromOrder(int order, bool verbose = false);
+     void LoadFromOrder(int quadrature_order, bool verbose = false);
    };
    
    } // namespace opensn
