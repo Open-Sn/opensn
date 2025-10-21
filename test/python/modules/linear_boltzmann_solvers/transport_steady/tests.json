@@ -135,6 +135,25 @@
     ]
   },
   {
+    "file": "transport_3d_2_unstructured_sldfe.py",
+    "comment": "3D LinearBSolver Extruded Unstructured - SLDFE quadrature",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.27523e-01,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 3.54369e-04,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_2_unstructured_gpu.py",
     "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
     "num_procs": 4,
