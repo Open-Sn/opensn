@@ -51,7 +51,7 @@ NLKEigenvalueAGSSolver::SetMonitor()
 
   if (lbs_problem->GetOptions().verbose_inner_iterations)
   {
-    KSP ksp;
+    KSP ksp = nullptr;
     SNESGetKSP(nl_solver_, &ksp);
     KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr);
   }
@@ -119,7 +119,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   // Compute final k_eff
   double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
 
-  PetscInt number_of_func_evals;
+  PetscInt number_of_func_evals = 0;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
   // Print summary

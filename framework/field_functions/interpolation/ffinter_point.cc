@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/field_functions/interpolation/ffinter_point.h"
+
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -100,7 +101,7 @@ FieldFunctionInterpolationPoint::Execute()
 double
 FieldFunctionInterpolationPoint::GetPointValue() const
 {
-  double global_point_value;
+  double global_point_value = 0.0;
   mpi_comm.all_reduce(point_value_, global_point_value, mpi::op::sum<double>());
   return global_point_value;
 }

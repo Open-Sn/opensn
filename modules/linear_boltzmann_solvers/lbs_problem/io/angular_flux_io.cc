@@ -121,9 +121,9 @@ LBSSolverIO::ReadAngularFluxes(
   log.Log() << "Reading angular flux file from " << file_base;
 
   // Read macro data and check for compatibility
-  uint64_t file_num_groupsets;
-  uint64_t file_num_local_cells;
-  uint64_t file_num_local_nodes;
+  uint64_t file_num_groupsets = 0;
+  uint64_t file_num_local_cells = 0;
+  uint64_t file_num_local_nodes = 0;
 
   H5ReadAttribute(file_id, "num_groupsets", file_num_groupsets);
   H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
@@ -197,8 +197,8 @@ LBSSolverIO::ReadAngularFluxes(
   dest.clear();
   for (uint64_t gs = 0; gs < num_groupsets; ++gs)
   {
-    uint64_t file_num_gs_dirs;
-    uint64_t file_num_gs_groups;
+    uint64_t file_num_gs_dirs = 0;
+    uint64_t file_num_gs_groups = 0;
 
     auto group_name = "groupset_" + std::to_string(gs);
     H5ReadAttribute(file_id, group_name + "/num_directions", file_num_gs_dirs);

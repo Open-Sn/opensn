@@ -587,7 +587,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
   const Vector3 khat(0, 0, 1);
   std::set<double> distance_set;
 
-  double track_length;
+  double track_length = 0.0;
   if (segment_lengths.empty())
   {
     track_length = (line_point1 - line_point0).Norm();

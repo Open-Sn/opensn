@@ -36,7 +36,8 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolyhedron";
 
-  CellType sub_type;
+  CellType sub_type = CellType::POLYHEDRON;
+  ;
   switch (vtk_cell->GetCellType())
   {
     case VTK_HEXAGONAL_PRISM:
@@ -158,7 +159,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
 
-  CellType sub_type;
+  CellType sub_type = CellType::POLYGON;
   switch (vtk_cell->GetCellType())
   {
     case VTK_POLYGON:
@@ -212,7 +213,7 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
 
-  CellType sub_type;
+  CellType sub_type = CellType::SLAB;
   switch (vtk_cell->GetCellType())
   {
     case VTK_LINE:

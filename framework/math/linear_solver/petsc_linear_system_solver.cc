@@ -147,7 +147,7 @@ PETScLinearSolver::PETScIterativeMethodName()
 int
 PETScLinearSolver::LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
-  LinearSystemContext* context;
+  LinearSystemContext* context = nullptr;
   MatShellGetContext(matrix, static_cast<void*>(&context));
 
   context->MatrixAction(matrix, vector, action);

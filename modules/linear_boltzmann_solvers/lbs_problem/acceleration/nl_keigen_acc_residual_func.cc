@@ -13,7 +13,7 @@ namespace opensn
 PetscErrorCode
 NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
-  NLKEigenDiffContext* nl_context_ptr;
+  NLKEigenDiffContext* nl_context_ptr = nullptr;
   SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
 
   auto& diff_solver = nl_context_ptr->diff_solver;

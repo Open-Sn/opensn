@@ -109,10 +109,10 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   log.Log() << "Reading flux moments from " << file_base;
 
   // Read the macro data
-  uint64_t file_num_moments;
-  uint64_t file_num_groups;
-  uint64_t file_num_local_cells;
-  uint64_t file_num_local_nodes;
+  uint64_t file_num_moments = 0;
+  uint64_t file_num_groups = 0;
+  uint64_t file_num_local_cells = 0;
+  uint64_t file_num_local_nodes = 0;
 
   H5ReadAttribute(file_id, "num_moments", file_num_moments);
   H5ReadAttribute(file_id, "num_groups", file_num_groups);

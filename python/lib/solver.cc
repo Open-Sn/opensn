@@ -239,7 +239,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionRate",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr;
+      const std::vector<double>* phi_ptr = nullptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();

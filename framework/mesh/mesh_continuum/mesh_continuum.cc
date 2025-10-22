@@ -577,7 +577,7 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk
       cell.block_id = blk_id;
   }
 
-  int global_num_cells_modified;
+  int global_num_cells_modified = 0;
   mpi_comm.all_reduce(num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
 
   log.Log0Verbose1() << program_timer.GetTimeString()
@@ -610,7 +610,7 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
     }
   }
 
-  int global_num_faces_modified;
+  int global_num_faces_modified = 0;
   mpi_comm.all_reduce(num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)

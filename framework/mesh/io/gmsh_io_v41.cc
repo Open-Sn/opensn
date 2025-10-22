@@ -33,7 +33,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  double gmsh_version;
+  double gmsh_version = 0.0;
   if (!(iss >> gmsh_version) || gmsh_version != 4.1)
     throw std::logic_error(fname + ": Only Gmsh version 4.1 format is supported.");
 
@@ -60,7 +60,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  size_t num_points, num_curves, num_surfaces, num_volumes;
+  size_t num_points = 0, num_curves = 0, num_surfaces = 0, num_volumes = 0;
   if (!(iss >> num_points >> num_curves >> num_surfaces >> num_volumes))
     throw std::logic_error(fname + ": Failed to read number of entitities.");
 
@@ -73,9 +73,9 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   {
     for (size_t i = 0; i < num_entities; ++i)
     {
-      int entity_tag, physical_tag;
-      size_t num_physical_tags;
-      double minx, miny, minz, maxx, maxy, maxz;
+      int entity_tag = 0, physical_tag = 0;
+      size_t num_physical_tags = 0;
+      double minx = 0.0, miny = 0.0, minz = 0.0, maxx = 0.0, maxy = 0.0, maxz = 0.0;
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
       iss >> entity_tag >> minx >> miny >> minz >> maxx >> maxy >> maxz >> num_physical_tags >>
@@ -96,7 +96,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  size_t num_entity_blocks, num_nodes, min_node_tag, max_node_tag;
+  size_t num_entity_blocks = 0, num_nodes = 0, min_node_tag = 0, max_node_tag = 0;
   if (not(iss >> num_entity_blocks >> num_nodes >> min_node_tag >> max_node_tag))
     throw std::logic_error(fname + ": Failed to read the number of node entity blocks.");
 
@@ -108,8 +108,8 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
-    int entity_dim, entity_tag, parametric;
-    size_t num_nodes_in_block;
+    int entity_dim = 0, entity_tag = 0, parametric = 0;
+    size_t num_nodes_in_block = 0;
     if (not(iss >> entity_dim >> entity_tag >> parametric >> num_nodes_in_block))
     {
       throw std::logic_error(fname + ": Failed to read number of nodes in block " +
@@ -128,7 +128,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
     {
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
-      double x, y, z;
+      double x = 0.0, y = 0.0, z = 0.0;
       iss >> x >> y >> z;
       vertices[node_tags[i] - 1] = {x, y, z};
     }
@@ -170,7 +170,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  size_t num_elements, min_element_tag, max_element_tag;
+  size_t num_elements = 0, min_element_tag = 0, max_element_tag = 0;
   if (not(iss >> num_entity_blocks >> num_elements >> min_element_tag >> max_element_tag))
     throw std::logic_error(fname + ": Failed to read number of element entity blocks.");
 
@@ -178,8 +178,8 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
-    int entity_dim, entity_tag, element_type;
-    size_t num_elems_in_block;
+    int entity_dim = 0, entity_tag = 0, element_type = 0;
+    size_t num_elems_in_block = 0;
     if (not(iss >> entity_dim >> entity_tag >> element_type >> num_elems_in_block))
     {
       throw std::logic_error(fname + ": Failed to read number of elements in block " +
@@ -224,8 +224,8 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   {
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
-    int entity_dim, entity_tag, element_type;
-    size_t num_elems_in_block;
+    int entity_dim = 0, entity_tag = 0, element_type = 0;
+    size_t num_elems_in_block = 0;
     if (not(iss >> entity_dim >> entity_tag >> element_type >> num_elems_in_block))
     {
       throw std::logic_error(fname + ": Failed to read number of elements in block " +
@@ -267,7 +267,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
     {
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
-      size_t element_tag;
+      size_t element_tag = 0;
       iss >> element_tag;
 
       std::vector<size_t> node_tags(num_cell_nodes);

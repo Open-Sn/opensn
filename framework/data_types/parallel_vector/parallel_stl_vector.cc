@@ -150,13 +150,13 @@ ParallelSTLVector::CopyLocalValues(const ParallelVector& y)
 void
 ParallelSTLVector::CopyLocalValues(Vec y)
 {
-  PetscInt n;
+  PetscInt n = 0;
   VecGetLocalSize(y, &n);
 
   OpenSnInvalidArgumentIf(std::cmp_less(n, local_size_),
                           "Attempted update with a vector of insufficient size.");
 
-  const double* x;
+  const double* x = nullptr;
   VecGetArrayRead(y, &x);
   std::copy(x, x + n, values_.begin());
   VecRestoreArrayRead(y, &x);
@@ -205,7 +205,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
   const auto y_end = static_cast<PetscInt>(y_offset + num_values);
   const auto local_end = local_offset + num_values;
 
-  PetscInt y_local_size;
+  PetscInt y_local_size = 0;
   VecGetLocalSize(y, &y_local_size);
 
   OpenSnInvalidArgumentIf(y_end > y_local_size,
@@ -218,7 +218,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
                             ", is out of range for destination vector with local size " +
                             std::to_string(local_size_));
 
-  const double* y_data;
+  const double* y_data = nullptr;
   VecGetArrayRead(y, &y_data);
 
   std::copy(y_data + y_offset,
@@ -366,7 +366,7 @@ ParallelSTLVector::Assemble()
   OpenSnLogicalErrorIf(local_mode == 3, "Invalid operation mode.");
 
   // Now, determine the global operation mode
-  int global_mode;
+  int global_mode = 0;
   comm_.all_reduce(local_mode, global_mode, mpi::op::max<int>());
 
   // If the mode is to do nothing, exit

@@ -105,7 +105,7 @@ ReadFace(std::istream& in, std::vector<int>& out)
   for (int i = 0; i < n; ++i)
   {
     SkipWSAndComments(in);
-    int v;
+    int v = 0;
     if (not(in >> v))
       return false;
     out.push_back(v);
@@ -150,7 +150,7 @@ SkipFoamHeader(std::istream& in)
 inline bool
 SkipUntil(std::istream& in, char target)
 {
-  int ch;
+  int ch = 0;
   while ((ch = in.get()) != EOF)
     if (static_cast<char>(ch) == target)
       return true;
@@ -164,7 +164,7 @@ ReadNInts(std::istream& in, int n, std::vector<int>& out)
   out.reserve(out.size() + static_cast<size_t>(n));
   for (int i = 0; i < n; ++i)
   {
-    int v;
+    int v = 0;
     if (not(in >> v))
       return false;
     out.emplace_back(v);
@@ -487,7 +487,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     std::vector<Vector3> verts;
     auto read_pt = [&](std::istream& in2, size_t) -> bool
     {
-      double x, y, z;
+      double x = 0.0, y = 0.0, z = 0.0;
       if (not ReadPoint(in2, x, y, z))
         return false;
       verts.emplace_back(x, y, z);
@@ -545,7 +545,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     size_t nfaces = 0;
     auto read_lab = [&](std::istream& in2, size_t) -> bool
     {
-      int v;
+      int v = 0;
       if (not ReadFace2CellID(in2, v))
         return false;
       owner.push_back(v);
@@ -571,7 +571,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     size_t nfaces = 0;
     auto read_lab = [&](std::istream& in2, size_t) -> bool
     {
-      int v;
+      int v = 0;
       if (not ReadFace2CellID(in2, v))
         return false;
       neigh.push_back(v);

@@ -30,7 +30,7 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
       throw std::invalid_argument("For an ExtrusionLayer either \"h\" or \"z\" must "
                                   "be specified and also not both.");
 
-    double h;
+    double h = 0.0;
     const auto n = valid_params.GetParamValue<uint32_t>("n");
     if (layer_block.Has("h"))
       h = valid_params.GetParamValue<double>("h");
@@ -127,7 +127,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
       for (const auto& template_cell : template_cells)
       {
         // Determine cell subtype
-        CellType extruded_subtype;
+        CellType extruded_subtype = CellType::POLYHEDRON;
         switch (template_cell->sub_type)
         {
           case CellType::TRIANGLE:

@@ -33,7 +33,7 @@ AssocLegendre(unsigned int ell, int m, double x)
       return Pnpos;
   }
 
-  double Pmlp1;
+  double Pmlp1 = 0.0;
   if (std::cmp_equal(ell, m))
   {
     Pmlp1 = -(2.0 * ell - 1.0) * sqrt(1.0 - x * x) * AssocLegendre(ell - 1, int(ell) - 1, x);

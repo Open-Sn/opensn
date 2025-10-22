@@ -46,7 +46,7 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
   }
   if (cell.GetType() == CellType::POLYGON)
   {
-    int vtk_subtype;
+    int vtk_subtype = 0;
     switch (cell.GetSubType())
     {
       case CellType::POLYGON:
@@ -93,7 +93,7 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
         faces_vids.push_back(vid);
     } // for f
 
-    int vtk_subtype;
+    int vtk_subtype = 0;
     switch (cell.GetSubType())
     {
       case CellType::POLYHEDRON:
@@ -141,7 +141,7 @@ UploadCellGeometryContinuous(const Cell& cell,
   }
   if (cell.GetType() == CellType::POLYGON)
   {
-    int vtk_subtype;
+    int vtk_subtype = 0;
     switch (cell.GetSubType())
     {
       case CellType::POLYGON:
@@ -165,7 +165,7 @@ UploadCellGeometryContinuous(const Cell& cell,
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
 
-    int vtk_subtype;
+    int vtk_subtype = 0;
     switch (cell.GetSubType())
     {
       case CellType::POLYHEDRON:
@@ -250,7 +250,7 @@ UploadFaceGeometry(const CellFace& cell_face,
   }
   if (num_verts >= 3)
   {
-    int vtk_subtype;
+    int vtk_subtype = 0;
     switch (num_verts)
     {
       case 3:
@@ -460,7 +460,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
   std::vector<int> block_ids(total_cell_count, -1);
 
   // Determine if reading cell identifiers
-  vtkDataArray* cell_id_array_ptr;
+  vtkDataArray* cell_id_array_ptr = nullptr;
   if (field_name.empty())
   {
     log.Log0Warning() << "A user-supplied field name from which to recover block identifiers has "

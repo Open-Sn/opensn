@@ -174,9 +174,9 @@ WGSLinearSolver::SetRHS()
     VecNorm(b_, NORM_2, &gs_context_ptr->rhs_norm);
 
     // Compute precondition RHS norm
-    PC pc;
+    PC pc = nullptr;
     KSPGetPC(ksp_, &pc);
-    Vec temp_vec;
+    Vec temp_vec = nullptr;
     VecDuplicate(b_, &temp_vec);
     PCApply(pc, b_, temp_vec);
     VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm);
@@ -202,9 +202,9 @@ WGSLinearSolver::SetRHS()
     VecNorm(x_, NORM_2, &gs_context_ptr->rhs_norm);
 
     // Compute precondition RHS norm
-    PC pc;
+    PC pc = nullptr;
     KSPGetPC(ksp_, &pc);
-    Vec temp_vec;
+    Vec temp_vec = nullptr;
     VecDuplicate(x_, &temp_vec);
     PCApply(pc, x_, temp_vec);
     VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm);
@@ -220,7 +220,7 @@ WGSLinearSolver::PostSolveCallback()
   // Get convergence reason
   if (not GetKSPSolveSuppressionFlag())
   {
-    KSPConvergedReason reason;
+    KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
     KSPGetConvergedReason(ksp_, &reason);
     if (reason != KSP_CONVERGED_RTOL and reason != KSP_DIVERGED_ITS)
       log.Log0Warning() << "Krylov solver failed. "

@@ -42,7 +42,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   {
     std::vector<double> output(diff_num_local_dofs, 0.0);
 
-    const double* phi_raw;
+    const double* phi_raw = nullptr;
     VecGetArrayRead(phi, &phi_raw);
     for (size_t i = 0; i < diff_num_local_dofs; ++i)
       output[i] = phi_raw[i];
@@ -53,7 +53,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
 
   void STLVecToPhiVec(const std::vector<double>& input, Vec phi) const
   {
-    double* phi_raw;
+    double* phi_raw = nullptr;
     VecGetArray(phi, &phi_raw);
     for (size_t i = 0; i < diff_num_local_dofs; ++i)
       phi_raw[i] = input[i];

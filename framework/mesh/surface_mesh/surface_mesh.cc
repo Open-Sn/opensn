@@ -590,13 +590,13 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
     throw std::runtime_error(oss.str());
   }
 
-  int num_verts;
+  int num_verts = 0;
   char line[250];
   file >> num_verts;
   file.getline(line, 250);
   for (int v = 1; v <= num_verts; ++v)
   {
-    int vert_index;
+    int vert_index = 0;
     Vector3 vertex;
     file >> vert_index >> vertex.x >> vertex.y;
     file.getline(line, 250);
@@ -615,16 +615,16 @@ SurfaceMesh::ImportFromTriangleFiles(const char* fileName, bool as_poly = false)
     throw std::runtime_error(oss.str());
   }
 
-  int num_tris;
+  int num_tris = 0;
 
   file >> num_tris;
   file.getline(line, 250);
   for (int v = 1; v <= num_tris; ++v)
   {
-    int tri_index;
+    int tri_index = 0;
     auto newFace = std::make_shared<PolyFace>();
 
-    int v0, v1, v2;
+    int v0 = 0, v1 = 0, v2 = 0;
     file >> tri_index >> v0 >> v1 >> v2;
     file.getline(line, 250);
 
@@ -742,7 +742,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
   std::getline(file, line);
   iss = std::istringstream(line);
-  int num_nodes;
+  int num_nodes = 0;
   if (not(iss >> num_nodes))
   {
     std::ostringstream oss;
@@ -758,7 +758,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
     iss = std::istringstream(line);
 
     Vector3 vertex;
-    int vert_index;
+    int vert_index = 0;
     if (not(iss >> vert_index))
     {
       std::ostringstream oss;
@@ -786,7 +786,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
   std::getline(file, line);
   iss = std::istringstream(line);
-  int num_elems;
+  int num_elems = 0;
   if (not(iss >> num_elems))
   {
     std::ostringstream oss;
@@ -796,7 +796,7 @@ SurfaceMesh::ImportFromMshFiles(const char* fileName, bool as_poly = false)
 
   for (int n = 0; n < num_elems; ++n)
   {
-    int elem_type, num_tags, physical_reg, tag, element_index;
+    int elem_type = 0, num_tags = 0, physical_reg = 0, tag = 0, element_index = 0;
     auto newFace = std::make_shared<PolyFace>();
     std::getline(file, line);
     iss = std::istringstream(line);

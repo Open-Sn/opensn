@@ -34,7 +34,7 @@ XSFile::Read()
     // Parse number of groups
     if (word == "NUM_GROUPS")
     {
-      int n_groups;
+      int n_groups = 0;
       line_stream >> n_groups;
       OpenSnLogicalErrorIf(n_groups <= 0, "The number of energy groups must be positive.");
       num_groups_ = n_groups;
@@ -43,7 +43,7 @@ XSFile::Read()
     // Parse the number of scattering moments
     if (word == "NUM_MOMENTS")
     {
-      int n_moments;
+      int n_moments = 0;
       line_stream >> n_moments;
       OpenSnLogicalErrorIf(n_moments < 0, "The number of scattering moments must be non-negative.");
       scattering_order_ = std::max(0, n_moments - 1);
@@ -52,7 +52,7 @@ XSFile::Read()
     // Parse the number of precursors species
     if (word == "NUM_PRECURSORS")
     {
-      int n_prec;
+      int n_prec = 0;
       line_stream >> n_prec;
       OpenSnLogicalErrorIf(n_prec < 0,
                            "The number of delayed neutron precursors must be non-negative.");
@@ -382,7 +382,7 @@ XSFile::ReadGroupStructure(const std::string& keyword,
   destination.reserve(n_grps + 1);
 
   std::string line;
-  double bound;
+  double bound = 0.0;
   size_t count = 0;
 
   // Read the block
@@ -417,8 +417,8 @@ XSFile::Read1DData(const std::string& keyword,
   destination.assign(n_entries, 0.0);
 
   std::string line;
-  int i;
-  double value;
+  int i = 0;
+  double value = 0.0;
   size_t count = 0;
 
   // Read the bloc
@@ -455,8 +455,8 @@ XSFile::Read2DData(const std::string& keyword,
   destination.assign(n_rows, std::vector<double>(n_cols, 0.0));
 
   std::string word, line;
-  double value;
-  size_t i, j;
+  double value = 0.0;
+  size_t i = 0, j = 0;
 
   // Read the block
   std::getline(file, line);
@@ -496,8 +496,8 @@ XSFile::ReadTransferMatrices(const std::string& keyword,
   destination.assign(n_moms, SparseMatrix(n_grps, n_grps));
 
   std::string word, line;
-  double value;
-  size_t ell, group, gprime;
+  double value = 0.0;
+  size_t ell = 0, group = 0, gprime = 0;
 
   // Read the block
   std::getline(file, line);

@@ -31,7 +31,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  double gmsh_version;
+  double gmsh_version = 0.0;
   if (!(iss >> gmsh_version) || gmsh_version != 2.2)
     throw std::logic_error(fname + ": Only Gmsh version 4.1 format is supported.");
 
@@ -46,7 +46,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  int num_nodes;
+  int num_nodes = 0;
   if (not(iss >> num_nodes))
     throw std::logic_error(fname + ": Failed to read the number of nodes.");
 
@@ -59,11 +59,11 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    int vert_index;
+    int vert_index = 0;
     if (not(iss >> vert_index))
       throw std::logic_error(fname + ": Failed to read vertex index.");
 
-    double x, y, z;
+    double x = 0.0, y = 0.0, z = 0.0;
     if (not(iss >> x >> y >> z))
       throw std::logic_error(fname + ": Failed while reading vertex coordinates.");
     vertices[vert_index - 1] = {x, y, z};
@@ -118,13 +118,13 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
-  int num_elems;
+  int num_elems = 0;
   if (not(iss >> num_elems))
     throw std::logic_error(fname + ": Failed to read number of elements.");
 
   for (int n = 0; n < num_elems; n++)
   {
-    int element_type, num_tags, physical_reg, tag, element_index;
+    int element_type = 0, num_tags = 0, physical_reg = 0, tag = 0, element_index = 0;
 
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
@@ -170,15 +170,15 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     std::getline(file, file_line);
     iss = std::istringstream(file_line);
 
-    int element_index, element_type, num_tags;
+    int element_index = 0, element_type = 0, num_tags = 0;
     if (not(iss >> element_index >> element_type >> num_tags))
       throw std::logic_error(fname + ": Failed reading element index, type, and number of tags.");
 
-    int physical_region;
+    int physical_region = 0;
     if (not(iss >> physical_region))
       throw std::logic_error(fname + ": Failed reading physical region.");
 
-    int tag;
+    int tag = 0;
     for (int i = 1; i < num_tags; i++)
       if (not(iss >> tag))
         throw std::logic_error(fname + ": Failed reading tags.");

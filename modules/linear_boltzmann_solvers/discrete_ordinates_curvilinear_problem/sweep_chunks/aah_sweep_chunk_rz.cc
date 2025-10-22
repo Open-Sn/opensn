@@ -187,7 +187,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
             const double mu_Nij = -face_mu_values[f] * M_surf[f](i, j);
             Amat(i, j) += mu_Nij;
 
-            const double* psi;
+            const double* psi = nullptr;
             if (is_local_face)
               psi = fluds.UpwindPsi(spls_index, in_face_counter, fj, 0, as_ss_idx);
             else if (not is_boundary_face)

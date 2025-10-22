@@ -104,7 +104,7 @@ KBAGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph,
       const auto& cuts = *coordinate_infos_[i].cuts_;
       const size_t num_cuts = cuts.size();
 
-      size_t p_val;
+      size_t p_val = 0;
       bool home_found = false;
       for (size_t j = 0; j < num_cuts; ++j)
         if (cuts[j] > point[i])

@@ -168,7 +168,7 @@ SPDS::SCCAlgorithm(Vertex u,
   }
 
   // If 'u' is a root node, pop the stack and generate an SCC
-  Vertex w;
+  Vertex w = 0;
   if (low[u] == disc[u])
   {
     std::vector<Vertex> sub_scc;

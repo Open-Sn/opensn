@@ -40,7 +40,7 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 
   auto& ksp = solver;
 
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp, &pc);
 
   if (groupset.apply_wgdsa or groupset.apply_tgdsa)

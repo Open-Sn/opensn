@@ -82,7 +82,7 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
   if (num_local_dofs != values.size())
     throw std::invalid_argument("Vector size mismatch.");
 
-  PetscScalar* rhs_ptr;
+  PetscScalar* rhs_ptr = nullptr;
   VecGetArray(rhs_, &rhs_ptr);
   for (size_t i = 0; i < num_local_dofs; ++i)
     rhs_ptr[i] += values[i];
@@ -153,7 +153,7 @@ DiffusionSolver::Initialize()
   KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters);
 
   // Set Pre-conditioner
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp_, &pc);
   //  PCSetType(pc, PCGAMG);
   PCSetType(pc, PCHYPRE);
@@ -185,7 +185,7 @@ void
 DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
-  Vec x;
+  Vec x = nullptr;
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
 
@@ -209,14 +209,14 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   {
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
-    double rhs_norm;
+    double rhs_norm = 0.0;
     VecNorm(rhs_, NORM_2, &rhs_norm);
     log.Log() << "RHS-norm " << rhs_norm;
   }
 
   if (use_initial_guess)
   {
-    double* x_raw;
+    double* x_raw = nullptr;
     VecGetArray(x, &x_raw);
     size_t k = 0;
     for (const auto& value : solution)
@@ -230,11 +230,11 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   // Print convergence info
   if (options.verbose)
   {
-    double sol_norm;
+    double sol_norm = 0.0;
     VecNorm(x, NORM_2, &sol_norm);
     log.Log() << "Solution-norm " << sol_norm;
 
-    KSPConvergedReason reason;
+    KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
     KSPGetConvergedReason(ksp_, &reason);
 
     log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
@@ -257,7 +257,7 @@ void
 DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
-  Vec x;
+  Vec x = nullptr;
   VecDuplicate(rhs_, &x);
   VecSet(x, 0.0);
 
@@ -281,7 +281,7 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   {
     KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
 
-    double rhs_norm;
+    double rhs_norm = 0.0;
     VecNorm(rhs_, NORM_2, &rhs_norm);
     log.Log() << "RHS-norm " << rhs_norm;
   }
@@ -297,11 +297,11 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   // Print convergence info
   if (options.verbose)
   {
-    double sol_norm;
+    double sol_norm = 0.0;
     VecNorm(x, NORM_2, &sol_norm);
     log.Log() << "Solution-norm " << sol_norm;
 
-    KSPConvergedReason reason;
+    KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
     KSPGetConvergedReason(ksp_, &reason);
 
     log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
