@@ -31,7 +31,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
 
   file.close();
 
-  double format;
+  double format = 0.0;
   if (not(iss >> format))
     throw std::logic_error(fname + ": Failed to read Gmsh file format.");
   else if (format == 2.2)

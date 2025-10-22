@@ -40,7 +40,7 @@ NLKEigenDiffSolver::SetMonitor()
 
   if (nl_context_ptr->verbosity_level >= 2)
   {
-    KSP ksp;
+    KSP ksp = nullptr;
     SNESGetKSP(nl_solver_, &ksp);
     KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr);
   }
@@ -113,7 +113,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   const double production = ComputeFissionProduction(do_problem, phi_old_local);
   LBSVecOps::ScalePhiVector(do_problem, PhiSTLOption::PHI_OLD, k_eff / production);
 
-  PetscInt number_of_func_evals;
+  PetscInt number_of_func_evals = 0;
   SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
 
   // Print summary

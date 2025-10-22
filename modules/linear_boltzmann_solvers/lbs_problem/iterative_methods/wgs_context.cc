@@ -31,7 +31,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 {
   CALI_CXX_MARK_SCOPE("WGSContext::MatrixAction");
 
-  WGSContext* gs_context_ptr;
+  WGSContext* gs_context_ptr = nullptr;
   MatShellGetContext(matrix, static_cast<void*>(&gs_context_ptr));
 
   // Copy krylov action_vector into local

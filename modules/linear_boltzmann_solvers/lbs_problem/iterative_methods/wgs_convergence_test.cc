@@ -21,7 +21,7 @@ GSConvergenceTest(
   CALI_CXX_MARK_FUNCTION;
 
   // Get data context
-  WGSContext* context;
+  WGSContext* context = nullptr;
   KSPGetApplicationContext(ksp, static_cast<void*>(&context));
 
   // Set rhs norm
@@ -46,8 +46,8 @@ GSConvergenceTest(
   }
 
   // Compute test criterion
-  double tol;
-  int64_t maxIts;
+  double tol = 0.0;
+  int64_t maxIts = 0;
   KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
 
   double scaled_residual = rnorm * residual_scale;

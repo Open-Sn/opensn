@@ -587,7 +587,7 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
   std::vector<std::vector<double>> V_shape_value;
   std::vector<std::vector<Vector3>> V_shape_grad;
   std::vector<double> V_JxW;
-  size_t V_num_nodes;
+  size_t V_num_nodes = 0;
 
   // Init volumetric quadrature
   V_quadrature_point_indices.reserve(ttl_num_vol_qpoints);
@@ -666,7 +666,7 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
   std::vector<std::vector<Vector3>> F_shape_grad;
   std::vector<double> F_JxW;
   std::vector<Vector3> F_normals;
-  size_t F_num_nodes;
+  size_t F_num_nodes = 0;
 
   size_t num_tris = face_data_[f].sides.size();
   size_t ttl_num_face_qpoints = num_tris * num_srf_qpoints;

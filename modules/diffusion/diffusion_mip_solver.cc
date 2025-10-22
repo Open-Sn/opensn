@@ -372,7 +372,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp_, &pc);
   PCSetUp(pc);
 
@@ -571,7 +571,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp_, &pc);
   PCSetUp(pc);
 
@@ -863,7 +863,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp_, &pc);
   PCSetUp(pc);
 
@@ -1034,7 +1034,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
-  const double* q_vector;
+  const double* q_vector = nullptr;
   VecGetArrayRead(petsc_q_vector, &q_vector);
 
   VecSet(rhs_, 0.0);
@@ -1180,7 +1180,7 @@ double
 DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 {
   const auto& cell_mapping = sdm_.GetCellMapping(cell);
-  double hp;
+  double hp = 0.0;
 
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();

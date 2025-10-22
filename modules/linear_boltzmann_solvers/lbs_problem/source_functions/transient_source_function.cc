@@ -22,13 +22,11 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
   const auto& BackwardEuler = SteppingMethod::IMPLICIT_EULER;
   const auto& CrankNicolson = SteppingMethod::CRANK_NICOLSON;
 
-  double theta;
+  double theta = 0.7;
   if (method_ == BackwardEuler)
     theta = 1.0;
   else if (method_ == CrankNicolson)
     theta = 0.5;
-  else
-    theta = 0.7;
 
   const double eff_dt = theta * dt_;
 

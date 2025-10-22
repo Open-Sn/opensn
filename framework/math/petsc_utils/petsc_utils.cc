@@ -13,7 +13,7 @@ namespace opensn
 Vec
 CreateVector(int64_t local_size, int64_t global_size)
 {
-  Vec x;
+  Vec x = nullptr;
   VecCreate(opensn::mpi_comm, &x);
   VecSetType(x, VECMPI);
   VecSetSizes(x, local_size, global_size);
@@ -37,7 +37,7 @@ CreateVectorWithGhosts(int64_t local_size,
                        int64_t nghosts,
                        const std::vector<PetscInt>& ghost_indices)
 {
-  Vec x;
+  Vec x = nullptr;
   VecCreateGhost(opensn::mpi_comm,
                  local_size,
                  global_size,
@@ -53,7 +53,7 @@ CreateVectorWithGhosts(int64_t local_size,
 Mat
 CreateSquareMatrix(int64_t local_size, int64_t global_size)
 {
-  Mat A;
+  Mat A = nullptr;
   MatCreate(opensn::mpi_comm, &A);
   MatSetType(A, MATMPIAIJ);
   MatSetSizes(A, local_size, local_size, global_size, global_size);
@@ -129,15 +129,15 @@ CreateCommonKrylovSolverSetup(Mat matrix,
 PetscErrorCode
 KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context */)
 {
-  Vec Rhs;
+  Vec Rhs = nullptr;
   KSPGetRhs(ksp, &Rhs);
-  double rhs_norm;
+  double rhs_norm = 0.0;
   VecNorm(Rhs, NORM_2, &rhs_norm);
   if (rhs_norm < 1.0e-12)
     rhs_norm = 1.0;
 
   // Get solver name
-  const char* ksp_name;
+  const char* ksp_name = nullptr;
   KSPGetOptionsPrefix(ksp, &ksp_name);
 
   // Default to this if ksp_name is NULL
@@ -169,7 +169,7 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
                          "data.size() < N, " + std::to_string(data.size()) + " < " +
                            std::to_string(N));
 
-  const double* x_ref;
+  const double* x_ref = nullptr;
   VecGetArrayRead(x, &x_ref);
 
   std::copy(x_ref, x_ref + N, data.begin());
@@ -201,7 +201,7 @@ CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool re
 void
 CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N)
 {
-  double* x_ref;
+  double* x_ref = nullptr;
   VecGetArray(x, &x_ref);
 
   std::copy(data.begin(), data.end(), x_ref);
@@ -213,7 +213,7 @@ void
 CopyParallelVectorToVec(const ParallelVector& y, Vec x)
 {
   const double* y_data = y.GetData();
-  double* x_data;
+  double* x_data = nullptr;
   VecGetArray(x, &x_data);
   std::copy(y_data, y_data + y.GetLocalSize(), x_data);
   VecRestoreArray(x, &x_data);
@@ -231,16 +231,16 @@ CopyGlobalVecToSTLvector(Vec x,
     local_indices[counter] = counter;
 
   // Creating PETSc vector
-  Vec local_vec;
+  Vec local_vec = nullptr;
   VecCreateSeq(PETSC_COMM_SELF, N + 1, &local_vec);
   VecSet(local_vec, 0.0);
 
   // Create and transfer index sets
-  IS global_set;
-  IS local_set;
+  IS global_set = nullptr;
+  IS local_set = nullptr;
   ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set);
   ISCreateGeneral(PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set);
-  VecScatter scat;
+  VecScatter scat = nullptr;
   VecScatterCreate(x, global_set, local_vec, local_set, &scat);
   VecScatterBegin(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
@@ -248,7 +248,7 @@ CopyGlobalVecToSTLvector(Vec x,
   // Copy to STL
   data.clear();
   data.resize(N, 0.0);
-  const double* x_ref;
+  const double* x_ref = nullptr;
   VecGetArrayRead(local_vec, &x_ref);
 
   std::copy(x_ref, x_ref + N, data.begin());
@@ -272,9 +272,9 @@ CommunicateGhostEntries(Vec x)
 GhostVecLocalRaw
 GetGhostVectorLocalViewRead(Vec x)
 {
-  Vec x_localized;
+  Vec x_localized = nullptr;
   VecGhostGetLocalForm(x, &x_localized);
-  const double* x_localized_raw;
+  const double* x_localized_raw = nullptr;
 
   VecGetArrayRead(x_localized, &x_localized_raw);
 

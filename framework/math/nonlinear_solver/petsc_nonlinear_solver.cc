@@ -43,7 +43,7 @@ PETScNonLinearSolver::ApplyToleranceOptions()
                     options_.nl_max_its,
                     options_.nl_max_r_evaluations);
   SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations);
-  KSP ksp;
+  KSP ksp = nullptr;
   SNESGetKSP(nl_solver_, &ksp);
   KSPSetTolerances(
     ksp, options_.l_rel_tol, options_.l_abs_tol, options_.l_div_tol, options_.l_max_its);
@@ -105,11 +105,11 @@ PETScNonLinearSolver::Setup()
   SNESSetType(nl_solver_, options_.petsc_snes_type.c_str());
   if (options_.nl_method == "LINEAR")
     SNESSetType(nl_solver_, SNESKSPONLY);
-  SNESLineSearch linesearch;
+  SNESLineSearch linesearch = nullptr;
   SNESGetLineSearch(nl_solver_, &linesearch);
   SNESLineSearchSetType(linesearch, SNESLINESEARCHBT);
 
-  KSP ksp;
+  KSP ksp = nullptr;
   SNESGetKSP(nl_solver_, &ksp);
   KSPSetType(ksp, options_.l_method.c_str());
 
@@ -159,13 +159,13 @@ PETScNonLinearSolver::Solve()
   SNESSolve(nl_solver_, nullptr, x_);
   PostSolveCallback();
 
-  SNESConvergedReason conv_reason;
+  SNESConvergedReason conv_reason = SNES_CONVERGED_ITERATING;
   SNESGetConvergedReason(nl_solver_, &conv_reason);
 
   if (conv_reason > 0)
     converged_ = true;
 
-  const char* strreason;
+  const char* strreason = nullptr;
   SNESGetConvergedReasonString(nl_solver_, &strreason);
 
   converged_reason_string_ = std::string(strreason);

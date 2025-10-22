@@ -159,7 +159,7 @@ WrapMesh(py::module& mesh)
         }
       }
       // print number of modified cells
-      int global_num_cells_modified;
+      int global_num_cells_modified = 0;
       mpi_comm.all_reduce(local_num_cells_modified, global_num_cells_modified, mpi::op::sum<int>());
       log.Log0Verbose1() << program_timer.GetTimeString()
                          << " Done setting block id from Python function. "

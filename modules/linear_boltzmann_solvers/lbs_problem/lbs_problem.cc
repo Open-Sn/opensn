@@ -1308,7 +1308,7 @@ LBSProblem::UpdateFieldFunctions()
 
     if (options_.power_normalization > 0.0)
     {
-      double global_total_power;
+      double global_total_power = 0.0;
       mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
 
       Scale(data_vector_local, options_.power_normalization / global_total_power);

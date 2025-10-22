@@ -31,7 +31,7 @@ GridFaceHistogram::MapFaceHistogramBins(size_t num_face_verts) const
 size_t
 GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
 {
-  size_t face_dof_size;
+  size_t face_dof_size = 0;
 
   try
   {

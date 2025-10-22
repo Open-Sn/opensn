@@ -234,7 +234,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
-  PC pc;
+  PC pc = nullptr;
   KSPGetPC(ksp_, &pc);
   PCSetUp(pc);
 
@@ -409,7 +409,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
 
   const size_t num_groups = uk_man_.unknowns.front().num_components;
 
-  const double* q_vector;
+  const double* q_vector = nullptr;
   VecGetArrayRead(petsc_q_vector, &q_vector);
 
   VecSet(rhs_, 0.0);

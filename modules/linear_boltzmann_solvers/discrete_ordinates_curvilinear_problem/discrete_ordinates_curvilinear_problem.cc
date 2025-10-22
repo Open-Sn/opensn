@@ -242,7 +242,7 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
   log.Log() << "Initializing spatial discretization_.\n";
 
   // primary discretization
-  QuadratureOrder qorder;
+  QuadratureOrder qorder = QuadratureOrder::INVALID_ORDER;
   switch (options_.geometry_type)
   {
     case GeometryType::ONED_SPHERICAL:

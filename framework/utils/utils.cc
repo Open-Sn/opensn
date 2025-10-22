@@ -128,9 +128,9 @@ PrintIterationProgress(const size_t current_iteration,
 
   // std::modf is used to get the integral part
   // of a real value
-  double x1;
+  double x1 = 0.0;
   std::modf(double(i - 1) / dI, &x1);
-  double x2;
+  double x2 = 0.0;
   std::modf(double(i) / dI, &x2);
 
   if (static_cast<unsigned int>(x2) != static_cast<unsigned int>(x1))

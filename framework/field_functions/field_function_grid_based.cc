@@ -185,7 +185,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   } // if in bounding box
 
   // Communicate number of point hits
-  size_t global_num_point_hits;
+  size_t global_num_point_hits = 0;
   mpi_comm.all_reduce(local_num_point_hits, global_num_point_hits, mpi::op::sum<size_t>());
 
   std::vector<double> global_point_value(num_components, 0.0);
