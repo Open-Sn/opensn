@@ -338,11 +338,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   mesh->BuildMeshConnectivity();
 
   // Set boundary ids
-  if (bndry_block_ids.empty())
-  {
-    mesh->AddBoundary(0, "Default Boundary");
-  }
-  else
+  if (not bndry_block_ids.empty())
   {
     std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
     for (auto& cell_ptr : mesh->GetRawCells())

@@ -41,6 +41,7 @@ if __name__ == "__main__":
         )
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Cross-section data
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)

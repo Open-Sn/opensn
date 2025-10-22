@@ -50,6 +50,7 @@ if __name__ == "__main__":
         )
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Set block IDs using logical volumes
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)

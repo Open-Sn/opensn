@@ -96,10 +96,15 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   auto& umesh_bndry_map = umesh->GetBoundaryIDMap();
   umesh_bndry_map = input_umesh->GetBoundaryIDMap();
 
+  auto& umesh_bndry_name_map = umesh->GetBoundaryNameMap();
+  umesh_bndry_name_map = input_umesh->GetBoundaryNameMap();
+
   const auto zmax_bndry_id = umesh->MakeBoundaryID(top_boundary_name_);
   umesh_bndry_map[zmax_bndry_id] = top_boundary_name_;
+  umesh_bndry_name_map[top_boundary_name_] = zmax_bndry_id;
   const auto zmin_bndry_id = umesh->MakeBoundaryID(bottom_boundary_name_);
   umesh_bndry_map[zmin_bndry_id] = bottom_boundary_name_;
+  umesh_bndry_name_map[bottom_boundary_name_] = zmin_bndry_id;
 
   // Setup z-levels
   double current_z = 0.0;
