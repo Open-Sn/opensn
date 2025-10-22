@@ -5,6 +5,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "caliper/cali.h"
+#include <cstddef>
 
 namespace opensn
 {
@@ -12,15 +14,18 @@ namespace opensn
 CBC_FLUDS::CBC_FLUDS(size_t num_groups,
                      size_t num_angles,
                      const CBC_FLUDSCommonData& common_data,
-                     std::vector<double>& local_psi_data,
-                     const UnknownManager& psi_uk_man,
-                     const SpatialDiscretization& sdm)
+                     size_t num_local_cells,
+                     size_t max_cell_dof_count,
+                     size_t min_num_pool_allocator_slots)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
     common_data_(common_data),
-    local_psi_data_(local_psi_data),
-    psi_uk_man_(psi_uk_man),
-    sdm_(sdm)
+    slot_size_(max_cell_dof_count * num_groups_and_angles_),
+    cell_local_ID_to_psi_map_(num_local_cells, nullptr),
+    local_psi_data_backing_buffer_(min_num_pool_allocator_slots * slot_size_)
 {
+  local_psi_data_.add_block(local_psi_data_backing_buffer_.data(),
+                            (min_num_pool_allocator_slots * slot_size_) * sizeof(double),
+                            slot_size_ * sizeof(double));
 }
 
 const FLUDSCommonData&
@@ -29,32 +34,60 @@ CBC_FLUDS::GetCommonData() const
   return common_data_;
 }
 
-const std::vector<double>&
-CBC_FLUDS::GetLocalUpwindDataBlock() const
+void
+CBC_FLUDS::Allocate(uint64_t cell_local_ID)
 {
-  return local_psi_data_;
+  assert(cell_local_ID_to_psi_map_[cell_local_ID] == nullptr);
+  void* cell_block_ptr = local_psi_data_.malloc();
+  cell_local_ID_to_psi_map_[cell_local_ID] = static_cast<double*>(cell_block_ptr);
 }
 
-const double*
-CBC_FLUDS::GetLocalCellUpwindPsi(const std::vector<double>& psi_data_block, const Cell& cell)
+void
+CBC_FLUDS::Deallocate(uint64_t cell_local_ID)
 {
-  const auto dof_map = sdm_.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0);
-  return &psi_data_block[dof_map];
+  assert(cell_local_ID_to_psi_map_[cell_local_ID] != nullptr);
+  local_psi_data_.free(cell_local_ID_to_psi_map_[cell_local_ID]);
+  cell_local_ID_to_psi_map_[cell_local_ID] = nullptr;
 }
 
-const std::vector<double>&
-CBC_FLUDS::GetNonLocalUpwindData(uint64_t cell_global_id, unsigned int face_id) const
+double*
+CBC_FLUDS::UpwindPsi(uint64_t cell_local_id, unsigned int adj_cell_node, size_t as_ss_idx)
 {
-  return deplocs_outgoing_messages_.at({cell_global_id, face_id});
+  assert(cell_local_ID_to_psi_map_[cell_local_id] != nullptr);
+  const size_t addr_offset = adj_cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return cell_local_ID_to_psi_map_[cell_local_id] + addr_offset;
 }
 
-const double*
-CBC_FLUDS::GetNonLocalUpwindPsi(const std::vector<double>& psi_data,
-                                unsigned int face_node_mapped,
-                                unsigned int angle_set_index)
+double*
+CBC_FLUDS::OutgoingPsi(uint64_t cell_local_ID, unsigned int cell_node, size_t as_ss_idx)
 {
-  const size_t dof_map = face_node_mapped * num_groups_and_angles_ + angle_set_index * num_groups_;
-  return &psi_data[dof_map];
+  assert(cell_local_ID_to_psi_map_[cell_local_ID] != nullptr);
+  const size_t addr_offset = cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return cell_local_ID_to_psi_map_[cell_local_ID] + addr_offset;
+}
+
+double*
+CBC_FLUDS::NLUpwindPsi(uint64_t cell_global_id,
+                       unsigned int face_id,
+                       unsigned int face_node_mapped,
+                       size_t as_ss_idx)
+{
+  std::vector<double>& psi = deplocs_outgoing_messages_.at({cell_global_id, face_id});
+  const size_t dof_map =
+    face_node_mapped * num_groups_and_angles_ + //  Offset to start of data for face_node_mapped
+    as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
+  assert((dof_map >= 0) and (dof_map < psi.size()));
+  return &psi[dof_map];
+}
+
+double*
+CBC_FLUDS::NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing,
+                         size_t face_node,
+                         size_t as_ss_idx)
+{
+  assert(psi_nonlocal_outgoing != nullptr);
+  const size_t addr_offset = face_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &(*psi_nonlocal_outgoing)[addr_offset];
 }
 
 } // namespace opensn

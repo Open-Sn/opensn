@@ -1022,16 +1022,18 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       }
       else if (sweep_type_ == "CBC")
       {
-        OpenSnLogicalErrorIf(not options_.save_angular_flux,
-                             "When using sweep_type \"CBC\" then "
-                             "\"save_angular_flux\" must be true.");
+        const size_t num_local_cells = grid_->local_cells.size();
+        const auto cbc_sweep_ordering = std::static_pointer_cast<CBC_SPDS>(sweep_ordering);
+        const auto& min_num_pool_allocator_slots =
+          cbc_sweep_ordering->GetMinNumPoolAllocatorSlots();
+
         std::shared_ptr<FLUDS> fluds =
           std::make_shared<CBC_FLUDS>(gs_num_grps,
                                       angle_indices.size(),
                                       dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      psi_new_local_[groupset.id],
-                                      groupset.psi_uk_man_,
-                                      *discretization_);
+                                      num_local_cells,
+                                      max_cell_dof_count_,
+                                      min_num_pool_allocator_slots);
 
         auto angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
                                                         gs_num_grps,
