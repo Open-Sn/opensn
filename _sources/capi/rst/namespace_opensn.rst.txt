@@ -891,9 +891,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0`
 
-- :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
-
 - :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
+
+- :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
 
 - :ref:`exhale_function_namespaceopensn_1a1c1246623d517531a8809a3d3b9353cf`
 

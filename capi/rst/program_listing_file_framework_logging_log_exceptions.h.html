@@ -94,17 +94,17 @@
 
 <span class="cp">#define OpenSnInvalidArgumentIf(condition, message)                                                \</span>
 <span class="cp">  if (condition)                                                                                   \</span>
-<span class="cp">  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + message)</span>
+<span class="cp">  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + (message))</span>
 
 <span class="cp">#define OpenSnInvalidArgument(message)                                                             \</span>
-<span class="cp">  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + message)</span>
+<span class="cp">  throw std::invalid_argument(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + (message))</span>
 
 <span class="cp">#define OpenSnLogicalErrorIf(condition, message)                                                   \</span>
 <span class="cp">  if (condition)                                                                                   \</span>
-<span class="cp">  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + message)</span>
+<span class="cp">  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + (message))</span>
 
 <span class="cp">#define OpenSnLogicalError(message)                                                                \</span>
-<span class="cp">  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + message)</span>
+<span class="cp">  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + (message))</span>
 
 <span class="cp">#define OpenSnRecoverableInvalidArgument(condition, message)                                       \</span>
 <span class="cp">  {                                                                                                \</span>
