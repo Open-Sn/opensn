@@ -64,6 +64,7 @@ if __name__ == "__main__":
     )
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
+    grid.SetOrthogonalBoundaries()
 
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)
 

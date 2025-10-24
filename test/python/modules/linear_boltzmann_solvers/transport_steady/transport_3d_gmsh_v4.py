@@ -26,6 +26,7 @@ if __name__ == "__main__":
         filename="../../../../assets/mesh/InclusionsGmshV4.msh",
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Material
     num_groups = 64

@@ -5,6 +5,7 @@
 
 #include "framework/data_types/vector3.h"
 #include "framework/data_types/byte_array.h"
+#include <limits>
 #include <tuple>
 #include <vector>
 #include <cstdint>
@@ -71,7 +72,7 @@ public:
   /// Flag indicating whether face has a neighbor
   bool has_neighbor = false;
   /// If face has neighbor, contains the global_id, otherwise, contains boundary_id.
-  uint64_t neighbor_id = 0;
+  uint64_t neighbor_id = std::numeric_limits<uint64_t>::max();
 
   /// The average/geometric normal
   Vector3 normal;

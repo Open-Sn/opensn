@@ -583,9 +583,10 @@ WrapLBS(py::module& slv)
     "ComputeLeakage",
     [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
+      auto grid = self.GetGrid();
       // get the supported boundaries
-      std::map<std::string, std::uint64_t> allowed_bd_names = LBSProblem::supported_boundary_names;
-      std::map<std::uint64_t, std::string> allowed_bd_ids = LBSProblem::supported_boundary_ids;
+      std::map<std::string, std::uint64_t> allowed_bd_names = grid->GetBoundaryNameMap();
+      std::map<std::uint64_t, std::string> allowed_bd_ids = grid->GetBoundaryIDMap();
       // get the boundaries to parse
       std::vector<std::uint64_t> bndry_ids;
       if (bnd_names.size() > 1)

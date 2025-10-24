@@ -190,6 +190,7 @@ void
 UnpartitionedMesh::AddBoundary(uint64_t id, const std::string& name)
 {
   boundary_id_map_[id] = name;
+  boundary_name_map_[name] = id;
 }
 
 void

@@ -21,16 +21,11 @@
 #include <cstring>
 #include <cassert>
 #include <memory>
+#include <stdexcept>
 #include <sys/stat.h>
 
 namespace opensn
 {
-
-std::map<std::string, uint64_t> LBSProblem::supported_boundary_names = {
-  {"xmin", XMIN}, {"xmax", XMAX}, {"ymin", YMIN}, {"ymax", YMAX}, {"zmin", ZMIN}, {"zmax", ZMAX}};
-
-std::map<uint64_t, std::string> LBSProblem::supported_boundary_ids = {
-  {XMIN, "xmin"}, {XMAX, "xmax"}, {YMIN, "ymin"}, {YMAX, "ymax"}, {ZMIN, "zmin"}, {ZMAX, "zmax"}};
 
 LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid)
   : Problem(name), grid_(grid), use_gpus_(false)
@@ -521,8 +516,6 @@ LBSProblem::GetBoundaryOptionsBlock()
                                            "of isotropic strength per group");
   params.AddOptionalParameter(
     "function_name", "", "Text name of the function to be called for this boundary condition.");
-  params.ConstrainParameterRange(
-    "name", AllowableRangeList::New({"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}));
   params.ConstrainParameterRange("type",
                                  AllowableRangeList::New({"vacuum", "isotropic", "reflecting"}));
 
@@ -652,7 +645,10 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
   const auto boundary_name = params.GetParamValue<std::string>("name");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  const auto bid = supported_boundary_names.at(boundary_name);
+  auto grid = GetGrid();
+  const auto bnd_map = grid->GetBoundaryIDMap();
+  const auto bnd_name_map = grid->GetBoundaryNameMap();
+  const auto bid = bnd_name_map.at(boundary_name);
   const std::map<std::string, LBSBoundaryType> type_list = {
     {"vacuum", LBSBoundaryType::VACUUM},
     {"isotropic", LBSBoundaryType::ISOTROPIC},
@@ -1023,26 +1019,7 @@ LBSProblem::InitializeParrays()
     {
       if (not face.has_neighbor)
       {
-        Vector3& n = face.normal;
-
-        int boundary_id = -1;
-        if (n.Dot(ihat) < -0.999)
-          boundary_id = XMIN;
-        else if (n.Dot(ihat) > 0.999)
-          boundary_id = XMAX;
-        else if (n.Dot(jhat) < -0.999)
-          boundary_id = YMIN;
-        else if (n.Dot(jhat) > 0.999)
-          boundary_id = YMAX;
-        else if (n.Dot(khat) < -0.999)
-          boundary_id = ZMIN;
-        else if (n.Dot(khat) > 0.999)
-          boundary_id = ZMAX;
-
-        if (boundary_id >= 0)
-          face.neighbor_id = boundary_id;
         cell_on_boundary = true;
-
         face_local_flags[f] = false;
         face_locality[f] = -1;
       } // if bndry
