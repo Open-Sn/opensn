@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "framework/parameters/input_parameters.h"
 #include <memory>
 
@@ -58,8 +59,13 @@ class ResponseEvaluator
 private:
   using FluxMomentBuffer = std::vector<double>;
   using AngularFluxBuffer = std::vector<std::vector<double>>;
-  using AdjointBuffer = std::pair<FluxMomentBuffer, AngularFluxBuffer>;
-
+  using SurfaceAngularFluxBuffer = std::vector<LBSSolverIO::SurfaceAngularFlux>;
+  struct AdjointBuffer 
+  {
+    FluxMomentBuffer flux_moments;
+    AngularFluxBuffer angular_fluxes;
+    SurfaceAngularFluxBuffer surface_angular_fluxes;
+  };
   using MaterialSources = std::map<int, std::vector<double>>;
   using PointSources = std::vector<std::shared_ptr<PointSource>>;
   using VolumetricSources = std::vector<std::shared_ptr<VolumetricSource>>;
@@ -95,6 +101,12 @@ public:
    */
   double EvaluateResponse(const std::string& buffer_name) const;
 
+  /**
+   * Evaluate a response using the specified forward buffer and 
+   * adjoint buffer towards a specified surface id.
+   */
+  double EvaluateSurfaceResponse(const std::string& fwd_buffer,
+                                 const std::string& adj_buffer) const;
 private:
   /**
    * Evaluates a boundary source and returns the angular flux on the boundary.
