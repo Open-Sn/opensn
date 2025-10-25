@@ -27,11 +27,52 @@ MeshContinuum::MeshContinuum()
           global_cell_id_to_nonlocal_id_map_),
     dim_(0),
     mesh_type_(UNSTRUCTURED),
-    coord_sys_(CoordinateSystemType::CARTESIAN),
+    coord_sys_(CoordinateSystemType::UNDEFINED),
     extruded_(false),
     num_partitions_(opensn::mpi_comm.size()),
     global_vertex_count_(0)
 {
+}
+
+GeometryType
+MeshContinuum::GetGeometryType() const
+{
+  switch (coord_sys_)
+  {
+    case CoordinateSystemType::CARTESIAN:
+    {
+      switch (dim_)
+      {
+        case 1: return GeometryType::ONED_SLAB;
+        case 2: return GeometryType::TWOD_CARTESIAN;
+        case 3: return GeometryType::THREED_CARTESIAN;
+        default: break;
+      }
+      break;
+    }
+    case CoordinateSystemType::CYLINDRICAL:
+    {
+      switch (dim_)
+      {
+        case 1: return GeometryType::ONED_CYLINDRICAL;
+        case 2: return GeometryType::TWOD_CYLINDRICAL;
+        default: break;
+      }
+      break;
+    }
+    case CoordinateSystemType::SPHERICAL:
+    {
+      switch (dim_)
+      {
+        case 1: return GeometryType::ONED_SPHERICAL;
+        default: break;
+      }
+      break;
+    }
+    default: break;
+  }
+
+  return GeometryType::INVALID;
 }
 
 std::array<size_t, 3>

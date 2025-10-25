@@ -8,6 +8,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
+#include "framework/math/geometry.h"
 #include <memory>
 #include <array>
 
@@ -32,6 +33,8 @@ public:
 
   CoordinateSystemType GetCoordinateSystem() const { return coord_sys_; }
   void SetCoordinateSystem(const CoordinateSystemType coord_sys) { coord_sys_ = coord_sys; }
+
+  GeometryType GetGeometryType() const;
 
   bool Extruded() const { return extruded_; }
   void SetExtruded(const bool extruded) { extruded_ = extruded; }

@@ -182,17 +182,33 @@ DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
       GetName() + ": Solver requires more flux moments than the angular quadrature supports");
 
   // Compute number of solver moments.
-  auto geometry_type = options_.geometry_type;
-  if (geometry_type == GeometryType::ONED_SLAB or geometry_type == GeometryType::ONED_CYLINDRICAL or
-      geometry_type == GeometryType::ONED_SPHERICAL or
-      geometry_type == GeometryType::TWOD_CYLINDRICAL)
+  switch (options_.geometry_type)
   {
-    num_moments_ = lfs + 1;
+    case GeometryType::ONED_SLAB:
+    case GeometryType::ONED_CYLINDRICAL:
+    case GeometryType::ONED_SPHERICAL:
+    case GeometryType::TWOD_CYLINDRICAL:
+    {
+      num_moments_ = lfs + 1;
+      break;
+    }
+
+    case GeometryType::TWOD_CARTESIAN:
+    {
+      num_moments_ = (lfs + 1) * (lfs + 2) / 2;
+      break;
+    }
+
+    case GeometryType::THREED_CARTESIAN:
+    {
+      const int n = lfs + 1;
+      num_moments_ = n * n;
+      break;
+    }
+
+    default:
+      throw std::runtime_error("Unable to compute number of moments from geometry type.");
   }
-  else if (geometry_type == GeometryType::TWOD_CARTESIAN)
-    num_moments_ = ((lfs + 1) * (lfs + 2)) / 2;
-  else if (geometry_type == GeometryType::THREED_CARTESIAN)
-    num_moments_ = (lfs + 1) * (lfs + 1);
 }
 
 std::pair<size_t, size_t>

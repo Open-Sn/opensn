@@ -101,15 +101,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
   }
 
   // Set geometry type
-  const auto dim = grid_->GetDimension();
-  if (dim == 1)
-    options_.geometry_type = GeometryType::ONED_SLAB;
-  else if (dim == 2)
-    options_.geometry_type = GeometryType::TWOD_CARTESIAN;
-  else if (dim == 3)
-    options_.geometry_type = GeometryType::THREED_CARTESIAN;
-  else
-    OpenSnLogicalError("Cannot deduce geometry type from mesh.");
+  options_.geometry_type = grid_->GetGeometryType();
+  if (options_.geometry_type == GeometryType::INVALID)
+    throw std::runtime_error("Invalid geometry type.");
 
   // Set boundary conditions
   if (params.Has("boundary_conditions"))

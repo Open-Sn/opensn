@@ -171,7 +171,7 @@ using SetSourceFunction = std::function<void(const LBSGroupset& groupset,
 /// Struct for storing LBS options.
 struct LBSOptions
 {
-  GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
+  GeometryType geometry_type = GeometryType::INVALID;
   int max_mpi_message_size = 32768;
 
   bool restart_writes_enabled = false;

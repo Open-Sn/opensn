@@ -52,57 +52,12 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
-  // perform additional verifications for curvilinear LBS
-  // coordinate system must be curvilinear
-  if (grid_->GetCoordinateSystem() != CoordinateSystemType::CYLINDRICAL and
-      grid_->GetCoordinateSystem() != CoordinateSystemType::SPHERICAL)
+  if (options_.geometry_type != GeometryType::TWOD_CYLINDRICAL)
   {
-    std::ostringstream oss;
-    oss << "DiscreteOrdinatesCurvilinearSolver: Invalid coordinate system (type = "
-        << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
+    std::stringstream oss;
+    oss << "DiscreteOrdinatesCurvilinearProblem:\nInvalid geometry type " << ToString(options_.geometry_type)
+        << ".\nOnly TWOD_CYLINDRICAL geometry type is supported.";
     throw std::runtime_error(oss.str());
-  }
-
-  // re-interpret geometry type to curvilinear
-  switch (options_.geometry_type)
-  {
-    case GeometryType::ONED_SLAB:
-    {
-      std::ostringstream oss;
-      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
-          << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
-      throw std::runtime_error(oss.str());
-      break;
-    }
-    case GeometryType::TWOD_CARTESIAN:
-    {
-      switch (grid_->GetCoordinateSystem())
-      {
-        case CoordinateSystemType::CYLINDRICAL:
-        {
-          options_.geometry_type = GeometryType::TWOD_CYLINDRICAL;
-          break;
-        }
-        default:
-        {
-          std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearSolver: Invalid geometry (type = "
-              << std::to_string(static_cast<int>(options_.geometry_type)) << ") "
-              << "for curvilinear coordinate system (type = "
-              << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
-          throw std::runtime_error(oss.str());
-        }
-      }
-      break;
-    }
-    default:
-    {
-      std::ostringstream oss;
-      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
-          << std::to_string(static_cast<int>(options_.geometry_type)) << ") "
-          << "for curvilinear coordinate system";
-      throw std::runtime_error(oss.str());
-    }
   }
 
   for (size_t gs = 0; gs < groupsets_.size(); ++gs)
