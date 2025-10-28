@@ -1268,10 +1268,10 @@ LBSProblem::UpdateFieldFunctions()
     ff_ptr->UpdateFieldVector(data_vector_local);
   }
 
-  // Update power generation
+  // Update power generation and scalar flux
   if (options_.power_field_function_on)
   {
-    std::vector<double> data_vector_local(local_node_count_, 0.0);
+    std::vector<double> data_vector_power_local(local_node_count_, 0.0);
 
     double local_total_power = 0.0;
     for (const auto& cell : grid_->local_cells)
@@ -1301,24 +1301,38 @@ LBSProblem::UpdateFieldFunctions()
           nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
         } // for g
 
-        data_vector_local[imapA] = nodal_power;
+        data_vector_power_local[imapA] = nodal_power;
         local_total_power += nodal_power * Vi(i);
       } // for node
     } // for cell
 
+    double scale_factor = 1.0;
     if (options_.power_normalization > 0.0)
     {
       double global_total_power = 0.0;
       mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
-
-      Scale(data_vector_local, options_.power_normalization / global_total_power);
+      scale_factor = options_.power_normalization / global_total_power;
+      Scale(data_vector_power_local, scale_factor);
     }
 
     const size_t ff_index = power_gen_fieldfunc_local_handle_;
 
     auto& ff_ptr = field_functions_.at(ff_index);
-    ff_ptr->UpdateFieldVector(data_vector_local);
+    ff_ptr->UpdateFieldVector(data_vector_power_local);
 
+    // scale scalar flux if neccessary
+    if (scale_factor != 1.0)
+    {
+      for (size_t g = 0; g < groups_.size(); ++g)
+      {
+        const size_t phi_ff_index = phi_field_functions_local_map_.at({g, size_t{0}});
+        auto& phi_ff_ptr = field_functions_.at(phi_ff_index);
+        const auto& phi_vec = phi_ff_ptr->GetLocalFieldVector();
+        std::vector<double> phi_scaled(phi_vec.begin(), phi_vec.end());
+        Scale(phi_scaled, scale_factor);
+        phi_ff_ptr->UpdateFieldVector(phi_scaled);
+      }
+    }
   } // if power enabled
 }
 
