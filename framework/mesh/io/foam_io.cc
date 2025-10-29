@@ -14,6 +14,48 @@ namespace
 {
 // Utility functions
 
+CellType
+SelectCellSubtype(const std::vector<UnpartitionedMesh::LightWeightFace>& faces)
+{
+  const size_t nfaces = faces.size();
+  size_t ntri = 0;
+  size_t nquad = 0;
+
+  for (const auto& f : faces)
+  {
+    const size_t nv = f.vertex_ids.size();
+    if (nv == 3)
+    {
+      ++ntri;
+    }
+    else if (nv == 4)
+    {
+      ++nquad;
+    }
+  }
+
+  CellType subtype = CellType::POLYHEDRON;
+
+  if (nfaces == 4 && ntri == 4)
+  {
+    subtype = CellType::TETRAHEDRON;
+  }
+  if (nfaces == 6 && nquad == 6)
+  {
+    subtype = CellType::HEXAHEDRON;
+  }
+  if (nfaces == 5 && ntri == 2 && nquad == 3)
+  {
+    subtype = CellType::WEDGE;
+  }
+  if (nfaces == 5 && ntri == 4 && nquad == 1)
+  {
+    subtype = CellType::PYRAMID;
+  }
+
+  return subtype;
+}
+
 // Skip whitespace and both // and /* */ comments
 inline void
 SkipWSAndComments(std::istream& s)
@@ -652,9 +694,8 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   // volume cells (POLYHEDRON)
   for (size_t c = 0; c < ncells; ++c)
   {
-    auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                     CellType::POLYHEDRON);
-    cell->block_id = block_map[c];
+    std::vector<UnpartitionedMesh::LightWeightFace> tmp_faces;
+    tmp_faces.reserve(cell_faces[c].size());
 
     for (auto code : cell_faces[c])
     {
@@ -673,8 +714,14 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
         for (auto it = f_v.rbegin(); it != f_v.rend(); ++it)
           lwf.vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
-      cell->faces.push_back(std::move(lwf));
+      tmp_faces.push_back(std::move(lwf));
     }
+
+    const CellType subtype = SelectCellSubtype(tmp_faces);
+
+    auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON, subtype);
+    cell->block_id = block_map[c];
+    cell->faces = std::move(tmp_faces);
 
     // per cell vertex ids
     std::vector<uint64_t> v_set;
