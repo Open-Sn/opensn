@@ -20,18 +20,27 @@ enum class GeometryType
   THREED_CARTESIAN = 6,
 };
 
-constexpr std::string_view ToString(GeometryType type) noexcept
+constexpr std::string_view
+ToString(GeometryType type) noexcept
 {
   switch (type)
   {
-    case GeometryType::INVALID:          return "INVALID";
-    case GeometryType::ONED_SLAB:        return "ONED_SLAB";
-    case GeometryType::ONED_CYLINDRICAL: return "ONED_CYLINDRICAL";
-    case GeometryType::ONED_SPHERICAL:   return "ONED_SPHERICAL";
-    case GeometryType::TWOD_CARTESIAN:   return "TWOD_CARTESIAN";
-    case GeometryType::TWOD_CYLINDRICAL: return "TWOD_CYLINDRICAL";
-    case GeometryType::THREED_CARTESIAN: return "THREED_CARTESIAN";
-    default:                             return "UNKNOWN";
+    case GeometryType::INVALID:
+      return "INVALID";
+    case GeometryType::ONED_SLAB:
+      return "ONED_SLAB";
+    case GeometryType::ONED_CYLINDRICAL:
+      return "ONED_CYLINDRICAL";
+    case GeometryType::ONED_SPHERICAL:
+      return "ONED_SPHERICAL";
+    case GeometryType::TWOD_CARTESIAN:
+      return "TWOD_CARTESIAN";
+    case GeometryType::TWOD_CYLINDRICAL:
+      return "TWOD_CYLINDRICAL";
+    case GeometryType::THREED_CARTESIAN:
+      return "THREED_CARTESIAN";
+    default:
+      return "UNKNOWN";
   }
 }
 

@@ -252,7 +252,7 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
   };
 
   auto swf = std::make_shared<SpatialWeightFunction>();
-  const auto geom_type = do_problem_.GetOptions().geometry_type;
+  const auto geom_type = do_problem_.GetGeometryType();
   if (geom_type == GeometryType::ONED_SPHERICAL)
     swf = std::make_shared<SphericalWeightFunction>();
   else if (geom_type == GeometryType::TWOD_CYLINDRICAL)

@@ -97,7 +97,8 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     if (not groupset.quadrature)
     {
       std::stringstream oss;
-      oss << "Groupset " << groupset.id << " does not have an associated quadrature set";
+      oss << GetName() << ":\nGroupset " << groupset.id
+          << " does not have an associated quadrature set";
       throw std::runtime_error(oss.str());
     }
     groupset.psi_uk_man_.unknowns.clear();
@@ -182,7 +183,7 @@ DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
       GetName() + ": Solver requires more flux moments than the angular quadrature supports");
 
   // Compute number of solver moments.
-  switch (options_.geometry_type)
+  switch (geometry_type_)
   {
     case GeometryType::ONED_SLAB:
     case GeometryType::ONED_CYLINDRICAL:
@@ -201,13 +202,14 @@ DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
 
     case GeometryType::THREED_CARTESIAN:
     {
-      const int n = lfs + 1;
+      const size_t n = lfs + 1;
       num_moments_ = n * n;
       break;
     }
 
     default:
-      throw std::runtime_error("Unable to compute number of moments from geometry type.");
+      throw std::runtime_error(GetName() +
+                               ": Unable to compute number of moments from geometry type.");
   }
 }
 
@@ -432,7 +434,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
         }
 
         sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
-          G, global_normal, MapGeometryTypeToCoordSys(options_.geometry_type));
+          G, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
       }
     } // non-defaulted
   } // for bndry id
@@ -620,7 +622,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
     if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
     {
       quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
-        grid_, *groupset.quadrature, groupset.angleagg_method, options_.geometry_type);
+        grid_, *groupset.quadrature, groupset.angleagg_method, geometry_type_);
     }
 
     if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)

@@ -13,6 +13,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
+#include "framework/math/geometry.h"
 #include <petscksp.h>
 #include <any>
 #include <chrono>
@@ -53,6 +54,8 @@ public:
   void SetBoundaryOptions(const InputParameters& params);
 
   void SetAdjoint(bool adjoint);
+
+  GeometryType GetGeometryType() const;
 
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t GetNumMoments() const;
@@ -272,6 +275,7 @@ protected:
   virtual void ZeroSolutions() = 0;
 
   LBSOptions options_;
+  GeometryType geometry_type_ = GeometryType::INVALID;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
   unsigned int scattering_order_ = 0;

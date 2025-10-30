@@ -43,10 +43,14 @@ MeshContinuum::GetGeometryType() const
     {
       switch (dim_)
       {
-        case 1: return GeometryType::ONED_SLAB;
-        case 2: return GeometryType::TWOD_CARTESIAN;
-        case 3: return GeometryType::THREED_CARTESIAN;
-        default: break;
+        case 1:
+          return GeometryType::ONED_SLAB;
+        case 2:
+          return GeometryType::TWOD_CARTESIAN;
+        case 3:
+          return GeometryType::THREED_CARTESIAN;
+        default:
+          break;
       }
       break;
     }
@@ -54,9 +58,12 @@ MeshContinuum::GetGeometryType() const
     {
       switch (dim_)
       {
-        case 1: return GeometryType::ONED_CYLINDRICAL;
-        case 2: return GeometryType::TWOD_CYLINDRICAL;
-        default: break;
+        case 1:
+          return GeometryType::ONED_CYLINDRICAL;
+        case 2:
+          return GeometryType::TWOD_CYLINDRICAL;
+        default:
+          break;
       }
       break;
     }
@@ -64,12 +71,15 @@ MeshContinuum::GetGeometryType() const
     {
       switch (dim_)
       {
-        case 1: return GeometryType::ONED_SPHERICAL;
-        default: break;
+        case 1:
+          return GeometryType::ONED_SPHERICAL;
+        default:
+          break;
       }
       break;
     }
-    default: break;
+    default:
+      break;
   }
 
   return GeometryType::INVALID;

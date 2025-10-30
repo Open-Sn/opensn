@@ -52,11 +52,12 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
-  if (options_.geometry_type != GeometryType::TWOD_CYLINDRICAL)
+  if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL)
   {
     std::stringstream oss;
-    oss << "DiscreteOrdinatesCurvilinearProblem:\nInvalid geometry type " << ToString(options_.geometry_type)
-        << ".\nOnly TWOD_CYLINDRICAL geometry type is supported.";
+    oss << GetName() << ":\n"
+        << "Invalid geometry type " << ToString(geometry_type_) << ".\n"
+        << "Only TWOD_CYLINDRICAL geometry type is supported.";
     throw std::runtime_error(oss.str());
   }
 
@@ -74,7 +75,8 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angular quadrature (type = "
+          oss << GetName() << ":\n"
+              << "Invalid angular quadrature (type = "
               << static_cast<int>(angular_quad_ptr->GetType()) << ")";
           throw std::runtime_error(oss.str());
         }
@@ -88,7 +90,8 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         if (curvilinear_angular_quad_ptr == nullptr)
         {
           std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angular quadrature (type = "
+          oss << GetName() << ":\n"
+              << "Invalid angular quadrature (type = "
               << static_cast<int>(angular_quad_ptr->GetType()) << ")";
           throw std::runtime_error(oss.str());
         }
@@ -97,7 +100,8 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       default:
       {
         std::ostringstream oss;
-        oss << "DiscreteOrdinatesCurvilinearProblem: Invalid coordinate system (type = "
+        oss << GetName() << ":\n"
+            << "Invalid coordinate system (type = "
             << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
         throw std::runtime_error(oss.str());
       }
@@ -112,8 +116,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         if (angleagg_method != AngleAggregationType::AZIMUTHAL)
         {
           std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angle aggregation (type = "
-              << static_cast<int>(angleagg_method) << ") for groupsset " << gs;
+          oss << GetName() << ":\n"
+              << "Invalid angle aggregation (type = " << static_cast<int>(angleagg_method)
+              << ") for groupsset " << gs;
           throw std::runtime_error(oss.str());
         }
         break;
@@ -123,8 +128,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         if (angleagg_method != AngleAggregationType::POLAR)
         {
           std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearProblem: Invalid angle aggregation (type = "
-              << static_cast<int>(angleagg_method) << ") for groupsset " << gs;
+          oss << GetName() << ":\n"
+              << "Invalid angle aggregation (type = " << static_cast<int>(angleagg_method)
+              << ") for groupsset " << gs;
           throw std::runtime_error(oss.str());
         }
         break;
@@ -132,7 +138,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       default:
       {
         std::ostringstream oss;
-        oss << "DiscreteOrdinatesCurvilinearProblem: Invalid coordinate system (type = "
+        oss << GetName() << ":\nInvalid coordinate system (type = "
             << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
         throw std::runtime_error(oss.str());
       }
@@ -168,9 +174,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
               if (std::abs(vertex[d]) > 1.0e-12)
               {
                 std::ostringstream oss;
-                oss << "DiscreteOrdinatesCurvilinearProblem: Mesh contains boundary faces with "
-                    << "outward-oriented unit normal vector " +
-                         (-1 * unit_normal_vectors[d]).PrintStr()
+                oss << GetName() << ":\n"
+                    << "Mesh contains boundary faces with outward-oriented unit normal vector "
+                    << (-1 * unit_normal_vectors[d]).PrintStr()
                     << ", with vertices characterized by v(" + std::to_string(d) + ") != 0";
                 throw std::runtime_error(oss.str());
               }
@@ -182,8 +188,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         if (not face_orthogonal)
         {
           std::ostringstream oss;
-          oss << "DiscreteOrdinatesCurvilinearProblem: Mesh contains boundary faces not "
-              << "orthogonal with respect to Cartesian reference frame";
+          oss << GetName() << ":\n"
+              << "Mesh contains boundary faces not orthogonal with respect to Cartesian reference "
+              << "frame";
           throw std::runtime_error(oss.str());
         }
       }
@@ -194,64 +201,40 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 void
 DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
 {
-  log.Log() << "Initializing spatial discretization_.\n";
+  log.Log() << "Initializing spatial discretization.\n";
 
-  // primary discretization
-  QuadratureOrder qorder = QuadratureOrder::INVALID_ORDER;
-  switch (options_.geometry_type)
+  const auto quadrature_orders = [](GeometryType g) -> std::pair<QuadratureOrder, QuadratureOrder>
   {
-    case GeometryType::ONED_SPHERICAL:
+    switch (g)
     {
-      qorder = QuadratureOrder::FOURTH;
-      break;
+      case GeometryType::ONED_SPHERICAL:
+        return {QuadratureOrder::FOURTH, QuadratureOrder::THIRD};
+
+      case GeometryType::ONED_CYLINDRICAL:
+      case GeometryType::TWOD_CYLINDRICAL:
+        return {QuadratureOrder::THIRD, QuadratureOrder::SECOND};
+
+      default:
+        return {QuadratureOrder::INVALID_ORDER, QuadratureOrder::INVALID_ORDER};
     }
-    case GeometryType::ONED_CYLINDRICAL:
-    case GeometryType::TWOD_CYLINDRICAL:
-    {
-      qorder = QuadratureOrder::THIRD;
-      break;
-    }
-    default:
-    {
-      std::ostringstream oss;
-      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
-          << static_cast<int>(options_.geometry_type) << ")";
-      throw std::runtime_error(oss.str());
-    }
+  };
+
+  const auto [quad_primary, quad_secondary] = quadrature_orders(geometry_type_);
+  if (quad_primary == QuadratureOrder::INVALID_ORDER)
+  {
+    std::ostringstream oss;
+    oss << GetName() << "::InitializeSpatialDiscretization:\n"
+        << "Invalid geometry type " << ToString(geometry_type_) << ".\n"
+        << "Only ONED_SPHERICAL, ONED_CYLINDRICAL, or TWOD_CYLINDRICAL geometries are supported.\n";
+    throw std::runtime_error(oss.str());
   }
 
-  discretization_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);
-
+  // Primary
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_, quad_primary);
   ComputeUnitIntegrals();
 
-  // secondary discretization
-  // system - manipulated such that the spatial discretization returns
-  // a cell view of the same type but with weighting of degree one less
-  // than the primary discretization
-  switch (options_.geometry_type)
-  {
-    case GeometryType::ONED_SPHERICAL:
-    {
-      qorder = QuadratureOrder::THIRD;
-      break;
-    }
-    case GeometryType::ONED_CYLINDRICAL:
-    case GeometryType::TWOD_CYLINDRICAL:
-    {
-      qorder = QuadratureOrder::SECOND;
-      break;
-    }
-    default:
-    {
-      std::ostringstream oss;
-      oss << "DiscreteOrdinatesCurvilinearProblem: Invalid geometry (type = "
-          << static_cast<int>(options_.geometry_type) << ")";
-      throw std::runtime_error(oss.str());
-    }
-  }
-
-  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_, qorder);
-
+  // Secondary
+  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_, quad_secondary);
   ComputeSecondaryUnitIntegrals();
 }
 
