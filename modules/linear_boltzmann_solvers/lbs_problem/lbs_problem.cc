@@ -88,7 +88,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
     CheckCapableDevices();
 #else
     throw std::invalid_argument(
-      GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled");
+      GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled.");
 #endif // __OPENSN_USE_CUDA__
   }
 
@@ -101,15 +101,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
   }
 
   // Set geometry type
-  const auto dim = grid_->GetDimension();
-  if (dim == 1)
-    options_.geometry_type = GeometryType::ONED_SLAB;
-  else if (dim == 2)
-    options_.geometry_type = GeometryType::TWOD_CARTESIAN;
-  else if (dim == 3)
-    options_.geometry_type = GeometryType::THREED_CARTESIAN;
-  else
-    OpenSnLogicalError("Cannot deduce geometry type from mesh.");
+  geometry_type_ = grid_->GetGeometryType();
+  if (geometry_type_ == GeometryType::INVALID)
+    throw std::runtime_error(GetName() + ": Invalid geometry type.");
 
   // Set boundary conditions
   if (params.Has("boundary_conditions"))
@@ -140,6 +134,12 @@ const LBSOptions&
 LBSProblem::GetOptions() const
 {
   return options_;
+}
+
+GeometryType
+LBSProblem::GetGeometryType() const
+{
+  return geometry_type_;
 }
 
 size_t

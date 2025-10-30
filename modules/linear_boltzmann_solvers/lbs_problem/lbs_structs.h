@@ -5,7 +5,6 @@
 
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/math.h"
-#include "framework/math/geometry.h"
 #include <functional>
 #include <chrono>
 #include <map>
@@ -171,7 +170,6 @@ using SetSourceFunction = std::function<void(const LBSGroupset& groupset,
 /// Struct for storing LBS options.
 struct LBSOptions
 {
-  GeometryType geometry_type = GeometryType::NO_GEOMETRY_SET;
   int max_mpi_message_size = 32768;
 
   bool restart_writes_enabled = false;

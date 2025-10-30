@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <string_view>
 #include <cstddef>
 
 namespace opensn
@@ -16,11 +17,43 @@ enum CoordinateSystemType : int
   SPHERICAL = 3,
 };
 
+constexpr std::string_view
+ToString(CoordinateSystemType type) noexcept
+{
+  switch (type)
+  {
+    case CoordinateSystemType::UNDEFINED:
+      return "UNDEFINED";
+    case CoordinateSystemType::CARTESIAN:
+      return "CARTESIAN";
+    case CoordinateSystemType::CYLINDRICAL:
+      return "CYLINDRICAL";
+    case CoordinateSystemType::SPHERICAL:
+      return "SPHERICAL";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 enum MeshType : int
 {
   ORTHOGONAL,
   UNSTRUCTURED
 };
+
+constexpr std::string_view
+ToString(MeshType type) noexcept
+{
+  switch (type)
+  {
+    case ORTHOGONAL:
+      return "UNDEFINED";
+    case UNSTRUCTURED:
+      return "CARTESIAN";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 enum BoundaryID : int
 {
