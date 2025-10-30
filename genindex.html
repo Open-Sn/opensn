@@ -2494,7 +2494,7 @@
 </li>
       <li><a href="capi/rst/enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121.html#_CPPv4N6opensn12GeometryTypeE">opensn::GeometryType (C++ enum)</a>
 </li>
-      <li><a href="capi/rst/enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121.html#_CPPv4N6opensn12GeometryType15NO_GEOMETRY_SETE">opensn::GeometryType::NO_GEOMETRY_SET (C++ enumerator)</a>
+      <li><a href="capi/rst/enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121.html#_CPPv4N6opensn12GeometryType7INVALIDE">opensn::GeometryType::INVALID (C++ enumerator)</a>
 </li>
       <li><a href="capi/rst/enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121.html#_CPPv4N6opensn12GeometryType16ONED_CYLINDRICALE">opensn::GeometryType::ONED_CYLINDRICAL (C++ enumerator)</a>
 </li>
@@ -2920,8 +2920,6 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions28field_function_prefix_optionE">opensn::LBSOptions::field_function_prefix_option (C++ member)</a>
 </li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions13geometry_typeE">opensn::LBSOptions::geometry_type (C++ member)</a>
-</li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions23last_restart_write_timeE">opensn::LBSOptions::last_restart_write_time (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions10LBSOptionsEv">opensn::LBSOptions::LBSOptions (C++ function)</a>
@@ -2994,6 +2992,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem20flux_moments_uk_man_E">opensn::LBSProblem::flux_moments_uk_man_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem14geometry_type_E">opensn::LBSProblem::geometry_type_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem26GetActiveSetSourceFunctionEv">opensn::LBSProblem::GetActiveSetSourceFunction (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12GetAGSSolverEv">opensn::LBSProblem::GetAGSSolver (C++ function)</a>
@@ -3009,6 +3009,8 @@
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem17GetDensitiesLocalEv">opensn::LBSProblem::GetDensitiesLocal (C++ function)</a>, <a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem17GetDensitiesLocalEv">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem21GetExtSrcMomentsLocalEv">opensn::LBSProblem::GetExtSrcMomentsLocal (C++ function)</a>, <a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem21GetExtSrcMomentsLocalEv">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem15GetGeometryTypeEv">opensn::LBSProblem::GetGeometryType (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem18GetGlobalNodeCountEv">opensn::LBSProblem::GetGlobalNodeCount (C++ function)</a>
 </li>
@@ -3559,6 +3561,8 @@
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum19GetCoordinateSystemEv">opensn::MeshContinuum::GetCoordinateSystem (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum12GetDimensionEv">opensn::MeshContinuum::GetDimension (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum15GetGeometryTypeEv">opensn::MeshContinuum::GetGeometryType (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum22GetGlobalNumberOfCellsEv">opensn::MeshContinuum::GetGlobalNumberOfCells (C++ function)</a>
 </li>
@@ -6107,6 +6111,8 @@
       <li><a href="capi/rst/classopensn_1_1_timer.html#_CPPv4N6opensn5Timer5ResetEv">opensn::Timer::Reset (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_timer.html#_CPPv4N6opensn5Timer5TimerEv">opensn::Timer::Timer (C++ function)</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610.html#_CPPv4N6opensn8ToStringE8MeshType">opensn::ToString (C++ function)</a>, <a href="capi/rst/function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837.html#_CPPv4N6opensn8ToStringE12GeometryType">[1]</a>, <a href="capi/rst/function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c.html#_CPPv4N6opensn8ToStringE20CoordinateSystemType">[2]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_total_x_s_carrier.html#_CPPv4N6opensn14TotalXSCarrierE">opensn::TotalXSCarrier (C++ class)</a>
 </li>

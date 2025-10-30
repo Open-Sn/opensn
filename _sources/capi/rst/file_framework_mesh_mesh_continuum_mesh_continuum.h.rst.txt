@@ -34,6 +34,8 @@ Includes
 
 - ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
 
+- ``framework/math/geometry.h`` (:ref:`file_framework_math_geometry.h`)
+
 - ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
 
 - ``framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h`)

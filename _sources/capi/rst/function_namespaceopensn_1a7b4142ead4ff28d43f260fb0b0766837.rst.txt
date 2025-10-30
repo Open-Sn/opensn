@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837:
+
+Function opensn::ToString(GeometryType)
+=======================================
+
+- Defined in :ref:`file_framework_math_geometry.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ToString(GeometryType)
+   :project: opensn

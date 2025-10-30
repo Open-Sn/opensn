@@ -34,6 +34,8 @@ Includes
 
 - ``chrono``
 
+- ``framework/math/geometry.h`` (:ref:`file_framework_math_geometry.h`)
+
 - ``framework/math/linear_solver/linear_solver.h`` (:ref:`file_framework_math_linear_solver_linear_solver.h`)
 
 - ``framework/math/spatial_discretization/finite_element/unit_cell_matrices.h`` (:ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`)

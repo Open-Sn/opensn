@@ -94,6 +94,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
 
@@ -118,6 +119,8 @@
 
 <span class="w">  </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="nf">GetCoordinateSystem</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">coord_sys_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetCoordinateSystem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">coord_sys_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="nf">GetGeometryType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Extruded</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">extruded_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetExtruded</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">extruded</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">extruded_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">extruded</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
