@@ -1040,14 +1040,10 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       }
       else if (sweep_type_ == "CBC")
       {
-        OpenSnLogicalErrorIf(not options_.save_angular_flux,
-                             "When using sweep_type \"CBC\" then "
-                             "\"save_angular_flux\" must be true.");
         std::shared_ptr<FLUDS> fluds =
           std::make_shared<CBC_FLUDS>(gs_num_grps,
                                       angle_indices.size(),
                                       dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      psi_new_local_[groupset.id],
                                       groupset.psi_uk_man_,
                                       *discretization_);
 
