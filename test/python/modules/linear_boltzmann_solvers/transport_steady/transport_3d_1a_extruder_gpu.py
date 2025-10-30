@@ -54,6 +54,7 @@ if __name__ == "__main__":
             ycuts=[0.0], ),
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Set block IDs
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)

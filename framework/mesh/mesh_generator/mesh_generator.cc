@@ -134,6 +134,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   auto grid_ptr = MeshContinuum::New();
 
   grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
+  grid_ptr->GetBoundaryNameMap() = input_umesh->GetBoundaryNameMap();
 
   size_t cell_global_id = 0;
   const auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();

@@ -141,8 +141,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   const auto Nz = vertices.size();
 
   umesh->SetOrthoAttributes(1, 1, Nz - 1);
-  umesh->AddBoundary(ZMIN, "ZMIN");
-  umesh->AddBoundary(ZMAX, "ZMAX");
+  umesh->AddBoundary(ZMIN, "zmin");
+  umesh->AddBoundary(ZMAX, "zmax");
 
   umesh->GetVertices().reserve(Nz);
   for (const auto& vertex : zverts)
@@ -208,10 +208,10 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   const auto Ny = vertices_1d_y.size();
 
   umesh->SetOrthoAttributes(Nx - 1, Ny - 1, 1);
-  umesh->AddBoundary(XMIN, "XMIN");
-  umesh->AddBoundary(XMAX, "XMAX");
-  umesh->AddBoundary(YMIN, "YMIN");
-  umesh->AddBoundary(YMAX, "YMAX");
+  umesh->AddBoundary(XMIN, "xmin");
+  umesh->AddBoundary(XMAX, "xmax");
+  umesh->AddBoundary(YMIN, "ymin");
+  umesh->AddBoundary(YMAX, "ymax");
 
   std::vector<std::vector<uint64_t>> vertex_ij_to_i_map(Ny, std::vector<uint64_t>(Nx));
   umesh->GetVertices().reserve(Nx * Ny);
@@ -328,12 +328,12 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   const auto Nz = vertices_1d_z.size();
 
   umesh->SetOrthoAttributes(Nx - 1, Ny - 1, Nz - 1);
-  umesh->AddBoundary(XMIN, "XMIN");
-  umesh->AddBoundary(XMAX, "XMAX");
-  umesh->AddBoundary(YMIN, "YMIN");
-  umesh->AddBoundary(YMAX, "YMAX");
-  umesh->AddBoundary(ZMIN, "ZMIN");
-  umesh->AddBoundary(ZMAX, "ZMAX");
+  umesh->AddBoundary(XMIN, "xmin");
+  umesh->AddBoundary(XMAX, "xmax");
+  umesh->AddBoundary(YMIN, "ymin");
+  umesh->AddBoundary(YMAX, "ymax");
+  umesh->AddBoundary(ZMIN, "zmin");
+  umesh->AddBoundary(ZMAX, "zmax");
 
   // i is j, and j is i, MADNESS explanation:
   // In math convention the i-index refers to the ith row
