@@ -222,6 +222,9 @@ if (OPENSN_WITH_CUDA)
   target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
   set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
   set_property(TARGET libopensncuda PROPERTY OUTPUT_NAME opensncuda)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    target_compile_options(libopensncuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
+  endif()
 endif()
 
 target_include_directories(libopensn

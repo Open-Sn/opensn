@@ -347,6 +347,9 @@ public:
   static std::map<std::string, uint64_t> supported_boundary_names;
   static std::map<uint64_t, std::string> supported_boundary_ids;
 
+  /// @brief Max number of DOFs per cell that the sweep kernel on GPU can handle.
+  inline static constexpr std::uint32_t max_dofs_gpu = 10;
+
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
 

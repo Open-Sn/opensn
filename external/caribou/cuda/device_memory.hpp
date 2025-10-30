@@ -56,6 +56,8 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
     DeviceMemory(void) = default;
     /** @brief Allocate memory for holding n elements.*/
     DeviceMemory(std::size_t n) : cuda::MemoryImpl<T>(DeviceMemory<T>::malloc_(n)), size_(n) {}
+    /** @brief Owning a pre-allocated memory.*/
+    DeviceMemory(T * ptr, std::size_t n = 0) : cuda::MemoryImpl<T>(ptr), size_(n) {}
     /// @}
 
     /// @name Copy and move
@@ -78,6 +80,16 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
 
     /// @name Action
     /// @{
+    /** @brief Replace the managed memory.*/
+    void reset(T * ptr = nullptr, std::size_t size = 0) noexcept {
+        cuda::MemoryImpl<T>::reset(ptr);
+        size_ = size;
+    }
+    /** @brief Releases the ownership of the managed object.*/
+    T * release() noexcept {
+        size_ = 0;
+        return cuda::MemoryImpl<T>::release();
+    }
     /** @brief Zero-fill device memory with zeros.*/
     void zero_fill(void) { cuda::check_cuda_error(::cudaMemset(this->get(), 0, this->size_ * sizeof(T))); }
     /// @}
@@ -90,6 +102,7 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
     static T * malloc_(std::size_t size) {
         T * result;
         cuda::check_cuda_error(::cudaMalloc(&result, sizeof(T) * size));
+        cuda::check_cuda_error(::cudaMemset(result, 0, sizeof(T) * size));
         return result;
     }
 };

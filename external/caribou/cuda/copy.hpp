@@ -92,4 +92,24 @@ void copy(MemoryPinningManager<T> & dst, const DeviceMemory<T> & src, std::size_
     cuda::check_cuda_error(error);
 }
 
+/**
+ * @brief Copy data from device to device.
+ * @details Copy n elements from src+i to dst+j.
+ */
+template <typename T>
+requires std::is_trivially_copyable<T>::value
+void copy(DeviceMemory<T> & dst, const DeviceMemory<T> & src, std::size_t n, std::size_t i = 0,
+          std::size_t j = 0) {
+    if (i + n > src.size()) {
+        throw std::invalid_argument("Overflown memory range on device vector.\n");
+    }
+    if (j + n > dst.size()) {
+        throw std::invalid_argument("Overflown memory range on host vector.\n");
+    }
+    ::cudaError_t error = ::cudaMemcpy(reinterpret_cast<void *>(dst.get() + j),
+                                       reinterpret_cast<const void *>(src.get() + i), sizeof(T) * n,
+                                       ::cudaMemcpyDeviceToDevice);
+    cuda::check_cuda_error(error);
+}
+
 }  // namespace caribou

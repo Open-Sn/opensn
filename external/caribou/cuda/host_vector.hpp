@@ -72,6 +72,20 @@ class cuda::PinnedHostAllocator {
         p->~U();
     }
     /// @}
+
+    /// @name Comparison operators
+    /// @{
+    /** @brief Equality operator.*/
+    template <class U>
+    constexpr bool operator==(const cuda::PinnedHostAllocator<U> & other) const noexcept {
+        return true;
+    }
+    /** @brief Inequality operator.*/
+    template <class U>
+    constexpr bool operator!=(const cuda::PinnedHostAllocator<U> & other) const noexcept {
+        return false;
+    }
+    /// @}
 };
 
 // Host vector
