@@ -23,6 +23,7 @@ if __name__ == "__main__":
         filename="c5g7/mesh/2D_c5g7_coarse.msh",
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Create cross sections
     xss = []

@@ -43,6 +43,7 @@ if __name__ == "__main__":
         ),
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Set block IDs
     grid.SetUniformBlockID(0)

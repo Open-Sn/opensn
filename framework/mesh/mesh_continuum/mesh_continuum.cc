@@ -15,6 +15,7 @@
 #include "framework/runtime.h"
 #include <algorithm>
 #include <set>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -170,6 +171,33 @@ MeshContinuum::SetOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
+  // Add boundaries
+  std::vector<std::string> boundary_names;
+  switch (GetDimension())
+  {
+    case 1:
+      boundary_names = {"zmin", "zmax"};
+      break;
+
+    case 2:
+      boundary_names = {"xmin", "xmax", "ymin", "ymax"};
+      break;
+
+    case 3:
+      boundary_names = {"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"};
+      break;
+
+    default:
+      throw std::runtime_error("Unsupported spatial dimension");
+  }
+
+  for (auto& name : boundary_names)
+  {
+    uint64_t bndry_id = MakeBoundaryID(name);
+    GetBoundaryIDMap()[bndry_id] = name;
+    GetBoundaryNameMap()[name] = bndry_id;
+  }
+
   const Vector3 ihat(1.0, 0.0, 0.0);
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
@@ -184,23 +212,19 @@ MeshContinuum::SetOrthogonalBoundaries()
 
         std::string boundary_name;
         if (n.Dot(ihat) < -0.99999)
-          boundary_name = "XMIN";
+          boundary_name = "xmin";
         else if (n.Dot(ihat) > 0.99999)
-          boundary_name = "XMAX";
+          boundary_name = "xmax";
         else if (n.Dot(jhat) < -0.99999)
-          boundary_name = "YMIN";
+          boundary_name = "ymin";
         else if (n.Dot(jhat) > 0.99999)
-          boundary_name = "YMAX";
+          boundary_name = "ymax";
         else if (n.Dot(khat) < -0.99999)
-          boundary_name = "ZMIN";
+          boundary_name = "zmin";
         else if (n.Dot(khat) > 0.99999)
-          boundary_name = "ZMAX";
+          boundary_name = "zmax";
 
-        uint64_t bndry_id = MakeBoundaryID(boundary_name);
-
-        face.neighbor_id = bndry_id;
-
-        GetBoundaryIDMap()[bndry_id] = boundary_name;
+        face.neighbor_id = GetBoundaryNameMap().at(boundary_name);
       }
     }
   }
@@ -643,6 +667,7 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
 {
   // Check if name already has id
   auto& grid_bndry_id_map = GetBoundaryIDMap();
+  auto& grid_bndry_name_map = GetBoundaryNameMap();
   uint64_t bndry_id = MakeBoundaryID(boundary_name);
 
   // Loop over cells
@@ -665,7 +690,10 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
   mpi_comm.all_reduce(num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
 
   if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
+  {
     grid_bndry_id_map[bndry_id] = boundary_name;
+    grid_bndry_name_map[boundary_name] = bndry_id;
+  }
 }
 
 Vector3

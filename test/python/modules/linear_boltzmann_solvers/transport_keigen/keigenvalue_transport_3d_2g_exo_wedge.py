@@ -32,6 +32,7 @@ if __name__ == "__main__":
         filename="../../../../assets/mesh/fuel_wedge.e",
     )
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Set Materials (Fuel)
     num_groups = 2
