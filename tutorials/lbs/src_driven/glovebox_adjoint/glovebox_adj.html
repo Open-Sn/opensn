@@ -197,7 +197,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="c159eca93d7e4be3a0b30f129e76a7ec" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="6113177ebaca4cb09365df705162429f" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -212,12 +212,13 @@
     <span class="n">partitioner</span><span class="o">=</span><span class="n">PETScGraphPartitioner</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;parmetis&#39;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p><img alt="789c93134b7546a89d53fb989f62302e" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="2ca1b90f4f6c4ad2988a919927e1719d" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="9de928b700114625b669a8af09e0abb4" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="d531eb6ddef1492399bf144cc0a3aaea" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="698125860e2e4a739b384b85ecc42ccd" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="d2cc05a6eb7d4c74916e2667def247dc" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -366,8 +367,6 @@
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">}</span>
     <span class="p">],</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                <span class="s2">&quot;adjoint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
@@ -492,14 +491,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="e24a758f82a0426b94d70798ebf3defc" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="d3945de714e04e5f967dad616c344ca6" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="2f454a7d1b174ccc933a7f527c9f9e28" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="add3c5092ed141d0a3fdbb815003224f" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="5bc5bea94ce74e3a8676e3245f4bd0a1" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="597b1ab67dab4b3da3cbeeb3cc41827d" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="641291f694d34127af41f7f064795923" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="93bf7362af3b414299b60ce3bea2ad10" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">

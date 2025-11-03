@@ -197,7 +197,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="377b01487d4c40dd90263e78667ad5ee" src="../../../../_images/glovebox_geom1.png" /></p>
+<p><img alt="fb10fa25e35340f59258803d4662ea9a" src="../../../../_images/glovebox_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -212,12 +212,13 @@
     <span class="n">partitioner</span><span class="o">=</span><span class="n">PETScGraphPartitioner</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;parmetis&#39;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p><img alt="7fd65c5e5e704024b8cfc627e3e214e0" src="../../../../_images/glovebox_mesh1.png" /></p>
-<p><img alt="14f15a5260e84d0a946b73c9742099fe" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
-<p><img alt="526e7d900bc44b6e8170658b779c6749" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="0cfc158526dd40a8b027ba0ef0128aff" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="cf8585e077da493b8620b69d0e132e00" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="3383d533645146a496da427c8bcf2470" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -359,8 +360,6 @@
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">}</span>
     <span class="p">],</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
 <span class="p">)</span>
@@ -521,9 +520,9 @@
 </div>
 </div>
 <p>Group 3: [1.353, 2.231] MeV</p>
-<p><img alt="a61ffb7120d040d39d1715f7c6893e08" src="../../../../_images/glovebox_g3.png" /></p>
+<p><img alt="6e71ede03b6943e1a78b9e2aef6beb66" src="../../../../_images/glovebox_g3.png" /></p>
 <p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="34197caed9054ab49428e4b528abb45c" src="../../../../_images/glovebox_g52.png" /></p>
+<p><img alt="9df4ef2ebaa2440ba02dd69cf639a50d" src="../../../../_images/glovebox_g52.png" /></p>
 </section>
 <section id="Compute-Leakage">
 <h3><span class="section-number">5.3.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
@@ -586,7 +585,7 @@
 <div class="line">Total Leakage YMax : 4.702092e-01</div>
 </div>
 <p>Total Leakage : 1.035658e+00</p>
-<p><img alt="7c4afe7b49084368bacb7c7206ffddba" src="../../../../_images/Lkg.png" /></p>
+<p><img alt="c6f5b9f92ec040d7b350ad3f5cb649a4" src="../../../../_images/Lkg.png" /></p>
 </section>
 <section id="Compute-Balance">
 <h3><span class="section-number">5.3.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>

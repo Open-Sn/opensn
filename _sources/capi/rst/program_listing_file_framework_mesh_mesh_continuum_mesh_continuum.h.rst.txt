@@ -60,6 +60,9 @@ Program Listing for File mesh_continuum.h
      int GetNumPartitions() const { return num_partitions_; }
      size_t GetGlobalNumberOfCells() const;
    
+     std::map<std::string, uint64_t>& GetBoundaryNameMap() { return boundary_name_map_; }
+     const std::map<std::string, uint64_t>& GetBoundaryNameMap() const { return boundary_name_map_; }
+   
      std::map<uint64_t, std::string>& GetBoundaryIDMap() { return boundary_id_map_; }
      const std::map<uint64_t, std::string>& GetBoundaryIDMap() const { return boundary_id_map_; }
      /// Returns the unique boundary ids present in the problem.
@@ -178,6 +181,7 @@ Program Listing for File mesh_continuum.h
      bool extruded_;
      OrthoMeshAttributes ortho_attributes_;
      std::map<uint64_t, std::string> boundary_id_map_;
+     std::map<std::string, uint64_t> boundary_name_map_;
      int num_partitions_;
      uint64_t global_vertex_count_;
    

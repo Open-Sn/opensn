@@ -287,7 +287,7 @@ OpenSn version 0.0.1
 <section id="Material-IDs">
 <h3><span class="section-number">5.1.2.3.1. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
 <p>In this example, we define a source-driven detector response problem consisting of two regions: a detector and a source in vacuum. The geometry of the model is shown below.</p>
-<p><img alt="770a566f70314d0b9b27469dae47c23f" src="../../../_images/adjoint_geom.png" /></p>
+<p><img alt="fb8880854664429d8c0f5c144831ae66" src="../../../_images/adjoint_geom.png" /></p>
 <p>Firstly, when using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to assign material IDs to all cells. We will begin by assigning the background material ID with a value of 0.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -444,10 +444,6 @@ OpenSn version 0.0.1
     <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">vol_src</span><span class="p">],</span>
     <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">}</span>
     <span class="p">],</span>

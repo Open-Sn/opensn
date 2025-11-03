@@ -220,7 +220,7 @@ OpenSn version 0.0.1
 <section id="Geometry">
 <h2><span class="section-number">5.3.4.2. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 1D multi-group, source-driven detector response problem using the WIMS69 energy group structure. The neutron source is modeled as a 0.4 cm slab of Cf-252 encased in 0.1 cm slabs of stainless steel (SS-316). The detector is modeled as a 2.4 cm region of He-3 enclosed in a 0.07 cm SS-316 sleeve and surrounded by high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="a09b091eee1445af94e82024b92cdb42" src="../../../../_images/detector_geom.png" /></p>
+<p><img alt="3f19a8271bc64649a0146229c2af25b1" src="../../../../_images/detector_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -249,6 +249,7 @@ OpenSn version 0.0.1
 
 <span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodesz</span><span class="p">])</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -493,10 +494,6 @@ OpenSn version 0.0.1
     <span class="n">xs_map</span><span class="o">=</span><span class="n">xsecs</span><span class="p">,</span>
     <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">adj_src</span><span class="p">],</span>
     <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">}</span>
     <span class="p">],</span>
