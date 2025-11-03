@@ -13,8 +13,8 @@ namespace opensn
 {
 
 /**
- * @brief Object managing the total cross section map on GPU.
- * @details For each block ID, group-wise total cross sections are stored side-by-side in device
+ * \brief Object managing the total cross section map on GPU.
+ * \details For each block ID, group-wise total cross sections are stored side-by-side in device
  * memory. The constructor initializes a map to record the stride associated with each block ID.
  */
 class TotalXSCarrier : public Carrier

@@ -183,7 +183,7 @@ SwapRows(DenseMatrix<TYPE>& A, size_t r1, size_t r2)
   auto cols = A.Columns();
   assert(rows > 0);
   assert(cols > 0);
-  assert(r1 >= 0 and r1 < rows and r2 >= 0 and r2 < rows);
+  assert(r1 < rows and r2 < rows);
 
   for (auto j = 0; j < cols; ++j)
     std::swap(A(r1, j), A(r2, j));
@@ -327,7 +327,7 @@ SubMatrix(const DenseMatrix<TYPE>& A, const size_t r, const size_t c)
 {
   auto rows = A.Rows();
   auto cols = A.Columns();
-  assert((r >= 0) and (r < rows) and (c >= 0) and (c < cols));
+  assert(r < rows and c < cols);
 
   DenseMatrix<TYPE> B(rows - 1, cols - 1);
   for (size_t i = 0, ii = 0; i < rows; ++i)

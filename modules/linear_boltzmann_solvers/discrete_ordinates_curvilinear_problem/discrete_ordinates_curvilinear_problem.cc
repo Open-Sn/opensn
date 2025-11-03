@@ -60,6 +60,12 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         << "Only TWOD_CYLINDRICAL geometry type is supported.";
     throw std::runtime_error(oss.str());
   }
+  if (use_gpus_)
+  {
+    throw std::runtime_error(
+      "DiscreteOrdinatesCurvilinearProblem: GPU acceleration is not supported for curvilinear "
+      "geometries yet.");
+  }
 
   for (size_t gs = 0; gs < groupsets_.size(); ++gs)
   {

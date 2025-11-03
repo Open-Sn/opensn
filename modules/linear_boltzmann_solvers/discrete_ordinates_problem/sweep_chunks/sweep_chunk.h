@@ -69,8 +69,6 @@ public:
   /// For cell-by-cell methods or computing the residual on a single cell.
   virtual void SetCell(Cell const* cell_ptr, AngleSet& angle_set) {}
 
-  virtual ~SweepChunk() = default;
-
   /**
    * Zero the portion of the output flux moments vector corresponding to the groupset for this
    * sweep chunk.
@@ -85,6 +83,8 @@ public:
 
   /// Returns the surface src-active flag.
   bool IsSurfaceSourceActive() const { return surface_source_active_; }
+
+  virtual ~SweepChunk() = default;
 
 protected:
   const std::shared_ptr<MeshContinuum> grid_;

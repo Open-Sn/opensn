@@ -14,7 +14,6 @@ namespace opensn
 {
 
 // experimental, to be moved to a higher level header file
-inline constexpr std::uint32_t max_dof = 8;
 static constexpr size_t simd_width =
 #if defined(__AVX512F__)
   8; // 8 lanes (512-bit, doubles)
@@ -48,14 +47,9 @@ public:
                 size_t max_angleset_size,
                 bool use_gpus);
 
-  ~AAHSweepChunk() override;
-
   void Sweep(AngleSet& angle_set) override;
 
 protected:
-  void CreateDeviceLevelVector();
-  void DestroyDeviceLevelVector();
-
   void CPUSweep(AngleSet& angle_set);
   void GPUSweep(AngleSet& angle_set);
 

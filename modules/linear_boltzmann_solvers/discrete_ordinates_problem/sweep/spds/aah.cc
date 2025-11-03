@@ -16,7 +16,8 @@ namespace opensn
 AAH_SPDS::AAH_SPDS(int id,
                    const Vector3& omega,
                    const std::shared_ptr<MeshContinuum> grid,
-                   bool allow_cycles)
+                   bool allow_cycles,
+                   bool use_gpus)
   : SPDS(omega, grid), id_(id), allow_cycles_(allow_cycles)
 {
   CALI_CXX_MARK_SCOPE("AAH_SPDS::AAH_SPDS");
@@ -87,6 +88,10 @@ AAH_SPDS::AAH_SPDS(int id,
   // Generate location-to-location dependencies
   global_dependencies_.resize(opensn::mpi_comm.size());
   CommunicateLocationDependencies(location_dependencies_, global_dependencies_);
+
+  // Copy levelized spls data to GPU
+  if (use_gpus)
+    CopySPLSDataOnDevice();
 }
 
 void
@@ -211,6 +216,23 @@ AAH_SPDS::BuildGlobalSweepTDG()
         stdg.item_id.push_back(global_linear_sweep_order[k]);
     global_sweep_planes_.push_back(stdg);
   }
+}
+
+#ifndef __OPENSN_USE_CUDA__
+void
+AAH_SPDS::CopySPLSDataOnDevice()
+{
+}
+
+void
+AAH_SPDS::FreeDeviceData()
+{
+}
+#endif
+
+AAH_SPDS::~AAH_SPDS()
+{
+  FreeDeviceData();
 }
 
 } // namespace opensn

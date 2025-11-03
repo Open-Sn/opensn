@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <cstdint>
+#include <vector>
 
 namespace opensn
 {
@@ -18,6 +19,11 @@ class MeshCarrier : public Carrier
 public:
   /// Constructor.
   MeshCarrier(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrier& outflow);
+
+  /// Total number of cell nodes in the mesh.
+  std::uint64_t num_nodes_total;
+  /// Vector storing offset for save angular flux for each cell.
+  std::vector<std::uint64_t> saved_psi_offset;
 
 protected:
   /// Compute the memory size (in bytes) to allocate on the GPU to copy the mesh data over.
