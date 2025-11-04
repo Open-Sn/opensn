@@ -1117,5 +1117,31 @@
         "abs_tol": 0.0001
       }
     ]
+  },
+  {
+    "file": "transport_2d_gmsh_blk_bnds_v2.py",
+    "comment": "Test that blocks and boundaries can be used when reading a gmsh mesh file (v2)",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Sum=",
+        "goldvalue": 0.14766,
+        "abs_tol": 0.00001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_gmsh_blk_bnds_v4.py",
+    "comment": "Test that blocks and boundaries can be used when reading a gmsh mesh file (v4)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Sum=",
+        "goldvalue": 0.14766,
+        "abs_tol": 0.00001
+      }
+    ]
   }
 ]
