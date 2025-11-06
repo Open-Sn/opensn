@@ -514,6 +514,25 @@
     ]
   },
   {
+    "file": "transport_3d_1b_exodus.py",
+    "comment": "3D LinearBSolver Test - PWLD - apply BCs on a mesh read from an exodusII file",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.52528e-1,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 4.59362e-04,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_1b_ortho_gpu.py",
     "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
     "requires_gpu": "True",
