@@ -5,7 +5,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
@@ -655,7 +654,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
         const size_t master_dir_id = so_grouping.front();
         const auto& omega = quadrature->omegas[master_dir_id];
         const auto new_swp_order = std::make_shared<AAH_SPDS>(
-          id, omega, this->grid_, quadrature_allow_cycles_map_[quadrature]);
+          id, omega, this->grid_, quadrature_allow_cycles_map_[quadrature], use_gpus_);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
         ++id;
       }
@@ -786,7 +785,11 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
   // Build FLUDS templates
   quadrature_fluds_commondata_map_.clear();
-  if (sweep_type_ == "AAH")
+  if (sweep_type_ == "AAH" && use_gpus_)
+  {
+    CreateFLUDSCommonDataForDevice();
+  }
+  else if (sweep_type_ == "AAH")
   {
     for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
     {
@@ -812,6 +815,25 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
   log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
 }
+
+#ifndef __OPENSN_USE_CUDA__
+void
+DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice : OPENSN_WITH_CUDA not enabled.");
+}
+
+std::shared_ptr<FLUDS>
+DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
+                                               std::size_t num_angles,
+                                               const FLUDSCommonData& common_data)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
+  return std::shared_ptr<FLUDS>();
+}
+#endif
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
 DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshContinuum> grid,
@@ -1021,10 +1043,18 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
 
       if (sweep_type_ == "AAH")
       {
-        std::shared_ptr<FLUDS> fluds =
-          std::make_shared<AAH_FLUDS>(gs_num_grps,
-                                      angle_indices.size(),
-                                      dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
+        std::shared_ptr<FLUDS> fluds;
+        if (use_gpus_)
+        {
+          fluds = CreateFLUDSForDevice(gs_num_grps, angle_indices.size(), fluds_common_data);
+        }
+        else
+        {
+          fluds = std::make_shared<AAH_FLUDS>(
+            gs_num_grps,
+            angle_indices.size(),
+            dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
+        }
 
         auto angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
                                                         gs_num_grps,

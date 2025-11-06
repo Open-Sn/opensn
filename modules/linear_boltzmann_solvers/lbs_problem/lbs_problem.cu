@@ -43,32 +43,32 @@ LBSProblem::ResetGPUCarriers()
   // delete carriers
   if (carriers_[0])
   {
-    TotalXSCarrier* xs_ptr = reinterpret_cast<TotalXSCarrier*>(carriers_[0]);
+    auto* xs_ptr = reinterpret_cast<TotalXSCarrier*>(carriers_[0]);
     delete xs_ptr;
     carriers_[0] = nullptr;
   }
   if (carriers_[1])
   {
-    OutflowCarrier* of_ptr = reinterpret_cast<OutflowCarrier*>(carriers_[1]);
+    auto* of_ptr = reinterpret_cast<OutflowCarrier*>(carriers_[1]);
     delete of_ptr;
     carriers_[1] = nullptr;
   }
   if (carriers_[2])
   {
-    MeshCarrier* msh_ptr = reinterpret_cast<MeshCarrier*>(carriers_[2]);
+    auto* msh_ptr = reinterpret_cast<MeshCarrier*>(carriers_[2]);
     delete msh_ptr;
     carriers_[2] = nullptr;
   }
   // delete pinners
   if (pinners_[0])
   {
-    MemoryPinner<double>* src = reinterpret_cast<MemoryPinner<double>*>(pinners_[0]);
+    auto* src = reinterpret_cast<MemoryPinner<double>*>(pinners_[0]);
     delete src;
     pinners_[0] = nullptr;
   }
   if (pinners_[1])
   {
-    MemoryPinner<double>* phi = reinterpret_cast<MemoryPinner<double>*>(pinners_[1]);
+    auto* phi = reinterpret_cast<MemoryPinner<double>*>(pinners_[1]);
     delete phi;
     pinners_[1] = nullptr;
   }

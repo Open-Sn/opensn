@@ -109,6 +109,11 @@ public:
   static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
 
 private:
+  void CreateFLUDSCommonDataForDevice();
+  std::shared_ptr<FLUDS> CreateFLUDSForDevice(std::size_t num_groups,
+                                              std::size_t num_angles,
+                                              const FLUDSCommonData& common_data);
+
   /// Computes the number of moments for the given mesher types
   void ValidateAndComputeScatteringMoments();
 

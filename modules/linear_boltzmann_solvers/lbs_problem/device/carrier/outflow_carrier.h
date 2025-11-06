@@ -12,8 +12,8 @@ namespace opensn
 {
 
 /**
- * @brief Object managing outflow data on GPU.
- * @details This class manages memory for storing group-wise outflow data for each boundary face and
+ * \brief Object managing outflow data on GPU.
+ * \details This class manages memory for storing group-wise outflow data for each boundary face and
  * provides cleaner way to transfer the data back to the host.
  */
 class OutflowCarrier : public Carrier
@@ -33,12 +33,12 @@ public:
   std::uint64_t GetOffset(const std::uint32_t& cell_local_idx, const std::uint32_t& face_idx);
 
   /**
-   * @brief Maps boundary faces to their outflow memory offsets.
-   * @details This map associates each boundary face, which is identified by a tuple of cell local
+   * \brief Maps boundary faces to their outflow memory offsets.
+   * \details This map associates each boundary face, which is identified by a tuple of cell local
    * index and face index in the cell, with its corresponding offset in the contiguous outflow data
    * stored on the device.
    *
-   * @note Non-boundary faces are not included in this map.
+   * \note Non-boundary faces are not included in this map.
    */
   std::map<std::uint64_t, std::uint64_t> outflow_map;
   /// Number of groups.

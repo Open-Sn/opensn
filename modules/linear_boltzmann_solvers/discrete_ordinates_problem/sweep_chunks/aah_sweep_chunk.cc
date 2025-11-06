@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: MIT
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "caliper/cali.h"
+
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {
@@ -43,9 +47,7 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
     max_level_size_(max_level_size),
     use_gpus_(use_gpus)
 {
-  if (use_gpus_)
-    CreateDeviceLevelVector();
-  else
+  if (!use_gpus_)
   {
     cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_Generic;
 
@@ -327,21 +329,6 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
 {
   throw std::runtime_error("OpenSn was not compiled with CUDA.\n");
 }
-
-void
-AAHSweepChunk::CreateDeviceLevelVector()
-{
-}
-
-void
-AAHSweepChunk::DestroyDeviceLevelVector()
-{
-}
 #endif // __OPENSN_USE_CUDA__
-
-AAHSweepChunk::~AAHSweepChunk()
-{
-  DestroyDeviceLevelVector();
-}
 
 } // namespace opensn

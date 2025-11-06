@@ -20,8 +20,7 @@ AngleSet::ResetMemoryPin()
 {
   if (memory_pin_)
   {
-    MemoryPinner<std::uint32_t>* directions =
-      reinterpret_cast<MemoryPinner<std::uint32_t>*>(memory_pin_);
+    auto* directions = reinterpret_cast<MemoryPinner<std::uint32_t>*>(memory_pin_);
     delete directions;
     memory_pin_ = nullptr;
   }

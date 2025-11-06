@@ -326,8 +326,8 @@ protected:
   std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
 
   /**
-   * @brief Data carriers for necessary data to run the sweep on GPU.
-   * @details These objects manage GPU memory allocation automatically, organize cross-section,
+   * \brief Data carriers for necessary data to run the sweep on GPU.
+   * \details These objects manage GPU memory allocation automatically, organize cross-section,
    * outflow, and mesh data into contiguous memory on the CPU, and handle copying it to the GPU.
    *
    * There are 3 carriers, respectively for cross sections, outflow and mesh.
@@ -344,6 +344,9 @@ protected:
   static void CheckCapableDevices();
 
 public:
+  /// Max number of DOFs per cell that the sweep kernel on GPU can handle.
+  static constexpr std::uint32_t max_dofs_gpu = 10;
+
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
 

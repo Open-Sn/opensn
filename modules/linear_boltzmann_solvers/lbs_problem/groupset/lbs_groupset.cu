@@ -10,7 +10,7 @@ namespace opensn
 void
 LBSGroupset::InitializeGPUCarriers()
 {
-  QuadratureCarrier* quad = new QuadratureCarrier(*this);
+  auto* quad = new QuadratureCarrier(*this);
   quad_carrier = quad;
 }
 
@@ -19,7 +19,7 @@ LBSGroupset::ResetGPUCarriers()
 {
   if (quad_carrier)
   {
-    QuadratureCarrier* quad = reinterpret_cast<QuadratureCarrier*>(quad_carrier);
+    auto* quad = reinterpret_cast<QuadratureCarrier*>(quad_carrier);
     delete quad;
     quad_carrier = nullptr;
   }

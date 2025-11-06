@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include <format>
 
 namespace opensn
 {
@@ -27,6 +28,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   const std::vector<UnitCellMatrices>& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const SpatialDiscretization& discretization = lbs_problem.GetSpatialDiscretization();
   alloc_size += mesh.local_cells.size() * sizeof(std::uint64_t);
+  saved_psi_offset.reserve(mesh.local_cells.size());
   // compute size for each cell in the mesh
   for (const Cell& cell : mesh.local_cells)
   {
@@ -37,6 +39,8 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     // pointer to total cross sections
     alloc_size += sizeof(std::uintptr_t);
     // phi address
+    alloc_size += sizeof(std::uint64_t);
+    // offset for saved angular flux
     alloc_size += sizeof(std::uint64_t);
     // G and M matrix
     const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
@@ -86,11 +90,22 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   // copy data of each cell
   std::uint64_t* offset_cell_data = reinterpret_cast<std::uint64_t*>(data);
   data = reinterpret_cast<char*>(offset_cell_data + num_cells);
+  std::uint64_t saved_psi_index = 0;
   for (char* cell_data = data; const Cell& cell : mesh.local_cells)
   {
     std::size_t cell_num_faces = cell.faces.size();
     const CellMapping& cell_mapping = discretization.GetCellMapping(cell);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
+    // check for cell num nodes compatibility with sweep kernel
+    if (cell_num_nodes > LBSProblem::max_dofs_gpu)
+    {
+      throw std::runtime_error(
+        std::format("GPU acceleration error: Cell local ID {} has {} DOFs which exceeds the "
+                    "maximum supported DOFs per cell on GPU: {}.",
+                    cell.local_id,
+                    cell_num_nodes,
+                    LBSProblem::max_dofs_gpu));
+    }
     // record current pointer offset
     *(offset_cell_data++) = cell_data - data;
     // number of faces and nodes (num_node = num_dof!)
@@ -112,6 +127,12 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     auto phi_address = cell_transport_view.MapDOF(0, 0, 0);
     *(phi_address_data++) = phi_address;
     cell_data = reinterpret_cast<char*>(phi_address_data);
+    // offset for saved angular flux
+    std::uint64_t* saved_psi_index_data = reinterpret_cast<std::uint64_t*>(cell_data);
+    *(saved_psi_index_data++) = saved_psi_index;
+    saved_psi_offset.push_back(saved_psi_index);
+    saved_psi_index += cell_num_nodes;
+    cell_data = reinterpret_cast<char*>(saved_psi_index_data);
     // GM matrices (G and M matrices are combined into one single Matrix of double4)
     const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
     const DenseMatrix<Vector3>& G = unit_matrices.intV_shapeI_gradshapeJ;
@@ -196,6 +217,8 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     // put cell data pointer as face data end
     cell_data = face_data;
   }
+  // store total number of cell nodes
+  num_nodes_total = saved_psi_index;
 }
 
 } // namespace opensn

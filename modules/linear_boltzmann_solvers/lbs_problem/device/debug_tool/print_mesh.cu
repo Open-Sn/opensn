@@ -64,6 +64,7 @@ PrintCell(CellView& cell)
   std::printf(INDENT(2) "density: %lf\n", cell.density);
   std::printf(INDENT(2) "total_xs_ptr: %p\n", cell.total_xs);
   std::printf(INDENT(2) "phi-address: %" PRIu64 "\n", cell.phi_address);
+  std::printf(INDENT(2) "save_psi_index: %" PRIu64 "\n", cell.save_psi_index);
   // GM matrix
   std::printf(INDENT(2) "G Matrix:\n");
   for (std::uint32_t i = 0; i < cell.num_nodes; ++i)
