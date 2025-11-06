@@ -34,6 +34,9 @@ target_include_directories(__init__
     ${PROJECT_SOURCE_DIR}/external
     ${MPI4PY_INCLUDE_DIR}
 )
+if (OPENSN_WITH_CUDA)
+    target_compile_definitions(__init__ PRIVATE __OPENSN_USE_CUDA__)
+endif()
 target_link_libraries(__init__
     PRIVATE
     libopensn

@@ -16,6 +16,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn import can_support_gpus
     from pyopensn.mesh import FromFileMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
@@ -26,6 +27,8 @@ if __name__ == "__main__":
     num_procs = 1
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
+    if not can_support_gpus:
+        sys.exit("OpenSn was built without GPU support.")
 
     # Setup mesh
     meshgen = FromFileMeshGenerator(

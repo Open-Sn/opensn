@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstdint>  // std::uint32_t
+#include <cstdio>   // std::printf
 
 #include "exception.hpp"  // cuda::check_cuda_error
 
@@ -19,6 +20,18 @@ inline std::uint32_t get_num_gpus(void) {
     int count;
     cuda::check_cuda_error(::cudaGetDeviceCount(&count));
     return static_cast<std::uint32_t>(count);
+}
+
+/** @brief Get the current device number.*/
+inline int get_current_device(void) {
+    int device_num;
+    cuda::check_cuda_error(::cudaGetDevice(&device_num));
+    return device_num;
+}
+
+/** @brief Set current GPU based on device number.*/
+inline void set_device(int device_num) {
+    cuda::check_cuda_error(::cudaSetDevice(device_num));
 }
 
 }  // namespace caribou

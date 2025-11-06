@@ -279,7 +279,6 @@ target_link_libraries(libopensn
     MPI::MPI_CXX
 )
 if (OPENSN_WITH_CUDA)
-  target_link_libraries(libopensncuda PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
   target_link_libraries(libopensn INTERFACE libopensncuda)
 endif()
 

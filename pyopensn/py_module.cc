@@ -14,6 +14,11 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   // Metadata
   pyopensn.doc() = "Python interface for OpenSn.";
   pyopensn.attr("__version__") = PROJECT_VERSION;
+#ifdef __OPENSN_USE_CUDA__
+  pyopensn.attr("can_support_gpus") = true;
+#else
+  pyopensn.attr("can_support_gpus") = false;
+#endif // __OPENSN_USE_CUDA__
   // Environment
   if (not PyEnv::p_default_env)
   {
@@ -32,4 +37,7 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   py_ffunc(pyopensn);
   py_response(pyopensn);
   py_solver(pyopensn);
+#ifdef __OPENSN_USE_CUDA__
+  py_device(pyopensn);
+#endif // __OPENSN_USE_CUDA__
 }

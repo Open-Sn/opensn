@@ -238,4 +238,10 @@ void WrapVolumetricSource(py::module& src);
 void py_xs(py::module& pyopensn);
 void WrapMultiGroupXS(py::module& xs);
 
+#ifdef __OPENSN_USE_CUDA__
+/// Wrap the CUDA/ROCm components of OpenSn.
+void py_device(py::module& pyopensn);
+void WrapDeviceSettings(py::module& device);
+#endif // __OPENSN_USE_CUDA__
+
 } // namespace opensn

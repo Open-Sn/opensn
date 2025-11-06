@@ -397,3 +397,26 @@ Argument vector
 
    context.InitializeWithArgv
    context.Finalize
+
+GPU configuration
+^^^^^^^^^^^^^^^^^
+
+.. important::
+
+   This API is only available when ``pyopensn.can_support_gpus`` is true.
+
+.. note::
+
+   The GPU assignment functionality is intended for use on single-user workstations.
+
+   It should not be used for production runs on large systems. When multiple GPUs are available on a
+   node, the mapping between MPI ranks and GPUs should be handled by the job scheduler.
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   device.get_device_count
+   device.get_current_device
+   device.set_device
