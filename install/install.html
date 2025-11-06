@@ -153,16 +153,34 @@ first fork the <strong>OpenSn</strong> repository then clone your fork.</p>
 </section>
 <section id="install-dependencies">
 <h2>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading"></a></h2>
-<p>Dependencies can be installed to <code class="docutils literal notranslate"><span class="pre">/path/to/dependencies/directory</span></code> with CMake
-as follows:</p>
+<p>You can install all required dependencies for <strong>OpenSn</strong> into a dedicated
+directory using <strong>CMake</strong>:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build_deps<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build_deps
-cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w">  </span><span class="se">\</span>
-<span class="w">    </span>/path/to/opensn/tools/dependencies
+cmake<span class="w"> </span>-DCMAKE_INSTALL_PREFIX<span class="o">=</span>/path/to/dependencies/directory<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>/path/to/opensn/tools/dependencies
 make<span class="w"> </span>-j
 <span class="nb">cd</span><span class="w"> </span>..
 rm<span class="w"> </span>-rf<span class="w"> </span>build_deps
 </pre></div>
 </div>
+<p>During this step, <strong>CMake</strong> automatically searches for compatible system
+installations of the required packages. Any missing dependencies will be
+downloaded, built, and installed into the specified directory.</p>
+<p>When the process completes, a helper script named <code class="docutils literal notranslate"><span class="pre">set_opensn_env.sh</span></code>
+is generated in the installation directory:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>/path/to/dependencies/directory/bin/set_opensn_env.sh
+</pre></div>
+</div>
+<p>This script updates your environment so that future <strong>CMake</strong> builds can
+locate the installed libraries and headers. To make these settings
+persistent, add the following line to your shell’s startup file (for
+example, <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.zshrc</span></code>):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>/path/to/dependencies/directory/bin/set_opensn_env.sh
+</pre></div>
+</div>
+<p>Sourcing this script ensures that <strong>OpenSn</strong> uses the correct versions
+of all required dependencies. This setup is recommended for both end
+users and developers working on the OpenSn code base.</p>
 </section>
 <section id="configure-and-build-opensn">
 <h2>Configure and build OpenSn<a class="headerlink" href="#configure-and-build-opensn" title="Link to this heading"></a></h2>
