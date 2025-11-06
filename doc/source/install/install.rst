@@ -56,17 +56,41 @@ To clone your fork of **OpenSn**:
 Install dependencies
 --------------------
 
-Dependencies can be installed to ``/path/to/dependencies/directory`` with CMake
-as follows:
+You can install all required dependencies for **OpenSn** into a dedicated
+directory using **CMake**:
 
 .. code-block:: shell
 
    mkdir build_deps && cd build_deps
-   cmake -DCMAKE_INSTALL_PREFIX=/path/to/dependencies/directory  \
-       /path/to/opensn/tools/dependencies
+   cmake -DCMAKE_INSTALL_PREFIX=/path/to/dependencies/directory \
+         /path/to/opensn/tools/dependencies
    make -j
    cd ..
    rm -rf build_deps
+
+During this step, **CMake** automatically searches for compatible system
+installations of the required packages. Any missing dependencies will be
+downloaded, built, and installed into the specified directory.
+
+When the process completes, a helper script named ``set_opensn_env.sh``
+is generated in the installation directory:
+
+.. code-block:: shell
+
+   /path/to/dependencies/directory/bin/set_opensn_env.sh
+
+This script updates your environment so that future **CMake** builds can
+locate the installed libraries and headers. To make these settings
+persistent, add the following line to your shell's startup file (for
+example, ``~/.bashrc`` or ``~/.zshrc``):
+
+.. code-block:: shell
+
+   source /path/to/dependencies/directory/bin/set_opensn_env.sh
+
+Sourcing this script ensures that **OpenSn** uses the correct versions
+of all required dependencies. This setup is recommended for both end
+users and developers working on the OpenSn code base.
 
 Configure and build OpenSn
 --------------------------
