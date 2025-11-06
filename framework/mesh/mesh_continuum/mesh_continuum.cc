@@ -661,6 +661,23 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk
 }
 
 void
+MeshContinuum::SetUniformBoundaryID(const std::string& boundary_name)
+{
+  auto bndry_id = MakeBoundaryID(boundary_name);
+  for (auto& cell : local_cells)
+  {
+    for (auto& face : cell.faces)
+    {
+      if (face.has_neighbor)
+        continue;
+      face.neighbor_id = bndry_id;
+    }
+  }
+  GetBoundaryIDMap()[bndry_id] = boundary_name;
+  GetBoundaryNameMap()[boundary_name] = bndry_id;
+}
+
+void
 MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
                                               const std::string& boundary_name,
                                               const bool sense)

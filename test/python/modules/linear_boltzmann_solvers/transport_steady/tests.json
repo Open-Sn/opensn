@@ -1162,5 +1162,18 @@
         "abs_tol": 0.00001
       }
     ]
+  },
+  {
+    "file": "transport_3d_uniform_bnd.py",
+    "comment": "Test assignment of a boundary name to all external faces",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Sum=",
+        "goldvalue": 4.10588,
+        "abs_tol": 0.00001
+      }
+    ]
   }
 ]

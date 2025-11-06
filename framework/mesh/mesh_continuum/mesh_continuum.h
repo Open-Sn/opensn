@@ -133,6 +133,9 @@ public:
   /// Sets block IDs using a logical volume.
   void SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk_id, bool sense);
 
+  /// Assign all boundary faces to a single name
+  void SetUniformBoundaryID(const std::string& boundary_name);
+
   /// Sets boundary ids using a logical volume.
   void SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
                                       const std::string& boundary_name,

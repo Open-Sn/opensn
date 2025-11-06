@@ -79,6 +79,19 @@ WrapMesh(py::module& mesh)
     py::arg("inside")
   );
   mesh_continuum.def(
+    "SetUniformBoundaryID",
+    &MeshContinuum::SetUniformBoundaryID,
+    R"(
+    Assign all boundary faces to a single name
+
+    Parameters
+    ----------
+    boundary_name: str
+        Name of the boundary to assign to all boundary faces
+    )",
+    py::arg("boundary_name")
+  );
+  mesh_continuum.def(
     "SetBoundaryIDFromLogicalVolume",
     &MeshContinuum::SetBoundaryIDFromLogicalVolume,
     R"(
