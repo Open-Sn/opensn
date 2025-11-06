@@ -4,6 +4,7 @@
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include <cstdint>
 #include <fstream>
 
 namespace opensn
@@ -16,6 +17,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   const std::string node_section_name = "$Nodes";
   const std::string elements_section_name = "$Elements";
   const std::string format_section_name = "$MeshFormat";
+  const std::string physical_names_section_name = "$PhysicalNames";
 
   // Opening file
   std::ifstream file(options.file_name);
@@ -38,7 +40,50 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   auto mesh = std::make_shared<UnpartitionedMesh>();
   log.Log() << "Making unpartitioned mesh from Gmsh file " << options.file_name << " (format v2.2)";
 
+  // Read physical section name
+  file.seekg(0);
+  bool has_physical_names_section = false;
+  while (std::getline(file, file_line))
+    if (physical_names_section_name == file_line)
+    {
+      has_physical_names_section = true;
+      break;
+    }
+
+  // map from physical name ID to [dim, physical name]
+  std::map<int, std::tuple<int, std::string>> physical_names;
+  if (has_physical_names_section)
+  {
+    std::getline(file, file_line);
+    iss = std::istringstream(file_line);
+    int num_physical_names = 0;
+    if (not(iss >> num_physical_names))
+      throw std::logic_error(fname + ": Failed to read the number of nodes.");
+
+    for (int n = 0; n < num_physical_names; n++)
+    {
+      std::getline(file, file_line);
+      iss = std::istringstream(file_line);
+
+      int dim = 0;
+      if (not(iss >> dim))
+        throw std::logic_error(fname + ": Failed to read physical name dimension.");
+
+      int phys_name_id = 0;
+      if (not(iss >> phys_name_id))
+        throw std::logic_error(fname + ": Failed to read physical name ID.");
+
+      std::string name;
+      if (not(iss >> name))
+        throw std::logic_error(fname + ": Failed to read physical name.");
+      name = name.substr(1, name.length() - 2);
+
+      physical_names[phys_name_id] = {dim, name};
+    }
+  }
+
   // Read node data
+  file.clear();
   file.seekg(0);
   while (std::getline(file, file_line))
     if (node_section_name == file_line)
@@ -302,12 +347,45 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   file.close();
 
+  // create boundary names and IDs
   unsigned int dimension = (mesh_is_2D) ? 2 : 3;
+  for (auto& [id, e] : physical_names)
+  {
+    if (std::get<0>(e) == dimension - 1)
+    {
+      auto name = std::get<1>(e);
+      mesh->AddBoundary(id, name);
+    }
+  }
+
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
+
+  // remap boundary cells onto cell faces
+  std::map<std::set<uint64_t>, int> bnd_cell_to_bnd_id_map;
+  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  {
+    std::set<uint64_t> key;
+    for (auto& vid : bnd_cell->vertex_ids)
+      key.insert(vid);
+    bnd_cell_to_bnd_id_map[key] = bnd_cell->block_id;
+  }
+  auto& raw_cells = mesh->GetRawCells();
+  for (auto& cell_ptr : raw_cells)
+    for (auto& face : cell_ptr->faces)
+      if (not face.has_neighbor)
+      {
+        std::set<uint64_t> key;
+        for (auto& vid : face.vertex_ids)
+          key.insert(vid);
+
+        auto it = bnd_cell_to_bnd_id_map.find(key);
+        if (it != bnd_cell_to_bnd_id_map.end())
+          face.neighbor = it->second;
+      }
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
