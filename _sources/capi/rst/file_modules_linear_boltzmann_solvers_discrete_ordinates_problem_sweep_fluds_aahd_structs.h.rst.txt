@@ -1,0 +1,91 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h:
+
+File aahd_structs.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_structs.h``)
+-------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``limits``
+
+- ``ostream``
+
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
+- ``stdexcept``
+
+- ``tuple``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds_common_data.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_std`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___directed_edge_node`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___face_node`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___node_index`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___non_local_face_node`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespacestd_1a38a7ee27156f0e5bb69be8be630258c0`
+
+- :ref:`exhale_function_namespacestd_1a61be1731bebc888682d8ba4f2ab4c9d2`
+
+- :ref:`exhale_function_namespacestd_1a7ef16e0b23291ac3cdf07c9adfa0c250`
+

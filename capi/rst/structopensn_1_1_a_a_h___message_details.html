@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct FloodLevel &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Struct AAH_MessageDetails &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -72,7 +72,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Struct FloodLevel</li>
+      <li class="breadcrumb-item active">Struct AAH_MessageDetails</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -81,29 +81,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-floodlevel">
-<span id="exhale-struct-structopensn-1-1-flood-level"></span><h1>Struct FloodLevel<a class="headerlink" href="#struct-floodlevel" title="Link to this heading"></a></h1>
+  <section id="struct-aah-messagedetails">
+<span id="exhale-struct-structopensn-1-1-a-a-h-message-details"></span><h1>Struct AAH_MessageDetails<a class="headerlink" href="#struct-aah-messagedetails" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-fluds-h"><span class="std std-ref">File aahd_fluds.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-communicators-aah-async-comm-h"><span class="std std-ref">File aah_async_comm.h</span></a></p></li>
 </ul>
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10FloodLevelE">
-<span class="target" id="structopensn_1_1_flood_level"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FloodLevel</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10FloodLevelE" title="Link to this definition"></a><br /></dt>
-<dd><p>Object storing pointers to angular fluxes for a given <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> level. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18AAH_MessageDetailsE">
+<span class="target" id="structopensn_1_1_a_a_h___message_details"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAH_MessageDetails</span></span></span><a class="headerlink" href="#_CPPv4N6opensn18AAH_MessageDetailsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Message details for each message passing. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10FloodLevel5cellsE">
-<span class="target" id="structopensn_1_1_flood_level_1ac7898474aae02ddee70fe22f3a46ddbe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_flood_cell.html#_CPPv4N6opensn9FloodCellE" title="opensn::FloodCell"><span class="n"><span class="pre">FloodCell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cells</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10FloodLevel5cellsE" title="Link to this definition"></a><br /></dt>
-<dd><p>Map from cell index in level to the data of the cell faces. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18AAH_MessageDetails4peerE">
+<span class="target" id="structopensn_1_1_a_a_h___message_details_1ad02e44275ea94697be27a8a94cea0281"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">peer</span></span></span><a class="headerlink" href="#_CPPv4N6opensn18AAH_MessageDetails4peerE" title="Link to this definition"></a><br /></dt>
+<dd><p>MPI rank of the peer partition. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10FloodLevel18precomputed_offsetE">
-<span class="target" id="structopensn_1_1_flood_level_1a7f919a756a4a40568ffa0777c3250a64"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">precomputed_offset</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10FloodLevel18precomputed_offsetE" title="Link to this definition"></a><br /></dt>
-<dd><p>Precomputed offset index into contiguous memory for incoming flux. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18AAH_MessageDetails4sizeE">
+<span class="target" id="structopensn_1_1_a_a_h___message_details_1a609a2fdb4829ffeb77f62784e35142ee"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn18AAH_MessageDetails4sizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Size of the message (in number of doubles). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18AAH_MessageDetails9block_posE">
+<span class="target" id="structopensn_1_1_a_a_h___message_details_1a11d54d261518e74eff545f47d12a36fd"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block_pos</span></span></span><a class="headerlink" href="#_CPPv4N6opensn18AAH_MessageDetails9block_posE" title="Link to this definition"></a><br /></dt>
+<dd><p>Position of the block in the data buffer. </p>
 </dd></dl>
 
 </div>

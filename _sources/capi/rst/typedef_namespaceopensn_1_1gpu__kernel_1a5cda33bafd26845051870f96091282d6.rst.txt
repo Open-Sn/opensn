@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6:
+
+Typedef opensn::gpu_kernel::SweepFunc
+=====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::gpu_kernel::SweepFunc
+   :project: opensn

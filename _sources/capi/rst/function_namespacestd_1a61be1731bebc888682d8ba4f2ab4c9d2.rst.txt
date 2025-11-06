@@ -1,0 +1,14 @@
+.. _exhale_function_namespacestd_1a61be1731bebc888682d8ba4f2ab4c9d2:
+
+Function std::operator<<(ostream&, const opensn::AAHD_FaceNode&)
+================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: std::operator<<(ostream&, const opensn::AAHD_FaceNode&)
+   :project: opensn

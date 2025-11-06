@@ -98,8 +98,8 @@
 <span class="p">{</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * @brief Object managing outflow data on GPU.</span>
-<span class="cm"> * @details This class manages memory for storing group-wise outflow data for each boundary face and</span>
+<span class="cm"> * \brief Object managing outflow data on GPU.</span>
+<span class="cm"> * \details This class manages memory for storing group-wise outflow data for each boundary face and</span>
 <span class="cm"> * provides cleaner way to transfer the data back to the host.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowCarrier</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Carrier</span>
@@ -119,12 +119,12 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetOffset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_idx</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * @brief Maps boundary faces to their outflow memory offsets.</span>
-<span class="cm">   * @details This map associates each boundary face, which is identified by a tuple of cell local</span>
+<span class="cm">   * \brief Maps boundary faces to their outflow memory offsets.</span>
+<span class="cm">   * \details This map associates each boundary face, which is identified by a tuple of cell local</span>
 <span class="cm">   * index and face index in the cell, with its corresponding offset in the contiguous outflow data</span>
 <span class="cm">   * stored on the device.</span>
 <span class="cm">   *</span>
-<span class="cm">   * @note Non-boundary faces are not included in this map.</span>
+<span class="cm">   * \note Non-boundary faces are not included in this map.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outflow_map</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Number of groups.</span>

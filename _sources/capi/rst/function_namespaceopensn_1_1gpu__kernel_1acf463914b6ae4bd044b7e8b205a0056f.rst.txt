@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1acf463914b6ae4bd044b7e8b205a0056f:
+
+Template Function opensn::gpu_kernel::ComputePhi
+================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::ComputePhi(double *, CellView&, DirectionView&, const unsigned int&, const std::uint32_t&, const Arguments&)
+   :project: opensn

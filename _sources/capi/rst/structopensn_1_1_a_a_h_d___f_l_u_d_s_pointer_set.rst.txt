@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set:
+
+Struct AAHD_FLUDSPointerSet
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAHD_FLUDSPointerSet
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

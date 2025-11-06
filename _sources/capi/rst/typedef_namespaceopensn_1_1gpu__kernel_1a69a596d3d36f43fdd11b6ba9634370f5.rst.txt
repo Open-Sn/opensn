@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1_1gpu__kernel_1a69a596d3d36f43fdd11b6ba9634370f5:
+
+Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange
+======================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::gpu_kernel::MakeIndexSequenceFromRange
+   :project: opensn

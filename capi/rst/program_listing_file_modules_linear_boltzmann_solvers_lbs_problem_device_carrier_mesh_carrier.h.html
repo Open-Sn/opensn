@@ -94,6 +94,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -104,6 +105,11 @@
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Constructor.</span>
 <span class="w">  </span><span class="n">MeshCarrier</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span><span class="w"> </span><span class="n">TotalXSCarrier</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="n">OutflowCarrier</span><span class="o">&amp;</span><span class="w"> </span><span class="n">outflow</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Total number of cell nodes in the mesh.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_nodes_total</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Vector storing offset for save angular flux for each cell.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">saved_psi_offset</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Compute the memory size (in bytes) to allocate on the GPU to copy the mesh data over.</span>

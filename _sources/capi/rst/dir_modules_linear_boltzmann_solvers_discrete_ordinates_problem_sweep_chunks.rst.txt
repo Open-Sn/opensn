@@ -12,6 +12,11 @@ Directory sweep_chunks
 
 *Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks``
 
+Subdirectories
+--------------
+
+- :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel`
+
 
 Files
 -----

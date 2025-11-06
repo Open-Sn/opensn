@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_a_a_h___message_details:
+
+Struct AAH_MessageDetails
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAH_MessageDetails
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

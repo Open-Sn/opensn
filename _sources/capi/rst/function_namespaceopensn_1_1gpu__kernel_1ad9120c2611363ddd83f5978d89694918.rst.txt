@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918:
+
+Template Function opensn::gpu_kernel::ComputeSurfaceIntegral
+============================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::ComputeSurfaceIntegral(double *, double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const Arguments&)
+   :project: opensn

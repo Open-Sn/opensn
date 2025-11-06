@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332:
+
+Function opensn::gpu_kernel::WritePsiToFludsAndOutflow
+======================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::WritePsiToFludsAndOutflow(double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const unsigned int&, const Arguments&)
+   :project: opensn

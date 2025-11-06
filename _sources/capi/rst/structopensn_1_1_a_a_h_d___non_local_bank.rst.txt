@@ -1,7 +1,7 @@
-.. _exhale_struct_structopensn_1_1_flood_cell:
+.. _exhale_struct_structopensn_1_1_a_a_h_d___non_local_bank:
 
-Struct FloodCell
-================
+Struct AAHD_NonLocalBank
+========================
 
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
 
@@ -12,14 +12,14 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public std::vector< FloodFace >``
+- ``public opensn::AAHD_Bank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___bank`)
 
 
 Struct Documentation
 --------------------
 
 
-.. doxygenstruct:: opensn::FloodCell
+.. doxygenstruct:: opensn::AAHD_NonLocalBank
    :project: opensn
    :members:
    :protected-members:

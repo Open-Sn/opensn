@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000:
+
+Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap
+=====================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::MakeSweepKernelSpecificationMap(std::index_sequence<IntSequence...>)
+   :project: opensn

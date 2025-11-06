@@ -12,6 +12,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::AAHD_FLUDS`` (:ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s`)
 - ``public opensn::AAH_FLUDS`` (:ref:`exhale_class_classopensn_1_1_a_a_h___f_l_u_d_s`)
 - ``public opensn::CBC_FLUDS`` (:ref:`exhale_class_classopensn_1_1_c_b_c___f_l_u_d_s`)
 

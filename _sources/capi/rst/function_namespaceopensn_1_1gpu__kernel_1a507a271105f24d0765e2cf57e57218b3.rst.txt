@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3:
+
+Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl
+====================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl(std::index_sequence<IntSeq...>)
+   :project: opensn

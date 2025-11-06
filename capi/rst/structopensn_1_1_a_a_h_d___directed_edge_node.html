@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct FloodCell &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Struct AAHD_DirectedEdgeNode &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -72,7 +72,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Struct FloodCell</li>
+      <li class="breadcrumb-item active">Struct AAHD_DirectedEdgeNode</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -81,26 +81,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-floodcell">
-<span id="exhale-struct-structopensn-1-1-flood-cell"></span><h1>Struct FloodCell<a class="headerlink" href="#struct-floodcell" title="Link to this heading"></a></h1>
+  <section id="struct-aahd-directededgenode">
+<span id="exhale-struct-structopensn-1-1-a-a-h-d-directed-edge-node"></span><h1>Struct AAHD_DirectedEdgeNode<a class="headerlink" href="#struct-aahd-directededgenode" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-fluds-h"><span class="std std-ref">File aahd_fluds.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-structs-h"><span class="std std-ref">File aahd_structs.h</span></a></p></li>
 </ul>
-<section id="inheritance-relationships">
-<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
-<section id="base-type">
-<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">std::vector&lt;</span> <span class="pre">FloodFace</span> <span class="pre">&gt;</span></code></p></li>
-</ul>
-</section>
-</section>
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9FloodCellE">
-<span class="target" id="structopensn_1_1_flood_cell"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FloodCell</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_flood_face.html#_CPPv4N6opensn9FloodFaceE" title="opensn::FloodFace"><span class="n"><span class="pre">FloodFace</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn9FloodCellE" title="Link to this definition"></a><br /></dt>
-<dd><p>Object storing pointers to angular fluxes for a given cell. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21AAHD_DirectedEdgeNodeE">
+<span class="target" id="structopensn_1_1_a_a_h_d___directed_edge_node"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_DirectedEdgeNode</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21AAHD_DirectedEdgeNodeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Node on a face (directed edge) connecting an upwind and downwind cell. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn21AAHD_DirectedEdgeNode13IsInitializedEv">
+<span class="target" id="structopensn_1_1_a_a_h_d___directed_edge_node_1a57728d9690474a986fd4b011aa7accb4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsInitialized</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn21AAHD_DirectedEdgeNode13IsInitializedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if the directed edge is initialized. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21AAHD_DirectedEdgeNode11upwind_nodeE">
+<span class="target" id="structopensn_1_1_a_a_h_d___directed_edge_node_1a47c65fa290cd43cd9e7cde09c459e3fa"></span><a class="reference internal" href="classopensn_1_1_a_a_h_d___face_node.html#_CPPv4N6opensn13AAHD_FaceNodeE" title="opensn::AAHD_FaceNode"><span class="n"><span class="pre">AAHD_FaceNode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">upwind_node</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21AAHD_DirectedEdgeNode11upwind_nodeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Upwind face node. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21AAHD_DirectedEdgeNode13downwind_nodeE">
+<span class="target" id="structopensn_1_1_a_a_h_d___directed_edge_node_1a5c314429af3f0ad91e69ca59a562570e"></span><a class="reference internal" href="classopensn_1_1_a_a_h_d___face_node.html#_CPPv4N6opensn13AAHD_FaceNodeE" title="opensn::AAHD_FaceNode"><span class="n"><span class="pre">AAHD_FaceNode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">downwind_node</span></span></span><a class="headerlink" href="#_CPPv4N6opensn21AAHD_DirectedEdgeNode13downwind_nodeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Downwind face node. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn21AAHD_DirectedEdgeNode12is_removableE">
+<span class="target" id="structopensn_1_1_a_a_h_d___directed_edge_node_1a25c01e77e88533ec78e3be76971bd986"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_removable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><a class="headerlink" href="#_CPPv4N6opensn21AAHD_DirectedEdgeNode12is_removableE" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating if the node is removable in the stack. </p>
+</dd></dl>
+
+</div>
 </dd></dl>
 
 </section>

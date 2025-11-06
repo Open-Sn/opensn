@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1gpu__kernel_1_1_buffer:
+
+Template Class Buffer
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_buffer.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::gpu_kernel::Buffer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

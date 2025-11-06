@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2b5e63fae803311d842849e9c38d5b61:
+
+Template Function opensn::SetupMessageData
+==========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SetupMessageData(const std::vector<int>&, const GetUnknownCountFunc&, std::vector<std::vector<AAH_MessageDetails>>&, std::vector<std::vector<bool>> *, int&, const MPICommunicatorSet&, int)
+   :project: opensn

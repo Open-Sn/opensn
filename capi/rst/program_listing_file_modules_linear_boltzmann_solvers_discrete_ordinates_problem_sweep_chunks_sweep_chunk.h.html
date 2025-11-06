@@ -155,13 +155,11 @@
 <span class="w">  </span><span class="c1">/// For cell-by-cell methods or computing the residual on a single cell.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">SetCell</span><span class="p">(</span><span class="n">Cell</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">cell_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">SweepChunk</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Zero the portion of the output flux moments vector corresponding to the groupset for this</span>
 <span class="cm">   * sweep chunk.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPhi</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ZeroDestinationPhi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Sets all elements of the output angular flux vector to zero.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPsi</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">assign</span><span class="p">((</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
@@ -171,6 +169,8 @@
 
 <span class="w">  </span><span class="c1">/// Returns the surface src-active flag.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsSurfaceSourceActive</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">surface_source_active_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">SweepChunk</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e:
+
+Template Function opensn::gpu_kernel::Sweep
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::Sweep(const Arguments&, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const unsigned int&, const std::uint32_t&, double *)
+   :project: opensn

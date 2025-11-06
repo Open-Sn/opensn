@@ -103,8 +103,8 @@
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS8AAH_SPDSEiRK7Vector3NSt10shared_ptrI13MeshContinuumEEb">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a02986f2966946fa26d327a403ec17f2b"></span><span class="sig-name descname"><span class="n"><span class="pre">AAH_SPDS</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">omega</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allow_cycles</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS8AAH_SPDSEiRK7Vector3NSt10shared_ptrI13MeshContinuumEEb" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS8AAH_SPDSEiRK7Vector3NSt10shared_ptrI13MeshContinuumEEbb">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a86d4fdc37243add4e27846a63b164b3e"></span><span class="sig-name descname"><span class="n"><span class="pre">AAH_SPDS</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">omega</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allow_cycles</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use_gpus</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS8AAH_SPDSEiRK7Vector3NSt10shared_ptrI13MeshContinuumEEbb" title="Link to this definition"></a><br /></dt>
 <dd><p>Creates a sweep-plane data structure (<a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a>) for the given direction and grid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -113,6 +113,7 @@
 <li><p><strong>omega</strong> – The angular direction for the sweep operation. </p></li>
 <li><p><strong>grid</strong> – The grid on which the sweep is performed. </p></li>
 <li><p><strong>allow_cycles</strong> – Whether cycles are allowed in the local and global swepp dependency graphs. </p></li>
+<li><p><strong>use_gpus</strong> – Whether to allocate device memory for GPU acceleration. </p></li>
 </ul>
 </dd>
 </dl>
@@ -143,6 +144,24 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS20CopySPLSDataOnDeviceEv">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1aba51cb28c3c331be45dd60b5ff7e2331"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopySPLSDataOnDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS20CopySPLSDataOnDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copies the levelized SPLS data on device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS14FreeDeviceDataEv">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a1509a884fa68df6edaab7dadd5afd20a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FreeDeviceData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS14FreeDeviceDataEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Free the memory on GPU. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8AAH_SPDS20GetDeviceLevelVectorENSt6size_tE">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a4a213e6475bb6156b5daab16e3442331"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDeviceLevelVector</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS20GetDeviceLevelVectorENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Get level vector on device. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS17GetGlobalSweepFASEv">
 <span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a624573e85259696f7e9060b79119b166"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGlobalSweepFAS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS17GetGlobalSweepFASEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the global sweep FAS as a vector of edges. </p>
@@ -157,6 +176,12 @@
 <dd class="field-odd"><p><strong>edges</strong> – A vector of edges representing the FAS. </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDSD0Ev">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a9bfb5bb1e6b15466dcd59eff99905f2e"></span><span class="sig-name descname"><span class="n"><span class="pre">~AAH_SPDS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDSD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>Destructor. </p>
 </dd></dl>
 
 </div>

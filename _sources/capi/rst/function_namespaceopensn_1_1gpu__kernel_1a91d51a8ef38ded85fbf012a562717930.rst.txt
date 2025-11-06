@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930:
+
+Template Function opensn::gpu_kernel::SaveAngularFlux
+=====================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::SaveAngularFlux(const double *, double *, CellView&, const unsigned int&, const std::uint64_t&)
+   :project: opensn

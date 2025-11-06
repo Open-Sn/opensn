@@ -32,6 +32,8 @@ Namespaces
 
 - :ref:`namespace_opensn__device_dbg`
 
+- :ref:`namespace_opensn__gpu_kernel`
+
 - :ref:`namespace_opensn__SimplifiedLDFESQ`
 
 
@@ -40,6 +42,20 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___message_details`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___bank`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___boundary_bank`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___delayed_local_bank`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___directed_edge_node`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set`
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___non_local_bank`
 
 - :ref:`exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices`
 
@@ -76,14 +92,6 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_face_nodal_mapping`
 
 - :ref:`exhale_struct_structopensn_1_1_face_view`
-
-- :ref:`exhale_struct_structopensn_1_1_flood_cell`
-
-- :ref:`exhale_struct_structopensn_1_1_flood_face`
-
-- :ref:`exhale_struct_structopensn_1_1_flood_level`
-
-- :ref:`exhale_struct_structopensn_1_1_flood_ptr`
 
 - :ref:`exhale_struct_structopensn_1_1_ghost_vec_local_raw`
 
@@ -241,7 +249,15 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h___s_p_d_s`
 
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___face_node`
+
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s_common_data`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___node_index`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___non_local_face_node`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk`
 
@@ -793,6 +809,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a689545ba1e4b5ee77aff4d480844a91c`
 
+- :ref:`exhale_function_namespaceopensn_1a03fc245c0c17b85692881486368d2f55`
+
 - :ref:`exhale_function_namespaceopensn_1ab8ba9e293b4a2b9c750312dbbee03f89`
 
 - :ref:`exhale_function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794`
@@ -935,6 +953,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64`
 
+- :ref:`exhale_function_namespaceopensn_1a2b5e63fae803311d842849e9c38d5b61`
+
 - :ref:`exhale_function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7`
 
 - :ref:`exhale_function_namespaceopensn_1a9a150f771f5f743674abdfa0bee57209`
@@ -1056,8 +1076,6 @@ Variables
 - :ref:`exhale_variable_namespaceopensn_1a9e71974189ed8e21bae1b79f423bfdb0`
 
 - :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`
-
-- :ref:`exhale_variable_namespaceopensn_1aa180315c1dc1ad3d5e6f0c2e822d385d`
 
 - :ref:`exhale_variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9`
 

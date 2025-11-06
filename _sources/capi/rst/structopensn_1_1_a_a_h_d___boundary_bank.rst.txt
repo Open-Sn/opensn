@@ -1,0 +1,26 @@
+.. _exhale_struct_structopensn_1_1_a_a_h_d___boundary_bank:
+
+Struct AAHD_BoundaryBank
+========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::AAHD_Bank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___bank`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAHD_BoundaryBank
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

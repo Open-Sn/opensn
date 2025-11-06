@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1_1gpu__kernel_1aa1b3846832c5d77d83db1bc1d2d12a87:
+
+Variable opensn::gpu_kernel::sweep_spec_map
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::gpu_kernel::sweep_spec_map
+   :project: opensn

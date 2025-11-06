@@ -1,0 +1,80 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h:
+
+File solver.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/solver.h``)
+-------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``caribou/caribou.h``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/arguments.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_buffer.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/view/mesh_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_mesh_view.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/view/quadrature_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_quadrature_view.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__gpu_kernel`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ab59595c32b28dc506f51f4d503d15986`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1acf463914b6ae4bd044b7e8b205a0056f`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a1af778ddf7fe732d40c310fe483709cf`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332`
+

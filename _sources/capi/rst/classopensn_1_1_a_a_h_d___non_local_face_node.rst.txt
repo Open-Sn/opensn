@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_a_a_h_d___non_local_face_node:
+
+Class AAHD_NonLocalFaceNode
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AAHD_NonLocalFaceNode
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

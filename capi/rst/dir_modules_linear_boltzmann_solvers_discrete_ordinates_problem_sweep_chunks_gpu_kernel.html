@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct FloodPtr &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Directory gpu_kernel &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -72,7 +72,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Struct FloodPtr</li>
+      <li class="breadcrumb-item active">Directory gpu_kernel</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -81,33 +81,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-floodptr">
-<span id="exhale-struct-structopensn-1-1-flood-ptr"></span><h1>Struct FloodPtr<a class="headerlink" href="#struct-floodptr" title="Link to this heading"></a></h1>
+  <section id="directory-gpu-kernel">
+<span id="dir-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel"></span><h1>Directory gpu_kernel<a class="headerlink" href="#directory-gpu-kernel" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks.html#dir-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks</span></code>)</p>
+<p><em>Directory path:</em> <code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel</span></code></p>
+<section id="files">
+<h2>Files<a class="headerlink" href="#files" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-fluds-h"><span class="std std-ref">File aahd_fluds.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-arguments-h"><span class="std std-ref">File arguments.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_buffer.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-buffer-h"><span class="std std-ref">File buffer.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-main-h"><span class="std std-ref">File main.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-solver-h"><span class="std std-ref">File solver.h</span></a></p></li>
 </ul>
-<section id="struct-documentation">
-<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8FloodPtrE">
-<span class="target" id="structopensn_1_1_flood_ptr"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FloodPtr</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8FloodPtrE" title="Link to this definition"></a><br /></dt>
-<dd><p>Object storing pointer to group-wise angular flux of a face node and angle on the host. </p>
-<p>If the node is associated with incoming face, the <code class="docutils literal notranslate"><span class="pre">outgoing</span></code> member is a null pointer and vice-versa. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8FloodPtr8incomingE">
-<span class="target" id="structopensn_1_1_flood_ptr_1af2d02cb4ca6d5a8d9aa7e6c8bef53bf8"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">incoming</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn8FloodPtr8incomingE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8FloodPtr8outgoingE">
-<span class="target" id="structopensn_1_1_flood_ptr_1a7ae5d363f81eba9d0e686ccfa41d0893"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">outgoing</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn8FloodPtr8outgoingE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
 </section>
 </section>
 

@@ -30,11 +30,21 @@ Includes
 --------
 
 
+- ``concepts``
+
+- ``cstddef``
+
+- ``framework/mpi/mpi_comm_set.h`` (:ref:`file_framework_mpi_mpi_comm_set.h`)
+
+- ``limits``
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
 
 - ``mpicpp-lite/mpicpp-lite.h``
+
+- ``type_traits``
 
 
 
@@ -58,5 +68,14 @@ Classes
 -------
 
 
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___message_details`
+
 - :ref:`exhale_class_classopensn_1_1_a_a_h___a_synchronous_communicator`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a2b5e63fae803311d842849e9c38d5b61`
 

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1gpu__kernel_1_1_arguments:
+
+Struct Arguments
+================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::gpu_kernel::Arguments
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,78 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h:
+
+File main.h
+===========
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/main.h``)
+-----------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/arguments.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_buffer.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/solver.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__gpu_kernel`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3`
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1a69a596d3d36f43fdd11b6ba9634370f5`
+
+- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1_1gpu__kernel_1aa1b3846832c5d77d83db1bc1d2d12a87`
+

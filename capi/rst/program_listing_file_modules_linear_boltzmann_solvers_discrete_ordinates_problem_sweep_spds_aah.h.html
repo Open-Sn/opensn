@@ -104,8 +104,13 @@
 <span class="cm">   * \param omega The angular direction for the sweep operation.</span>
 <span class="cm">   * \param grid The grid on which the sweep is performed.</span>
 <span class="cm">   * \param allow_cycles Whether cycles are allowed in the local and global swepp dependency graphs.</span>
+<span class="cm">   * \param use_gpus Whether to allocate device memory for GPU acceleration.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">AAH_SPDS</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AAH_SPDS</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span>
+<span class="w">           </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Returns the id of this SPDS.</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetId</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">id_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -119,6 +124,18 @@
 <span class="w">  </span><span class="c1">/// Builds the Task Dependency Graph (TDG) for the global sweep.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildGlobalSweepTDG</span><span class="p">();</span>
 
+<span class="w">  </span><span class="c1">/// Copies the levelized SPLS data on device.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopySPLSDataOnDevice</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Free the memory on GPU.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">FreeDeviceData</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Get level vector on device</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="nf">GetDeviceLevelVector</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">level</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">device_levelized_spls_</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">contiguous_offset_</span><span class="p">[</span><span class="n">level</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Returns the global sweep FAS as a vector of edges.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGlobalSweepFAS</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_sweep_fas_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -127,6 +144,9 @@
 <span class="cm">   * \param edges A vector of edges representing the FAS.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetGlobalSweepFAS</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">global_sweep_fas_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edges</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Destructor.</span>
+<span class="w">  </span><span class="o">~</span><span class="n">AAH_SPDS</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Unique identifier for this SPDS.</span>
@@ -139,6 +159,10 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">STDG</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_sweep_planes_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Vector of edges representing the FAS used to break cycles in the global sweep graph.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_sweep_fas_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Levelized SPLS structure on GPU (only visible to GPU implementation).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">device_levelized_spls_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Per-level offset into the contiguous level data.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">contiguous_offset_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
