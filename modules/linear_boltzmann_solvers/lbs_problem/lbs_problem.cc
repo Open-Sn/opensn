@@ -648,7 +648,12 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
   auto grid = GetGrid();
   const auto bnd_map = grid->GetBoundaryIDMap();
   const auto bnd_name_map = grid->GetBoundaryNameMap();
-  const auto bid = bnd_name_map.at(boundary_name);
+  auto it = bnd_name_map.find(boundary_name);
+  if (it == bnd_name_map.end())
+    throw std::runtime_error(std::format("Could not find the specified boundary '{}' - please "
+                                         "check that the 'name' parameter is spelled correctly.",
+                                         boundary_name));
+  const auto bid = it->second;
   const std::map<std::string, LBSBoundaryType> type_list = {
     {"vacuum", LBSBoundaryType::VACUUM},
     {"isotropic", LBSBoundaryType::ISOTROPIC},
