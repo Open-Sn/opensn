@@ -22,8 +22,7 @@ AngularQuadrature::MakeHarmonicIndices()
 
   // For Galerkin methods with Product Quadrature, use rule-based selection
   if ((construction_method_ == OperatorConstructionMethod::GALERKIN_ONE ||
-       construction_method_ == OperatorConstructionMethod::GALERKIN_THREE) &&
-      type_ == AngularQuadratureType::ProductQuadrature)
+       construction_method_ == OperatorConstructionMethod::GALERKIN_THREE))
   {
     // Set up parameters for rule-based selection
     HarmonicSelectionRules::SelectionParameters params;
@@ -57,6 +56,7 @@ AngularQuadrature::MakeHarmonicIndices()
 void
 AngularQuadrature::BuildDiscreteToMomentOperator()
 {
+  MakeHarmonicIndices();
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
@@ -209,6 +209,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
 void
 AngularQuadrature::BuildMomentToDiscreteOperator()
 {
+  MakeHarmonicIndices();
   const size_t num_angles = abscissae.size();
   const size_t num_moms = m_to_ell_em_map_.size();
 
@@ -240,13 +241,13 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
 
       // Verbose printout
       std::stringstream outs;
-      outs << "\nQuadrature m2d operator (Standard Method):\n";
+      outs << "\nQuadrature m2d operator (Standard/Galerkin-Quadrature 1 Method):\n";
       for (auto n = 0; n < num_angles; ++n)
       {
         outs << std::setw(5) << n;
         for (auto m = 0; m < num_moms; ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[m][n]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
                << " ";
         }
         outs << "\n";
