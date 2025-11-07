@@ -41,7 +41,8 @@ struct AAH_MessageDetails
  */
 template <typename GetUnknownCountFunc>
   requires std::is_invocable_v<GetUnknownCountFunc, std::size_t> &&
-           std::is_convertible_v<std::result_of_t<GetUnknownCountFunc(std::size_t)>, std::size_t>
+           std::is_convertible_v<std::invoke_result_t<GetUnknownCountFunc, std::size_t>,
+                                 std::size_t>
 void
 SetupMessageData(const std::vector<int>& locations,
                  const GetUnknownCountFunc& get_unknown_count,
