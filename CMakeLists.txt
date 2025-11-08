@@ -229,18 +229,19 @@ endif()
 
 target_include_directories(libopensn
     PRIVATE
-    $<INSTALL_INTERFACE:include/opensn>
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/external
     PUBLIC
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/opensn>
     $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${caliper_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
+
 if (OPENSN_WITH_CUDA)
   target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
   target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
@@ -255,13 +256,13 @@ if (OPENSN_WITH_CUDA)
   )
   target_include_directories(libopensncuda
       PRIVATE
-      $<INSTALL_INTERFACE:include/opensn>
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
       $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}/external
       PUBLIC
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/opensn>
       $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
       $<BUILD_INTERFACE:${caliper_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
@@ -271,7 +272,7 @@ if (OPENSN_WITH_CUDA)
 endif()
 
 target_link_libraries(libopensn
-    PRIVATE
+    PUBLIC
     ${PETSC_LIBRARY}
     ${VTK_LIBRARIES}
     caliper
@@ -292,6 +293,11 @@ set_target_properties(
         SOVERSION ${PROJECT_VERSION_MAJOR}
         OUTPUT_NAME opensn
 )
+
+set_target_properties(libopensn PROPERTIES EXPORT_NAME opensn)
+if (OPENSN_WITH_CUDA)
+  set_target_properties(libopensncuda PROPERTIES EXPORT_NAME opensncuda)
+endif()
 
 if(OPENSN_WITH_PYTHON)
   add_subdirectory(python)
@@ -314,7 +320,7 @@ endif()
 
 configure_file(config.h.in config.h)
 
-# install
+# find_package(OpenSn)
 configure_package_config_file(
     ${PROJECT_SOURCE_DIR}/cmake/OpenSnConfig.cmake.in
     OpenSnConfig.cmake
@@ -331,9 +337,9 @@ write_basic_package_version_file(
 install(
     TARGETS libopensn
     EXPORT openSnTargets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
@@ -342,9 +348,9 @@ if(OPENSN_WITH_CUDA)
   install(
         TARGETS libopensncuda
         EXPORT openSnTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
@@ -384,13 +390,16 @@ install(
 
 if(OPENSN_WITH_PYTHON)
   install(
-        TARGETS opensn libopensnpy
-        EXPORT openSnTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
+        TARGETS opensn
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
-
+  install(
+        TARGETS libopensnpy
+        EXPORT openSnTargets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
   install(
         DIRECTORY ${CMAKE_SOURCE_DIR}/python
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
