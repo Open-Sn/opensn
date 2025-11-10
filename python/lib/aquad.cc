@@ -354,14 +354,14 @@ WrapLebedevQuadrature(py::module& aquad)
     "LebedevQuadrature",
     R"(
     Lebedev quadrature for spherical integration.
-    
+
     This quadrature provides high-order accuracy for spherical integration with
     symmetric distribution of points on the sphere.
 
     Wrapper of :cpp:class:`opensn::LebedevQuadrature`.
     )"
   );
-  
+
   lebedev_quadrature.def(
     py::init(
       [](py::kwargs& params)

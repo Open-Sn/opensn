@@ -26,6 +26,11 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::exec("rank = " + std::to_string(comm.rank()));
   py::exec("size = " + std::to_string(comm.size()));
   py::exec("opensn_console = True");
+#ifdef __OPENSN_USE_CUDA__
+  py::exec("can_support_gpus = True");
+#else
+  py::exec("can_support_gpus = False");
+#endif // __OPENSN_USE_CUDA__
 
   console.BindBarrier(comm);
 
@@ -64,6 +69,10 @@ PyApp::PyApp(const mpi::Communicator& comm)
   Console::BindModule(WrapNLKEigen);
   Console::BindModule(WrapPIteration);
   Console::BindModule(WrapDiscreteOrdinatesKEigenAcceleration);
+
+#ifdef __OPENSN_USE_CUDA__
+  Console::BindModule(WrapDeviceSettings);
+#endif // __OPENSN_USE_CUDA__
 }
 
 int

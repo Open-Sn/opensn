@@ -16,6 +16,7 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14 doxygen/1.13.2 pandoc/3.6.4
+          export CMAKE_ARGS="-DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON"
           python3 setup.py build_ext --inplace
           cd doc
           make html

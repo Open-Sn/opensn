@@ -15,6 +15,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn import can_support_gpus
     from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.xs import MultiGroupXS
@@ -22,6 +23,8 @@ if "opensn_console" not in globals():
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
+    if can_support_gpus:
+        from pyopensn.device import set_device, get_device_count
 
 if __name__ == "__main__":
 
@@ -29,6 +32,13 @@ if __name__ == "__main__":
     num_procs = 4
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
+
+    # Check for GPU support
+    if not can_support_gpus:
+        sys.exit("OpenSn was built without GPU support.")
+
+    # Divide MPI ranks to multiple GPUs
+    set_device(rank % get_device_count())
 
     # Setup mesh using an unstructured triangle mesh file
     meshgen = FromFileMeshGenerator(

@@ -14,6 +14,10 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # libopensnpython
 file(GLOB_RECURSE LIBOPENSN_PY_SRCS CONFIGURE_DEPENDS lib/*.cc)
+if (OPENSN_WITH_CUDA)
+    file(GLOB_RECURSE LIBOPENSN_PY_CUDA_SRCS CONFIGURE_DEPENDS lib/*.cu)
+    list(APPEND LIBOPENSN_PY_SRCS ${LIBOPENSN_PY_CUDA_SRCS})
+endif()
 add_library(libopensnpy STATIC ${LIBOPENSN_PY_SRCS})
 target_include_directories(libopensnpy
     PRIVATE
@@ -32,6 +36,9 @@ target_link_libraries(libopensnpy
     pybind11::embed
 )
 target_compile_options(libopensnpy PRIVATE ${OPENSN_CXX_FLAGS})
+if (OPENSN_WITH_CUDA)
+    target_compile_definitions(libopensnpy PRIVATE __OPENSN_USE_CUDA__)
+endif()
 set_target_properties(
     libopensnpy
     PROPERTIES
