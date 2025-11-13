@@ -1,7 +1,7 @@
-.. _exhale_class_classopensn_1_1_lebedev_quadrature:
+.. _exhale_class_classopensn_1_1_lebedev_quadrature3_d_x_y_z:
 
-Class LebedevQuadrature
-=======================
+Class LebedevQuadrature3DXYZ
+============================
 
 - Defined in :ref:`file_framework_math_quadratures_angular_lebedev_quadrature.h`
 
@@ -19,7 +19,7 @@ Class Documentation
 -------------------
 
 
-.. doxygenclass:: opensn::LebedevQuadrature
+.. doxygenclass:: opensn::LebedevQuadrature3DXYZ
    :project: opensn
    :members:
    :protected-members:

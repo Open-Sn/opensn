@@ -980,7 +980,7 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_lebedev_quadrature.rst
+   classopensn_1_1_lebedev_quadrature3_d_x_y_z.rst
 
 .. toctree::
    :maxdepth: 1
