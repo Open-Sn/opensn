@@ -404,6 +404,77 @@ WrapLBS(py::module& slv)
     py::arg("file_base")
   );
   lbs_problem.def(
+    "WriteSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self, 
+      const std::string& file_base, 
+      py::list bndry_names,
+      py::object surfaces)
+    {
+      // Map boundary names
+      std::map<std::string, uint64_t> allowed_bd_names = LBSProblem::supported_boundary_names;
+      std::map<std::uint64_t, std::string> allowed_bd_ids = LBSProblem::supported_boundary_ids;
+      std::vector<std::string> bndrys;
+      for (py::handle name : bndry_names)
+        bndrys.push_back(name.cast<std::string>());
+
+      // Map surface names
+      std::optional<std::pair<std::string, double>> opt_surfaces;
+      if (!surfaces.is_none())
+      {
+        py::list surf_list = surfaces.cast<py::list>();
+        if (py::len(surf_list) == 2)
+        {
+          std::string surf_id = surf_list[0].cast<std::string>();
+          double slice = surf_list[1].cast<double>();
+          opt_surfaces = std::make_pair(surf_id, slice);
+        }
+      }
+
+      // LBSSolverIO::WriteSurfaceAngularFluxes(self, file_base, bndry_map);
+      LBSSolverIO::WriteSurfaceAngularFluxes(self, file_base, bndrys, opt_surfaces);
+    },
+    R"(
+    Write surface angular flux data to file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    )",
+    py::arg("file_base"),
+    py::arg("bndry_names"),
+    py::arg("surfaces") = py::none()
+  );
+  lbs_problem.def(
+    "ReadSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base, py::list bndry_names)
+    {
+      std::map<std::string, std::uint64_t> supported_bd_names = LBSProblem::supported_boundary_names;
+      std::map<std::uint64_t, std::string> supported_bd_ids = LBSProblem::supported_boundary_ids;
+
+      // std::map<std::string, std::uint64_t> bndry_map;
+      std::vector<std::string> bndrys;
+      for (py::handle name : bndry_names)
+      {
+        std::string bndry = name.cast<std::string>();
+        // bndry_map[bndry] = supported_bd_names.at(bndry);
+        bndrys.push_back(bndry);
+      }
+      // LBSSolverIO::ReadSurfaceAngularFluxes(self, file_base, bndry_map);
+      LBSSolverIO::ReadSurfaceAngularFluxes(self, file_base, bndrys);
+    },
+    R"(
+    Read surface angular fluxes from file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    )",
+    py::arg("file_base"),
+    py::arg("bndry_names")
+  );
+  lbs_problem.def(
     "SetPointSources",
     [](LBSProblem& self, py::kwargs& params)
     {

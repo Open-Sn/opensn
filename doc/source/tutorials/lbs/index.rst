@@ -1,4 +1,3 @@
-
 Linear Boltzmann Solver
 =======================
 
