@@ -15,7 +15,9 @@
 namespace opensn
 {
 
-LebedevQuadrature::LebedevQuadrature(int quadrature_order, int scattering_order, bool verbose)
+LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(int quadrature_order,
+                                               int scattering_order,
+                                               bool verbose)
   : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order)
 {
   LoadFromOrder(quadrature_order, verbose);
@@ -25,7 +27,7 @@ LebedevQuadrature::LebedevQuadrature(int quadrature_order, int scattering_order,
 }
 
 void
-LebedevQuadrature::LoadFromOrder(int quadrature_order, bool verbose)
+LebedevQuadrature3DXYZ::LoadFromOrder(int quadrature_order, bool verbose)
 {
   abscissae.clear();
   weights.clear();

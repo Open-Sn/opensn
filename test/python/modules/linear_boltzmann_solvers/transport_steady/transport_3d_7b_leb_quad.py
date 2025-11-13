@@ -16,7 +16,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
-    from pyopensn.aquad import LebedevQuadrature
+    from pyopensn.aquad import LebedevQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         strength.append(1.0)
     mg_src = VolumetricSource(block_ids=[0], group_strength=strength)
 
-    pquad = LebedevQuadrature(quadrature_order=21, scattering_order=0)
+    pquad = LebedevQuadrature3DXYZ(quadrature_order=21, scattering_order=0)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
