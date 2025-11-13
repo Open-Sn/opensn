@@ -125,7 +125,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
 
     for (const auto& cell : grid->local_cells)
     {
-      const uint64_t c = cell.local_id;
+      const auto c = cell.local_id;
       bool on_ref_bndry = false;
 
       for (const auto& face : cell.faces)
@@ -326,7 +326,7 @@ ReflectingBoundary::CopyDelayedAngularFluxNewToOld()
 }
 
 double*
-ReflectingBoundary::PsiIncoming(uint64_t cell_local_id,
+ReflectingBoundary::PsiIncoming(std::uint32_t cell_local_id,
                                 unsigned int face_num,
                                 unsigned int fi,
                                 unsigned int angle_num,

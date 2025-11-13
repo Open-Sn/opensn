@@ -24,7 +24,7 @@ public:
   {
   }
 
-  double* PsiIncoming(uint64_t cell_local_id,
+  double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,

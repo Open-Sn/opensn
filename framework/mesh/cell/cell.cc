@@ -70,7 +70,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
   return adj_cell.partition_id;
 }
 
-uint64_t
+std::uint32_t
 CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
 {
   if (not has_neighbor)
@@ -393,7 +393,7 @@ Cell::Serialize() const
   ByteArray raw;
 
   raw.Write<uint64_t>(global_id);
-  raw.Write<uint64_t>(local_id);
+  raw.Write<std::uint32_t>(local_id);
   raw.Write<int>(partition_id);
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
@@ -418,7 +418,7 @@ Cell
 Cell::DeSerialize(const ByteArray& raw, size_t& address)
 {
   auto cell_global_id = raw.Read<uint64_t>(address, &address);
-  auto cell_local_id = raw.Read<uint64_t>(address, &address);
+  auto cell_local_id = raw.Read<std::uint32_t>(address, &address);
   auto cell_prttn_id = raw.Read<int>(address, &address);
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);

@@ -52,7 +52,7 @@ public:
   int GetNeighborPartitionID(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's local id.
-  uint64_t GetNeighborLocalID(const MeshContinuum* grid) const;
+  std::uint32_t GetNeighborLocalID(const MeshContinuum* grid) const;
 
   /// Determines the neighbor's associated face.
   int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
@@ -114,7 +114,7 @@ public:
   std::string ToString() const;
 
   uint64_t global_id = 0;
-  uint64_t local_id = 0;
+  std::uint32_t local_id = 0;
   int partition_id = 0;
   int num_parition = 0;
   unsigned int block_id = std::numeric_limits<unsigned int>::max();

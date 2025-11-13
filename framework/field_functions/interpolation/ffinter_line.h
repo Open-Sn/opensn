@@ -51,7 +51,7 @@ private:
   int number_of_points_;
   double op_value_;
   Vector3 pi_, pf_;
-  std::vector<uint64_t> local_cells_;
+  std::vector<std::uint32_t> local_cells_;
   std::vector<Vector3> local_interpolation_points_;
   std::vector<double> local_interpolation_values_;
   std::shared_ptr<FieldFunctionGridBased> ref_ff_;

@@ -718,8 +718,8 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
     int offset = 0;
     while (offset < global_edges_to_remove.size())
     {
-      int spds_id = global_edges_to_remove[offset++];
-      int num_edges = global_edges_to_remove[offset++];
+      auto spds_id = global_edges_to_remove[offset++];
+      auto num_edges = global_edges_to_remove[offset++];
       std::vector<int> edges;
       edges.reserve(num_edges);
       for (auto i = 0; i < num_edges; ++i)

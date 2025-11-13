@@ -24,7 +24,7 @@ AAH_SPDS::AAH_SPDS(int id,
 
   // Populate Cell Relationships
   size_t num_loc_cells = grid->local_cells.size();
-  std::vector<std::set<std::pair<int, double>>> cell_successors(num_loc_cells);
+  std::vector<std::set<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
   std::set<int> location_dependencies;
 
@@ -107,7 +107,7 @@ AAH_SPDS::BuildGlobalSweepFAS()
 
   for (int loc = 0; loc < comm_size; ++loc)
   {
-    for (int dep : global_dependencies_[loc])
+    for (auto dep : global_dependencies_[loc])
     {
       double weight = 1.0;
       if (not global_edge_weights_.empty())
@@ -176,12 +176,12 @@ AAH_SPDS::BuildGlobalSweepTDG()
   Graph global_tdg(opensn::mpi_comm.size());
 
   for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc) // NOLINT
-    for (int dep : global_dependencies_[loc])
+    for (auto dep : global_dependencies_[loc])
       boost::add_edge(dep, loc, 1.0, global_tdg);
 
   // De-serialize edges
   std::vector<std::pair<int, int>> edges_to_remove;
-  edges_to_remove.resize(global_sweep_fas_.size() / 2, std::pair<int, int>(0, 0));
+  edges_to_remove.resize(global_sweep_fas_.size() / 2, std::make_pair(0, 0));
   int i = 0;
   for (auto& edge : edges_to_remove)
   {
@@ -192,8 +192,8 @@ AAH_SPDS::BuildGlobalSweepTDG()
   // Remove edges
   for (auto& edge_to_remove : edges_to_remove)
   {
-    int rlocI = edge_to_remove.first;
-    int locI = edge_to_remove.second;
+    auto rlocI = edge_to_remove.first;
+    auto locI = edge_to_remove.second;
 
     boost::remove_edge(rlocI, locI, global_tdg);
 
